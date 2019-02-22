@@ -40,7 +40,8 @@ import {
   UnenrolCourseRequest,
   CourseBatchStatus,
   CourseBatchesRequest,
-  CourseEnrollmentType
+  CourseEnrollmentType,
+  EnrolledCoursesRequest
 } from 'sunbird';
 import { ContentRatingAlertComponent, ContentActionsComponent } from '@app/component';
 import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
@@ -241,6 +242,35 @@ export class EnrolledCourseDetailsPage {
   }
 
   updateEnrolledCourseList(unenrolledCourse) {
+    const enrolledCoursesRequest: EnrolledCoursesRequest = {
+      userId: this.appGlobalService.getUserId(),
+      refreshEnrolledCourses: false,
+      returnRefreshedEnrolledCourses: true
+    };
+    this.courseService.getEnrolledCourses(enrolledCoursesRequest)
+      .then((enrolledCourses: any) => {
+        if (enrolledCourses) {
+          enrolledCourses = JSON.parse(enrolledCourses);
+          this.zone.run(() => {
+            // this.enrolledCourses = enrolledCourses.result.courses ? enrolledCourses.result.courses : [];
+            // maintain the list of courses that are enrolled, and store them in appglobal
+            if (enrolledCourses.length > 0) {
+              const courseList: Array<any> = [];
+              for (const course of enrolledCourses) {
+                courseList.push(course);
+              }
+              this.appGlobalService.setEnrolledCourseList(courseList);
+            }
+            this.removeUnenrolledCourse(unenrolledCourse);
+          });
+        }
+      })
+      .catch((error: any) => {
+        this.removeUnenrolledCourse(unenrolledCourse);
+      });
+  }
+
+  private removeUnenrolledCourse(unenrolledCourse) {
     const enrolledCourses = this.appGlobalService.getEnrolledCourseList();
     const found = enrolledCourses.find((ele) => {
       return ele.courseId === unenrolledCourse.courseId;
@@ -355,8 +385,7 @@ export class EnrolledCourseDetailsPage {
         .then((data: any) => {
           this.zone.run(() => {
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('COURSE_UNENROLLED'));
-            this.events.publish(EventTopics.UNENROL_COURSE_SUCCESS, {
-            });
+            this.events.publish(EventTopics.UNENROL_COURSE_SUCCESS, {});
             loader.dismiss();
           });
         })
@@ -365,8 +394,8 @@ export class EnrolledCourseDetailsPage {
             error = JSON.parse(error);
             if (error && error.error === 'CONNECTION_ERROR') {
               this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NO_INTERNET_MESSAGE'));
-            } else if (error && error.error === 'USER_ALREADY_ENROLLED_COURSE') {
-              this.commonUtilService.showToast(this.commonUtilService.translateMessage('ALREADY_ENROLLED_COURSE'));
+            } else {
+              this.events.publish(EventTopics.UNENROL_COURSE_SUCCESS, {});
             }
             loader.dismiss();
           });
@@ -953,6 +982,7 @@ export class EnrolledCourseDetailsPage {
   ionViewWillLeave(): void {
     this.isNavigatingWithinCourse = true;
     this.events.unsubscribe('genie.event');
+    // TODO: this.events.unsubscribe(EventTopics.UNENROL_COURSE_SUCCESS);
   }
 
   /**
