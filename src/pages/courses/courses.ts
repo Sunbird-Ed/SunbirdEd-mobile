@@ -762,7 +762,7 @@ export class CoursesPage implements OnInit {
    * and also shows the bottom navigation bar
    */
   removeOverlayAndShowError(): any {
-    this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
+    this.commonUtilService.showToast('COURSE_NOT_AVAILABLE');
     this.tabBarElement.style.display = 'flex';
     this.showOverlay = false;
   }
