@@ -300,7 +300,6 @@ export class CoursesPage implements OnInit {
       });
     });
     this.events.subscribe(EventTopics.REFRESH_ENROLL_COURSE_LIST, () => {
-      this.enrolledCourses = this.appGlobalService.getEnrolledCourseList();
       this.getEnrolledCourses(false, true);
     });
   }
@@ -365,7 +364,7 @@ export class CoursesPage implements OnInit {
           }
         });
 
-        if (filterApplied) {
+        if (filterApplied && !hardRefresh) {
           criteria.mode = 'hard';
         }
         criteria.filters = this.appliedFilter;
