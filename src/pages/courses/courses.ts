@@ -365,7 +365,7 @@ export class CoursesPage implements OnInit {
           }
         });
 
-        if (filterApplied) {
+        if (filterApplied && !hardRefresh) {
           criteria.mode = 'hard';
         }
         criteria.filters = this.appliedFilter;
