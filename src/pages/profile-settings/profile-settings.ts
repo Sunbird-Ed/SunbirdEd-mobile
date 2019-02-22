@@ -150,7 +150,7 @@ export class ProfileSettingsPage {
   }
 
   ionViewWillLeave() {
-   this.unregisterBackButton();
+    this.unregisterBackButton();
   }
   /**
  * It will Dismiss active popup
@@ -231,7 +231,6 @@ export class ProfileSettingsPage {
             this.syllabusList.push(value);
           });
           this.loader.dismiss();
-
           if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
             this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
               .then(catagories => {
@@ -242,8 +241,6 @@ export class ProfileSettingsPage {
                 this.loader.dismiss();
                 this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
               });
-          } else {
-            this.loader.dismiss();
           }
         } else {
           this.loader.dismiss();
@@ -547,7 +544,7 @@ export class ProfileSettingsPage {
   }
 
   handleBackButton() {
-   this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       const navObj = this.app.getActiveNavs()[0];
 
       if (navObj.canGoBack()) {
@@ -563,6 +560,4 @@ export class ProfileSettingsPage {
       PageId.ONBOARDING_PROFILE_PREFERENCES,
       Environment.ONBOARDING);
   }
-
-
 }
