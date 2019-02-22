@@ -569,9 +569,12 @@ export class ProfilePage {
   }
 
   editMobileNumber(event) {
+    const newTitle = this.profile.phone ?
+                     this.commonUtilService.translateMessage('EDIT_PHONE_POPUP_TITLE') :
+                     this.commonUtilService.translateMessage('ENTER_PHONE_POPUP_TITLE');
     const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
       phone: this.profile.phone,
-      title: this.commonUtilService.translateMessage('EDIT_PHONE_POPUP_TITLE'),
+      title: newTitle,
       description: '',
       type: 'phone',
       userId: this.profile.userId
