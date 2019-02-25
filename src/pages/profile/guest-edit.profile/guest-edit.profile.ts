@@ -1,50 +1,38 @@
-import { AlertController } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
-import { Component, Inject } from '@angular/core';
 import {
+  AlertController,
   App,
+  Events,
+  IonicApp,
+  LoadingController,
   NavController,
   NavParams,
-  Events,
-  LoadingController,
-  IonicApp,
   Platform
 } from 'ionic-angular';
-import {
-  FormBuilder,
-  FormGroup
-} from '@angular/forms';
+import {TranslateService} from '@ngx-translate/core';
+import {Component, Inject} from '@angular/core';
+import {FormBuilder, FormGroup} from '@angular/forms';
 import * as _ from 'lodash';
 import {
   CategoryRequest,
-  SharedPreferences,
-  UserSource,
-  InteractType,
-  InteractSubtype,
-  Environment,
-  PageId,
-  ImpressionType,
-  ObjectType,
-  ProfileType,
   ContainerService,
-  TabsPage,
+  Environment,
+  FrameworkService,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  ObjectType,
+  PageId,
+  SharedPreferences,
   SuggestedFrameworkRequest,
-  FrameworkService
+  TabsPage
 } from 'sunbird';
-import {Profile, ProfileService, ProfileSource} from 'sunbird-sdk';
-import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
-import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import {
-  initTabs,
-  GUEST_STUDENT_TABS,
-  GUEST_TEACHER_TABS
-} from '../../../app/module.service';
-import { AppGlobalService } from '../../../service/app-global.service';
-import { CommonUtilService } from '../../../service/common-util.service';
-import {
-  PreferenceKey,
-  FrameworkCategory
-} from '../../../app/app.constant';
+import {Profile, ProfileService, ProfileSource, ProfileType} from 'sunbird-sdk';
+import {FormAndFrameworkUtilService} from '../formandframeworkutil.service';
+import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
+import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs} from '../../../app/module.service';
+import {AppGlobalService} from '../../../service/app-global.service';
+import {CommonUtilService} from '../../../service/common-util.service';
+import {FrameworkCategory, PreferenceKey} from '../../../app/app.constant';
 
 @Component({
   selector: 'page-guest-edit.profile',
@@ -565,7 +553,6 @@ export class GuestEditProfilePage {
       }, (err: any) => {
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
-        console.log('Err', err);
       });
   }
 

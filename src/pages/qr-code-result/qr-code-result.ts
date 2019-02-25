@@ -1,58 +1,46 @@
-import { CommonUtilService } from './../../service/common-util.service';
-import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
+import {CommonUtilService} from './../../service/common-util.service';
+import {FormAndFrameworkUtilService} from './../profile/formandframeworkutil.service';
+import {Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {
-  Component,
-  NgZone,
-  ViewChild
-} from '@angular/core';
-import {
+  AlertController,
+  Events,
   IonicPage,
+  Navbar,
   NavController,
   NavParams,
   Platform,
-  Navbar,
-  Events
+  PopoverController
 } from 'ionic-angular';
 import {
+  ChildContentRequest,
+  ContentMarkerRequest,
   ContentService,
   CorrelationData,
-  ChildContentRequest,
-  InteractSubtype,
-  PageId,
-  Profile,
-  ProfileService,
-  ProfileRequest,
-  SharedPreferences,
-  TabsPage,
-  SuggestedFrameworkRequest,
-  FrameworkService,
-  FileUtil,
-  Rollup,
-  ContentMarkerRequest,
-  MarkerType
-} from 'sunbird';
-import { ContentDetailsPage } from '../content-details/content-details';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
-import {
-  ContentType,
-  MimeType,
-  FrameworkCategory
-} from '../../app/app.constant';
-import { CollectionDetailsPage } from '../collection-details/collection-details';
-import { TranslateService } from '@ngx-translate/core';
-import { AppGlobalService } from '../../service/app-global.service';
-import {
-  InteractType,
   Environment,
-  ImpressionType
+  FileUtil,
+  FrameworkService,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  MarkerType,
+  PageId,
+  ProfileRequest,
+  Rollup,
+  SharedPreferences,
+  SuggestedFrameworkRequest,
+  TabsPage
 } from 'sunbird';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import {ContentDetailsPage} from '../content-details/content-details';
+import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
+import {ContentType, FrameworkCategory, MimeType} from '../../app/app.constant';
+import {CollectionDetailsPage} from '../collection-details/collection-details';
+import {TranslateService} from '@ngx-translate/core';
+import {AppGlobalService} from '../../service/app-global.service';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
 import * as _ from 'lodash';
-import { PopoverController, Content } from 'ionic-angular';
-import { ProfileSettingsPage } from '../profile-settings/profile-settings';
-import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
-import { AlertController } from 'ionic-angular';
-import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
+import {ProfileSettingsPage} from '../profile-settings/profile-settings';
+import {Profile, ProfileService,} from "sunbird-sdk";
+
 @IonicPage()
 @Component({
   selector: 'page-qr-code-result',
@@ -61,38 +49,38 @@ import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup'
 export class QrCodeResultPage {
   unregisterBackButton: any;
   /**
-	 * To hold identifier
-	 */
+   * To hold identifier
+   */
   identifier: string;
 
   /**
-	   * To hold identifier
-	   */
+   * To hold identifier
+   */
   searchIdentifier: string;
 
   /**
-	   * Contains children content data
-	   */
+   * Contains children content data
+   */
   childrenData: Array<any>;
 
   /**
-	   * Show loader while importing content
-	   */
+   * Show loader while importing content
+   */
   showChildrenLoader: boolean;
 
   /**
-	   * Contains card data of previous state
-	   */
+   * Contains card data of previous state
+   */
   content: any;
 
   /**
-	   * Contains Parent Content Details
-	   */
+   * Contains Parent Content Details
+   */
   parentContent: any;
 
   /**
-	   * Contains
-	   */
+   * Contains
+   */
   isParentContentAvailable = false;
   profile: Profile;
 
@@ -127,7 +115,9 @@ export class QrCodeResultPage {
   downloadProgress: any = 0;
   isDownloadCompleted: boolean;
   isUpdateAvailable: boolean;
+
   constructor(
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     public navCtrl: NavController,
     public navParams: NavParams,
     public contentService: ContentService,
@@ -138,7 +128,6 @@ export class QrCodeResultPage {
     private alertCtrl: AlertController,
     private appGlobalService: AppGlobalService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
-    private profileService: ProfileService,
     private events: Events,
     private preferences: SharedPreferences,
     private popOverCtrl: PopoverController,
@@ -150,8 +139,8 @@ export class QrCodeResultPage {
   }
 
   /**
-	 * Ionic life cycle hook
-	 */
+   * Ionic life cycle hook
+   */
   ionViewWillEnter(): void {
     this.content = this.navParams.get('content');
     this.corRelationList = this.navParams.get('corRelation');
@@ -223,7 +212,7 @@ export class QrCodeResultPage {
   }
 
   getChildContents() {
-    const request: ChildContentRequest = { contentId: this.identifier };
+    const request: ChildContentRequest = {contentId: this.identifier};
     this.contentService.getChildContents(
       request)
       .then((data: any) => {
@@ -249,8 +238,7 @@ export class QrCodeResultPage {
         }
 
       })
-      .catch((error: string) => {
-        console.error('Error: while fetching child contents ===>>>', error);
+      .catch(() => {
         this.zone.run(() => {
           this.showChildrenLoader = false;
         });
@@ -303,6 +291,7 @@ export class QrCodeResultPage {
 
     return false;
   }
+
   playOnline(content) {
     if (content.contentData.streamingUrl && !content.isAvailableLocally) {
       this.playContent(content);
@@ -310,6 +299,7 @@ export class QrCodeResultPage {
       this.navigateToDetailsPage(content);
     }
   }
+
   navigateToDetailsPage(content) {
     if (content && content.contentData && content.contentData.contentType === ContentType.COURSE) {
       this.navCtrl.push(EnrolledCourseDetailsPage, {
@@ -333,21 +323,21 @@ export class QrCodeResultPage {
       });
     }
   }
+
   calculateAvailableUserCount() {
     const profileRequest: ProfileRequest = {
       local: true,
       server: false
     };
-    this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
+    this.profileService.getAllProfiles(profileRequest).subscribe(profiles => {
       if (profiles) {
-        this.userCount = JSON.parse(profiles).length;
+        this.userCount = profiles.length;
       }
       if (this.appGlobalService.isUserLoggedIn()) {
         this.userCount += 1;
       }
-    }).catch((error) => {
-      console.error('Error occurred= ', error);
-    });
+    }, () => {
+    })
   }
 
   /** funtion add elipses to the texts**/
@@ -359,11 +349,12 @@ export class QrCodeResultPage {
       return this.commonUtilService.translateMessage(msg);
     }
   }
+
   /**
-     * Play content
-     */
+   * Play content
+   */
   playContent(content) {
-    const extraInfoMap = { hierarchyInfo: [] };
+    const extraInfoMap = {hierarchyInfo: []};
     if (this.cardData && this.cardData.hierarchyInfo) {
       extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
     }
@@ -378,25 +369,26 @@ export class QrCodeResultPage {
     this.contentService.setContentMarker(req)
       .then((resp) => {
       }).catch((err) => {
-      });
+    });
     const request: any = {};
     request.streaming = true;
     AppGlobalService.isPlayerLaunched = true;
     (<any>window).geniecanvas.play(content, JSON.stringify(request));
   }
+
   editProfile(): void {
-    const req: Profile = new Profile();
-    req.board = this.profile.board;
-    req.grade = this.profile.grade;
-    req.medium = this.profile.medium;
-    req.subject = this.profile.subject;
-    req.uid = this.profile.uid;
-    req.handle = this.profile.handle;
-    req.profileType = this.profile.profileType;
-    req.source = this.profile.source;
-    req.createdAt = this.profile.createdAt;
-    req.syllabus = this.profile.syllabus;
-    console.log('qrcode editProfile req', req);
+    const req: Profile = {
+      board: this.profile.board,
+      grade: this.profile.grade,
+      medium: this.profile.medium,
+      subject: this.profile.subject,
+      uid: this.profile.uid,
+      handle: this.profile.handle,
+      profileType: this.profile.profileType,
+      source: this.profile.source,
+      createdAt: this.profile.createdAt,
+      syllabus: this.profile.syllabus
+    };
     // Shorthand for above code
     // req = (({board, grade, medium, subject, uid, handle, profileType, source, createdAt, syllabus}) =>
     // ({board, grade, medium, subject, uid, handle, profileType, source, createdAt, syllabus}))(this.profile);
@@ -404,15 +396,15 @@ export class QrCodeResultPage {
       this.profile.grade.forEach(gradeCode => {
         for (let i = 0; i < this.gradeList.length; i++) {
           if (this.gradeList[i].code === gradeCode) {
-            req.gradeValueMap = this.profile.gradeValueMap;
-            req.gradeValueMap[this.gradeList[i].code] = this.gradeList[i].name;
+            req.gradeValue = this.profile.gradeValue;
+            req.gradeValue[this.gradeList[i].code] = this.gradeList[i].name;
             break;
           }
         }
       });
     }
 
-    this.profileService.updateProfile(req)
+    this.profileService.updateProfile(req).toPromise()
       .then((res: any) => {
         const updateProfileRes = JSON.parse(res);
         if (updateProfileRes.syllabus && updateProfileRes.syllabus.length && updateProfileRes.board && updateProfileRes.board.length
@@ -422,15 +414,14 @@ export class QrCodeResultPage {
         }
         this.appGlobalService.guestUserProfile = JSON.parse(res);
       })
-      .catch((err: any) => {
-        console.error('Err', err);
+      .catch(() => {
       });
   }
 
   setGrade(reset, grades) {
     if (reset) {
       this.profile.grade = [];
-      this.profile.gradeValueMap = {};
+      this.profile.gradeValue = {};
     }
     _.each(grades, (grade) => {
       if (grade && this.profile.grade.indexOf(grade) === -1) {
@@ -442,12 +433,13 @@ export class QrCodeResultPage {
       }
     });
   }
+
   /**
-	 * @param categoryList
-	 * @param data
-	 * @param categoryType
-	 * return the code of board,medium and subject based on Name
-	 */
+   * @param categoryList
+   * @param data
+   * @param categoryType
+   * return the code of board,medium and subject based on Name
+   */
   findCode(categoryList: Array<any>, data, categoryType) {
     if (_.find(categoryList, (category) => category.name === data[categoryType])) {
       return _.find(categoryList, (category) => category.name === data[categoryType]).code;
@@ -457,18 +449,18 @@ export class QrCodeResultPage {
   }
 
   /**
-	 * Assigning board, medium, grade and subject to profile
-	 */
+   * Assigning board, medium, grade and subject to profile
+   */
 
   setCurrentProfile(index, data) {
-    console.log('setCurrentProfile index', index);
     if (!this.profile.medium || !this.profile.medium.length) {
       this.profile.medium = [];
     }
-/*     if (!this.profile.subject || !this.profile.subject.length) {
-      this.profile.subject = [];
-    }
- */    switch (index) {
+    /*     if (!this.profile.subject || !this.profile.subject.length) {
+          this.profile.subject = [];
+        }
+     */
+    switch (index) {
       case 0:
         this.profile.syllabus = [data.framework];
         this.profile.board = [data.board];
@@ -490,18 +482,19 @@ export class QrCodeResultPage {
       case 3:
         this.setGrade(false, data.gradeLevel);
         break;
-/*       case 4:
-        this.profile.subject.push(data.subject);
-        break;
- */    }
+      /*       case 4:
+              this.profile.subject.push(data.subject);
+              break;
+       */
+    }
     this.editProfile();
   }
 
   /**
-	 * comparing current profile data with qr result data, If not matching then reset current profile data
-	 * @param {object} data
-	 * @param {object} profile
-	 */
+   * comparing current profile data with qr result data, If not matching then reset current profile data
+   * @param {object} data
+   * @param {object} profile
+   */
   checkProfileData(data, profile) {
     if (data && data.framework) {
 
@@ -564,14 +557,15 @@ export class QrCodeResultPage {
                             if (!existingGrade) {
                               this.setCurrentProfile(3, data);
                             }
-/*                             let existingSubject = false;
-                            existingSubject = _.find(profile.subject, (subject) => {
-                              return subject === data.subject;
-                            });
-                            if (!existingSubject) {
-                              this.setCurrentProfile(4, data);
-                            }
- */                          }
+                            /*                             let existingSubject = false;
+                                                        existingSubject = _.find(profile.subject, (subject) => {
+                                                          return subject === data.subject;
+                                                        });
+                                                        if (!existingSubject) {
+                                                          this.setCurrentProfile(4, data);
+                                                        }
+                             */
+                          }
                         }
                       } else {
                         this.setCurrentProfile(1, data);
@@ -580,9 +574,8 @@ export class QrCodeResultPage {
                   } else {
                     this.setCurrentProfile(0, data);
                   }
-                }).catch(error => {
-                  console.error('Error', error);
-                });
+                }).catch(() => {
+              });
 
               return;
             }
@@ -590,8 +583,7 @@ export class QrCodeResultPage {
           this.telemetryGeneratorService.generateProfilePopulatedTelemetry(PageId.DIAL_CODE_SCAN_RESULT,
             data.framework, Boolean(isProfileUpdated) ? 'auto' : 'na');
         })
-        .catch((error) => {
-          console.error('Error', error);
+        .catch(() => {
         });
     }
   }
@@ -604,8 +596,6 @@ export class QrCodeResultPage {
       this.zone.run(() => {
         data = JSON.parse(data);
         const res = data;
-        console.log('Geni Event!');
-        console.log(res);
 
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
           if (res.data.downloadProgress === -1 || res.data.downloadProgress === '-1') {
@@ -618,12 +608,12 @@ export class QrCodeResultPage {
         // Get child content
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
 
-              this.showLoading = false;
-              this.isDownloadStarted = false;
-              this.results = [];
-              this.parents = [];
-              this.paths = [];
-              this.getChildContents();
+          this.showLoading = false;
+          this.isDownloadStarted = false;
+          this.results = [];
+          this.parents = [];
+          this.paths = [];
+          this.getChildContents();
         }
         // For content update available
         if (res.data && res.type === 'contentUpdateAvailable' && res.data.identifier === this.identifier) {
@@ -678,7 +668,6 @@ export class QrCodeResultPage {
       })
       .catch((error: any) => {
         this.zone.run(() => {
-          console.log('error while loading content details', error);
           this.isDownloadStarted = false;
           this.showLoading = false;
           const errorRes = JSON.parse(error);
@@ -691,7 +680,7 @@ export class QrCodeResultPage {
       });
   }
 
-    /**
+  /**
    * Function to get import content api request params
    *
    * @param {Array<string>} identifiers contains list of content identifier(s)

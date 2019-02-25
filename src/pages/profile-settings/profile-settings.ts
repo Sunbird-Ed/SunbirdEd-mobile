@@ -1,59 +1,29 @@
-import {
-  GUEST_TEACHER_TABS,
-  initTabs,
-  GUEST_STUDENT_TABS
-} from './../../app/module.service';
-import {
-  NavParams,
-  IonicApp,
-  Select,
-  App
-} from 'ionic-angular/index';
-import { AppGlobalService } from '../../service/app-global.service';
-import {
-  ProfileService,
-  TabsPage,
-  InteractSubtype,
-  PageId,
-  InteractType,
-  ProfileType,
-  ContainerService,
-  FrameworkService,
-  SuggestedFrameworkRequest
-} from 'sunbird';
-import {
-  Component,
-  ViewChild
-} from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import {
-  FormBuilder,
-  FormGroup
-} from '@angular/forms';
-import {
-  IonicPage,
-  NavController
-} from 'ionic-angular';
-import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
+import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs} from './../../app/module.service';
+import {App, IonicApp, NavParams, Select} from 'ionic-angular/index';
+import {AppGlobalService} from '../../service/app-global.service';
 import {
   CategoryRequest,
+  ContainerService,
+  Environment,
+  FrameworkService,
+  InteractSubtype,
+  InteractType,
+  PageId,
   SharedPreferences,
-  Profile,
-  Environment
+  SuggestedFrameworkRequest,
+  TabsPage
 } from 'sunbird';
-import {
-  LoadingController,
-  Events,
-  Platform
-} from 'ionic-angular';
-import {
-  PreferenceKey,
-  FrameworkCategory
-} from '../../app/app.constant';
+import {Component, Inject, ViewChild} from '@angular/core';
+import {TranslateService} from '@ngx-translate/core';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {Events, IonicPage, LoadingController, NavController, Platform} from 'ionic-angular';
+import {FormAndFrameworkUtilService} from '../profile/formandframeworkutil.service';
+import {FrameworkCategory, PreferenceKey} from '../../app/app.constant';
 import * as _ from 'lodash';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
-import { CommonUtilService } from '../../service/common-util.service';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
+import {CommonUtilService} from '../../service/common-util.service';
+import {Profile, ProfileService, ProfileType} from "sunbird-sdk";
 
 @IonicPage()
 @Component({
@@ -103,6 +73,7 @@ export class ProfileSettingsPage {
   };
 
   constructor(
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     private navCtrl: NavController,
     private navParams: NavParams,
     private fb: FormBuilder,
@@ -110,7 +81,6 @@ export class ProfileSettingsPage {
     private translate: TranslateService,
     private loadingCtrl: LoadingController,
     private preference: SharedPreferences,
-    private profileService: ProfileService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private appGlobalService: AppGlobalService,
     private events: Events,
@@ -122,7 +92,6 @@ export class ProfileSettingsPage {
     private app: App,
     private framework: FrameworkService,
     private telemetryService: TelemetryGeneratorService
-
   ) {
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {
@@ -144,17 +113,18 @@ export class ProfileSettingsPage {
   ionViewWillEnter() {
     this.hideBackButton = Boolean(this.navParams.get('hideBackButton'));
     if (this.navParams.get('isCreateNavigationStack')) {
-      this.navCtrl.insertPages(0, [{ page: 'LanguageSettingsPage' }, { page: 'UserTypeSelectionPage' }]);
+      this.navCtrl.insertPages(0, [{page: 'LanguageSettingsPage'}, {page: 'UserTypeSelectionPage'}]);
     }
     this.getSyllabusDetails();
   }
 
   ionViewWillLeave() {
-   this.unregisterBackButton();
+    this.unregisterBackButton();
   }
+
   /**
- * It will Dismiss active popup
- */
+   * It will Dismiss active popup
+   */
   dismissPopup() {
     const activePortal = this.ionicApp._modalPortal.getActive() ||
       this.ionicApp._toastPortal.getActive() ||
@@ -171,18 +141,20 @@ export class ProfileSettingsPage {
    * Initializes guest user object
    */
   getGuestUser() {
-    this.profileService.getCurrentUser().then((response: any) => {
-      this.profile = JSON.parse(response);
-      if (this.navParams.get('isChangeRoleRequest')) {
-        this.profile.syllabus = [];
-        this.profile.board = [];
-        this.profile.grade = [];
-        this.profile.subject = [];
-        this.profile.medium = [];
-      }
-      this.profileForTelemetry = this.profile;
-      this.initUserForm();
-    }).catch(() => {
+    this.profileService.getActiveSessionProfile()
+      .toPromise()
+      .then((response: any) => {
+        this.profile = response;
+        if (this.navParams.get('isChangeRoleRequest')) {
+          this.profile.syllabus = [];
+          this.profile.board = [];
+          this.profile.grade = [];
+          this.profile.subject = [];
+          this.profile.medium = [];
+        }
+        this.profileForTelemetry = this.profile;
+        this.initUserForm();
+      }).catch(() => {
       this.profile = undefined;
       this.initUserForm();
     });
@@ -210,8 +182,8 @@ export class ProfileSettingsPage {
   }
 
   /**
-	 * It will fetch syllabus details
-	 */
+   * It will fetch syllabus details
+   */
   getSyllabusDetails() {
     this.loader = this.commonUtilService.getLoader();
     this.loader.present();
@@ -227,7 +199,7 @@ export class ProfileSettingsPage {
         if (result && result !== undefined && result.length > 0) {
           result.forEach(element => {
             // renaming the fields to text, value and checked
-            const value = { 'name': element.name, 'code': element.identifier };
+            const value = {'name': element.name, 'code': element.identifier};
             this.syllabusList.push(value);
           });
           this.loader.dismiss();
@@ -237,11 +209,10 @@ export class ProfileSettingsPage {
               .then(catagories => {
                 this.categories = catagories;
                 this.resetForm(0, false);
-              }).catch(error => {
-                console.error('Error', error);
-                this.loader.dismiss();
-                this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
-              });
+              }).catch(() => {
+              this.loader.dismiss();
+              this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
+            });
           } else {
             this.loader.dismiss();
           }
@@ -253,56 +224,55 @@ export class ProfileSettingsPage {
   }
 
   /**
-	 * This will internally call framework API
-	 * @param {string} currentCategory - request Parameter passing to the framework API
-	 * @param {string} list - Local variable name to hold the list data
-	 */
+   * This will internally call framework API
+   * @param {string} currentCategory - request Parameter passing to the framework API
+   * @param {string} list - Local variable name to hold the list data
+   */
   getCategoryData(req: CategoryRequest, list): void {
     if (this.frameworkId) {
-      this.formAndFrameworkUtilService.getCategoryData(req, this.frameworkId).
-        then((result) => {
-          if (this.loader !== undefined) {
-            this.loader.dismiss();
-          }
-          this[list] = result;
-          if (list !== 'gradeList') {
-            this[list] = _.orderBy(this[list], ['name'], ['asc']);
-          }
-          if (req.currentCategory === 'board') {
-            const boardName = this.syllabusList.find(framework => this.frameworkId === framework.code);
-            if (boardName) {
-              const boardCode = result.find(board => boardName.name === board.name);
-              if (boardCode) {
-                this.userForm.patchValue({
-                  boards: [boardCode.code]
-                });
-                this.resetForm(1, false);
-              } else {
-                this.userForm.patchValue({
-                  boards: [result[0].code]
-                });
-                this.resetForm(1, false);
-              }
+      this.formAndFrameworkUtilService.getCategoryData(req, this.frameworkId).then((result) => {
+        if (this.loader !== undefined) {
+          this.loader.dismiss();
+        }
+        this[list] = result;
+        if (list !== 'gradeList') {
+          this[list] = _.orderBy(this[list], ['name'], ['asc']);
+        }
+        if (req.currentCategory === 'board') {
+          const boardName = this.syllabusList.find(framework => this.frameworkId === framework.code);
+          if (boardName) {
+            const boardCode = result.find(board => boardName.name === board.name);
+            if (boardCode) {
+              this.userForm.patchValue({
+                boards: [boardCode.code]
+              });
+              this.resetForm(1, false);
+            } else {
+              this.userForm.patchValue({
+                boards: [result[0].code]
+              });
+              this.resetForm(1, false);
             }
-          } else if (this.isEditData) {
-            this.isEditData = false;
-            this.userForm.patchValue({
-              medium: this.profile.medium || []
-            });
-            this.userForm.patchValue({
-              grades: this.profile.grade || []
-            });
           }
-        });
+        } else if (this.isEditData) {
+          this.isEditData = false;
+          this.userForm.patchValue({
+            medium: this.profile.medium || []
+          });
+          this.userForm.patchValue({
+            grades: this.profile.grade || []
+          });
+        }
+      });
     }
   }
 
   /**
-	 * It will check previous value and make a API call
-	 * @param index
-	 * @param currentField
-	 * @param prevSelectedValue
-	 */
+   * It will check previous value and make a API call
+   * @param index
+   * @param currentField
+   * @param prevSelectedValue
+   */
   checkPrevValue(index, currentField, prevSelectedValue = []) {
     if (index === 1) {
       const loader = this.commonUtilService.getLoader();
@@ -310,7 +280,6 @@ export class ProfileSettingsPage {
       this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
         .then(catagories => {
           this.categories = catagories;
-          console.log('this.categories', this.categories);
           const request: CategoryRequest = {
             currentCategory: this.categories[0].code,
             selectedLanguage: this.translate.currentLang,
@@ -318,9 +287,9 @@ export class ProfileSettingsPage {
           };
           this.getCategoryData(request, currentField);
         }).catch(() => {
-          this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
-          loader.dismiss();
-        });
+        this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
+        loader.dismiss();
+      });
 
     } else {
       const request: CategoryRequest = {
@@ -330,18 +299,16 @@ export class ProfileSettingsPage {
         selectedLanguage: this.selectedLanguage,
         categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
       };
-      console.log('else getCategoryData', request);
       this.getCategoryData(request, currentField);
     }
   }
 
   /**
-	 * It will reset user form, based on given index
-	 * @param {number}  index
-	 * @param {boolean} showloader Flag for showing loader or not
-	 */
+   * It will reset user form, based on given index
+   * @param {number}  index
+   * @param {boolean} showloader Flag for showing loader or not
+   */
   resetForm(index, showloader: boolean): void {
-    console.log('resetForm index', index);
     const oldAttribute: any = {};
     const newAttribute: any = {};
     switch (index) {
@@ -485,13 +452,12 @@ export class ProfileSettingsPage {
   }
 
   submitEditForm(formVal, loader): void {
-    const req: Profile = new Profile();
-    req.board = formVal.boards;
-    req.grade = formVal.grades;
-    req.medium = formVal.medium;
-    req.uid = this.profile.uid;
-    req.handle = this.profile.handle;
-
+    const req: Profile = {
+      ...this.profile,
+      board: formVal.boards,
+      grade: formVal.grades,
+      medium: formVal.medium
+    };
     if (this.navParams.get('selectedUserType')) {
       req.profileType = this.navParams.get('selectedUserType');
     } else {
@@ -506,16 +472,16 @@ export class ProfileSettingsPage {
       formVal.grades.forEach(gradeCode => {
         for (let i = 0; i < this.gradeList.length; i++) {
           if (this.gradeList[i].code === gradeCode) {
-            if (!req.gradeValueMap) {
-              req.gradeValueMap = {};
+            if (!req.gradeValue) {
+              req.gradeValue = {};
             }
-            req.gradeValueMap[this.gradeList[i].code] = this.gradeList[i].name;
+            req.gradeValue[this.gradeList[i].code] = this.gradeList[i].name;
             break;
           }
         }
       });
     }
-    this.profileService.updateProfile(req)
+    this.profileService.updateProfile(req).toPromise()
       .then((res: any) => {
         if (req.profileType === ProfileType.TEACHER) {
           initTabs(this.container, GUEST_TEACHER_TABS);
@@ -524,11 +490,11 @@ export class ProfileSettingsPage {
         }
 
         this.events.publish('refresh:profile');
-        this.appGlobalService.guestUserProfile = JSON.parse(res);
+        this.appGlobalService.guestUserProfile = res;
         this.commonUtilService.showToast('PROFILE_UPDATE_SUCCESS');
-        this.events.publish('onboarding-card:completed', { isOnBoardingCardCompleted: true });
+        this.events.publish('onboarding-card:completed', {isOnBoardingCardCompleted: true});
         this.events.publish('refresh:profile');
-        this.appGlobalService.guestUserProfile = JSON.parse(res);
+        this.appGlobalService.guestUserProfile = res;
         this.appGlobalService.setOnBoardingCompleted();
         this.telemetryGeneratorService.generateProfilePopulatedTelemetry(PageId.DIAL_CODE_SCAN_RESULT, req.syllabus[0], 'manual');
         if (this.navParams.get('isChangeRoleRequest')) {
@@ -539,15 +505,14 @@ export class ProfileSettingsPage {
           loginMode: 'guest'
         });
       })
-      .catch((err: any) => {
+      .catch(() => {
         loader.dismiss();
         this.commonUtilService.showToast('PROFILE_UPDATE_FAILED');
-        console.log('Err', err);
       });
   }
 
   handleBackButton() {
-   this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       const navObj = this.app.getActiveNavs()[0];
 
       if (navObj.canGoBack()) {

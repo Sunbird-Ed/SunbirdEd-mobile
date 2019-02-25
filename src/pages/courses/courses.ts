@@ -1,58 +1,43 @@
-import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity';
+import {ViewMoreActivityPage} from './../view-more-activity/view-more-activity';
+import {Component, NgZone, OnInit} from '@angular/core';
+import {Events, IonicPage, NavController, PopoverController} from 'ionic-angular';
+import {AppVersion} from '@ionic-native/app-version';
 import {
-  Component,
-  NgZone,
-  OnInit
-} from '@angular/core';
-import {
-  NavController,
-  PopoverController,
-  Events
-} from 'ionic-angular';
-import { AppVersion } from '@ionic-native/app-version';
-import { IonicPage } from 'ionic-angular';
-import {
-  SharedPreferences,
-  CourseService,
-  PageAssembleService,
-  PageAssembleCriteria,
-  ImpressionType,
-  PageId,
-  Environment,
   ContentService,
-  ProfileType,
-  PageAssembleFilter,
+  CourseService,
+  Environment,
+  ImpressionType,
+  InteractSubtype,
   InteractType,
-  InteractSubtype
+  PageAssembleCriteria,
+  PageAssembleFilter,
+  PageAssembleService,
+  PageId,
+  SharedPreferences
 } from 'sunbird';
-import {
-  QRResultCallback,
-  SunbirdQRScanner
-} from '../qrscanner/sunbirdqrscanner.service';
-import { SearchPage } from '../search/search';
-import { ContentDetailsPage } from '../content-details/content-details';
+import {QRResultCallback, SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
+import {SearchPage} from '../search/search';
+import {ContentDetailsPage} from '../content-details/content-details';
 import * as _ from 'lodash';
 import {
-  ProfileConstants,
-  EventTopics,
-  PreferenceKey,
-  ContentType,
-  PageName,
   ContentCard,
+  ContentType,
+  EventTopics,
+  PageName,
+  PreferenceKey,
+  ProfileConstants,
   ViewMore
 } from '../../app/app.constant';
-import {
-  PageFilterCallback,
-  PageFilter
-} from '../page-filter/page.filter';
-import { Network } from '@ionic-native/network';
-import { AppGlobalService } from '../../service/app-global.service';
+import {PageFilter, PageFilterCallback} from '../page-filter/page.filter';
+import {Network} from '@ionic-native/network';
+import {AppGlobalService} from '../../service/app-global.service';
 import Driver from 'driver.js';
-import { CourseUtilService } from '../../service/course-util.service';
-import { updateFilterInSearchQuery } from '../../util/filter.util';
-import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import {CourseUtilService} from '../../service/course-util.service';
+import {updateFilterInSearchQuery} from '../../util/filter.util';
+import {FormAndFrameworkUtilService} from '../profile/formandframeworkutil.service';
+import {CommonUtilService} from '../../service/common-util.service';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {ProfileType} from 'sunbird-sdk';
 
 @IonicPage()
 @Component({
@@ -339,8 +324,7 @@ export class CoursesPage implements OnInit {
           });
         }
       })
-      .catch((error: any) => {
-        console.log('error while loading enrolled courses', error);
+      .catch(() => {
         this.spinner(false);
       });
   }
@@ -426,7 +410,6 @@ export class CoursesPage implements OnInit {
         this.checkEmptySearchResult();
       });
     }).catch((error: string) => {
-      console.log('Page assmble error', error);
       this.ngZone.run(() => {
         this.pageApiLoader = false;
         if (error === 'CONNECTION_ERROR') {
@@ -537,8 +520,7 @@ export class CoursesPage implements OnInit {
       .then(() => {
         this.getPopularAndLatestCourses(true);
       })
-      .catch(error => {
-        console.log('Error while Fetching Data', error);
+      .catch(() => {
         this.getPopularAndLatestCourses(true);
       });
   }
@@ -627,7 +609,6 @@ export class CoursesPage implements OnInit {
         filterOptions['filter'] = data;
         this.showFilterPage(filterOptions);
       }).catch(() => {
-        console.error('Error Occurred!');
       });
     }
 
@@ -680,8 +661,7 @@ export class CoursesPage implements OnInit {
           this.importContent([identifier], false);
         }
       })
-      .catch((error: any) => {
-        console.log(error);
+      .catch(() => {
         this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
       });
   }

@@ -1,28 +1,12 @@
-import {
-  Component,
-  NgZone
-} from '@angular/core';
-import {
-  IonicPage,
-  NavController,
-  NavParams,
-  Events,
-  Platform
-} from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
-import {
-  SharedPreferences,
-  ImpressionType,
-  PageId,
-  Environment,
-  InteractType,
-  InteractSubtype
-} from 'sunbird';
+import {Component, NgZone} from '@angular/core';
+import {Events, IonicPage, NavController, NavParams, Platform} from 'ionic-angular';
+import {TranslateService} from '@ngx-translate/core';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId, SharedPreferences} from 'sunbird';
 
-import { appLanguages, PreferenceKey, Map } from '@app/app';
-import { CommonUtilService, AppGlobalService, TelemetryGeneratorService } from '@app/service';
-import { OnboardingPage } from '@app/pages/onboarding/onboarding';
-import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
+import {appLanguages, Map, PreferenceKey} from '@app/app';
+import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
+import {OnboardingPage} from '@app/pages/onboarding/onboarding';
+import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
 
 @IonicPage()
 @Component({
@@ -78,7 +62,6 @@ export class LanguageSettingsPage {
       } else {
         const pId = this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING_LANGUAGE_SETTING;
         const env = this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING;
-        console.log('from others calling exit popup');
         this.commonUtilService.showExitPopUp(pId, env, false);
       }
       this.unregisterBackButton();
@@ -116,7 +99,6 @@ export class LanguageSettingsPage {
             this.previousLanguage = val;
             this.language = val;
           } else {
-            console.error('Language not set');
             // this.getDeviceLanguage();
             this.previousLanguage = undefined;
 
@@ -133,7 +115,6 @@ export class LanguageSettingsPage {
           this.defaultDeviceLang = res.value.split("-")[0];
           let lang = this.languages.find(i => i.code === this.defaultDeviceLang);
           if (lang != undefined && lang != null) {
-            console.log("Language chosen - " + lang.code)
             lang.isApplied = true;
             this.language = lang.code;
           } else {

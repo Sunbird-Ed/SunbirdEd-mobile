@@ -1,45 +1,34 @@
-import { NgZone, OnDestroy } from '@angular/core';
-import { ProfileConstants, FrameworkCategory } from './../app/app.constant';
-
-import { Injectable } from '@angular/core';
+import {Inject, Injectable, OnDestroy} from '@angular/core';
+import {FrameworkCategory, ProfileConstants} from './../app/app.constant';
 import {
-    Profile,
-    ProfileType,
-    AuthService,
-    SharedPreferences,
-    ProfileService,
-    BuildParamService,
-    PageId,
-    Environment,
-    InteractType,
-    InteractSubtype,
-    FrameworkDetailsRequest,
-    FrameworkService
+  AuthService,
+  BuildParamService,
+  Environment,
+  FrameworkDetailsRequest,
+  FrameworkService,
+  InteractSubtype,
+  InteractType,
+  PageId,
+  SharedPreferences
 } from 'sunbird';
-import {
-    Events,
-    PopoverController,
-    PopoverOptions
-} from 'ionic-angular';
-import { UpgradePopover } from '../pages/upgrade/upgrade-popover';
-import {
-    GenericAppConfig,
-    PreferenceKey
-} from '../app/app.constant';
-import { TelemetryGeneratorService } from './telemetry-generator.service';
+import {Events, PopoverController, PopoverOptions} from 'ionic-angular';
+import {UpgradePopover} from '../pages/upgrade/upgrade-popover';
+import {GenericAppConfig, PreferenceKey} from '../app/app.constant';
+import {TelemetryGeneratorService} from './telemetry-generator.service';
+import {Profile, ProfileService, ProfileType} from 'sunbird-sdk';
 
 @Injectable()
 export class AppGlobalService implements OnDestroy {
 
     constructor(
-        private event: Events,
-        private authService: AuthService,
-        private profile: ProfileService,
-        private preference: SharedPreferences,
-        private popoverCtrl: PopoverController,
-        private buildParamService: BuildParamService,
-        private framework: FrameworkService,
-        private telemetryGeneratorService: TelemetryGeneratorService
+      @Inject('PROFILE_SERVICE') private profile: ProfileService,
+      private event: Events,
+      private authService: AuthService,
+      private preference: SharedPreferences,
+      private popoverCtrl: PopoverController,
+      private buildParamService: BuildParamService,
+      private framework: FrameworkService,
+      private telemetryGeneratorService: TelemetryGeneratorService
     ) {
 
         this.initValues();
@@ -367,9 +356,9 @@ export class AppGlobalService implements OnDestroy {
          }
 
     private getCurrentUserProfile() {
-        this.profile.getCurrentUser()
+      this.profile.getActiveSessionProfile().toPromise()
             .then((response: any) => {
-                this.guestUserProfile = JSON.parse(response);
+              this.guestUserProfile = response;
                 if (this.guestUserProfile.syllabus && this.guestUserProfile.syllabus.length > 0) {
                     this.getFrameworkDetails(this.guestUserProfile.syllabus[0])
                         .then((categories) => {

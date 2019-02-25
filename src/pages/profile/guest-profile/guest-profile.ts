@@ -1,37 +1,20 @@
-import { TranslateService } from '@ngx-translate/core';
-import { Component } from '@angular/core';
-import {
-  NavController,
-  PopoverController,
-  Events
-} from 'ionic-angular';
+import {TranslateService} from '@ngx-translate/core';
+import {Component, Inject} from '@angular/core';
+import {Events, NavController, PopoverController} from 'ionic-angular';
 import * as _ from 'lodash';
 import {
-  ProfileService,
-  SharedPreferences,
-  ProfileType,
+  Environment,
+  FrameworkService,
   ImpressionType,
   PageId,
-  Environment,
+  SharedPreferences,
   SuggestedFrameworkRequest,
-  FrameworkService,
 } from 'sunbird';
-import {
-  GuestEditProfilePage,
-  OverflowMenuComponent,
-  FormAndFrameworkUtilService
-} from '@app/pages/profile';
-import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
-import {
-  AppGlobalService,
-  TelemetryGeneratorService,
-  CommonUtilService
-} from '@app/service';
-import {
-  MenuOverflow,
-  PreferenceKey,
-  FrameworkCategory
-} from '@app/app';
+import {FormAndFrameworkUtilService, GuestEditProfilePage, OverflowMenuComponent} from '@app/pages/profile';
+import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
+import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
+import {FrameworkCategory, MenuOverflow, PreferenceKey} from '@app/app';
+import {ProfileService, ProfileType} from 'sunbird-sdk';
 
 @Component({
   selector: 'page-guest-profile',
@@ -56,9 +39,9 @@ export class GuestProfilePage {
   loader: any;
 
   constructor(
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     private navCtrl: NavController,
     private popoverCtrl: PopoverController,
-    private profileService: ProfileService,
     private events: Events,
     private preference: SharedPreferences,
     private commonUtilService: CommonUtilService,
@@ -118,22 +101,22 @@ export class GuestProfilePage {
       this.loader.present();
     }
 
-    this.profileService.getCurrentUser().then((res: any) => {
-      this.profile = JSON.parse(res);
+    this.profileService.getActiveSessionProfile().toPromise()
+      .then((res: any) => {
+        this.profile = res;
       this.getSyllabusDetails();
       setTimeout(() => {
         if (refresher) { refresher.complete(); }
       }, 500);
     })
-      .catch((err: any) => {
+      .catch(() => {
         this.loader.dismiss();
-        console.error('Error', err);
       });
   }
 
   editGuestProfile() {
     this.navCtrl.push(GuestEditProfilePage, {
-      profile: JSON.parse(JSON.stringify(this.profile)),
+      profile: this.profile,
       isCurrentUser: true
     });
   }

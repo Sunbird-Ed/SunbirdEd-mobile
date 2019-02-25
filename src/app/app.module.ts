@@ -150,7 +150,11 @@ export const sunbirdSdkFactory: (uniqueDeviceID: UniqueDeviceID, platform: Platf
           systemSettingsDirPath: '/data/system',
         },
         telemetryConfig: {
-          deviceRegisterApiPath: ''
+          deviceRegisterApiPath: '',
+          telemetryApiPath: '',
+          deviceRegisterHost: '',
+          telemetrySyncBandwidth: 100,
+          telemetrySyncThreshold: 1000
         }
       });
     };

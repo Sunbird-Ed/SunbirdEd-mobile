@@ -1,59 +1,41 @@
+import {Component, NgZone, ViewChild} from '@angular/core';
+import {Events, IonicPage, Navbar, NavController, NavParams, Platform} from 'ionic-angular';
 import {
-  Component,
-  NgZone,
-  ViewChild
-} from '@angular/core';
-import {
-  IonicPage,
-  NavParams,
-  NavController,
-  Events,
-  Navbar,
-  Platform
-} from 'ionic-angular';
-import {
-  ContentService,
-  ContentSearchCriteria,
-  LogLevel,
-  ImpressionType,
-  Environment,
-  InteractType,
-  InteractSubtype,
   ContentDetailRequest,
-  FileUtil,
-  ProfileType,
+  ContentSearchCriteria,
+  ContentService,
   CorrelationData,
+  Environment,
+  FileUtil,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  LogLevel,
   Mode,
-  TelemetryObject,
-  PageId,
-  TabsPage,
   PageAssembleCriteria,
   PageAssembleFilter,
   PageAssembleService,
-  SharedPreferences
+  PageId,
+  SharedPreferences,
+  TabsPage,
+  TelemetryObject
 } from 'sunbird';
-import { GenieResponse } from '../settings/datasync/genieresponse';
-import { FilterPage } from './filters/filter';
-import { CollectionDetailsPage } from '../collection-details/collection-details';
-import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
-import { ContentDetailsPage } from '../content-details/content-details';
-import { Map } from '../../app/telemetryutil';
+import {ProfileType} from 'sunbird-sdk';
+import {GenieResponse} from '../settings/datasync/genieresponse';
+import {FilterPage} from './filters/filter';
+import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
+import {ContentDetailsPage} from '../content-details/content-details';
+import {Map} from '../../app/telemetryutil';
 import * as _ from 'lodash';
-import {
-  ContentType,
-  MimeType,
-  Search,
-  AudienceFilter,
-  PageName,
-  PreferenceKey
-} from '../../app/app.constant';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
-import { AppGlobalService } from '../../service/app-global.service';
-import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { QrCodeResultPage } from '../qr-code-result/qr-code-result';
-import { TranslateService } from '@ngx-translate/core';
+import {AudienceFilter, ContentType, MimeType, PageName, Search} from '../../app/app.constant';
+import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
+import {AppGlobalService} from '../../service/app-global.service';
+import {FormAndFrameworkUtilService} from '../profile/formandframeworkutil.service';
+import {CommonUtilService} from '../../service/common-util.service';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {QrCodeResultPage} from '../qr-code-result/qr-code-result';
+import {TranslateService} from '@ngx-translate/core';
+
 @IonicPage()
 @Component({
   selector: 'page-search',
@@ -187,8 +169,7 @@ export class SearchPage {
         this.currentFrameworkId = value;
 
       })
-      .catch((err: any) => {
-        console.error('Err', err);
+      .catch(() => {
       });
   }
 
@@ -342,8 +323,7 @@ export class SearchPage {
         }
         this.showLoader = false;
       });
-    }).catch((error) => {
-      console.log('Error : ' + JSON.stringify(error));
+    }).catch(() => {
       this.zone.run(() => {
         this.showLoader = false;
       });
@@ -416,8 +396,7 @@ export class SearchPage {
         this.showEmptyMessage = this.searchContentResult.length === 0 ? true : false;
         this.showLoader = false;
       });
-    }).catch((error) => {
-      console.log('Error : ' + JSON.parse(error));
+    }).catch(() => {
       this.zone.run(() => {
         this.showLoader = false;
         if (!this.commonUtilService.networkInfo.isNetworkAvailable) {

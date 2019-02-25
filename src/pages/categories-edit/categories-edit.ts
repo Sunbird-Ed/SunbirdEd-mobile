@@ -1,40 +1,22 @@
-import { AppGlobalService } from './../../service/app-global.service';
-import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
-import { CommonUtilService } from './../../service/common-util.service';
-import {
-  Component,
-  ViewChild
-} from '@angular/core';
-import {
-  IonicPage,
-  NavController,
-  NavParams,
-  LoadingController
-} from 'ionic-angular';
-import {
-  FormBuilder,
-  FormGroup
-} from '@angular/forms';
+import {AppGlobalService} from './../../service/app-global.service';
+import {FormAndFrameworkUtilService} from './../profile/formandframeworkutil.service';
+import {CommonUtilService} from './../../service/common-util.service';
+import {Component, ViewChild} from '@angular/core';
+import {Events, IonicPage, LoadingController, NavController, NavParams, Select} from 'ionic-angular';
+import {FormBuilder, FormGroup} from '@angular/forms';
 import {
   CategoryRequest,
-  Profile,
-  UpdateUserInfoRequest,
-  UserProfileService,
-  ProfileService,
   ContainerService,
-  TabsPage,
   FrameworkService,
-  SuggestedFrameworkRequest
+  ProfileService,
+  SuggestedFrameworkRequest,
+  TabsPage,
+  UpdateUserInfoRequest,
+  UserProfileService
 } from 'sunbird';
-import { TranslateService } from '@ngx-translate/core';
-import * as _ from 'lodash';
-import { Events } from 'ionic-angular';
-import {
-  initTabs,
-  LOGIN_TEACHER_TABS,
-  FrameworkCategory
-} from '@app/app';
-import { Select } from 'ionic-angular';
+import {TranslateService} from '@ngx-translate/core';
+import {FrameworkCategory, initTabs, LOGIN_TEACHER_TABS} from '@app/app';
+import {Profile} from 'sunbird-sdk';
 
 @IonicPage()
 @Component({
@@ -147,7 +129,7 @@ export class CategoriesEditPage {
         if (result && result.length) {
           result.forEach(element => {
             // renaming the fields to text, value and checked
-            const value = { 'name': element.name, 'code': element.identifier };
+            const value = {'name': element.name, 'code': element.identifier};
             this.syllabusList.push(value);
           });
 
@@ -157,9 +139,9 @@ export class CategoriesEditPage {
                 this.categories = catagories;
                 this.resetForm(0);
               }).catch(() => {
-                this.loader.dismiss();
-                this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
-              });
+              this.loader.dismiss();
+              this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
+            });
           } else {
             this.loader.dismiss();
           }
@@ -231,8 +213,8 @@ export class CategoriesEditPage {
             };
             this.getCategoryData(request, currentField);
           }).catch(() => {
-            this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
-          });
+          this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
+        });
       }
     } else {
       const request: CategoryRequest = {
@@ -285,8 +267,7 @@ export class CategoriesEditPage {
         }
 
       })
-      .catch(error => {
-        console.error('Error=', error);
+      .catch(() => {
       });
   }
 
@@ -390,9 +371,8 @@ export class CategoriesEditPage {
           this.navCtrl.pop();
         }
       },
-      (err: any) => {
+      () => {
         this.loader.dismiss();
-        console.log('Error', err);
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
       });
   }

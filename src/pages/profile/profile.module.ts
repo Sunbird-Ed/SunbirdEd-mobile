@@ -15,7 +15,6 @@ import {UserSearchComponent} from './user-search/user-search';
 import {DirectivesModule} from '../../directives/directives.module';
 import {ComponentsModule} from '../../component/components.module';
 import {IonicImageLoader} from 'ionic-image-loader';
-import {ImagePicker} from './imagepicker/imagepicker';
 import {CategoriesEditPageModule} from '../categories-edit/categories-edit.module';
 import {PersonalDetailsEditPage} from './personal-details-edit.profile/personal-details-edit.profile';
 
@@ -26,7 +25,6 @@ import {PersonalDetailsEditPage} from './personal-details-edit.profile/personal-
     GuestEditProfilePage,
     OverflowMenuComponent,
     UserSearchComponent,
-    ImagePicker,
     PersonalDetailsEditPage
   ],
   entryComponents: [
@@ -34,7 +32,6 @@ import {PersonalDetailsEditPage} from './personal-details-edit.profile/personal-
     GuestProfilePage,
     GuestEditProfilePage,
     OverflowMenuComponent,
-    ImagePicker,
     UserSearchComponent,
     PersonalDetailsEditPage
   ],
