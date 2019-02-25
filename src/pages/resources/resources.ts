@@ -222,6 +222,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 	 * Angular life cycle hooks
 	 */
   ngOnInit() {
+    this.guestUser = !this.appGlobalService.isUserLoggedIn();
+    if (this.guestUser) {
+      this.getCurrentUser();
+    } else {
+      this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
+      this.profile = this.appGlobalService.getCurrentUser();
+    }
     this.setSavedContent();
     this.loadRecentlyViewedContent();
   }
