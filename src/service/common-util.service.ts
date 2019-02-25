@@ -13,7 +13,7 @@ import {
 } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
-import { SharedPreferences } from 'sunbird';
+import { SharedPreferences, InteractType, InteractSubtype } from 'sunbird';
 import { Network } from '@ionic-native/network';
 
 import { PreferenceKey } from '../app/app.constant';
@@ -252,7 +252,12 @@ export class CommonUtilService implements OnDestroy {
                         text: this.translateMessage('YES'),
                         cssClass: 'alert-btn-cancel',
                         handler: () => {
-                            this.telemetryGeneratorService.generateBackClickedTelemetry(pageId, environment, isNavBack);
+                            this.telemetryGeneratorService.generateInteractTelemetry(
+                                InteractType.TOUCH,
+                                InteractSubtype.YES_CLICKED,
+                                environment,
+                                pageId
+                            );
                             this.platform.exitApp();
                             this.telemetryGeneratorService.generateEndTelemetry('app', '', '', environment);
                         }
@@ -261,7 +266,12 @@ export class CommonUtilService implements OnDestroy {
                         text: this.translateMessage('NO'),
                         cssClass: 'alert-btn-delete',
                         handler: () => {
-                            // telemetry
+                            this.telemetryGeneratorService.generateInteractTelemetry(
+                                InteractType.TOUCH,
+                                InteractSubtype.NO_CLICKED,
+                                environment,
+                                pageId
+                            );
                             if (this.alert) {
                                 this.alert.dismiss();
                                 this.alert = undefined;
@@ -274,6 +284,7 @@ export class CommonUtilService implements OnDestroy {
             this.telemetryGeneratorService.generateBackClickedTelemetry(pageId, environment, isNavBack);
             return;
         } else {
+            this.telemetryGeneratorService.generateBackClickedTelemetry(pageId, environment, isNavBack);
             if (this.alert) {
                 this.alert.dismiss();
                 this.alert = undefined;
