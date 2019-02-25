@@ -1,44 +1,28 @@
-import { CommonUtilService } from './../../../service/common-util.service';
+import {CommonUtilService} from './../../../service/common-util.service';
+import {Component, Inject, ViewChild} from '@angular/core';
+import {App, Events, Nav, NavParams, ViewController} from 'ionic-angular';
+import {SettingsPage} from '../../settings/settings';
 import {
-    Component,
-    ViewChild
-} from '@angular/core';
-import {
-    NavParams,
-    ViewController,
-    App,
-    Nav,
-    Events
-} from 'ionic-angular';
-import { SettingsPage } from '../../settings/settings';
-import {
-    OAuthService,
-    SharedPreferences,
-    ProfileType,
-    Profile,
-    UserSource,
-    TabsPage,
-    ContainerService,
-    InteractType,
-    InteractSubtype,
-    PageId,
-    Environment,
-    TelemetryService,
-    ProfileService
+  ContainerService,
+  Environment,
+  InteractSubtype,
+  InteractType,
+  OAuthService,
+  PageId,
+  SharedPreferences,
+  TabsPage,
+  TelemetryService,
 } from 'sunbird';
-import { OnboardingPage } from '../../onboarding/onboarding';
-import {
-    initTabs,
-    GUEST_STUDENT_TABS,
-    GUEST_TEACHER_TABS
-} from '../../../app/module.service';
-import { generateInteractTelemetry } from '../../../app/telemetryutil';
-import { UserAndGroupsPage } from '../../user-and-groups/user-and-groups';
-import { TranslateService } from '@ngx-translate/core';
-import { ReportsPage } from '../../reports/reports';
-import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import { AppGlobalService } from '../../../service/app-global.service';
-import { PreferenceKey } from '../../../app/app.constant';
+import {OnboardingPage} from '../../onboarding/onboarding';
+import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs} from '../../../app/module.service';
+import {generateInteractTelemetry} from '../../../app/telemetryutil';
+import {UserAndGroupsPage} from '../../user-and-groups/user-and-groups';
+import {TranslateService} from '@ngx-translate/core';
+import {ReportsPage} from '../../reports/reports';
+import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
+import {AppGlobalService} from '../../../service/app-global.service';
+import {PreferenceKey} from '../../../app/app.constant';
+import {Profile, ProfileService, ProfileSource, ProfileType} from 'sunbird-sdk';
 
 @Component({
     selector: 'menu-overflow',
@@ -51,19 +35,19 @@ export class OverflowMenuComponent {
     profile: any = {};
 
     constructor(
-        public navParams: NavParams,
-        public viewCtrl: ViewController,
-        private oauth: OAuthService,
-        private telemetryService: TelemetryService,
-        private app: App,
-        private profileService: ProfileService,
-        private preferences: SharedPreferences,
-        private translate: TranslateService,
-        private telemetryGeneratorService: TelemetryGeneratorService,
-        private appGlobalService: AppGlobalService,
-        private container: ContainerService,
-        private commonUtilService: CommonUtilService,
-        private events: Events
+      @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+      public navParams: NavParams,
+      public viewCtrl: ViewController,
+      private oauth: OAuthService,
+      private telemetryService: TelemetryService,
+      private app: App,
+      private preferences: SharedPreferences,
+      private translate: TranslateService,
+      private telemetryGeneratorService: TelemetryGeneratorService,
+      private appGlobalService: AppGlobalService,
+      private container: ContainerService,
+      private commonUtilService: CommonUtilService,
+      private events: Events
     ) {
         this.items = this.navParams.get('list');
         this.profile = this.navParams.get('profile') || {};
@@ -121,7 +105,7 @@ export class OverflowMenuComponent {
                         InteractSubtype.LOGOUT_INITIATE, '');
                     this.oauth.doLogOut();
                     (<any>window).splashscreen.clearPrefs();
-                    const profile: Profile = new Profile();
+                  const profile = <Profile>{};
                     this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN')
                         .then(val => {
                             if (val !== '') {
@@ -132,10 +116,11 @@ export class OverflowMenuComponent {
 
                             profile.handle = 'Guest1';
                             profile.profileType = ProfileType.TEACHER;
-                            profile.source = UserSource.LOCAL;
+                          profile.source = ProfileSource.LOCAL;
 
                             this.events.publish(AppGlobalService.USER_INFO_UPDATED);
-                            this.profileService.setCurrentProfile(true, profile).then(() => {
+                          this.profileService.setActiveSessionForProfile(profile.uid).toPromise()
+                            .then(() => {
                                 this.navigateToAptPage();
                             }) .catch(() => {
                                 this.navigateToAptPage();

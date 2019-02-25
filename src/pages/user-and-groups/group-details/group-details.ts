@@ -1,58 +1,50 @@
-import { CommonUtilService } from './../../../service/common-util.service';
-import { TranslateService } from '@ngx-translate/core';
+import {CommonUtilService} from './../../../service/common-util.service';
+import {TranslateService} from '@ngx-translate/core';
+import {Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {
-  Component,
-  NgZone,
-  ViewChild,
-  Inject
-} from '@angular/core';
-import {
+  AlertController,
+  App,
+  Content,
+  Events,
   IonicPage,
+  LoadingController,
   NavController,
   NavParams,
-  LoadingController,
-  Content
+  PopoverController,
+  ToastController
 } from 'ionic-angular';
-import { PopoverPage } from '../popover/popover';
-import { PopoverController } from 'ionic-angular';
-import { GroupDetailNavPopoverPage } from '../group-detail-nav-popover/group-detail-nav-popover';
-import { CreateGroupPage } from '../create-group/create-group';
-import { AlertController } from 'ionic-angular';
-import { AddOrRemoveGroupUserPage } from '../add-or-remove-group-user/add-or-remove-group-user';
+import {PopoverPage} from '../popover/popover';
+import {GroupDetailNavPopoverPage} from '../group-detail-nav-popover/group-detail-nav-popover';
+import {CreateGroupPage} from '../create-group/create-group';
+import {AddOrRemoveGroupUserPage} from '../add-or-remove-group-user/add-or-remove-group-user';
 import {
-  Profile,
-  ProfileRequest,
-  ProfileService,
-  OAuthService,
-  ProfileType,
-  TabsPage,
-  ContainerService,
-  SharedPreferences,
   AddUpdateProfilesRequest,
-  InteractType,
-  InteractSubtype,
+  AuthService,
+  ContainerService,
   Environment,
-  PageId,
-  TelemetryObject,
+  InteractSubtype,
+  InteractType,
+  OAuthService,
   ObjectType,
-  AuthService
+  PageId,
+  SharedPreferences,
+  TabsPage,
+  TelemetryObject
 } from 'sunbird';
-import {Group, GroupService} from 'sunbird-sdk';
-import { Events } from 'ionic-angular';
-import { AppGlobalService } from '../../../service/app-global.service';
+import {GetAllProfileRequest, Group, GroupService, Profile, ProfileService, ProfileType} from 'sunbird-sdk';
+import {AppGlobalService} from '../../../service/app-global.service';
 import {
-  initTabs,
   GUEST_STUDENT_SWITCH_TABS,
-  GUEST_TEACHER_SWITCH_TABS,
   GUEST_STUDENT_TABS,
-  GUEST_TEACHER_TABS
+  GUEST_TEACHER_SWITCH_TABS,
+  GUEST_TEACHER_TABS,
+  initTabs
 } from '../../../app/module.service';
-import { App } from 'ionic-angular';
-import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
-import { ToastController } from 'ionic-angular';
-import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import { Map } from '../../../app/telemetryutil';
-import { PreferenceKey } from '../../../app/app.constant';
+import {GuestEditProfilePage} from '../../profile/guest-edit.profile/guest-edit.profile';
+import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
+import {Map} from '../../../app/telemetryutil';
+import {PreferenceKey} from '../../../app/app.constant';
+
 @IonicPage()
 @Component({
   selector: 'page-group-member',
@@ -76,7 +68,7 @@ export class GroupDetailsPage {
     private navCtrl: NavController,
     private navParams: NavParams,
     @Inject('GROUP_SERVICE') private groupService: GroupService,
-    private profileService: ProfileService,
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     private zone: NgZone,
     private translate: TranslateService,
     private popOverCtrl: PopoverController,
@@ -115,27 +107,26 @@ export class GroupDetailsPage {
   getAllProfile() {
     const loader = this.getLoader();
     loader.present();
-    const profileRequest: ProfileRequest = {
+    const profileRequest: GetAllProfileRequest = {
       local: true,
       groupId: this.group.gid
     };
 
     this.zone.run(() => {
-      this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
+      this.profileService.getAllProfiles(profileRequest).toPromise()
+        .then((profiles) => {
         this.zone.run(() => {
           if (profiles && profiles.length) {
-            this.userList = JSON.parse(profiles);
+            this.userList = profiles;
             this.userList.forEach((item) => {
               this.userUids.push(item.uid);
             });
             this.isNoUsers = (this.userList.length) ? false : true;
             loader.dismiss();
           }
-          console.log('UserList', JSON.parse(profiles));
         });
-      }).catch((error) => {
+        }).catch(() => {
         loader.dismiss();
-        console.log('Something went wrong while fetching user list', error);
       });
     });
   }
@@ -202,7 +193,6 @@ export class GroupDetailsPage {
           role: 'cancel',
           cssClass: 'alert-btn-cancel',
           handler: () => {
-            console.log('Cancel clicked' + selectedUser);
           }
         },
         {
@@ -284,10 +274,8 @@ export class GroupDetailsPage {
   }
 
   presentPopoverNav(myEvent) {
-    console.log('clicked nav popover');
     const popover = this.popOverCtrl.create(GroupDetailNavPopoverPage, {
       goToEditGroup: () => {
-        console.log('go to edit group');
         this.navCtrl.push(CreateGroupPage, {
           groupInfo: this.group
         });
@@ -340,7 +328,6 @@ export class GroupDetailsPage {
         popover.dismiss();
       },
       delete: () => {
-        console.log('in delete');
         this.userDeleteGroupConfirmBox(index);
         popover.dismiss();
 
@@ -368,7 +355,6 @@ export class GroupDetailsPage {
           role: 'cancel',
           cssClass: 'alert-btn-cancel',
           handler: () => {
-            console.log('Cancel clicked');
           }
         },
         {
@@ -384,7 +370,6 @@ export class GroupDetailsPage {
   }
 
   deleteGroup() {
-    console.log(this.group.gid);
     const telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = this.group.gid;
     telemetryObject.type = ObjectType.GROUP;
@@ -397,12 +382,10 @@ export class GroupDetailsPage {
       PageId.GROUP_DETAIL,
       telemetryObject
     );
-    this.groupService.deleteGroup(this.group.gid).subscribe((sucess) => {
-      console.log(sucess);
+    this.groupService.deleteGroup(this.group.gid).subscribe(() => {
       this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
 
     }, (error) => {
-      console.log(error);
     });
   }
 
@@ -420,7 +403,6 @@ export class GroupDetailsPage {
           role: 'cancel',
           cssClass: 'alert-btn-cancel',
           handler: () => {
-            console.log('Cancel clicked');
           }
         },
         {
@@ -450,14 +432,12 @@ export class GroupDetailsPage {
     };
 
     this.groupService.addProfilesToGroup(req).subscribe(
-      (success) => {
-        console.log('success', success);
+      () => {
         this.userList.splice(userListIndex, 1);
         this.isNoUsers = (this.userList.length) ? false : true;
       }, error => {
 
     });
-    console.log('request is', req);
   }
 
   /**
@@ -497,9 +477,9 @@ export class GroupDetailsPage {
 
   private setAsCurrentUser(selectedUser, isBeingPlayed: boolean) {
     this.groupService.setActiveSessionForGroup(this.group.gid)
-      .subscribe(val => {
-        console.log('Value : ' + val);
-        this.profileService.setCurrentUser(selectedUser.uid) .then((success) => {
+      .subscribe(() => {
+        this.profileService.setActiveSessionForProfile(selectedUser.uid).toPromise()
+          .then(() => {
           if (isBeingPlayed) {
             this.event.publish('playConfig', this.playConfig);
             this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
@@ -524,11 +504,9 @@ export class GroupDetailsPage {
           });
           toast.present();
 
-        }, (error) => {
-          console.log('Error ' + error);
+          }, () => {
         });
-      }, error => {
-        console.log('Error : ' + error);
+      }, () => {
       });
   }
 

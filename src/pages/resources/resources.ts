@@ -1,63 +1,46 @@
-import { Search } from './../../app/app.constant';
+import {Search} from './../../app/app.constant';
+import {AfterViewInit, Component, NgZone, OnInit} from '@angular/core';
 import {
-  Component,
-  NgZone,
-  OnInit,
-  AfterViewInit
-} from '@angular/core';
-import {
-  ContentService,
-  ImpressionType,
-  PageId,
-  Environment,
-  InteractType,
-  InteractSubtype,
-  SharedPreferences,
-  ContentFilterCriteria,
-  ProfileType,
-  FrameworkService,
   CategoryRequest,
+  ContentFilterCriteria,
   ContentSearchCriteria,
+  ContentService,
+  Environment,
+  FrameworkService,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  PageId,
+  SharedPreferences,
   TelemetryObject
 } from 'sunbird';
-import {
-  NavController,
-  Events
-} from 'ionic-angular';
+import {Events, NavController} from 'ionic-angular';
 import * as _ from 'lodash';
-import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
-import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
-import { SearchPage } from '../search/search';
-import { Map } from '../../app/telemetryutil';
+import {ViewMoreActivityPage} from '../view-more-activity/view-more-activity';
+import {SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
+import {SearchPage} from '../search/search';
+import {Map} from '../../app/telemetryutil';
 import {
-  ContentType,
   AudienceFilter,
-  PreferenceKey,
+  CardSectionName,
   ContentCard,
-  ViewMore,
+  ContentType,
   FrameworkCategory,
-  CardSectionName
+  PreferenceKey,
+  ViewMore
 } from '../../app/app.constant';
-import {
-  PageFilterCallback
-} from '../page-filter/page.filter';
-import { AppGlobalService } from '../../service/app-global.service';
+import {PageFilterCallback} from '../page-filter/page.filter';
+import {AppGlobalService} from '../../service/app-global.service';
 import Driver from 'driver.js';
-import { AppVersion } from '@ionic-native/app-version';
-import { updateFilterInSearchQuery } from '../../util/filter.util';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { TranslateService } from '@ngx-translate/core';
-import { Network } from '@ionic-native/network';
-import {
-  trigger,
-  state,
-  style,
-  animate,
-  transition,
-  group,
-} from '@angular/animations';
-import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
+import {AppVersion} from '@ionic-native/app-version';
+import {updateFilterInSearchQuery} from '../../util/filter.util';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {CommonUtilService} from '../../service/common-util.service';
+import {TranslateService} from '@ngx-translate/core';
+import {Network} from '@ionic-native/network';
+import {animate, group, state, style, transition, trigger,} from '@angular/animations';
+import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
+import {ProfileType} from 'sunbird-sdk';
 
 @Component({
   selector: 'page-resources',
@@ -321,9 +304,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 	 */
   setSavedContent() {
     // this.localResources = [];
-    console.log('in setSavedContent');
     // if(this.isOnBoardingCardCompleted || !this.guestUser){
-    // console.log('in setSavedContent isOnBoardingCardCompleted');
     this.showLoader = true;
     const requestParams: ContentFilterCriteria = {
       uid: this.profile ? this.profile.uid : undefined,
@@ -471,7 +452,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         });
       })
       .catch(error => {
-        console.log('error while getting popular resources...', error);
         loader.dismiss();
         this.ngZone.run(() => {
           this.pageApiLoader = false;
@@ -650,7 +630,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   getCategoryData() {
-    console.log('this.appGlobalService.getCurrentUser()', this.appGlobalService.getCurrentUser());
     const syllabus: Array<string> = this.appGlobalService.getCurrentUser().syllabus;
     const frameworkId = (syllabus && syllabus.length > 0) ? syllabus[0] : undefined;
     const categories: Array<string> = FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES;
@@ -671,15 +650,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         this.categoryMediums = category.terms;
         this.arrangeMediumsByUserData(this.categoryMediums.map(a => ({...a})));
       })
-      .catch(err => {
-        console.log('Something went wrong!');
+      .catch(() => {
       });
   }
 
 
   findWithAttr(array, attr, value) {
       for (let i = 0; i < array.length; i += 1) {
-          console.log(array[i][attr]);
           if (array[i][attr].toLowerCase() === value.toLowerCase()) {
               return i;
           }
@@ -688,7 +665,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   arrangeMediumsByUserData(categoryMediumsParam) {
-    console.log('categoryMediums ========', categoryMediumsParam);
     if (this.appGlobalService.getCurrentUser() &&
         this.appGlobalService.getCurrentUser().medium &&
         this.appGlobalService.getCurrentUser().medium.length) {
@@ -728,7 +704,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           }
       })
       .catch(err => {
-        console.log('Something went wrong!');
       });
   }
   checkEmptySearchResult(isAfterLanguageChange = false) {
@@ -804,7 +779,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     const values = new Map();
     values['sectionName'] = sectionName;
     values['positionClicked'] = index;
-    console.log('telemetryObject ', telemetryObject);
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.CONTENT_CLICKED,
       'home',

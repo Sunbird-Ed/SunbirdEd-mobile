@@ -1,37 +1,28 @@
-import { initTabs, GUEST_TEACHER_TABS, GUEST_STUDENT_TABS } from './../../app/module.service';
-import { CommonUtilService } from './../../service/common-util.service';
-import { Injectable } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs} from './../../app/module.service';
+import {CommonUtilService} from './../../service/common-util.service';
+import {Injectable} from '@angular/core';
+import {TranslateService} from '@ngx-translate/core';
+import {App, Platform, Popover, PopoverController} from 'ionic-angular';
+import {QRAlertCallBack, QRScannerAlert} from './qrscanner_alert';
 import {
-  PopoverController,
-  Popover,
-  Platform
-} from 'ionic-angular';
-import {
-  QRScannerAlert,
-  QRAlertCallBack
-} from './qrscanner_alert';
-import {
+  ContainerService,
   Environment,
-  Mode,
-  InteractType,
+  ImpressionSubtype,
+  ImpressionType,
   InteractSubtype,
+  InteractType,
+  Mode,
   PageId,
   PermissionService,
-  ImpressionType,
-  ImpressionSubtype,
-  TelemetryObject,
   TabsPage,
-  ProfileType,
-  ContainerService,
-  Profile
+  TelemetryObject,
 } from 'sunbird';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { QRScannerResultHandler } from './qrscanresulthandler.service';
-import { ProfileSettingsPage } from '../profile-settings/profile-settings';
-import { App } from 'ionic-angular';
-import { AppGlobalService } from '../../service/app-global.service';
-import { Subscription } from 'rxjs';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {QRScannerResultHandler} from './qrscanresulthandler.service';
+import {ProfileSettingsPage} from '../profile-settings/profile-settings';
+import {AppGlobalService} from '../../service/app-global.service';
+import {Subscription} from 'rxjs';
+import {Profile, ProfileType} from 'sunbird-sdk';
 
 @Injectable()
 export class SunbirdQRScanner {
@@ -128,8 +119,7 @@ export class SunbirdQRScanner {
           this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source);
         }
       }
-    }).catch((error) => {
-      console.log('Error : ' + error);
+    }).catch(() => {
     });
   }
 

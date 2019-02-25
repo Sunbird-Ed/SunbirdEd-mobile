@@ -1,18 +1,25 @@
-import { CommonUtilService } from './../../../service/common-util.service';
-import { NavController } from 'ionic-angular/navigation/nav-controller';
-import { Component, NgZone } from '@angular/core';
-import { NavParams, LoadingController } from 'ionic-angular';
+import {CommonUtilService} from './../../../service/common-util.service';
+import {NavController} from 'ionic-angular/navigation/nav-controller';
+import {Component, NgZone} from '@angular/core';
+import {LoadingController, NavParams} from 'ionic-angular';
 import {
-    ReportService, ReportSummary, PageId, Environment, InteractType, InteractSubtype, DeviceInfoService, Profile
+  DeviceInfoService,
+  Environment,
+  InteractSubtype,
+  InteractType,
+  PageId,
+  ReportService,
+  ReportSummary
 } from 'sunbird';
-import { GroupReportAlert } from '../group-report-alert/group-report-alert';
-import { TranslateService } from '@ngx-translate/core';
-import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import { AppGlobalService } from '../../../service/app-global.service';
-import { UserReportPage } from '../user-report/user-report';
-import { File } from '@ionic-native/file';
-import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
-import { DatePipe } from '@angular/common';
+import {GroupReportAlert} from '../group-report-alert/group-report-alert';
+import {TranslateService} from '@ngx-translate/core';
+import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
+import {AppGlobalService} from '../../../service/app-global.service';
+import {UserReportPage} from '../user-report/user-report';
+import {File} from '@ionic-native/file';
+import {FileTransfer, FileTransferObject} from '@ionic-native/file-transfer';
+import {DatePipe} from '@angular/common';
+import {Profile} from 'sunbird-sdk';
 
 
 @Component({
@@ -92,8 +99,7 @@ export class GroupReportListPage {
             .then((res: any) => {
                 this.deviceId = res;
             })
-            .catch((err: any) => {
-                console.error('Error', err);
+          .catch(() => {
             });
         this.profile = this.appGlobalService.getCurrentUser();
         this.groupinfo = this.navParams.get('group');
@@ -179,9 +185,7 @@ export class GroupReportListPage {
                 });
 
             })
-                .catch((error: any) => {
-                    const data = JSON.parse(error);
-                    console.log('Error received', data);
+              .catch(() => {
                     loader.dismiss();
                 });
         } else
@@ -217,9 +221,7 @@ export class GroupReportListPage {
                         that.fromQuestionAssessment = details;
                     });
                 })
-                    .catch((error: any) => {
-                        const data = JSON.parse(error);
-                        console.log('Error received', data);
+                  .catch(() => {
                         loader.dismiss();
                     });
             }
