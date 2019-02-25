@@ -168,8 +168,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .then((appName: any) => {
         this.appLabel = appName;
       });
-      this.defaultImg = 'assets/imgs/ic_launcher.png';
-      this.generateNetworkType();
+    this.defaultImg = 'assets/imgs/ic_launcher.png';
+    this.generateNetworkType();
   }
 
   subscribeUtilityEvents() {
@@ -222,8 +222,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 	 * Angular life cycle hooks
 	 */
   ngOnInit() {
-    this.setSavedContent();
-    this.loadRecentlyViewedContent();
+    this.getCurrentUser();
   }
 
   generateNetworkType() {
@@ -249,17 +248,24 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 	 * It will fetch the guest user profile details
 	 */
   getCurrentUser(): void {
+    this.guestUser = !this.appGlobalService.isUserLoggedIn();
     const profileType = this.appGlobalService.getGuestUserType();
     this.showSignInCard = false;
-    if (profileType === ProfileType.TEACHER) {
-      this.showSignInCard = this.appGlobalService.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER;
-      this.audienceFilter = AudienceFilter.GUEST_TEACHER;
-    } else if (profileType === ProfileType.STUDENT) {
-      this.showSignInCard = this.appGlobalService.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT;
-      this.audienceFilter = AudienceFilter.GUEST_STUDENT;
+
+    if (this.guestUser) {
+      if (profileType === ProfileType.TEACHER) {
+        this.showSignInCard = this.appGlobalService.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER;
+        this.audienceFilter = AudienceFilter.GUEST_TEACHER;
+      } else if (profileType === ProfileType.STUDENT) {
+        this.showSignInCard = this.appGlobalService.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT;
+        this.audienceFilter = AudienceFilter.GUEST_STUDENT;
+      }
+    } else {
+      this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
     }
-    this.setSavedContent();
+
     this.profile = this.appGlobalService.getCurrentUser();
+    this.setSavedContent();
     this.loadRecentlyViewedContent();
   }
 
@@ -337,11 +343,11 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
           if (value.contentData.appIcon) {
             if (value.contentData.appIcon.includes('http:') || value.contentData.appIcon.includes('https:')) {
-                if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-                        value.contentData.appIcon = value.contentData.appIcon;
-                  } else {
-                        value.contentData.appIcon = this.defaultImg;
-                  }
+              if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+                value.contentData.appIcon = value.contentData.appIcon;
+              } else {
+                value.contentData.appIcon = this.defaultImg;
+              }
             } else if (value.basePath) {
               value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
             }
@@ -379,11 +385,11 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
           if (value.contentData.appIcon) {
             if (value.contentData.appIcon.includes('http:') || value.contentData.appIcon.includes('https:')) {
-                if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-                        value.contentData.appIcon = value.contentData.appIcon;
-                  } else {
-                        value.contentData.appIcon = this.defaultImg;
-                  }
+              if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+                value.contentData.appIcon = value.contentData.appIcon;
+              } else {
+                value.contentData.appIcon = this.defaultImg;
+              }
             } else if (value.basePath) {
               value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
             }
@@ -431,21 +437,21 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       }
 
       if (this.profile.grade && this.profile.grade.length) {
-        contentSearchCriteria.grade =  this.applyProfileFilter(this.profile.grade,
+        contentSearchCriteria.grade = this.applyProfileFilter(this.profile.grade,
           contentSearchCriteria.grade, 'gradeLevel');
       }
 
     }
     // swipe down to refresh should not over write current selected options
     if (contentSearchCriteria.grade) {
-        this.getGroupByPageReq.grade = [contentSearchCriteria.grade[0]];
-      }
-    if  (contentSearchCriteria.medium) {
-         this.getGroupByPageReq.medium = [contentSearchCriteria.medium[0]];
-      }
+      this.getGroupByPageReq.grade = [contentSearchCriteria.grade[0]];
+    }
+    if (contentSearchCriteria.medium) {
+      this.getGroupByPageReq.medium = [contentSearchCriteria.medium[0]];
+    }
     if (contentSearchCriteria.board) {
-    this.getGroupByPageReq.board = [contentSearchCriteria.board[0]];
-  }
+      this.getGroupByPageReq.board = [contentSearchCriteria.board[0]];
+    }
     this.getGroupByPageReq.mode = 'hard';
     this.getGroupByPageReq.facets = Search.FACETS_ETB;
     this.getGroupByPageReq.contentTypes = [ContentType.TEXTBOOK];
@@ -455,10 +461,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   getGroupByPage(isAfterLanguageChange = false) {
     this.storyAndWorksheets = [];
     if (!this.refresh) {
-        this.searchApiLoader = true;
-      } else {
-        this.searchApiLoader = false;
-      }
+      this.searchApiLoader = true;
+    } else {
+      this.searchApiLoader = false;
+    }
     this.contentService.getGroupByPage(this.getGroupByPageReq, this.guestUser)
       .then((response: any) => {
         this.ngZone.run(() => {
@@ -590,20 +596,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewWillEnter() {
-    this.guestUser = !this.appGlobalService.isUserLoggedIn();
-    if (this.guestUser) {
-      this.getCurrentUser();
-    } else {
-      this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
-      this.profile = this.appGlobalService.getCurrentUser();
-    }
+    this.getCategoryData();
+
+    this.getCurrentUser();
 
     if (!this.pageLoadedSuccess) {
       this.getPopularContent();
     }
     this.subscribeGenieEvents();
-
-    this.getCategoryData();
   }
 
   subscribeGenieEvents() {
@@ -627,21 +627,12 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     }
     this.refresh = true;
     this.storyAndWorksheets = [];
-    this.setSavedContent();
-    this.loadRecentlyViewedContent();
-    this.guestUser = !this.appGlobalService.isUserLoggedIn();
 
-    if (this.guestUser) {
-      this.getCurrentUser();
-    } else {
-      this.profile = this.appGlobalService.getCurrentUser();
-      this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
-    }
+    this.getCategoryData();
+    this.getCurrentUser();
 
     this.getPopularContent(false);
-    this.getCategoryData();
   }
-
 
   generateImpressionEvent() {
     this.telemetryGeneratorService.generateImpressionTelemetry(
@@ -687,7 +678,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .then(res => {
         const category = JSON.parse(res);
         this.categoryMediums = category.terms;
-        this.arrangeMediumsByUserData(this.categoryMediums.map(a => ({...a})));
+        this.arrangeMediumsByUserData(this.categoryMediums.map(a => ({ ...a })));
       })
       .catch(err => {
         console.log('Something went wrong!');
@@ -696,35 +687,35 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
 
   findWithAttr(array, attr, value) {
-      for (let i = 0; i < array.length; i += 1) {
-          console.log(array[i][attr]);
-          if (array[i][attr].toLowerCase() === value.toLowerCase()) {
-              return i;
-          }
+    for (let i = 0; i < array.length; i += 1) {
+      console.log(array[i][attr]);
+      if (array[i][attr].toLowerCase() === value.toLowerCase()) {
+        return i;
       }
-      return -1;
+    }
+    return -1;
   }
 
   arrangeMediumsByUserData(categoryMediumsParam) {
     console.log('categoryMediums ========', categoryMediumsParam);
     if (this.appGlobalService.getCurrentUser() &&
-        this.appGlobalService.getCurrentUser().medium &&
-        this.appGlobalService.getCurrentUser().medium.length) {
-          const mediumIndex = this.findWithAttr(categoryMediumsParam, 'name', this.appGlobalService.getCurrentUser().medium[0]);
+      this.appGlobalService.getCurrentUser().medium &&
+      this.appGlobalService.getCurrentUser().medium.length) {
+      const mediumIndex = this.findWithAttr(categoryMediumsParam, 'name', this.appGlobalService.getCurrentUser().medium[0]);
 
-          for (let i = mediumIndex; i > 0; i--) {
-            categoryMediumsParam[i] = categoryMediumsParam[i - 1];
-            if (i === 1) {
-              categoryMediumsParam[0] = this.categoryMediums[mediumIndex];
-            }
-          }
-        this.categoryMediums = categoryMediumsParam;
-
-        for (let i = 0, len = this.categoryMediums.length; i < len; i++) {
-          if (this.getGroupByPageReq.medium[0].toLowerCase().trim() === this.categoryMediums[i].name.toLowerCase().trim() ) {
-            this.mediumClick(this.categoryMediums[i].name);
-          }
+      for (let i = mediumIndex; i > 0; i--) {
+        categoryMediumsParam[i] = categoryMediumsParam[i - 1];
+        if (i === 1) {
+          categoryMediumsParam[0] = this.categoryMediums[mediumIndex];
         }
+      }
+      this.categoryMediums = categoryMediumsParam;
+
+      for (let i = 0, len = this.categoryMediums.length; i < len; i++) {
+        if (this.getGroupByPageReq.medium[0].toLowerCase().trim() === this.categoryMediums[i].name.toLowerCase().trim()) {
+          this.mediumClick(this.categoryMediums[i].name);
+        }
+      }
     }
   }
 
@@ -739,11 +730,11 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .then(res => {
         const category = JSON.parse(res);
         this.categoryGradeLevels = category.terms;
-          for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
-            if (this.getGroupByPageReq.grade[0] === this.categoryGradeLevels[i].name ) {
-              this.classClick(i);
-            }
+        for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
+          if (this.getGroupByPageReq.grade[0] === this.categoryGradeLevels[i].name) {
+            this.classClick(i);
           }
+        }
       })
       .catch(err => {
         console.log('Something went wrong!');
@@ -783,10 +774,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.getGroupByPageReq.grade = [this.categoryGradeLevels[index].name];
     // [grade.name];
     if ((this.currentGrade) && (this.currentGrade.name !== this.categoryGradeLevels[index].name)) {
-     this.getGroupByPage();
+      this.getGroupByPage();
     }
     for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
-      if (i === index ) {
+      if (i === index) {
         this.currentGrade = this.categoryGradeLevels[i];
         this.current_index = this.categoryGradeLevels[i];
         this.categoryGradeLevels[i].selected = 'classAnimate';
@@ -794,16 +785,16 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         this.categoryGradeLevels[i].selected = '';
       }
     }
-    document.getElementById('gradeScroll').scrollTo({top: 0, left: index * 60, behavior: 'smooth'});
+    document.getElementById('gradeScroll').scrollTo({ top: 0, left: index * 60, behavior: 'smooth' });
   }
   mediumClick(mediumName: string) {
     this.getGroupByPageReq.medium = [mediumName];
-    if ( this.currentMedium !== mediumName) {
+    if (this.currentMedium !== mediumName) {
       this.getGroupByPage();
     }
 
     for (let i = 0, len = this.categoryMediums.length; i < len; i++) {
-      if (this.categoryMediums[i].name === mediumName ) {
+      if (this.categoryMediums[i].name === mediumName) {
         this.currentMedium = this.categoryMediums[i].name;
         this.categoryMediums[i].selected = true;
       } else {
