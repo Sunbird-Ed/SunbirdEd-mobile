@@ -270,11 +270,7 @@ export class UserAndGroupsPage {
 
   getAllGroup() {
     this.zone.run(() => {
-      const groupRequest = {
-        uid: ''
-      };
-
-      this.groupService.getAllGroups(groupRequest).subscribe((groups) => {
+      this.groupService.getAllGroups().subscribe((groups) => {
         if (groups && groups.length) {
           this.showEmptyGroupsMessage = false;
           this.groupList = groups.sort((prev: Group, next: Group) => {
@@ -629,10 +625,6 @@ export class UserAndGroupsPage {
       ]
     });
     alert.present();
-  }
-
-  public async getGroupUsersCount(groupId: string): Promise<number> {
-    return (await this.profileService.getAllProfiles({ groupId }).toPromise()).length;
   }
 
   deleteUser(index: number) {
