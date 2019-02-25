@@ -116,7 +116,7 @@ export class ViewMoreActivityPage implements OnInit {
   resumeContentData: any;
   uid: any;
   audience: any;
-
+  defaultImg: string;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -128,6 +128,7 @@ export class ViewMoreActivityPage implements OnInit {
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService
   ) {
+    this.defaultImg = 'assets/imgs/ic_launcher.png';
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     this.subscribeUtilityEvents();
   }
@@ -342,14 +343,14 @@ export class ViewMoreActivityPage implements OnInit {
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
           if (value.contentData.appIcon) {
-            if (Boolean(value.isAvailableLocally) && value.basePath) {
+            if (value.contentData.appIcon.includes('http:') || value.contentData.appIcon.includes('https:')) {
+                if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+                        value.contentData.appIcon = value.contentData.appIcon;
+                  } else {
+                        value.contentData.appIcon = this.defaultImg;
+                  }
+            } else if (value.basePath) {
               value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
-            } else if (!Boolean(value.isAvailableLocally)) {
-              if (value.contentData.appIcon.includes('http:') || value.contentData.appIcon.includes('https:')) {
-                value.contentData.appIcon = value.contentData.appIcon;
-              } else if (value.basePath) {
-                value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
-              }
             }
           }
           contentData.push(value);

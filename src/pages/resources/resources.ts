@@ -335,11 +335,18 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .then(data => {
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
-          if (Boolean(value.isAvailableLocally) && value.basePath && value.contentData.appIcon) {
-            value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
-          } else if (!Boolean(value.isAvailableLocally)) {
-            value.contentData.appIcon = value.contentData.appIcon;
+          if (value.contentData.appIcon) {
+            if (value.contentData.appIcon.includes('http:') || value.contentData.appIcon.includes('https:')) {
+                if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+                        value.contentData.appIcon = value.contentData.appIcon;
+                  } else {
+                        value.contentData.appIcon = this.defaultImg;
+                  }
+            } else if (value.basePath) {
+              value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
+            }
           }
+
         });
         this.ngZone.run(() => {
           this.localResources = data;
@@ -371,14 +378,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
           if (value.contentData.appIcon) {
-            if (Boolean(value.isAvailableLocally) && value.basePath) {
+            if (value.contentData.appIcon.includes('http:') || value.contentData.appIcon.includes('https:')) {
+                if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+                        value.contentData.appIcon = value.contentData.appIcon;
+                  } else {
+                        value.contentData.appIcon = this.defaultImg;
+                  }
+            } else if (value.basePath) {
               value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
-            } else if (!Boolean(value.isAvailableLocally)) {
-              if (value.contentData.appIcon.includes('http:') || value.contentData.appIcon.includes('https:')) {
-                value.contentData.appIcon = value.contentData.appIcon;
-              } else if (value.basePath) {
-                value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
-              }
             }
           }
         });
