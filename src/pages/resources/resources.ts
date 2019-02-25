@@ -228,9 +228,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     } else {
       this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
       this.profile = this.appGlobalService.getCurrentUser();
+      this.setSavedContent();
+      this.loadRecentlyViewedContent();
     }
-    this.setSavedContent();
-    this.loadRecentlyViewedContent();
   }
 
   generateNetworkType() {
