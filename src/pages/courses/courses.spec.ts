@@ -348,7 +348,7 @@ describe('CoursesPage', () => {
     coursesPage.isFilterApplied = false;
 
     // act
-    coursesPage.getPopularAndLatestCourses(criteria);
+    coursesPage.getPopularAndLatestCourses(false, criteria);
 
     // assert
     expect(pageAssembleServiceMock.getPageAssemble).toHaveBeenCalledWith(criteria);
@@ -569,7 +569,7 @@ describe('CoursesPage', () => {
       // assert
       setTimeout(() => {
         zoneMock.run.mock.calls[0][0].call(coursesPage);
-        expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('ERROR_CONTENT_NOT_AVAILABLE');
+        expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('COURSE_NOT_AVAILABLE');
         expect(coursesPage.showOverlay).toBe(false);
         done();
       }, 0);
@@ -586,7 +586,7 @@ describe('CoursesPage', () => {
       // assert
       setTimeout(() => {
         zoneMock.run.mock.calls[0][0].call(coursesPage);
-        expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('ERROR_CONTENT_NOT_AVAILABLE');
+        expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('COURSE_NOT_AVAILABLE');
         expect(coursesPage.showOverlay).toBe(false);
         done();
       }, 0);

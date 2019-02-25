@@ -108,9 +108,8 @@ describe('ProfilePage', () => {
         const refresher = {
             complete: jest.fn()
         };
-        refresher.complete();
         // act
-        profilePage.doRefresh('profile');
+        profilePage.doRefresh(refresher);
         // assert
         setTimeout(() => {
             expect(refresher.complete).toHaveBeenCalled();
@@ -462,6 +461,9 @@ describe('ProfilePage', () => {
             present: jest.fn(),
             onDidDismiss: jest.fn()
         };
+        profilePage.profile = {
+            phone: true
+        };
         popUpMock.present.mockImplementation(() => { });
         popoverCtrlMock.create.mockReturnValue(popUpMock);
         // act
@@ -477,6 +479,9 @@ describe('ProfilePage', () => {
             present: jest.fn(),
             onDidDismiss: jest.fn()
         };
+        profilePage.profile = {
+            phone: false
+        };
         popUpMock.onDidDismiss.mockImplementation((edited, key) => {
             edited(true);
             // spyOn(profilePage, 'callOTPPopover').and.stub();
@@ -486,7 +491,7 @@ describe('ProfilePage', () => {
         // act
         profilePage.editMobileNumber({});
         // assert
-        expect(commonUtilServiceMock.translateMessage).toHaveBeenCalledWith('EDIT_PHONE_POPUP_TITLE');
+        expect(commonUtilServiceMock.translateMessage).toHaveBeenCalledWith('ENTER_PHONE_POPUP_TITLE');
         expect(popUpMock.onDidDismiss).toHaveBeenCalled();
         expect(popUpMock.present).toHaveBeenCalled();
     });
