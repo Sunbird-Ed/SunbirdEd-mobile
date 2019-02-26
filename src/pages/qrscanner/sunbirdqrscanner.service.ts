@@ -6,6 +6,10 @@ import {App, Platform, Popover, PopoverController} from 'ionic-angular';
 import {QRAlertCallBack, QRScannerAlert} from './qrscanner_alert';
 import {
   ContainerService,
+  PermissionService,
+  TabsPage
+} from 'sunbird';
+import {
   Environment,
   ImpressionSubtype,
   ImpressionType,
@@ -13,10 +17,8 @@ import {
   InteractType,
   Mode,
   PageId,
-  PermissionService,
-  TabsPage,
-  TelemetryObject,
-} from 'sunbird';
+  TelemetryObject
+} from 'sunbird-sdk';
 import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
 import {QRScannerResultHandler} from './qrscanresulthandler.service';
 import {ProfileSettingsPage} from '../profile-settings/profile-settings';
@@ -196,9 +198,7 @@ export class SunbirdQRScanner {
   }
 
   generateStartEvent(pageId: string) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = '';
-    telemetryObject.type = 'qr';
+    const telemetryObject = new TelemetryObject('', 'qr', undefined);
     this.telemetryGeneratorService.generateStartTelemetry(
       PageId.QRCodeScanner,
       telemetryObject);
@@ -206,9 +206,8 @@ export class SunbirdQRScanner {
 
   generateEndEvent(pageId: string, qrData: string) {
     if (pageId) {
-      const telemetryObject: TelemetryObject = new TelemetryObject();
-      telemetryObject.id = qrData;
-      telemetryObject.type = 'qr';
+      const telemetryObject: TelemetryObject = new TelemetryObject(qrData, 'qr', undefined);
+
       this.telemetryGeneratorService.generateEndTelemetry(
         'qr',
         Mode.PLAY,

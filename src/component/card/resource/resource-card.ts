@@ -13,7 +13,8 @@ import { ContentDetailsPage } from '../../../pages/content-details/content-detai
 import { ContentType, MimeType, ContentCard, PreferenceKey, CardSectionName } from '../../../app/app.constant';
 import { CourseUtilService } from '../../../service/course-util.service';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import { InteractType, InteractSubtype, TelemetryObject, SharedPreferences } from 'sunbird';
+import { InteractType, InteractSubtype, TelemetryObject } from 'sunbird-sdk';
+import {SharedPreferences} from 'sunbird';
 import { CollectionDetailsEtbPage } from '../../../pages/collection-details-etb/collection-details-etb';
 
 /**
@@ -87,12 +88,12 @@ export class ResourceCard implements OnInit {
    */
   navigateToDetailPage(content: any, layoutName: string): void {
     const identifier = content.contentId || content.identifier;
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = identifier;
+    let telemetryObject: TelemetryObject ;
     if (layoutName === this.layoutInProgress) {
-      telemetryObject.type = ContentType.COURSE;
+      telemetryObject = new TelemetryObject(identifier, ContentType.COURSE, undefined);
     } else {
-      telemetryObject.type = this.isResource(content.contentType) ? ContentType.RESOURCE : content.contentType;
+      const ObjectType = this.isResource(content.contentType) ? ContentType.RESOURCE : content.contentType;
+      telemetryObject = new TelemetryObject(identifier, ObjectType, undefined);
     }
 
 

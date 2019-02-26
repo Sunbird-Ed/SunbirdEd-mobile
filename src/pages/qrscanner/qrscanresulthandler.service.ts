@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import {
+    ContentDetailRequest,
+    ContentService,
+    ImpressionType,
+    ImpressionSubtype
+} from 'sunbird';
+import {
     InteractType,
     InteractSubtype,
     Environment,
@@ -8,11 +14,7 @@ import {
     TelemetryObject,
     Mode,
     CorrelationData,
-    ContentDetailRequest,
-    ContentService,
-    ImpressionType,
-    ImpressionSubtype
-} from 'sunbird';
+} from 'sunbird-sdk';
 import { SearchPage } from '../search/search';
 import {
     ContentType,
@@ -148,10 +150,9 @@ export class QRScannerResultHandler {
         values['action'] = action;
         values['compatibile'] = (action === 'SearchResult' || action === 'ContentDetail') ? 1 : 0;
 
-        const telemetryObject: TelemetryObject = new TelemetryObject();
+        let telemetryObject: TelemetryObject;
         if (dialCode) {
-            telemetryObject.id = dialCode;
-            telemetryObject.type = 'qr';
+            telemetryObject = new TelemetryObject(dialCode, 'qr', undefined);
         }
 
         this.telemetryGeneratorService.generateInteractTelemetry(
@@ -165,9 +166,8 @@ export class QRScannerResultHandler {
 
     generateEndEvent(pageId: string, qrData: string) {
         if (pageId) {
-            const telemetryObject: TelemetryObject = new TelemetryObject();
-            telemetryObject.id = qrData;
-            telemetryObject.type = QRScannerResultHandler.CORRELATION_TYPE;
+            const telemetryObject = new TelemetryObject(qrData, QRScannerResultHandler.CORRELATION_TYPE, undefined);
+
             this.telemetryGeneratorService.generateEndTelemetry(
                 QRScannerResultHandler.CORRELATION_TYPE,
                 Mode.PLAY,

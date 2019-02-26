@@ -11,13 +11,15 @@ import {
 } from 'ionic-angular';
 import {
   AddUpdateProfilesRequest,
+  ObjectType,
+} from 'sunbird';
+import {
   TelemetryObject,
   InteractType,
   InteractSubtype,
   Environment,
   PageId,
-  ObjectType,
-} from 'sunbird';
+} from 'sunbird-sdk';
 import {GroupService,
         Group,
         Profile,
@@ -252,9 +254,8 @@ export class AddOrRemoveGroupUserPage {
   }
 
   deleteUsersFromGroup() {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = this.groupInfo.gid;
-    telemetryObject.type = ObjectType.GROUP;
+    let telemetryObject: TelemetryObject;
+    telemetryObject = new TelemetryObject(this.groupInfo.gid, ObjectType.GROUP, undefined);
 
     const valuesMap = new Map();
     valuesMap['UIDS'] = this.selectedUids;

@@ -15,15 +15,16 @@ import {
   ContentService,
   ContentSortCriteria,
   CourseService,
+  SortOrder
+} from 'sunbird';
+import {
   Environment,
   ImpressionType,
   InteractSubtype,
   InteractType,
   PageId,
-  SortOrder,
-  TelemetryObject,
-  TelemetryService,
-} from 'sunbird';
+  TelemetryObject
+} from 'sunbird-sdk';
 import {OverflowMenuComponent} from '@app/pages/profile';
 import {generateImpressionTelemetry, generateInteractTelemetry} from '@app/app/telemetryutil';
 import {ContentCard, ContentType, MenuOverflow, MimeType, ProfileConstants} from '@app/app/app.constant';
@@ -34,7 +35,6 @@ import {CollectionDetailsPage} from '@app/pages/collection-details/collection-de
 import {ContentDetailsPage} from '@app/pages/content-details/content-details';
 import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
 import {FormAndFrameworkUtilService} from './formandframeworkutil.service';
-import {ImageLoader} from 'ionic-image-loader';
 import {EditContactDetailsPopupComponent} from '@app/component/edit-contact-details-popup/edit-contact-details-popup';
 import {EditContactVerifyPopupComponent} from '@app/component';
 import {ProfileService, ServerProfileDetailsRequest, UpdateServerProfileInfoRequest} from 'sunbird-sdk';
@@ -96,7 +96,6 @@ export class ProfilePage {
     private popoverCtrl: PopoverController,
     private zone: NgZone,
     private authService: AuthService,
-    private telemetryService: TelemetryService,
     private loadingCtrl: LoadingController,
     private navParams: NavParams,
     private events: Events,
@@ -104,11 +103,9 @@ export class ProfilePage {
     private courseService: CourseService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
-    private containerService: ContainerService,
     private commonUtilService: CommonUtilService,
     private app: App,
     private contentService: ContentService,
-    private imageLoader: ImageLoader,
     public viewCtrl: ViewController
   ) {
     this.userId = this.navParams.get('userId') || '';
@@ -139,13 +136,13 @@ export class ProfilePage {
         this.imageUri = res.url;
       }
     });
-    this.telemetryService.impression(generateImpressionTelemetry(
+    this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
       PageId.PROFILE,
       Environment.USER, '', '', '',
       undefined,
       undefined
-    ));
+    );
   }
 
   doRefresh(refresher?) {
@@ -434,12 +431,13 @@ export class ProfilePage {
    */
   navigateToDetailPage(content: any, layoutName: string, index: number): void {
     const identifier = content.contentId || content.identifier;
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = identifier;
+    let telemetryObject: TelemetryObject;
     if (layoutName === ContentCard.LAYOUT_INPROGRESS) {
-      telemetryObject.type = ContentType.COURSE;
+      telemetryObject = new TelemetryObject(identifier, ContentType.COURSE, undefined);
     } else {
-      telemetryObject.type = this.isResource(content.contentType) ? ContentType.RESOURCE : content.contentType;
+      const telemetryObjectType = this.isResource(content.contentType) ? ContentType.RESOURCE : content.contentType;
+      telemetryObject = new TelemetryObject(identifier, telemetryObjectType, undefined);
+
     }
 
 
@@ -483,13 +481,12 @@ export class ProfilePage {
 
   navigateToCategoriesEditPage() {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-      this.telemetryService.interact(
-        generateInteractTelemetry(InteractType.TOUCH,
+      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
           InteractSubtype.EDIT_CLICKED,
           Environment.HOME,
           PageId.PROFILE, null,
           undefined,
-          undefined));
+          undefined);
       this.navCtrl.push(CategoriesEditPage);
     } else {
       this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
@@ -498,13 +495,12 @@ export class ProfilePage {
 
   navigateToEditPersonalDetails() {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-      this.telemetryService.interact(
-        generateInteractTelemetry(InteractType.TOUCH,
+      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
           InteractSubtype.EDIT_CLICKED,
           Environment.HOME,
           PageId.PROFILE, null,
           undefined,
-          undefined));
+          undefined);
       this.navCtrl.push(PersonalDetailsEditPage, {
         profile: this.profile
       });

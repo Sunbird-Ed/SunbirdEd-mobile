@@ -21,17 +21,24 @@ import {
   AddUpdateProfilesRequest,
   AuthService,
   ContainerService,
-  Environment,
-  InteractSubtype,
-  InteractType,
   OAuthService,
   ObjectType,
-  PageId,
   SharedPreferences,
-  TabsPage,
-  TelemetryObject
+  TabsPage
 } from 'sunbird';
-import {GetAllProfileRequest, Group, GroupService, Profile, ProfileService, ProfileType} from 'sunbird-sdk';
+import {
+   GetAllProfileRequest,
+   Group,
+   GroupService,
+   Profile,
+   ProfileService,
+   ProfileType,
+   Environment,
+   InteractSubtype,
+   InteractType,
+   PageId,
+   TelemetryObject
+  } from 'sunbird-sdk';
 import {AppGlobalService} from '../../../service/app-global.service';
 import {
   GUEST_STUDENT_SWITCH_TABS,
@@ -167,9 +174,8 @@ export class GroupDetailsPage {
     valuesMap['to'] = toUser;
     valuesMap['gid'] = this.group.gid;
 
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = selectedUser.uid;
-    telemetryObject.type = Environment.USER;
+    let telemetryObject: TelemetryObject;
+    telemetryObject = new TelemetryObject(selectedUser.uid, Environment.USER, undefined);
 
     // Generate Switch user initiate interact event
     this.telemetryGeneratorService.generateInteractTelemetry(
@@ -234,9 +240,8 @@ export class GroupDetailsPage {
 
 
   logOut(selectedUser: any, isBeingPlayed: boolean) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = this.profileDetails.id;
-    telemetryObject.type = Environment.USER;
+    const telemetryObject = new TelemetryObject(this.profileDetails.id, Environment.USER, undefined);
+
 
     // Generate Logout initiate event
     this.telemetryGeneratorService.generateInteractTelemetry(
@@ -370,9 +375,7 @@ export class GroupDetailsPage {
   }
 
   deleteGroup() {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = this.group.gid;
-    telemetryObject.type = ObjectType.GROUP;
+    const telemetryObject = new TelemetryObject(this.group.gid, ObjectType.GROUP, undefined);
 
     // Generate Delete group event
     this.telemetryGeneratorService.generateInteractTelemetry(

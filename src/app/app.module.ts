@@ -73,6 +73,9 @@ export const sunbirdSdkServicesProvidersFactory: () => Provider[] = () => {
   }, {
     provide: 'SYSTEM_SETTINGS_SERVICE',
     useFactory: () => SunbirdSdk.instance.systemSettingsService
+  }, {
+    provide: 'TELEMETRY_SERVICE',
+    useFactory: () => SunbirdSdk.instance.telemetryService
   }];
 };
 
@@ -153,8 +156,8 @@ export const sunbirdSdkFactory: (uniqueDeviceID: UniqueDeviceID, platform: Platf
           deviceRegisterApiPath: '',
           telemetryApiPath: '',
           deviceRegisterHost: '',
-          telemetrySyncBandwidth: 100,
-          telemetrySyncThreshold: 1000
+          telemetrySyncBandwidth: 3,
+          telemetrySyncThreshold: 3
         }
       });
     };

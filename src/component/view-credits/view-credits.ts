@@ -11,7 +11,7 @@ import {
   Environment,
   InteractType,
   TelemetryObject
-} from 'sunbird';
+} from 'sunbird-sdk';
 import { ProfileConstants } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
@@ -63,10 +63,8 @@ export class ViewCreditsComponent {
     this.pageId = this.navParams.get('pageId');
     this.rollUp = this.navParams.get('rollUp');
     this.correlation = this.navParams.get('correlation');
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = this.content.identifier;
-    telemetryObject.type = this.content.contentType;
-    telemetryObject.version = this.content.pkgVersion;
+    const telemetryObject = new TelemetryObject(this.content.identifier, this.content.contentType, this.content.pkgVersion);
+
     this.telemetrygeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       'credits-clicked',
       Environment.HOME,

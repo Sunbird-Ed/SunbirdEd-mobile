@@ -20,6 +20,12 @@ import * as _ from 'lodash';
 import {
   ContentService,
   FileUtil,
+  ShareUtil,
+  BuildParamService,
+  ProfileType,
+
+} from 'sunbird';
+import {
   PageId,
   Environment,
   Mode,
@@ -27,14 +33,11 @@ import {
   Rollup,
   InteractType,
   InteractSubtype,
-  ShareUtil,
-  BuildParamService,
-  ProfileType,
   CorrelationData,
   TelemetryObject,
   ErrorCode,
   ErrorType
-} from 'sunbird';
+} from 'sunbird-sdk';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import { ContentActionsComponent, ConfirmAlertComponent, ContentRatingAlertComponent } from '@app/component';
 import {
@@ -907,7 +910,7 @@ export class CollectionDetailsEtbPage {
   }
 
   generateStartEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
+    const telemetryObject = new TelemetryObject(objectId, objectType, objectVersion);
     this.telemetryGeneratorService.generateStartTelemetry(
       PageId.COLLECTION_DETAIL,
       telemetryObject,
@@ -916,7 +919,7 @@ export class CollectionDetailsEtbPage {
   }
 
   generateEndEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
+    const telemetryObject = new TelemetryObject(objectId, objectType, objectVersion);
     this.telemetryGeneratorService.generateEndTelemetry(
       objectType,
       Mode.PLAY,
@@ -929,7 +932,7 @@ export class CollectionDetailsEtbPage {
 
   generateQRSessionEndEvent(pageId: string, qrData: string) {
     if (pageId !== undefined) {
-      const telemetryObject: TelemetryObject = { id: qrData, type: 'qr', version: '', rollup: undefined };
+      const telemetryObject = new TelemetryObject(qrData, 'qr', '');
       this.telemetryGeneratorService.generateEndTelemetry(
         'qr',
         Mode.PLAY,
@@ -1001,7 +1004,7 @@ export class CollectionDetailsEtbPage {
    * @param corRelationList correlation List
    */
   readLessorReadMore(param, objRollup, corRelationList) {
-    const telemetryObject: TelemetryObject = { id: this.objId, type: this.objType, version: this.objVer, rollup: undefined };
+    const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
     this.telemetryGeneratorService.readLessOrReadMore(param, objRollup, corRelationList, telemetryObject);
   }
 

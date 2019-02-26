@@ -5,15 +5,17 @@ import {
   ContentFilterCriteria,
   ContentSearchCriteria,
   ContentService,
-  Environment,
   FrameworkService,
+  SharedPreferences,
+} from 'sunbird';
+import {
   ImpressionType,
   InteractSubtype,
   InteractType,
   PageId,
-  SharedPreferences,
+  Environment,
   TelemetryObject
-} from 'sunbird';
+} from 'sunbird-sdk';
 import {Events, NavController} from 'ionic-angular';
 import * as _ from 'lodash';
 import {ViewMoreActivityPage} from '../view-more-activity/view-more-activity';
@@ -38,7 +40,7 @@ import {TelemetryGeneratorService} from '../../service/telemetry-generator.servi
 import {CommonUtilService} from '../../service/common-util.service';
 import {TranslateService} from '@ngx-translate/core';
 import {Network} from '@ionic-native/network';
-import {animate, group, state, style, transition, trigger,} from '@angular/animations';
+import {animate, group, state, style, transition, trigger} from '@angular/animations';
 import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
 import {ProfileType} from 'sunbird-sdk';
 
@@ -771,10 +773,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   navigateToDetailPage(item, index, sectionName) {
     const identifier = item.contentId || item.identifier;
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.type = item.contentType;
-
-    telemetryObject.id = identifier;
+    let telemetryObject: TelemetryObject;
+    telemetryObject = new TelemetryObject(identifier, item.contentType, undefined);
 
     const values = new Map();
     values['sectionName'] = sectionName;
