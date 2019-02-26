@@ -4,8 +4,7 @@ import { NavController, NavParams } from 'ionic-angular';
 import {
   SharedPreferences,
   Impression,
-  ShareUtil,
-  
+  ShareUtil
 } from 'sunbird';
 import {
   PageId,
