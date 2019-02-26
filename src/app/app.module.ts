@@ -130,7 +130,8 @@ export const sunbirdSdkFactory: (uniqueDeviceID: UniqueDeviceID, platform: Platf
           frameworkApiPath: '/api/framework/v1',
           searchOrganizationApiPath: '/api/org/v1',
           frameworkConfigDirPath: '/data/framework',
-          channelConfigDirPath: '/data/channel'
+          channelConfigDirPath: '/data/channel',
+          systemSettingsDefaultChannelIdKey: 'custodianOrgId'
         },
         profileServiceConfig: {
           profileApiPath: '/api/user/v1',
