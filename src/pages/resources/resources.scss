@@ -129,6 +129,9 @@ page-resources {
       .course-scroll-holder {
         background-color: #FDFEFE;
       }
+      .scroll-content:nth-child(2) {
+        padding-bottom: 0px !important ;
+      }
       .toolbar-title-md {
         margin-left: -5px !important;
         font-weight: normal !important;

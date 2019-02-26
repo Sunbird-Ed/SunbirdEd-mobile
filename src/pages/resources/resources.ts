@@ -621,17 +621,19 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 	 * @param refresher
 	 */
   swipeDownToRefresh(refresher?) {
-    if (refresher) {
-      refresher.complete();
-      this.telemetryGeneratorService.generatePullToRefreshTelemetry(PageId.LIBRARY, Environment.HOME);
-    }
     this.refresh = true;
     this.storyAndWorksheets = [];
 
     this.getCategoryData();
     this.getCurrentUser();
+    if (refresher) {
+      refresher.complete();
+      this.telemetryGeneratorService.generatePullToRefreshTelemetry(PageId.LIBRARY, Environment.HOME);
+      this.getGroupByPage();
+    } else {
+          this.getPopularContent(false);
+         }
 
-    this.getPopularContent(false);
   }
 
   generateImpressionEvent() {
