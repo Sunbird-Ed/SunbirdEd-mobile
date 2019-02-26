@@ -631,7 +631,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.telemetryGeneratorService.generatePullToRefreshTelemetry(PageId.LIBRARY, Environment.HOME);
       this.getGroupByPage();
     } else {
-          this.getPopularContent(false);
+          this.getPopularContent();
          }
 
   }
