@@ -18,8 +18,7 @@
 	</div>
 </ion-header>
 
-<ion-content overflow-scroll="true" class="course-scroll-holder1" style="background: #EBEBEB;">
-	<ion-refresher (ionRefresh)="swipeDownToRefresh($event)"></ion-refresher>
+<ion-content style="background: #EBEBEB;">
 	<div class="horizontal-scroll  PLR15px bg-white">
 		<a class="medium-pill MR24" *ngFor="let medium of categoryMediums; let i = index;" [ngClass]="{'active': medium?.selected}" [@appear] (click)="mediumClick(medium?.name)">{{medium?.name}}&nbsp;{{'MEDIUM' | translate }}</a>
 	</div>
@@ -30,6 +29,8 @@
 			{{grade?.name}} 
 		</a>
 	</div>
+<ion-content overflow-scroll="true" [fullscreen] = "true" class="course-scroll-holder1" style="background: #EBEBEB;">
+	<ion-refresher (ionRefresh)="swipeDownToRefresh($event)"></ion-refresher>
 	<div style="margin: 40px;" *ngIf ="refresh">
 		<ion-spinner icon="spiral"></ion-spinner>
 	</div>
@@ -130,4 +131,6 @@
 	<div *ngIf="showSignInCard" class="signin-card-bg">
 		<sign-in-card (valueChange)="showOfflineNetworkWarning($event)" [source]="source"></sign-in-card>
 	</div>
+	
+</ion-content>
 </ion-content>
