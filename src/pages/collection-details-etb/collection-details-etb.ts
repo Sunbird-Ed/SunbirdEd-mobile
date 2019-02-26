@@ -418,9 +418,17 @@ export class CollectionDetailsEtbPage {
   extractApiResponse(data) {
     this.contentDetail = data.result.contentData ? data.result.contentData : [];
     this.contentDetail.isAvailableLocally = data.result.isAvailableLocally;
-    if (this.contentDetail.isAvailableLocally) {
-      this.localImage = (data.result.basePath + '/' + this.contentDetail.appIcon);
-     // console.log('LocalImage', this.localImage);
+
+    if (this.contentDetail.appIcon) {
+      if (this.contentDetail.appIcon.includes('http:') || this.contentDetail.appIcon.includes('https:')) {
+          if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+                  this.contentDetail.appIcon = this.contentDetail.appIcon;
+            } else {
+                  this.contentDetail.appIcon = this.defaultAppIcon;
+            }
+      } else if (data.result.basePath) {
+        this.localImage = data.result.basePath + '/' + this.contentDetail.appIcon;
+      }
     }
     this.objId = this.contentDetail.identifier;
     this.objVer = this.contentDetail.pkgVersion;

@@ -1,7 +1,7 @@
 import { mockRes } from '../filters/filter.spec.data';
 import {
     navParamsMock, popoverCtrlMock, navCtrlMock, eventsMock,
-    commonUtilServiceMock, loadingControllerMock, platformMock
+    commonUtilServiceMock, loadingControllerMock, platformMock, ionicAppMock
 } from '../../../__tests__/mocks';
 import { FilterPage } from './filter';
 
@@ -19,8 +19,15 @@ describe.only('FilterPage', () => {
         });
         platformMock.registerBackButtonAction.mockReturnValue(jest.fn());
         navParamsMock.get.mockReturnValue({ facets: [], facetFilters: [{ 'age': 0, 'contentTypes': ['Story', 'Worksheet'] }] });
-        filterPage = new FilterPage(navParamsMock as any, popoverCtrlMock as any, navCtrlMock as any,
-            eventsMock as any, commonUtilServiceMock as any, platformMock as any);
+        filterPage = new FilterPage(
+            navParamsMock as any,
+            popoverCtrlMock as any,
+            navCtrlMock as any,
+            eventsMock as any,
+            commonUtilServiceMock as any,
+            platformMock as any,
+            ionicAppMock as any
+            );
         filterPage.filterCriteria = mockRes.filterCriteria;
         jest.resetAllMocks();
     });
@@ -31,7 +38,7 @@ describe.only('FilterPage', () => {
         const filter = ['board', 'gradeLevel', 'subject'];
         // act
         filterPage = new FilterPage(navParamsMock as any, popoverCtrlMock as any, navCtrlMock as any,
-            eventsMock as any, commonUtilServiceMock as any, platformMock as any);
+            eventsMock as any, commonUtilServiceMock as any, platformMock as any, ionicAppMock as any);
         // assert
     });
 
@@ -113,7 +120,10 @@ describe.only('FilterPage', () => {
     });
     it('should call registerBackButtonAction() when ionViewWillEnter()', () => {
         platformMock.registerBackButtonAction.mockReturnValue(() => { });
-
+        navCtrlMock.canGoBack.mockReturnValue(true);
+        (ionicAppMock._modalPortal as any) = { getActive: jest.fn(() => null) };
+        (ionicAppMock._toastPortal as any) = { getActive: jest.fn(() => null) };
+        (ionicAppMock._overlayPortal as any) = { getActive: jest.fn(() => null) };
         filterPage.handleBackButton();
         filterPage.unregisterBackButton = platformMock.registerBackButtonAction.mock.calls[0][0].call();
         expect(navCtrlMock.pop).toHaveBeenCalled();

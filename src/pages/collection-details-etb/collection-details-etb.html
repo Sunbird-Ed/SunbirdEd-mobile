@@ -150,7 +150,7 @@
             <div class="secondChildren" *ngIf="firstChildren?.children">
               <div *ngFor="let secondChildren of firstChildren?.children">
                 <div class="separator-line"></div>
-                <div class="P10 MT5" *ngIf="secondChildren?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && firstChildren?.children">{{secondChildren?.contentData?.name}}
+                <div class="P10 MT5" *ngIf="secondChildren?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && secondChildren?.children">{{secondChildren?.contentData?.name}}
                 </div>
                 <ion-row *ngIf="secondChildren?.contentData?.mimeType !== 'application/vnd.ekstep.content-collection'"
                   (click)="navigateToDetailsPage(secondChildren, depth + '.' + (i + 1))">
@@ -167,7 +167,7 @@
                   </ion-col>
                 </ion-row>
                 <!-- <ion-row *ngIf="secondChildren?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !firstChildren?.children"> -->
-                  <div class="font-grey-text P10" *ngIf="secondChildren?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !firstChildren?.children">{{secondChildren?.contentData?.name}} 
+                  <div class="font-grey-text P10" *ngIf="secondChildren?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !secondChildren?.children">{{secondChildren?.contentData?.name}} 
                     <span class="grey-icon-span">
                       <ion-icon ios="ios-alert" md="md-alert" class="grey-icon ML5"></ion-icon>
                     </span></div>
@@ -176,7 +176,7 @@
               <div class="thirdChildren" *ngIf="secondChildren?.children">
                   <div *ngFor="let thirdChildren of secondChildren?.children">
                     <div class="separator-line"></div>
-                    <div class="P10 MT5" *ngIf="thirdChildren?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && secondChildren?.children">{{thirdChildren?.contentData?.name}}
+                    <div class="P10 MT5" *ngIf="thirdChildren?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && thirdChildren?.children">{{thirdChildren?.contentData?.name}}
                     </div>
                     <ion-row *ngIf="thirdChildren?.contentData?.mimeType !== 'application/vnd.ekstep.content-collection'"
                       (click)="navigateToDetailsPage(thirdChildren, depth + '.' + (i + 1))">
@@ -193,7 +193,7 @@
                       </ion-col>
                     </ion-row>
                     <!-- <ion-row *ngIf="thirdChildren?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !secondChildren?.children"> -->
-                      <div class="font-grey-text P10" *ngIf="thirdChildren?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !secondChildren?.children" >{{thirdChildren?.contentData?.name}}
+                      <div class="font-grey-text P10" *ngIf="thirdChildren?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !thirdChildren?.children" >{{thirdChildren?.contentData?.name}}
                          <span class="grey-icon-span">
                           <ion-icon ios="ios-alert" md="md-alert" class="grey-icon ML5"></ion-icon>
                         </span></div>

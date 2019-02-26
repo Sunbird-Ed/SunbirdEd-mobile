@@ -265,14 +265,14 @@ export class QrCodeResultPage {
       if (content.children === undefined) {
         if (content.mimeType !== MimeType.COLLECTION) {
           if (content.contentData.appIcon) {
-            if (Boolean(content.isAvailableLocally) && content.basePath) {
+            if (content.contentData.appIcon.includes('http:') || content.contentData.appIcon.includes('https:')) {
+                if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+                        content.contentData.appIcon = content.contentData.appIcon;
+                  } else {
+                        content.contentData.appIcon = this.defaultImg;
+                  }
+            } else if (content.basePath) {
               content.contentData.appIcon = content.basePath + '/' + content.contentData.appIcon;
-            } else if (!Boolean(content.isAvailableLocally)) {
-              if (content.contentData.appIcon.includes('http:') || content.contentData.appIcon.includes('https:')) {
-                content.contentData.appIcon = content.contentData.appIcon;
-              } else if (content.basePath) {
-                content.contentData.appIcon = content.basePath + '/' + content.contentData.appIcon;
-              }
             }
           }
           this.results.push(content);

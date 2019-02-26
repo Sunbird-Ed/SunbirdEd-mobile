@@ -331,7 +331,7 @@ describe('EnrolledCourseDetailsPage Component', () => {
     enrolled.extractApiResponse(response);
     expect(enrolled.generateImpressionEvent).toBeCalled();
     expect(enrolled.generateStartEvent).toBeCalled();
-    expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('ERROR_CONTENT_NOT_AVAILABLE');
+    expect(commonUtilServiceMock.showToast).toHaveBeenCalledWith('COURSE_NOT_AVAILABLE');
     expect(navCtrlMock.pop).toBeCalled();
     expect(enrolled.setCourseStructure).toBeCalled();
     expect(enrolled.setChildContents).toBeCalled();

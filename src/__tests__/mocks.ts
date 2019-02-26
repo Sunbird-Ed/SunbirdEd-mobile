@@ -77,7 +77,8 @@ export const navCtrlMock = createSpyObj<NavController>([
   'pop',
   'push',
   'setRoot',
-  'popTo'
+  'popTo',
+  'canGoBack'
 ]);
 
 export const navParamsMock = createSpyObj<NavParams>([
