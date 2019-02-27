@@ -24,6 +24,7 @@ import { BookmarkComponent } from './bookmark/bookmark';
 import { UnenrollAlertComponent } from './unenroll-alert/unenroll-alert';
 import { EditContactVerifyPopupComponent } from './edit-contact-verify-popup/edit-contact-verify-popup';
 import { EditContactDetailsPopupComponent } from './edit-contact-details-popup/edit-contact-details-popup';
+import { CollectionChild } from './collection-child/collection-child';
 
 @NgModule({
     declarations: [
@@ -44,7 +45,8 @@ import { EditContactDetailsPopupComponent } from './edit-contact-details-popup/e
         UnenrollAlertComponent,
         EditContactDetailsPopupComponent,
         EditContactVerifyPopupComponent,
-        ResourceCard
+        ResourceCard,
+        CollectionChild
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -55,7 +57,8 @@ import { EditContactDetailsPopupComponent } from './edit-contact-details-popup/e
         BrowserAnimationsModule,
         NgxDatatableModule,
         IonicModule,
-        IonicPageModule.forChild(ResourceCard)
+        IonicPageModule.forChild(ResourceCard),
+        IonicPageModule.forChild(CollectionChild)
     ],
     exports: [
         CourseCard,
@@ -74,7 +77,8 @@ import { EditContactDetailsPopupComponent } from './edit-contact-details-popup/e
         UnenrollAlertComponent,
         EditContactDetailsPopupComponent,
         EditContactVerifyPopupComponent,
-        ResourceCard
+        ResourceCard,
+        CollectionChild
         // ContentActionsComponent
     ],
     entryComponents: [
