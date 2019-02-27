@@ -2,28 +2,35 @@ import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs} from './../../app/modu
 import {App, IonicApp, NavParams, Select} from 'ionic-angular/index';
 import {AppGlobalService} from '../../service/app-global.service';
 import {
-  CategoryRequest,
   ContainerService,
   Environment,
-  FrameworkService,
   InteractSubtype,
   InteractType,
   PageId,
   SharedPreferences,
-  SuggestedFrameworkRequest,
   TabsPage
 } from 'sunbird';
 import {Component, Inject, ViewChild} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {Events, IonicPage, LoadingController, NavController, Platform} from 'ionic-angular';
-import {FormAndFrameworkUtilService} from '../profile/formandframeworkutil.service';
-import {FrameworkCategory, PreferenceKey} from '../../app/app.constant';
+import {PreferenceKey} from '../../app/app.constant';
 import * as _ from 'lodash';
-import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
-import {SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
-import {CommonUtilService} from '../../service/common-util.service';
-import {Profile, ProfileService, ProfileType} from "sunbird-sdk";
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
+import { CommonUtilService } from '../../service/common-util.service';
+import {
+  FrameworkService,
+  FrameworkUtilService,
+  GetSuggestedFrameworksRequest,
+  GetFrameworkCategoryTermsRequest,
+  FrameworkDetailsRequest,
+  Framework,
+  FrameworkCategoryCodesGroup,
+  Profile,
+  ProfileService,
+  ProfileType
+} from 'sunbird-sdk';
 
 @IonicPage()
 @Component({
@@ -77,7 +84,6 @@ export class ProfileSettingsPage {
     private navCtrl: NavController,
     private navParams: NavParams,
     private fb: FormBuilder,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private translate: TranslateService,
     private loadingCtrl: LoadingController,
     private preference: SharedPreferences,
@@ -90,8 +96,10 @@ export class ProfileSettingsPage {
     private container: ContainerService,
     private ionicApp: IonicApp,
     private app: App,
-    private framework: FrameworkService,
-    private telemetryService: TelemetryGeneratorService
+    private telemetryService: TelemetryGeneratorService,
+    @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
+    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService
+
   ) {
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {
@@ -188,13 +196,13 @@ export class ProfileSettingsPage {
     this.loader = this.commonUtilService.getLoader();
     this.loader.present();
 
-    const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
-      isGuestUser: true,
-      selectedLanguage: this.translate.currentLang,
-      categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
+    const getSuggestedFrameworksRequest: GetSuggestedFrameworksRequest = {
+      language: this.translate.currentLang,
+      requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
     };
-    this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
+    this.frameworkUtilService.getActiveChannelSuggestedFrameworkList(getSuggestedFrameworksRequest).toPromise()
       .then((result) => {
+        console.log('getActiveChannelSuggestedFrameworkList', result);
         this.syllabusList = [];
         if (result && result !== undefined && result.length > 0) {
           result.forEach(element => {
@@ -205,9 +213,15 @@ export class ProfileSettingsPage {
           this.loader.dismiss();
 
           if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
-            this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
-              .then(catagories => {
-                this.categories = catagories;
+            // this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
+            const frameworkDetailsRequest: FrameworkDetailsRequest = {
+              frameworkId: this.profile.syllabus[0] ? this.profile.syllabus[0] : '',
+              requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
+            };
+            this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
+              .then((framework: Framework) => {
+                console.log('getFrameworkDetails', framework);
+                this.categories = framework.categories;
                 this.resetForm(0, false);
               }).catch(() => {
               this.loader.dismiss();
@@ -228,9 +242,10 @@ export class ProfileSettingsPage {
    * @param {string} currentCategory - request Parameter passing to the framework API
    * @param {string} list - Local variable name to hold the list data
    */
-  getCategoryData(req: CategoryRequest, list): void {
+  getCategoryData(req: GetFrameworkCategoryTermsRequest, list): void {
     if (this.frameworkId) {
-      this.formAndFrameworkUtilService.getCategoryData(req, this.frameworkId).then((result) => {
+      this.frameworkUtilService.getFrameworkCategoryTerms(req).toPromise()
+      .then((result) => {
         if (this.loader !== undefined) {
           this.loader.dismiss();
         }
@@ -238,7 +253,7 @@ export class ProfileSettingsPage {
         if (list !== 'gradeList') {
           this[list] = _.orderBy(this[list], ['name'], ['asc']);
         }
-        if (req.currentCategory === 'board') {
+        if (req.currentCategoryCode === 'board') {
           const boardName = this.syllabusList.find(framework => this.frameworkId === framework.code);
           if (boardName) {
             const boardCode = result.find(board => boardName.name === board.name);
@@ -273,17 +288,23 @@ export class ProfileSettingsPage {
    * @param currentField
    * @param prevSelectedValue
    */
-  checkPrevValue(index, currentField, prevSelectedValue = []) {
+  checkPrevValue(index, currentField, prevSelectedValue: any[]) {
     if (index === 1) {
       const loader = this.commonUtilService.getLoader();
-      this.frameworkId = prevSelectedValue[0];
-      this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
-        .then(catagories => {
-          this.categories = catagories;
-          const request: CategoryRequest = {
-            currentCategory: this.categories[0].code,
-            selectedLanguage: this.translate.currentLang,
-            categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
+      this.frameworkId = prevSelectedValue ? (Array.isArray(prevSelectedValue[0]) ? prevSelectedValue[0][0] : prevSelectedValue[0] ) : '';
+      // this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
+      const frameworkDetailsRequest: FrameworkDetailsRequest = {
+        frameworkId:  this.frameworkId,
+        requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
+      };
+      this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
+        .then((framework: Framework) => {
+          this.categories = framework.categories;
+          console.log('this.categories', this.categories);
+          const request: GetFrameworkCategoryTermsRequest = {
+            currentCategoryCode: this.categories[0].code,
+            language: this.translate.currentLang,
+            requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
           };
           this.getCategoryData(request, currentField);
         }).catch(() => {
@@ -292,12 +313,12 @@ export class ProfileSettingsPage {
       });
 
     } else {
-      const request: CategoryRequest = {
-        currentCategory: this.categories[index - 1].code,
-        prevCategory: this.categories[index - 2].code,
-        selectedCode: prevSelectedValue,
-        selectedLanguage: this.selectedLanguage,
-        categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
+      const request: GetFrameworkCategoryTermsRequest = {
+        currentCategoryCode: this.categories[index - 1].code,
+        prevCategoryCode: this.categories[index - 2].code,
+        selectedTermsCodes: prevSelectedValue,
+        language: this.selectedLanguage,
+        requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
       };
       this.getCategoryData(request, currentField);
     }
