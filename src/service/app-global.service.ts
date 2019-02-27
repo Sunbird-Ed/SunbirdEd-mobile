@@ -1,7 +1,6 @@
 import {Inject, Injectable, OnDestroy} from '@angular/core';
-import {FrameworkCategory, ProfileConstants} from './../app/app.constant';
+import {FrameworkCategory} from './../app/app.constant';
 import {
-  AuthService,
   BuildParamService,
   Environment,
   FrameworkDetailsRequest,
@@ -15,25 +14,12 @@ import {Events, PopoverController, PopoverOptions} from 'ionic-angular';
 import {UpgradePopover} from '../pages/upgrade/upgrade-popover';
 import {GenericAppConfig, PreferenceKey} from '../app/app.constant';
 import {TelemetryGeneratorService} from './telemetry-generator.service';
-import {Profile, ProfileService, ProfileType} from 'sunbird-sdk';
+import {AuthService, OauthSession, Profile, ProfileService, ProfileType} from 'sunbird-sdk';
 
 @Injectable()
 export class AppGlobalService implements OnDestroy {
 
-    constructor(
-      @Inject('PROFILE_SERVICE') private profile: ProfileService,
-      private event: Events,
-      private authService: AuthService,
-      private preference: SharedPreferences,
-      private popoverCtrl: PopoverController,
-      private buildParamService: BuildParamService,
-      private framework: FrameworkService,
-      private telemetryGeneratorService: TelemetryGeneratorService
-    ) {
-
-        this.initValues();
-        this.listenForEvents();
-    }
+  session: OauthSession;
 
     public static readonly USER_INFO_UPDATED = 'user-profile-changed';
     public static readonly PROFILE_OBJ_CHANGED = 'app-global:profile-obj-changed';
@@ -65,7 +51,21 @@ export class AppGlobalService implements OnDestroy {
     guestProfileType: ProfileType;
     isProfileSettingsCompleted: boolean;
     isOnBoardingCompleted = false;
-    session: any;
+
+  constructor(
+    @Inject('PROFILE_SERVICE') private profile: ProfileService,
+    @Inject('AUTH_SERVICE') private authService: AuthService,
+    private event: Events,
+    private preference: SharedPreferences,
+    private popoverCtrl: PopoverController,
+    private buildParamService: BuildParamService,
+    private framework: FrameworkService,
+    private telemetryGeneratorService: TelemetryGeneratorService
+  ) {
+
+    this.initValues();
+    this.listenForEvents();
+  }
     public averageTime = 0;
     public averageScore = 0;
     private frameworkData = [];
@@ -210,40 +210,12 @@ export class AppGlobalService implements OnDestroy {
      */
     getUserId(): string {
         if (!this.session) {
-            this.authService.getSessionData((session) => {
-                if (session && session !== 'null') {
-                    return session[ProfileConstants.USER_TOKEN];
-                }
-
-                return this.session = '';
+          this.authService.getSession().toPromise().then((session) => {
+            this.session = session;
             });
         }
 
-        return this.session[ProfileConstants.USER_TOKEN];
-    }
-
-    private initValues() {
-        this.readConfig();
-        this.authService.getSessionData((session) => {
-            if (session === null || session === 'null') {
-                this.getGuestUserInfo();
-            } else {
-                this.guestProfileType = undefined;
-                this.isGuestUser = false;
-                this.session = JSON.parse(session);
-            }
-            this.getCurrentUserProfile();
-        });
-
-        this.preference.getString(PreferenceKey.IS_ONBOARDING_COMPLETED)
-            .then((result) => {
-                this.isOnBoardingCompleted = (result === 'true') ? true : false;
-            });
-    }
-
-    setOnBoardingCompleted() {
-        this.isOnBoardingCompleted = true;
-        this.preference.putString(PreferenceKey.IS_ONBOARDING_COMPLETED, 'true');
+      return this.session.userToken;
     }
 
     readConfig() {
@@ -350,10 +322,35 @@ export class AppGlobalService implements OnDestroy {
             .then(response => {
                 this.SUPPORT_EMAIL = response;
             })
-            .catch(error => {
+          .catch(() => {
                 this.SUPPORT_EMAIL = '';
             });
          }
+
+  setOnBoardingCompleted() {
+    this.isOnBoardingCompleted = true;
+    this.preference.putString(PreferenceKey.IS_ONBOARDING_COMPLETED, 'true');
+  }
+
+  private initValues() {
+    this.readConfig();
+
+    this.authService.getSession().toPromise().then((session) => {
+      if (!session) {
+        this.getGuestUserInfo();
+      } else {
+        this.guestProfileType = undefined;
+        this.isGuestUser = false;
+        this.session = session;
+      }
+      this.getCurrentUserProfile();
+    });
+
+    this.preference.getString(PreferenceKey.IS_ONBOARDING_COMPLETED)
+      .then((result) => {
+        this.isOnBoardingCompleted = (result === 'true') ? true : false;
+      });
+  }
 
     private getCurrentUserProfile() {
       this.profile.getActiveSessionProfile().toPromise()
@@ -367,7 +364,7 @@ export class AppGlobalService implements OnDestroy {
                             });
 
                             this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
-                        }).catch((error) => {
+                        }).catch(() => {
                             this.frameworkData = [];
                             this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
                         });
@@ -378,6 +375,7 @@ export class AppGlobalService implements OnDestroy {
                 }
             })
             .catch((error) => {
+              console.error(error);
                 this.guestUserProfile = undefined;
                 this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
             });

@@ -1,27 +1,20 @@
+import {Inject, Injectable} from '@angular/core';
 import {
-    Injectable
-} from '@angular/core';
-import {
-    FrameworkService,
-    CategoryRequest,
-    FrameworkDetailsRequest,
-    SharedPreferences,
-    FormRequest,
-    FormService,
-    Profile,
-    ProfileService,
-    SystemSettingRequest
+  CategoryRequest,
+  FormRequest,
+  FormService,
+  FrameworkDetailsRequest,
+  FrameworkService,
+  SharedPreferences,
+  SystemSettingRequest
 } from 'sunbird';
-import { AppGlobalService } from '../../service/app-global.service';
-import { AppVersion } from '@ionic-native/app-version';
-import {
-    FormConstant,
-    PreferenceKey,
-    FrameworkCategory
-} from '../../app/app.constant';
-import { TranslateService } from '@ngx-translate/core';
+import {AppGlobalService} from '../../service/app-global.service';
+import {AppVersion} from '@ionic-native/app-version';
+import {FormConstant, FrameworkCategory, PreferenceKey} from '../../app/app.constant';
+import {TranslateService} from '@ngx-translate/core';
 import * as _ from 'lodash';
-import { Events } from 'ionic-angular';
+import {Events} from 'ionic-angular';
+import {Profile, ProfileService} from 'sunbird-sdk';
 
 @Injectable()
 export class FormAndFrameworkUtilService {
@@ -34,14 +27,14 @@ export class FormAndFrameworkUtilService {
     profile: Profile;
 
     constructor(
-        private framework: FrameworkService,
-        private preference: SharedPreferences,
-        private formService: FormService,
-        private appGlobalService: AppGlobalService,
-        private appVersion: AppVersion,
-        private translate: TranslateService,
-        private profileService: ProfileService,
-        private events: Events
+      @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+      private framework: FrameworkService,
+      private preference: SharedPreferences,
+      private formService: FormService,
+      private appGlobalService: AppGlobalService,
+      private appVersion: AppVersion,
+      private translate: TranslateService,
+      private events: Events
     ) {
         // Get language selected
         this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
@@ -295,7 +288,7 @@ export class FormAndFrameworkUtilService {
                 medium: [],
                 subject: [],
                 syllabus: [],
-                gradeValueMap: {}
+              gradeValue: {}
             };
             if (profileRes.framework && Object.keys(profileRes.framework).length) {
                 const categoryKeysLen = Object.keys(profileRes.framework).length;
@@ -316,7 +309,7 @@ export class FormAndFrameworkUtilService {
                                         const codeObj = _.find(categoryList, (category) => category.name === element);
                                         if (codeObj) {
                                             profile['grade'].push(codeObj.code);
-                                            profile['gradeValueMap'][codeObj.code] = element;
+                                          profile['gradeValue'][codeObj.code] = element;
                                         }
                                     } else {
                                         const codeObj = _.find(categoryList, (category) => category.name === element);
@@ -353,26 +346,27 @@ export class FormAndFrameworkUtilService {
 
     updateProfileInfo(profile, profileData) {
         return new Promise((resolve, reject) => {
-            const req: Profile = new Profile();
-            if (profile.board && profile.board.length > 1) {
-                profile.board.splice(1, profile.board.length);
-            }
-            req.board = profile.board;
-            req.grade = profile.grade;
-            req.medium = profile.medium;
-            req.subject = profile.subject;
-            req.gradeValueMap = profile.gradeValueMap;
-            req.uid = profileData.uid;
-            req.handle = profileData.uid;
-            req.profileType = profileData.profileType;
-            req.source = profileData.source;
-            req.createdAt = profileData.createdAt || this.formatDate();
+          const req: Profile = {
+            board: profile.board,
+            grade: profile.grade,
+            medium: profile.medium,
+            subject: profile.subject,
+            gradeValue: profile.gradeValue,
+            uid: profileData.uid,
+            handle: profileData.uid,
+            profileType: profileData.profileType,
+            source: profileData.source,
+            createdAt: profileData.createdAt || this.formatDate()
+          };
+          if (profile.board && profile.board.length > 1) {
+            profile.board.splice(1, profile.board.length);
+          }
             this.preference.getString('current_framework_id')
                 .then(value => {
                     req.syllabus = [value];
-                    this.profileService.updateProfile(req)
+                  this.profileService.updateProfile(req).toPromise()
                         .then((res: any) => {
-                            const updateProfileRes = JSON.parse(res);
+                          const updateProfileRes = res;
                             this.events.publish('refresh:loggedInProfile');
                             if (updateProfileRes.board && updateProfileRes.grade && updateProfileRes.medium &&
                                 updateProfileRes.board.length && updateProfileRes.grade.length

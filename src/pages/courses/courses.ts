@@ -103,10 +103,22 @@ export class CoursesPage implements OnInit {
   /**
    * Default method of class CoursesPage
    *
+   * @param appVersion
    * @param {NavController} navCtrl To navigate user from one page to another
    * @param {CourseService} courseService Service to get enrolled courses
    * @param {PageAssembleService} pageService Service to get latest and popular courses
    * @param {NgZone} ngZone To bind data
+   * @param qrScanner
+   * @param popCtrl
+   * @param events
+   * @param contentService
+   * @param preference
+   * @param appGlobalService
+   * @param courseUtilService
+   * @param formAndFrameworkUtilService
+   * @param commonUtilService
+   * @param telemetryGeneratorService
+   * @param network
    */
   constructor(
     private appVersion: AppVersion,

@@ -1,48 +1,43 @@
-import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
+import {FormAndFrameworkUtilService} from './../profile/formandframeworkutil.service';
+import {Component, Inject, ViewChild} from '@angular/core';
+import {Events, LoadingController, Navbar, NavController, Platform} from 'ionic-angular';
+import {AppVersion} from '@ionic-native/app-version';
 import {
-  Component,
-  ViewChild
-} from '@angular/core';
-import {
-  NavController,
-  LoadingController,
-  Navbar,
-  Platform,
-  Events
-} from 'ionic-angular';
-import { AppVersion } from '@ionic-native/app-version';
-import {
-  TabsPage,
-  OAuthService,
   ContainerService,
-  UserProfileService,
-  ProfileService,
-  ProfileType,
-  AuthService,
-  TenantInfoRequest,
-  InteractType,
-  InteractSubtype,
   Environment,
-  PageId,
   ImpressionType,
+  InteractSubtype,
+  InteractType,
+  PageId,
   SharedPreferences,
-  UserSource,
-  Profile
+  TabsPage,
 } from 'sunbird';
 
-import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
+import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
 import {
-  initTabs,
   GUEST_STUDENT_TABS,
   GUEST_TEACHER_TABS,
+  initTabs,
   LOGIN_TEACHER_TABS,
   Map,
-  ProfileConstants,
-  PreferenceKey
+  PreferenceKey,
+  ProfileConstants
 } from '@app/app';
-import { LanguageSettingsPage } from '@app/pages/language-settings/language-settings';
-import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
-import { CategoriesEditPage } from '../categories-edit/categories-edit';
+import {LanguageSettingsPage} from '@app/pages/language-settings/language-settings';
+import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
+import {
+  ApiService,
+  AuthService,
+  OauthSession,
+  OAuthSessionProvider,
+  Profile,
+  ProfileService,
+  ProfileSource,
+  ProfileType,
+  SdkConfig,
+  ServerProfileDetailsRequest
+} from 'sunbird-sdk';
+import {CategoriesEditPage} from "@app/pages/categories-edit/categories-edit";
 
 @Component({
   selector: 'page-onboarding',
@@ -58,12 +53,12 @@ export class OnboardingPage {
   backButtonFunc: any = undefined;
 
   constructor(
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    @Inject('AUTH_SERVICE') private authService: AuthService,
+    @Inject('API_SERVICE') private apiService: ApiService,
+    @Inject('SDK_CONFIG') private sdkConfig: SdkConfig,
     public navCtrl: NavController,
-    private auth: OAuthService,
     private container: ContainerService,
-    private userProfileService: UserProfileService,
-    private profileService: ProfileService,
-    private authService: AuthService,
     private loadingCtrl: LoadingController,
     private preferences: SharedPreferences,
     private platform: Platform,
@@ -135,18 +130,15 @@ export class OnboardingPage {
 
     this.generateLoginInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.LOGIN_INITIATE, '');
-    that.auth.doOAuthStepOne()
-      .then(token => {
-        loader.present();
-        return that.auth.doOAuthStepTwo(token);
-      })
+    this.authService.setSession(new OAuthSessionProvider(this.sdkConfig.apiConfig, this.apiService))
+      .toPromise()
       .then(() => {
         // initTabs(that.container, LOGIN_TEACHER_TABS);
         return that.refreshProfileData();
       })
-      .then(slug => {
+      .then(() => {
         this.events.publish(AppGlobalService.USER_INFO_UPDATED);
-        return that.refreshTenantData(slug);
+        return that.refreshTenantData();
       })
       .then(() => {
         loader.dismiss();
@@ -161,79 +153,76 @@ export class OnboardingPage {
       });
   }
 
-  refreshTenantData(slug: string) {
+  refreshTenantData() {
     const that = this;
     return new Promise((resolve, reject) => {
-      const request = new TenantInfoRequest();
-      request.refreshTenantInfo = true;
-      request.slug = slug;
-      this.userProfileService.getTenantInfo(
-        request,
-        res => {
-          const r = JSON.parse(res);
-          (<any>window).splashscreen.setContent(that.orgName, r.logo);
+      this.profileService.getTenantInfo().toPromise()
+        .then((success) => {
+          (<any>window).splashscreen.setContent(that.orgName, success.logo);
           resolve();
-        },
-        error => {
-          resolve(); // ignore
-        });
+        }).catch(() => {
+        resolve(); //ignore
+      })
     });
   }
 
   refreshProfileData() {
     const that = this;
     return new Promise<string>((resolve, reject) => {
-      that.authService.getSessionData((session) => {
+      that.authService.getSession().toPromise().then((session: OauthSession) => {
         if (session === undefined || session == null) {
           reject('session is null');
         } else {
-          const sessionObj = JSON.parse(session);
-          const req = {
-            userId: sessionObj[ProfileConstants.USER_TOKEN],
+          const req: ServerProfileDetailsRequest = {
+            userId: session.userToken,
             requiredFields: ProfileConstants.REQUIRED_FIELDS,
-            refreshUserProfileDetails: true
           };
-          that.userProfileService.getUserProfileDetails(req, res => {
-            const r = JSON.parse(res);
-            setTimeout(() => {
-              this.commonUtilService.showToast(this.commonUtilService.translateMessage('WELCOME_BACK', r.firstName));
-            }, 800);
+          that.profileService.getServerProfilesDetails(req).toPromise()
+            .then((success) => {
+              setTimeout(() => {
+                this.commonUtilService.showToast(this.commonUtilService.translateMessage('WELCOME_BACK', success.firstName));
+              }, 800);
+              that.generateLoginInteractTelemetry(InteractType.OTHER, InteractSubtype.LOGIN_SUCCESS, success.id);
 
-            that.generateLoginInteractTelemetry(InteractType.OTHER, InteractSubtype.LOGIN_SUCCESS, r.userId);
+              const profile: Profile = {
+                uid: success.id,
+                handle: success.id,
+                profileType: ProfileType.TEACHER,
+                source: ProfileSource.SERVER,
+                serverProfile: success
+              };
 
-            const profile: Profile = new Profile();
-            profile.uid = r.id;
-            profile.handle = r.id;
-            profile.profileType = ProfileType.TEACHER;
-            profile.source = UserSource.SERVER;
-
-
-            that.profileService.setCurrentProfile(false, profile)
-              .then((response: any) => {
-                this.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
-                  .then((value) => {
-                    that.orgName = r.rootOrg.orgName;
-                    if (value['status']) {
-                      initTabs(that.container, LOGIN_TEACHER_TABS);
-                      resolve(r.rootOrg.slug);
-                    } else {
-                      that.navCtrl.setRoot(CategoriesEditPage, { showOnlyMandatoryFields: true, profile: value['profile'] });
-                      reject();
-                    }
-                    // that.orgName = r.rootOrg.orgName;
-                    // resolve(r.rootOrg.slug);
-                  }).catch(() => {
-                    that.orgName = r.rootOrg.orgName;
-                    resolve(r.rootOrg.slug);
+              this.profileService.createProfile(profile, ProfileSource.SERVER)
+                .toPromise()
+                .then(() => {
+                  that.profileService.setActiveSessionForProfile(profile.uid).toPromise()
+                    .then(() => {
+                      this.formAndFrameworkUtilService.updateLoggedInUser(success, profile)
+                        .then((value) => {
+                          that.orgName = success.rootOrg.orgName;
+                          if (value['status']) {
+                            initTabs(that.container, LOGIN_TEACHER_TABS);
+                            resolve(success.rootOrg.slug);
+                          } else {
+                            that.navCtrl.setRoot(CategoriesEditPage, {
+                              showOnlyMandatoryFields: true,
+                              profile: value['profile']
+                            });
+                            reject();
+                          }
+                          // that.orgName = r.rootOrg.orgName;
+                          // resolve(r.rootOrg.slug);
+                        }).catch(() => {
+                        that.orgName = success.rootOrg.orgName;
+                        resolve(success.rootOrg.slug);
+                      });
+                    }).catch((e) => {
+                    reject(e);
                   });
-              })
-              .catch((err: any) => {
-                reject(err);
-              });
-          }, error => {
-            reject(error);
-            console.error(error);
-          });
+                });
+            }).catch((e) => {
+            reject(e);
+          })
         }
       });
     });
@@ -256,23 +245,24 @@ export class OnboardingPage {
     this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN')
       .then(val => {
         if (val !== '') {
-          const profile: Profile = new Profile();
-          profile.uid = val;
-          profile.handle = 'Guest1';
-          profile.profileType = ProfileType.TEACHER;
-          profile.source = UserSource.LOCAL;
+          const profile: Profile = {
+            uid: val,
+            handle: 'Guest1',
+            profileType: ProfileType.TEACHER,
+            source: ProfileSource.LOCAL
+          };
+          this.profileService.setActiveSessionForProfile(profile.uid).toPromise()
+            .then(() => {
+              this.events.publish(AppGlobalService.USER_INFO_UPDATED);
 
-          this.profileService.setCurrentProfile(true, profile).then(res => {
-            this.events.publish(AppGlobalService.USER_INFO_UPDATED);
-
-            if (this.appGlobalService.isProfileSettingsCompleted) {
-              this.navCtrl.setRoot(TabsPage, {
-                loginMode: 'guest'
-              });
-            } else {
-              this.navCtrl.push(UserTypeSelectionPage);
-            }
-          }).catch(err => {
+              if (this.appGlobalService.isProfileSettingsCompleted) {
+                this.navCtrl.setRoot(TabsPage, {
+                  loginMode: 'guest'
+                });
+              } else {
+                this.navCtrl.push(UserTypeSelectionPage);
+              }
+            }).catch(err => {
             this.navCtrl.push(UserTypeSelectionPage);
           });
         } else {

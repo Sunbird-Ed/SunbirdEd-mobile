@@ -1,71 +1,53 @@
+import {Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {
-  Component,
-  NgZone,
-  ViewChild
-} from '@angular/core';
-import {
+  AlertController,
+  Events,
+  IonicApp,
   IonicPage,
+  Navbar,
   NavController,
   NavParams,
-  Events,
-  PopoverController,
-  Navbar,
   Platform,
-  IonicApp,
-  AlertController
+  PopoverController
 } from 'ionic-angular';
-import { SocialSharing } from '@ionic-native/social-sharing';
+import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
 import {
+  BuildParamService,
+  ContentDetailRequest,
+  ContentMarkerRequest,
   ContentService,
   CourseService,
-  FileUtil,
-  ShareUtil,
-  BuildParamService,
-  ProfileService,
-  ProfileRequest,
-  SharedPreferences,
   DeviceInfoService,
-  ContentMarkerRequest,
+  FileUtil,
   MarkerType,
-  ContentDetailRequest,
+  SharedPreferences,
+  ShareUtil
 } from 'sunbird';
+import {PreferenceKey, XwalkConstants} from '../../app/app.constant';
+import {Map, ShareUrl} from '@app/app';
+import {BookmarkComponent, ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
+import {AppGlobalService, CourseUtilService} from '@app/service';
+import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
+import {Network} from '@ionic-native/network';
+import {UserAndGroupsPage} from '../user-and-groups/user-and-groups';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {CommonUtilService} from '../../service/common-util.service';
+import {DialogPopupComponent} from '../../component/dialog-popup/dialog-popup';
+import {Observable} from 'rxjs';
 import {
-  ImpressionType,
-  PageId,
-  Environment,
-  Mode,
-  InteractType,
-  InteractSubtype,
-  Rollup,
   CorrelationData,
+  Environment,
+  GetAllProfileRequest,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  Mode,
+  PageId,
+  ProfileService,
+  Rollup,
   TelemetryObject,
 } from 'sunbird-sdk';
-import {
-  PreferenceKey
-} from '../../app/app.constant';
-import {
-  ShareUrl,
-  Map
-} from '@app/app';
-import {
-  ContentRatingAlertComponent,
-  ContentActionsComponent,
-  BookmarkComponent
-} from '@app/component';
-import {
-  AppGlobalService,
-  CourseUtilService
-} from '@app/service';
-import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
-import { Network } from '@ionic-native/network';
-import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
-import { Observable } from 'rxjs';
-import { XwalkConstants } from '../../app/app.constant';
-import { ValueTransformer } from '@angular/compiler/src/util';
 
 
 @IonicPage()
@@ -138,7 +120,9 @@ export class ContentDetailsPage {
   @ViewChild(Navbar) navBar: Navbar;
   showMessage: any;
   isUsrGrpAlrtOpen: Boolean = false;
+
   constructor(
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     private navCtrl: NavController,
     private navParams: NavParams,
     private contentService: ContentService,
@@ -155,7 +139,6 @@ export class ContentDetailsPage {
     private appGlobalService: AppGlobalService,
     private alertCtrl: AlertController,
     private ionicApp: IonicApp,
-    private profileService: ProfileService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
     private courseUtilService: CourseUtilService,
@@ -281,18 +264,19 @@ export class ContentDetailsPage {
   }
 
   calculateAvailableUserCount() {
-    const profileRequest: ProfileRequest = {
+    const profileRequest: GetAllProfileRequest = {
       local: true,
       server: false
     };
-    this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
-      if (profiles) {
-        this.userCount = JSON.parse(profiles).length;
-      }
-      if (this.appGlobalService.isUserLoggedIn()) {
-        this.userCount += 1;
-      }
-    }).catch((error) => {
+    this.profileService.getAllProfiles(profileRequest).toPromise()
+      .then((profiles) => {
+        if (profiles) {
+          this.userCount = profiles.length;
+        }
+        if (this.appGlobalService.isUserLoggedIn()) {
+          this.userCount += 1;
+        }
+      }).catch((error) => {
       console.error('Error occurred= ', error);
     });
   }
@@ -350,8 +334,8 @@ export class ContentDetailsPage {
         comment: this.ratingComment,
         popupType: popupType
       }, {
-          cssClass: 'content-rating-alert'
-        });
+        cssClass: 'content-rating-alert'
+      });
       popUp.present({
         ev: event
       });
@@ -436,90 +420,90 @@ export class ContentDetailsPage {
   }
 
   extractApiResponse(data) {
-      this.content = data.result.contentData;
-      this.content.downloadable = data.result.isAvailableLocally;
+    this.content = data.result.contentData;
+    this.content.downloadable = data.result.isAvailableLocally;
 
-      this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
-      this.content.contentMarker = data.result.contentMarker ? data.result.contentMarker : [];
+    this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
+    this.content.contentMarker = data.result.contentMarker ? data.result.contentMarker : [];
 
-      if (this.cardData && this.cardData.hierarchyInfo) {
-        data.result.hierarchyInfo = this.cardData.hierarchyInfo;
-        this.isChildContent = true;
-      }
-      if (this.content.streamingUrl) {
-        this.streamingUrl = this.content.streamingUrl;
-      }
+    if (this.cardData && this.cardData.hierarchyInfo) {
+      data.result.hierarchyInfo = this.cardData.hierarchyInfo;
+      this.isChildContent = true;
+    }
+    if (this.content.streamingUrl) {
+      this.streamingUrl = this.content.streamingUrl;
+    }
 
-      if (!this.isChildContent && this.content.contentMarker.length
-        && this.content.contentMarker[0].extraInfoMap
-        && this.content.contentMarker[0].extraInfoMap.hierarchyInfo
-        && this.content.contentMarker[0].extraInfoMap.hierarchyInfo.length) {
-        this.isChildContent = true;
-      }
+    if (!this.isChildContent && this.content.contentMarker.length
+      && this.content.contentMarker[0].extraInfoMap
+      && this.content.contentMarker[0].extraInfoMap.hierarchyInfo
+      && this.content.contentMarker[0].extraInfoMap.hierarchyInfo.length) {
+      this.isChildContent = true;
+    }
 
-      this.content.playContent = JSON.stringify(data.result);
-      if (this.content.gradeLevel && this.content.gradeLevel.length && typeof this.content.gradeLevel !== 'string') {
-        this.content.gradeLevel = this.content.gradeLevel.join(', ');
+    this.content.playContent = JSON.stringify(data.result);
+    if (this.content.gradeLevel && this.content.gradeLevel.length && typeof this.content.gradeLevel !== 'string') {
+      this.content.gradeLevel = this.content.gradeLevel.join(', ');
+    }
+    if (this.content.attributions && this.content.attributions.length) {
+      this.content.attributions = this.content.attributions.join(', ');
+    }
+    if (this.content.me_totalRatings) {
+      const rating = this.content.me_totalRatings.split('.');
+      if (rating && rating[0]) {
+        this.content.me_totalRatings = rating[0];
       }
-      if (this.content.attributions && this.content.attributions.length) {
-        this.content.attributions = this.content.attributions.join(', ');
-      }
-      if (this.content.me_totalRatings) {
-        const rating = this.content.me_totalRatings.split('.');
-        if (rating && rating[0]) {
-          this.content.me_totalRatings = rating[0];
-        }
-      }
-      this.objId = this.content.identifier;
-      this.objVer = this.content.pkgVersion;
+    }
+    this.objId = this.content.identifier;
+    this.objVer = this.content.pkgVersion;
 
-      // User Rating
-      const contentFeedback: any = data.result.contentFeedback;
-      if (contentFeedback !== undefined && contentFeedback.length !== 0) {
-        this.userRating = contentFeedback[0].rating;
-        this.ratingComment = contentFeedback[0].comments;
-      }
+    // User Rating
+    const contentFeedback: any = data.result.contentFeedback;
+    if (contentFeedback !== undefined && contentFeedback.length !== 0) {
+      this.userRating = contentFeedback[0].rating;
+      this.ratingComment = contentFeedback[0].comments;
+    }
 
-      // Check locally available
-      if (Boolean(data.result.isAvailableLocally)) {
-        if (data.result.isUpdateAvailable && !this.isUpdateAvail) {
-          this.isUpdateAvail = true;
-        } else {
-          this.isUpdateAvail = false;
-        }
+    // Check locally available
+    if (Boolean(data.result.isAvailableLocally)) {
+      if (data.result.isUpdateAvailable && !this.isUpdateAvail) {
+        this.isUpdateAvail = true;
       } else {
-        this.content.size = this.content.size;
+        this.isUpdateAvail = false;
       }
+    } else {
+      this.content.size = this.content.size;
+    }
 
-      if (this.content.me_totalDownloads) {
-        this.content.me_totalDownloads = this.content.me_totalDownloads.split('.')[0];
-      }
+    if (this.content.me_totalDownloads) {
+      this.content.me_totalDownloads = this.content.me_totalDownloads.split('.')[0];
+    }
 
-      if (this.navParams.get('isResumedCourse')) {
-        this.cardData.contentData = this.content;
-        this.cardData.pkgVersion = this.content.pkgVersion;
-        this.generateTelemetry();
-      }
+    if (this.navParams.get('isResumedCourse')) {
+      this.cardData.contentData = this.content;
+      this.cardData.pkgVersion = this.content.pkgVersion;
+      this.generateTelemetry();
+    }
 
-      if (this.shouldGenerateTelemetry) {
-        this.generateDetailsInteractEvent();
-        this.shouldGenerateEndTelemetry = false;
-      }
+    if (this.shouldGenerateTelemetry) {
+      this.generateDetailsInteractEvent();
+      this.shouldGenerateEndTelemetry = false;
+    }
 
-      if (this.downloadAndPlay) {
-        if (!this.content.downloadable) {
-          /**
-           * Content is not downloaded then call the following method
-           * It will download the content and play it
-           */
-          this.downloadContent();
-        } else {
-          /**
-           * If the content is already downloaded then just play it
-           */
-          this.showSwitchUserAlert(false);
-        }
+    if (this.downloadAndPlay) {
+      if (!this.content.downloadable) {
+        /**
+         * Content is not downloaded then call the following method
+         * It will download the content and play it
+         */
+        this.downloadContent();
+      } else {
+        /**
+         * If the content is already downloaded then just play it
+         */
+        this.showSwitchUserAlert(false);
       }
+    }
   }
 
   generateTelemetry() {
@@ -622,8 +606,8 @@ export class ContentDetailsPage {
   }
 
   /**
- * It will Dismiss active popup
- */
+   * It will Dismiss active popup
+   */
   dismissPopup() {
     const activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
 
@@ -783,6 +767,7 @@ export class ContentDetailsPage {
       });
     });
   }
+
   /** funtion add elipses to the texts**/
   addElipsesInLongText(msg: string) {
     if (this.commonUtilService.translateMessage(msg).length >= 12) {
@@ -900,7 +885,7 @@ export class ContentDetailsPage {
         this.contentService.setContentMarker(req)
           .then((resp) => {
           }).catch((err) => {
-          });
+        });
       }
       this.downloadAndPlay = false;
       const request: any = {};
@@ -927,8 +912,8 @@ export class ContentDetailsPage {
       .then((res: any) => {
         this.apiLevel = res;
       }).catch((error: any) => {
-        console.error('Error ', error);
-      });
+      console.error('Error ', error);
+    });
   }
 
   showOverflowMenu(event) {
@@ -947,8 +932,8 @@ export class ContentDetailsPage {
       pageName: PageId.CONTENT_DETAIL,
       corRelationList: this.corRelationList
     }, {
-        cssClass: 'content-action'
-      });
+      cssClass: 'content-action'
+    });
     popover.present({
       ev: event
     });
@@ -973,8 +958,8 @@ export class ContentDetailsPage {
       corRelationList: this.corRelationList,
       position: 'bottom'
     }, {
-        cssClass: 'bookmark-menu'
-      });
+      cssClass: 'bookmark-menu'
+    });
     popover.present({
       ev: event
     });
@@ -1031,10 +1016,10 @@ export class ContentDetailsPage {
   }
 
   /**
-  * To View Credits popup
-  * check if non of these properties exist, then return false
-  * else show ViewCreditsComponent
-  */
+   * To View Credits popup
+   * check if non of these properties exist, then return false
+   * else show ViewCreditsComponent
+   */
   viewCredits() {
     if (!this.content.creator && !this.content.creators) {
       if (!this.content.contributors && !this.content.owner) {
@@ -1063,8 +1048,8 @@ export class ContentDetailsPage {
       body: this.commonUtilService.translateMessage('ANDROID_NOT_SUPPORTED_DESC'),
       buttonText: this.commonUtilService.translateMessage('INSTALL_CROSSWALK')
     }, {
-        cssClass: 'popover-alert'
-      });
+      cssClass: 'popover-alert'
+    });
     popover.present();
   }
 }

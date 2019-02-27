@@ -1,22 +1,13 @@
 import {AppGlobalService} from './../../service/app-global.service';
 import {FormAndFrameworkUtilService} from './../profile/formandframeworkutil.service';
 import {CommonUtilService} from './../../service/common-util.service';
-import {Component, ViewChild} from '@angular/core';
+import {Component, Inject, ViewChild} from '@angular/core';
 import {Events, IonicPage, LoadingController, NavController, NavParams, Select} from 'ionic-angular';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {
-  CategoryRequest,
-  ContainerService,
-  FrameworkService,
-  ProfileService,
-  SuggestedFrameworkRequest,
-  TabsPage,
-  UpdateUserInfoRequest,
-  UserProfileService
-} from 'sunbird';
+import {CategoryRequest, ContainerService, FrameworkService, SuggestedFrameworkRequest, TabsPage,} from 'sunbird';
 import {TranslateService} from '@ngx-translate/core';
 import {FrameworkCategory, initTabs, LOGIN_TEACHER_TABS} from '@app/app';
-import {Profile} from 'sunbird-sdk';
+import {Profile, ProfileService, UpdateServerProfileInfoRequest} from 'sunbird-sdk';
 
 @IonicPage()
 @Component({
@@ -62,6 +53,7 @@ export class CategoriesEditPage {
   };
 
   constructor(
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     private navCtrl: NavController,
     private loadingCtrl: LoadingController,
     private navParams: NavParams,
@@ -70,8 +62,6 @@ export class CategoriesEditPage {
     private fb: FormBuilder,
     private translate: TranslateService,
     private appGlobalService: AppGlobalService,
-    private userProfileService: UserProfileService,
-    private profileService: ProfileService,
     private events: Events,
     private container: ContainerService,
     private framework: FrameworkService
@@ -327,40 +317,41 @@ export class CategoriesEditPage {
 
   submitForm(formVal) {
     this.loader.present();
-    const req: UpdateUserInfoRequest = new UpdateUserInfoRequest();
-    const framework = {};
+    const req: UpdateServerProfileInfoRequest = {
+      userId: this.profile.uid,
+      framework: {}
+    };
     if (formVal.syllabus) {
-      framework['id'] = [formVal.syllabus];
+      this.framework['id'] = [formVal.syllabus];
     }
     if (formVal.boards) {
       const code = typeof (formVal.boards) === 'string' ? formVal.boards : formVal.boards[0];
-      framework['board'] = [this.boardList.find(board => code === board.code).name];
+      this.framework['board'] = [this.boardList.find(board => code === board.code).name];
     }
     if (formVal.medium && formVal.medium.length) {
       const Names = [];
       formVal.medium.forEach(element => {
         Names.push(this.mediumList.find(medium => element === medium.code).name);
       });
-      framework['medium'] = Names;
+      this.framework['medium'] = Names;
     }
     if (formVal.grades && formVal.grades.length) {
       const Names = [];
       formVal.grades.forEach(element => {
         Names.push(this.gradeList.find(grade => element === grade.code).name);
       });
-      framework['gradeLevel'] = Names;
+      this.framework['gradeLevel'] = Names;
     }
     if (formVal.subjects && formVal.subjects.length) {
       const Names = [];
       formVal.subjects.forEach(element => {
         Names.push(this.subjectList.find(subject => element === subject.code).name);
       });
-      framework['subject'] = Names;
+      this.framework['subject'] = Names;
     }
-    req.userId = this.profile.uid;
-    req.framework = framework;
-    this.userProfileService.updateUserInfo(req,
-      (res: any) => {
+    req.framework = this.framework;
+    this.profileService.updateServerProfile(req).toPromise()
+      .then(() => {
         this.loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_SUCCESS'));
         this.events.publish('loggedInProfile:update', req.framework);
@@ -370,11 +361,10 @@ export class CategoriesEditPage {
         } else {
           this.navCtrl.pop();
         }
-      },
-      () => {
-        this.loader.dismiss();
-        this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
-      });
+      }).catch(() => {
+      this.loader.dismiss();
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
+    })
   }
 
   getLoader(): any {

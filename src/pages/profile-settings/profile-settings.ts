@@ -16,17 +16,17 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {Events, IonicPage, LoadingController, NavController, Platform} from 'ionic-angular';
 import {PreferenceKey} from '../../app/app.constant';
 import * as _ from 'lodash';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
-import { CommonUtilService } from '../../service/common-util.service';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
+import {CommonUtilService} from '../../service/common-util.service';
 import {
-  FrameworkService,
-  FrameworkUtilService,
-  GetSuggestedFrameworksRequest,
-  GetFrameworkCategoryTermsRequest,
-  FrameworkDetailsRequest,
   Framework,
   FrameworkCategoryCodesGroup,
+  FrameworkDetailsRequest,
+  FrameworkService,
+  FrameworkUtilService,
+  GetFrameworkCategoryTermsRequest,
+  GetSuggestedFrameworksRequest,
   Profile,
   ProfileService,
   ProfileType
@@ -220,7 +220,6 @@ export class ProfileSettingsPage {
             };
             this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
               .then((framework: Framework) => {
-                console.log('getFrameworkDetails', framework);
                 this.categories = framework.categories;
                 this.resetForm(0, false);
               }).catch(() => {

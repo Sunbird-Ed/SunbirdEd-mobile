@@ -1,37 +1,33 @@
-import { CommonUtilService } from './../../service/common-util.service';
+import {CommonUtilService} from './../../service/common-util.service';
+import {Component, EventEmitter, Inject, Input, NgZone, Output} from '@angular/core';
+import {TranslateService} from '@ngx-translate/core';
+import {NavController} from 'ionic-angular';
+import {AppVersion} from '@ionic-native/app-version';
 import {
-  Component,
-  NgZone,
-  Input,
-  Output,
-  EventEmitter
-} from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { NavController } from 'ionic-angular';
-import { AppVersion } from '@ionic-native/app-version';
-import {
-  OAuthService,
   ContainerService,
-  UserProfileService,
-  ProfileService,
-  AuthService,
-  TenantInfoRequest,
-  TelemetryService,
-  InteractType,
-  InteractSubtype,
   Environment,
+  InteractSubtype,
+  InteractType,
   PageId,
   SharedPreferences,
-  ProfileType,
-  UserSource,
-  Profile
+  TelemetryService,
 } from 'sunbird';
+import {initTabs, LOGIN_TEACHER_TABS} from '../../app/module.service';
+import {generateInteractTelemetry} from '../../app/telemetryutil';
+import {ProfileConstants} from '../../app/app.constant';
+import {FormAndFrameworkUtilService} from '../../pages/profile/formandframeworkutil.service';
 import {
-  initTabs, LOGIN_TEACHER_TABS
-} from '../../app/module.service';
-import { generateInteractTelemetry } from '../../app/telemetryutil';
-import { ProfileConstants } from '../../app/app.constant';
-import { FormAndFrameworkUtilService } from '../../pages/profile/formandframeworkutil.service';
+  ApiService,
+  AuthService,
+  OauthSession,
+  OAuthSessionProvider,
+  Profile,
+  ProfileService,
+  ProfileSource,
+  ProfileType,
+  SdkConfig,
+  ServerProfileDetailsRequest
+} from 'sunbird-sdk';
 
 @Component({
   selector: 'sign-in-card',
@@ -54,13 +50,13 @@ export class SignInCardComponent {
   @Output() valueChange = new EventEmitter();
 
   constructor(
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    @Inject('AUTH_SERVICE') private authService: AuthService,
+    @Inject('API_SERVICE') private apiService: ApiService,
+    @Inject('SDK_CONFIG') private sdkConfig: SdkConfig,
     public translate: TranslateService,
     public navCtrl: NavController,
-    private auth: OAuthService,
     private container: ContainerService,
-    private userProfileService: UserProfileService,
-    private profileService: ProfileService,
-    private authService: AuthService,
     private ngZone: NgZone,
     private telemetryService: TelemetryService,
     private appVersion: AppVersion,
@@ -77,7 +73,7 @@ export class SignInCardComponent {
   }
 
   initText() {
-    this.translate.get(this.DEFAULT_TEXT, { '%s': this.appName }).subscribe((value) => {
+    this.translate.get(this.DEFAULT_TEXT, {'%s': this.appName}).subscribe((value) => {
       this.translateDisplayText = value;
       if (this.title.length === 0) {
         this.title = 'OVERLAY_LABEL_COMMON';
@@ -108,11 +104,8 @@ export class SignInCardComponent {
 
       const that = this;
       const loader = this.commonUtilService.getLoader();
-      that.auth.doOAuthStepOne(this.commonUtilService.isRTL())
-        .then(token => {
-          loader.present();
-          return that.auth.doOAuthStepTwo(token);
-        })
+      this.authService.setSession(new OAuthSessionProvider(this.sdkConfig.apiConfig, this.apiService))
+        .toPromise()
         .then(() => {
           initTabs(that.container, LOGIN_TEACHER_TABS);
           return that.refreshProfileData();
@@ -129,8 +122,8 @@ export class SignInCardComponent {
           });
         })
         .catch(error => {
-          loader.dismiss();
           console.log(error);
+          return loader.dismiss();
         });
     }
   }
@@ -139,70 +132,61 @@ export class SignInCardComponent {
     const that = this;
 
     return new Promise<any>((resolve, reject) => {
-      that.authService.getSessionData((session) => {
-        if (Boolean(session)) {
-          const sessionObj = JSON.parse(session);
-          const req = {
-            userId: sessionObj[ProfileConstants.USER_TOKEN],
-            requiredFields: ProfileConstants.REQUIRED_FIELDS,
-            refreshUserProfileDetails: true
+      that.authService.getSession().toPromise()
+        .then((session: OauthSession) => {
+          if (session) {
+            const req: ServerProfileDetailsRequest = {
+              userId: session.userToken,
+              requiredFields: ProfileConstants.REQUIRED_FIELDS
           };
-          that.userProfileService.getUserProfileDetails(req, res => {
-            const r = JSON.parse(res);
-            that.generateLoginInteractTelemetry(InteractType.OTHER, InteractSubtype.LOGIN_SUCCESS, r.id);
-
-            const profile: Profile = new Profile();
-            profile.uid = r.id;
-            profile.handle = r.id;
-            profile.profileType = ProfileType.TEACHER;
-            profile.source = UserSource.SERVER;
-
-
-            that.profileService.setCurrentProfile(false, profile)
-              .then((currentProfile: any) => {
-                that.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
-                  .then((value) => {
-                    resolve({
-                      slug: r.rootOrg.slug,
-                      title: r.rootOrg.orgName
+            that.profileService.getServerProfilesDetails(req).toPromise()
+              .then((success) => {
+                that.generateLoginInteractTelemetry(InteractType.OTHER, InteractSubtype.LOGIN_SUCCESS, success.id);
+                const profile: Profile = {
+                  uid: success.id,
+                  handle: success.id,
+                  profileType: ProfileType.TEACHER,
+                  source: ProfileSource.SERVER,
+                  serverProfile: success
+                };
+                this.profileService.createProfile(profile, ProfileSource.SERVER)
+                  .toPromise()
+                  .then(() => {
+                    that.profileService.setActiveSessionForProfile(profile.uid).toPromise()
+                      .then(() => {
+                        that.formAndFrameworkUtilService.updateLoggedInUser(success, profile)
+                          .then(() => {
+                            resolve({slug: success.rootOrg.slug, title: success.rootOrg.orgName});
+                          }).catch(() => {
+                          resolve({slug: success.rootOrg.slug, title: success.rootOrg.orgName});
+                        }).catch((err) => {
+                          reject(err);
+                        });
+                      }).catch((err) => {
+                      console.log('err in setActiveSessionProfile in sign-in card --', err);
                     });
                   }).catch(() => {
-                    resolve({
-                      slug: r.rootOrg.slug,
-                      title: r.rootOrg.orgName
-                    });
-                  });
-              })
-              .catch((err: any) => {
-                reject(err);
-              });
 
-          }, error => {
-            reject(error);
-            console.error(error);
+              })
+              }).catch((err) => {
+              reject(err);
           });
         } else {
           reject('session is null');
         }
-      });
+        })
     });
   }
 
   refreshTenantData(slug: string, title: string) {
     return new Promise((resolve, reject) => {
-      const request = new TenantInfoRequest();
-      request.refreshTenantInfo = true;
-      request.slug = slug;
-      this.userProfileService.getTenantInfo(
-        request,
-        res => {
-          const r = JSON.parse(res);
-          (<any>window).splashscreen.setContent(title, r.logo);
+      this.profileService.getTenantInfo().toPromise()
+        .then((value) => {
+          (<any>window).splashscreen.setContent(title, value.logo);
           resolve();
-        },
-        error => {
-          resolve(); // ignore
-        });
+        }).catch(() => {
+        resolve(); // ignore
+      })
     });
   }
 
