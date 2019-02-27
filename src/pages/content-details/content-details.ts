@@ -20,25 +20,27 @@ import {
   ContentService,
   CourseService,
   FileUtil,
-  ImpressionType,
-  PageId,
-  Environment,
-  Mode,
   ShareUtil,
-  InteractType,
-  InteractSubtype,
-  Rollup,
   BuildParamService,
-  CorrelationData,
   ProfileService,
   ProfileRequest,
-  TelemetryObject,
   SharedPreferences,
   DeviceInfoService,
   ContentMarkerRequest,
   MarkerType,
-  ContentDetailRequest
+  ContentDetailRequest,
 } from 'sunbird';
+import {
+  ImpressionType,
+  PageId,
+  Environment,
+  Mode,
+  InteractType,
+  InteractSubtype,
+  Rollup,
+  CorrelationData,
+  TelemetryObject,
+} from 'sunbird-sdk';
 import {
   PreferenceKey
 } from '../../app/app.constant';
@@ -537,12 +539,11 @@ export class ContentDetailsPage {
     values['isDownloaded'] = this.content.downloadable;
     values['autoAfterDownload'] = this.downloadAndPlay;
 
-    const telemetryObject: TelemetryObject = {
-      id: this.content.identifier,
-      type: this.content.contentType,
-      version: this.content.pkgVersion,
-      rollup: undefined
-    };
+    const telemetryObject = new TelemetryObject(
+      this.content.identifier,
+      this.content.contentType,
+      this.content.pkgVersion
+    );
 
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
       ImpressionType.DETAIL,
@@ -586,7 +587,7 @@ export class ContentDetailsPage {
   }
 
   generateStartEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
+    const telemetryObject = new TelemetryObject(objectId, objectType, objectVersion);
     this.telemetryGeneratorService.generateStartTelemetry(
       PageId.CONTENT_DETAIL,
       telemetryObject,
@@ -595,7 +596,7 @@ export class ContentDetailsPage {
   }
 
   generateEndEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
+    const telemetryObject = new TelemetryObject(objectId, objectType, objectVersion);
     this.telemetryGeneratorService.generateEndTelemetry(
       objectType,
       Mode.PLAY,
@@ -608,7 +609,7 @@ export class ContentDetailsPage {
 
   generateQRSessionEndEvent(pageId: string, qrData: string) {
     if (pageId !== undefined) {
-      const telemetryObject: TelemetryObject = { id: qrData, type: 'qr', version: '', rollup: undefined };
+      const telemetryObject = new TelemetryObject(qrData, 'qr', '');
       this.telemetryGeneratorService.generateEndTelemetry(
         'qr',
         Mode.PLAY,
@@ -1052,7 +1053,7 @@ export class ContentDetailsPage {
    * @param corRelationList correlation List
    */
   readLessorReadMore(param, objRollup, corRelationList) {
-    const telemetryObject: TelemetryObject = { id: this.objId, type: this.objType, version: this.objVer, rollup: undefined };
+    const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
     this.telemetryGeneratorService.readLessOrReadMore(param, objRollup, corRelationList, telemetryObject);
   }
 

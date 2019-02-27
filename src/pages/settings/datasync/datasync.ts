@@ -1,23 +1,25 @@
 import { CommonUtilService } from './../../../service/common-util.service';
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, Inject } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import {
-  TelemetryService,
-  SyncStat,
   SharedPreferences,
+  Impression,
+  ShareUtil
+} from 'sunbird';
+import {
   PageId,
   Environment,
   ImpressionType,
-  Impression,
+  TelemetryService,
   InteractType,
   InteractSubtype,
-  ShareUtil,
+  TelemetrySyncStat,
   TelemetryStat
-} from 'sunbird';
+} from 'sunbird-sdk';
 import { DataSyncType } from './datasynctype.enum';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { generateImpressionTelemetry, generateInteractTelemetry } from '../../../app/telemetryutil';
+import { TelemetryGeneratorService } from '@app/service';
 
 const KEY_DATA_SYNC_TYPE = 'sync_config';
 const KEY_DATA_SYNC_TIME = 'data_sync_time';
@@ -28,7 +30,6 @@ class CMap {
 @Component({
   selector: 'page-datasync',
   templateUrl: 'datasync.html',
-  providers: [TelemetryService]
 })
 export class DatasyncPage {
   dataSyncType: DataSyncType;
@@ -41,12 +42,13 @@ export class DatasyncPage {
     public zone: NgZone,
     public navCtrl: NavController,
     public navParams: NavParams,
-    private telemetryService: TelemetryService,
+    @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
     private preference: SharedPreferences,
     private translate: TranslateService,
     private shareUtil: ShareUtil,
     private social: SocialSharing,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private telemetryGeneratorService: TelemetryGeneratorService,
   ) { }
 
   init() {
@@ -77,13 +79,13 @@ export class DatasyncPage {
     impression.type = ImpressionType.VIEW;
     impression.pageId = PageId.SETTINGS_DATASYNC;
     impression.env = Environment.SETTINGS;
-    this.telemetryService.impression(generateImpressionTelemetry(
+    this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
       PageId.SETTINGS_DATASYNC,
       Environment.SETTINGS, '', '', '',
       undefined,
       undefined
-    ));
+    );
   }
 
   onSelected() {
@@ -94,11 +96,9 @@ export class DatasyncPage {
   }
 
   getLastSyncTime() {
-    this.telemetryService.getTelemetryStat().then((response: any) => {
+    this.telemetryService.getTelemetryStat().subscribe((syncStat: TelemetryStat) => {
       const that = this;
       that.zone.run(() => {
-        const syncStat: TelemetryStat = JSON.parse(response).result;
-
         if (syncStat.lastSyncTime !== 0) {
           const milliseconds = Number(syncStat.lastSyncTime);
 
@@ -112,7 +112,7 @@ export class DatasyncPage {
           that.latestSync = this.lastSyncedTimeString + ' ' + dateAndTime;
         }
       });
-    }) .catch(() => {
+    }, (err) => {
     });
   }
 
@@ -134,11 +134,10 @@ export class DatasyncPage {
     loader.present();
     this.generateInteractEvent(InteractType.TOUCH, InteractSubtype.MANUALSYNC_INITIATED, null);
     this.telemetryService.sync()
-      .then((response: any) => {
+      .subscribe((syncStat: TelemetrySyncStat) => {
 
         that.zone.run(() => {
-          const syncStat: SyncStat = response.result;
-          this.generateInteractEvent(InteractType.OTHER, InteractSubtype.MANUALSYNC_SUCCESS, syncStat.syncedFileSize.toString());
+          this.generateInteractEvent(InteractType.OTHER, InteractSubtype.MANUALSYNC_SUCCESS, syncStat.syncedFileSize);
           const milliseconds = Number(syncStat.syncTime);
 
           // get date
@@ -157,8 +156,7 @@ export class DatasyncPage {
           loader.dismiss();
           this.commonUtilService.showToast('DATA_SYNC_SUCCESSFUL');
         });
-      })
-      .catch((error) => {
+      }, (error) => {
         loader.dismiss();
         this.commonUtilService.showToast('DATA_SYNC_FAILURE');
         console.error('Telemetry Data Sync Error: ' + error);
@@ -184,20 +182,21 @@ export class DatasyncPage {
 
 
 
-  generateInteractEvent(interactType: string, subtype: string, size: string) {
+  generateInteractEvent(interactType: string, subtype: string, size: number) {
     /*istanbul ignore else */
     if (size != null) {
-      const valuesMap = new CMap();
-      valuesMap['SizeOfFileInKB'] = size;
-      this.telemetryService.interact(generateInteractTelemetry(
+      this.telemetryGeneratorService.generateInteractTelemetry(
         interactType,
         subtype,
         Environment.SETTINGS,
         PageId.SETTINGS_DATASYNC,
-        valuesMap,
+        undefined,
+        {
+          SizeOfFileInKB: (size / 1000) + ''
+        },
         undefined,
         undefined
-      ));
+      );
     }
   }
 }

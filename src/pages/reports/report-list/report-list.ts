@@ -1,8 +1,17 @@
 import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams, LoadingController } from 'ionic-angular';
 import { GroupReportListPage } from '../group-report-list/group-report-list';
-import { ReportService, ReportSummary, ContentService, SummarizerContentFilterCriteria, ImpressionType, Environment,
-    PageId, InteractType, InteractSubtype, ObjectType, TelemetryObject } from 'sunbird';
+import { ReportService, ContentService, SummarizerContentFilterCriteria,  } from 'sunbird';
+import {
+    ImpressionType,
+    Environment,
+    PageId,
+    InteractType,
+    InteractSubtype,
+    ObjectType,
+    TelemetryObject,
+    ReportSummary
+} from 'sunbird-sdk';
 import { UserReportPage } from '../user-report/user-report';
 import { ContentType } from '../../../app/app.constant';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
@@ -83,9 +92,7 @@ export class ReportListPage {
     }
 
     goToGroupReportsList(report: ReportSummary) {
-        const telemetryObject: TelemetryObject = new TelemetryObject();
-        telemetryObject.id = report.contentId;
-        telemetryObject.type = ObjectType.CONTENT;
+        const telemetryObject = new TelemetryObject(report.contentId, ObjectType.CONTENT, undefined);
 
         this.telemetryGeneratorService.generateInteractTelemetry(
             InteractType.TOUCH,

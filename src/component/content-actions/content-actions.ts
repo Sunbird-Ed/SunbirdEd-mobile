@@ -7,13 +7,15 @@ import { Component } from '@angular/core';
 import {
   ContentService,
   AuthService,
+} from 'sunbird';
+import {
   Environment,
   Rollup,
   CorrelationData,
   InteractType,
   InteractSubtype,
   TelemetryObject
-} from 'sunbird';
+} from 'sunbird-sdk';
 import { ToastController, Platform } from 'ionic-angular';
 import { CommonUtilService } from '../../service/common-util.service';
 import { ReportIssuesComponent } from '../report-issues/report-issues';
@@ -161,10 +163,8 @@ export class ContentActionsComponent {
   }
 
   deleteContent() {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = this.content.identifier;
-    telemetryObject.type = this.content.contentType;
-    telemetryObject.version = this.content.pkgVersion;
+    const telemetryObject = new TelemetryObject(this.content.identifier, this.content.contentType, this.content.pkgVersion);
+
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.DELETE_CLICKED,

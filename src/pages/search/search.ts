@@ -5,21 +5,23 @@ import {
   ContentSearchCriteria,
   ContentService,
   CorrelationData,
-  Environment,
   FileUtil,
+  PageAssembleCriteria,
+  PageAssembleFilter,
+  PageAssembleService,
+  SharedPreferences,
+  TabsPage,
+} from 'sunbird';
+import {
   ImpressionType,
   InteractSubtype,
   InteractType,
   LogLevel,
   Mode,
-  PageAssembleCriteria,
-  PageAssembleFilter,
-  PageAssembleService,
+  Environment,
   PageId,
-  SharedPreferences,
-  TabsPage,
   TelemetryObject
-} from 'sunbird';
+} from 'sunbird-sdk';
 import {ProfileType} from 'sunbird-sdk';
 import {GenieResponse} from '../settings/datasync/genieresponse';
 import {FilterPage} from './filters/filter';
@@ -134,7 +136,7 @@ export class SearchPage {
 
   ionViewWillEnter() {
     this.handleDeviceBackButton();
-    const telemetryObject: TelemetryObject = new TelemetryObject();
+   // const telemetryObject = new TelemetryObject();
   }
 
   ionViewDidEnter() {
@@ -551,10 +553,7 @@ export class SearchPage {
     values['SearchPhrase'] = this.searchKeywords;
     values['PositionClicked'] = index;
 
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = identifier;
-    telemetryObject.type = contentType;
-    telemetryObject.version = pkgVersion;
+    const telemetryObject = new TelemetryObject(identifier, contentType, pkgVersion);
 
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.CONTENT_CLICKED,
@@ -568,10 +567,7 @@ export class SearchPage {
 
   generateQRSessionEndEvent(pageId: string, qrData: string) {
     if (pageId !== undefined) {
-      const telemetryObject: TelemetryObject = new TelemetryObject();
-      telemetryObject.id = qrData;
-      telemetryObject.type = 'qr';
-      telemetryObject.version = '';
+      const telemetryObject = new TelemetryObject(qrData, 'qr', '');
       this.telemetryGeneratorService.generateEndTelemetry(
         'qr',
         Mode.PLAY,

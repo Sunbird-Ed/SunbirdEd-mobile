@@ -21,27 +21,29 @@ import {
   FileUtil,
   CourseService,
   ChildContentRequest,
-  PageId,
   UserProfileService,
-  InteractSubtype,
-  Environment,
-  Mode,
-  InteractType,
   BuildParamService,
   ShareUtil,
   SharedPreferences,
   ProfileType,
   GetContentStateRequest,
-  ImpressionType,
-  CorrelationData,
-  TelemetryObject,
-  ErrorCode,
-  ErrorType,
   UnenrolCourseRequest,
   CourseBatchStatus,
   CourseBatchesRequest,
   CourseEnrollmentType
 } from 'sunbird';
+import {
+  PageId,
+  InteractSubtype,
+  Environment,
+  Mode,
+  InteractType,
+  ImpressionType,
+  CorrelationData,
+  TelemetryObject,
+  ErrorCode,
+  ErrorType,
+} from 'sunbird-sdk';
 import { ContentRatingAlertComponent, ContentActionsComponent } from '@app/component';
 import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
@@ -1088,7 +1090,7 @@ export class EnrolledCourseDetailsPage {
 
   generateQRSessionEndEvent(pageId: string, qrData: string) {
     if (pageId !== undefined) {
-      const telemetryObject: TelemetryObject = { id: qrData, type: 'qr', version: undefined, rollup: undefined };
+      const telemetryObject = new TelemetryObject(qrData, 'qr', undefined);
       this.telemetryGeneratorService.generateEndTelemetry(
         'qr',
         Mode.PLAY,
@@ -1112,7 +1114,7 @@ export class EnrolledCourseDetailsPage {
   }
 
   generateStartEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
+    const telemetryObject = new TelemetryObject(objectId, objectType, objectVersion);
     this.telemetryGeneratorService.generateStartTelemetry(PageId.COURSE_DETAIL,
       telemetryObject,
       undefined,
@@ -1121,7 +1123,7 @@ export class EnrolledCourseDetailsPage {
   }
 
   generateEndEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
+    const telemetryObject = new TelemetryObject(objectId, objectType, objectVersion);
     this.telemetryGeneratorService.generateEndTelemetry(objectType,
       Mode.PLAY,
       PageId.COURSE_DETAIL,

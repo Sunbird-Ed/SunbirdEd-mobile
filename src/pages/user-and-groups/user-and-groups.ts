@@ -23,6 +23,15 @@ import {
   SharedPreferences,
   OAuthService,
   GroupRequest,
+  AuthService
+} from 'sunbird';
+import {
+  GroupService,
+  Group,
+  ProfileService,
+  GetAllProfileRequest,
+  Profile,
+  ProfileType,
   InteractType,
   Environment,
   InteractSubtype,
@@ -30,14 +39,6 @@ import {
   TelemetryObject,
   ObjectType,
   ImpressionType,
-  AuthService
-} from 'sunbird';
-import {GroupService,
-        Group,
-        ProfileService,
-        GetAllProfileRequest,
-        Profile,
-        ProfileType
         } from 'sunbird-sdk';
 import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
 import { IonicApp } from 'ionic-angular';
@@ -417,9 +418,7 @@ export class UserAndGroupsPage {
     valuesMap['from'] = fromUser;
     valuesMap['to'] = toUser;
 
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = selectedUser.uid;
-    telemetryObject.type = ObjectType.USER;
+    const telemetryObject = new TelemetryObject(selectedUser.uid, ObjectType.USER, undefined);
 
     // Generate Switch user initiate interact event
     this.telemetryGeneratorService.generateInteractTelemetry(
@@ -489,9 +488,7 @@ export class UserAndGroupsPage {
   }
 
   logOut(selectedUser: any, isBeingPlayed: boolean) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = this.profileDetails.id;
-    telemetryObject.type = Environment.USER;
+    const telemetryObject = new TelemetryObject(this.profileDetails.id, Environment.USER, undefined);
 
     // Generate Logout success event
     this.telemetryGeneratorService.generateInteractTelemetry(
@@ -577,9 +574,7 @@ export class UserAndGroupsPage {
   deleteGroup(index: number) {
 
     const gid = this.groupList[index].gid;
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = gid;
-    telemetryObject.type = ObjectType.GROUP;
+    const telemetryObject = new TelemetryObject(gid, ObjectType.GROUP, undefined);
 
     // Generate Delete user event
     this.telemetryGeneratorService.generateInteractTelemetry(
@@ -630,9 +625,7 @@ export class UserAndGroupsPage {
   deleteUser(index: number) {
     const uid = this.userList[index].uid;
 
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = uid;
-    telemetryObject.type = ObjectType.USER;
+    const telemetryObject = new TelemetryObject(uid, ObjectType.USER, undefined);
 
     // Generate Delete user event
     this.telemetryGeneratorService.generateInteractTelemetry(

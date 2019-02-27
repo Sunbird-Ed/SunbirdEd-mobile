@@ -12,7 +12,9 @@ import { ReportListPage } from './report-list/report-list';
 import {
   ProfileService,
   ProfileRequest,
-  GroupRequest,
+  GroupRequest
+} from 'sunbird';
+import {
   InteractSubtype,
   InteractType,
   PageId,
@@ -20,7 +22,7 @@ import {
   ImpressionType,
   TelemetryObject,
   ObjectType
-} from 'sunbird';
+} from 'sunbird-sdk';
 import {GroupService} from 'sunbird-sdk';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 
@@ -138,9 +140,7 @@ export class ReportsPage {
 
   goToUserReportList(uid: string , handle: string) {
 
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = uid;
-    telemetryObject.type = ObjectType.USER;
+    const telemetryObject = new TelemetryObject(uid, ObjectType.USER, undefined);
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.USER_CLICKED,
@@ -157,9 +157,7 @@ export class ReportsPage {
   }
 
   goToGroupUserReportList(group) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = group.gid;
-    telemetryObject.type = ObjectType.GROUP;
+    const telemetryObject = new TelemetryObject(group.gid, ObjectType.GROUP, undefined);
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.GROUP_CLICKED,
