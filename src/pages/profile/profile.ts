@@ -8,25 +8,9 @@ import {
   PopoverController,
   ViewController
 } from 'ionic-angular';
-import {
-  AuthService,
-  ContainerService,
-  ContentSearchCriteria,
-  ContentService,
-  ContentSortCriteria,
-  CourseService,
-  SortOrder
-} from 'sunbird';
-import {
-  Environment,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  PageId,
-  TelemetryObject
-} from 'sunbird-sdk';
+import {ContentSearchCriteria, ContentService, ContentSortCriteria, CourseService, SortOrder,} from 'sunbird';
 import {OverflowMenuComponent} from '@app/pages/profile';
-import {generateImpressionTelemetry, generateInteractTelemetry} from '@app/app/telemetryutil';
+import {generateInteractTelemetry} from '@app/app/telemetryutil';
 import {ContentCard, ContentType, MenuOverflow, MimeType, ProfileConstants} from '@app/app/app.constant';
 import {CategoriesEditPage} from '@app/pages/categories-edit/categories-edit';
 import {PersonalDetailsEditPage} from '@app/pages/profile/personal-details-edit.profile/personal-details-edit.profile';
@@ -37,7 +21,19 @@ import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@a
 import {FormAndFrameworkUtilService} from './formandframeworkutil.service';
 import {EditContactDetailsPopupComponent} from '@app/component/edit-contact-details-popup/edit-contact-details-popup';
 import {EditContactVerifyPopupComponent} from '@app/component';
-import {ProfileService, ServerProfileDetailsRequest, UpdateServerProfileInfoRequest} from 'sunbird-sdk';
+import {
+  AuthService,
+  Environment,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  OauthSession,
+  PageId,
+  ProfileService,
+  ServerProfileDetailsRequest,
+  TelemetryObject,
+  UpdateServerProfileInfoRequest
+} from 'sunbird-sdk';
 
 /**
  * The Profile page
@@ -92,10 +88,10 @@ export class ProfilePage {
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    @Inject('AUTH_SERVICE') private authService: AuthService,
     private navCtrl: NavController,
     private popoverCtrl: PopoverController,
     private zone: NgZone,
-    private authService: AuthService,
     private loadingCtrl: LoadingController,
     private navParams: NavParams,
     private events: Events,
@@ -110,7 +106,7 @@ export class ProfilePage {
   ) {
     this.userId = this.navParams.get('userId') || '';
     this.isRefreshProfile = this.navParams.get('returnRefreshedUserProfileDetails');
-    this.isLoggedInUser = this.userId ? false : true;
+    this.isLoggedInUser = !this.userId;
 
     // Event for optional and forceful upgrade
     this.events.subscribe('force_optional_upgrade', (upgrade) => {
@@ -145,7 +141,7 @@ export class ProfilePage {
     );
   }
 
-  doRefresh(refresher?) {
+  async doRefresh(refresher?) {
     const loader = this.getLoader();
     this.isRefreshProfile = true;
     loader.present();
@@ -181,50 +177,39 @@ export class ProfilePage {
   refreshProfileData() {
     const that = this;
     return new Promise((resolve, reject) => {
-      that.authService.getSessionData(session => {
-        if (session === null || session === 'null') {
+      that.authService.getSession().toPromise().then((session: OauthSession) => {
+        if (session === null || session === undefined) {
           reject('session is null');
         } else {
-          const sessionObj = JSON.parse(session);
-          that.loggedInUserId = sessionObj[ProfileConstants.USER_TOKEN];
-          if (that.userId && sessionObj[ProfileConstants.USER_TOKEN] === that.userId) {
+          that.loggedInUserId = session.userToken;
+          if (that.userId && session.userToken === that.userId) {
             that.isLoggedInUser = true;
           }
-
-          const req: ServerProfileDetailsRequest = {
-            userId:
-              that.userId && that.userId !== sessionObj[ProfileConstants.USER_TOKEN]
-                ? that.userId
-                : sessionObj[ProfileConstants.USER_TOKEN],
+          const request: ServerProfileDetailsRequest = {
+            userId: that.userId && that.userId !== session.userToken ? that.userId : session.userToken,
             requiredFields: ProfileConstants.REQUIRED_FIELDS
           };
           if (that.isLoggedInUser) {
-            if (that.isRefreshProfile) {
-              that.isRefreshProfile = false;
-            }
-          } else {
-            that.isRefreshProfile = false;
+            that.isRefreshProfile = !that.isRefreshProfile;
           }
-          that.profileService.getServerProfilesDetails(req).toPromise()
-            .then((success: any) => {
+          that.profileService.getServerProfilesDetails(request).toPromise()
+            .then((profileData) => {
               that.zone.run(() => {
                 that.resetProfile();
-                const result = JSON.parse(success);
-                that.profile = result;
-                this.profileService.getActiveSessionProfile().toPromise()
-                  .then((response: any) => {
-                    const profile = JSON.parse(response);
-                    that.formAndFrameworkUtilService.updateLoggedInUser(result, profile)
-                      .then((value) => {
-                        if (!value['status']) {
-                          this.app.getRootNav().setRoot(CategoriesEditPage, {
+                that.profile = profileData;
+                that.profileService.getActiveSessionProfile().toPromise()
+                  .then((activeProfile) => {
+                    that.formAndFrameworkUtilService.updateLoggedInUser(profileData, activeProfile)
+                      .then((frameWorkData) => {
+                        if (!frameWorkData['status']) {
+                          that.app.getRootNav().setRoot(CategoriesEditPage, {
                             showOnlyMandatoryFields: true,
-                            profile: value['profile']
+                            profile: frameWorkData['activeProfileData']
                           });
                         }
                       });
-                    if (result && result.avatar) {
-                      that.imageUri = result.avatar;
+                    if (profileData && profileData.avatar) {
+                      that.imageUri = profileData.avatar;
                     }
                     that.formatRoles();
                     that.formatOrgDetails();
@@ -471,11 +456,9 @@ export class ProfilePage {
     this.profileService.getActiveSessionProfile()
       .toPromise()
       .then((resp: any) => {
-        const profile = JSON.parse(resp);
-        this.formAndFrameworkUtilService.updateLoggedInUser(this.profile, profile)
+        this.formAndFrameworkUtilService.updateLoggedInUser(this.profile, resp)
           .then(() => {
-          }).catch(() => {
-        });
+          });
       });
   }
 

@@ -1,32 +1,29 @@
-import {Injectable} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {
   ContainerService,
   Environment,
   InteractSubtype,
   InteractType,
-  OAuthService,
   PageId,
-  Profile,
-  ProfileService,
-  ProfileType,
   SharedPreferences,
   TabsPage,
   TelemetryService,
-  UserSource
 } from 'sunbird';
 import {generateInteractTelemetry, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, PreferenceKey} from '@app/app';
 import {AppGlobalService, CommonUtilService} from '@app/service';
 import {OnboardingPage} from '@app/pages/onboarding/onboarding';
 import {App, Events} from 'ionic-angular';
+import {AuthService, OauthSession, ProfileService, ProfileType} from 'sunbird-sdk';
+import {Observable} from "rxjs";
 
 @Injectable()
 export class LogoutHandlerService {
   constructor(
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    @Inject('AUTH_SERVICE') private authService: AuthService,
     private commonUtilService: CommonUtilService,
-    private oAuthService: OAuthService,
     private sharedPreferences: SharedPreferences,
     private events: Events,
-    private profileService: ProfileService,
     private appGlobalService: AppGlobalService,
     private app: App,
     private containerService: ContainerService,
@@ -40,28 +37,35 @@ export class LogoutHandlerService {
     } else {
       this.generateLogoutInteractTelemetry(InteractType.TOUCH,
         InteractSubtype.LOGOUT_INITIATE, '');
-      this.oAuthService.doLogOut();
-      (<any>window).splashscreen.clearPrefs();
-      const profile: Profile = new Profile();
-      this.sharedPreferences.getString('GUEST_USER_ID_BEFORE_LOGIN')
-        .then(val => {
-          if (val !== '') {
-            profile.uid = val;
-          } else {
-            this.sharedPreferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
-          }
 
-          profile.handle = 'Guest1';
-          profile.profileType = ProfileType.TEACHER;
-          profile.source = UserSource.LOCAL;
-
-          this.events.publish(AppGlobalService.USER_INFO_UPDATED);
-          this.profileService.setCurrentProfile(true, profile).then(() => {
-            this.navigateToAptPage();
-          }).catch(() => {
-            this.navigateToAptPage();
-          });
-        });
+      this.authService.getSession()
+        .mergeMap((oauthSession: OauthSession) => {
+          return this.profileService.deleteProfile(oauthSession.userToken);
+        })
+        .mergeMap(() => {
+          return Observable.fromPromise(this.sharedPreferences.getString('GUEST_USER_ID_BEFORE_LOGIN'))
+            .do((guest_user_id: string) => {
+              if (!guest_user_id) {
+                this.sharedPreferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
+              }
+            })
+            .mergeMap((guest_user_id: string) => {
+              return this.profileService.setActiveSessionForProfile(guest_user_id).toPromise()
+                .then(() => {
+                  this.events.publish(AppGlobalService.USER_INFO_UPDATED);
+                  this.navigateToAptPage();
+                }).catch((e) => {
+                  console.log(e);
+                });
+            });
+        })
+        .mergeMap(() =>
+          Observable.defer(() => Observable.of((<any>window).splashscreen.clearPrefs()))
+        )
+        .mergeMap(() =>
+          this.authService.resignSession()
+        )
+        .subscribe();
     }
   }
 

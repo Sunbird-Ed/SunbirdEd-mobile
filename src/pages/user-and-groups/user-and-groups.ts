@@ -1,63 +1,51 @@
-import { GroupDetailsPage } from './group-details/group-details';
-import { TranslateService } from '@ngx-translate/core';
+import {GroupDetailsPage} from './group-details/group-details';
+import {TranslateService} from '@ngx-translate/core';
+import {Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {
-  Component,
-  NgZone,
-  ViewChild,
-  Inject
-} from '@angular/core';
-import {
+  AlertController,
+  App,
+  Content,
+  Events,
+  IonicApp,
   IonicPage,
+  LoadingController,
   NavController,
   NavParams,
-  AlertController,
   Platform,
-  PopoverController,
-  ToastController,
-  LoadingController
+  PopoverController
 } from 'ionic-angular';
-import { PopoverPage } from './popover/popover';
+import {PopoverPage} from './popover/popover';
+import {AuthService, ContainerService, OAuthService, SharedPreferences, TabsPage} from 'sunbird';
 import {
-  ContainerService,
-  TabsPage,
-  SharedPreferences,
-  OAuthService,
-  GroupRequest,
-  AuthService
-} from 'sunbird';
-import {
-  GroupService,
-  Group,
-  ProfileService,
-  GetAllProfileRequest,
-  Profile,
-  ProfileType,
-  InteractType,
   Environment,
-  InteractSubtype,
-  PageId,
-  TelemetryObject,
-  ObjectType,
+  GetAllProfileRequest,
+  Group,
+  GroupService,
   ImpressionType,
-        } from 'sunbird-sdk';
-import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
-import { IonicApp } from 'ionic-angular';
-import { ShareUserAndGroupPage } from './share-user-and-groups/share-user-and-groups';
-import { AppGlobalService } from '../../service/app-global.service';
-import { CommonUtilService } from '../../service/common-util.service';
+  InteractSubtype,
+  InteractType,
+  ObjectType,
+  PageId,
+  Profile,
+  ProfileService,
+  ProfileType,
+  TelemetryObject,
+} from 'sunbird-sdk';
+import {GuestEditProfilePage} from '../profile/guest-edit.profile/guest-edit.profile';
+import {ShareUserAndGroupPage} from './share-user-and-groups/share-user-and-groups';
+import {AppGlobalService} from '../../service/app-global.service';
+import {CommonUtilService} from '../../service/common-util.service';
 import {
-  initTabs,
   GUEST_STUDENT_SWITCH_TABS,
-  GUEST_TEACHER_SWITCH_TABS,
   GUEST_STUDENT_TABS,
-  GUEST_TEACHER_TABS
+  GUEST_TEACHER_SWITCH_TABS,
+  GUEST_TEACHER_TABS,
+  initTabs
 } from '../../app/module.service';
-import { App, Events } from 'ionic-angular';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { Map } from '../../app/telemetryutil';
-import { Content } from 'ionic-angular';
-import { PreferenceKey } from '../../app/app.constant';
-import { CreateGroupPage } from './create-group/create-group';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {Map} from '../../app/telemetryutil';
+import {PreferenceKey} from '../../app/app.constant';
+import {CreateGroupPage} from './create-group/create-group';
 
 @IonicPage()
 @Component({
@@ -156,16 +144,13 @@ export class UserAndGroupsPage {
 
   getCurrentGroup() {
     this.groupService.getActiveSessionGroup().subscribe(val => {
-      console.log('Value : ' + val);
       const group = val;
       if (group) {
         this.zone.run(() => {
-          console.log('Value : ' + group.gid);
           this.currentGroupId = group.gid;
         });
       }
     }, error => {
-      console.log('Error : ' + error);
     });
   }
 
@@ -263,7 +248,6 @@ export class UserAndGroupsPage {
           loader.dismiss();
           this.noUsersPresent = true;
           this.loadingUserList = false;
-          console.log('Something went wrong while fetching user list', error);
         });
       });
     }, 1000);
@@ -294,9 +278,7 @@ export class UserAndGroupsPage {
         } else {
           this.showEmptyGroupsMessage = true;
         }
-        console.log('GroupList', groups);
-      }, (error) => {
-        console.log('Something went wrong while fetching data', error);
+      }, () => {
       });
     });
   }
@@ -367,7 +349,6 @@ export class UserAndGroupsPage {
           isNewUser: true
         });
       });
-      console.error('error occoured' + error);
     });
   }
 
@@ -384,7 +365,6 @@ export class UserAndGroupsPage {
       this.content.resize();
       this.selectedUserIndex = -1;
     });
-    console.log('Event', event._value);
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
       event._value,
@@ -441,7 +421,6 @@ export class UserAndGroupsPage {
           role: 'cancel',
           cssClass: 'alert-btn-cancel',
           handler: () => {
-            console.log('Cancel clicked' + selectedUser);
           }
         },
         {
@@ -477,12 +456,10 @@ export class UserAndGroupsPage {
         latestCreatedProfile: true
       };
       this.profileService.getAllProfiles(req).toPromise().then((lastCreatedProfile: any) => {
-        console.log('lastCreatedProfile: ', lastCreatedProfile);
-        this.lastCreatedProfileData = JSON.parse(lastCreatedProfile);
-        resolve(JSON.parse(lastCreatedProfile));
-      }).catch(error => {
+        this.lastCreatedProfileData = lastCreatedProfile;
+        resolve(lastCreatedProfile);
+      }).catch(() => {
         reject(null);
-        console.log('error in fetching last created profile data' + error);
       });
     });
   }
@@ -546,7 +523,6 @@ export class UserAndGroupsPage {
           role: 'cancel',
           cssClass: 'alert-btn-cancel',
           handler: () => {
-            console.log('Cancel clicked');
           }
         },
         {
@@ -584,12 +560,10 @@ export class UserAndGroupsPage {
       PageId.GROUPS,
       telemetryObject
     );
-    this.groupService.deleteGroup(gid).subscribe((success) => {
-      console.log(success);
+    this.groupService.deleteGroup(gid).subscribe(() => {
       this.groupList.splice(index, 1);
       this.getAllGroup();
-    }, (error) => {
-      console.log(error);
+    }, () => {
     });
   }
 
@@ -607,7 +581,6 @@ export class UserAndGroupsPage {
           role: 'cancel',
           cssClass: 'alert-btn-cancel',
           handler: () => {
-            console.log('Cancel clicked');
           }
         },
         {
@@ -636,15 +609,13 @@ export class UserAndGroupsPage {
       telemetryObject
     );
     this.profileService.deleteProfile(uid)
-      .subscribe((result) => {
-        console.log('User Deleted Successfully', result);
+      .subscribe(() => {
         this.userList.splice(index, 1);
         if (this.userList.length === 0) {
           this.noUsersPresent = true;
         }
 
-      }, (error) => {
-        console.error('Error Occurred=', error);
+      }, () => {
       });
   }
 
@@ -685,11 +656,9 @@ export class UserAndGroupsPage {
 
   private setAsCurrentUser(selectedUser, isBeingPlayed: boolean) {
     this.groupService.setActiveSessionForGroup(null)
-      .subscribe(val => {
-        console.log('Value : ' + val);
+      .subscribe(() => {
       },
-      (error) => {
-        console.log('Error : ' + error);
+        () => {
       });
       this.profileService.setActiveSessionForProfile(selectedUser.uid) .subscribe(() => {
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('SWITCHING_TO', selectedUser.handle),
@@ -710,8 +679,7 @@ export class UserAndGroupsPage {
       this.event.publish(AppGlobalService.USER_INFO_UPDATED);
       this.app.getRootNav().setRoot(TabsPage);
     }, 1000);
-  }, (error) => {
-    console.log('Error ' + error);
+      }, () => {
   });
   }
 // code which invokes loader

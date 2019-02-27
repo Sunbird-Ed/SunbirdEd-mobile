@@ -1,50 +1,29 @@
-import {
-  Component,
-  NgZone,
-  ViewChild
-} from '@angular/core';
-import {
-  IonicPage,
-  NavController,
-  NavParams,
-  Events,
-  Platform,
-  Navbar,
-  PopoverController
-} from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
-import { SocialSharing } from '@ionic-native/social-sharing';
+import {Component, NgZone, ViewChild} from '@angular/core';
+import {Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController} from 'ionic-angular';
+import {TranslateService} from '@ngx-translate/core';
+import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
 
+import {BuildParamService, ContentService, FileUtil, ShareUtil,} from 'sunbird';
+import {ContentDetailsPage} from '@app/pages/content-details/content-details';
+import {ConfirmAlertComponent, ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
+import {ContentType, MimeType, ShareUrl} from '@app/app';
+import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
+import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
 import {
-  ContentService,
-  FileUtil,
-  ShareUtil,
-  BuildParamService,
-  ProfileType,
-} from 'sunbird';
-import {
-  PageId,
-  Environment,
-  Mode,
-  ImpressionType,
-  Rollup,
-  InteractType,
-  InteractSubtype,
   CorrelationData,
-  TelemetryObject,
+  Environment,
   ErrorCode,
-  ErrorType
+  ErrorType,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  Mode,
+  PageId,
+  ProfileType,
+  Rollup,
+  TelemetryObject
 } from 'sunbird-sdk';
-import { ContentDetailsPage } from '@app/pages/content-details/content-details';
-import { ContentActionsComponent, ConfirmAlertComponent, ContentRatingAlertComponent } from '@app/component';
-import {
-  ContentType,
-  MimeType,
-  ShareUrl
-} from '@app/app';
-import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
-import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService } from '@app/service';
 
 @IonicPage()
 @Component({
@@ -182,6 +161,7 @@ export class CollectionDetailsPage {
   isChildClickable = false;
 
   @ViewChild(Navbar) navBar: Navbar;
+
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -310,8 +290,8 @@ export class CollectionDetailsPage {
           comment: this.ratingComment,
           pageId: PageId.COLLECTION_DETAIL,
         }, {
-            cssClass: 'content-rating-alert'
-          });
+          cssClass: 'content-rating-alert'
+        });
         popUp.present();
         popUp.onDidDismiss(data => {
           if (data && data.message === 'rating.success') {
@@ -330,9 +310,9 @@ export class CollectionDetailsPage {
   }
 
   /**
- * Get the session to know if the user is logged-in or guest
- *
- */
+   * Get the session to know if the user is logged-in or guest
+   *
+   */
 
   checkLoggedInOrGuestUser() {
     this.guestUser = !this.appGlobalService.isUserLoggedIn();
@@ -442,13 +422,17 @@ export class CollectionDetailsPage {
     } else {
       _.forEach(hierarchyInfo, (value, key) => {
         switch (key) {
-          case 0: this.objRollup.l1 = value.identifier;
+          case 0:
+            this.objRollup.l1 = value.identifier;
             break;
-          case 1: this.objRollup.l2 = value.identifier;
+          case 1:
+            this.objRollup.l2 = value.identifier;
             break;
-          case 2: this.objRollup.l3 = value.identifier;
+          case 2:
+            this.objRollup.l3 = value.identifier;
             break;
-          case 3: this.objRollup.l4 = value.identifier;
+          case 3:
+            this.objRollup.l4 = value.identifier;
             break;
         }
       });
@@ -581,7 +565,7 @@ export class CollectionDetailsPage {
    */
   setChildContents() {
     const hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
-    const option = { contentId: this.identifier, hierarchyInfo: hierarchyInfo }; // TODO: remove level
+    const option = {contentId: this.identifier, hierarchyInfo: hierarchyInfo}; // TODO: remove level
     this.contentService.getChildContents(option)
       .then((data: any) => {
         data = JSON.parse(data);
@@ -837,8 +821,8 @@ export class CollectionDetailsPage {
       pageName: PageId.COLLECTION_DETAIL,
       corRelationList: this.corRelationList
     }, {
-        cssClass: 'content-action'
-      });
+      cssClass: 'content-action'
+    });
     popover.present({
       ev: event
     });

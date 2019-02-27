@@ -1,52 +1,29 @@
-
-import {
-  Component,
-  NgZone,
-  ViewChild
-} from '@angular/core';
-import {
-  IonicPage,
-  NavController,
-  NavParams,
-  Events,
-  Platform,
-  Navbar,
-  PopoverController
-} from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
-import { SocialSharing } from '@ionic-native/social-sharing';
+import {Component, NgZone, ViewChild} from '@angular/core';
+import {Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController} from 'ionic-angular';
+import {TranslateService} from '@ngx-translate/core';
+import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
 
+import {BuildParamService, ContentService, FileUtil, ShareUtil} from 'sunbird';
+import {ContentDetailsPage} from '@app/pages/content-details/content-details';
+import {ConfirmAlertComponent, ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
+import {ContentType, MimeType, ShareUrl} from '@app/app';
+import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
+import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
 import {
-  ContentService,
-  FileUtil,
-  ShareUtil,
-  BuildParamService,
-  ProfileType,
-
-} from 'sunbird';
-import {
-  PageId,
-  Environment,
-  Mode,
-  ImpressionType,
-  Rollup,
-  InteractType,
-  InteractSubtype,
   CorrelationData,
-  TelemetryObject,
+  Environment,
   ErrorCode,
-  ErrorType
+  ErrorType,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  Mode,
+  PageId,
+  ProfileType,
+  Rollup,
+  TelemetryObject
 } from 'sunbird-sdk';
-import { ContentDetailsPage } from '@app/pages/content-details/content-details';
-import { ContentActionsComponent, ConfirmAlertComponent, ContentRatingAlertComponent } from '@app/component';
-import {
-  ContentType,
-  MimeType,
-  ShareUrl
-} from '@app/app';
-import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
-import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService } from '@app/service';
 
 /**
  * Generated class for the CollectionDetailsEtbPage page.
@@ -730,7 +707,6 @@ export class CollectionDetailsEtbPage {
     this.showDownloadBtn = false;
     this.downloadIdentifiers = [];
     this.queuedIdentifiers = [];
-    this.isDepthChild = this.isDepthChild;
     this.showDownloadBtn = false;
     this.isDownloadCompleted = false;
     this.currentCount = 0;

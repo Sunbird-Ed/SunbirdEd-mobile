@@ -1,62 +1,53 @@
+import {Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {
-  Component,
-  NgZone,
-  ViewChild
-} from '@angular/core';
-import {
+  AlertController,
+  Events,
   IonicPage,
+  Navbar,
   NavController,
   NavParams,
-  Events,
-  PopoverController,
   Platform,
-  Navbar,
-  AlertController
+  PopoverController
 } from 'ionic-angular';
 import * as _ from 'lodash';
-import { SocialSharing } from '@ionic-native/social-sharing';
+import {SocialSharing} from '@ionic-native/social-sharing';
 
 import {
-  ContentService,
-  FileUtil,
-  CourseService,
-  ChildContentRequest,
-  UserProfileService,
   BuildParamService,
-  ShareUtil,
-  SharedPreferences,
-  ProfileType,
-  GetContentStateRequest,
-  UnenrolCourseRequest,
-  CourseBatchStatus,
+  ChildContentRequest,
+  ContentService,
   CourseBatchesRequest,
-  CourseEnrollmentType
+  CourseBatchStatus,
+  CourseEnrollmentType,
+  CourseService,
+  FileUtil,
+  GetContentStateRequest,
+  SharedPreferences,
+  ShareUtil,
+  UnenrolCourseRequest
 } from 'sunbird';
+import {ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
+import {CollectionDetailsPage} from '@app/pages/collection-details/collection-details';
+import {ContentDetailsPage} from '@app/pages/content-details/content-details';
+import {ContentType, EventTopics, MimeType, PreferenceKey, ShareUrl} from '@app/app';
+import {CourseBatchesPage} from '@app/pages/course-batches/course-batches';
+import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
+import {DatePipe} from '@angular/common';
 import {
-  PageId,
-  InteractSubtype,
-  Environment,
-  Mode,
-  InteractType,
-  ImpressionType,
   CorrelationData,
-  TelemetryObject,
+  Environment,
   ErrorCode,
   ErrorType,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  Mode,
+  PageId,
+  ProfileService,
+  ProfileType,
+  ServerProfileDetailsRequest,
+  TelemetryObject
 } from 'sunbird-sdk';
-import { ContentRatingAlertComponent, ContentActionsComponent } from '@app/component';
-import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
-import { ContentDetailsPage } from '@app/pages/content-details/content-details';
-import {
-  ContentType,
-  MimeType,
-  EventTopics,
-  ShareUrl,
-  PreferenceKey
-} from '@app/app';
-import { CourseBatchesPage } from '@app/pages/course-batches/course-batches';
-import { CourseUtilService, AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
-import { DatePipe } from '@angular/common';
 
 @IonicPage()
 @Component({
@@ -165,7 +156,9 @@ export class EnrolledCourseDetailsPage {
   isBatchNotStarted = false;
 
   @ViewChild(Navbar) navBar: Navbar;
+
   constructor(
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     private navCtrl: NavController,
     private navParams: NavParams,
     private alertCtrl: AlertController,
@@ -174,7 +167,6 @@ export class EnrolledCourseDetailsPage {
     private events: Events,
     private fileUtil: FileUtil,
     private popoverCtrl: PopoverController,
-    private profileService: UserProfileService,
     private courseService: CourseService,
     private buildParamService: BuildParamService,
     private shareUtil: ShareUtil,
@@ -292,8 +284,8 @@ export class EnrolledCourseDetailsPage {
           comment: this.ratingComment,
           pageId: PageId.COURSE_DETAIL
         }, {
-            cssClass: 'content-rating-alert'
-          });
+          cssClass: 'content-rating-alert'
+        });
         popUp.present({
           ev: event
         });
@@ -329,8 +321,8 @@ export class EnrolledCourseDetailsPage {
       batchDetails: this.batchDetails,
       pageName: 'course'
     }, {
-        cssClass: 'content-action'
-      });
+      cssClass: 'content-action'
+    });
     popover.present({
       ev: event
     });
@@ -359,8 +351,7 @@ export class EnrolledCourseDetailsPage {
         .then((data: any) => {
           this.zone.run(() => {
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('COURSE_UNENROLLED'));
-            this.events.publish(EventTopics.UNENROL_COURSE_SUCCESS, {
-            });
+            this.events.publish(EventTopics.UNENROL_COURSE_SUCCESS, {});
             loader.dismiss();
           });
         })
@@ -484,7 +475,7 @@ export class EnrolledCourseDetailsPage {
    * Get batch details
    */
   getBatchDetails() {
-    this.courseService.getBatchDetails({ batchId: this.courseCardData.batchId })
+    this.courseService.getBatchDetails({batchId: this.courseCardData.batchId})
       .then((data: any) => {
         this.zone.run(() => {
           data = JSON.parse(data);
@@ -535,18 +526,17 @@ export class EnrolledCourseDetailsPage {
   }
 
   getBatchCreatorName() {
-    const req = {
+    const req: ServerProfileDetailsRequest = {
       userId: this.batchDetails.createdBy,
       requiredFields: []
     };
-    this.profileService.getUserProfileDetails(req, (data: any) => {
-      data = JSON.parse(data);
-
-      if (data) {
-        this.batchDetails.creatorFirstName = data.firstName ? data.firstName : '';
-        this.batchDetails.creatorLastName = data.lastName ? data.lastName : '';
-      }
-    }, () => {
+    this.profileService.getServerProfilesDetails(req).toPromise()
+      .then((data) => {
+        if (data) {
+          this.batchDetails.creatorFirstName = data.firstName ? data.firstName : '';
+          this.batchDetails.creatorLastName = data.lastName ? data.lastName : '';
+        }
+      }).catch(() => {
     });
   }
 
@@ -674,6 +664,7 @@ export class EnrolledCourseDetailsPage {
       this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
     }
   }
+
   /**
    * Function to get status of child contents
    */
@@ -727,6 +718,7 @@ export class EnrolledCourseDetailsPage {
       });
     });
   }
+
   /**
    * Function to set child contents
    */
@@ -840,7 +832,7 @@ export class EnrolledCourseDetailsPage {
   resumeContent(identifier): void {
     this.showResumeBtn = false;
     this.navCtrl.push(ContentDetailsPage, {
-      content: { identifier: identifier },
+      content: {identifier: identifier},
       depth: '1', // Needed to handle some UI elements.
       contentState: {
         batchId: this.courseCardData.batchId ? this.courseCardData.batchId : '',
@@ -1008,6 +1000,7 @@ export class EnrolledCourseDetailsPage {
       this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
     }
   }
+
   /**
    * Loads first children with in the start data
    */
