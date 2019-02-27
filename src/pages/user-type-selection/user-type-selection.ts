@@ -233,10 +233,30 @@ export class UserTypeSelectionPage {
           loginMode: 'guest'
         });
       } else {
-        this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
+        if (isUserTypeChanged) {
+          this.profile.profileType = this.selectedUserType;
+          this.profileService.updateProfile(this.profile)
+            .then((res: any) => {
+              this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
+            }).catch(error => {
+              console.error('Error=');
+            });
+        } else {
+          this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
+        }
       }
     } else if (this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
-      this.navCtrl.push(ProfileSettingsPage);
+      if (isUserTypeChanged) {
+        this.profile.profileType = this.selectedUserType;
+        this.profileService.updateProfile(this.profile)
+          .then((res: any) => {
+            this.navCtrl.push(ProfileSettingsPage);
+          }).catch(error => {
+            console.error('Error=');
+          });
+      } else {
+        this.navCtrl.push(ProfileSettingsPage);
+      }
     } else {
       this.profile.profileType = this.selectedUserType;
       this.profileService.updateProfile(this.profile)
