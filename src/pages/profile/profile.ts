@@ -592,9 +592,12 @@ export class ProfilePage {
   }
 
   editEmail(event) {
+    const newTitle = this.profile.email ?
+                     this.commonUtilService.translateMessage('EDIT_EMAIL_POPUP_TITLE') :
+                     this.commonUtilService.translateMessage('EMAIL_PLACEHOLDER');
     const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
       email: this.profile.email,
-      title: this.commonUtilService.translateMessage('EDIT_EMAIL_POPUP_TITLE'),
+      title: newTitle,
       description: '',
       type: 'email',
       userId: this.profile.userId
