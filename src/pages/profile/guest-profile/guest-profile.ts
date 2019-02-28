@@ -7,13 +7,11 @@ import {
   ImpressionType,
   PageId,
   SharedPreferences,
-  SuggestedFrameworkRequest,
 } from 'sunbird';
-import { FormAndFrameworkUtilService, GuestEditProfilePage, OverflowMenuComponent } from '@app/pages/profile';
+import { GuestEditProfilePage, OverflowMenuComponent } from '@app/pages/profile';
 import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
 import { AppGlobalService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
-import { FrameworkCategory, MenuOverflow, PreferenceKey } from '@app/app';
-// import {ProfileService, ProfileType} from 'sunbird-sdk';
+import { MenuOverflow, PreferenceKey } from '@app/app';
 import {
   FrameworkService,
   FrameworkUtilService,

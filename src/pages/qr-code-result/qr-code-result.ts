@@ -1,6 +1,6 @@
-import {CommonUtilService} from './../../service/common-util.service';
-import {FormAndFrameworkUtilService} from './../profile/formandframeworkutil.service';
-import {Component, Inject, NgZone, ViewChild} from '@angular/core';
+import { CommonUtilService } from './../../service/common-util.service';
+import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
+import { Component, Inject, NgZone, ViewChild } from '@angular/core';
 import {
   AlertController,
   Events,
@@ -18,7 +18,6 @@ import {
   CorrelationData,
   Environment,
   FileUtil,
-  FrameworkService,
   ImpressionType,
   InteractSubtype,
   InteractType,
@@ -27,19 +26,27 @@ import {
   ProfileRequest,
   Rollup,
   SharedPreferences,
-  SuggestedFrameworkRequest,
   TabsPage
 } from 'sunbird';
-import {ContentDetailsPage} from '../content-details/content-details';
-import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
-import {ContentType, FrameworkCategory, MimeType} from '../../app/app.constant';
-import {CollectionDetailsPage} from '../collection-details/collection-details';
-import {TranslateService} from '@ngx-translate/core';
-import {AppGlobalService} from '../../service/app-global.service';
-import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import { ContentDetailsPage } from '../content-details/content-details';
+import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
+import { ContentType, FrameworkCategory, MimeType } from '../../app/app.constant';
+import { CollectionDetailsPage } from '../collection-details/collection-details';
+import { TranslateService } from '@ngx-translate/core';
+import { AppGlobalService } from '../../service/app-global.service';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import * as _ from 'lodash';
-import {ProfileSettingsPage} from '../profile-settings/profile-settings';
-import {Profile, ProfileService,} from "sunbird-sdk";
+import { ProfileSettingsPage } from '../profile-settings/profile-settings';
+import {
+  FrameworkService,
+  FrameworkUtilService,
+  GetSuggestedFrameworksRequest,
+  FrameworkDetailsRequest,
+  Framework,
+  FrameworkCategoryCodesGroup,
+  Profile,
+  ProfileService,
+} from 'sunbird-sdk';
 
 @IonicPage()
 @Component({
@@ -127,13 +134,13 @@ export class QrCodeResultPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private alertCtrl: AlertController,
     private appGlobalService: AppGlobalService,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private events: Events,
     private preferences: SharedPreferences,
     private popOverCtrl: PopoverController,
     private commonUtilService: CommonUtilService,
-    private framework: FrameworkService,
-    private fileUtil: FileUtil
+    private fileUtil: FileUtil,
+    @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
+    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService
   ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
@@ -212,7 +219,7 @@ export class QrCodeResultPage {
   }
 
   getChildContents() {
-    const request: ChildContentRequest = {contentId: this.identifier};
+    const request: ChildContentRequest = { contentId: this.identifier };
     this.contentService.getChildContents(
       request)
       .then((data: any) => {
@@ -354,7 +361,7 @@ export class QrCodeResultPage {
    * Play content
    */
   playContent(content) {
-    const extraInfoMap = {hierarchyInfo: []};
+    const extraInfoMap = { hierarchyInfo: [] };
     if (this.cardData && this.cardData.hierarchyInfo) {
       extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
     }
@@ -369,7 +376,7 @@ export class QrCodeResultPage {
     this.contentService.setContentMarker(req)
       .then((resp) => {
       }).catch((err) => {
-    });
+      });
     const request: any = {};
     request.streaming = true;
     AppGlobalService.isPlayerLaunched = true;
@@ -498,22 +505,25 @@ export class QrCodeResultPage {
   checkProfileData(data, profile) {
     if (data && data.framework) {
 
-      const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
-        isGuestUser: true,
-        selectedLanguage: this.translate.currentLang,
-        categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
+      const getSuggestedFrameworksRequest: GetSuggestedFrameworksRequest = {
+        language: this.translate.currentLang,
+        requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
       };
-      this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
-        .then((res) => {
+      this.frameworkUtilService.getActiveChannelSuggestedFrameworkList(getSuggestedFrameworksRequest).toPromise()
+        .then((res: Framework[]) => {
           let isProfileUpdated = false;
           res.forEach(element => {
             // checking whether content data framework Id exists/valid in syllabus list
             if (data.framework === element.identifier) {
               isProfileUpdated = true;
-              // Get frameworkdetails(categories)
-              this.formAndFrameworkUtilService.getFrameworkDetails(data.framework)
-                .then(catagories => {
-                  this.categories = catagories;
+              const frameworkDetailsRequest: FrameworkDetailsRequest = {
+                frameworkId: data.framework,
+                requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
+              };
+              this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
+                .then((framework: Framework) => {
+                  console.log('framework', framework);
+                  this.categories = framework.categories;
                   this.boardList = _.find(this.categories, (category) => category.code === 'board').terms;
                   this.mediumList = _.find(this.categories, (category) => category.code === 'medium').terms;
                   this.gradeList = _.find(this.categories, (category) => category.code === 'gradeLevel').terms;
@@ -575,7 +585,7 @@ export class QrCodeResultPage {
                     this.setCurrentProfile(0, data);
                   }
                 }).catch(() => {
-              });
+                });
 
               return;
             }
