@@ -121,7 +121,7 @@ export class ProfilePage {
 
     this.formAndFrameworkUtilService.getCustodianOrgId().then((orgId: string) => {
       this.custodianOrgId = orgId;
-    }, err => {
+    }, () => {
     });
   }
 
@@ -141,7 +141,7 @@ export class ProfilePage {
     );
   }
 
-  async doRefresh(refresher?) {
+  doRefresh(refresher?) {
     const loader = this.getLoader();
     this.isRefreshProfile = true;
     loader.present();
@@ -457,7 +457,8 @@ export class ProfilePage {
       .toPromise()
       .then((resp: any) => {
         this.formAndFrameworkUtilService.updateLoggedInUser(this.profile, resp)
-          .then(() => {
+          .then((success) => {
+            console.log('updateLocalProfile-- ', success);
           });
       });
   }
@@ -465,11 +466,11 @@ export class ProfilePage {
   navigateToCategoriesEditPage() {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-          InteractSubtype.EDIT_CLICKED,
-          Environment.HOME,
-          PageId.PROFILE, null,
-          undefined,
-          undefined);
+        InteractSubtype.EDIT_CLICKED,
+        Environment.HOME,
+        PageId.PROFILE, null,
+        undefined,
+        undefined);
       this.navCtrl.push(CategoriesEditPage);
     } else {
       this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
@@ -479,11 +480,11 @@ export class ProfilePage {
   navigateToEditPersonalDetails() {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-          InteractSubtype.EDIT_CLICKED,
-          Environment.HOME,
-          PageId.PROFILE, null,
-          undefined,
-          undefined);
+        InteractSubtype.EDIT_CLICKED,
+        Environment.HOME,
+        PageId.PROFILE, null,
+        undefined,
+        undefined);
       this.navCtrl.push(PersonalDetailsEditPage, {
         profile: this.profile
       });
