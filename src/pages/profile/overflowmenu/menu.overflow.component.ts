@@ -4,20 +4,20 @@ import {App, Nav, NavParams, ViewController} from 'ionic-angular';
 import {SettingsPage} from '../../settings/settings';
 import {
   ContainerService,
-  Environment,
-  InteractSubtype,
-  InteractType,
-  PageId,
   SharedPreferences,
-  TelemetryService,
 } from 'sunbird';
-import {generateInteractTelemetry} from '../../../app/telemetryutil';
 import {UserAndGroupsPage} from '../../user-and-groups/user-and-groups';
 import {TranslateService} from '@ngx-translate/core';
 import {ReportsPage} from '../../reports/reports';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
 import {LogoutHandlerService} from '../../../service/handlers/logout-handler.service';
 import {AppGlobalService} from '../../../service/app-global.service';
+import {
+    Environment,
+    InteractSubtype,
+    InteractType,
+    PageId,
+} from 'sunbird-sdk';
 
 @Component({
     selector: 'menu-overflow',
@@ -32,7 +32,6 @@ export class OverflowMenuComponent {
     constructor(
       public navParams: NavParams,
       public viewCtrl: ViewController,
-      private telemetryService: TelemetryService,
       private logoutHandlerService: LogoutHandlerService,
       private app: App,
       private preferences: SharedPreferences,
@@ -78,7 +77,7 @@ export class OverflowMenuComponent {
                 break;
 
             case 'SETTINGS': {
-                this.telemetryService.interact(generateInteractTelemetry(
+                this.telemetryGeneratorService.generateInteractTelemetry(
                     InteractType.TOUCH,
                     InteractSubtype.SETTINGS_CLICKED,
                     Environment.USER,
@@ -86,7 +85,7 @@ export class OverflowMenuComponent {
                     null,
                     undefined,
                     undefined
-                ));
+                );
                 this.app.getActiveNav().push(SettingsPage);
                 break;
             }

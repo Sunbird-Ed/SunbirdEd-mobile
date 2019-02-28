@@ -1,19 +1,24 @@
 import {Inject, Injectable} from '@angular/core';
 import {
   ContainerService,
-  Environment,
-  InteractSubtype,
-  InteractType,
-  PageId,
   SharedPreferences,
-  TabsPage,
-  TelemetryService,
+  TabsPage
 } from 'sunbird';
-import {generateInteractTelemetry, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, PreferenceKey} from '@app/app';
+import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, PreferenceKey} from '@app/app';
 import {AppGlobalService, CommonUtilService} from '@app/service';
 import {OnboardingPage} from '@app/pages/onboarding/onboarding';
 import {App, Events} from 'ionic-angular';
-import {AuthService, OauthSession, ProfileService, ProfileType} from 'sunbird-sdk';
+import {TelemetryGeneratorService} from '@app/service';
+import {
+  AuthService,
+  Environment,
+  InteractSubtype,
+  InteractType,
+  OauthSession,
+  PageId,
+  ProfileService,
+  ProfileType
+} from 'sunbird-sdk';
 import {Observable} from "rxjs";
 
 @Injectable()
@@ -27,7 +32,7 @@ export class LogoutHandlerService {
     private appGlobalService: AppGlobalService,
     private app: App,
     private containerService: ContainerService,
-    private telemetryService: TelemetryService
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
   }
 
@@ -92,15 +97,14 @@ export class LogoutHandlerService {
   private generateLogoutInteractTelemetry(interactType: InteractType, interactSubtype: InteractSubtype, uid: string) {
     const valuesMap = new Map();
     valuesMap.set('UID', uid);
-    this.telemetryService.interact(
-      generateInteractTelemetry(interactType,
+    this.telemetryGeneratorService.generateInteractTelemetry(interactType,
         interactSubtype,
         Environment.HOME,
         PageId.LOGOUT,
+        undefined,
         valuesMap,
         undefined,
         undefined
-      )
     );
   }
 }

@@ -1,14 +1,9 @@
 import {
   BuildParamService,
   ContainerService,
-  Environment,
-  InteractSubtype,
-  InteractType,
-  PageId,
   PermissionService,
   SharedPreferences,
   TabsPage,
-  TelemetryService
 } from 'sunbird';
 import {ProfileSettingsPage} from './../pages/profile-settings/profile-settings';
 import {Component, Inject, NgZone, ViewChild} from '@angular/core';
@@ -29,7 +24,15 @@ import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@a
 import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
 import {CategoriesEditPage} from '@app/pages/categories-edit/categories-edit';
 import {TncUpdateHandlerService} from '@app/service/handlers/tnc-update-handler.service';
-import {AuthService, OauthSession, ProfileService, ProfileType} from "sunbird-sdk";
+import {AuthService,
+        OauthSession,
+        ProfileService,
+        ProfileType,
+        Environment,
+        InteractSubtype,
+        InteractType,
+        PageId,
+      } from "sunbird-sdk";
 
 const KEY_SUNBIRD_SUPPORT_FILE_PATH = 'sunbird_support_file_path';
 
@@ -63,7 +66,6 @@ export class MyApp {
     private translate: TranslateService,
     private events: Events,
     private zone: NgZone,
-    private telemetryService: TelemetryService,
     private preference: SharedPreferences,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private event: Events,
@@ -389,7 +391,7 @@ export class MyApp {
   }
 
   private generateInteractEvent(pageid: string) {
-    this.telemetryService.interact(generateInteractTelemetry(
+    this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.TAB_CLICKED,
       Environment.HOME,
@@ -397,7 +399,7 @@ export class MyApp {
       null,
       undefined,
       undefined
-    ));
+    );
   }
 
   private navigateToContentDetails(content) {
