@@ -337,9 +337,9 @@ export class MyApp {
   }
 
   private async makeEntriesInSupportFolder() {
-    await this.permission.requestPermission(this.permissionList);
-    await this.permission.hasPermission(this.permissionList);
-    await this.makeEntryInSupportFolder();
+    this.permission.hasPermission(this.permissionList);
+    this.permission.requestPermission(this.permissionList);
+    this.makeEntryInSupportFolder();
   }
 
   private async makeEntryInSupportFolder() {
