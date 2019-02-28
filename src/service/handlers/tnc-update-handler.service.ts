@@ -48,9 +48,9 @@ export class TncUpdateHandlerService {
       this.profileService.acceptTermsAndConditions({version: user.tncLatestVersion})
         .toPromise()
         .then(() => {
-          resolve()
+          resolve();
         }).catch(() => {
-        reject()
+        reject();
       });
     }));
   }

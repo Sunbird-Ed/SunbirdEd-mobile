@@ -322,34 +322,33 @@ export class CategoriesEditPage {
       framework: {}
     };
     if (formVal.syllabus) {
-      this.framework['id'] = [formVal.syllabus];
+      req.framework['id'] = [formVal.syllabus];
     }
     if (formVal.boards) {
       const code = typeof (formVal.boards) === 'string' ? formVal.boards : formVal.boards[0];
-      this.framework['board'] = [this.boardList.find(board => code === board.code).name];
+      req.framework['board'] = [this.boardList.find(board => code === board.code).name];
     }
     if (formVal.medium && formVal.medium.length) {
       const Names = [];
       formVal.medium.forEach(element => {
         Names.push(this.mediumList.find(medium => element === medium.code).name);
       });
-      this.framework['medium'] = Names;
+      req.framework['medium'] = Names;
     }
     if (formVal.grades && formVal.grades.length) {
       const Names = [];
       formVal.grades.forEach(element => {
         Names.push(this.gradeList.find(grade => element === grade.code).name);
       });
-      this.framework['gradeLevel'] = Names;
+      req.framework['gradeLevel'] = Names;
     }
     if (formVal.subjects && formVal.subjects.length) {
       const Names = [];
       formVal.subjects.forEach(element => {
         Names.push(this.subjectList.find(subject => element === subject.code).name);
       });
-      this.framework['subject'] = Names;
+      req.framework['subject'] = Names;
     }
-    req.framework = this.framework;
     this.profileService.updateServerProfile(req).toPromise()
       .then(() => {
         this.loader.dismiss();
