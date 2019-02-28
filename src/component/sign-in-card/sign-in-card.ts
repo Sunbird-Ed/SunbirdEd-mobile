@@ -5,22 +5,21 @@ import {NavController} from 'ionic-angular';
 import {AppVersion} from '@ionic-native/app-version';
 import {
   ContainerService,
-  Environment,
-  InteractSubtype,
-  InteractType,
-  PageId,
-  SharedPreferences,
-  TelemetryService,
+  SharedPreferences
 } from 'sunbird';
 import {initTabs, LOGIN_TEACHER_TABS} from '../../app/module.service';
-import {generateInteractTelemetry} from '../../app/telemetryutil';
+import {TelemetryGeneratorService} from '@app/service';
 import {ProfileConstants} from '../../app/app.constant';
 import {FormAndFrameworkUtilService} from '../../pages/profile/formandframeworkutil.service';
 import {
   ApiService,
   AuthService,
+  Environment,
+  InteractSubtype,
+  InteractType,
   OauthSession,
   OAuthSessionProvider,
+  PageId,
   Profile,
   ProfileService,
   ProfileSource,
@@ -58,11 +57,11 @@ export class SignInCardComponent {
     public navCtrl: NavController,
     private container: ContainerService,
     private ngZone: NgZone,
-    private telemetryService: TelemetryService,
     private appVersion: AppVersion,
     private sharedPreferences: SharedPreferences,
     private commonUtilService: CommonUtilService,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
 
     this.appVersion.getAppName()
@@ -90,14 +89,13 @@ export class SignInCardComponent {
     if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
       this.valueChange.emit(true);
     } else {
-      this.telemetryService.interact(
-        generateInteractTelemetry(
+      this.telemetryGeneratorService.generateInteractTelemetry(
           InteractType.TOUCH,
           InteractSubtype.SIGNIN_OVERLAY_CLICKED,
           Environment.HOME,
           this.source, null,
           undefined,
-          undefined)
+          undefined
       );
 
       this.generateLoginInteractTelemetry(InteractType.TOUCH, InteractSubtype.LOGIN_INITIATE, '');
@@ -167,14 +165,14 @@ export class SignInCardComponent {
                     });
                   }).catch(() => {
 
-              })
+              });
               }).catch((err) => {
               reject(err);
           });
         } else {
           reject('session is null');
         }
-        })
+        });
     });
   }
 
@@ -186,20 +184,21 @@ export class SignInCardComponent {
           resolve();
         }).catch(() => {
         resolve(); // ignore
-      })
+      });
     });
   }
 
   generateLoginInteractTelemetry(interactType, interactSubtype, uid) {
     const valuesMap = new Map();
     valuesMap['UID'] = uid;
-    this.telemetryService.interact(
-      generateInteractTelemetry(interactType,
+    this.telemetryGeneratorService.generateInteractTelemetry(
+        interactType,
         interactSubtype,
         Environment.HOME,
         PageId.LOGIN,
+        undefined,
         valuesMap,
         undefined,
-        undefined));
+        undefined);
   }
 }

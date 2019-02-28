@@ -9,15 +9,16 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import {
   DeviceInfoService,
   BuildParamService,
+  SharedPreferences
+} from 'sunbird';
+import { TelemetryGeneratorService } from '@app/service';
+import {
   ImpressionType,
   PageId,
   Environment,
-  TelemetryService,
-  SharedPreferences,
   InteractType,
   InteractSubtype
-} from 'sunbird';
-import { generateImpressionTelemetry, generateInteractTelemetry } from '../../../app/telemetryutil';
+} from 'sunbird-sdk';
 
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
 
@@ -39,7 +40,7 @@ export class AboutUsPage {
     private appVersion: AppVersion,
     private preference: SharedPreferences,
     private socialSharing: SocialSharing,
-    private telemetryService: TelemetryService,
+    private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService
   ) { }
 
@@ -108,23 +109,23 @@ export class AboutUsPage {
   }
 
   generateInteractTelemetry(interactionType, interactSubtype) {
-    this.telemetryService.interact(generateInteractTelemetry(
+    this.telemetryGeneratorService.generateInteractTelemetry(
       interactionType, interactSubtype,
       PageId.SETTINGS,
       Environment.SETTINGS, null,
       undefined,
       undefined
-    ));
+    );
   }
 
   generateImpressionEvent() {
-    this.telemetryService.impression(generateImpressionTelemetry(
+    this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
       PageId.SETTINGS_ABOUT_US,
       Environment.SETTINGS, '', '', '',
       undefined,
       undefined
-    ));
+    );
   }
 
   getVersionName(appName): any {

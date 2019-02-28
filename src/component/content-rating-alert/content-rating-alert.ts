@@ -1,6 +1,7 @@
 import {
   Component,
-  NgZone
+  NgZone,
+  Inject
 } from '@angular/core';
 import {
   NavParams,
@@ -10,23 +11,25 @@ import {
 } from 'ionic-angular';
 import {
   ContentService,
+  Log
+} from 'sunbird';
+import { TranslateService } from '@ngx-translate/core';
+import {TelemetryGeneratorService} from '@app/service';
+import { ProfileConstants } from '../../app/app.constant';
+import { AppGlobalService } from '../../service/app-global.service';
+import { CommonUtilService } from '../../service/common-util.service';
+import {
   TelemetryService,
   InteractType,
   InteractSubtype,
   Environment,
   ImpressionType,
   ImpressionSubtype,
-  Log,
-  LogLevel
-} from 'sunbird';
-import { TranslateService } from '@ngx-translate/core';
-import {
-  generateImpressionTelemetry,
-  generateInteractTelemetry
-} from '../../app/telemetryutil';
-import { ProfileConstants } from '../../app/app.constant';
-import { AppGlobalService } from '../../service/app-global.service';
-import { CommonUtilService } from '../../service/common-util.service';
+  LogLevel,
+  LogType,
+  PageId,
+  TelemetryLogRequest
+} from 'sunbird-sdk';
 
 @Component({
   selector: 'content-rating-alert',
@@ -60,7 +63,8 @@ export class ContentRatingAlertComponent {
     private toastCtrl: ToastController,
     private ngZone: NgZone,
     private contentService: ContentService,
-    private telemetryService: TelemetryService,
+    @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
+    private telemetryGeneratorService: TelemetryGeneratorService,
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService) {
     this.getUserId();
@@ -89,26 +93,30 @@ export class ContentRatingAlertComponent {
   }
 
   ionViewWillEnter() {
-    this.telemetryService.impression(generateImpressionTelemetry(
+     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW,
       ImpressionSubtype.RATING_POPUP,
       this.pageId,
       Environment.HOME, '', '', '',
       undefined,
       undefined
-    ));
+    );
 
-    const log = new Log();
+    const log = new TelemetryLogRequest();
     log.level = LogLevel.INFO;
     log.message = this.pageId;
     log.env = Environment.HOME;
-    log.type = ImpressionType.VIEW;
+    log.type = LogType.NOTIFICATION;
     const params = new Array<any>();
     const paramsMap = new Map();
     paramsMap['PopupType'] = this.popupType;
     params.push(paramsMap);
     log.params = params;
-    this.telemetryService.log(log);
+    this.telemetryService.log(log).subscribe((val) => {
+      console.log(val);
+    }, err => {
+      console.log(err);
+    });
   }
 
   /**
@@ -147,14 +155,14 @@ export class ContentRatingAlertComponent {
     const paramsMap = new Map();
     paramsMap['Ratings'] = this.ratingCount;
     paramsMap['Comment'] = this.comment;
-    this.telemetryService.interact(generateInteractTelemetry(
+    this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.RATING_SUBMITTED,
       Environment.HOME,
-      this.pageId, paramsMap,
+      this.pageId, undefined, paramsMap,
       undefined,
       undefined
-    ));
+    );
 
     const viewDismissData = {
       rating: this.ratingCount,
