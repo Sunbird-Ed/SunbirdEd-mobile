@@ -30,17 +30,10 @@
         <div class="left">
           <div class="item">
             <div class="flex">
-              <div (click)="rateContent()">
-                <span class="MR5 f14 font-weight-bold">{{ contentDetail?.me_totalRatings ?
-                  contentDetail?.me_totalRatings : 0 }}</span>
-                <span class="yellow-gold">
-                  <ion-icon ios="ios-star" md="md-star"></ion-icon>
-                </span>
-              </div>
               <div>
                 <div class="title"> {{(contentDetail?.name && contentDetail?.name?.length > 25) ? (contentDetail?.name
-                  |
-                  slice:0:25) + '...' : (contentDetail?.name)}}</div>
+                    |
+                    slice:0:25) + '...' : (contentDetail?.name)}}</div>
               </div>
               <div *ngIf="contentDetail?.creator || contentDetail?.owner">
                 <span class="light-black f12">by</span>
@@ -54,9 +47,15 @@
             </div>
           </div>
         </div>
-        <div class="right">
+        <div class="right W-88">
           <div class="img-container">
             <img src="{{ localImage || contentDetail?.appIcon || defaultAppIcon}}">
+          </div>
+          <div *ngIf="contentDetail?.me_totalRatings" class="rating" (click)="rateContent()">
+            <span class="MR5 f14 font-weight-bold">{{ contentDetail?.me_totalRatings }}</span>
+            <span class="yellow-gold">
+              <ion-icon ios="ios-star" md="md-star"></ion-icon>
+            </span>
           </div>
         </div>
       </div>
