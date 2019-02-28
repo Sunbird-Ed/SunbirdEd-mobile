@@ -1,20 +1,29 @@
-import {TranslateService} from '@ngx-translate/core';
-import {Component, Inject} from '@angular/core';
-import {Events, NavController, PopoverController} from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
+import { Component, Inject } from '@angular/core';
+import { Events, NavController, PopoverController } from 'ionic-angular';
 import * as _ from 'lodash';
 import {
   Environment,
-  FrameworkService,
   ImpressionType,
   PageId,
   SharedPreferences,
   SuggestedFrameworkRequest,
 } from 'sunbird';
-import {FormAndFrameworkUtilService, GuestEditProfilePage, OverflowMenuComponent} from '@app/pages/profile';
-import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
-import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
-import {FrameworkCategory, MenuOverflow, PreferenceKey} from '@app/app';
-import {ProfileService, ProfileType} from 'sunbird-sdk';
+import { FormAndFrameworkUtilService, GuestEditProfilePage, OverflowMenuComponent } from '@app/pages/profile';
+import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
+import { AppGlobalService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
+import { FrameworkCategory, MenuOverflow, PreferenceKey } from '@app/app';
+// import {ProfileService, ProfileType} from 'sunbird-sdk';
+import {
+  FrameworkService,
+  FrameworkUtilService,
+  GetSuggestedFrameworksRequest,
+  FrameworkDetailsRequest,
+  Framework,
+  FrameworkCategoryCodesGroup,
+  ProfileService,
+  ProfileType,
+} from 'sunbird-sdk';
 
 @Component({
   selector: 'page-guest-profile',
@@ -46,10 +55,10 @@ export class GuestProfilePage {
     private preference: SharedPreferences,
     private commonUtilService: CommonUtilService,
     private appGlobalService: AppGlobalService,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private framework: FrameworkService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
+    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService
   ) {
 
 
@@ -104,11 +113,11 @@ export class GuestProfilePage {
     this.profileService.getActiveSessionProfile().toPromise()
       .then((res: any) => {
         this.profile = res;
-      this.getSyllabusDetails();
-      setTimeout(() => {
-        if (refresher) { refresher.complete(); }
-      }, 500);
-    })
+        this.getSyllabusDetails();
+        setTimeout(() => {
+          if (refresher) { refresher.complete(); }
+        }, 500);
+      })
       .catch(() => {
         this.loader.dismiss();
       });
@@ -144,13 +153,13 @@ export class GuestProfilePage {
   getSyllabusDetails() {
     let selectedFrameworkId = '';
 
-    const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
-      isGuestUser: true,
-      selectedLanguage: this.translate.currentLang,
-      categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
+
+    const getSuggestedFrameworksRequest: GetSuggestedFrameworksRequest = {
+      language: this.translate.currentLang,
+      requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
     };
-    this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
-      .then((result) => {
+    this.frameworkUtilService.getActiveChannelSuggestedFrameworkList(getSuggestedFrameworksRequest).toPromise()
+      .then((result: Framework[]) => {
         if (result && result !== undefined && result.length > 0) {
 
           result.forEach(element => {
@@ -175,9 +184,13 @@ export class GuestProfilePage {
   }
 
   getFrameworkDetails(frameworkId?: string): void {
-    this.formAndFrameworkUtilService.getFrameworkDetails(frameworkId)
-      .then(catagories => {
-        this.categories = catagories;
+    const frameworkDetailsRequest: FrameworkDetailsRequest = {
+      frameworkId: this.profile.syllabus[0] || '',
+      requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
+    };
+    this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
+      .then((framework: Framework) => {
+        this.categories = framework.categories;
 
         if (this.profile.board && this.profile.board.length) {
           this.boards = this.getFieldDisplayValues(this.profile.board, 0);

@@ -29,7 +29,8 @@ import {
   GetSuggestedFrameworksRequest,
   Profile,
   ProfileService,
-  ProfileType
+  ProfileType,
+  CategoryTerm
 } from 'sunbird-sdk';
 
 @IonicPage()
@@ -201,7 +202,7 @@ export class ProfileSettingsPage {
       requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
     };
     this.frameworkUtilService.getActiveChannelSuggestedFrameworkList(getSuggestedFrameworksRequest).toPromise()
-      .then((result) => {
+      .then((result: Framework[]) => {
         console.log('getActiveChannelSuggestedFrameworkList', result);
         this.syllabusList = [];
         if (result && result !== undefined && result.length > 0) {
@@ -213,7 +214,6 @@ export class ProfileSettingsPage {
           this.loader.dismiss();
 
           if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
-            // this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
             const frameworkDetailsRequest: FrameworkDetailsRequest = {
               frameworkId: this.profile.syllabus[0] ? this.profile.syllabus[0] : '',
               requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
@@ -244,7 +244,7 @@ export class ProfileSettingsPage {
   getCategoryData(req: GetFrameworkCategoryTermsRequest, list): void {
     if (this.frameworkId) {
       this.frameworkUtilService.getFrameworkCategoryTerms(req).toPromise()
-      .then((result) => {
+      .then((result: CategoryTerm[]) => {
         if (this.loader !== undefined) {
           this.loader.dismiss();
         }
@@ -291,7 +291,6 @@ export class ProfileSettingsPage {
     if (index === 1) {
       const loader = this.commonUtilService.getLoader();
       this.frameworkId = prevSelectedValue ? (Array.isArray(prevSelectedValue[0]) ? prevSelectedValue[0][0] : prevSelectedValue[0] ) : '';
-      // this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
       const frameworkDetailsRequest: FrameworkDetailsRequest = {
         frameworkId:  this.frameworkId,
         requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
@@ -303,7 +302,8 @@ export class ProfileSettingsPage {
           const request: GetFrameworkCategoryTermsRequest = {
             currentCategoryCode: this.categories[0].code,
             language: this.translate.currentLang,
-            requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
+            requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES,
+            frameworkId: this.frameworkId
           };
           this.getCategoryData(request, currentField);
         }).catch(() => {
@@ -317,7 +317,8 @@ export class ProfileSettingsPage {
         prevCategoryCode: this.categories[index - 2].code,
         selectedTermsCodes: prevSelectedValue,
         language: this.selectedLanguage,
-        requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
+        requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES,
+        frameworkId: this.frameworkId
       };
       this.getCategoryData(request, currentField);
     }
