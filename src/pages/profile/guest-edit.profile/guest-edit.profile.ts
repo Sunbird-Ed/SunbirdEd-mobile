@@ -37,7 +37,6 @@ import {
   ProfileSource,
   CategoryTerm
 } from 'sunbird-sdk';
-import {FormAndFrameworkUtilService} from '../formandframeworkutil.service';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
 import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs} from '../../../app/module.service';
 import {AppGlobalService} from '../../../service/app-global.service';
@@ -255,7 +254,6 @@ export class GuestEditProfilePage {
           });
 
           if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
-            // this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
             const frameworkDetailsRequest: FrameworkDetailsRequest = {
               frameworkId:  this.profile.syllabus[0],
               requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
@@ -342,7 +340,6 @@ export class GuestEditProfilePage {
       // this.frameworkId = prevSelectedValue[0];
       this.frameworkId = prevSelectedValue ? (Array.isArray(prevSelectedValue[0]) ? prevSelectedValue[0][0] : prevSelectedValue[0] ) : '';
       if (this.frameworkId.length !== 0) {
-        // this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
         const frameworkDetailsRequest: FrameworkDetailsRequest = {
           frameworkId:  this.frameworkId,
           requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES

@@ -1,13 +1,24 @@
-import {AppGlobalService} from './../../service/app-global.service';
-import {FormAndFrameworkUtilService} from './../profile/formandframeworkutil.service';
-import {CommonUtilService} from './../../service/common-util.service';
-import {Component, Inject, ViewChild} from '@angular/core';
-import {Events, IonicPage, LoadingController, NavController, NavParams, Select} from 'ionic-angular';
-import {FormBuilder, FormGroup} from '@angular/forms';
-import {CategoryRequest, ContainerService, FrameworkService, SuggestedFrameworkRequest, TabsPage,} from 'sunbird';
-import {TranslateService} from '@ngx-translate/core';
-import {FrameworkCategory, initTabs, LOGIN_TEACHER_TABS} from '@app/app';
-import {Profile, ProfileService, UpdateServerProfileInfoRequest} from 'sunbird-sdk';
+import { AppGlobalService } from './../../service/app-global.service';
+import { CommonUtilService } from './../../service/common-util.service';
+import { Component, Inject, ViewChild } from '@angular/core';
+import { Events, IonicPage, LoadingController, NavController, NavParams, Select } from 'ionic-angular';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { ContainerService, TabsPage, } from 'sunbird';
+import { TranslateService } from '@ngx-translate/core';
+import { initTabs, LOGIN_TEACHER_TABS } from '@app/app';
+import {
+  FrameworkService,
+  FrameworkUtilService,
+  GetSuggestedFrameworksRequest,
+  GetFrameworkCategoryTermsRequest,
+  FrameworkDetailsRequest,
+  Framework,
+  FrameworkCategoryCodesGroup,
+  Profile,
+  ProfileService,
+  CategoryTerm,
+  UpdateServerProfileInfoRequest
+} from 'sunbird-sdk';
 
 @IonicPage()
 @Component({
@@ -58,13 +69,13 @@ export class CategoriesEditPage {
     private loadingCtrl: LoadingController,
     private navParams: NavParams,
     private commonUtilService: CommonUtilService,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private fb: FormBuilder,
     private translate: TranslateService,
     private appGlobalService: AppGlobalService,
     private events: Events,
     private container: ContainerService,
-    private framework: FrameworkService
+    @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
+    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService
   ) {
     this.profile = this.appGlobalService.getCurrentUser();
     if (this.navParams.get('showOnlyMandatoryFields')) {
@@ -110,28 +121,32 @@ export class CategoriesEditPage {
     if (this.profile.syllabus && this.profile.syllabus[0]) {
       this.frameworkId = this.profile.syllabus[0];
     }
-    const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
-      selectedLanguage: this.translate.currentLang,
-      categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
+    const getSuggestedFrameworksRequest: GetSuggestedFrameworksRequest = {
+      language: this.translate.currentLang,
+      requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
     };
-    this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
-      .then((result) => {
+    this.frameworkUtilService.getActiveChannelSuggestedFrameworkList(getSuggestedFrameworksRequest).toPromise()
+      .then((result: Framework[]) => {
         if (result && result.length) {
           result.forEach(element => {
             // renaming the fields to text, value and checked
-            const value = {'name': element.name, 'code': element.identifier};
+            const value = { 'name': element.name, 'code': element.identifier };
             this.syllabusList.push(value);
           });
 
           if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
-            this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
-              .then(catagories => {
-                this.categories = catagories;
+            const frameworkDetailsRequest: FrameworkDetailsRequest = {
+              frameworkId: this.profile.syllabus[0],
+              requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
+            };
+            this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
+              .then((framework: Framework) => {
+                this.categories = framework.categories;
                 this.resetForm(0);
               }).catch(() => {
-              this.loader.dismiss();
-              this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
-            });
+                this.loader.dismiss();
+                this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
+              });
           } else {
             this.loader.dismiss();
           }
@@ -192,27 +207,33 @@ export class CategoriesEditPage {
     if (index === 1) {
       this.frameworkId = selectedValue[0];
       if (this.frameworkId.length !== 0) {
-        this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
-          .then(catagories => {
-            this.categories = catagories;
+        const frameworkDetailsRequest: FrameworkDetailsRequest = {
+          frameworkId: this.frameworkId,
+          requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
+        };
+        this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
+          .then((framework: Framework) => {
+            this.categories = framework.categories;
             // loader.dismiss();
-            const request: CategoryRequest = {
-              currentCategory: this.categories[0].code,
-              selectedLanguage: this.translate.currentLang,
-              categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
+            const request: GetFrameworkCategoryTermsRequest = {
+              currentCategoryCode: this.categories[0].code,
+              language: this.translate.currentLang,
+              requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES,
+              frameworkId: this.frameworkId
             };
             this.getCategoryData(request, currentField);
           }).catch(() => {
-          this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
-        });
+            this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
+          });
       }
     } else {
-      const request: CategoryRequest = {
-        currentCategory: this.categories[index - 1].code,
-        prevCategory: this.categories[index - 2].code,
-        selectedCode: selectedValue,
-        selectedLanguage: this.translate.currentLang,
-        categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
+      const request: GetFrameworkCategoryTermsRequest = {
+        currentCategoryCode: this.categories[index - 1].code,
+        prevCategoryCode: this.categories[index - 2].code,
+        selectedTermsCodes: selectedValue,
+        language: this.translate.currentLang,
+        requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES,
+        frameworkId: this.frameworkId
       };
       this.getCategoryData(request, currentField);
     }
@@ -223,11 +244,11 @@ export class CategoriesEditPage {
    * @param request API request body
    * @param currentField Variable name of the current field list
    */
-  getCategoryData(request: CategoryRequest, currentField: string) {
-    this.formAndFrameworkUtilService.getCategoryData(request, this.frameworkId)
-      .then((result) => {
+  getCategoryData(request: GetFrameworkCategoryTermsRequest, currentField: string) {
+    this.frameworkUtilService.getFrameworkCategoryTerms(request).toPromise()
+      .then((result: CategoryTerm[]) => {
         this[currentField] = result;
-        if (request.currentCategory === 'board') {
+        if (request.currentCategoryCode === 'board') {
           const boardName = this.syllabusList.find(framework => this.frameworkId === framework.code);
           if (boardName) {
             const boardCode = result.find(board => boardName.name === board.name);
@@ -361,9 +382,9 @@ export class CategoriesEditPage {
           this.navCtrl.pop();
         }
       }).catch(() => {
-      this.loader.dismiss();
-      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
-    })
+        this.loader.dismiss();
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
+      });
   }
 
   getLoader(): any {
