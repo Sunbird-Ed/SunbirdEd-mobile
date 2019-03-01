@@ -1,29 +1,37 @@
-import {Inject, Injectable, OnDestroy} from '@angular/core';
-import {FrameworkCategory} from './../app/app.constant';
+import { Inject, Injectable, OnDestroy } from '@angular/core';
+import { FrameworkCategory } from './../app/app.constant';
 import {
-  BuildParamService,
-  Environment,
-  FrameworkDetailsRequest,
-  FrameworkService,
-  InteractSubtype,
-  InteractType,
-  PageId,
-  SharedPreferences
+    BuildParamService,
+    Environment,
+    InteractSubtype,
+    InteractType,
+    PageId,
+    SharedPreferences
 } from 'sunbird';
-import {Events, PopoverController, PopoverOptions} from 'ionic-angular';
-import {UpgradePopover} from '../pages/upgrade/upgrade-popover';
-import {GenericAppConfig, PreferenceKey} from '../app/app.constant';
-import {TelemetryGeneratorService} from './telemetry-generator.service';
-import {AuthService, OauthSession, Profile, ProfileService, ProfileType} from 'sunbird-sdk';
+import { Events, PopoverController, PopoverOptions } from 'ionic-angular';
+import { UpgradePopover } from '../pages/upgrade/upgrade-popover';
+import { GenericAppConfig, PreferenceKey } from '../app/app.constant';
+import { TelemetryGeneratorService } from './telemetry-generator.service';
+import {
+    FrameworkService,
+    FrameworkDetailsRequest,
+    Framework,
+    FrameworkCategoryCodesGroup,
+    ProfileType,
+    AuthService,
+    OauthSession,
+    Profile,
+    ProfileService
+
+} from 'sunbird-sdk';
 
 @Injectable()
 export class AppGlobalService implements OnDestroy {
-
-  session: OauthSession;
-
     public static readonly USER_INFO_UPDATED = 'user-profile-changed';
     public static readonly PROFILE_OBJ_CHANGED = 'app-global:profile-obj-changed';
     public static isPlayerLaunched = false;
+
+    session: OauthSession;
 
     /**
     * This property stores the courses enrolled by a user
@@ -52,20 +60,20 @@ export class AppGlobalService implements OnDestroy {
     isProfileSettingsCompleted: boolean;
     isOnBoardingCompleted = false;
 
-  constructor(
-    @Inject('PROFILE_SERVICE') private profile: ProfileService,
-    @Inject('AUTH_SERVICE') private authService: AuthService,
-    private event: Events,
-    private preference: SharedPreferences,
-    private popoverCtrl: PopoverController,
-    private buildParamService: BuildParamService,
-    private framework: FrameworkService,
-    private telemetryGeneratorService: TelemetryGeneratorService
-  ) {
+    constructor(
+        @Inject('PROFILE_SERVICE') private profile: ProfileService,
+        @Inject('AUTH_SERVICE') private authService: AuthService,
+        @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
+        private event: Events,
+        private preference: SharedPreferences,
+        private popoverCtrl: PopoverController,
+        private buildParamService: BuildParamService,
+        private telemetryGeneratorService: TelemetryGeneratorService
+    ) {
 
-    this.initValues();
-    this.listenForEvents();
-  }
+        this.initValues();
+        this.listenForEvents();
+    }
     public averageTime = 0;
     public averageScore = 0;
     private frameworkData = [];
@@ -210,12 +218,12 @@ export class AppGlobalService implements OnDestroy {
      */
     getUserId(): string {
         if (!this.session) {
-          this.authService.getSession().toPromise().then((session) => {
-            this.session = session;
+            this.authService.getSession().toPromise().then((session) => {
+                this.session = session;
             });
         }
 
-      return this.session.userToken;
+        return this.session.userToken;
     }
 
     readConfig() {
@@ -322,40 +330,40 @@ export class AppGlobalService implements OnDestroy {
             .then(response => {
                 this.SUPPORT_EMAIL = response;
             })
-          .catch(() => {
+            .catch(() => {
                 this.SUPPORT_EMAIL = '';
             });
-         }
+    }
 
-  setOnBoardingCompleted() {
-    this.isOnBoardingCompleted = true;
-    this.preference.putString(PreferenceKey.IS_ONBOARDING_COMPLETED, 'true');
-  }
+    setOnBoardingCompleted() {
+        this.isOnBoardingCompleted = true;
+        this.preference.putString(PreferenceKey.IS_ONBOARDING_COMPLETED, 'true');
+    }
 
-  private initValues() {
-    this.readConfig();
+    private initValues() {
+        this.readConfig();
 
-    this.authService.getSession().toPromise().then((session) => {
-      if (!session) {
-        this.getGuestUserInfo();
-      } else {
-        this.guestProfileType = undefined;
-        this.isGuestUser = false;
-        this.session = session;
-      }
-      this.getCurrentUserProfile();
-    });
+        this.authService.getSession().toPromise().then((session) => {
+            if (!session) {
+                this.getGuestUserInfo();
+            } else {
+                this.guestProfileType = undefined;
+                this.isGuestUser = false;
+                this.session = session;
+            }
+            this.getCurrentUserProfile();
+        });
 
-    this.preference.getString(PreferenceKey.IS_ONBOARDING_COMPLETED)
-      .then((result) => {
-        this.isOnBoardingCompleted = (result === 'true') ? true : false;
-      });
-  }
+        this.preference.getString(PreferenceKey.IS_ONBOARDING_COMPLETED)
+            .then((result) => {
+                this.isOnBoardingCompleted = (result === 'true') ? true : false;
+            });
+    }
 
     private getCurrentUserProfile() {
-      this.profile.getActiveSessionProfile().toPromise()
+        this.profile.getActiveSessionProfile().toPromise()
             .then((response: any) => {
-              this.guestUserProfile = response;
+                this.guestUserProfile = response;
                 if (this.guestUserProfile.syllabus && this.guestUserProfile.syllabus.length > 0) {
                     this.getFrameworkDetails(this.guestUserProfile.syllabus[0])
                         .then((categories) => {
@@ -375,7 +383,7 @@ export class AppGlobalService implements OnDestroy {
                 }
             })
             .catch((error) => {
-              console.error(error);
+                console.error(error);
                 this.guestUserProfile = undefined;
                 this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
             });
@@ -384,19 +392,13 @@ export class AppGlobalService implements OnDestroy {
     // Remove this method after refactoring formandframeworkutil.service
     private getFrameworkDetails(frameworkId: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            const req: FrameworkDetailsRequest = {
-                defaultFrameworkDetails: true,
-                categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
+            const frameworkDetailsRequest: FrameworkDetailsRequest = {
+                frameworkId: frameworkId || '',
+                requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
             };
-
-            if (frameworkId !== undefined && frameworkId.length) {
-                req.defaultFrameworkDetails = false;
-                req.frameworkId = frameworkId;
-            }
-
-            this.framework.getAllCategories(req)
-                .then(res => {
-                    resolve(res);
+            this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
+                .then((framework: Framework) => {
+                    resolve(framework.categories);
                 })
                 .catch(error => {
                     reject(error);

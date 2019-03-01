@@ -1,14 +1,43 @@
-import {Search} from './../../app/app.constant';
-import {AfterViewInit, Component, NgZone, OnInit} from '@angular/core';
+import { Search } from './../../app/app.constant';
+import { AfterViewInit, Component, NgZone, OnInit, Inject } from '@angular/core';
 import {
-  CategoryRequest,
   ContentFilterCriteria,
   ContentSearchCriteria,
   ContentService,
-  FrameworkService,
   SharedPreferences,
 } from 'sunbird';
+import { Events, NavController } from 'ionic-angular';
+import * as _ from 'lodash';
+import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
+import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
+import { SearchPage } from '../search/search';
+import { Map } from '../../app/telemetryutil';
 import {
+  AudienceFilter,
+  CardSectionName,
+  ContentCard,
+  ContentType,
+  PreferenceKey,
+  ViewMore
+} from '../../app/app.constant';
+import { PageFilterCallback } from '../page-filter/page.filter';
+import { AppGlobalService } from '../../service/app-global.service';
+import Driver from 'driver.js';
+import { AppVersion } from '@ionic-native/app-version';
+import { updateFilterInSearchQuery } from '../../util/filter.util';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { CommonUtilService } from '../../service/common-util.service';
+import { TranslateService } from '@ngx-translate/core';
+import { Network } from '@ionic-native/network';
+import { animate, group, state, style, transition, trigger } from '@angular/animations';
+import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
+import {
+  FrameworkUtilService,
+  FrameworkCategoryCodesGroup,
+  GetFrameworkCategoryTermsRequest,
+  FrameworkCategoryCode,
+  CategoryTerm,
+  ProfileType,
   ImpressionType,
   InteractSubtype,
   InteractType,
@@ -16,33 +45,6 @@ import {
   Environment,
   TelemetryObject
 } from 'sunbird-sdk';
-import {Events, NavController} from 'ionic-angular';
-import * as _ from 'lodash';
-import {ViewMoreActivityPage} from '../view-more-activity/view-more-activity';
-import {SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
-import {SearchPage} from '../search/search';
-import {Map} from '../../app/telemetryutil';
-import {
-  AudienceFilter,
-  CardSectionName,
-  ContentCard,
-  ContentType,
-  FrameworkCategory,
-  PreferenceKey,
-  ViewMore
-} from '../../app/app.constant';
-import {PageFilterCallback} from '../page-filter/page.filter';
-import {AppGlobalService} from '../../service/app-global.service';
-import Driver from 'driver.js';
-import {AppVersion} from '@ionic-native/app-version';
-import {updateFilterInSearchQuery} from '../../util/filter.util';
-import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
-import {CommonUtilService} from '../../service/common-util.service';
-import {TranslateService} from '@ngx-translate/core';
-import {Network} from '@ionic-native/network';
-import {animate, group, state, style, transition, trigger} from '@angular/animations';
-import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
-import {ProfileType} from 'sunbird-sdk';
 
 @Component({
   selector: 'page-resources',
@@ -137,9 +139,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     private appVersion: AppVersion,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
-    private frameworkService: FrameworkService,
     private translate: TranslateService,
-    private network: Network
+    private network: Network,
+    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService
   ) {
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {
@@ -152,8 +154,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .then((appName: any) => {
         this.appLabel = appName;
       });
-      this.defaultImg = 'assets/imgs/ic_launcher.png';
-      this.generateNetworkType();
+    this.defaultImg = 'assets/imgs/ic_launcher.png';
+    this.generateNetworkType();
   }
 
   subscribeUtilityEvents() {
@@ -399,21 +401,21 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       }
 
       if (this.profile.grade && this.profile.grade.length) {
-        contentSearchCriteria.grade =  this.applyProfileFilter(this.profile.grade,
+        contentSearchCriteria.grade = this.applyProfileFilter(this.profile.grade,
           contentSearchCriteria.grade, 'gradeLevel');
       }
 
     }
     // swipe down to refresh should not over write current selected options
     if (contentSearchCriteria.grade) {
-        this.getGroupByPageReq.grade = [contentSearchCriteria.grade[0]];
-      }
-    if  (contentSearchCriteria.medium) {
-         this.getGroupByPageReq.medium = [contentSearchCriteria.medium[0]];
-      }
+      this.getGroupByPageReq.grade = [contentSearchCriteria.grade[0]];
+    }
+    if (contentSearchCriteria.medium) {
+      this.getGroupByPageReq.medium = [contentSearchCriteria.medium[0]];
+    }
     if (contentSearchCriteria.board) {
-    this.getGroupByPageReq.board = [contentSearchCriteria.board[0]];
-  }
+      this.getGroupByPageReq.board = [contentSearchCriteria.board[0]];
+    }
     this.getGroupByPageReq.mode = 'hard';
     this.getGroupByPageReq.facets = Search.FACETS_ETB;
     this.getGroupByPageReq.contentTypes = [ContentType.TEXTBOOK];
@@ -634,23 +636,22 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   getCategoryData() {
     const syllabus: Array<string> = this.appGlobalService.getCurrentUser().syllabus;
     const frameworkId = (syllabus && syllabus.length > 0) ? syllabus[0] : undefined;
-    const categories: Array<string> = FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES;
+    const categories: Array<FrameworkCategoryCode> = FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES;
     this.getMediumData(frameworkId, categories);
     this.getGradeLevelData(frameworkId, categories);
   }
 
   getMediumData(frameworkId, categories): any {
-    const req: CategoryRequest = {
-      currentCategory: FrameworkCategory.MEDIUM,
-      frameworkId: frameworkId,
-      selectedLanguage: this.translate.currentLang,
-      categories: categories
+    const req: GetFrameworkCategoryTermsRequest = {
+      currentCategoryCode: FrameworkCategoryCode.MEDIUM,
+      language: this.translate.currentLang,
+      requiredCategories: categories,
+      frameworkId: frameworkId
     };
-    this.frameworkService.getCategoryData(req)
-      .then(res => {
-        const category = JSON.parse(res);
-        this.categoryMediums = category.terms;
-        this.arrangeMediumsByUserData(this.categoryMediums.map(a => ({...a})));
+    this.frameworkUtilService.getFrameworkCategoryTerms(req).toPromise()
+      .then((res: CategoryTerm[]) => {
+        this.categoryMediums = res;
+        this.arrangeMediumsByUserData(this.categoryMediums.map(a => ({ ...a })));
       })
       .catch(() => {
       });
@@ -658,52 +659,51 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
 
   findWithAttr(array, attr, value) {
-      for (let i = 0; i < array.length; i += 1) {
-          if (array[i][attr].toLowerCase() === value.toLowerCase()) {
-              return i;
-          }
+    for (let i = 0; i < array.length; i += 1) {
+      if (array[i][attr].toLowerCase() === value.toLowerCase()) {
+        return i;
       }
-      return -1;
+    }
+    return -1;
   }
 
   arrangeMediumsByUserData(categoryMediumsParam) {
     if (this.appGlobalService.getCurrentUser() &&
-        this.appGlobalService.getCurrentUser().medium &&
-        this.appGlobalService.getCurrentUser().medium.length) {
-          const mediumIndex = this.findWithAttr(categoryMediumsParam, 'name', this.appGlobalService.getCurrentUser().medium[0]);
+      this.appGlobalService.getCurrentUser().medium &&
+      this.appGlobalService.getCurrentUser().medium.length) {
+      const mediumIndex = this.findWithAttr(categoryMediumsParam, 'name', this.appGlobalService.getCurrentUser().medium[0]);
 
-          for (let i = mediumIndex; i > 0; i--) {
-            categoryMediumsParam[i] = categoryMediumsParam[i - 1];
-            if (i === 1) {
-              categoryMediumsParam[0] = this.categoryMediums[mediumIndex];
-            }
-          }
-        this.categoryMediums = categoryMediumsParam;
-
-        for (let i = 0, len = this.categoryMediums.length; i < len; i++) {
-          if (this.getGroupByPageReq.medium[0].toLowerCase().trim() === this.categoryMediums[i].name.toLowerCase().trim() ) {
-            this.mediumClick(this.categoryMediums[i].name);
-          }
+      for (let i = mediumIndex; i > 0; i--) {
+        categoryMediumsParam[i] = categoryMediumsParam[i - 1];
+        if (i === 1) {
+          categoryMediumsParam[0] = this.categoryMediums[mediumIndex];
         }
+      }
+      this.categoryMediums = categoryMediumsParam;
+
+      for (let i = 0, len = this.categoryMediums.length; i < len; i++) {
+        if (this.getGroupByPageReq.medium[0].toLowerCase().trim() === this.categoryMediums[i].name.toLowerCase().trim()) {
+          this.mediumClick(this.categoryMediums[i].name);
+        }
+      }
     }
   }
 
   getGradeLevelData(frameworkId, categories): any {
-    const req: CategoryRequest = {
-      currentCategory: FrameworkCategory.GRADE_LEVEL,
-      frameworkId: frameworkId,
-      selectedLanguage: this.translate.currentLang,
-      categories: categories
+    const req: GetFrameworkCategoryTermsRequest = {
+      currentCategoryCode: FrameworkCategoryCode.GRADE_LEVEL,
+      language: this.translate.currentLang,
+      requiredCategories: categories,
+      frameworkId: frameworkId
     };
-    this.frameworkService.getCategoryData(req)
-      .then(res => {
-        const category = JSON.parse(res);
-        this.categoryGradeLevels = category.terms;
-          for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
-            if (this.getGroupByPageReq.grade[0] === this.categoryGradeLevels[i].name ) {
-              this.classClick(i);
-            }
+    this.frameworkUtilService.getFrameworkCategoryTerms(req).toPromise()
+      .then((res: CategoryTerm[]) => {
+        this.categoryGradeLevels = res;
+        for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
+          if (this.getGroupByPageReq.grade[0] === this.categoryGradeLevels[i].name) {
+            this.classClick(i);
           }
+        }
       })
       .catch(err => {
       });
@@ -742,10 +742,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.getGroupByPageReq.grade = [this.categoryGradeLevels[index].name];
     // [grade.name];
     if ((this.currentGrade) && (this.currentGrade.name !== this.categoryGradeLevels[index].name)) {
-     this.getGroupByPage();
+      this.getGroupByPage();
     }
     for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
-      if (i === index ) {
+      if (i === index) {
         this.currentGrade = this.categoryGradeLevels[i];
         this.current_index = this.categoryGradeLevels[i];
         this.categoryGradeLevels[i].selected = 'classAnimate';
@@ -753,16 +753,16 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         this.categoryGradeLevels[i].selected = '';
       }
     }
-    document.getElementById('gradeScroll').scrollTo({top: 0, left: index * 60, behavior: 'smooth'});
+    document.getElementById('gradeScroll').scrollTo({ top: 0, left: index * 60, behavior: 'smooth' });
   }
   mediumClick(mediumName: string) {
     this.getGroupByPageReq.medium = [mediumName];
-    if ( this.currentMedium !== mediumName) {
+    if (this.currentMedium !== mediumName) {
       this.getGroupByPage();
     }
 
     for (let i = 0, len = this.categoryMediums.length; i < len; i++) {
-      if (this.categoryMediums[i].name === mediumName ) {
+      if (this.categoryMediums[i].name === mediumName) {
         this.currentMedium = this.categoryMediums[i].name;
         this.categoryMediums[i].selected = true;
       } else {
