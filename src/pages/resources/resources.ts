@@ -465,6 +465,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     } else {
       this.searchApiLoader = false;
     }
+    const reqvalues = new Map();
+    reqvalues['pageReq'] = this.getGroupByPageReq;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+        InteractSubtype.RESOURCE_PAGE_REQUEST,
+        Environment.HOME,
+        this.source, undefined,
+        reqvalues);
     this.contentService.getGroupByPage(this.getGroupByPageReq, this.guestUser)
       .then((response: any) => {
         this.ngZone.run(() => {
@@ -485,7 +492,21 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             newSections.push(element);
           });
           // END OF TEMPORARY CODE
+
           this.storyAndWorksheets = newSections;
+          const sectionInfo = {};
+          for (let i = 0; i < this.storyAndWorksheets.length; i++) {
+             const sectionName = this.storyAndWorksheets[i].name,
+                  count = this.storyAndWorksheets[i].contents.length;
+                  sectionInfo[sectionName] = count;
+          }
+          const resvalues = new Map();
+          resvalues['pageRes'] = sectionInfo;
+          this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+            InteractSubtype.RESOURCE_PAGE_LOADED,
+            Environment.HOME,
+            this.source, undefined,
+            resvalues);
           this.pageLoadedSuccess = true;
           this.refresh = false;
           this.searchApiLoader = false;
@@ -503,6 +524,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
             if (!isAfterLanguageChange) { this.commonUtilService.showToast('ERROR_FETCHING_DATA'); }
           }
+          const errvalues = new Map();
+          errvalues['isNetworkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
+          this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+            InteractSubtype.RESOURCE_PAGE_ERROR,
+            Environment.HOME,
+            this.source, undefined,
+            errvalues);
         });
       });
   }
