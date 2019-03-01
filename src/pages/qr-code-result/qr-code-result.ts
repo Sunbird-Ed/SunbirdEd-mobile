@@ -1,5 +1,4 @@
 import { CommonUtilService } from './../../service/common-util.service';
-import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
 import { Component, Inject, NgZone, ViewChild } from '@angular/core';
 import {
   AlertController,
@@ -344,7 +343,7 @@ export class QrCodeResultPage {
         this.userCount += 1;
       }
     }, () => {
-    })
+    });
   }
 
   /** funtion add elipses to the texts**/
