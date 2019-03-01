@@ -8,7 +8,7 @@ import {
   PopoverController,
   ViewController
 } from 'ionic-angular';
-import {ContentSearchCriteria, ContentService, ContentSortCriteria, CourseService, SortOrder,} from 'sunbird';
+import {ContentSearchCriteria, ContentService, ContentSortCriteria, CourseService, SortOrder} from 'sunbird';
 import {OverflowMenuComponent} from '@app/pages/profile';
 import {generateInteractTelemetry} from '@app/app/telemetryutil';
 import {ContentCard, ContentType, MenuOverflow, MimeType, ProfileConstants} from '@app/app/app.constant';

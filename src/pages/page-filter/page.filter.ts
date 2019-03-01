@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import {
   PopoverController,
   ViewController,
@@ -15,16 +15,20 @@ import {
   InteractSubtype,
   Environment,
   PageId,
-  CategoryRequest,
-  FrameworkService,
   ImpressionType,
-  FrameworkDetailsRequest
 } from 'sunbird';
 import { PageFilterOptions } from './options/filter.options';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { FrameworkCategory } from '@app/app';
 import { FormAndFrameworkUtilService } from '../profile';
+import {
+  FrameworkUtilService,
+  FrameworkCategoryCodesGroup,
+  GetFrameworkCategoryTermsRequest,
+  FrameworkCategoryCode,
+  CategoryTerm
+} from 'sunbird-sdk';
 
 @Component({
   selector: 'page-filter',
@@ -41,20 +45,20 @@ export class PageFilter {
 
   backButtonFunc = undefined;
   selectedLanguage = 'en';
-  categories: Array<string> = FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES;
+  categories: Array<FrameworkCategoryCode> = FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES;
 
   constructor(
     private popCtrl: PopoverController,
     private viewCtrl: ViewController,
     private navParams: NavParams,
     private platform: Platform,
-    private frameworkService: FrameworkService,
     private translate: TranslateService,
     private appGlobalService: AppGlobalService,
     private events: Events,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
-    private frameworkUtilService: FormAndFrameworkUtilService
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService
   ) {
     this.callback = navParams.get('callback');
     this.initFilterValues();
@@ -97,7 +101,7 @@ export class PageFilter {
     loader.present();
     if (this.pageId === PageId.COURSES) {
       this.pageId = PageId.COURSE_PAGE_FILTER;
-      this.categories = FrameworkCategory.COURSE_FRAMEWORK_CATEGORIES;
+      this.categories = FrameworkCategoryCodesGroup.COURSE_FRAMEWORK_CATEGORIES;
     } else if (this.pageId === PageId.LIBRARY) {
       this.pageId = PageId.LIBRARY_PAGE_FILTER;
     }
@@ -138,10 +142,10 @@ export class PageFilter {
     });
 
     const syllabus: Array<string> = this.appGlobalService.getCurrentUser().syllabus;
-    let frameworkId ;
+    let frameworkId;
 
     if (this.pageId === PageId.COURSE_PAGE_FILTER) {
-      frameworkId = await this.frameworkUtilService.getCourseFrameworkId();
+      frameworkId = await this.formAndFrameworkUtilService.getCourseFrameworkId();
     } else {
       frameworkId = (syllabus && syllabus.length > 0) ? syllabus[0] : undefined;
     }
@@ -172,20 +176,20 @@ export class PageFilter {
  */
   async getFrameworkData(frameworkId: string, currentCategory: string, index: number) {
     return new Promise((resolve, reject) => {
-      const req: CategoryRequest = {
-        currentCategory: currentCategory,
-        frameworkId: frameworkId,
-        selectedLanguage: this.translate.currentLang,
-        categories: this.categories
+      const req: GetFrameworkCategoryTermsRequest = {
+        currentCategoryCode: currentCategory,
+        language: this.translate.currentLang,
+        requiredCategories: this.categories,
+        frameworkId: frameworkId
       };
-      this.frameworkService.getCategoryData(req)
-        .then(res => {
-          const category = JSON.parse(res);
+      this.frameworkUtilService.getFrameworkCategoryTerms(req).toPromise()
+        .then((res: CategoryTerm[]) => {
+          const category = res;
           // this.filters[index].name = category.name;  // Assign the lable from framework
 
-          const responseArray = category.terms;
+          const responseArray = category;
           if (responseArray && responseArray.length > 0) {
-            if (req.currentCategory === 'topic' && this.pageId === PageId.COURSE_PAGE_FILTER) {
+            if (req.currentCategoryCode === 'topic' && this.pageId === PageId.COURSE_PAGE_FILTER) {
               // this.filters[index].values = _.map(responseArray, 'name');
               for (let i = 0; i < responseArray.length; i++) {
                 const name = responseArray[i].name;
@@ -249,7 +253,7 @@ export class PageFilter {
   }
 
   getRootOrganizations(index) {
-    this.frameworkUtilService.getRootOrganizations()
+    this.formAndFrameworkUtilService.getRootOrganizations()
       .then(res => {
         this.filters[index].values = res;
       })
