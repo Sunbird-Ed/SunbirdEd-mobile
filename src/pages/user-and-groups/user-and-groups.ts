@@ -15,8 +15,9 @@ import {
   PopoverController
 } from 'ionic-angular';
 import {PopoverPage} from './popover/popover';
-import {AuthService, ContainerService, OAuthService, SharedPreferences, TabsPage} from 'sunbird';
+import {ContainerService, SharedPreferences, TabsPage} from 'sunbird';
 import {
+  AuthService,
   Environment,
   GetAllProfileRequest,
   Group,
@@ -67,7 +68,7 @@ export class UserAndGroupsPage {
   groupList: Array<Group> = [];
 
   unregisterBackButton: any;
-  profileDetails: any;
+  profileDetails: Profile;
   loadingUserList = false;
 
   userType: string;
@@ -75,8 +76,9 @@ export class UserAndGroupsPage {
   selectedUserIndex = -1;
   lastCreatedProfileData: any;
 
-  selectedUsername: string ;
+  selectedUsername: string;
   isCurUserSelected: boolean;
+
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -86,6 +88,7 @@ export class UserAndGroupsPage {
     private zone: NgZone,
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('GROUP_SERVICE') private groupService: GroupService,
+    @Inject('AUTH_SERVICE') private authService: AuthService,
     private platform: Platform,
     private ionicApp: IonicApp,
     private event: Events,
@@ -93,9 +96,7 @@ export class UserAndGroupsPage {
     private container: ContainerService,
     private preferences: SharedPreferences,
     private app: App,
-    private oauth: OAuthService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private authService: AuthService,
     private loadingCtrl: LoadingController,
     private commonUtilService: CommonUtilService
   ) {
@@ -150,7 +151,7 @@ export class UserAndGroupsPage {
           this.currentGroupId = group.gid;
         });
       }
-    }, error => {
+    }, () => {
     });
   }
 
@@ -173,29 +174,29 @@ export class UserAndGroupsPage {
     }
 
     const popover = this.popOverCtrl.create(PopoverPage, {
-      edit: () => {
-        if (isUser) {
-          this.navCtrl.push(GuestEditProfilePage, {
-            profile: this.userList[index],
-            isCurrentUser: isCurrentUser
-          });
-        } else {
-          this.navCtrl.push(CreateGroupPage, {
-            groupInfo: this.groupList[index]
-          });
-        }
-        popover.dismiss();
+        edit: () => {
+          if (isUser) {
+            this.navCtrl.push(GuestEditProfilePage, {
+              profile: this.userList[index],
+              isCurrentUser: isCurrentUser
+            });
+          } else {
+            this.navCtrl.push(CreateGroupPage, {
+              groupInfo: this.groupList[index]
+            });
+          }
+          popover.dismiss();
+        },
+        delete: () => {
+          if (isUser) {
+            this.deleteUserConfirmBox(index);
+          } else {
+            this.deleteGroupConfirmBox(index);
+          }
+          popover.dismiss();
+        },
+        isCurrentUser: isCurrentUser
       },
-      delete: () => {
-        if (isUser) {
-          this.deleteUserConfirmBox(index);
-        } else {
-          this.deleteGroupConfirmBox(index);
-        }
-        popover.dismiss();
-      },
-      isCurrentUser: isCurrentUser
-    },
       {
         cssClass: 'user-popover'
       }
@@ -215,7 +216,9 @@ export class UserAndGroupsPage {
     this.loadingUserList = true;
     setTimeout(() => {
       this.zone.run(() => {
-        this.profileService.getAllProfiles(profileRequest).subscribe((profiles) => {
+        this.profileService.getAllProfiles(profileRequest)
+          .map((profiles) => profiles.filter((profile) => !!profile.handle))
+          .subscribe((profiles) => {
           const profileList: Array<Profile> = profiles;
           if (profileList && profileList.length) {
             this.userList = profileList.sort((prev: Profile, next: Profile) => {
@@ -244,7 +247,7 @@ export class UserAndGroupsPage {
 
           loader.dismiss();
 
-        }, (error) => {
+          }, () => {
           loader.dismiss();
           this.noUsersPresent = true;
           this.loadingUserList = false;
@@ -296,8 +299,8 @@ export class UserAndGroupsPage {
   }
 
   /**
-  * Navigates to Create group Page
-  */
+   * Navigates to Create group Page
+   */
   createGroup() {
     // Generate create group click event
     this.telemetryGeneratorService.generateInteractTelemetry(
@@ -317,8 +320,8 @@ export class UserAndGroupsPage {
   }
 
   /**
-  * Navigates to group Details page
-  */
+   * Navigates to group Details page
+   */
   gotToGroupDetailsPage() {
     this.navCtrl.push(GroupDetailsPage, {
       item: this.groupList
@@ -326,10 +329,10 @@ export class UserAndGroupsPage {
   }
 
   /**
-  * Navigates to Create User Page
-  */
+   * Navigates to Create User Page
+   */
   createUser() {
-    this.getLastCreatedProfile().then((response: any) => {
+    this.getLastCreatedProfile().then(() => {
       // Generate create user click event
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.TOUCH,
@@ -343,7 +346,7 @@ export class UserAndGroupsPage {
           lastCreatedProfile: this.lastCreatedProfileData
         });
       });
-    }).catch((error) => {
+    }).catch(() => {
       this.zone.run(() => {
         this.navCtrl.push(GuestEditProfilePage, {
           isNewUser: true
@@ -352,7 +355,7 @@ export class UserAndGroupsPage {
     });
   }
 
-  selectUser(index: number,  uid?: string, name?: string) {
+  selectUser(index: number, uid?: string, name?: string) {
     this.isCurUserSelected = this.appGlobalService.getCurrentUser().uid === uid;
     this.zone.run(() => {
       this.selectedUserIndex = (this.selectedUserIndex === index) ? -1 : index;
@@ -373,8 +376,8 @@ export class UserAndGroupsPage {
   }
 
   /**
-  * Shows Prompt for switch Account
-  */
+   * Shows Prompt for switch Account
+   */
   switchAccountConfirmBox() {
     // Generate Switch User click event
     this.telemetryGeneratorService.generateInteractTelemetry(
@@ -448,6 +451,7 @@ export class UserAndGroupsPage {
       valuesMap
     );
   }
+
   // method below fetches the last created user
   getLastCreatedProfile() {
     return new Promise((resolve, reject) => {
@@ -455,7 +459,9 @@ export class UserAndGroupsPage {
         local: true,
         latestCreatedProfile: true
       };
-      this.profileService.getAllProfiles(req).toPromise().then((lastCreatedProfile: any) => {
+      this.profileService.getAllProfiles(req)
+        .map((profiles) => profiles.filter((profile) => !!profile.handle))
+        .toPromise().then((lastCreatedProfile: any) => {
         this.lastCreatedProfileData = lastCreatedProfile;
         resolve(lastCreatedProfile);
       }).catch(() => {
@@ -465,7 +471,7 @@ export class UserAndGroupsPage {
   }
 
   logOut(selectedUser: any, isBeingPlayed: boolean) {
-    const telemetryObject = new TelemetryObject(this.profileDetails.id, Environment.USER, undefined);
+    const telemetryObject = new TelemetryObject(this.profileDetails.uid, Environment.USER, undefined);
 
     // Generate Logout success event
     this.telemetryGeneratorService.generateInteractTelemetry(
@@ -476,17 +482,18 @@ export class UserAndGroupsPage {
       telemetryObject
     );
     if (isBeingPlayed) {
-      this.authService.endSession();
+      this.authService.resignSession().subscribe();
       (<any>window).splashscreen.clearPrefs();
       this.setAsCurrentUser(selectedUser, true);
     } else {
       if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-        this.oauth.doLogOut().then(() => {
+        this.authService.resignSession().subscribe(() => {
           (<any>window).splashscreen.clearPrefs();
           this.setAsCurrentUser(selectedUser, false);
+        }, () => {
         });
       } else {
-        this.authService.endSession();
+        this.authService.resignSession().subscribe();
         (<any>window).splashscreen.clearPrefs();
         this.setAsCurrentUser(selectedUser, false);
       }
@@ -502,6 +509,7 @@ export class UserAndGroupsPage {
     );
 
   }
+
   /**condition for disabling the play button */
   disablePlayButton() {
     if (this.selectedUserIndex === -1 && !this.userList.length) {
@@ -536,6 +544,7 @@ export class UserAndGroupsPage {
     });
     alert.present();
   }
+
   /**Navigates to play content details page nd launch the player */
   play() {
     const selectedUser = this.userList[this.selectedUserIndex];
@@ -620,14 +629,14 @@ export class UserAndGroupsPage {
   }
 
   /**
-  * Used to Translate message to current Language
-  * @param {string} messageConst Message Constant to be translated
-  * @param {string} field Field to be place in language string
-  * @returns {string} field Translated Message
-  */
+   * Used to Translate message to current Language
+   * @param {string} messageConst Message Constant to be translated
+   * @param {string} field Field to be place in language string
+   * @returns {string} field Translated Message
+   */
   translateMessage(messageConst: string, field?: string): string {
     let translatedMsg = '';
-    this.translate.get(messageConst, { '%s': field }).subscribe(
+    this.translate.get(messageConst, {'%s': field}).subscribe(
       (value: any) => {
         translatedMsg = value;
       }
@@ -654,40 +663,41 @@ export class UserAndGroupsPage {
     return '';
   }
 
+// code which invokes loader
+  getLoader(): any {
+    return this.loadingCtrl.create({
+      duration: 30000,
+      spinner: 'crescent'
+    });
+  }
+
   private setAsCurrentUser(selectedUser, isBeingPlayed: boolean) {
     this.groupService.setActiveSessionForGroup(null)
       .subscribe(() => {
-      },
+        },
         () => {
-      });
-      this.profileService.setActiveSessionForProfile(selectedUser.uid) .subscribe(() => {
-        this.commonUtilService.showToast(this.commonUtilService.translateMessage('SWITCHING_TO', selectedUser.handle),
+        });
+    this.profileService.setActiveSessionForProfile(selectedUser.uid).subscribe(() => {
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('SWITCHING_TO', selectedUser.handle),
         undefined, undefined, 1000);
-    setTimeout(() => {
-      if (isBeingPlayed) {
-        this.event.publish('playConfig', this.playConfig);
-        this.navCtrl.pop();
-      }
-      if (selectedUser.profileType === ProfileType.STUDENT) {
-        initTabs(this.container, isBeingPlayed ? GUEST_STUDENT_TABS : GUEST_STUDENT_SWITCH_TABS);
-        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT);
-      } else {
-        initTabs(this.container, isBeingPlayed ? GUEST_TEACHER_TABS : GUEST_TEACHER_SWITCH_TABS);
-        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
-      }
-      this.event.publish('refresh:profile');
-      this.event.publish(AppGlobalService.USER_INFO_UPDATED);
-      this.app.getRootNav().setRoot(TabsPage);
-    }, 1000);
-      }, () => {
-  });
+      setTimeout(() => {
+        if (isBeingPlayed) {
+          this.event.publish('playConfig', this.playConfig);
+          this.navCtrl.pop();
+        }
+        if (selectedUser.profileType === ProfileType.STUDENT) {
+          initTabs(this.container, isBeingPlayed ? GUEST_STUDENT_TABS : GUEST_STUDENT_SWITCH_TABS);
+          this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT);
+        } else {
+          initTabs(this.container, isBeingPlayed ? GUEST_TEACHER_TABS : GUEST_TEACHER_SWITCH_TABS);
+          this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
+        }
+        this.event.publish('refresh:profile');
+        this.event.publish(AppGlobalService.USER_INFO_UPDATED);
+        this.app.getRootNav().setRoot(TabsPage);
+      }, 1000);
+    }, () => {
+    });
   }
-// code which invokes loader
-getLoader(): any {
-  return this.loadingCtrl.create({
-    duration: 30000,
-    spinner: 'crescent'
-  });
-}
 }
 

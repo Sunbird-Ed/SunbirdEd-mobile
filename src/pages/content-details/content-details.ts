@@ -268,7 +268,9 @@ export class ContentDetailsPage {
       local: true,
       server: false
     };
-    this.profileService.getAllProfiles(profileRequest).toPromise()
+    this.profileService.getAllProfiles(profileRequest)
+      .map((profiles) => profiles.filter((profile) => !!profile.handle))
+      .toPromise()
       .then((profiles) => {
         if (profiles) {
           this.userCount = profiles.length;

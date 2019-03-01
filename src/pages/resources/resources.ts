@@ -9,11 +9,12 @@ import {
   SharedPreferences,
 } from 'sunbird';
 import {
+  Environment,
   ImpressionType,
   InteractSubtype,
   InteractType,
   PageId,
-  Environment,
+  ProfileType,
   TelemetryObject
 } from 'sunbird-sdk';
 import {Events, NavController} from 'ionic-angular';
@@ -42,7 +43,6 @@ import {TranslateService} from '@ngx-translate/core';
 import {Network} from '@ionic-native/network';
 import {animate, group, state, style, transition, trigger} from '@angular/animations';
 import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
-import {ProfileType} from 'sunbird-sdk';
 
 @Component({
   selector: 'page-resources',
@@ -126,6 +126,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   currentGrade: any;
   currentMedium: string;
   defaultImg: string;
+  isUpgradePopoverShown: boolean = false;
   constructor(
     public navCtrl: NavController,
     private ngZone: NgZone,
@@ -180,9 +181,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     });
 
     // Event for optional and forceful upgrade
-    this.events.subscribe('force_optional_upgrade', (upgrade) => {
-      if (upgrade) {
-        this.appGlobalService.openPopover(upgrade);
+    this.events.subscribe('force_optional_upgrade', async (upgrade) => {
+      if (upgrade && !this.isUpgradePopoverShown) {
+        await this.appGlobalService.openPopover(upgrade);
+        this.isUpgradePopoverShown = true;
       }
     });
 

@@ -1,24 +1,19 @@
-import { TranslateService } from '@ngx-translate/core';
-import { Component, Inject } from '@angular/core';
-import { Events, NavController, PopoverController } from 'ionic-angular';
+import {TranslateService} from '@ngx-translate/core';
+import {Component, Inject} from '@angular/core';
+import {Events, NavController, PopoverController} from 'ionic-angular';
 import * as _ from 'lodash';
+import {Environment, ImpressionType, PageId, SharedPreferences,} from 'sunbird';
+import {GuestEditProfilePage, OverflowMenuComponent} from '@app/pages/profile';
+import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
+import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
+import {MenuOverflow, PreferenceKey} from '@app/app';
 import {
-  Environment,
-  ImpressionType,
-  PageId,
-  SharedPreferences,
-} from 'sunbird';
-import { GuestEditProfilePage, OverflowMenuComponent } from '@app/pages/profile';
-import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
-import { AppGlobalService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
-import { MenuOverflow, PreferenceKey } from '@app/app';
-import {
+  Framework,
+  FrameworkCategoryCodesGroup,
+  FrameworkDetailsRequest,
   FrameworkService,
   FrameworkUtilService,
   GetSuggestedFrameworksRequest,
-  FrameworkDetailsRequest,
-  Framework,
-  FrameworkCategoryCodesGroup,
   ProfileService,
   ProfileType,
 } from 'sunbird-sdk';
@@ -45,6 +40,8 @@ export class GuestProfilePage {
   selectedLanguage: string;
   loader: any;
 
+  isUpgradePopoverShown: boolean = false;
+
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     private navCtrl: NavController,
@@ -69,9 +66,10 @@ export class GuestProfilePage {
       });
 
     // Event for optional and forceful upgrade
-    this.events.subscribe('force_optional_upgrade', (upgrade) => {
-      if (upgrade) {
-        this.appGlobalService.openPopover(upgrade);
+    this.events.subscribe('force_optional_upgrade', async (upgrade) => {
+      if (upgrade && !this.isUpgradePopoverShown) {
+        await this.appGlobalService.openPopover(upgrade);
+        this.isUpgradePopoverShown = true;
       }
     });
 

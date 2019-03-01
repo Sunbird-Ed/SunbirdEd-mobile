@@ -1,36 +1,21 @@
+import {Component, Inject, NgZone} from '@angular/core';
+import {AlertController, IonicPage, LoadingController, NavController, NavParams} from 'ionic-angular';
+import {AddUpdateProfilesRequest, ObjectType,} from 'sunbird';
 import {
-  Component,
-  NgZone,
-  Inject
-} from '@angular/core';
-import {
-  IonicPage,
-  NavController,
-  NavParams,
-  AlertController
-} from 'ionic-angular';
-import {
-  AddUpdateProfilesRequest,
-  ObjectType,
-} from 'sunbird';
-import {
-  TelemetryObject,
-  InteractType,
-  InteractSubtype,
   Environment,
+  GetAllProfileRequest,
+  Group,
+  GroupService,
+  InteractSubtype,
+  InteractType,
   PageId,
+  Profile,
+  ProfileService,
+  TelemetryObject,
 } from 'sunbird-sdk';
-import {GroupService,
-        Group,
-        Profile,
-        ProfileService,
-        GetAllProfileRequest} from 'sunbird-sdk';
-import { LoadingController } from 'ionic-angular';
-import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
-import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../../service/common-util.service';
-import { group } from '@angular/animations';
-import { Observable } from 'rxjs';
+import {GuestEditProfilePage} from '../../profile/guest-edit.profile/guest-edit.profile';
+import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
+import {CommonUtilService} from '../../../service/common-util.service';
 
 @IonicPage()
 @Component({
@@ -56,7 +41,7 @@ export class AddOrRemoveGroupUserPage {
     private navCtrl: NavController,
     private navParams: NavParams,
     @Inject('GROUP_SERVICE') private groupService: GroupService,
-    @Inject ('PROFILE_SERVICE')private profileService: ProfileService,
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     private zone: NgZone,
     private loadingCtrl: LoadingController,
     private commonUtilService: CommonUtilService,
@@ -66,7 +51,6 @@ export class AddOrRemoveGroupUserPage {
     this.addUsers = Boolean(this.navParams.get('isAddUsers'));
     this.groupInfo = this.navParams.get('groupInfo');
     this.groupMembers = this.navParams.get('groupMembers');
-    console.log('length of group member', this.groupMembers.length);
   }
 
   ionViewWillEnter() {
@@ -79,8 +63,9 @@ export class AddOrRemoveGroupUserPage {
     };
 
     this.profileService.getAllProfiles(req)
-      .subscribe(profiles => {
-       this.allUsers = profiles;
+      .map((profiles) => profiles.filter((profile) => !!profile.handle))
+      .subscribe((profiles) => {
+        this.allUsers = profiles;
         const uniqueUserList = this.allUsers.filter(e => {
           const found = this.groupMembers.find(m => {
             return m.uid === e.uid;
@@ -123,8 +108,7 @@ export class AddOrRemoveGroupUserPage {
   }
 
   goToEditGroup(index) {
-    this.navCtrl.push(GuestEditProfilePage, {
-    });
+    this.navCtrl.push(GuestEditProfilePage, {});
   }
 
   isUserSelected(index: number) {
@@ -206,24 +190,23 @@ export class AddOrRemoveGroupUserPage {
     });
 
 
-
     const req: AddUpdateProfilesRequest = {
       groupId: this.groupInfo.gid,
       uidList: groupMembersUids.concat(this.getSelectedUids())
     };
     this.groupService.addProfilesToGroup(req)
       .subscribe((success) => {
-        console.log(success);
-        loader.dismiss();
-        this.commonUtilService.showToast(this.commonUtilService.translateMessage('GROUP_MEMBER_ADD_SUCCESS'));
-        this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
-      },
-      (error) => {
-        loader.dismiss();
-        this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
-        console.log('Error : ' + error);
-        loader.dismiss();
-      });
+          console.log(success);
+          loader.dismiss();
+          this.commonUtilService.showToast(this.commonUtilService.translateMessage('GROUP_MEMBER_ADD_SUCCESS'));
+          this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
+        },
+        (error) => {
+          loader.dismiss();
+          this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
+          console.log('Error : ' + error);
+          loader.dismiss();
+        });
   }
 
   deleteUsersFromGroupConfirmBox(length) {
@@ -277,22 +260,22 @@ export class AddOrRemoveGroupUserPage {
 
     this.groupService.addProfilesToGroup(req)
       .subscribe((success) => {
-        console.log(success);
-        loader.dismiss();
-        this.commonUtilService.showToast(this.commonUtilService.translateMessage('GROUP_MEMBER_DELETE_SUCCESS'));
-        this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
-      },
-      (error) => {
-        loader.dismiss();
-        this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
-        console.log('Error : ' + error);
-        loader.dismiss();
-      });
+          console.log(success);
+          loader.dismiss();
+          this.commonUtilService.showToast(this.commonUtilService.translateMessage('GROUP_MEMBER_DELETE_SUCCESS'));
+          this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
+        },
+        (error) => {
+          loader.dismiss();
+          this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
+          console.log('Error : ' + error);
+          loader.dismiss();
+        });
   }
 
   /**
-* Returns Loader Object
-*/
+   * Returns Loader Object
+   */
   getLoader(): any {
     return this.loadingCtrl.create({
       duration: 30000,

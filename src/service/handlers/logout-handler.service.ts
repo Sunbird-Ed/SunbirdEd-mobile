@@ -1,20 +1,14 @@
 import {Inject, Injectable} from '@angular/core';
-import {
-  ContainerService,
-  SharedPreferences,
-  TabsPage
-} from 'sunbird';
+import {ContainerService, SharedPreferences, TabsPage} from 'sunbird';
 import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, PreferenceKey} from '@app/app';
-import {AppGlobalService, CommonUtilService} from '@app/service';
+import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
 import {OnboardingPage} from '@app/pages/onboarding/onboarding';
 import {App, Events} from 'ionic-angular';
-import {TelemetryGeneratorService} from '@app/service';
 import {
   AuthService,
   Environment,
   InteractSubtype,
   InteractType,
-  OauthSession,
   PageId,
   ProfileService,
   ProfileType
@@ -44,9 +38,6 @@ export class LogoutHandlerService {
         InteractSubtype.LOGOUT_INITIATE, '');
 
       this.authService.getSession()
-        .mergeMap((oauthSession: OauthSession) => {
-          return this.profileService.deleteProfile(oauthSession.userToken);
-        })
         .mergeMap(() => {
           return Observable.fromPromise(this.sharedPreferences.getString('GUEST_USER_ID_BEFORE_LOGIN'))
             .do((guest_user_id: string) => {

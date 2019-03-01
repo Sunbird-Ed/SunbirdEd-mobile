@@ -43,7 +43,9 @@ export class ShareUserAndGroupPage {
     const profileRequest: GetAllProfileRequest = {
       local: true
     };
-    this.profileService.getAllProfiles(profileRequest).toPromise()
+    this.profileService.getAllProfiles(profileRequest)
+      .map((profiles) => profiles.filter((profile) => !!profile.handle))
+      .toPromise()
       .then((profiles) => {
       this.zone.run(() => {
         if (profiles && profiles.length) {
@@ -54,8 +56,6 @@ export class ShareUserAndGroupPage {
           this.userWeightMap.set(profile.uid, 0);
         });
       });
-    }).catch((error) => {
-      console.log('Something went wrong while fetching user list', error);
     });
   }
 
@@ -76,7 +76,9 @@ export class ShareUserAndGroupPage {
             local: true,
             groupId: group.gid
           };
-          this.profileService.getAllProfiles(gruopUserRequest).toPromise().then((profiles) => {
+          this.profileService.getAllProfiles(gruopUserRequest)
+            .map((profiles) => profiles.filter((profile) => !!profile.handle))
+            .toPromise().then((profiles) => {
             this.zone.run(() => {
               if (profiles && profiles.length) {
                 this.userGroupMap.set(group.gid, profiles);
