@@ -11,23 +11,28 @@ import {
   Validators,
 } from '@angular/forms';
 import {
-  CategoryRequest,
   InteractType,
   InteractSubtype,
   Environment,
   PageId,
   ImpressionType,
   ObjectType,
-  SuggestedFrameworkRequest,
-  FrameworkService,
 } from 'sunbird';
-import {Group, GroupService} from 'sunbird-sdk';
-import { FormAndFrameworkUtilService } from '../../profile/formandframeworkutil.service';
+import { Group, GroupService } from 'sunbird-sdk';
 import { GroupMembersPage } from './../group-members/group-members';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../../service/common-util.service';
-import { FrameworkCategory } from '@app/app';
+import {
+  FrameworkService,
+  FrameworkUtilService,
+  GetSuggestedFrameworksRequest,
+  FrameworkDetailsRequest,
+  Framework,
+  FrameworkCategoryCodesGroup,
+  GetFrameworkCategoryTermsRequest,
+  FrameworkCategoryCode
+} from 'sunbird-sdk';
 
 @IonicPage()
 @Component({
@@ -58,13 +63,13 @@ export class CreateGroupPage {
   constructor(
     private navCtrl: NavController,
     private fb: FormBuilder,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private translate: TranslateService,
     private navParams: NavParams,
     private commonUtilService: CommonUtilService,
     @Inject('GROUP_SERVICE') private groupService: GroupService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private framework: FrameworkService
+    @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
+    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService
   ) {
     this.group = this.navParams.get('groupInfo') || {};
     this.groupEditForm = this.fb.group({
@@ -100,13 +105,12 @@ export class CreateGroupPage {
     this.loader = this.commonUtilService.getLoader();
     this.loader.present();
 
-    const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
-      isGuestUser: true,
-      selectedLanguage: this.translate.currentLang,
-      categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
+    const getSuggestedFrameworksRequest: GetSuggestedFrameworksRequest = {
+      language: this.translate.currentLang,
+      requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
     };
-    this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
-      .then((result) => {
+    this.frameworkUtilService.getActiveChannelSuggestedFrameworkList(getSuggestedFrameworksRequest).toPromise()
+      .then((result: Framework[]) => {
         if (result && result.length) {
           result.forEach(element => {
             // renaming the fields to text, value and checked
@@ -207,10 +211,10 @@ export class CreateGroupPage {
           );
           this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
         },
-        (error) => {
-          loader.dismiss();
-          console.error('Error : ' + error);
-        });
+          (error) => {
+            loader.dismiss();
+            console.error('Error : ' + error);
+          });
     } else {
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('ENTER_GROUP_NAME'));
     }
@@ -233,16 +237,20 @@ export class CreateGroupPage {
       class: []
     });
 
-    this.formAndFrameworkUtilService.getFrameworkDetails(frameworkId)
-      .then((categories) => {
-        const request: CategoryRequest = {
-          currentCategory: 'gradeLevel',
-          selectedLanguage: this.translate.currentLang,
-          categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
-        };
+    const frameworkDetailsRequest: FrameworkDetailsRequest = {
+      frameworkId: frameworkId,
+      requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
+    };
+    this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
+      .then((framework: Framework) => {
         this.isFormValid = true;
-
-        return this.formAndFrameworkUtilService.getCategoryData(request);
+        const request: GetFrameworkCategoryTermsRequest = {
+          currentCategoryCode: FrameworkCategoryCode.GRADE_LEVEL,
+          language: this.translate.currentLang,
+          requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES,
+          frameworkId: frameworkId
+        };
+        return this.frameworkUtilService.getFrameworkCategoryTerms(request).toPromise();
       })
       .then((classes) => {
         this.loader.dismiss();
