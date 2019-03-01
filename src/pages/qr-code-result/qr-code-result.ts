@@ -1,5 +1,5 @@
-import { CommonUtilService } from './../../service/common-util.service';
-import { Component, Inject, NgZone, ViewChild } from '@angular/core';
+import {CommonUtilService} from './../../service/common-util.service';
+import {Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {
   AlertController,
   Events,
@@ -27,22 +27,22 @@ import {
   SharedPreferences,
   TabsPage
 } from 'sunbird';
-import { ContentDetailsPage } from '../content-details/content-details';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
-import { ContentType, FrameworkCategory, MimeType } from '../../app/app.constant';
-import { CollectionDetailsPage } from '../collection-details/collection-details';
-import { TranslateService } from '@ngx-translate/core';
-import { AppGlobalService } from '../../service/app-global.service';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import {ContentDetailsPage} from '../content-details/content-details';
+import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
+import {ContentType, MimeType} from '../../app/app.constant';
+import {CollectionDetailsPage} from '../collection-details/collection-details';
+import {TranslateService} from '@ngx-translate/core';
+import {AppGlobalService} from '../../service/app-global.service';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
 import * as _ from 'lodash';
-import { ProfileSettingsPage } from '../profile-settings/profile-settings';
+import {ProfileSettingsPage} from '../profile-settings/profile-settings';
 import {
+  Framework,
+  FrameworkCategoryCodesGroup,
+  FrameworkDetailsRequest,
   FrameworkService,
   FrameworkUtilService,
   GetSuggestedFrameworksRequest,
-  FrameworkDetailsRequest,
-  Framework,
-  FrameworkCategoryCodesGroup,
   Profile,
   ProfileService,
 } from 'sunbird-sdk';
@@ -335,7 +335,9 @@ export class QrCodeResultPage {
       local: true,
       server: false
     };
-    this.profileService.getAllProfiles(profileRequest).subscribe(profiles => {
+    this.profileService.getAllProfiles(profileRequest)
+      .map((profiles) => profiles.filter((profile) => !!profile.handle))
+      .subscribe(profiles => {
       if (profiles) {
         this.userCount = profiles.length;
       }

@@ -99,6 +99,7 @@ export class CoursesPage implements OnInit {
   isFilterApplied = false;
   callback: QRResultCallback;
   pageFilterCallBack: PageFilterCallback;
+  isUpgradePopoverShown: boolean = false;
 
   /**
    * Default method of class CoursesPage
@@ -241,9 +242,10 @@ export class CoursesPage implements OnInit {
   }
   subscribeUtilityEvents() {
     // Event for optional and forceful upgrade
-    this.events.subscribe('force_optional_upgrade', (upgrade) => {
-      if (upgrade) {
-        this.appGlobalService.openPopover(upgrade);
+    this.events.subscribe('force_optional_upgrade', async (upgrade) => {
+      if (upgrade && !this.isUpgradePopoverShown) {
+        await this.appGlobalService.openPopover(upgrade);
+        this.isUpgradePopoverShown = true;
       }
     });
 

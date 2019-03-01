@@ -31,7 +31,8 @@
                 <ion-col col-12 class="bg-color-white" (click)="selectUser(i,  profileDetails?.uid, profileDetails?.handle)">
                   <ion-item class="bg-color-white padding-left-0 rm-label-margin" no-padding>
                     <h6 class="line-height-2 padding-left-2 elipsis" color="primary" [ngStyle]="{'color': currentUserId === user?.uid ? 'dodgerblue' : 'black'}">
-                      <b>{{profileDetails?.handle}}&nbsp;{{profileDetails?.lastName}}</b>
+                      <b
+                        *ngIf="profileDetails">{{profileDetails.serverProfile ? profileDetails.serverProfile.firstName : profileDetails.handle}}&nbsp;{{profileDetails.serverProfile?.lastName}}</b>
                     </h6>
                     <!-- <p>{{profileDetails?.grade}}</p> -->
                     <p *ngIf="profileDetails?.profileType === 'TEACHER'">{{'USER_TYPE_1' | translate | titlecase}}</p>

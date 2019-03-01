@@ -1,6 +1,6 @@
 import {APP_INITIALIZER, ErrorHandler, NgModule, Provider} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-import {Events, IonicApp, IonicErrorHandler, IonicModule, Platform} from 'ionic-angular';
+import {Events, IonicApp, IonicErrorHandler, IonicModule} from 'ionic-angular';
 import {MyApp} from './app.component';
 import {StatusBar} from '@ionic-native/status-bar';
 import {TranslateLoader, TranslateModule, TranslateService} from '@ngx-translate/core';
@@ -12,7 +12,6 @@ import {AppVersion} from '@ionic-native/app-version';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import {ImageLoader, ImageLoaderConfig, IonicImageLoader} from 'ionic-image-loader';
 import {FileTransfer, FileTransferObject} from '@ionic-native/file-transfer';
-// import {UniqueDeviceID} from '@ionic-native/unique-device-id';
 import {FileOpener} from '@ionic-native/file-opener';
 import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
 import {UpgradePopover} from '@app/pages/upgrade';
@@ -79,23 +78,15 @@ export const sunbirdSdkServicesProvidersFactory: () => Provider[] = () => {
   }];
 };
 
-export const sunbirdSdkFactory: (uniqueDeviceID: UniqueDeviceID, platform: Platform) => () => Promise<void> =
-  (uniqueDeviceID: UniqueDeviceID, platform: Platform) => {
+export const sunbirdSdkFactory =
+  () => {
     return async () => {
-      // let deviceId = '';
-
-      // if (platform.is('core') || platform.is('mobileweb')) {
-      //   deviceId = '4adce7fad56e02b7';
-      // } else {
-      //   deviceId = await uniqueDeviceID.get();
-
-
       await SunbirdSdk.instance.init({
         fileConfig: {
           debugMode: false
         },
         apiConfig: {
-          debugMode: true,
+          debugMode: false,
           host: 'https://staging.ntp.net.in',
           baseUrl: 'https://staging.ntp.net.in/api',
           user_authentication: {
@@ -217,7 +208,7 @@ export const sunbirdSdkFactory: (uniqueDeviceID: UniqueDeviceID, platform: Platf
     UniqueDeviceID,
     ...sunbirdSdkServicesProvidersFactory(),
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    {provide: APP_INITIALIZER, useFactory: sunbirdSdkFactory, deps: [UniqueDeviceID], multi: true}
+    {provide: APP_INITIALIZER, useFactory: sunbirdSdkFactory, deps: [], multi: true}
   ],
   exports: [
     BroadcastComponent

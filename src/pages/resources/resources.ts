@@ -128,6 +128,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   currentGrade: any;
   currentMedium: string;
   defaultImg: string;
+  isUpgradePopoverShown: boolean = false;
   constructor(
     public navCtrl: NavController,
     private ngZone: NgZone,
@@ -182,9 +183,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     });
 
     // Event for optional and forceful upgrade
-    this.events.subscribe('force_optional_upgrade', (upgrade) => {
-      if (upgrade) {
-        this.appGlobalService.openPopover(upgrade);
+    this.events.subscribe('force_optional_upgrade', async (upgrade) => {
+      if (upgrade && !this.isUpgradePopoverShown) {
+        await this.appGlobalService.openPopover(upgrade);
+        this.isUpgradePopoverShown = true;
       }
     });
 

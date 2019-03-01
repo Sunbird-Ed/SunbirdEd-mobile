@@ -27,18 +27,18 @@ import {
   TabsPage
 } from 'sunbird';
 import {
-   GetAllProfileRequest,
-   Group,
-   GroupService,
-   Profile,
-   ProfileService,
-   ProfileType,
-   Environment,
-   InteractSubtype,
-   InteractType,
-   PageId,
-   TelemetryObject
-  } from 'sunbird-sdk';
+  Environment,
+  GetAllProfileRequest,
+  Group,
+  GroupService,
+  InteractSubtype,
+  InteractType,
+  PageId,
+  Profile,
+  ProfileService,
+  ProfileType,
+  TelemetryObject
+} from 'sunbird-sdk';
 import {AppGlobalService} from '../../../service/app-global.service';
 import {
   GUEST_STUDENT_SWITCH_TABS,
@@ -120,7 +120,9 @@ export class GroupDetailsPage {
     };
 
     this.zone.run(() => {
-      this.profileService.getAllProfiles(profileRequest).toPromise()
+      this.profileService.getAllProfiles(profileRequest)
+        .map((profiles) => profiles.filter((profile) => !!profile.handle))
+        .toPromise()
         .then((profiles) => {
         this.zone.run(() => {
           if (profiles && profiles.length) {

@@ -1,32 +1,18 @@
-import {
-  Component,
-  NgZone,
-  Inject
-} from '@angular/core';
-import {
-  IonicPage,
-  NavController,
-  NavParams,
-  LoadingController
-} from 'ionic-angular';
+import {Component, Inject, NgZone} from '@angular/core';
+import {IonicPage, LoadingController, NavController, NavParams} from 'ionic-angular';
 import {
   AddUpdateProfilesRequest,
-  InteractType,
-  InteractSubtype,
   Environment,
-  PageId,
   ImpressionType,
-  ObjectType
+  InteractSubtype,
+  InteractType,
+  ObjectType,
+  PageId
 } from 'sunbird';
-import {Group,
-        GroupService,
-        ProfileService,
-        Profile,
-        GetAllProfileRequest
-       } from 'sunbird-sdk';
-import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
-import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../../service/common-util.service';
+import {GetAllProfileRequest, Group, GroupService, Profile, ProfileService} from 'sunbird-sdk';
+import {GuestEditProfilePage} from '../../profile/guest-edit.profile/guest-edit.profile';
+import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
+import {CommonUtilService} from '../../../service/common-util.service';
 
 @IonicPage()
 @Component({
@@ -70,17 +56,16 @@ export class GroupMembersPage {
   // method below fetches the last created user
   getLastCreatedProfile() {
     return new Promise((resolve, reject) => {
-      const req = {
-        local: true,
-        latestCreatedProfile: true
+      const req: GetAllProfileRequest = {
+        local: true
       };
-      this.profileService.getAllProfiles(req).toPromise().then((lastCreatedProfile: any) => {
-        console.log('lastCreatedProfile: ', lastCreatedProfile);
-        this.lastCreatedProfileData = JSON.parse(lastCreatedProfile);
-        resolve(JSON.parse(lastCreatedProfile));
-      }).catch(error => {
+      this.profileService.getAllProfiles(req)
+        .map((profiles) => profiles.filter((profile) => !!profile.handle))
+        .toPromise().then((lastCreatedProfile: any) => {
+        this.lastCreatedProfileData = lastCreatedProfile;
+        resolve(lastCreatedProfile);
+      }).catch(() => {
         reject(null);
-        console.log('error in fetching last created profile data' + error);
       });
     });
   }
@@ -91,7 +76,9 @@ export class GroupMembersPage {
     };
 
     this.zone.run(() => {
-      this.profileService.getAllProfiles(profileRequest).toPromise().then((profiles) => {
+      this.profileService.getAllProfiles(profileRequest)
+        .map((profiles) => profiles.filter((profile) => !!profile.handle))
+        .toPromise().then((profiles) => {
         const loader = this.getLoader();
         loader.present();
         this.zone.run(() => {
@@ -100,10 +87,7 @@ export class GroupMembersPage {
             loader.dismiss();
             this.loading = false;
           }
-          console.log('UserList', profiles);
         });
-      }).catch((error) => {
-        console.log('Something went wrong while fetching user list', error);
       });
     });
   }
@@ -170,11 +154,9 @@ export class GroupMembersPage {
           groupId: res.gid,
           uidList: selectedUids
         };
-        console.log('group creating successfull');
         return this.groupService.addProfilesToGroup(req).toPromise();
       })
       .then(success => {
-        console.log('group profile', success);
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('GROUP_CREATE_SUCCESS'));
         this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 3));
@@ -182,7 +164,6 @@ export class GroupMembersPage {
       .catch(error => {
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
-        console.log('Error : ' + error);
         loader.dismiss();
       });
   }

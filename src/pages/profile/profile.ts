@@ -109,9 +109,9 @@ export class ProfilePage {
     this.isLoggedInUser = !this.userId;
 
     // Event for optional and forceful upgrade
-    this.events.subscribe('force_optional_upgrade', (upgrade) => {
+    this.events.subscribe('force_optional_upgrade', async (upgrade) => {
       if (upgrade) {
-        this.appGlobalService.openPopover(upgrade);
+        await this.appGlobalService.openPopover(upgrade);
       }
     });
 
