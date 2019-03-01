@@ -401,6 +401,8 @@ export class MyApp {
         try {
           action = JSON.parse(response.data.action);
         } catch (Error) { }
+        const values = new Map();
+        values['openrapInfo'] = action;
         if (response && response.data.action && response.data.action === 'logout') {
           this.authService.getSessionData((session) => {
             if (session) {
@@ -429,8 +431,18 @@ export class MyApp {
           });
         } else if (response && action && action.actionType === 'connected') {
           console.log('connected to openrap device with the IP ' + action.ip);
+          this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+            'openrap-device-connected',
+            Environment.HOME,
+            Environment.HOME, undefined,
+            values);
         } else if (response && action && action.actionType === 'disconnected') {
           console.log('disconnected from openrap device with the IP ' + action.ip);
+          this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+            'openrap-device-disconnected',
+            Environment.HOME,
+            Environment.HOME, undefined,
+            values);
         } else if (response && response.data.action && response.data.action === EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY) {
           this.events.publish(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, {
             update: true
