@@ -155,7 +155,8 @@ export const contentServiceMock = createSpyObj<ContentService>([
   'getChildContents',
   'sendFeedback',
   'deleteContent',
-  'getAllLocalContents'
+  'getAllLocalContents',
+  'setContentMarker'
 ]);
 
 export const popoverCtrlMock = createSpyObj<PopoverController>([
@@ -402,3 +403,4 @@ export const generateOTPRequestMock = createSpyObj<GenerateOTPRequest>([
 ]);
 
 export const networkMock = createSpyObj<Network>([]);
+
