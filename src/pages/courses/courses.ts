@@ -1,5 +1,5 @@
 import {ViewMoreActivityPage} from './../view-more-activity/view-more-activity';
-import {Component, NgZone, OnInit} from '@angular/core';
+import {Component, NgZone, OnInit, Inject} from '@angular/core';
 import {Events, IonicPage, NavController, PopoverController} from 'ionic-angular';
 import {AppVersion} from '@ionic-native/app-version';
 import {
@@ -9,9 +9,6 @@ import {
   ImpressionType,
   InteractSubtype,
   InteractType,
-  PageAssembleCriteria,
-  PageAssembleFilter,
-  PageAssembleService,
   PageId,
   SharedPreferences
 } from 'sunbird';
@@ -23,7 +20,6 @@ import {
   ContentCard,
   ContentType,
   EventTopics,
-  PageName,
   PreferenceKey,
   ProfileConstants,
   ViewMore
@@ -37,7 +33,12 @@ import {updateFilterInSearchQuery} from '../../util/filter.util';
 import {FormAndFrameworkUtilService} from '../profile/formandframeworkutil.service';
 import {CommonUtilService} from '../../service/common-util.service';
 import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
-import {ProfileType} from 'sunbird-sdk';
+import {ProfileType,
+  PageAssembleService,
+  PageAssembleCriteria,
+  PageAssembleFilter,
+  PageName
+} from 'sunbird-sdk';
 
 @IonicPage()
 @Component({
@@ -125,7 +126,6 @@ export class CoursesPage implements OnInit {
     private appVersion: AppVersion,
     private navCtrl: NavController,
     private courseService: CourseService,
-    private pageService: PageAssembleService,
     private ngZone: NgZone,
     private qrScanner: SunbirdQRScanner,
     private popCtrl: PopoverController,
@@ -137,7 +137,8 @@ export class CoursesPage implements OnInit {
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private network: Network
+    private network: Network,
+    @Inject('PAGE_ASSEMBLE_SERVICE') private pageService: PageAssembleService
   ) {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
@@ -351,8 +352,11 @@ export class CoursesPage implements OnInit {
   getPopularAndLatestCourses(hardRefresh = false, pageAssembleCriteria?: PageAssembleCriteria): void {
     this.pageApiLoader = true;
     if (pageAssembleCriteria === undefined) {
-      const criteria = new PageAssembleCriteria();
-      criteria.name = PageName.COURSE;
+      const criteria: PageAssembleCriteria = {
+        name: PageName.COURSE,
+        filters: {},
+        source: 'app'
+      };
       criteria.mode = 'soft';
 
       if (this.appliedFilter) {
@@ -374,9 +378,6 @@ export class CoursesPage implements OnInit {
     this.mode = pageAssembleCriteria.mode;
 
     if (this.profile && !this.isFilterApplied) {
-      if (!pageAssembleCriteria.filters) {
-        pageAssembleCriteria.filters = new PageAssembleFilter();
-      }
 
       if (this.profile.board && this.profile.board.length) {
         pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board, 'board');
@@ -397,12 +398,13 @@ export class CoursesPage implements OnInit {
       }
     }
 
-    pageAssembleCriteria.hardRefresh = hardRefresh;
+    // pageAssembleCriteria.hardRefresh = hardRefresh;
 
-    this.pageService.getPageAssemble(pageAssembleCriteria).then((res: any) => {
-      res = JSON.parse(res);
+    this.pageService.getPageAssemble(pageAssembleCriteria).toPromise()
+    .then((res: any) => {
+      res = res;
       this.ngZone.run(() => {
-        const sections = JSON.parse(res.sections);
+        const sections = res.sections;
         const newSections = [];
         sections.forEach(element => {
           element.display = JSON.parse(element.display);
@@ -569,8 +571,9 @@ export class CoursesPage implements OnInit {
     this.pageFilterCallBack = {
       applyFilter(filter, appliedFilter) {
         that.ngZone.run(() => {
-          const criteria = new PageAssembleCriteria();
-          criteria.name = PageName.COURSE;
+          const criteria: PageAssembleCriteria = {
+            name: PageName.COURSE,
+          };
           criteria.filters = filter;
           that.courseFilter = appliedFilter;
           that.appliedFilter = filter;

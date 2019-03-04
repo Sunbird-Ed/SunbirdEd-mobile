@@ -111,7 +111,8 @@ export const sunbirdSdkFactory =
           dbName: 'GenieServices.db'
         },
         contentServiceConfig: {
-          apiPath: ''
+          apiPath: '',
+          searchApiPath: ''
         },
         courseServiceConfig: {
           apiPath: '/api/course/v1'

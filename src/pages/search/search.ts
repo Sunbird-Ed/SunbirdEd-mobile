@@ -1,4 +1,4 @@
-import {Component, NgZone, ViewChild} from '@angular/core';
+import {Component, NgZone, ViewChild, Inject} from '@angular/core';
 import {Events, IonicPage, Navbar, NavController, NavParams, Platform} from 'ionic-angular';
 import {
   ContentDetailRequest,
@@ -6,9 +6,6 @@ import {
   ContentService,
   CorrelationData,
   FileUtil,
-  PageAssembleCriteria,
-  PageAssembleFilter,
-  PageAssembleService,
   SharedPreferences,
   TabsPage,
 } from 'sunbird';
@@ -20,16 +17,21 @@ import {
   Mode,
   Environment,
   PageId,
-  TelemetryObject
+  TelemetryObject,
+  PageAssembleCriteria,
+  PageAssembleFilter,
+  PageAssembleService,
+  PageName,
+  ProfileType,
+
 } from 'sunbird-sdk';
-import {ProfileType} from 'sunbird-sdk';
 import {GenieResponse} from '../settings/datasync/genieresponse';
 import {FilterPage} from './filters/filter';
 import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
 import {ContentDetailsPage} from '../content-details/content-details';
 import {Map} from '../../app/telemetryutil';
 import * as _ from 'lodash';
-import {AudienceFilter, ContentType, MimeType, PageName, Search} from '../../app/app.constant';
+import {AudienceFilter, ContentType, MimeType, Search} from '../../app/app.constant';
 import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
 import {AppGlobalService} from '../../service/app-global.service';
 import {FormAndFrameworkUtilService} from '../profile/formandframeworkutil.service';
@@ -107,7 +109,6 @@ export class SearchPage {
   @ViewChild(Navbar) navBar: Navbar;
   constructor(
     private contentService: ContentService,
-    private pageService: PageAssembleService,
     private navParams: NavParams,
     private navCtrl: NavController,
     private zone: NgZone,
@@ -120,7 +121,8 @@ export class SearchPage {
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private preference: SharedPreferences,
-    private translate: TranslateService
+    private translate: TranslateService,
+    @Inject('PAGE_ASSEMBLE_SERVICE') private pageService: PageAssembleService
   ) {
 
     this.checkUserSession();
@@ -484,18 +486,21 @@ export class SearchPage {
     }
 
     // Page API START
-    const pagetAssemblefilter = new PageAssembleFilter();
+    const pagetAssemblefilter: PageAssembleFilter = {};
     pagetAssemblefilter.dialcodes = this.dialCode;
 
-    const pageAssembleCriteria = new PageAssembleCriteria();
-    pageAssembleCriteria.name = PageName.DIAL_CODE;
-    pageAssembleCriteria.filters = pagetAssemblefilter;
-    pageAssembleCriteria.hardRefresh = true;
+    const pageAssembleCriteria: PageAssembleCriteria = {
+      name: PageName.DIAL_CODE,
+      filters: pagetAssemblefilter,
+      source: 'app'
+    };
+    // pageAssembleCriteria.hardRefresh = true;
 
-    this.pageService.getPageAssemble(pageAssembleCriteria).then((res: any) => {
+    this.pageService.getPageAssemble(pageAssembleCriteria).toPromise()
+    .then((res: any) => {
       this.zone.run(() => {
-        const response = JSON.parse(res);
-        const sections = JSON.parse(response.sections);
+        const response = res;
+        const sections = response.sections;
         if (sections && sections.length) {
           this.addCorRelation(sections[0].resmsgId, 'API');
           this.processDialCodeResult(sections);
