@@ -1,3 +1,6 @@
+import { SearchCardComponent } from './search-card/search-card';
+import { DetailCardComponent } from './detail-card/detail-card';
+import { NewCourseCardComponent } from './new-course-card/new-course-card';
 import { ContentRatingAlertComponent } from './content-rating-alert/content-rating-alert';
 import { TranslateModule } from '@ngx-translate/core';
 import { PipesModule } from './../pipes/pipes.module';
@@ -24,7 +27,9 @@ import { BookmarkComponent } from './bookmark/bookmark';
 import { UnenrollAlertComponent } from './unenroll-alert/unenroll-alert';
 import { EditContactVerifyPopupComponent } from './edit-contact-verify-popup/edit-contact-verify-popup';
 import { EditContactDetailsPopupComponent } from './edit-contact-details-popup/edit-contact-details-popup';
-import { CollectionChild } from './collection-child/collection-child';
+import { ViewAllCardComponent } from './view-all-card/view-all-card';
+import { TextbookCardComponent } from './textbook-card/textbook-card';
+// import { CollectionChildComponent } from './collection-child/collection-child';
 
 @NgModule({
     declarations: [
@@ -34,7 +39,6 @@ import { CollectionChild } from './collection-child/collection-child';
         SignInCardComponent,
         PBHorizontal,
         ConfirmAlertComponent,
-        // ContentActionsComponent,
         ReportIssuesComponent,
         ContentRatingAlertComponent,
         AssessmentDetailsComponent,
@@ -46,7 +50,12 @@ import { CollectionChild } from './collection-child/collection-child';
         EditContactDetailsPopupComponent,
         EditContactVerifyPopupComponent,
         ResourceCard,
-        CollectionChild
+        NewCourseCardComponent,
+        ViewAllCardComponent,
+        DetailCardComponent,
+        SearchCardComponent,
+        TextbookCardComponent,
+        // CollectionChildComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -57,8 +66,7 @@ import { CollectionChild } from './collection-child/collection-child';
         BrowserAnimationsModule,
         NgxDatatableModule,
         IonicModule,
-        IonicPageModule.forChild(ResourceCard),
-        IonicPageModule.forChild(CollectionChild)
+        IonicPageModule.forChild(ResourceCard)
     ],
     exports: [
         CourseCard,
@@ -78,8 +86,13 @@ import { CollectionChild } from './collection-child/collection-child';
         EditContactDetailsPopupComponent,
         EditContactVerifyPopupComponent,
         ResourceCard,
-        CollectionChild
-        // ContentActionsComponent
+        NewCourseCardComponent,
+        ViewAllCardComponent,
+        DetailCardComponent,
+        SearchCardComponent,
+        TextbookCardComponent,
+        // CollectionChildComponent
+
     ],
     entryComponents: [
         ConfirmAlertComponent,
