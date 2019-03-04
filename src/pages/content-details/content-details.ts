@@ -78,6 +78,7 @@ export class ContentDetailsPage {
   isChildContent = false;
   contentDetails: any;
   identifier: string;
+  new: Boolean = true;
 
   /**
    * To hold previous state data
@@ -133,8 +134,10 @@ export class ContentDetailsPage {
   userCount = 0;
   shouldGenerateTelemetry = true;
   playOnlineSpinner: boolean;
+  defaultAppIcon: string;
   @ViewChild(Navbar) navBar: Navbar;
   showMessage: any;
+  localImage: any;
   isUsrGrpAlrtOpen: Boolean = false;
   constructor(
     private navCtrl: NavController,
@@ -158,7 +161,7 @@ export class ContentDetailsPage {
     private commonUtilService: CommonUtilService,
     private courseUtilService: CourseUtilService,
     private deviceInfoService: DeviceInfoService,
-    private network: Network
+    private network: Network,
   ) {
 
     this.objRollup = new Rollup();
@@ -169,6 +172,7 @@ export class ContentDetailsPage {
     this.handlePageResume();
     this.checkDeviceAPILevel();
     this.checkappAvailability();
+    this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
   }
 
   ionViewDidLoad() {
@@ -437,6 +441,18 @@ export class ContentDetailsPage {
   extractApiResponse(data) {
     this.content = data.result.contentData;
     this.content.downloadable = data.result.isAvailableLocally;
+    if (this.content.appIcon) {
+      if (this.content.appIcon.includes('http:') || this.content.appIcon.includes('https:')) {
+        if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+          // this.content.appIcon = this.content.appIcon;
+          // } else {
+          this.content.appIcon = this.defaultAppIcon;
+        }
+      } else if (data.result.basePath) {
+        this.content.appIcon = data.result.basePath + '/' + this.content.appIcon;
+        console.log('local Image' , this.localImage);
+      }
+    }
 
     this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
     this.content.contentMarker = data.result.contentMarker ? data.result.contentMarker : [];
@@ -967,7 +983,31 @@ export class ContentDetailsPage {
       });
     });
   }
-
+  deleteContent() {
+    const popover = this.popoverCtrl.create(ContentActionsComponent, {
+      content: this.content,
+      isChild: this.isChildContent,
+      objRollup: this.objRollup,
+      pageName: PageId.CONTENT_DETAIL,
+      corRelationList: this.corRelationList
+    }, {
+        cssClass: 'content-action'
+      });
+    popover.present({
+      ev: event
+    });
+    popover.onDidDismiss(data => {
+      this.zone.run(() => {
+        if (data === 'delete.success') {
+          this.content.streamingUrl = this.streamingUrl;
+          this.content.downloadable = false;
+          const playContent = JSON.parse(this.content.playContent);
+          playContent.isAvailableLocally = false;
+          this.content.playContent = JSON.stringify(playContent);
+        }
+      });
+    });
+  }
   showBookmarkMenu(event?) {
     const popover = this.popoverCtrl.create(BookmarkComponent, {
       content: this.content,

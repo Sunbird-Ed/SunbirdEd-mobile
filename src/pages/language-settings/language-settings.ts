@@ -1,3 +1,4 @@
+import { ResourcesPage } from './../resources/resources';
 import {
   Component,
   NgZone
@@ -40,6 +41,7 @@ export class LanguageSettingsPage {
   selectedLanguage: any = {};
   btnColor = '#55acee';
   unregisterBackButton = undefined;
+  mainPage: Boolean = false;
 
 
   constructor(
@@ -53,7 +55,9 @@ export class LanguageSettingsPage {
     private platform: Platform,
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService
-  ) { }
+  ) {
+    this.mainPage = this.navParams.get('mainPage');
+  }
 
   ionViewDidLoad() {
     this.isFromSettings = this.navParams.get('isFromSettings');
@@ -124,6 +128,9 @@ export class LanguageSettingsPage {
         });
     });
 
+  }
+  goToResources() {
+     this.navCtrl.setRoot(ResourcesPage);
   }
 
   /*   getDeviceLanguage() {
