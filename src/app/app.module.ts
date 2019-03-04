@@ -21,6 +21,7 @@ import {LogoutHandlerService} from '@app/service/handlers/logout-handler.service
 import {TncUpdateHandlerService} from '@app/service/handlers/tnc-update-handler.service';
 import {SunbirdSdk} from 'sunbird-sdk';
 import {UniqueDeviceID} from '@ionic-native/unique-device-id';
+import {Device} from '@ionic-native/device';
 
 export const translateHttpLoaderFactory = (httpClient: HttpClient) => {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
@@ -206,6 +207,7 @@ export const sunbirdSdkFactory =
     LogoutHandlerService,
     TncUpdateHandlerService,
     UniqueDeviceID,
+    Device,
     ...sunbirdSdkServicesProvidersFactory(),
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     {provide: APP_INITIALIZER, useFactory: sunbirdSdkFactory, deps: [], multi: true}
