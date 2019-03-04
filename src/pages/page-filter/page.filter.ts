@@ -1,33 +1,19 @@
-import { Component, Inject } from '@angular/core';
-import {
-  PopoverController,
-  ViewController,
-  NavParams,
-  Platform,
-  Events
-} from 'ionic-angular';
-import { AppGlobalService } from '../../service/app-global.service';
+import {Component, Inject} from '@angular/core';
+import {Events, NavParams, Platform, PopoverController, ViewController} from 'ionic-angular';
+import {AppGlobalService} from '../../service/app-global.service';
 import * as _ from 'lodash';
-import { TranslateService } from '@ngx-translate/core';
+import {TranslateService} from '@ngx-translate/core';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageAssembleFilter, PageId,} from 'sunbird';
+import {PageFilterOptions} from './options/filter.options';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {CommonUtilService} from '../../service/common-util.service';
+import {FormAndFrameworkUtilService} from '../profile';
 import {
-  PageAssembleFilter,
-  InteractType,
-  InteractSubtype,
-  Environment,
-  PageId,
-  ImpressionType,
-} from 'sunbird';
-import { PageFilterOptions } from './options/filter.options';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { FrameworkCategory } from '@app/app';
-import { FormAndFrameworkUtilService } from '../profile';
-import {
-  FrameworkUtilService,
-  FrameworkCategoryCodesGroup,
-  GetFrameworkCategoryTermsRequest,
+  CategoryTerm,
   FrameworkCategoryCode,
-  CategoryTerm
+  FrameworkCategoryCodesGroup,
+  FrameworkUtilService,
+  GetFrameworkCategoryTermsRequest
 } from 'sunbird-sdk';
 
 @Component({

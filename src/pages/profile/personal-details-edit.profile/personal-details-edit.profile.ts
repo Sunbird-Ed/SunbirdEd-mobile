@@ -98,13 +98,13 @@ export class PersonalDetailsEditPage {
   getStates() {
     this.loader = this.getLoader();
     const req: LocationSearchCriteria = {
-      type: Location.TYPE_STATE
+      filters: {
+        type: Location.TYPE_STATE
+      }
     };
-    this.profileService.searchLocation(req).toPromise().then((response: any) => {
-      response = JSON.parse(response);
-
-      const locations = JSON.parse(response.result.locationList);
-      if (locations && locations.length) {
+    this.profileService.searchLocation(req).subscribe((success) => {
+      const locations = success;
+      if (locations && Object.keys(locations).length) {
         this.stateList = locations;
       } else {
         this.loader.dismiss();
@@ -116,14 +116,14 @@ export class PersonalDetailsEditPage {
   getDistrict(parentId: string) {
     this.loader = this.getLoader();
     const req: LocationSearchCriteria = {
-      type: Location.TYPE_DISTRICT,
-      parentId: parentId
+      filters: {
+        type: Location.TYPE_DISTRICT,
+        parentId: parentId
+      }
     };
-    this.profileService.searchLocation(req).toPromise()
-      .then((response: any) => {
-      response = JSON.parse(response);
-      const districtsTemp = JSON.parse(response.result.locationList);
-      if (districtsTemp && districtsTemp.length) {
+    this.profileService.searchLocation(req).subscribe((success) => {
+      const districtsTemp = success;
+      if (districtsTemp && Object.keys(districtsTemp).length) {
         this.districtList = districtsTemp;
       } else {
         this.profileEditForm.patchValue({
@@ -133,7 +133,7 @@ export class PersonalDetailsEditPage {
         this.loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('NO_DATA_FOUND'));
       }
-    });
+    })
   }
 
   /**
@@ -213,8 +213,8 @@ export class PersonalDetailsEditPage {
   }
 
   /**
-  *  It will validate the name field.
-  */
+   *  It will validate the name field.
+   */
   validateName() {
     const name = this.profileEditForm.getRawValue().name;
     return name.trim();

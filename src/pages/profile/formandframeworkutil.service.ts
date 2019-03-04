@@ -1,27 +1,24 @@
-import { Inject, Injectable } from '@angular/core';
-import {
-    FormRequest,
-    FormService,
-    FrameworkService,
-    SharedPreferences,
-} from 'sunbird';
-import { AppGlobalService } from '../../service/app-global.service';
-import { AppVersion } from '@ionic-native/app-version';
-import { FormConstant, FrameworkCategory, PreferenceKey } from '../../app/app.constant';
-import { TranslateService } from '@ngx-translate/core';
+import {Inject, Injectable} from '@angular/core';
+import {FrameworkService, SharedPreferences,} from 'sunbird';
+import {AppGlobalService} from '../../service/app-global.service';
+import {AppVersion} from '@ionic-native/app-version';
+import {PreferenceKey} from '../../app/app.constant';
+import {TranslateService} from '@ngx-translate/core';
 import * as _ from 'lodash';
-import { Events } from 'ionic-angular';
+import {Events} from 'ionic-angular';
 import {
-    Profile,
-    ProfileService,
-    SystemSettingsService,
-    GetSystemSettingsRequest,
-    SystemSettingsOrgIds,
-    SystemSettings,
-    FrameworkCategoryCodesGroup,
-    GetFrameworkCategoryTermsRequest,
-    FrameworkUtilService,
-    CategoryTerm
+  CategoryTerm,
+  FormRequest,
+  FormService,
+  FrameworkCategoryCodesGroup,
+  FrameworkUtilService,
+  GetFrameworkCategoryTermsRequest,
+  GetSystemSettingsRequest,
+  Profile,
+  ProfileService,
+  SystemSettings,
+  SystemSettingsOrgIds,
+  SystemSettingsService
 } from 'sunbird-sdk';
 
 @Injectable()
@@ -35,16 +32,16 @@ export class FormAndFrameworkUtilService {
     profile: Profile;
 
     constructor(
-        @Inject('PROFILE_SERVICE') private profileService: ProfileService,
-        @Inject('SYSTEM_SETTINGS_SERVICE') private systemSettingsService: SystemSettingsService,
-        @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
-        private framework: FrameworkService,
-        private preference: SharedPreferences,
-        private formService: FormService,
-        private appGlobalService: AppGlobalService,
-        private appVersion: AppVersion,
-        private translate: TranslateService,
-        private events: Events
+      @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+      @Inject('SYSTEM_SETTINGS_SERVICE') private systemSettingsService: SystemSettingsService,
+      @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
+      @Inject('FORM_SERVICE') private formService: FormService,
+      private framework: FrameworkService,
+      private preference: SharedPreferences,
+      private appGlobalService: AppGlobalService,
+      private appVersion: AppVersion,
+      private translate: TranslateService,
+      private events: Events
     ) {
         // Get language selected
         this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
@@ -95,6 +92,78 @@ export class FormAndFrameworkUtilService {
         });
     }
 
+  /**
+   * This method checks if the newer version of the available and respectively shows the dialog with relevant contents
+   */
+  checkNewAppVersion(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      console.log('checkNewAppVersion Called');
+
+      this.appVersion.getVersionCode()
+        .then((versionCode: any) => {
+          console.log('checkNewAppVersion Current app version - ' + versionCode);
+
+          let result: any;
+
+          // form api request
+          const req: FormRequest = {
+            type: 'app',
+            subType: 'install',
+            action: 'upgrade'
+          };
+          // form api call
+          this.formService.getForm(req).toPromise()
+            .then((res: any) => {
+              let fields: Array<any> = [];
+              let ranges: Array<any> = [];
+              let upgradeTypes: Array<any> = [];
+
+              if (res && res.form && res.form.data) {
+                fields = res.form.data.fields;
+
+                fields.forEach(element => {
+                  if (element.language === this.selectedLanguage) {
+                    if (element.range) {
+                      ranges = element.range;
+                    }
+
+                    if (element.upgradeTypes) {
+                      upgradeTypes = element.upgradeTypes;
+                    }
+                  }
+                });
+
+                if (ranges && ranges.length > 0 && upgradeTypes && upgradeTypes.length > 0) {
+                  let type: string;
+                  const forceType = 'force';
+
+                  ranges.forEach(element => {
+                    if (versionCode >= element.minVersionCode && versionCode <= element.maxVersionCode) {
+                      console.log('App needs a upgrade of type - ' + element.type);
+                      type = element.type;
+
+                      if (type === forceType) {
+                        return true; // this is to stop the foreach loop
+                      }
+                    }
+                  });
+
+                  upgradeTypes.forEach(upgradeElement => {
+                    if (type === upgradeElement.type) {
+                      result = upgradeElement;
+                    }
+                  });
+                }
+              }
+
+              resolve(result);
+            }).catch((error: any) => {
+            reject(error);
+          });
+        });
+    });
+  }
+
     /**
      * Network call to form api
      *
@@ -110,45 +179,16 @@ export class FormAndFrameworkUtilService {
             type: 'pageassemble',
             subType: 'course',
             action: 'filter_v2',
-            filePath: FormConstant.DEFAULT_PAGE_COURSE_FILTER_PATH
         };
         // form api call
-        this.formService.getForm(req).then((res: any) => {
-            const response: any = JSON.parse(res);
-            courseFilterConfig = response.result.fields;
+      this.formService.getForm(req).toPromise()
+        .then((res: any) => {
+          courseFilterConfig = res.form.data.fields;
             this.appGlobalService.setCourseFilterConfig(courseFilterConfig);
             resolve(courseFilterConfig);
         }).catch((error: any) => {
             console.log('Error - ' + error);
             resolve(courseFilterConfig);
-        });
-    }
-
-    /**
-     * Network call to form api
-     *
-     * @param libraryFilterConfig
-     * @param resolve
-     * @param reject
-     */
-    private invokeLibraryFilterConfigFormApi(libraryFilterConfig: Array<any>,
-        resolve: (value?: any) => void,
-        reject: (reason?: any) => void) {
-        const req: FormRequest = {
-            type: 'pageAssemble',
-            subType: 'library',
-            action: 'filter',
-            filePath: FormConstant.DEFAULT_PAGE_LIBRARY_FILTER_PATH
-        };
-        // form api call
-        this.formService.getForm(req).then((res: any) => {
-            const response: any = JSON.parse(res);
-            libraryFilterConfig = response.result.fields;
-            this.appGlobalService.setLibraryFilterConfig(libraryFilterConfig);
-            resolve(libraryFilterConfig);
-        }).catch((error: any) => {
-            console.log('Error - ' + error);
-            resolve(libraryFilterConfig);
         });
     }
 
@@ -213,75 +253,29 @@ export class FormAndFrameworkUtilService {
     // }
 
     /**
-     * This method checks if the newer version of the available and respectively shows the dialog with relevant contents
+     * Network call to form api
+     *
+     * @param libraryFilterConfig
+     * @param resolve
+     * @param reject
      */
-    checkNewAppVersion(): Promise<any> {
-        return new Promise((resolve, reject) => {
-            console.log('checkNewAppVersion Called');
-
-            this.appVersion.getVersionCode()
-                .then((versionCode: any) => {
-                    console.log('checkNewAppVersion Current app version - ' + versionCode);
-
-                    let result: any;
-
-                    // form api request
-                    const req: FormRequest = {
-                        type: 'app',
-                        subType: 'install',
-                        action: 'upgrade'
-                    };
-                    // form api call
-                    this.formService.getForm(req).then((res: any) => {
-                        const response: any = JSON.parse(res);
-
-                        let fields: Array<any> = [];
-                        let ranges: Array<any> = [];
-                        let upgradeTypes: Array<any> = [];
-
-                        if (response && response.result && response.result.fields) {
-                            fields = response.result.fields;
-
-                            fields.forEach(element => {
-                                if (element.language === this.selectedLanguage) {
-                                    if (element.range) {
-                                        ranges = element.range;
-                                    }
-
-                                    if (element.upgradeTypes) {
-                                        upgradeTypes = element.upgradeTypes;
-                                    }
-                                }
-                            });
-
-                            if (ranges && ranges.length > 0 && upgradeTypes && upgradeTypes.length > 0) {
-                                let type: string;
-                                const forceType = 'force';
-
-                                ranges.forEach(element => {
-                                    if (versionCode >= element.minVersionCode && versionCode <= element.maxVersionCode) {
-                                        console.log('App needs a upgrade of type - ' + element.type);
-                                        type = element.type;
-
-                                        if (type === forceType) {
-                                            return true; // this is to stop the foreach loop
-                                        }
-                                    }
-                                });
-
-                                upgradeTypes.forEach(upgradeElement => {
-                                    if (type === upgradeElement.type) {
-                                        result = upgradeElement;
-                                    }
-                                });
-                            }
-                        }
-
-                        resolve(result);
-                    }).catch((error: any) => {
-                        reject(error);
-                    });
-                });
+    private invokeLibraryFilterConfigFormApi(libraryFilterConfig: Array<any>,
+                                             resolve: (value?: any) => void,
+                                             reject: (reason?: any) => void) {
+      const req: FormRequest = {
+        type: 'pageAssemble',
+        subType: 'library',
+        action: 'filter',
+      };
+      // form api call
+      this.formService.getForm(req).toPromise()
+        .then((res: any) => {
+          libraryFilterConfig = res.form.data.fields;
+          this.appGlobalService.setLibraryFilterConfig(libraryFilterConfig);
+          resolve(libraryFilterConfig);
+        }).catch((error: any) => {
+        console.log('Error - ' + error);
+        resolve(libraryFilterConfig);
         });
     }
     /**
