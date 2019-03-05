@@ -119,6 +119,7 @@ export class SearchPage {
   isSingleContent = false;
   currentFrameworkId = '';
   selectedLanguageCode = '';
+  layoutName = 'search';
 
   @ViewChild(Navbar) navBar: Navbar;
   constructor(
@@ -305,7 +306,7 @@ export class SearchPage {
           }
         });
       });
-        this.navCtrl.push(FilterPage, { filterCriteria: this.responseData.result.filterCriteria });
+      this.navCtrl.push(FilterPage, { filterCriteria: this.responseData.result.filterCriteria });
     });
   }
 
@@ -389,6 +390,7 @@ export class SearchPage {
       }
 
     }
+
     this.contentService.searchContent(contentSearchRequest, false, false, false).then((responseData: any) => {
 
       this.zone.run(() => {
@@ -765,6 +767,7 @@ export class SearchPage {
     if (!this.responseData.result.filterCriteria) {
       return;
     }
+
     this.responseData.result.filterCriteria.facetFilters.forEach(facet => {
       if (facet.values && facet.values.length > 0) {
         facet.values.forEach(value => {
@@ -931,8 +934,7 @@ export class SearchPage {
         this.audienceFilter = AudienceFilter.GUEST_TEACHER;
       }
 
-      // TODO : revisit for refactoring
-      this.profile = undefined;
+      this.profile = this.appGlobalService.getCurrentUser();
     } else {
       this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
       this.profile = undefined;

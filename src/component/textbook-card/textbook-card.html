@@ -1,0 +1,26 @@
+<div *ngIf="layoutName === 'textbook'">
+<div class="sb-card">
+  <div class="img-container">
+    <img src="{{ content?.courseLogoUrl || content?.appIcon || defaultImg }}">
+  </div>
+  <div class="sb-card-details">
+    <div class="title">{{content?.courseName || content?.name}} </div>
+    <div><span class="info class">{{content?.gradeLevel}}</span><span class="separator-dot"></span><span class="info subject">
+        {{content?.subject}}
+      </span></div>
+  </div>
+</div>
+</div>
+<div *ngIf="layoutName === search">
+<div class="sb-card reverse">
+  <div class="img-container">
+    <img src="{{ content?.courseLogoUrl || content?.appIcon || defaultImg }}">
+  </div>
+  <div class="sb-card-details">
+    <div class="title">{{content?.courseName || content?.name}} </div>
+    <div><span class="info class">{{content?.gradeLevel}}</span><span class="separator-dot"></span><span class="info subject">
+        {{content?.subject}}
+      </span></div>
+  </div>
+</div>
+</div>
