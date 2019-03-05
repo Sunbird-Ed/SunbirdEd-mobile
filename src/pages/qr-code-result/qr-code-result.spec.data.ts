@@ -1,95 +1,11 @@
-import { ProfileType, UserSource } from 'sunbird'                                                ;
-// import { MimeType, ContentType } from './../../app/app.constant';
+import { ProfileType, UserSource } from 'sunbird';
 export const mockRes = {
-  enrollCourseEvent:
-  { 'batchId': '1234', 'identifier': 'SAMPLE_ID' },
-  enqueuedOthersImportContentResponse:
-  {'message': 'successful', 'result': [{'identifier': 'SAMPLE_ID', 'status': 'ENQUEUED_FOR_DOWNLOADS'}]},
-  importCompleteEventSample:
-  {'data': {'identifier': 'SAMPLE_ID', 'status': 'IMPORT_COMPLETED'}, 'type': 'contentImport'},
-  downloadProgressEventSample1:
-  {'data': {'downloadId': 18788, 'downloadProgress': 10, 'identifier': 'do_sampele', 'status': 1}, 'type': 'downloadProgress'},
-
-  downloadProgressEventSample2:
-  {'data': {'downloadId': 18788, 'downloadProgress': -1, 'identifier': 'do_sampele', 'status': 1}, 'type': 'downloadProgress'},
-
-  downloadProgressEventSample3:
-  {'data': {'downloadId': 18788, 'downloadProgress': 100, 'identifier': 'do_sampele', 'status': 1}, 'type': 'downloadProgress'},
-  updateEventSample:
-  {'data': {'identifier': 'SAMPLE_ID'}, 'type': 'contentUpdateAvailable'},
-  contentDetailsResponse: {
-    'message': 'successful',
-    'hierarchyInfo' : 'PARENT_ID',
-    'contentTypesCount' : 1,
-    'result': {
-        'contentData': {
-            // tslint:disable-next-line:max-line-length
-            'appIcon': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/content/do_212516141114736640146589/artifact/7fd95b138e3e32dc73cc6c8ce7af59cb_1527849151139.thumb.jpeg',
-            // tslint:disable-next-line:max-line-length
-            'artifactUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/assets/do_212516141114736640146589/mp4_877_1527849257.mp4',
-            'attributions': [
-                ''
-            ],
-            'audience': [
-                'Learner'
-            ],
-            'me_totalRatings': '3.0',
-            'board': 'CBSE',
-            'contentDisposition': 'inline',
-            'contentEncoding': 'identity',
-            'contentType': 'Resource',
-            'createdBy': '877',
-            'createdOn': '2018-06-01T10:34:17.170+0000',
-            'creator': 'Subrat Rath',
-            'description': 'Swing around',
-            // tslint:disable-next-line:max-line-length
-            'downloadUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_212516141114736640146589/swing_1527849415336_do_212516141114736640146589_1.0.ecar',
-            'gradeLevel': [
-                'KG',
-                'Class 1'
-            ],
-            'identifier': 'do_212516141114736640146589',
-            'language': [
-                'English'
-            ],
-            'lastPublishedOn': '2018-06-01T10:36:55.335+0000',
-            'mimeType': 'video/mp4',
-            'name': 'Swing',
-            'osId': 'org.ekstep.quiz.app',
-            'owner': 'Joker',
-            'pkgVersion': '1.0',
-            'publisher': '',
-            'resourceType': 'Practice',
-            'size': '2120865.0',
-            'status': 'Live',
-            'subject': 'English',
-            'variants': {
-                'spine': {
-                    // tslint:disable-next-line:max-line-length
-                    'ecarUrl': 'https://ekstep-public-qa.s3-ap-south-1.amazonaws.com/ecar_files/do_212516141114736640146589/swing_1527849415610_do_212516141114736640146589_1.0_spine.ecar',
-                    'size': 17434
-                }
-            },
-            'versionKey': '1527849415052',
-            'me_totalDownloads': '24.0',
-            'contentTypesCount': ''
-        },
-        'contentType': 'resource',
-        'identifier': 'do_212516141114736640146589',
-        'isAvailableLocally': true,
-        'isUpdateAvailable': false,
-        'lastUpdatedTime': 0,
-        'mimeType': 'video/mp4',
-        'referenceCount': 1,
-        'contentFeedback': [
-            {
-                'rating': 1,
-                'comments': 'Test'
-            }
-        ]
-    },
-    'status': true
-},
+  data: [{
+    'contentType': 'textbook',
+    'identifier': 'do_21252111813225676812977',
+    'isAvailableLocally': true,
+    'isUpdateAvailable': false,
+  }],
   profile: {
     'age': 1,
     'avatar': 'avatar',
@@ -111,12 +27,10 @@ export const mockRes = {
       'english'
     ],
     'syllabus': [
-      'NCF',
-      'KKK'
+      'NCF'
     ],
     'board': [
-      'icse',
-      'FEVV'
+      'icse'
     ],
     'grade': [
       'grade5'
@@ -125,33 +39,6 @@ export const mockRes = {
       'grade5': 'Class 5'
     }
   },
-
-  UserList: [
-    {
-        'avatar': 'avatar',
-        'createdAt': 'Aug 9, 2018 11:36:50 AM',
-        'day': -1,
-        'gender': 'MALE',
-        'handle': 'tes user',
-        'isGroupUser': false,
-        'language': 'en',
-        'month': -1,
-        'profileType': ProfileType.STUDENT,
-        'source': 'UserSource.LOCAL',
-        'standard': -1,
-        'uid': '3af2e8a4-003e-438d-b360-2ae922696913'
-    }
-],
-   content: {
-    'contentType': 'textbook',
-    'identifier': 'do_21252111813225676812977',
-    'isAvailableLocally': true,
-    'isUpdateAvailable': false,
-      contentData: {
-        'streamingUrl': false
-      }
-    },
-
 
   getChildContentAPIResponse: {
     'message': 'successful',

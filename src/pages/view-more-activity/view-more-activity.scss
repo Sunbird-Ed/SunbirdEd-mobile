@@ -35,3 +35,33 @@ page-view-more-activity {
     }
 
 }
+.sb-view-all-container {
+    width: 100%;
+    .sb-view-all-items{
+        background-color: $primary-color;
+        height: ($base-block-space * 10);
+        width: 100%;
+        position: relative;
+        display: flex;
+        align-items: center;
+        @include padding(0, ($base-block-space * 1));
+        .sb-view-all-title{
+            color: $white-color;
+            .page-heading{
+                font-size: $font-size-base + 2;
+                font-weight: bold;
+                line-height: 22px;
+            }
+        
+            .page-info{
+                display: block;
+                font-size: $font-size-base - 2;
+                line-height: 15px;
+            }
+        }
+        .sb-card-scroll-container{
+          overflow-x: auto;
+          padding: 0 0 8px 0;
+        }
+    }
+}
