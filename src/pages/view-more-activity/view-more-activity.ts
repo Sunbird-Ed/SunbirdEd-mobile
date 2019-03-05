@@ -199,6 +199,8 @@ export class ViewMoreActivityPage implements OnInit {
                   });
                 } else {
                   this.searchList = data.result.contentDataList;
+                  console.log('**1 search List =>', this.searchList);
+
                 }
               } else {
                 this.loadMoreBtn = false;
@@ -287,6 +289,7 @@ export class ViewMoreActivityPage implements OnInit {
       default:
         this.search();
     }
+    console.log('search List =>' , this.searchList);
   }
 
   /**
@@ -307,6 +310,7 @@ export class ViewMoreActivityPage implements OnInit {
           data = JSON.parse(data);
           this.searchList = data.result.courses ? data.result.courses : [];
           this.loadMoreBtn = false;
+          console.log('**2 searchList =>', this.searchList);
         }
         loader.dismiss();
       })
@@ -357,6 +361,7 @@ export class ViewMoreActivityPage implements OnInit {
         });
         this.ngZone.run(() => {
           this.searchList = contentData;
+          console.log('content data is =>' , contentData);
           loader.dismiss();
           this.loadMoreBtn = false;
         });
