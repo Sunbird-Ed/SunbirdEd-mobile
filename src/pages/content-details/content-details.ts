@@ -14,8 +14,6 @@ import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
 import {
   BuildParamService,
-  ContentDetailRequest,
-  ContentMarkerRequest,
   ContentService,
   CourseService,
   DeviceInfoService,
@@ -36,6 +34,11 @@ import {CommonUtilService} from '../../service/common-util.service';
 import {DialogPopupComponent} from '../../component/dialog-popup/dialog-popup';
 import {Observable} from 'rxjs';
 import {
+  ContentAccess,
+  ContentAccessStatus,
+  ContentDetailRequest,
+  ContentMarkerRequest,
+  ContentService as newContentService,
   CorrelationData,
   Environment,
   GetAllProfileRequest,
@@ -78,25 +81,19 @@ export class ContentDetailsPage {
   loader: any;
   userId = '';
   public objRollup: Rollup;
-  private resume;
   isContentPlayed = false;
   /**
    * Used to handle update content workflow
    */
   isUpdateAvail = false;
   userRating = 0;
-
   /*stores streaming url*/
   streamingUrl: any;
-
   /**
    * currently used to identify that its routed from QR code results page
    * Can be sent from any page, where after landing on details page should download or play content automatically
    */
   downloadAndPlay: boolean;
-  private ratingComment = '';
-  private corRelationList: Array<CorrelationData>;
-
   /**
    * This flag helps in knowing when the content player is closed and the user is back on content details page.
    */
@@ -116,13 +113,16 @@ export class ContentDetailsPage {
   unregisterBackButton: any;
   userCount = 0;
   shouldGenerateTelemetry = true;
-
   @ViewChild(Navbar) navBar: Navbar;
   showMessage: any;
   isUsrGrpAlrtOpen: Boolean = false;
+  private resume;
+  private ratingComment = '';
+  private corRelationList: Array<CorrelationData>;
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    @Inject('CONTENT_SERVICE') private newContentService: newContentService,
     private navCtrl: NavController,
     private navParams: NavParams,
     private contentService: ContentService,
@@ -365,6 +365,8 @@ export class ContentDetailsPage {
   /**
    * To set content details in local variable
    * @param {string} identifier identifier of content / course
+   * @param refreshContentDetails
+   * @param showRating
    */
   setContentDetails(identifier, refreshContentDetails: boolean | true, showRating: boolean) {
     let loader;
@@ -374,7 +376,6 @@ export class ContentDetailsPage {
     }
     const req: ContentDetailRequest = {
       contentId: identifier,
-      refreshContentDetails: refreshContentDetails,
       attachFeedback: true,
       attachContentAccess: true,
       attachContentMarker: true
@@ -716,7 +717,7 @@ export class ContentDetailsPage {
 
         // For streaming url available
         if (res.data && res.type === 'streamingUrlAvailable') {
-          console.log('res.data' , res.data);
+          console.log('res.data', res.data);
           this.zone.run(() => {
             if (res.data.identifier === this.identifier) {
               this.content.streamingUrl = res.data.streamingUrl;
@@ -803,7 +804,7 @@ export class ContentDetailsPage {
       const alert = this.alertCtrl.create({
         title: this.commonUtilService.translateMessage('PLAY_AS'),
         mode: 'wp',
-        message: profile.handle,
+        message: profile.serverProfile ? profile.serverProfile.firstName : profile.handle,
         cssClass: 'confirm-alert',
         buttons: [
           {
@@ -870,7 +871,7 @@ export class ContentDetailsPage {
       });
 
       if (isStreaming) {
-        const extraInfoMap = { hierarchyInfo: [] };
+        const extraInfoMap = {hierarchyInfo: []};
         if (this.cardData && this.cardData.hierarchyInfo) {
           extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
         }
@@ -882,11 +883,18 @@ export class ContentDetailsPage {
           data: JSON.stringify(playContent.contentData),
           marker: MarkerType.PREVIEWED,
           isMarked: true,
-          extraInfoMap: extraInfoMap
+          extraInfo: extraInfoMap
         };
-        this.contentService.setContentMarker(req)
-          .then((resp) => {
-          }).catch((err) => {
+        const request: ContentAccess = {
+          status: ContentAccessStatus.PLAYED,
+          contentId: this.identifier,
+          contentType: this.content.contentType
+        };
+        this.newContentService.setContentMarker(req).toPromise()
+          .then((data) => {
+            console.log('setContentMarker', data);
+            this.profileService.addContentAccess(request).subscribe();
+          }).catch(() => {
         });
       }
       this.downloadAndPlay = false;

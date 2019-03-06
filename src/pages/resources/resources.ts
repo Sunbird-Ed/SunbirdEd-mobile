@@ -1,17 +1,12 @@
-import { Search } from './../../app/app.constant';
-import { AfterViewInit, Component, NgZone, OnInit, Inject } from '@angular/core';
-import {
-  ContentFilterCriteria,
-  ContentSearchCriteria,
-  ContentService,
-  SharedPreferences,
-} from 'sunbird';
-import { Events, NavController } from 'ionic-angular';
+import {Search} from './../../app/app.constant';
+import {AfterViewInit, Component, Inject, NgZone, OnInit} from '@angular/core';
+import {ContentSearchCriteria, ContentService, SharedPreferences,} from 'sunbird';
+import {Events, NavController} from 'ionic-angular';
 import * as _ from 'lodash';
-import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
-import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
-import { SearchPage } from '../search/search';
-import { Map } from '../../app/telemetryutil';
+import {ViewMoreActivityPage} from '../view-more-activity/view-more-activity';
+import {SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
+import {SearchPage} from '../search/search';
+import {Map} from '../../app/telemetryutil';
 import {
   AudienceFilter,
   CardSectionName,
@@ -20,29 +15,31 @@ import {
   PreferenceKey,
   ViewMore
 } from '../../app/app.constant';
-import { PageFilterCallback } from '../page-filter/page.filter';
-import { AppGlobalService } from '../../service/app-global.service';
+import {PageFilterCallback} from '../page-filter/page.filter';
+import {AppGlobalService} from '../../service/app-global.service';
 import Driver from 'driver.js';
-import { AppVersion } from '@ionic-native/app-version';
-import { updateFilterInSearchQuery } from '../../util/filter.util';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { TranslateService } from '@ngx-translate/core';
-import { Network } from '@ionic-native/network';
-import { animate, group, state, style, transition, trigger } from '@angular/animations';
-import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
+import {AppVersion} from '@ionic-native/app-version';
+import {updateFilterInSearchQuery} from '../../util/filter.util';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {CommonUtilService} from '../../service/common-util.service';
+import {TranslateService} from '@ngx-translate/core';
+import {Network} from '@ionic-native/network';
+import {animate, group, state, style, transition, trigger} from '@angular/animations';
+import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
 import {
-  FrameworkUtilService,
-  FrameworkCategoryCodesGroup,
-  GetFrameworkCategoryTermsRequest,
-  FrameworkCategoryCode,
   CategoryTerm,
-  ProfileType,
+  ContentRequest,
+  ContentService as newContentService,
+  Environment,
+  FrameworkCategoryCode,
+  FrameworkCategoryCodesGroup,
+  FrameworkUtilService,
+  GetFrameworkCategoryTermsRequest,
   ImpressionType,
   InteractSubtype,
   InteractType,
   PageId,
-  Environment,
+  ProfileType,
   TelemetryObject
 } from 'sunbird-sdk';
 
@@ -142,7 +139,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     private commonUtilService: CommonUtilService,
     private translate: TranslateService,
     private network: Network,
-    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService
+    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
+    @Inject('CONTENT_SERVICE') private newContentService: newContentService
   ) {
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {
@@ -312,12 +310,12 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     // this.localResources = [];
     // if(this.isOnBoardingCardCompleted || !this.guestUser){
     this.showLoader = true;
-    const requestParams: ContentFilterCriteria = {
+    const requestParams: ContentRequest = {
       uid: this.profile ? this.profile.uid : undefined,
       contentTypes: ContentType.FOR_LIBRARY_TAB,
       audience: this.audienceFilter
     };
-    this.contentService.getAllLocalContents(requestParams)
+    this.newContentService.getContents(requestParams).toPromise()
       .then(data => {
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
@@ -345,14 +343,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 	 */
   loadRecentlyViewedContent() {
     this.showLoader = true;
-    const requestParams: ContentFilterCriteria = {
+    const requestParams: ContentRequest = {
       uid: this.profile ? this.profile.uid : undefined,
       contentTypes: ContentType.FOR_RECENTLY_VIEWED,
       audience: this.audienceFilter,
       recentlyViewed: true,
       limit: 20
     };
-    this.contentService.getAllLocalContents(requestParams)
+    this.newContentService.getContents(requestParams).toPromise()
       .then(data => {
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
