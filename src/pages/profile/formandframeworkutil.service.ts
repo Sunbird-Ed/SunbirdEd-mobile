@@ -1,5 +1,5 @@
 import {Inject, Injectable} from '@angular/core';
-import {FrameworkService, SharedPreferences,} from 'sunbird';
+import {SharedPreferences} from 'sunbird';
 import {AppGlobalService} from '../../service/app-global.service';
 import {AppVersion} from '@ionic-native/app-version';
 import {PreferenceKey} from '../../app/app.constant';
@@ -10,10 +10,12 @@ import {
   CategoryTerm,
   FormRequest,
   FormService,
+  FrameworkService,
   FrameworkCategoryCodesGroup,
   FrameworkUtilService,
   GetFrameworkCategoryTermsRequest,
   GetSystemSettingsRequest,
+  OrganizationSearchCriteria,
   Profile,
   ProfileService,
   SystemSettings,
@@ -36,7 +38,7 @@ export class FormAndFrameworkUtilService {
       @Inject('SYSTEM_SETTINGS_SERVICE') private systemSettingsService: SystemSettingsService,
       @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
       @Inject('FORM_SERVICE') private formService: FormService,
-      private framework: FrameworkService,
+      @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
       private preference: SharedPreferences,
       private appGlobalService: AppGlobalService,
       private appVersion: AppVersion,
@@ -406,9 +408,14 @@ export class FormAndFrameworkUtilService {
             rootOrganizations = this.appGlobalService.getCachedRootOrganizations();
             // if data not cached
             if (rootOrganizations === undefined || rootOrganizations.length === 0) {
-                rootOrganizations = await this.framework.getRootOrganizations();
-                const organization = rootOrganizations.toString();
-                rootOrganizations = JSON.parse(JSON.parse(organization).result.orgSearchResult).content;
+                const searchOrganizationReq: OrganizationSearchCriteria<{any}> = {
+                    filters: {
+                        isRootOrg: true
+                    }
+                };
+                rootOrganizations = await this.frameworkService.searchOrganization(searchOrganizationReq).toPromise();
+                console.log('rootOrganizations', rootOrganizations);
+                rootOrganizations = rootOrganizations.content;
                 // cache the data
                 this.appGlobalService.setRootOrganizations(rootOrganizations);
                 return rootOrganizations;
