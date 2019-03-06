@@ -62,6 +62,9 @@ import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-d
 import { ReportsPage } from '../reports';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { SettingsPage } from '../settings';
+import { ProfilePage } from '../profile/profile';
+import { GuestProfilePage } from '../profile';
+import { Page } from 'ionic-angular/umd/navigation/nav-util';
 
 @Component({
   selector: 'page-resources',
@@ -688,6 +691,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       Environment.HOME,
       PageId.LIBRARY);
     this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
+  }
+  onProfileClick() {
+    const currentProfile: Page = (this.appGlobalService.isGuestUser) ? GuestProfilePage : ProfilePage;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      'profile-button-clicked',
+      Environment.HOME,
+      PageId.LIBRARY);
+    this.navCtrl.push(currentProfile, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
   }
 
   getCategoryData() {

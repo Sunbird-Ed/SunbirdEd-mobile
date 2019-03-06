@@ -10,6 +10,9 @@
 			{{ 'LIBRARY_LW' | translate}}
 		</ion-title>
 		<ion-buttons class="sb-header-btn-group" end>
+			<button icon-only ion-button (click)="onProfileClick()">
+				<ion-icon name="person"></ion-icon>
+			</button>
 			<button ion-button icon-only (click)="scanQRCode()">
 				<ion-icon name="qr-scanner"></ion-icon>
 			</button>
@@ -62,7 +65,6 @@
 	</ion-footer>
 </ion-menu>
 <ion-content overflow-scroll="true" class="course-scroll-holder1" style="background: #EBEBEB;">
-	<ion-refresher (ionRefresh)="swipeDownToRefresh($event)"></ion-refresher>
 	<div class="sb-slider-pills-container">
 		<div class="sb-pills-container sb-medium-pills-container">
 			<div class="pill" *ngFor="let medium of categoryMediums; let i = index;" [ngClass]="{'active': medium?.selected}"
@@ -75,6 +77,13 @@
 			 attr.id="class{{i}}" (click)="classClick(i);" [@appear]="{value: grade?.selected, params: {left_indent: i * 72}}">{{grade?.name}}</div>
 		</div>
 	</div>
+
+	<ion-content overflow-scroll="true" [fullscreen] = "true" class="course-scroll-holder1" style="background: #EBEBEB;">
+			<ion-refresher (ionRefresh)="swipeDownToRefresh($event)"></ion-refresher>
+			<div style="margin: 40px;" *ngIf ="refresh">
+				<ion-spinner icon="spiral"></ion-spinner>
+			</div>
+	<ion-spinner *ngIf="showLoader" padding style="padding-top: 100px;"></ion-spinner>
 	<div *ngIf="recentlyViewedResources && recentlyViewedResources.length">
 		<div class="sb-recently-viewed-container" style="padding-bottom:40px;">
 
@@ -93,6 +102,11 @@
 			</div>
 		</div>
 	</div>
+	<div *ngIf="searchApiLoader && storyAndWorksheets && storyAndWorksheets.length === 0">
+			<div style="height: 500px;">
+				<ion-spinner padding style="padding-top: 110px;"></ion-spinner>
+			</div>
+    </div>
 	<div *ngFor="let items of storyAndWorksheets">
 		<div class="sb-textbook-container" *ngIf="items?.contents">
 			<div class="sb-textbook-items">
@@ -131,4 +145,5 @@
 	<div *ngIf="showSignInCard" class="signin-card-bg">
 		<sign-in-card (valueChange)="showOfflineNetworkWarning($event)" [source]="source"></sign-in-card>
 	</div>
+  </ion-content>
 </ion-content>

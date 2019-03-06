@@ -136,7 +136,8 @@ export const commonUtilServiceMock = createSpyObj<CommonUtilService>([
   'getTranslatedValue',
   'showContentComingSoonAlert',
   'toLocaleUpperCase',
-  'showExitPopUp'
+  'showExitPopUp',
+  'arrayToString'
 ]);
 
 export const eventsMock = createSpyObj<Events>([
