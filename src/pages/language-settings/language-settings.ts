@@ -1,12 +1,12 @@
-import {Component, NgZone} from '@angular/core';
+import {Component, NgZone, Inject} from '@angular/core';
 import {Events, IonicPage, NavController, NavParams, Platform} from 'ionic-angular';
 import {TranslateService} from '@ngx-translate/core';
-import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from 'sunbird-sdk';
-import {SharedPreferences} from 'sunbird';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId, SharedPreferences} from 'sunbird-sdk';
 import {appLanguages, Map, PreferenceKey} from '@app/app';
 import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
 import {OnboardingPage} from '@app/pages/onboarding/onboarding';
 import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
+
 
 @IonicPage()
 @Component({
@@ -30,13 +30,13 @@ export class LanguageSettingsPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     public translateService: TranslateService,
-    private preferences: SharedPreferences,
     private events: Events,
     private zone: NgZone,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private platform: Platform,
     private appGlobalService: AppGlobalService,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    @Inject('SHARED_PREFERENCES')private preferences: SharedPreferences,
   ) { }
 
   ionViewDidLoad() {
@@ -93,7 +93,7 @@ export class LanguageSettingsPage {
     this.languages = appLanguages;
 
     this.zone.run(() => {
-      this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+      this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
         .then(val => {
           if (Boolean(val)) {
             this.previousLanguage = val;
@@ -182,8 +182,8 @@ export class LanguageSettingsPage {
       this.generateLanguageSuccessInteractEvent(this.previousLanguage, this.language);
       if (this.language) {
         this.selectedLanguage = this.languages.find(i => i.code === this.language);
-        this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE_CODE, this.selectedLanguage.code);
-        this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE, this.selectedLanguage.label);
+        this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE_CODE, this.selectedLanguage.code).toPromise();
+        this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE, this.selectedLanguage.label).toPromise();
         this.translateService.use(this.language);
       }
       this.events.publish('onAfterLanguageChange:update', {

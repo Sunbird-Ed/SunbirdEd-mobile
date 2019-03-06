@@ -152,6 +152,9 @@ export const sunbirdSdkFactory =
           deviceRegisterHost: '',
           telemetrySyncBandwidth: 3,
           telemetrySyncThreshold: 3
+        },
+        sharedPreferencesConfig: {
+          debugMode: false
         }
       });
     };
