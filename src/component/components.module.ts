@@ -29,7 +29,7 @@ import { EditContactVerifyPopupComponent } from './edit-contact-verify-popup/edi
 import { EditContactDetailsPopupComponent } from './edit-contact-details-popup/edit-contact-details-popup';
 import { ViewAllCardComponent } from './view-all-card/view-all-card';
 import { TextbookCardComponent } from './textbook-card/textbook-card';
-// import { CollectionChildComponent } from './collection-child/collection-child';
+import { CollectionChildComponent } from './collection-child/collection-child';
 
 @NgModule({
     declarations: [
@@ -55,7 +55,7 @@ import { TextbookCardComponent } from './textbook-card/textbook-card';
         DetailCardComponent,
         SearchCardComponent,
         TextbookCardComponent,
-        // CollectionChildComponent
+        CollectionChildComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -91,7 +91,7 @@ import { TextbookCardComponent } from './textbook-card/textbook-card';
         DetailCardComponent,
         SearchCardComponent,
         TextbookCardComponent,
-        // CollectionChildComponent
+        CollectionChildComponent
 
     ],
     entryComponents: [
