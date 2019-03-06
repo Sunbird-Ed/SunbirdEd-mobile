@@ -3,7 +3,6 @@
 // common styles for slider pills
 .sb-slider-pills-container {
     overflow-x: auto;
-    width: 100%;
     .sb-pills-container {
         display: inline-flex;
         align-items: center;
@@ -15,7 +14,6 @@
         text-overflow: ellipsis;
         min-height: ($base-block-space * 4);
         @include margin(null,($base-block-space * 1),null,null);
-        letter-spacing: -0.5px;
         @include padding(($base-block-space * 0.5) ($base-block-space * 1));
         border-radius: 2px;
         text: {
@@ -41,7 +39,6 @@
     .sb-medium-pills-container {
         min-height: ($base-block-space * 8);
         background:$bg-white;
-        width: 100%;
         .pill {
             border:$secondary-color 1px solid;
             color:$secondary-color;

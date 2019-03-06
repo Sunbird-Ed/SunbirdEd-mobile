@@ -12,7 +12,7 @@ import { ContentDetailsPage } from '@app/pages/content-details/content-details';
     selector: 'collection-child',
     templateUrl: 'collection-child.html'
 })
-export class CollectionChild {
+export class CollectionChildComponent {
 
     @Input() childData: any;
     @Input() index: any;
