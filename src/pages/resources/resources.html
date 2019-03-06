@@ -10,6 +10,9 @@
 			{{ 'LIBRARY_LW' | translate}}
 		</ion-title>
 		<ion-buttons class="sb-header-btn-group" end>
+			<button icon-only ion-button (click)="onProfileClick()">
+				<ion-icon name="person"></ion-icon>
+			</button>
 			<button ion-button icon-only (click)="scanQRCode()">
 				<ion-icon name="qr-scanner"></ion-icon>
 			</button>
