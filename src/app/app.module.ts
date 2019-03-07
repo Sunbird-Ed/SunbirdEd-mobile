@@ -76,6 +76,12 @@ export const sunbirdSdkServicesProvidersFactory: () => Provider[] = () => {
   }, {
     provide: 'TELEMETRY_SERVICE',
     useFactory: () => SunbirdSdk.instance.telemetryService
+  }, {
+    provide: 'CONTENT_SERVICE',
+    useFactory: () => SunbirdSdk.instance.contentService
+  }, {
+    provide: 'CONTENT_FEEDBACK_SERVICE',
+    useFactory: () => SunbirdSdk.instance.contentFeedbackService
   }];
 };
 
@@ -107,12 +113,12 @@ export const sunbirdSdkFactory =
           }
         },
         dbConfig: {
-          debugMode: true,
+          debugMode: false,
           dbName: 'GenieServices.db'
         },
         contentServiceConfig: {
           apiPath: '',
-          searchApiPath: ''
+          searchApiPath: '/api/composite/v1'
         },
         courseServiceConfig: {
           apiPath: '/api/course/v1'
