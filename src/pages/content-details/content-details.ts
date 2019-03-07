@@ -734,6 +734,9 @@ export class ContentDetailsPage {
             if (res.data.identifier === this.identifier) {
               if (res.data.streamingUrl) {
                 this.content.streamingUrl = res.data.streamingUrl;
+                const playContent = JSON.parse(this.content.playContent);
+                playContent.contentData.streamingUrl = res.data.streamingUrl;
+                this.content.playContent = JSON.stringify(playContent);
               } else {
                 this.playOnlineSpinner = false;
               }
