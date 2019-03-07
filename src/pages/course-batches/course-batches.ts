@@ -1,28 +1,9 @@
-import {
-  Component,
-  NgZone,
-  OnInit
-} from '@angular/core';
-import {
-  CourseService,
-  AuthService,
-  CourseBatchesRequest,
-  CourseBatchStatus,
-  CourseEnrollmentType,
-  EnrollCourseRequest
-} from 'sunbird';
-import {
-  IonicPage,
-  NavController,
-  NavParams,
-  Events
-} from 'ionic-angular';
-import * as _ from 'lodash';
-import {
-  ProfileConstants,
-  EventTopics
-} from '../../app/app.constant';
-import { CommonUtilService } from '../../service/common-util.service';
+import {Component, Inject, NgZone, OnInit} from '@angular/core';
+import {CourseService, EnrollCourseRequest} from 'sunbird';
+import {Events, IonicPage, NavController, NavParams} from 'ionic-angular';
+import {EventTopics} from '../../app/app.constant';
+import {CommonUtilService} from '../../service/common-util.service';
+import {AuthService, OauthSession} from 'sunbird-sdk';
 
 /**
  * Generated class for the CourseBatchesPage page.
@@ -87,14 +68,15 @@ export class CourseBatchesPage implements OnInit {
    * @param {AuthService} authService To get logged-in user data
    */
   constructor(
+    @Inject('AUTH_SERVICE') private authService: AuthService,
     private courseService: CourseService,
     private navCtrl: NavController,
     private navParams: NavParams,
     private zone: NgZone,
-    private authService: AuthService,
     private commonUtilService: CommonUtilService,
     private events: Events
-  ) {  }
+  ) {
+  }
 
   ngOnInit(): void {
     this.getUserId();
@@ -142,20 +124,22 @@ export class CourseBatchesPage implements OnInit {
    * Get logged-user id. User id is needed to enroll user into batch.
    */
   getUserId(): void {
-    this.authService.getSessionData((session) => {
-      if (session === undefined || session == null || session === 'null') {
-        console.log('session expired');
-        this.zone.run(() => { this.isGuestUser = true; });
+    this.authService.getSession().subscribe((session: OauthSession) => {
+      if (!session) {
+        this.zone.run(() => {
+          this.isGuestUser = true;
+        });
       } else {
         this.zone.run(() => {
-          const sessionObj = JSON.parse(session);
           this.isGuestUser = false;
-          this.userId = sessionObj[ProfileConstants.USER_TOKEN];
+          this.userId = session.userToken;
           this.getBatchesByCourseId();
         });
       }
-    });
+    }, () => {
+    })
   }
+
 
   /**
    * To get batches, passed from enrolled-course-details page via navParams
