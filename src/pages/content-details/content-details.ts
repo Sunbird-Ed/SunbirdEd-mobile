@@ -726,6 +726,9 @@ export class ContentDetailsPage {
           this.zone.run(() => {
             if (res.data.identifier === this.identifier) {
               this.content.streamingUrl = res.data.streamingUrl;
+              const playContent = JSON.parse(this.content.playContent);
+              playContent.contentData.streamingUrl = res.data.streamingUrl;
+              this.content.playContent = JSON.stringify(playContent);
             }
           });
         }
