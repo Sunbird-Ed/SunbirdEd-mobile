@@ -6,4 +6,17 @@ ion-spinner {
   ion-spinner * {
     stroke:$blue !important;
   }
+
+  .sb-card-textbook-container{
+
+
+    textbook-card {
+      .sb-card{
+        border-bottom: 0.5px solid rgba(151, 151, 151, 0.40)!important;
+      }
+      &:last-child{
+        border-bottom: none;
+      }
+    }
+  } 
 }
