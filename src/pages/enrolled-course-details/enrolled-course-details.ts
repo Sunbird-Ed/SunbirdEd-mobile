@@ -36,7 +36,6 @@ import {DatePipe} from '@angular/common';
 import {
   CorrelationData,
   Environment,
-  ErrorCode,
   ErrorType,
   ImpressionType,
   InteractSubtype,
@@ -46,6 +45,7 @@ import {
   ProfileService,
   ProfileType,
   ServerProfileDetailsRequest,
+  TelemetryErrorCode,
   TelemetryObject
 } from 'sunbird-sdk';
 
@@ -618,7 +618,7 @@ export class EnrolledCourseDetailsPage {
               stackTrace.parentIdentifier = this.course.identifier;
               stackTrace.faultyIdentifiers = this.faultyIdentifiers;
               this.telemetryGeneratorService.generateErrorTelemetry(Environment.HOME,
-                ErrorCode.ERR_DOWNLOAD_FAILED,
+                TelemetryErrorCode.ERR_DOWNLOAD_FAILED,
                 ErrorType.SYSTEM,
                 PageId.COURSE_DETAIL,
                 JSON.stringify(stackTrace),

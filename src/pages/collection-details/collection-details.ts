@@ -13,7 +13,6 @@ import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGenerat
 import {
   CorrelationData,
   Environment,
-  ErrorCode,
   ErrorType,
   ImpressionType,
   InteractSubtype,
@@ -22,6 +21,7 @@ import {
   PageId,
   ProfileType,
   Rollup,
+  TelemetryErrorCode,
   TelemetryObject
 } from 'sunbird-sdk';
 
@@ -523,7 +523,7 @@ export class CollectionDetailsPage {
               stackTrace.parentIdentifier = this.cardData.identifier;
               stackTrace.faultyIdentifiers = this.faultyIdentifiers;
               this.telemetryGeneratorService.generateErrorTelemetry(Environment.HOME,
-                ErrorCode.ERR_DOWNLOAD_FAILED,
+                TelemetryErrorCode.ERR_DOWNLOAD_FAILED,
                 ErrorType.SYSTEM,
                 PageId.COLLECTION_DETAIL,
                 JSON.stringify(stackTrace),
