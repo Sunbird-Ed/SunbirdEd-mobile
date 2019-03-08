@@ -31,9 +31,7 @@
           <div class="item">
             <div class="flex">
               <div>
-                <div class="title"> {{(contentDetail?.name && contentDetail?.name?.length > 25) ? (contentDetail?.name
-                    |
-                    slice:0:25) + '...' : (contentDetail?.name)}}</div>
+                <div class="title">{{contentDetail?.name}}</div>
               </div>
               <div *ngIf="contentDetail?.creator || contentDetail?.owner">
                 <span class="light-black f12">by</span>
