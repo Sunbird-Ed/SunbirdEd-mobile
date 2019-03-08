@@ -71,7 +71,7 @@
 	<div class="sb-slider-pills-container">
 		<div class="sb-pills-container sb-grade-pills-container" id="gradeScroll" [@ScrollHorizontal]="{value: currentGrade?.selected, params: {left_indent: current_index * 72}}">
 			<div class="pill" *ngFor="let grade of categoryGradeLevels; let i = index; let first = first" [ngClass]="{'active': grade?.selected, '': !grade?.selected}"
-			 attr.id="class{{i}}" (click)="classClick(i);" [@appear]="{value: grade?.selected, params: {left_indent: i * 72}}">{{grade?.name}}</div>
+			 attr.id="class{{i}}" (click)="classClick(i);">{{grade?.name}}</div>
 		</div>
 	</div>
 	<ion-refresher (ionRefresh)="swipeDownToRefresh($event)"></ion-refresher>
