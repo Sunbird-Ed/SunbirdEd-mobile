@@ -134,11 +134,7 @@ page-resources {
       }
       .toolbar-title-md {
         margin-left: -5px !important;
-        font-weight: normal !important;
-        font-style: normal;
-        font-stretch: normal;
-        line-height: 1.5;
-        letter-spacing: -0.1px;
+        @include margin(null, null, null, -5px !important);
       }
       .course-page-color {
         background: #efeff4;
