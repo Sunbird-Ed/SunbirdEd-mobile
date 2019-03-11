@@ -14,6 +14,7 @@ import {
   IonicApp,
   AlertController
 } from 'ionic-angular';
+import { FileSizePipe  } from '@app/pipes/file-size/file-size';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
 import {
@@ -49,7 +50,8 @@ import {
 import {
   ContentRatingAlertComponent,
   ContentActionsComponent,
-  BookmarkComponent
+  BookmarkComponent,
+  SbPopoverComponent
 } from '@app/component';
 import {
   AppGlobalService,
@@ -126,6 +128,7 @@ export class ContentDetailsPage {
   objType;
   objVer;
   didViewLoad: boolean;
+  contentDetail: any;
   backButtonFunc = undefined;
   baseUrl = '';
   shouldGenerateEndTelemetry = false;
@@ -162,6 +165,7 @@ export class ContentDetailsPage {
     private courseUtilService: CourseUtilService,
     private deviceInfoService: DeviceInfoService,
     private network: Network,
+    private fileSizePipe: FileSizePipe
   ) {
 
     this.objRollup = new Rollup();
@@ -341,6 +345,25 @@ export class ContentDetailsPage {
   /**
    * Function to rate content
    */
+
+
+  // const popover = this.popoverCtrl.create(SbRatingComponent, {
+  //   sbPopoverHeading:"Rate the content",
+  //   actionsButtons:[
+  //     {
+  //       btntext: "Rate",
+  //       btnClass: 'popover-color'
+  //     },
+  //   ],
+  //   icon: {md:"md-sad",
+  //   ios:"ios-sad",
+  //   className:""},
+  //   metaInfo:"You have rated 3 stars",
+  //  sbPopoverContent:"Some content might not be playable offline."
+  // }, {
+  //   cssClass: 'sb-popover info',
+  // });
+
   rateContent(popupType: string) {
     const paramsMap = new Map();
     if (this.isContentPlayed || this.content.contentAccess.length) {
@@ -351,9 +374,15 @@ export class ContentDetailsPage {
         pageId: PageId.CONTENT_DETAIL,
         rating: this.userRating,
         comment: this.ratingComment,
-        popupType: popupType
+        popupType: popupType,
+        actionsButtons: [
+          {
+            btntext: 'Rate',
+            btnClass: 'popover-color'
+          },
+        ],
       }, {
-          cssClass: 'content-rating-alert'
+          cssClass: 'sb-popover info'
         });
       popUp.present({
         ev: event
@@ -984,19 +1013,55 @@ export class ContentDetailsPage {
     });
   }
   deleteContent() {
-    const popover = this.popoverCtrl.create(ContentActionsComponent, {
+    console.log('contenmtttttttttttttt', this.content);
+    // const popover = this.popoverCtrl.create(ContentActionsComponent, {
+    //   content: this.content,
+    //   isChild: this.isChildContent,
+    //   objRollup: this.objRollup,
+    //   pageName: PageId.CONTENT_DETAIL,
+    //   corRelationList: this.corRelationList
+    // }, {
+    //     cssClass: 'content-action'
+    //   });
+    // popover.present({
+    //   ev: event
+    // });
+    // popover.onDidDismiss(data => {
+    //   this.zone.run(() => {
+    //     if (data === 'delete.success') {
+    //       this.content.streamingUrl = this.streamingUrl;
+    //       this.content.downloadable = false;
+    //       const playContent = JSON.parse(this.content.playContent);
+    //       playContent.isAvailableLocally = false;
+    //       this.content.playContent = JSON.stringify(playContent);
+    //     }
+    //   });
+    // });
+
+    const confirm = this.popoverCtrl.create(SbPopoverComponent, {
       content: this.content,
       isChild: this.isChildContent,
       objRollup: this.objRollup,
       pageName: PageId.CONTENT_DETAIL,
-      corRelationList: this.corRelationList
+      corRelationList: this.corRelationList,
+      sbPopoverHeading: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE'),
+      sbPopoverMainTitle: this.content.name + this.content.subject,
+      actionsButtons: [
+        {
+          btntext: this.commonUtilService.translateMessage('REMOVE'),
+          btnClass: 'popover-color'
+        },
+      ],
+      icon: null,
+      metaInfo:  'items' + '(' + this.fileSizePipe.transform(this.content.size, 2) + ')',
+      sbPopoverContent: 'Are you sure you want to delete ?'
     }, {
-        cssClass: 'content-action'
+        cssClass: 'sb-popover danger',
       });
-    popover.present({
+    confirm.present({
       ev: event
     });
-    popover.onDidDismiss(data => {
+    confirm.onDidDismiss(data => {
       this.zone.run(() => {
         if (data === 'delete.success') {
           this.content.streamingUrl = this.streamingUrl;

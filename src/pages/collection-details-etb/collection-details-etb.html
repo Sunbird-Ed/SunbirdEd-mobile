@@ -31,7 +31,7 @@
           <div class="item">
             <div class="flex">
               <div>
-                <div class="title"> {{(contentDetail?.name && contentDetail?.name?.length > 25) ? (contentDetail?.name
+                <div class="title" (click)="showOver($event)"> {{(contentDetail?.name && contentDetail?.name?.length > 25) ? (contentDetail?.name
                     |
                     slice:0:25) + '...' : (contentDetail?.name)}}</div>
               </div>

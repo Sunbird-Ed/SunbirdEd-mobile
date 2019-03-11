@@ -30,6 +30,7 @@ import { EditContactDetailsPopupComponent } from './edit-contact-details-popup/e
 import { ViewAllCardComponent } from './view-all-card/view-all-card';
 import { TextbookCardComponent } from './textbook-card/textbook-card';
 import { CollectionChildComponent } from './collection-child/collection-child';
+import { SbPopoverComponent } from './popups/sb-popover/sb-popover';
 
 @NgModule({
     declarations: [
@@ -55,7 +56,8 @@ import { CollectionChildComponent } from './collection-child/collection-child';
         DetailCardComponent,
         SearchCardComponent,
         TextbookCardComponent,
-        CollectionChildComponent
+        CollectionChildComponent,
+        SbPopoverComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -91,7 +93,8 @@ import { CollectionChildComponent } from './collection-child/collection-child';
         DetailCardComponent,
         SearchCardComponent,
         TextbookCardComponent,
-        CollectionChildComponent
+        CollectionChildComponent,
+        SbPopoverComponent
 
     ],
     entryComponents: [
@@ -102,7 +105,8 @@ import { CollectionChildComponent } from './collection-child/collection-child';
         DialogPopupComponent,
         UnenrollAlertComponent,
         EditContactDetailsPopupComponent,
-        EditContactVerifyPopupComponent
+        EditContactVerifyPopupComponent,
+        SbPopoverComponent
     ],
     providers: [
         FormAndFrameworkUtilService

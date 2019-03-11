@@ -11,8 +11,11 @@ import {
   Events,
   Platform,
   Navbar,
-  PopoverController
+  PopoverController,
+  ToastController
 } from 'ionic-angular';
+import { FileSizePipe  } from '@app/pipes/file-size/file-size';
+import { ViewController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
@@ -36,7 +39,7 @@ import {
   ErrorType
 } from 'sunbird';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
-import { ContentActionsComponent, ConfirmAlertComponent, ContentRatingAlertComponent } from '@app/component';
+import { ContentActionsComponent, SbPopoverComponent, ConfirmAlertComponent, ContentRatingAlertComponent } from '@app/component';
 import {
   ContentType,
   MimeType,
@@ -193,6 +196,12 @@ export class CollectionDetailsEtbPage {
   public source = '';
   isChildClickable = false;
   shownGroup = null;
+  content: any;
+  data: any;
+  isChild = false;
+  contentId: string;
+  batchDetails: any;
+  pageName: any;
 
   // Local Image
   localImage = '';
@@ -214,7 +223,10 @@ export class CollectionDetailsEtbPage {
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private courseUtilService: CourseUtilService
+    private courseUtilService: CourseUtilService,
+    public viewCtrl: ViewController,
+    private toastCtrl: ToastController,
+    private fileSizePipe: FileSizePipe
   ) {
 
     this.objRollup = new Rollup();
@@ -222,6 +234,10 @@ export class CollectionDetailsEtbPage {
     this.checkCurrentUserType();
     this.getBaseURL();
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
+    this.content = this.navParams.get('content');
+    this.data = this.navParams.get('data');
+    this.batchDetails = this.navParams.get('batchDetails');
+    this.pageName = this.navParams.get('pageName');
   }
 
   ionViewDidLoad() {
@@ -276,7 +292,7 @@ export class CollectionDetailsEtbPage {
     });
   }
   // toggle the card
-   toggleGroup(group) {
+  toggleGroup(group) {
     if (this.isGroupShown(group)) {
       this.shownGroup = null;
     } else {
@@ -421,11 +437,11 @@ export class CollectionDetailsEtbPage {
 
     if (this.contentDetail.appIcon) {
       if (this.contentDetail.appIcon.includes('http:') || this.contentDetail.appIcon.includes('https:')) {
-          if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-                  this.contentDetail.appIcon = this.contentDetail.appIcon;
-            } else {
-                  this.contentDetail.appIcon = this.defaultAppIcon;
-            }
+        if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+          this.contentDetail.appIcon = this.contentDetail.appIcon;
+        } else {
+          this.contentDetail.appIcon = this.defaultAppIcon;
+        }
       } else if (data.result.basePath) {
         this.localImage = data.result.basePath + '/' + this.contentDetail.appIcon;
       }
@@ -602,7 +618,7 @@ export class CollectionDetailsEtbPage {
           this.isDownloadStarted = false;
           this.showLoading = false;
           if (Boolean(this.isUpdateAvailable)) {
-          //  this.showChildrenLoader = true;
+            //  this.showChildrenLoader = true;
             this.setChildContents();
           } else {
             const errorRes = JSON.parse(error);
@@ -629,7 +645,7 @@ export class CollectionDetailsEtbPage {
         data = JSON.parse(data);
         this.zone.run(() => {
           if (data && data.result && data.result.children) {
-          //  console.log('ChildrenData', this.childrenData);
+            //  console.log('ChildrenData', this.childrenData);
             this.childrenData = data.result.children;
           }
 
@@ -1021,5 +1037,100 @@ export class CollectionDetailsEtbPage {
     this.downloadProgress = 0;
     this.events.unsubscribe('genie.event');
   }
+  showOver() {
+    const confirm = this.popoverCtrl.create(SbPopoverComponent, {
+      content: this.contentDetail,
+      isChild: this.isDepthChild,
+      objRollup: this.objRollup,
+      pageName: PageId.COLLECTION_DETAIL,
+      corRelationList: this.corRelationList,
+      sbPopoverHeading: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE'),
+      sbPopoverMainTitle: this.contentDetail.name + this.contentDetail.subject,
+      actionsButtons: [
+        {
+          btntext: this.commonUtilService.translateMessage('REMOVE'),
+          btnClass: 'popover-color'
+        },
+      ],
+      icon: null,
+      metaInfo: this.contentDetail.contentTypesCount.TextBookUnit +
+       'items' + '(' + this.fileSizePipe.transform(this.contentDetail.size, 2) + ')',
+      sbPopoverContent: 'Are you sure you want to delete ?'
+    }, {
+        cssClass: 'sb-popover danger',
+      });
+    confirm.present({
+      ev: event
+    });
+    confirm.onDidDismiss((canDelete: boolean = false) => {
+      if (canDelete) {
+        this.deleteContent();
+      }
+    });
+  }
 
+    /**
+   * Construct content delete request body
+   */
+  getDeleteRequestBody() {
+    const apiParams = {
+      contentDeleteList: [{
+        contentId: this.contentId,
+        isChildContent: this.isChild
+      }]
+    };
+    return apiParams;
+  }
+  showToaster(message) {
+    const toast = this.toastCtrl.create({
+      message: message,
+      duration: 2000,
+      position: 'bottom'
+    });
+    toast.present();
+  }
+
+  getMessageByConstant(constant: string) {
+    let msg = '';
+    this.translate.get(constant).subscribe(
+      (value: any) => {
+        msg = value;
+      }
+    );
+    return msg;
+  }
+  deleteContent() {
+    const telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = this.content.identifier;
+    telemetryObject.type = this.content.contentType;
+    telemetryObject.version = this.content.pkgVersion;
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.DELETE_CLICKED,
+      Environment.HOME,
+      this.pageName,
+      telemetryObject,
+      undefined,
+      this.objRollup,
+      this.corRelationList);
+
+    this.contentService.deleteContent(this.getDeleteRequestBody()).then((res: any) => {
+      const data = JSON.parse(res);
+      if (data.result && data.result.status === 'NOT_FOUND') {
+        this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
+      } else {
+        // Publish saved resources update event
+        this.events.publish('savedResources:update', {
+          update: true
+        });
+        console.log('delete response: ', data);
+        this.showToaster(this.getMessageByConstant('MSG_RESOURCE_DELETED'));
+        this.viewCtrl.dismiss('delete.success');
+      }
+    }).catch((error: any) => {
+      console.log('delete response: ', error);
+      this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
+      this.viewCtrl.dismiss();
+    });
+  }
 }
