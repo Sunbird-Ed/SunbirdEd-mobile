@@ -4,12 +4,6 @@ import {Events, IonicPage, NavController, PopoverController} from 'ionic-angular
 import {AppVersion} from '@ionic-native/app-version';
 import {
   ContentService,
-  CourseService,
-  Environment,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  PageId,
   SharedPreferences
 } from 'sunbird';
 import {QRResultCallback, SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
@@ -37,7 +31,14 @@ import {ProfileType,
   PageAssembleService,
   PageAssembleCriteria,
   PageAssembleFilter,
-  PageName
+  PageName,
+  CourseService,
+  Environment,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  PageId,
+  Course
 } from 'sunbird-sdk';
 
 @IonicPage()
@@ -50,7 +51,7 @@ export class CoursesPage implements OnInit {
   /**
    * Contains enrolled course
    */
-  enrolledCourses: Array<any>;
+  enrolledCourses: Array<Course> = [];
 
   /**
    * Contains popular and latest courses ist
@@ -100,7 +101,7 @@ export class CoursesPage implements OnInit {
   isFilterApplied = false;
   callback: QRResultCallback;
   pageFilterCallBack: PageFilterCallback;
-  isUpgradePopoverShown: boolean = false;
+  isUpgradePopoverShown = false;
 
   /**
    * Default method of class CoursesPage
@@ -125,7 +126,7 @@ export class CoursesPage implements OnInit {
   constructor(
     private appVersion: AppVersion,
     private navCtrl: NavController,
-    private courseService: CourseService,
+    @Inject('COURSE_SERVICE') private courseService: CourseService,
     private ngZone: NgZone,
     private qrScanner: SunbirdQRScanner,
     private popCtrl: PopoverController,
@@ -318,16 +319,13 @@ export class CoursesPage implements OnInit {
       refreshEnrolledCourses: refreshEnrolledCourses,
       returnRefreshedEnrolledCourses: returnRefreshedCourses
     };
-    this.courseService.getEnrolledCourses(option)
-      .then((enrolledCourses: any) => {
+    this.courseService.getEnrolledCourses(option).toPromise()
+      .then((enrolledCourses) => {
         if (enrolledCourses) {
-          enrolledCourses = JSON.parse(enrolledCourses);
           this.ngZone.run(() => {
-            this.enrolledCourses = enrolledCourses.result.courses ? enrolledCourses.result.courses : [];
-            // maintain the list of courses that are enrolled, and store them in appglobal
+            this.enrolledCourses = enrolledCourses ? enrolledCourses : [];
             if (this.enrolledCourses.length > 0) {
-              const courseList: Array<any> = [];
-
+              const courseList: Array<Course> = [];
               for (const course of this.enrolledCourses) {
                 courseList.push(course);
               }
@@ -338,8 +336,7 @@ export class CoursesPage implements OnInit {
             this.spinner(false);
           });
         }
-      })
-      .catch(() => {
+      }, (err) => {
         this.spinner(false);
       });
   }

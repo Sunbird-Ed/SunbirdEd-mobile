@@ -1,10 +1,16 @@
 import {Component, Inject, NgZone, Renderer2, ViewChild} from '@angular/core';
-import {AuthService, Environment, ImpressionType, PageId, TelemetryService, Visit} from 'sunbird';
+import {AuthService, Visit} from 'sunbird';
 import {LoadingController, NavController} from 'ionic-angular';
 import {ProfilePage} from './../profile';
-import {generateImpressionTelemetry} from '../../../app/telemetryutil';
+import {TelemetryGeneratorService} from '@app/service';
 import {CommonUtilService} from '../../../service/common-util.service';
-import {ProfileService, ServerProfileSearchCriteria} from 'sunbird-sdk';
+import {
+  ProfileService,
+  ServerProfileSearchCriteria,
+  Environment,
+  ImpressionType,
+  PageId
+} from 'sunbird-sdk';
 
 @Component({
   selector: 'user-search',
@@ -33,11 +39,11 @@ export class UserSearchComponent {
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     private navCtrl: NavController,
     private authService: AuthService,
-    private telemetryService: TelemetryService,
     private zone: NgZone,
     private renderer: Renderer2,
     private loadingCtrl: LoadingController,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) { }
 
   /**
@@ -118,12 +124,12 @@ export class UserSearchComponent {
   }
 
   ionViewDidLoad() {
-    this.telemetryService.impression(generateImpressionTelemetry(
+    this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.SEARCH, '',
       PageId.PROFILE,
       Environment.USER, '', '', '',
       undefined, undefined
-    ));
+    );
   }
 
   ionViewDidEnter() {

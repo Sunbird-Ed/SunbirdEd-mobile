@@ -8,7 +8,7 @@ import {
   PopoverController,
   ViewController
 } from 'ionic-angular';
-import {ContentSearchCriteria, ContentService, ContentSortCriteria, CourseService, SortOrder} from 'sunbird';
+import {ContentSearchCriteria, ContentService, ContentSortCriteria, SortOrder} from 'sunbird';
 import {OverflowMenuComponent} from '@app/pages/profile';
 import {generateInteractTelemetry} from '@app/app/telemetryutil';
 import {ContentCard, ContentType, MenuOverflow, MimeType, ProfileConstants} from '@app/app/app.constant';
@@ -23,6 +23,8 @@ import {EditContactDetailsPopupComponent} from '@app/component/edit-contact-deta
 import {EditContactVerifyPopupComponent} from '@app/component';
 import {
   AuthService,
+  CourseService,
+  Course,
   Environment,
   ImpressionType,
   InteractSubtype,
@@ -96,7 +98,7 @@ export class ProfilePage {
     private navParams: NavParams,
     private events: Events,
     private appGlobalService: AppGlobalService,
-    private courseService: CourseService,
+    @Inject('COURSE_SERVICE') private courseService: CourseService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,
@@ -388,10 +390,11 @@ export class ProfilePage {
       returnRefreshedEnrolledCourses: true
     };
     this.trainingsCompleted = [];
-    this.courseService.getEnrolledCourses(option)
-      .then((res: any) => {
-        res = JSON.parse(res);
-        const enrolledCourses = res.result.courses;
+    this.courseService.getEnrolledCourses(option).toPromise()
+      .then((res: Course[]) => {
+       // res = JSON.parse(res);
+        const enrolledCourses = res;
+        console.log('course is ', res);
         for (let i = 0, len = enrolledCourses.length; i < len; i++) {
           if ((enrolledCourses[i].status === 2) || (enrolledCourses[i].leafNodesCount === enrolledCourses[i].progress)) {
             this.trainingsCompleted.push(enrolledCourses[i]);
