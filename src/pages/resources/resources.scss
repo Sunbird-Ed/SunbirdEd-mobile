@@ -4,6 +4,23 @@ ion-spinner {
     margin: auto;
   }
   ion-spinner * {
-    stroke:#024f9d !important;
+    stroke:$blue !important;
   }
+
+  .sb-card-textbook-container, .sb-card-view-all-container{
+    textbook-card {
+      .sb-card{
+        border-bottom: 0.5px solid rgba(151, 151, 151, 0.40);
+        &:last-child{
+          border-bottom: 0.5px solid rgba(151, 151, 151, 0.40);
+        }
+      }
+      &:last-child{
+        .sb-card{
+          border-bottom: none;
+        }
+        
+      }
+    }
+  } 
 }
