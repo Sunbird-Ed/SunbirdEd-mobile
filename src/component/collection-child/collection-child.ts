@@ -19,6 +19,7 @@ export class CollectionChildComponent {
     @Input() depth: any;
     @Input() corRelationList: any;
     @Input() isDepthChild: any;
+    @Input() isOnline: any;
 
 
     constructor(

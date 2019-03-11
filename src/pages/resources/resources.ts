@@ -62,6 +62,9 @@ import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-d
 import { ReportsPage } from '../reports';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { SettingsPage } from '../settings';
+import { ProfilePage } from '../profile/profile';
+import { GuestProfilePage } from '../profile';
+import { Page } from 'ionic-angular/umd/navigation/nav-util';
 
 @Component({
   selector: 'page-resources',
@@ -175,14 +178,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       });
     this.defaultImg = 'assets/imgs/ic_launcher.png';
     this.generateNetworkType();
-    //   this.categoryMediums = [{
-    //     name : 'English'
-    //   }, {
-    //     name : 'Hindi'
-    //   }, {
-    //     name : 'Bengali'
-    //   }
-    // ];
   }
 
   subscribeUtilityEvents() {
@@ -493,6 +488,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     } else {
       this.searchApiLoader = false;
     }
+    const reqvalues = new Map();
+    reqvalues['pageReq'] = this.getGroupByPageReq;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+        InteractSubtype.RESOURCE_PAGE_REQUEST,
+        Environment.HOME,
+        this.source, undefined,
+        reqvalues);
     this.contentService.getGroupByPage(this.getGroupByPageReq, this.guestUser)
       .then((response: any) => {
         this.ngZone.run(() => {
@@ -513,12 +515,25 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             newSections.push(element);
           });
           // END OF TEMPORARY CODE
+
           this.storyAndWorksheets = newSections;
+          const sectionInfo = {};
+          for (let i = 0; i < this.storyAndWorksheets.length; i++) {
+             const sectionName = this.storyAndWorksheets[i].name,
+                  count = this.storyAndWorksheets[i].contents.length;
+                  sectionInfo[sectionName] = count;
+          }
+          const resvalues = new Map();
+          resvalues['pageRes'] = sectionInfo;
+          this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+            InteractSubtype.RESOURCE_PAGE_LOADED,
+            Environment.HOME,
+            this.source, undefined,
+            resvalues);
           this.pageLoadedSuccess = true;
           this.refresh = false;
           this.searchApiLoader = false;
           // this.noInternetConnection = false;
-          console.log('Story and worksheets =>', this.storyAndWorksheets);
           this.generateExtraInfoTelemetry(newSections.length);
           this.checkEmptySearchResult(isAfterLanguageChange);
         });
@@ -532,6 +547,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
             if (!isAfterLanguageChange) { this.commonUtilService.showToast('ERROR_FETCHING_DATA'); }
           }
+          const errvalues = new Map();
+          errvalues['isNetworkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
+          this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+            InteractSubtype.RESOURCE_PAGE_ERROR,
+            Environment.HOME,
+            this.source, undefined,
+            errvalues);
         });
       });
   }
@@ -633,8 +655,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.getPopularContent();
     }
     this.subscribeGenieEvents();
-
-    this.getCategoryData();
   }
 
   subscribeGenieEvents() {
@@ -652,18 +672,19 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 	 * @param refresher
 	 */
   swipeDownToRefresh(refresher?) {
-    if (refresher) {
-      refresher.complete();
-      this.telemetryGeneratorService.generatePullToRefreshTelemetry(PageId.LIBRARY, Environment.HOME);
-    }
     this.refresh = true;
     this.storyAndWorksheets = [];
 
     this.getCategoryData();
     this.getCurrentUser();
+    if (refresher) {
+      refresher.complete();
+      this.telemetryGeneratorService.generatePullToRefreshTelemetry(PageId.LIBRARY, Environment.HOME);
+      this.getGroupByPage();
+    } else {
+          this.getPopularContent();
+         }
 
-    this.getPopularContent(false);
-    this.getCategoryData();
   }
 
   generateImpressionEvent() {
@@ -688,6 +709,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       Environment.HOME,
       PageId.LIBRARY);
     this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
+  }
+  onProfileClick() {
+    const currentProfile: Page = (this.appGlobalService.isGuestUser) ? GuestProfilePage : ProfilePage;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      'profile-button-clicked',
+      Environment.HOME,
+      PageId.LIBRARY);
+    this.navCtrl.push(currentProfile, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
   }
 
   getCategoryData() {
@@ -836,7 +865,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   navigateToDetailPage(item, index, sectionName) {
-    console.log('telemetry testing', item, index, sectionName);
     const identifier = item.contentId || item.identifier;
     const telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.type = item.contentType;

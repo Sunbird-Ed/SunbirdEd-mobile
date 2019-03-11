@@ -1,161 +1,26 @@
-/*
- Global styles starts
-*/
-    // Recently Viewed Starts
-    
+page-resources {
+ion-spinner {
+    display: block;
+    margin: auto;
+  }
+  ion-spinner * {
+    stroke:$blue !important;
+  }
 
- 
-  .sb-recently-viewed-container {
-
-    .sb-recently-viewed-items{
-      background-color: #024f9d;
-      height: ($base-block-space * 11);
-      width: 100%;
-      position: relative;
-      @include padding(($base-block-space * 1), 0);
-      .sb-recenlty-viewed-title {
-        font-size: 16px;
-        color: #ffffff;
-        font-family: "Noto Sans";	
-        line-height: 22px;
-        overflow: auto;
-        margin-bottom: ($base-block-space * 1);
-      @include padding(0, ($base-block-space * 1));
-  
+  .sb-card-textbook-container, .sb-card-view-all-container{
+    textbook-card {
+      .sb-card{
+        border-bottom: 0.5px solid rgba(151, 151, 151, 0.40);
+        &:last-child{
+          border-bottom: 0.5px solid rgba(151, 151, 151, 0.40);
+        }
       }
-        .sb-card-scroll-container{
-        overflow-x: auto;
-        padding: 0 0 8px 0;
+      &:last-child{
+        .sb-card{
+          border-bottom: none;
+        }
+        
       }
     }
-  }
-
-
-
-    // Recently Viewed ends
- 
-    // Text book css starts
-   
-    // Text book css ends
-    
-    .sb-card-container .sb-search-card .sb-card{
-      padding: 8px 16px;
-  }
-  .sb-view-all-items.sb-search-items
-  {
-      padding: 0px;
-      background-color: transparent;
-  }
-  
-  
-  .sb-card-result.sb-card-details
-  {
-    @include padding($base-block-space * 2);
-    .sb-card-res-count{
-          color: #979797;
-          font-size: ($font-size-base  - 2);
-          line-height: 15px;
-    }
-   .sb-card-result-content{
-          color: #979797;
-          font-size: ($font-size-base  + 2);
-          font-weight: 500;
-          line-height: 22px;
-   }
-  }
-  .sb-separator-line{
-      margin: 0px;
-   }
-
-   // side menu scss
-
-
-   .sb-header {
-    .bar-buttons-md.sb-hamburger {
-        -webkit-box-ordinal-group: 4;
-        -webkit-order: 3;
-        -ms-flex-order: 3;
-        order: 3;
-    }
-    .toolbar-ios {
-        padding:0px;
-    }
-    .toolbar-background.toolbar-background-md{
-        background: #fff;
-    }
+  } 
 }
-
-
-.sb-side-menu {
-ion-label {
-    display: flex;
-    align-items: center;
-}
-ion-icon{
-    vertical-align: -webkit-baseline-middle;
-}
-.img-container{
-    height:32px;
-    width: 32px;
-    background-color: grey;
-    vertical-align: bottom;
-}
-.toolbar {
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.12);
-  background-color: #ffffff;
-  .toolbar-background-md{
-    background-color: map-get($colors, white)
-  }
-
-}
-.toolbar-md{
-  min-height:($base-block-space * 9);
-}
-
-.toolbar-title {
-  color: $primary-color;
-  ion-icon {
-    font-size: 26px;
-  }
-}
-.sb-menu-list  {
-
-    .sb-menu-icon
-    {
-        width : ($base-block-space * 4);
-        height: ($base-block-space * 4);
-        align-items: center;
-    }
-  
-  .item {
-    color: $primary-color;
-    font-size: $font-size-base;
-    font-weight: normal;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: normal;
-    @include margin (0,$base-block-space,0,0);
-    .item-inner {
-      border-bottom: 0;
-    }
-    ion-icon {
-      font-size:(($font-size-base * 2) - 4);
-    }
-    .sb-menu-item{
-    }
-  }
-}
-.side-menu-footer {
-  @include padding($base-block-space);
-  background-color: #f6f5f5;
-  width: 100%;
-  font-size: ($font-size-base);
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: normal;
-  color: #ADADAD;;
-}
-
-}
-

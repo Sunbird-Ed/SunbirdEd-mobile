@@ -1,53 +1,70 @@
-
 <!-- Generated template for the DetailCardComponent component -->
 
 <div class="sb-dt-card">
-    <div class="sb-dt-content">
+  <div class="sb-dt-content">
+    <div class="left">
 
-      <div class="left">
-        <div (click)="rateContent()" class="sb-rating-view">
-          <span class="sb-rating-value">4.5</span>
-          <span class="sb-rating-star">
-            <ion-icon ios="ios-star" md="md-star"></ion-icon>
-          </span>
-        </div>
-        <div class="sb-dt-title"> Social Science term2</div>
-        <div class="sb-dt-source">
-          <span class="sb-by">by</span>
-          <span class="sb-user">Bindu Priya</span>
-        </div>
-        <div class="sb-dt-class-info">
-          <span class="sb-dt-label sb-dt-class">Third Class</span>
-          <span class="sb-separator-dot"></span>
-          <span class="sb-dt-label sb-dt-subject">Biology</span>
-        </div>
+      <div class="sb-dt-title"> {{contentDetail?.name}}</div>
+      <div class="sb-dt-source" *ngIf="contentDetail?.creator || contentDetail?.owner">
+        <span class="sb-by">by</span>
+        <span class="sb-user">{{ contentDetail?.creator || contentDetail?.owner }}</span>
       </div>
+      <div class="sb-dt-class-info" *ngIf="contentDetail?.gradeLevel || contentDetail?.subject">
+        <span class="sb-dt-label sb-dt-class">{{contentDetail?.gradeLevel}}</span>
+        <span class="sb-separator-dot"></span>
+        <span class="sb-dt-label sb-dt-subject">{{contentDetail?.subject}}</span>
+      </div>
+    </div>
 
-      <div class="right">
-        <div class="img-container">
-          <img src="">
-        </div>
+    <div class="right">
+      <div class="img-container">
+        <img src="{{ localImage || contentDetail?.appIcon || defaultAppIcon}}">
       </div>
 
     </div>
 
-    <div class="sb-separator-line"></div>
+  </div>
 
-    <div class="sb-dt-card-actions">
-
-      <div class="sb-btn-tile-group">
-        <button ion-button clear icon-only class="sb-btn-tile">
-          <ion-icon ios="ios-cloud-download" md="md-cloud-download" class="sb-dt-card-blue-icon"></ion-icon>
-          <span class="sb-btn-footer-text">Download</span>
-        </button>
-        <button ion-button clear icon-only class="sb-btn-tile">
-          <ion-icon ios="ios-share" md="md-share" class="sb-dt-card-blue-icon"></ion-icon>
-          <span class="sb-btn-footer-text">Share</span>
-        </button>
-        <button ion-button clear icon-only class="sb-btn-tile">
-          <ion-icon ios="ios-trash" md="md-trash" class="sb-dt-card-danger-icon"></ion-icon>
-          <span class="sb-btn-footer-text">Delete</span>
-        </button>
+  <div class="sb-dt-content pt-0">
+    <div class="left">
+      <div class="sb-practice">
+        <button ion-button outline small>Practice</button>
       </div>
+    </div>
+    <div class="right">
+      <div *ngIf="contentDetail?.me_totalRatings" (click)="rateContent()" class="sb-rating-view">
+        <span class="sb-rating-value">{{ contentDetail?.me_totalRatings }}</span>
+        <span class="sb-rating-star">
+          <ion-icon ios="ios-star" md="md-star"></ion-icon>
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+
+
+  <div class="sb-separator-line"></div>
+
+  <div class="sb-dt-card-actions">
+
+    <div class="sb-btn-tile-group">
+      <button ion-button clear icon-only class="sb-btn-tile" *ngIf="showDownloadBtn && !isDepthChild && !isDownloadStarted" (click)="downloadAllContents()">
+        <ion-icon ios="ios-cloud-download" md="md-cloud-download" class="sb-dt-card-blue-icon"></ion-icon>
+        <span class="sb-btn-footer-text">Download</span>
+      </button>
+      <button ion-button clear icon-only class="sb-btn-tile">
+        <ion-icon ios="ios-trash" md="md-trash" class="sb-dt-card-danger-icon"></ion-icon>
+        <span class="sb-btn-footer-text">Delete</span>
+      </button>
+      <button ion-button clear icon-only class="sb-btn-tile">
+        <ion-icon ios="ios-share" md="md-share" class="sb-dt-card-blue-icon"></ion-icon>
+        <span class="sb-btn-footer-text">Share</span>
+      </button>
+      <button ion-button clear icon-only class="sb-btn-tile">
+        <ion-icon ios="ios-star-outline" md="md-star-outline" class="sb-dt-card-blue-icon"></ion-icon>
+        <span class="sb-btn-footer-text">Rate</span>
+      </button>
     </div>
   </div>
+</div>
