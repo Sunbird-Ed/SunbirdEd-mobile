@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 
 /**
  * Generated class for the DetailCardComponent component.
@@ -10,13 +10,27 @@ import { Component } from '@angular/core';
   selector: 'detail-card',
   templateUrl: 'detail-card.html'
 })
-export class DetailCardComponent {
+export class DetailCardComponent implements OnInit {
+  @Input() contentDetail: any;
+  @Input() defaultAppIcon: string;
+  @Input() localImage: string;
+  @Input() showDownloadBtn: boolean;
+  @Input() isDepthChild: boolean;
+  @Input() isDownloadStarted: boolean;
 
+
+  @Output() downloadAllContent = new EventEmitter();
   text: string;
 
   constructor() {
-    console.log('Hello DetailCardComponent Component');
-    this.text = 'Hello World';
+  }
+
+  ngOnInit() {
+  }
+
+  downloadAllContents() {
+    this.downloadAllContent.emit();
+    console.log('emited!');
   }
 
 }
