@@ -46,11 +46,24 @@ collection-child {
         font-size: 25px;
     }
 
-    .ML5{
-        margin-left: 5px;
+    .ml8{
+        @include margin (null, null, null, 8px);
     }
-    .margin-10{
-        margin-left: 10px;
+
+    .mtb-8{
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+
+    .sb-topic-item
+    {
+      @include padding($base-block-space * 1);
+    }
+
+    .sb-topics-container .sb-topic-container.sb-topics-1child{
+        .sb-separator-line{
+            @include margin(null, $base-block-space * 1);
+          }
     }
 
 }
