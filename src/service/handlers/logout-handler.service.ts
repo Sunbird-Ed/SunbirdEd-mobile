@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
-  ContainerService,
+  // ContainerService,
   Environment,
   InteractSubtype,
   InteractType,
@@ -10,7 +10,7 @@ import {
   ProfileService,
   ProfileType,
   SharedPreferences,
-  TabsPage,
+  // TabsPage,
   TelemetryService,
   UserSource
 } from 'sunbird';
@@ -18,6 +18,8 @@ import {generateInteractTelemetry, GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initT
 import {AppGlobalService, CommonUtilService} from '@app/service';
 import {OnboardingPage} from '@app/pages/onboarding/onboarding';
 import {App, Events} from 'ionic-angular';
+import { ContainerService } from '../../service/container-service';
+import { TabsPage } from '@app/pages/tabs/tabs';
 
 @Injectable()
 export class LogoutHandlerService {

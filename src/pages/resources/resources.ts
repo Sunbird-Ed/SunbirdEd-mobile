@@ -211,7 +211,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     });
 
     this.events.subscribe('tab.change', (data) => {
-      this.ngZone.run(() => {
+      // this.ngZone.run(() => {
+        console.log('Dataa--', data);
         if (data === 'LIBRARY') {
           if (this.appliedFilter) {
             this.filterIcon = './assets/imgs/ic_action_filter.png';
@@ -220,8 +221,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             this.isFilterApplied = false;
             this.getPopularContent();
           }
-        }
-      });
+        } else if (data === '') {
+          this.qrScanner.startScanner(PageId.LIBRARY);
+      }
+      // });
     });
 
   }

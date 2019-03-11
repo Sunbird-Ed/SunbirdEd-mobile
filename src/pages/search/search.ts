@@ -26,12 +26,13 @@ import {
   Mode,
   TelemetryObject,
   PageId,
-  TabsPage,
+  // TabsPage,
   PageAssembleCriteria,
   PageAssembleFilter,
   PageAssembleService,
   SharedPreferences
 } from 'sunbird';
+import { TabsPage } from '@app/pages/tabs/tabs';
 import { GenieResponse } from '../settings/datasync/genieresponse';
 import { FilterPage } from './filters/filter';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
