@@ -19,16 +19,19 @@
 </ion-header>
 
 <ion-content style="background: #EBEBEB;">
-	<div class="horizontal-scroll  PLR15px bg-white">
-		<a class="medium-pill MR24" *ngFor="let medium of categoryMediums; let i = index;" [ngClass]="{'active': medium?.selected}" [@appear] (click)="mediumClick(medium?.name)">{{medium?.name}}&nbsp;{{'MEDIUM' | translate }}</a>
+	<div ion-fixed style="min-width: 100%;">
+		<div class="horizontal-scroll  PLR15px bg-white">
+			<a class="medium-pill MR24" *ngFor="let medium of categoryMediums; let i = index;" [ngClass]="{'active': medium?.selected}" [@appear] (click)="mediumClick(medium?.name)">{{medium?.name}}&nbsp;{{'MEDIUM' | translate }}</a>
+		</div>
+	
+		<div class="horizontal-scroll  class-filter-cotainer class-shadow" id="gradeScroll" [@ScrollHorizontal]="{value: currentGrade?.selected, params: {left_indent: current_index * 72}}">
+			<a class="class-pill " *ngFor="let grade of categoryGradeLevels; let i = index; let first = first" 
+			[ngClass]="{'active': grade?.selected, '': !grade?.selected}" attr.id="class{{i}}" (click)="classClick(i);">
+				{{grade?.name}} 
+			</a>
+		</div>
 	</div>
-
-	<div class="horizontal-scroll  class-filter-cotainer class-shadow" id="gradeScroll" [@ScrollHorizontal]="{value: currentGrade?.selected, params: {left_indent: current_index * 72}}">
-		<a class="class-pill " *ngFor="let grade of categoryGradeLevels; let i = index; let first = first" 
-		[ngClass]="{'active': grade?.selected, '': !grade?.selected}" attr.id="class{{i}}" (click)="classClick(i);">
-			{{grade?.name}} 
-		</a>
-	</div>
+	<div style="margin-top:100px">
 	<ion-refresher (ionRefresh)="swipeDownToRefresh($event)"></ion-refresher>
 	<div style="margin: 40px;" *ngIf ="refresh">
 		<ion-spinner icon="spiral"></ion-spinner>
@@ -130,4 +133,5 @@
 	<div *ngIf="showSignInCard" class="signin-card-bg">
 		<sign-in-card (valueChange)="showOfflineNetworkWarning($event)" [source]="source"></sign-in-card>
 	</div>
+</div>
 </ion-content>
