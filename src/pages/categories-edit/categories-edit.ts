@@ -311,7 +311,7 @@ export class CategoriesEditPage {
       if (this.showOnlyMandatoryFields) {
         this.gradeSelect.open();
       } else {
-        this.showErrorToastMessage('GRADE');
+        this.showErrorToastMessage('CLASS');
       }
     } else {
       this.submitForm(formVal);
