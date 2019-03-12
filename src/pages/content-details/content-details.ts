@@ -506,7 +506,7 @@ export class ContentDetailsPage {
     }
 
     if (this.downloadAndPlay) {
-      if (!this.content.downloadable) {
+      if (!this.content.downloadable || this.isUpdateAvail) {
         /**
          * Content is not downloaded then call the following method
          * It will download the content and play it
