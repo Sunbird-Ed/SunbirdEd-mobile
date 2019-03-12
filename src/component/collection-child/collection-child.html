@@ -24,7 +24,7 @@
     </span>
     {{childData?.contentData?.name}}
 </div>
-<div *ngIf="childData?.children && childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection'" class="separator-line margin-10"></div>
+<!-- <div *ngIf="childData?.children && childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection'" class="separator-line margin-10"></div> -->
 <div class="margin-10" *ngFor="let firstChildren of childData?.children; let j = index;">
     <collection-child [childData]="firstChildren"></collection-child>
 </div>
