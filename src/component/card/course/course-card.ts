@@ -126,6 +126,7 @@ export class CourseCard implements OnInit {
   }
 
   resumeCourse(content: any) {
+    this.saveContentContext(content);
     if (content.lastReadContentId && content.status === 1) {
       this.events.publish('course:resume', {
         content: content
@@ -149,5 +150,19 @@ export class CourseCard implements OnInit {
     }
   }
 
+
+  saveContentContext(content: any) {
+    const contentContextMap = new Map();
+    // store content context in the below map
+    contentContextMap['userId'] = content.userId;
+    contentContextMap['courseId'] = content.courseId;
+    contentContextMap['batchId'] = content.batchId;
+    if (content.batch) {
+      contentContextMap['batchStatus'] = content.batch.status;
+    }
+
+    // store the contentContextMap in shared preference and access it from SDK
+    this.preference.putString(PreferenceKey.CONTENT_CONTEXT, JSON.stringify(contentContextMap));
+  }
 }
 
