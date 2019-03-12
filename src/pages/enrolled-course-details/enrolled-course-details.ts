@@ -24,7 +24,8 @@ import {
   CourseService as course_Service,
   GetContentStateRequest,
   ContentService as content_service,
-  ChildContentRequest
+  ChildContentRequest,
+  SharedPreferences,
 } from 'sunbird';
 import {ContentActionsComponent, ContentRatingAlertComponent, CourseCard} from '@app/component';
 import {CollectionDetailsPage} from '@app/pages/collection-details/collection-details';
@@ -54,7 +55,6 @@ import {
   CourseBatchStatus,
   ContentService,
    ContentImportResponse,
-   SharedPreferences,
    Content,
    TelemetryErrorCode,
    Course
@@ -182,7 +182,7 @@ export class EnrolledCourseDetailsPage {
     private buildParamService: BuildParamService,
     private shareUtil: ShareUtil,
     private social: SocialSharing,
-    @Inject('SHARED_PREFERENCES') private preference: SharedPreferences,
+    private preference: SharedPreferences,
     private courseUtilService: CourseUtilService,
     private platform: Platform,
     private appGlobalService: AppGlobalService,
@@ -488,7 +488,7 @@ export class EnrolledCourseDetailsPage {
         this.zone.run(() => {
           if (data) {
             this.batchDetails = data;
-            this.preference.getString(PreferenceKey.COURSE_IDENTIFIER).toPromise()
+            this.preference.getString(PreferenceKey.COURSE_IDENTIFIER)
               .then(val => {
                 if (val === this.batchDetails.identifier) {
                   this.batchExp = true;
@@ -983,7 +983,6 @@ export class EnrolledCourseDetailsPage {
               if (this.batches.length) {
                 _.forEach(this.batches, (batch, key) => {
                   if (batch.status === 1) {
-                    console.log('stastus is 1', this.batches);
                     ongoingBatches.push(batch);
                   } else {
                     upcommingBatches.push(batch);
