@@ -1,8 +1,13 @@
-import {Component, Inject, NgZone, ViewChild} from '@angular/core';
+import {
+  Component,
+  NgZone,
+  ViewChild,
+  Inject
+} from '@angular/core';
 import {
   AlertController,
-  Events,
   IonicPage,
+  Events,
   Navbar,
   NavController,
   NavParams,
@@ -14,19 +19,15 @@ import {SocialSharing} from '@ionic-native/social-sharing';
 
 import {
   BuildParamService,
-  ChildContentRequest,
-  ContentService,
-  CourseBatchesRequest,
-  CourseBatchStatus,
-  CourseEnrollmentType,
-  CourseService,
   FileUtil,
-  GetContentStateRequest,
-  SharedPreferences,
   ShareUtil,
-  UnenrolCourseRequest
+  CourseService as course_Service,
+  GetContentStateRequest,
+  ContentService as content_service,
+  ChildContentRequest,
+  SharedPreferences,
 } from 'sunbird';
-import {ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
+import {ContentActionsComponent, ContentRatingAlertComponent, CourseCard} from '@app/component';
 import {CollectionDetailsPage} from '@app/pages/collection-details/collection-details';
 import {ContentDetailsPage} from '@app/pages/content-details/content-details';
 import {ContentType, EventTopics, MimeType, PreferenceKey, ShareUrl} from '@app/app';
@@ -34,6 +35,7 @@ import {CourseBatchesPage} from '@app/pages/course-batches/course-batches';
 import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
 import {DatePipe} from '@angular/common';
 import {
+  Batch,
   CorrelationData,
   Environment,
   ErrorType,
@@ -45,8 +47,17 @@ import {
   ProfileService,
   ProfileType,
   ServerProfileDetailsRequest,
-  TelemetryErrorCode,
-  TelemetryObject
+  TelemetryObject,
+  CourseService,
+  CourseBatchesRequest,
+  UnenrollCourseRequest,
+  CourseEnrollmentType,
+  CourseBatchStatus,
+  ContentService,
+   ContentImportResponse,
+   Content,
+   TelemetryErrorCode,
+   Course
 } from 'sunbird-sdk';
 
 @IonicPage()
@@ -162,12 +173,12 @@ export class EnrolledCourseDetailsPage {
     private navCtrl: NavController,
     private navParams: NavParams,
     private alertCtrl: AlertController,
-    private contentService: ContentService,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private zone: NgZone,
     private events: Events,
     private fileUtil: FileUtil,
     private popoverCtrl: PopoverController,
-    private courseService: CourseService,
+    @Inject('COURSE_SERVICE') private courseService: CourseService,
     private buildParamService: BuildParamService,
     private shareUtil: ShareUtil,
     private social: SocialSharing,
@@ -177,7 +188,9 @@ export class EnrolledCourseDetailsPage {
     private appGlobalService: AppGlobalService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private acourseService: course_Service,
+    private acontentService: content_service
   ) {
 
     this.appGlobalService.getUserId();
@@ -342,22 +355,20 @@ export class EnrolledCourseDetailsPage {
     if (unenroll) {
       const loader = this.commonUtilService.getLoader();
       loader.present();
-      const unenrolCourseRequest: UnenrolCourseRequest = {
+      const unenrolCourseRequest: UnenrollCourseRequest = {
         userId: this.appGlobalService.getUserId(),
         courseId: this.batchDetails.courseId,
         batchId: this.batchDetails.id
       };
-      this.courseService.unenrolCourse(unenrolCourseRequest)
-        .then((data: any) => {
+      this.courseService.unenrollCourse(unenrolCourseRequest)
+        .subscribe((data) => {
           this.zone.run(() => {
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('COURSE_UNENROLLED'));
             this.events.publish(EventTopics.UNENROL_COURSE_SUCCESS, {});
             loader.dismiss();
           });
-        })
-        .catch((error: any) => {
+        }, (error) => {
           this.zone.run(() => {
-            error = JSON.parse(error);
             if (error && error.error === 'CONNECTION_ERROR') {
               this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NO_INTERNET_MESSAGE'));
             } else if (error && error.error === 'USER_ALREADY_ENROLLED_COURSE') {
@@ -380,17 +391,14 @@ export class EnrolledCourseDetailsPage {
       attachFeedback: true,
       attachContentAccess: true
     };
-
-    this.contentService.getContentDetail(option)
-      .then((data: any) => {
+    this.contentService.getContentDetails(option).toPromise()
+      .then((data: Content) => {
         this.zone.run(() => {
-          data = JSON.parse(data);
-          if (data && data.result) {
             this.extractApiResponse(data);
-          }
         });
       })
       .catch((error: any) => {
+        console.error(error);
         if (JSON.parse(error).error === 'CONNECTION_ERROR') {
           this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
         } else {
@@ -405,9 +413,9 @@ export class EnrolledCourseDetailsPage {
    * If locally available then make childContents api call else make import content api call
    * @param data
    */
-  extractApiResponse(data): void {
-    if (data.result.contentData) {
-      this.course = data.result.contentData;
+  extractApiResponse(data: Content): void {
+    if (data.contentData) {
+      this.course = data.contentData;
       this.objId = this.course.identifier;
       this.objType = this.course.contentType;
       this.objVer = this.course.pkgVersion;
@@ -439,7 +447,7 @@ export class EnrolledCourseDetailsPage {
       }
 
       // User Rating
-      const contentFeedback: any = data.result.contentFeedback ? data.result.contentFeedback : [];
+      const contentFeedback: any = data.contentFeedback ? data.contentFeedback : [];
       if (contentFeedback !== undefined && contentFeedback.length !== 0) {
         this.userRating = contentFeedback[0].rating;
         this.ratingComment = contentFeedback[0].comments;
@@ -450,17 +458,17 @@ export class EnrolledCourseDetailsPage {
       this.navCtrl.pop();
     }
 
-    if (data.result.isAvailableLocally) {
+    if (data.isAvailableLocally) {
       this.getBatchDetails();
     }
-    this.course.isAvailableLocally = data.result.isAvailableLocally;
+    this.course.isAvailableLocally = data.isAvailableLocally;
 
     if (this.courseCardData.batchId) {
       // if (this.course.isAvailableLocally === true) {
       // this.getBatchDetails();
     }
 
-    if (Boolean(data.result.isAvailableLocally)) {
+    if (Boolean(data.isAvailableLocally)) {
       this.setChildContents();
     } else {
       this.showLoading = true;
@@ -475,12 +483,11 @@ export class EnrolledCourseDetailsPage {
    * Get batch details
    */
   getBatchDetails() {
-    this.courseService.getBatchDetails({batchId: this.courseCardData.batchId})
-      .then((data: any) => {
+    this.courseService.getBatchDetails({ batchId: this.courseCardData.batchId }).toPromise()
+      .then((data: Batch) => {
         this.zone.run(() => {
-          data = JSON.parse(data);
-          if (data.result) {
-            this.batchDetails = data.result;
+          if (data) {
+            this.batchDetails = data;
             this.preference.getString(PreferenceKey.COURSE_IDENTIFIER)
               .then(val => {
                 if (val === this.batchDetails.identifier) {
@@ -584,14 +591,13 @@ export class EnrolledCourseDetailsPage {
       contentStatusArray: []
     };
 
-    this.contentService.importContent(option)
+    this.acontentService.importContent(option)
       .then((data: any) => {
         data = JSON.parse(data);
         this.zone.run(() => {
           if (data.result && data.result[0].status === 'NOT_FOUND') {
             this.showLoading = false;
           }
-
           if (data.result && data.result.length && this.isDownloadStarted) {
             _.forEach(data.result, (value) => {
               if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
@@ -732,7 +738,7 @@ export class EnrolledCourseDetailsPage {
       option.level = 1;
     }
 
-    this.contentService.getChildContents(option)
+    this.acontentService.getChildContents(option)
       .then((data: any) => {
         data = JSON.parse(data);
         this.zone.run(() => {
@@ -800,7 +806,7 @@ export class EnrolledCourseDetailsPage {
 
   cancelDownload() {
     this.telemetryGeneratorService.generateCancelDownloadTelemetry(this.course);
-    this.contentService.cancelDownload(this.identifier).then(() => {
+    this.acontentService.cancelDownload(this.identifier).then(() => {
       this.zone.run(() => {
         this.showLoading = false;
         this.navCtrl.pop();
@@ -867,6 +873,7 @@ export class EnrolledCourseDetailsPage {
   isCourseEnrolled(identifier: string) {
     // get all the enrolled courses
     const enrolledCourses = this.appGlobalService.getEnrolledCourseList();
+    console.log('enrolled course is', enrolledCourses);
     if (enrolledCourses && enrolledCourses.length > 0) {
       for (const course of enrolledCourses) {
         if (course.courseId === identifier) {
@@ -959,18 +966,20 @@ export class EnrolledCourseDetailsPage {
     const upcommingBatches = [];
     const loader = this.commonUtilService.getLoader();
     const courseBatchesRequest: CourseBatchesRequest = {
-      courseId: this.identifier,
-      enrollmentType: CourseEnrollmentType.OPEN,
-      status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
+      filters: {
+        courseId: this.identifier,
+        status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS],
+        enrollmentType: CourseEnrollmentType.OPEN
+      }
     };
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       if (!this.guestUser) {
         loader.present();
-        this.courseService.getCourseBatches(courseBatchesRequest)
-          .then((data: any) => {
-            data = JSON.parse(data);
+        this.courseService.getCourseBatches(courseBatchesRequest).toPromise()
+          .then((data: Batch[]) => {
+            // data = JSON.parse(data);
             this.zone.run(() => {
-              this.batches = data.result.content;
+              this.batches = data;
               if (this.batches.length) {
                 _.forEach(this.batches, (batch, key) => {
                   if (batch.status === 1) {
@@ -1141,7 +1150,7 @@ export class EnrolledCourseDetailsPage {
         returnRefreshedContentStates: returnRefresh,
         batchId: this.batchId
       };
-      this.courseService.getContentState(request).then((success: any) => {
+      this.acourseService.getContentState(request).then((success: any) => {
         success = JSON.parse(success);
         if (this.childrenData) {
           this.getStatusOfChildContent(this.childrenData, success);

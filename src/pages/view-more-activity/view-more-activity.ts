@@ -7,17 +7,21 @@ import {
 import {
   Component,
   NgZone,
-  OnInit
+  OnInit,
+  Inject
 } from '@angular/core';
 import {
   ContentService,
+  ContentFilterCriteria
+} from 'sunbird';
+import {
   CourseService,
   PageId,
   Environment,
   ImpressionType,
   LogLevel,
-  ContentFilterCriteria
-} from 'sunbird';
+  Course
+} from 'sunbird-sdk';
 import * as _ from 'lodash';
 import {
   ContentType,
@@ -123,7 +127,7 @@ export class ViewMoreActivityPage implements OnInit {
     private events: Events,
     private ngZone: NgZone,
     private contentService: ContentService,
-    private courseService: CourseService,
+    @Inject('COURSE_SERVICE') private courseService: CourseService,
     private courseUtilService: CourseUtilService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService
@@ -300,11 +304,11 @@ export class ViewMoreActivityPage implements OnInit {
       refreshEnrolledCourses: false,
       returnRefreshedEnrolledCourses: true
     };
-    this.courseService.getEnrolledCourses(option)
-      .then((data: any) => {
+    this.courseService.getEnrolledCourses(option).toPromise()
+      .then((data: Course[]) => {
         if (data) {
-          data = JSON.parse(data);
-          this.searchList = data.result.courses ? data.result.courses : [];
+         // data = JSON.parse(data);
+          this.searchList = data ? data : [];
           this.loadMoreBtn = false;
         }
         loader.dismiss();

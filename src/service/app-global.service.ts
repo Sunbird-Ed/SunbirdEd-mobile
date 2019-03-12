@@ -21,7 +21,8 @@ import {
     AuthService,
     OauthSession,
     Profile,
-    ProfileService
+    ProfileService,
+    Course
 
 } from 'sunbird-sdk';
 
@@ -36,7 +37,7 @@ export class AppGlobalService implements OnDestroy {
     /**
     * This property stores the courses enrolled by a user
     */
-    courseList: Array<any>;
+    courseList: Array<Course>;
 
     /**
     * This property stores the course filter configuration at the app level for a particular app session
