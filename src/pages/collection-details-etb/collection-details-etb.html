@@ -24,7 +24,7 @@
 <ion-content padding>
 
   <!-- Testing with data from API -->
-  <section class="MT5 P0">
+  <section class="MT5 P0" *ngIf="contentDetail && contentDetail !== '' ">
     <div class="details-card MB5">
       <div class="content">
         <div class="left">
@@ -67,10 +67,7 @@
   <div *ngIf="showChildrenLoader">
     <ion-row style="padding-top: 30px;" padding>
       <ion-col text-center>
-        <p *ngIf="downloadProgress !== 100">{{ 'FETCHING_CONTENTS' | translate: {'%s': downloadProgress ?
-          downloadProgress : '0'} }}</p>
-        <p *ngIf="downloadProgress === 100">{{ 'LOADING_CONTENT' | translate }}</p>
-        <ion-spinner padding></ion-spinner>
+        <p>{{ 'LOADING_CONTENT' | translate }}...</p>
       </ion-col>
     </ion-row>
   </div>
