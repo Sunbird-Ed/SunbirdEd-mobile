@@ -19,7 +19,7 @@
 </ion-header>
 
 <ion-content style="background: #EBEBEB;">
-	<div ion-fixed style="min-width: 100%;">
+	<div ion-fixed style="width: 100%;">
 		<div class="horizontal-scroll  PLR15px bg-white">
 			<a class="medium-pill MR24" *ngFor="let medium of categoryMediums; let i = index;" [ngClass]="{'active': medium?.selected}" [@appear] (click)="mediumClick(medium?.name)">{{medium?.name}}&nbsp;{{'MEDIUM' | translate }}</a>
 		</div>
@@ -33,7 +33,7 @@
 	</div>
 	<div style="margin-top:100px">
 	<ion-refresher (ionRefresh)="swipeDownToRefresh($event)"></ion-refresher>
-	<div style="margin: 40px;" *ngIf ="refresh">
+	<div style="margin: 40px; padding-top: 20px" *ngIf ="refresh">
 		<ion-spinner icon="spiral"></ion-spinner>
 	</div>
 	<div class="course-scroll-holder" [ngClass]="{'empty-saved-resources' : (localResources && localResources.length === 0 || showLoader)}"
