@@ -77,7 +77,7 @@ export const GUEST_TEACHER_TABS = [
     // HOME_TAB,
     COURSE_TAB,
     SCANNER_TAB,
-    LIBRARY_TAB,
+    LIBRARY_TAB
    // GUEST_PROFILE_TAB
 ];
 
@@ -85,7 +85,7 @@ export const LOGIN_TEACHER_TABS = [
     // HOME_TAB,
     COURSE_TAB,
     SCANNER_TAB,
-    LIBRARY_TAB,
+    LIBRARY_TAB
     // PROFILE_TAB
 ];
 
@@ -98,7 +98,7 @@ export const GUEST_TEACHER_SWITCH_TABS = [
     // HOME_TAB,
     COURSE_TAB,
     SCANNER_TAB,
-    LIBRARY_TAB,
+    LIBRARY_TAB
    // GUEST_PROFILE_SWITCH_TAB
 ];
 
