@@ -452,5 +452,6 @@
   "YES": "Yes",
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
   "COURSE_WILL_BE_AVAILABLE": "Course will be available from  {{%s}}",
-  "ERROR_WHILE_LOGIN": "Error While Login"
+  "ERROR_WHILE_LOGIN": "Error While Login",
+  "EMPTY_LIBRARY_TEXTBOOK_FILTER":"No books found for {{%s}}"
 }
