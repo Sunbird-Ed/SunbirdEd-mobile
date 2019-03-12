@@ -6,7 +6,8 @@ import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-an
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import {
   CategoryRequest, Profile, UpdateUserInfoRequest, UserProfileService, ProfileService, ContainerService,
-  TabsPage, FrameworkService, SuggestedFrameworkRequest, LocationSearchCriteria
+  // TabsPage,
+   FrameworkService, SuggestedFrameworkRequest, LocationSearchCriteria
 } from 'sunbird';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';

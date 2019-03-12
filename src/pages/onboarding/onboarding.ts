@@ -12,9 +12,9 @@ import {
 } from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
 import {
-  TabsPage,
+  // TabsPage,
   OAuthService,
-  ContainerService,
+  // ContainerService,
   UserProfileService,
   ProfileService,
   ProfileType,
@@ -29,6 +29,7 @@ import {
   UserSource,
   Profile
 } from 'sunbird';
+import { TabsPage } from '@app/pages/tabs/tabs';
 
 import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
 import {
@@ -43,6 +44,7 @@ import {
 import { LanguageSettingsPage } from '@app/pages/language-settings/language-settings';
 import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
 import { CategoriesEditPage } from '../categories-edit/categories-edit';
+import { ContainerService } from '../../service/container-service';
 
 @Component({
   selector: 'page-onboarding',

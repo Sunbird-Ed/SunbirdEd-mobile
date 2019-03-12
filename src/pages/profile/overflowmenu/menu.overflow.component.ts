@@ -17,8 +17,8 @@ import {
     ProfileType,
     Profile,
     UserSource,
-    TabsPage,
-    ContainerService,
+    // TabsPage,
+    // ContainerService,
     InteractType,
     InteractSubtype,
     PageId,
@@ -26,6 +26,7 @@ import {
     TelemetryService,
     ProfileService
 } from 'sunbird';
+import { TabsPage } from '@app/pages/tabs/tabs';
 import { OnboardingPage } from '../../onboarding/onboarding';
 import {
     initTabs,
@@ -39,6 +40,7 @@ import { ReportsPage } from '../../reports/reports';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { AppGlobalService } from '../../../service/app-global.service';
 import { PreferenceKey } from '../../../app/app.constant';
+import { ContainerService } from '../../../service/container-service';
 
 @Component({
     selector: 'menu-overflow',
