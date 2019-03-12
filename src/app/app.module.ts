@@ -93,7 +93,7 @@ export const sunbirdSdkFactory =
           debugMode: false
         },
         apiConfig: {
-          debugMode: false,
+          debugMode: true,
           host: 'https://staging.ntp.net.in',
           baseUrl: 'https://staging.ntp.net.in/api',
           user_authentication: {
@@ -117,7 +117,7 @@ export const sunbirdSdkFactory =
           dbName: 'GenieServices.db'
         },
         contentServiceConfig: {
-          apiPath: '',
+          apiPath: '/api/content/v1',
           searchApiPath: '/api/composite/v1'
         },
         courseServiceConfig: {
@@ -145,8 +145,8 @@ export const sunbirdSdkFactory =
           apiPath: '/api/data/v1',
         },
         appConfig: {
-          maxCompatibilityLevel: 100,
-          minCompatibilityLevel: 0
+          maxCompatibilityLevel: 4,
+          minCompatibilityLevel: 1
         },
         systemSettingsConfig: {
           systemSettingsApiPath: '/api/data/v1',
@@ -160,7 +160,7 @@ export const sunbirdSdkFactory =
           telemetrySyncThreshold: 3
         },
         sharedPreferencesConfig: {
-          debugMode: false
+          debugMode: true
         }
       });
     };

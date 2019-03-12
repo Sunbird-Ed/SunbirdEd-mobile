@@ -8,7 +8,6 @@ import {
   PopoverController,
   ViewController
 } from 'ionic-angular';
-import {ContentSearchCriteria, ContentService, ContentSortCriteria, SortOrder} from 'sunbird';
 import {OverflowMenuComponent} from '@app/pages/profile';
 import {generateInteractTelemetry} from '@app/app/telemetryutil';
 import {ContentCard, ContentType, MenuOverflow, MimeType, ProfileConstants} from '@app/app/app.constant';
@@ -23,8 +22,11 @@ import {EditContactDetailsPopupComponent} from '@app/component/edit-contact-deta
 import {EditContactVerifyPopupComponent} from '@app/component';
 import {
   AuthService,
-  CourseService,
+  ContentSearchCriteria,
+  ContentService,
+  ContentSortCriteria,
   Course,
+  CourseService,
   Environment,
   ImpressionType,
   InteractSubtype,
@@ -32,7 +34,9 @@ import {
   OauthSession,
   PageId,
   ProfileService,
+  SearchType,
   ServerProfileDetailsRequest,
+  SortOrder,
   TelemetryObject,
   UpdateServerProfileInfoRequest
 } from 'sunbird-sdk';
@@ -103,7 +107,7 @@ export class ProfilePage {
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,
     private app: App,
-    private contentService: ContentService,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
     public viewCtrl: ViewController
   ) {
     this.userId = this.navParams.get('userId') || '';
@@ -508,12 +512,13 @@ export class ProfilePage {
       createdBy: [this.userId || this.loggedInUserId],
       limit: 100,
       contentTypes: ContentType.FOR_PROFILE_TAB,
-      sortCriteria: [contentSortCriteria]
+      sortCriteria: [contentSortCriteria],
+      searchType: SearchType.SEARCH
     };
 
-    this.contentService.searchContent(contentSearchCriteria, false, false, false)
-      .then((result: any) => {
-        this.contentCreatedByMe = JSON.parse(result).result.contentDataList;
+    this.contentService.searchContent(contentSearchCriteria).toPromise()
+      .then((result) => {
+        this.contentCreatedByMe = result.contentDataList;
       })
       .catch((error: any) => {
         console.error('Error', error);

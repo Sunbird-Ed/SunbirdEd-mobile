@@ -1,34 +1,23 @@
-import {
-  Component,
-  NgZone,
-  Inject
-} from '@angular/core';
-import {
-  NavParams,
-  ViewController,
-  Platform,
-  ToastController
-} from 'ionic-angular';
-import {
-  ContentService,
-  Log
-} from 'sunbird';
-import { TranslateService } from '@ngx-translate/core';
+import {Component, Inject, NgZone} from '@angular/core';
+import {NavParams, Platform, ToastController, ViewController} from 'ionic-angular';
+import {TranslateService} from '@ngx-translate/core';
 import {TelemetryGeneratorService} from '@app/service';
-import { ProfileConstants } from '../../app/app.constant';
-import { AppGlobalService } from '../../service/app-global.service';
-import { CommonUtilService } from '../../service/common-util.service';
+import {ProfileConstants} from '../../app/app.constant';
+import {AppGlobalService} from '../../service/app-global.service';
+import {CommonUtilService} from '../../service/common-util.service';
 import {
-  TelemetryService,
-  InteractType,
-  InteractSubtype,
+  Content,
+  ContentFeedback,
+  ContentFeedbackService,
   Environment,
-  ImpressionType,
   ImpressionSubtype,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
   LogLevel,
   LogType,
-  PageId,
-  TelemetryLogRequest
+  TelemetryLogRequest,
+  TelemetryService
 } from 'sunbird-sdk';
 
 @Component({
@@ -42,7 +31,7 @@ export class ContentRatingAlertComponent {
   comment = '';
   backButtonFunc = undefined;
   ratingCount: any;
-  content: any;
+  content: Content;
   showCommentBox = false;
   private pageId = '';
   userRating = 0;
@@ -53,20 +42,27 @@ export class ContentRatingAlertComponent {
    *
    * @param navParams
    * @param viewCtrl
-   * @param authService
+   * @param platform
+   * @param translate
+   * @param toastCtrl
+   * @param ngZone
    * @param contentService
+   * @param telemetryService
+   * @param telemetryGeneratorService
+   * @param appGlobalService
+   * @param commonUtilService
    */
   constructor(private navParams: NavParams,
-    private viewCtrl: ViewController,
-    private platform: Platform,
-    private translate: TranslateService,
-    private toastCtrl: ToastController,
-    private ngZone: NgZone,
-    private contentService: ContentService,
-    @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
-    private telemetryGeneratorService: TelemetryGeneratorService,
-    private appGlobalService: AppGlobalService,
-    private commonUtilService: CommonUtilService) {
+              private viewCtrl: ViewController,
+              private platform: Platform,
+              private translate: TranslateService,
+              private toastCtrl: ToastController,
+              private ngZone: NgZone,
+              @Inject('CONTENT_FEEDBACK_SERVICE') private contentService: ContentFeedbackService,
+              @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
+              private telemetryGeneratorService: TelemetryGeneratorService,
+              private appGlobalService: AppGlobalService,
+              private commonUtilService: CommonUtilService) {
     this.getUserId();
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.viewCtrl.dismiss();
@@ -145,11 +141,11 @@ export class ContentRatingAlertComponent {
   }
 
   submit() {
-    const option = {
+    const option: ContentFeedback = {
       contentId: this.content.identifier,
       rating: this.ratingCount,
       comments: this.comment,
-      contentVersion: this.content.versionKey
+      contentVersion: this.content.contentData.versionKey
     };
     this.viewCtrl.dismiss();
     const paramsMap = new Map();
@@ -170,18 +166,17 @@ export class ContentRatingAlertComponent {
       message: ''
     };
 
-    this.contentService.sendFeedback(option).then((res: any) => {
+    this.contentService.sendFeedback(option).subscribe((res) => {
       console.log('success:', res);
       viewDismissData.message = 'rating.success';
       this.viewCtrl.dismiss(viewDismissData);
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('THANK_FOR_RATING'));
+    }, (data) => {
+      console.log('error:', data);
+      viewDismissData.message = 'rating.error';
+      // TODO: ask anil to show error message(s)
+      this.viewCtrl.dismiss(viewDismissData);
     })
-      .catch((data: any) => {
-        console.log('error:', data);
-        viewDismissData.message = 'rating.error';
-        // TODO: ask anil to show error message(s)
-        this.viewCtrl.dismiss(viewDismissData);
-      });
   }
 
   showMessage(msg) {

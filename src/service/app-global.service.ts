@@ -1,29 +1,20 @@
-import { Inject, Injectable, OnDestroy } from '@angular/core';
-import { FrameworkCategory } from './../app/app.constant';
+import {Inject, Injectable, OnDestroy} from '@angular/core';
+import {BuildParamService, Environment, InteractSubtype, InteractType, PageId, SharedPreferences} from 'sunbird';
+import {Events, PopoverController, PopoverOptions} from 'ionic-angular';
+import {UpgradePopover} from '../pages/upgrade/upgrade-popover';
+import {GenericAppConfig, PreferenceKey} from '../app/app.constant';
+import {TelemetryGeneratorService} from './telemetry-generator.service';
 import {
-    BuildParamService,
-    Environment,
-    InteractSubtype,
-    InteractType,
-    PageId,
-    SharedPreferences
-} from 'sunbird';
-import { Events, PopoverController, PopoverOptions } from 'ionic-angular';
-import { UpgradePopover } from '../pages/upgrade/upgrade-popover';
-import { GenericAppConfig, PreferenceKey } from '../app/app.constant';
-import { TelemetryGeneratorService } from './telemetry-generator.service';
-import {
-    FrameworkService,
-    FrameworkDetailsRequest,
-    Framework,
-    FrameworkCategoryCodesGroup,
-    ProfileType,
-    AuthService,
-    OauthSession,
-    Profile,
-    ProfileService,
-    Course
-
+  AuthService,
+  Course,
+  Framework,
+  FrameworkCategoryCodesGroup,
+  FrameworkDetailsRequest,
+  FrameworkService,
+  OauthSession,
+  Profile,
+  ProfileService,
+  ProfileType
 } from 'sunbird-sdk';
 
 @Injectable()
@@ -217,14 +208,19 @@ export class AppGlobalService implements OnDestroy {
     /**
      * @returns {string} UserId or empty string if not available
      */
-    getUserId(): string {
+    getUserId(): string | undefined {
         if (!this.session) {
-            this.authService.getSession().toPromise().then((session) => {
+          this.authService.getSession().toPromise()
+            .then((session) => {
                 this.session = session;
             });
         }
 
+      if (this.session) {
         return this.session.userToken;
+      }
+
+      return undefined;
     }
 
     readConfig() {

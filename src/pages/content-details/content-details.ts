@@ -32,8 +32,8 @@ import {UserAndGroupsPage} from '../user-and-groups/user-and-groups';
 import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
 import {CommonUtilService} from '../../service/common-util.service';
 import {DialogPopupComponent} from '../../component/dialog-popup/dialog-popup';
-import {Observable} from 'rxjs';
 import {
+  Content,
   ContentAccess,
   ContentAccessStatus,
   ContentDetailRequest,
@@ -61,7 +61,8 @@ import {
 export class ContentDetailsPage {
   apiLevel: number;
   appAvailability: string;
-  content: any;
+  content: Content;
+  playingContent: Content;
   isChildContent = false;
   contentDetails: any;
   identifier: string;
@@ -89,6 +90,9 @@ export class ContentDetailsPage {
   userRating = 0;
   /*stores streaming url*/
   streamingUrl: any;
+  contentDownloadable: {
+    [contentId: string]: boolean;
+  } = {};
   /**
    * currently used to identify that its routed from QR code results page
    * Can be sent from any page, where after landing on details page should download or play content automatically
@@ -304,23 +308,23 @@ export class ContentDetailsPage {
     });
   }
 
-  selectBookmark() {
-    this.content.bookmarked = true;
-    this.showMessage = true;
-    const notifyTimer = Observable.timer(10000);
-    notifyTimer.subscribe(e => {
-      this.showMessage = false;
-    });
-  }
+  /*
+   selectBookmark() {
+     this.content.bookmarked = true;
+     this.showMessage = true;
+     const notifyTimer = Observable.timer(10000);
+     notifyTimer.subscribe(e => {
+       this.showMessage = false;
+     });
+   }
 
-  deSelectBookmark() {
-    this.content.bookmarked = false;
-    if (this.showMessage) {
-      this.showMessage = false;
-    }
-  }
-
-
+   deSelectBookmark() {
+     this.content.bookmarked = false;
+     if (this.showMessage) {
+       this.showMessage = false;
+     }
+   }
+   */
   /**
    * Function to rate content
    */
@@ -381,11 +385,10 @@ export class ContentDetailsPage {
       attachContentMarker: true
     };
 
-    this.contentService.getContentDetail(req)
-      .then((data: any) => {
+    this.newContentService.getContentDetails(req).toPromise()
+      .then((data: Content) => {
         this.zone.run(() => {
-          data = JSON.parse(data);
-          if (data && data.result) {
+          if (data) {
             this.extractApiResponse(data);
             if (!showRating) {
               loader.dismiss();
@@ -404,16 +407,16 @@ export class ContentDetailsPage {
         });
       })
       .catch((error: any) => {
-        const data = JSON.parse(error);
-        console.log('Error received', data);
         loader.dismiss();
         if (this.isDownloadStarted) {
-          this.content.downloadable = false;
+          this.contentDownloadable[this.content.identifier] = false;
+          // this.content.downloadable = false;
           this.isDownloadStarted = false;
         }
-        if (data.error === 'CONNECTION_ERROR') {
+        if (error.hasOwnProperty('CONNECTION_ERROR') === 'CONNECTION_ERROR') {
           this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
-        } else if (data.error === 'SERVER_ERROR' || data.error === 'SERVER_AUTH_ERROR') {
+        } else if (error.hasOwnProperty('SERVER_ERROR') === 'SERVER_ERROR' ||
+          error.hasOwnProperty('SERVER_AUTH_ERROR') === 'SERVER_AUTH_ERROR') {
           this.commonUtilService.showToast('ERROR_FETCHING_DATA');
         } else {
           this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
@@ -422,19 +425,19 @@ export class ContentDetailsPage {
       });
   }
 
-  extractApiResponse(data) {
-    this.content = data.result.contentData;
-    this.content.downloadable = data.result.isAvailableLocally;
+  extractApiResponse(data: Content) {
+    this.content = data;
+    this.contentDownloadable[this.content.identifier] = data.isAvailableLocally;
 
-    this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
-    this.content.contentMarker = data.result.contentMarker ? data.result.contentMarker : [];
+    this.content.contentAccess = data.contentAccess ? data.contentAccess : [];
+    this.content.contentMarker = data.contentMarker ? data.contentMarker : [];
 
     if (this.cardData && this.cardData.hierarchyInfo) {
-      data.result.hierarchyInfo = this.cardData.hierarchyInfo;
+      data.hierarchyInfo = this.cardData.hierarchyInfo;
       this.isChildContent = true;
     }
-    if (this.content.streamingUrl) {
-      this.streamingUrl = this.content.streamingUrl;
+    if (this.content.contentData.streamingUrl) {
+      this.streamingUrl = this.content.contentData.streamingUrl;
     }
 
     if (!this.isChildContent && this.content.contentMarker.length
@@ -444,47 +447,44 @@ export class ContentDetailsPage {
       this.isChildContent = true;
     }
 
-    this.content.playContent = JSON.stringify(data.result);
-    if (this.content.gradeLevel && this.content.gradeLevel.length && typeof this.content.gradeLevel !== 'string') {
-      this.content.gradeLevel = this.content.gradeLevel.join(', ');
+    this.playingContent = data;
+    if (this.content.contentData.gradeLevel && this.content.contentData.gradeLevel.length
+      && typeof this.content.contentData.gradeLevel !== 'string') {
+      this.content.contentData.gradeLevel ? this.content.contentData.gradeLevel.join(', ') : '';
     }
-    if (this.content.attributions && this.content.attributions.length) {
-      this.content.attributions = this.content.attributions.join(', ');
+    if (this.content.contentData.attributions && this.content.contentData.attributions.length) {
+      this.content.contentData.attributions ? this.content.contentData.attributions.join(', ') : '';
     }
-    if (this.content.me_totalRatings) {
-      const rating = this.content.me_totalRatings.split('.');
+    if (this.content.contentData.me_totalRatings) {
+      const rating = this.content.contentData.me_totalRatings.split('.');
       if (rating && rating[0]) {
-        this.content.me_totalRatings = rating[0];
+        this.content.contentData.me_totalRatings = rating[0];
       }
     }
     this.objId = this.content.identifier;
-    this.objVer = this.content.pkgVersion;
+    this.objVer = this.content.contentData.pkgVersion;
 
     // User Rating
-    const contentFeedback: any = data.result.contentFeedback;
+    const contentFeedback: any = data.contentFeedback;
     if (contentFeedback !== undefined && contentFeedback.length !== 0) {
       this.userRating = contentFeedback[0].rating;
       this.ratingComment = contentFeedback[0].comments;
     }
 
     // Check locally available
-    if (Boolean(data.result.isAvailableLocally)) {
-      if (data.result.isUpdateAvailable && !this.isUpdateAvail) {
-        this.isUpdateAvail = true;
-      } else {
-        this.isUpdateAvail = false;
-      }
+    if (Boolean(data.isAvailableLocally)) {
+      this.isUpdateAvail = data.isUpdateAvailable && !this.isUpdateAvail;
     } else {
-      this.content.size = this.content.size;
+      this.content.contentData.size = this.content.contentData.size;
     }
 
-    if (this.content.me_totalDownloads) {
-      this.content.me_totalDownloads = this.content.me_totalDownloads.split('.')[0];
+    if (this.content.contentData.me_totalDownloads) {
+      this.content.contentData.me_totalDownloads = this.content.contentData.me_totalDownloads.split('.')[0];
     }
 
     if (this.navParams.get('isResumedCourse')) {
       this.cardData.contentData = this.content;
-      this.cardData.pkgVersion = this.content.pkgVersion;
+      this.cardData.pkgVersion = this.content.contentData.pkgVersion;
       this.generateTelemetry();
     }
 
@@ -494,7 +494,7 @@ export class ContentDetailsPage {
     }
 
     if (this.downloadAndPlay) {
-      if (!this.content.downloadable) {
+      if (!this.contentDownloadable[this.content.identifier]) {
         /**
          * Content is not downloaded then call the following method
          * It will download the content and play it
@@ -523,13 +523,13 @@ export class ContentDetailsPage {
   generateDetailsInteractEvent() {
     const values = new Map();
     values['isUpdateAvailable'] = this.isUpdateAvail;
-    values['isDownloaded'] = this.content.downloadable;
+    values['isDownloaded'] = this.contentDownloadable[this.content.identifier];
     values['autoAfterDownload'] = this.downloadAndPlay;
 
     const telemetryObject = new TelemetryObject(
       this.content.identifier,
       this.content.contentType,
-      this.content.pkgVersion
+      this.content.contentData.pkgVersion
     );
 
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
@@ -674,7 +674,7 @@ export class ContentDetailsPage {
       .catch((error) => {
         console.log('error while loading content details', error);
         if (this.isDownloadStarted) {
-          this.content.downloadable = false;
+          this.contentDownloadable[this.content.identifier] = false;
           this.isDownloadStarted = false;
         }
         this.commonUtilService.showToast('SOMETHING_WENT_WRONG');
@@ -699,7 +699,7 @@ export class ContentDetailsPage {
           if (this.isDownloadStarted) {
             this.isDownloadStarted = false;
             this.cancelDownloading = false;
-            this.content.downloadable = true;
+            this.contentDownloadable[this.content.identifier] = true;
             this.setContentDetails(this.identifier, false, false);
             this.downloadProgress = '';
             this.events.publish('savedResources:update', {
@@ -720,7 +720,7 @@ export class ContentDetailsPage {
           console.log('res.data', res.data);
           this.zone.run(() => {
             if (res.data.identifier === this.identifier) {
-              this.content.streamingUrl = res.data.streamingUrl;
+              this.content.contentData.streamingUrl = res.data.streamingUrl;
             }
           });
         }
@@ -738,7 +738,7 @@ export class ContentDetailsPage {
         this.isDownloadStarted = true;
         const values = new Map();
         values['network-type'] = this.network.type;
-        values['size'] = this.content.size;
+        values['size'] = this.content.contentData.size;
         this.importContent([this.identifier], this.isChildContent);
         this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
           InteractSubtype.UPDATE_INITIATE ? this.isUpdateAvail : InteractSubtype.DOWNLOAD_INITIATE,
@@ -761,7 +761,7 @@ export class ContentDetailsPage {
         this.isDownloadStarted = false;
         this.downloadProgress = '';
         if (!this.isUpdateAvail) {
-          this.content.downloadable = false;
+          this.contentDownloadable[this.content.identifier] = false;
         }
       });
     }).catch((error: any) => {
@@ -771,7 +771,7 @@ export class ContentDetailsPage {
     });
   }
 
-  /** funtion add elipses to the texts**/
+  /** function add eclipses to the texts**/
   addElipsesInLongText(msg: string) {
     if (this.commonUtilService.translateMessage(msg).length >= 12) {
       return this.commonUtilService.translateMessage(msg).slice(0, 8) + '....';
@@ -876,7 +876,7 @@ export class ContentDetailsPage {
           extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
         }
 
-        const playContent = JSON.parse(this.content.playContent);
+        const playContent = this.playingContent;
         const req: ContentMarkerRequest = {
           uid: this.appGlobalService.getCurrentUser().uid,
           contentId: this.identifier,
@@ -903,7 +903,7 @@ export class ContentDetailsPage {
         request.streaming = isStreaming;
       }
 
-      (<any>window).geniecanvas.play(this.content.playContent, JSON.stringify(request));
+      (<any>window).geniecanvas.play(JSON.stringify(this.playingContent), JSON.stringify(request));
     }
   }
 
@@ -950,11 +950,10 @@ export class ContentDetailsPage {
     popover.onDidDismiss(data => {
       this.zone.run(() => {
         if (data === 'delete.success') {
-          this.content.streamingUrl = this.streamingUrl;
-          this.content.downloadable = false;
-          const playContent = JSON.parse(this.content.playContent);
+          this.content.contentData.streamingUrl = this.streamingUrl;
+          this.contentDownloadable[this.content.identifier] = false;
+          const playContent = this.playingContent;
           playContent.isAvailableLocally = false;
-          this.content.playContent = JSON.stringify(playContent);
         }
       });
     });
@@ -989,7 +988,7 @@ export class ContentDetailsPage {
     const loader = this.commonUtilService.getLoader();
     loader.present();
     const url = this.baseUrl + ShareUrl.CONTENT + this.content.identifier;
-    if (this.content.downloadable) {
+    if (this.contentDownloadable[this.content.identifier]) {
       this.shareUtil.exportEcar(this.content.identifier, path => {
         loader.dismiss();
         this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.content.contentType);
@@ -1031,9 +1030,9 @@ export class ContentDetailsPage {
    * else show ViewCreditsComponent
    */
   viewCredits() {
-    if (!this.content.creator && !this.content.creators) {
-      if (!this.content.contributors && !this.content.owner) {
-        if (!this.content.attributions) {
+    if (!this.content.contentData.creator && !this.content.contentData.creators) {
+      if (!this.content.contentData.contributors && !this.content.contentData.owner) {
+        if (!this.content.contentData.attributions) {
           return false;
         }
       }

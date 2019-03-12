@@ -1,6 +1,6 @@
 import {Search} from './../../app/app.constant';
 import {AfterViewInit, Component, Inject, NgZone, OnInit} from '@angular/core';
-import {ContentSearchCriteria, ContentService, SharedPreferences,} from 'sunbird';
+import {SharedPreferences} from 'sunbird';
 import {Events, NavController} from 'ionic-angular';
 import * as _ from 'lodash';
 import {ViewMoreActivityPage} from '../view-more-activity/view-more-activity';
@@ -29,6 +29,7 @@ import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-det
 import {
   CategoryTerm,
   ContentRequest,
+  ContentSearchCriteria,
   ContentService as newContentService,
   Environment,
   FrameworkCategoryCode,
@@ -39,7 +40,10 @@ import {
   InteractSubtype,
   InteractType,
   PageId,
+  Profile,
+  ProfileService,
   ProfileType,
+  SearchType,
   TelemetryObject
 } from 'sunbird-sdk';
 
@@ -50,10 +54,10 @@ import {
     trigger('appear', [
       state('true', style({
         left: '{{left_indent}}',
-      }), { params: { left_indent: 0 } }), // default parameters values required
+      }), {params: {left_indent: 0}}), // default parameters values required
 
       transition('* => classAnimate', [
-        style({ width: 5, opacity: 0 }),
+        style({width: 5, opacity: 0}),
         group([
           animate('0.3s 0.2s ease', style({
             transform: 'translateX(0) scale(1.2)', width: '*',
@@ -68,7 +72,7 @@ import {
       state('true', style({
         left: '{{left_indent}}',
         transform: 'translateX(-100px)',
-      }), { params: { left_indent: 0 } }), // default parameters values required
+      }), {params: {left_indent: 0}}), // default parameters values required
 
       transition('* => classAnimate', [
         // style({ width: 5, transform: 'translateX(-100px)', opacity: 0 }),
@@ -98,8 +102,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   showLoader = false;
 
   /**
-	 * Flag to show latest and popular course loader
-	 */
+   * Flag to show latest and popular course loader
+   */
   pageApiLoader = true;
   isOnBoardingCardCompleted = false;
   public source = PageId.LIBRARY;
@@ -108,12 +112,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   filterIcon = './assets/imgs/ic_action_filter.png';
   selectedLanguage = 'en';
   audienceFilter = [];
-  profile: any;
+  profile: Profile;
   appLabel: string;
   mode = 'soft';
   isFilterApplied = false;
   pageFilterCallBack: PageFilterCallback;
-  getGroupByPageReq: ContentSearchCriteria = {};
+  getGroupByPageReq: ContentSearchCriteria = {
+    searchType: SearchType.SEARCH
+  };
 
   layoutPopular = ContentCard.LAYOUT_POPULAR;
   layoutSavedContent = ContentCard.LAYOUT_SAVED_CONTENT;
@@ -126,10 +132,11 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   currentMedium: string;
   defaultImg: string;
   isUpgradePopoverShown: boolean = false;
+
   constructor(
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     public navCtrl: NavController,
     private ngZone: NgZone,
-    private contentService: ContentService,
     private qrScanner: SunbirdQRScanner,
     private events: Events,
     private preference: SharedPreferences,
@@ -158,6 +165,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   subscribeUtilityEvents() {
+    this.profileService.getActiveSessionProfile().subscribe((profile: Profile) => {
+      this.profile = profile;
+    });
     this.events.subscribe('savedResources:update', (res) => {
       if (res && res.update) {
         this.setSavedContent();
@@ -205,8 +215,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   /**
-	 * Angular life cycle hooks
-	 */
+   * Angular life cycle hooks
+   */
   ngOnInit() {
     this.setSavedContent();
     this.loadRecentlyViewedContent();
@@ -232,8 +242,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   /**
-	 * It will fetch the guest user profile details
-	 */
+   * It will fetch the guest user profile details
+   */
   getCurrentUser(): void {
     const profileType = this.appGlobalService.getGuestUserType();
     this.showSignInCard = false;
@@ -280,10 +290,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   /**
-	 * Navigate to search page
-	 *
-	 * @param {string} queryParams search query params
-	 */
+   * Navigate to search page
+   *
+   * @param {string} queryParams search query params
+   */
   navigateToViewMoreContentsPageWithParams(queryParams, headerTitle): void {
     const values = new Map();
     values['SectionName'] = headerTitle;
@@ -304,8 +314,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   /**
-	 * Get saved content
-	 */
+   * Get saved content
+   */
   setSavedContent() {
     // this.localResources = [];
     // if(this.isOnBoardingCardCompleted || !this.guestUser){
@@ -339,8 +349,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   /**
-	 * Load/get recently viewed content
-	 */
+   * Load/get recently viewed content
+   */
   loadRecentlyViewedContent() {
     this.showLoader = true;
     const requestParams: ContentRequest = {
@@ -373,8 +383,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   /**
-	 * Get popular content
-	 */
+   * Get popular content
+   */
   getPopularContent(isAfterLanguageChange = false, contentSearchCriteria?: ContentSearchCriteria) {
     // if (this.isOnBoardingCardCompleted || !this.guestUser) {
     this.pageApiLoader = true;
@@ -382,10 +392,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     const that = this;
 
     if (!contentSearchCriteria) {
-      const criteria = new ContentSearchCriteria();
-      criteria.mode = 'hard';
-
-      contentSearchCriteria = criteria;
+      contentSearchCriteria = {
+        mode: 'hard'
+      };
     }
 
     this.mode = contentSearchCriteria.mode;
@@ -426,12 +435,12 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.storyAndWorksheets = [];
     const loader = this.commonUtilService.getLoader();
     loader.present();
-    this.contentService.getGroupByPage(this.getGroupByPageReq, this.guestUser)
+    this.newContentService.getGroupByPage(this.getGroupByPageReq).toPromise()
       .then((response: any) => {
         loader.dismiss();
         this.ngZone.run(() => {
           // TODO Temporary code - should be fixed at backend
-          const sections = JSON.parse(response.sections);
+          const sections = response.sections;
           const newSections = [];
           sections.forEach(element => {
             // element.display = JSON.parse(element.display);
@@ -461,11 +470,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.pageApiLoader = false;
           if (error === 'CONNECTION_ERROR') {
           } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
-            if (!isAfterLanguageChange) { this.commonUtilService.showToast('ERROR_FETCHING_DATA'); }
+            if (!isAfterLanguageChange) {
+              this.commonUtilService.showToast('ERROR_FETCHING_DATA');
+            }
           }
         });
       });
   }
+
   generateExtraInfoTelemetry(sectionsCount) {
     const values = new Map();
     values['savedItemVisible'] = (this.localResources && this.localResources.length) ? 'Y' : 'N';
@@ -583,9 +595,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   /**
-	 *
-	 * @param refresher
-	 */
+   *
+   * @param refresher
+   */
   swipeDownToRefresh(refresher?) {
     if (refresher) {
       refresher.complete();
@@ -630,7 +642,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       InteractSubtype.SEARCH_BUTTON_CLICKED,
       Environment.HOME,
       PageId.LIBRARY);
-    this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
+    this.navCtrl.push(SearchPage, {contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY});
   }
 
   getCategoryData() {
@@ -651,7 +663,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.frameworkUtilService.getFrameworkCategoryTerms(req).toPromise()
       .then((res: CategoryTerm[]) => {
         this.categoryMediums = res;
-        this.arrangeMediumsByUserData(this.categoryMediums.map(a => ({ ...a })));
+        this.arrangeMediumsByUserData(this.categoryMediums.map(a => ({...a})));
       })
       .catch(() => {
       });
@@ -708,6 +720,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .catch(err => {
       });
   }
+
   checkEmptySearchResult(isAfterLanguageChange = false) {
     const flags = [];
     _.forEach(this.storyAndWorksheets, (value, key) => {
@@ -718,7 +731,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
     if (flags.length && _.includes(flags, true)) {
     } else {
-      if (!isAfterLanguageChange) { this.commonUtilService.showToast('NO_CONTENTS_FOUND'); }
+      if (!isAfterLanguageChange) {
+        this.commonUtilService.showToast('NO_CONTENTS_FOUND');
+      }
     }
   }
 
@@ -728,6 +743,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.showWarning = false;
     }, 3000);
   }
+
   checkNetworkStatus(showRefresh = false) {
     if (this.commonUtilService.networkInfo.isNetworkAvailable && showRefresh) {
       this.swipeDownToRefresh();
@@ -753,8 +769,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         this.categoryGradeLevels[i].selected = '';
       }
     }
-    document.getElementById('gradeScroll').scrollTo({ top: 0, left: index * 60, behavior: 'smooth' });
+    document.getElementById('gradeScroll').scrollTo({top: 0, left: index * 60, behavior: 'smooth'});
   }
+
   mediumClick(mediumName: string) {
     this.getGroupByPageReq.medium = [mediumName];
     if (this.currentMedium !== mediumName) {

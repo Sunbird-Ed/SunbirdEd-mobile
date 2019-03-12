@@ -1,26 +1,23 @@
-import { TelemetryGeneratorService } from './../../service/telemetry-generator.service';
-import { TranslateService } from '@ngx-translate/core';
-import { NavParams } from 'ionic-angular/navigation/nav-params';
-import { PopoverController, Events, AlertController } from 'ionic-angular/index';
-import { ViewController } from 'ionic-angular';
-import { Component } from '@angular/core';
+import {TelemetryGeneratorService} from './../../service/telemetry-generator.service';
+import {TranslateService} from '@ngx-translate/core';
+import {NavParams} from 'ionic-angular/navigation/nav-params';
+import {AlertController, Events, PopoverController} from 'ionic-angular/index';
+import {Platform, ToastController, ViewController} from 'ionic-angular';
+import {Component, Inject} from '@angular/core';
 import {
-  ContentService,
   AuthService,
-} from 'sunbird';
-import {
-  Environment,
-  Rollup,
   CorrelationData,
-  InteractType,
+  Environment,
   InteractSubtype,
+  InteractType,
+  OauthSession,
+  Rollup,
   TelemetryObject
 } from 'sunbird-sdk';
-import { ToastController, Platform } from 'ionic-angular';
-import { CommonUtilService } from '../../service/common-util.service';
-import { ReportIssuesComponent } from '../report-issues/report-issues';
-import { ProfileConstants } from '../../app/app.constant';
-import { UnenrollAlertComponent } from '../unenroll-alert/unenroll-alert';
+import {CommonUtilService} from '../../service/common-util.service';
+import {ReportIssuesComponent} from '../report-issues/report-issues';
+import {UnenrollAlertComponent} from '../unenroll-alert/unenroll-alert';
+import {ContentService} from 'sunbird';
 
 @Component({
   selector: 'content-actions',
@@ -46,7 +43,7 @@ export class ContentActionsComponent {
     private navParams: NavParams,
     private toastCtrl: ToastController,
     public popoverCtrl: PopoverController,
-    private authService: AuthService,
+    @Inject('AUTH_SERVICE') private authService: AuthService,
     private alertctrl: AlertController,
     private events: Events,
     private translate: TranslateService,
@@ -74,21 +71,16 @@ export class ContentActionsComponent {
   }
 
   getUserId() {
-    this.authService.getSessionData((session: string) => {
-      if (session === null || session === 'null') {
+    this.authService.getSession().subscribe((session: OauthSession) => {
+      if (!session) {
         this.userId = '';
       } else {
-        const res = JSON.parse(session);
-        this.userId = res[ProfileConstants.USER_TOKEN] ? res[ProfileConstants.USER_TOKEN] : '';
-        // Needed: this get exeuted if user is on course details page.
+        this.userId = session.userToken ? session.userToken : '';
+        // Needed: this get executed if user is on course details page.
         if (this.pageName === 'course' && this.userId) {
           // If course is not enrolled then hide flag/report issue menu.
           // If course has batchId then it means it is enrolled course
-          if (this.content.batchId) {
-            this.showFlagMenu = true;
-          } else {
-            this.showFlagMenu = false;
-          }
+          this.showFlagMenu = !!this.content.batchId;
         }
       }
     });

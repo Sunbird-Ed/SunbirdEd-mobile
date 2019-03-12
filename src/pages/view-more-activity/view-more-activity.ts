@@ -1,36 +1,23 @@
+import {Events, IonicPage, NavController, NavParams} from 'ionic-angular';
+import {Component, Inject, NgZone, OnInit} from '@angular/core';
+import {ContentService,} from 'sunbird';
 import {
-  IonicPage,
-  NavController,
-  NavParams,
-  Events
-} from 'ionic-angular';
-import {
-  Component,
-  NgZone,
-  OnInit,
-  Inject
-} from '@angular/core';
-import {
-  ContentService,
-  ContentFilterCriteria
-} from 'sunbird';
-import {
+  Content,
+  ContentRequest,
+  ContentService as NewContentService,
+  Course,
   CourseService,
-  PageId,
   Environment,
   ImpressionType,
   LogLevel,
-  Course
+  PageId
 } from 'sunbird-sdk';
 import * as _ from 'lodash';
-import {
-  ContentType,
-  ViewMore
-} from '../../app/app.constant';
-import { ContentDetailsPage } from '../content-details/content-details';
-import { CourseUtilService } from '../../service/course-util.service';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../service/common-util.service';
+import {ContentType, ViewMore} from '../../app/app.constant';
+import {ContentDetailsPage} from '../content-details/content-details';
+import {CourseUtilService} from '../../service/course-util.service';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {CommonUtilService} from '../../service/common-util.service';
 
 @IonicPage()
 @Component({
@@ -41,23 +28,23 @@ import { CommonUtilService } from '../../service/common-util.service';
 export class ViewMoreActivityPage implements OnInit {
 
   /**
- * Contains search query
- */
+   * Contains search query
+   */
   searchQuery: any;
 
   /**
- * To hold search result
- */
+   * To hold search result
+   */
   searchList: any;
 
   /**
-* Contains tab bar element ref
-*/
+   * Contains tab bar element ref
+   */
   tabBarElement: any;
 
   /**
- * Flag to show / hide button
- */
+   * Flag to show / hide button
+   */
   loadMoreBtn = true;
 
   /**
@@ -71,26 +58,24 @@ export class ViewMoreActivityPage implements OnInit {
   downloadsOnlyToggle = false;
 
 
-
-
   /**
-	 * Offset
-	 */
+   * Offset
+   */
   offset = 0;
 
   /**
-	 * Contains search limit
-	 */
+   * Contains search limit
+   */
   searchLimit = 10;
 
   /**
-	 * Total search count
-	 */
+   * Total search count
+   */
   totalCount: number;
 
   /**
-	 * Load more flag
-	 */
+   * Load more flag
+   */
   isLoadMore = false;
 
   /**
@@ -99,18 +84,18 @@ export class ViewMoreActivityPage implements OnInit {
   localContentsCard = false;
 
   /**
-	 * Header title
-	 */
+   * Header title
+   */
   headerTitle: string;
 
   /**
-	 * Default page type
-	 */
+   * Default page type
+   */
   pageType = 'library';
 
   /**
-	 * To queue downloaded identifier
-	 */
+   * To queue downloaded identifier
+   */
   queuedIdentifiers: Array<any> = [];
 
   downloadPercentage = 0;
@@ -122,6 +107,7 @@ export class ViewMoreActivityPage implements OnInit {
   audience: any;
 
   constructor(
+    @Inject('CONTENT_SERVICE') private newContentService: NewContentService,
     private navCtrl: NavController,
     private navParams: NavParams,
     private events: Events,
@@ -137,15 +123,15 @@ export class ViewMoreActivityPage implements OnInit {
   }
 
   /**
-	 * Angular life cycle hooks
-	 */
+   * Angular life cycle hooks
+   */
   ngOnInit() {
     this.tabBarElement.style.display = 'none';
   }
 
   /**
-	 * Ionic default life cycle hook
-	 */
+   * Ionic default life cycle hook
+   */
   ionViewWillEnter(): void {
     this.tabBarElement.style.display = 'none';
     this.searchQuery = this.navParams.get('requestParams');
@@ -178,8 +164,8 @@ export class ViewMoreActivityPage implements OnInit {
   }
 
   /**
-	 * Search content
-	 */
+   * Search content
+   */
   search() {
     const loader = this.commonUtilService.getLoader();
     loader.present();
@@ -195,7 +181,7 @@ export class ViewMoreActivityPage implements OnInit {
             data = JSON.parse(data);
             this.ngZone.run(() => {
               if (data.result && data.result.contentDataList) {
-                this.loadMoreBtn = data.result.contentDataList.length < this.searchLimit ? false : true;
+                this.loadMoreBtn = data.result.contentDataList.length >= this.searchLimit;
                 if (this.isLoadMore) {
                   _.forEach(data.result.contentDataList, (value) => {
                     this.searchList.push(value);
@@ -221,31 +207,9 @@ export class ViewMoreActivityPage implements OnInit {
       });
   }
 
-  private generateImpressionEvent() {
-    this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.SEARCH, '',
-      PageId.VIEW_MORE,
-      Environment.HOME, '', '', '');
-  }
-
-  private generateLogEvent(searchResult) {
-    if (searchResult != null) {
-      const contentArray: Array<any> = searchResult.contentDataList;
-      const params = new Array<any>();
-      const paramsMap = new Map();
-      paramsMap['SearchResults'] = contentArray.length;
-      paramsMap['SearchCriteria'] = searchResult.request;
-      params.push(paramsMap);
-      this.telemetryGeneratorService.generateLogEvent(LogLevel.INFO,
-        PageId.VIEW_MORE,
-        Environment.HOME,
-        ImpressionType.SEARCH, params);
-    }
-  }
-
   /**
-	 * Load more result
-	 */
+   * Load more result
+   */
   loadMore() {
     this.isLoadMore = true;
     this.offset = this.offset + this.searchLimit;
@@ -257,8 +221,8 @@ export class ViewMoreActivityPage implements OnInit {
   }
 
   /**
-	 * Mapper to call api based on page.Layout name
-	 */
+   * Mapper to call api based on page.Layout name
+   */
   mapper() {
     const pageName = this.navParams.get('pageName');
     switch (pageName) {
@@ -293,8 +257,8 @@ export class ViewMoreActivityPage implements OnInit {
   }
 
   /**
-	 * Get enrolled courses
-	 */
+   * Get enrolled courses
+   */
   getEnrolledCourse() {
     const loader = this.commonUtilService.getLoader();
     loader.present();
@@ -320,27 +284,21 @@ export class ViewMoreActivityPage implements OnInit {
   }
 
   /**
-	 * Get local content
-	 */
+   * Get local content
+   */
   getLocalContents(recentlyViewed?: boolean, downloaded?: boolean) {
     const loader = this.commonUtilService.getLoader();
     loader.present();
 
-    const requestParams: ContentFilterCriteria = {
+    const requestParams: ContentRequest = {
       uid: this.uid,
       audience: this.audience,
       recentlyViewed: recentlyViewed,
-      downloadedOnly: downloaded
+      localOnly: downloaded,
+      contentTypes: recentlyViewed ? ContentType.FOR_RECENTLY_VIEWED : ContentType.FOR_LIBRARY_TAB,
+      limit: recentlyViewed ? 20 : 0
     };
-
-    if (recentlyViewed) {
-      requestParams.contentTypes = ContentType.FOR_RECENTLY_VIEWED;
-      requestParams.limit = 20;
-    } else {
-      requestParams.contentTypes = ContentType.FOR_LIBRARY_TAB;
-    }
-
-    this.contentService.getAllLocalContents(requestParams)
+    this.newContentService.getContents(requestParams).toPromise()
       .then(data => {
         const contentData = [];
         _.forEach(data, (value) => {
@@ -365,12 +323,11 @@ export class ViewMoreActivityPage implements OnInit {
 
   getContentDetails(content) {
     const identifier = content.contentId || content.identifier;
-    this.contentService.getContentDetail({ contentId: identifier })
-      .then((data: any) => {
-        data = JSON.parse(data);
-        if (Boolean(data.result.isAvailableLocally)) {
+    this.newContentService.getContentDetails({contentId: identifier}).toPromise()
+      .then((data: Content) => {
+        if (Boolean(data.isAvailableLocally)) {
           this.navCtrl.push(ContentDetailsPage, {
-            content: { identifier: content.lastReadContentId },
+            content: {identifier: content.lastReadContentId},
             depth: '1',
             contentState: {
               batchId: content.batchId ? content.batchId : '',
@@ -436,7 +393,7 @@ export class ViewMoreActivityPage implements OnInit {
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport' && this.downloadPercentage === 100) {
           this.showOverlay = false;
           this.navCtrl.push(ContentDetailsPage, {
-            content: { identifier: this.resumeContentData.lastReadContentId },
+            content: {identifier: this.resumeContentData.lastReadContentId},
             depth: '1',
             contentState: {
               batchId: this.resumeContentData.batchId ? this.resumeContentData.batchId : '',
@@ -474,8 +431,8 @@ export class ViewMoreActivityPage implements OnInit {
   }
 
   /**
-	 * Ionic life cycle hook
-	 */
+   * Ionic life cycle hook
+   */
   ionViewCanLeave() {
     this.ngZone.run(() => {
       this.events.unsubscribe('genie.event');
@@ -484,5 +441,27 @@ export class ViewMoreActivityPage implements OnInit {
       this.pageType = this.pageType;
       this.showOverlay = false;
     });
+  }
+
+  private generateImpressionEvent() {
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.SEARCH, '',
+      PageId.VIEW_MORE,
+      Environment.HOME, '', '', '');
+  }
+
+  private generateLogEvent(searchResult) {
+    if (searchResult != null) {
+      const contentArray: Array<any> = searchResult.contentDataList;
+      const params = new Array<any>();
+      const paramsMap = new Map();
+      paramsMap['SearchResults'] = contentArray.length;
+      paramsMap['SearchCriteria'] = searchResult.request;
+      params.push(paramsMap);
+      this.telemetryGeneratorService.generateLogEvent(LogLevel.INFO,
+        PageId.VIEW_MORE,
+        Environment.HOME,
+        ImpressionType.SEARCH, params);
+    }
   }
 }
