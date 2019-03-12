@@ -15,15 +15,8 @@ import {
   ContentMarkerRequest,
   ContentService,
   CorrelationData,
-  Environment,
   FileUtil,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  MarkerType,
-  PageId,
   ProfileRequest,
-  Rollup,
   SharedPreferences,
   TabsPage
 } from 'sunbird';
@@ -37,6 +30,13 @@ import {TelemetryGeneratorService} from '../../service/telemetry-generator.servi
 import * as _ from 'lodash';
 import {ProfileSettingsPage} from '../profile-settings/profile-settings';
 import {
+  Environment,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  PageId,
+  Rollup,
+  MarkerType,
   Framework,
   FrameworkCategoryCodesGroup,
   FrameworkDetailsRequest,
