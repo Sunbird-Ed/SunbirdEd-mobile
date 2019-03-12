@@ -1013,6 +1013,14 @@ export class EnrolledCourseDetailsPage {
       enrollmentType: CourseEnrollmentType.OPEN,
       status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
     };
+    const reqvalues = new Map();
+    reqvalues['enrollReq'] = courseBatchesRequest;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.ENROLL_CLICKED,
+        Environment.HOME,
+        PageId.CONTENT_DETAIL, undefined,
+        reqvalues);
+
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       if (!this.guestUser) {
         loader.present();
