@@ -437,7 +437,7 @@ export class ContentDetailsPage {
   extractApiResponse(data) {
     this.content = data.result.contentData;
     this.content.downloadable = data.result.isAvailableLocally;
-
+    this.content.lastUpdatedTime = data.result.lastUpdatedTime;
     this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
     this.content.contentMarker = data.result.contentMarker ? data.result.contentMarker : [];
 
