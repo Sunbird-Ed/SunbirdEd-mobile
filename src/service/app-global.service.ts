@@ -11,7 +11,7 @@ import {
   FrameworkCategoryCodesGroup,
   FrameworkDetailsRequest,
   FrameworkService,
-  OauthSession,
+  OAuthSession,
   Profile,
   ProfileService,
   ProfileType
@@ -23,7 +23,7 @@ export class AppGlobalService implements OnDestroy {
     public static readonly PROFILE_OBJ_CHANGED = 'app-global:profile-obj-changed';
     public static isPlayerLaunched = false;
 
-    session: OauthSession;
+    session: OAuthSession;
 
     /**
     * This property stores the courses enrolled by a user

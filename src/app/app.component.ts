@@ -25,7 +25,7 @@ import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
 import {CategoriesEditPage} from '@app/pages/categories-edit/categories-edit';
 import {TncUpdateHandlerService} from '@app/service/handlers/tnc-update-handler.service';
 import {AuthService,
-        OauthSession,
+        OAuthSession,
         ProfileService,
         ProfileType,
         Environment,
@@ -166,7 +166,7 @@ export class MyApp {
         } catch (Error) {
         }
         if (response && response.data.action && response.data.action === 'logout') {
-          this.authService.getSession().toPromise().then((session: OauthSession) => {
+          this.authService.getSession().toPromise().then((session: OAuthSession) => {
             if (session) {
               this.authService.resignSession().subscribe();
               (<any>window).splashscreen.clearPrefs();

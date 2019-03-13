@@ -1,6 +1,6 @@
 import {Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {Events, IonicPage, Navbar, NavController, NavParams, Platform} from 'ionic-angular';
-import {ContentService, CorrelationData, FileUtil, SharedPreferences, TabsPage,} from 'sunbird';
+import {ContentService, CorrelationData, FileUtil, SharedPreferences, TabsPage} from 'sunbird';
 import {
   Content,
   ContentDetailRequest,

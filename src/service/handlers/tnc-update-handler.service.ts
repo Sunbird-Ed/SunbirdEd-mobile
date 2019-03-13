@@ -2,7 +2,7 @@ import {Inject, Injectable} from '@angular/core';
 import {Modal, ModalController} from 'ionic-angular';
 import {TermsAndConditionsPage} from '@app/pages/terms-and-conditions/terms-and-conditions';
 import {ProfileConstants} from '@app/app';
-import {AuthService, OauthSession, ProfileService, ServerProfile, ServerProfileDetailsRequest} from 'sunbird-sdk';
+import {AuthService, OAuthSession, ProfileService, ServerProfile, ServerProfileDetailsRequest} from 'sunbird-sdk';
 
 @Injectable()
 export class TncUpdateHandlerService {
@@ -17,7 +17,7 @@ export class TncUpdateHandlerService {
 
   public async checkForTncUpdate(): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
-      this.authService.getSession().toPromise().then((sessionData: OauthSession) => {
+      this.authService.getSession().toPromise().then((sessionData: OAuthSession) => {
         if (!sessionData) {
           resolve(false);
           return;

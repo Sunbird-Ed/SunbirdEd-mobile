@@ -28,7 +28,7 @@ import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@a
 import {
   ApiService,
   AuthService,
-  OauthSession,
+  OAuthSession,
   OAuthSessionProvider,
   Profile,
   ProfileService,
@@ -161,15 +161,15 @@ export class OnboardingPage {
           (<any>window).splashscreen.setContent(that.orgName, success.logo);
           resolve();
         }).catch(() => {
-        resolve(); //ignore
-      })
+        resolve(); // ignore
+      });
     });
   }
 
   refreshProfileData() {
     const that = this;
     return new Promise<string>((resolve, reject) => {
-      that.authService.getSession().toPromise().then((session: OauthSession) => {
+      that.authService.getSession().toPromise().then((session: OAuthSession) => {
         if (session === undefined || session == null) {
           reject('session is null');
         } else {

@@ -10,7 +10,7 @@ import {
   Environment,
   InteractSubtype,
   InteractType,
-  OauthSession,
+  OAuthSession,
   Rollup,
   TelemetryObject
 } from 'sunbird-sdk';
@@ -71,7 +71,7 @@ export class ContentActionsComponent {
   }
 
   getUserId() {
-    this.authService.getSession().subscribe((session: OauthSession) => {
+    this.authService.getSession().subscribe((session: OAuthSession) => {
       if (!session) {
         this.userId = '';
       } else {

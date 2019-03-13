@@ -109,11 +109,11 @@ export const sunbirdSdkFactory =
             producerUniqueId: 'sunbird.app'
           },
           cached_requests: {
-            timeToLive: 2000
+            timeToLive: 30 * 60 * 60 * 1000
           }
         },
         dbConfig: {
-          debugMode: false,
+          debugMode: true,
           dbName: 'GenieServices.db'
         },
         contentServiceConfig: {

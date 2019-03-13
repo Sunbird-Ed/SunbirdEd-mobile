@@ -17,7 +17,7 @@ import {
   Environment,
   InteractSubtype,
   InteractType,
-  OauthSession,
+  OAuthSession,
   OAuthSessionProvider,
   PageId,
   Profile,
@@ -131,7 +131,7 @@ export class SignInCardComponent {
 
     return new Promise<any>((resolve, reject) => {
       that.authService.getSession().toPromise()
-        .then((session: OauthSession) => {
+        .then((session: OAuthSession) => {
           if (session) {
             const req: ServerProfileDetailsRequest = {
               userId: session.userToken,

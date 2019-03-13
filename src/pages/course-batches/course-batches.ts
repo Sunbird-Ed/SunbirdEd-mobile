@@ -9,7 +9,7 @@ import {
   CourseBatchStatus,
   CourseEnrollmentType,
 } from 'sunbird';
-import {CourseService, AuthService, OauthSession, EnrollCourseRequest, Batch} from 'sunbird-sdk';
+import {CourseService, AuthService, OAuthSession, EnrollCourseRequest, Batch} from 'sunbird-sdk';
 import {
   IonicPage,
   NavController,
@@ -137,7 +137,7 @@ export class CourseBatchesPage implements OnInit {
    * Get logged-user id. User id is needed to enroll user into batch.
    */
   getUserId(): void {
-    this.authService.getSession().subscribe((session: OauthSession) => {
+    this.authService.getSession().subscribe((session: OAuthSession) => {
       if (!session) {
         this.zone.run(() => {
           this.isGuestUser = true;

@@ -31,7 +31,7 @@ import {
   ImpressionType,
   InteractSubtype,
   InteractType,
-  OauthSession,
+  OAuthSession,
   PageId,
   ProfileService,
   SearchType,
@@ -183,7 +183,7 @@ export class ProfilePage {
   refreshProfileData() {
     const that = this;
     return new Promise((resolve, reject) => {
-      that.authService.getSession().toPromise().then((session: OauthSession) => {
+      that.authService.getSession().toPromise().then((session: OAuthSession) => {
         if (session === null || session === undefined) {
           reject('session is null');
         } else {
