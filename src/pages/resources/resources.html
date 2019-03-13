@@ -61,21 +61,24 @@
 		Version V1.12.27
 	</ion-footer>
 </ion-menu>
-<ion-content style="background: #FFF;" >
-	<div class="sb-slider-pills-container">
-		<div class="sb-pills-container sb-medium-pills-container">
-			<div class="pill" *ngFor="let medium of categoryMediums; let i = index;" [ngClass]="{'active': medium?.selected}"
-			 [@appear] (click)="mediumClick(medium?.name)">{{medium?.name}} Medium</div>
+<ion-content  class = "main-container">
+	<div ion-fixed class = "fixed-container">
+		<div class="sb-slider-pills-container">
+			<div class="sb-pills-container sb-medium-pills-container">
+				<div class="pill" *ngFor="let medium of categoryMediums; let i = index;" [ngClass]="{'active': medium?.selected}"
+				[@appear] (click)="mediumClick(medium?.name)">{{medium?.name}} Medium</div>
+			</div>
+		</div>
+		<div class="sb-slider-pills-container">
+			<div class="sb-pills-container sb-grade-pills-container" id="gradeScroll" [@ScrollHorizontal]="{value: currentGrade?.selected, params: {left_indent: current_index * 72}}">
+				<div class="pill" *ngFor="let grade of categoryGradeLevels; let i = index; let first = first" [ngClass]="{'active': grade?.selected, '': !grade?.selected}"
+				attr.id="class{{i}}" (click)="classClick(i);">{{grade?.name}}</div>
+			</div>
 		</div>
 	</div>
-	<div class="sb-slider-pills-container">
-		<div class="sb-pills-container sb-grade-pills-container" id="gradeScroll" [@ScrollHorizontal]="{value: currentGrade?.selected, params: {left_indent: current_index * 72}}">
-			<div class="pill" *ngFor="let grade of categoryGradeLevels; let i = index; let first = first" [ngClass]="{'active': grade?.selected, '': !grade?.selected}"
-			 attr.id="class{{i}}" (click)="classClick(i);">{{grade?.name}}</div>
-		</div>
-	</div>
+	<div class ="scrollable-container">
 	<ion-refresher (ionRefresh)="swipeDownToRefresh($event)"></ion-refresher>
-	<div style="margin: 40px;" *ngIf ="refresh">
+	<div *ngIf ="refresh" class="spinner-align">
 		<ion-spinner icon="spiral"></ion-spinner>
 	</div>
 	<ion-spinner *ngIf="showLoader" padding style="padding-top: 100px;"></ion-spinner>
@@ -140,4 +143,5 @@
 	<div *ngIf="showSignInCard" class="signin-card-bg">
 		<sign-in-card (valueChange)="showOfflineNetworkWarning($event)" [source]="source"></sign-in-card>
 	</div>
+</div>
 </ion-content>
