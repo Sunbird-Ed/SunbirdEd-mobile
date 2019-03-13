@@ -454,6 +454,7 @@ export class ContentDetailsPage {
       }
     }
 
+    this.content.lastUpdatedTime = data.result.lastUpdatedTime;
     this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
     this.content.contentMarker = data.result.contentMarker ? data.result.contentMarker : [];
 
@@ -522,7 +523,7 @@ export class ContentDetailsPage {
     }
 
     if (this.downloadAndPlay) {
-      if (!this.content.downloadable) {
+      if (!this.content.downloadable || this.isUpdateAvail) {
         /**
          * Content is not downloaded then call the following method
          * It will download the content and play it
@@ -750,6 +751,9 @@ export class ContentDetailsPage {
             if (res.data.identifier === this.identifier) {
               if (res.data.streamingUrl) {
                 this.content.streamingUrl = res.data.streamingUrl;
+                const playContent = JSON.parse(this.content.playContent);
+                playContent.contentData.streamingUrl = res.data.streamingUrl;
+                this.content.playContent = JSON.stringify(playContent);
               } else {
                 this.playOnlineSpinner = false;
               }
