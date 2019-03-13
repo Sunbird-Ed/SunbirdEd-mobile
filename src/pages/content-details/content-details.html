@@ -301,12 +301,15 @@
 
 	<!--- Ion footer  displays when content streaming is enabled -->
 
-	<ion-footer *ngIf="content && appGlobalService?.CONTENT_STREAMING_ENABLED">
-		<ion-toolbar padding *ngIf="!content?.streamingUrl">
-			<button ion-button block *ngIf="!content?.downloadable && playOnlineSpinner" (click)="showSwitchUserAlert(true)"
-			 text-uppercase [disabled]="!content?.streamingUrl" [ngStyle]="{'opacity':!commonUtilService.networkInfo.isNetworkAvailable  || !content?.streamingUrl ? '0.4': '1' }">{{'PLAY_ONLINE'
-				| translate}}
-				<ion-spinner icon="spiral" class="button-spinner"></ion-spinner>
+<ion-footer *ngIf="content && appGlobalService?.CONTENT_STREAMING_ENABLED">
+	<ion-toolbar padding *ngIf="!content?.streamingUrl">
+			<button ion-button block 
+					*ngIf="content?.lastUpdatedTime != 0 && commonUtilService?.networkInfo?.isNetworkAvailable && !content?.downloadable && playOnlineSpinner" 
+					(click)="showSwitchUserAlert(true)" 
+					text-uppercase [disabled]= "!content?.streamingUrl"
+					[ngStyle]= "{'opacity':!commonUtilService.networkInfo.isNetworkAvailable  || !content?.streamingUrl ? '0.4': '1' }">{{'PLAY_ONLINE'
+			  | translate}}
+			  <ion-spinner icon="spiral" class ="button-spinner"></ion-spinner>
 			</button>
 
 			<button ion-button block *ngIf="content?.downloadable" (click)="showSwitchUserAlert(false)" [disabled]="isDownloadStarted">{{

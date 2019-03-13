@@ -1,4 +1,4 @@
-  {
+{
   "name": "Sunbird",
   "version": "0.0.2",
   "author": "Ionic Framework",
@@ -172,7 +172,6 @@
       "/node_modules/",
       "src/component/profile-avatar/profile-avatar.spec.ts",
       "src/component/report-issues/report-issues.spec.ts",
-      "src/component/sign-in-card/sign-in-card.spec.ts",
       "src/component/view-more-card/view-more-card.spec.ts",
       "src/pages/profile/guest-edit.profile/guest-edit.profile.spec.ts",
       "src/pages/profile/overflowmenu/menu.overflow.component.spec.ts",

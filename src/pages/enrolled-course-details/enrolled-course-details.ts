@@ -515,6 +515,8 @@ export class EnrolledCourseDetailsPage {
           data = JSON.parse(data);
           if (data.result) {
             this.batchDetails = data.result;
+            this.saveContentContext(this.appGlobalService.getUserId(),
+              this.batchDetails.courseId, this.courseCardData.batchId, this.batchDetails.status);
             this.preference.getString(PreferenceKey.COURSE_IDENTIFIER)
               .then(val => {
                 if (val === this.batchDetails.identifier) {
@@ -557,6 +559,20 @@ export class EnrolledCourseDetailsPage {
       .catch((error: any) => {
         console.error('error while loading content details', error);
       });
+  }
+
+  saveContentContext(userId, courseId, batchId, batchStatus) {
+    const contentContextMap = new Map();
+    // store content context in the below map
+    contentContextMap['userId'] = userId;
+    contentContextMap['courseId'] = courseId;
+    contentContextMap['batchId'] = batchId;
+    if (batchStatus) {
+      contentContextMap['batchStatus'] = batchStatus;
+    }
+
+    // store the contentContextMap in shared preference and access it from SDK
+    this.preference.putString(PreferenceKey.CONTENT_CONTEXT, JSON.stringify(contentContextMap));
   }
 
   getBatchCreatorName() {
@@ -997,6 +1013,14 @@ export class EnrolledCourseDetailsPage {
       enrollmentType: CourseEnrollmentType.OPEN,
       status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
     };
+    const reqvalues = new Map();
+    reqvalues['enrollReq'] = courseBatchesRequest;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.ENROLL_CLICKED,
+        Environment.HOME,
+        PageId.CONTENT_DETAIL, undefined,
+        reqvalues);
+
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       if (!this.guestUser) {
         loader.present();

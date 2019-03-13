@@ -25,8 +25,8 @@
         <ion-icon ios="ios-alert" md="md-alert" class="sb-accordian-grey-icon"></ion-icon>
     </div>
 
-    <div *ngIf="childData?.children && childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection'"
-        class="sb-separator-line ml8 mtb-8"></div>
+    <!-- <div *ngIf="childData?.children && childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection'"
+        class="sb-separator-line ml8 mtb-8"></div> -->
     <div class="ml8" *ngFor="let firstChildren of childData?.children; let j = index;">
         <collection-child [childData]="firstChildren"></collection-child>
     </div>

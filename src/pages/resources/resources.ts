@@ -526,6 +526,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
                   count = this.storyAndWorksheets[i].contents.length;
                   sectionInfo[sectionName] = count;
           }
+
           const resvalues = new Map();
           resvalues['pageRes'] = sectionInfo;
           this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
@@ -549,6 +550,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           if (error === 'CONNECTION_ERROR') {
           } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
             if (!isAfterLanguageChange) { this.commonUtilService.showToast('ERROR_FETCHING_DATA'); }
+          } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable) {
+            this.commonUtilService.showToast(
+              this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
+              `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
           }
           const errvalues = new Map();
           errvalues['isNetworkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
