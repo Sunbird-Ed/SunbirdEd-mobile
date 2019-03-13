@@ -116,7 +116,7 @@
       </ion-grid>
       <div class="hidden-content margin-10" *ngIf="isGroupShown(i) && (item?.children && item?.children?.length)">
         <div *ngFor="let firstChildren of item?.children; let j = index;">
-          <div class="separator-line"></div>
+          <!-- <div class="separator-line"></div> -->
           <collection-child [childData]="firstChildren" [index]="j" [depth]="depth" [corRelationList]="corRelationList" [isDepthChild]="isDepthChild"></collection-child>
         </div>
       </div>
