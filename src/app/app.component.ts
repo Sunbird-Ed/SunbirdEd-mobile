@@ -1,7 +1,7 @@
 import {
   AuthService,
   BuildParamService,
-  ContainerService,
+  // ContainerService,
   Environment,
   InteractSubtype,
   InteractType,
@@ -10,10 +10,12 @@ import {
   ProfileService,
   ProfileType,
   SharedPreferences,
-  TabsPage,
+  // TabsPage,
   TelemetryService,
   UserProfileService
 } from 'sunbird';
+import { ContainerService } from '@app/service/container-service';
+import { TabsPage } from '@app/pages/tabs/tabs';
 import { ProfileSettingsPage } from './../pages/profile-settings/profile-settings';
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { App, Events, Nav, Platform, PopoverController, ToastController, AlertController } from 'ionic-angular';
@@ -36,6 +38,7 @@ import { TelemetryGeneratorService } from '../service/telemetry-generator.servic
 import { BroadcastComponent } from '../component/broadcast/broadcast';
 import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
 import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
+
 
 declare var chcp: any;
 

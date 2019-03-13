@@ -22,9 +22,9 @@ import {
   ProfileRequest,
   Profile,
   Group,
-  ContainerService,
+  // ContainerService,
   ProfileType,
-  TabsPage,
+  // TabsPage,
   SharedPreferences,
   OAuthService,
   GroupRequest,
@@ -37,6 +37,7 @@ import {
   ImpressionType,
   AuthService
 } from 'sunbird';
+import { TabsPage } from '@app/pages/tabs/tabs';
 import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
 import { IonicApp } from 'ionic-angular';
 import { ShareUserAndGroupPage } from './share-user-and-groups/share-user-and-groups';
@@ -55,6 +56,7 @@ import { Map } from '../../app/telemetryutil';
 import { Content } from 'ionic-angular';
 import { PreferenceKey } from '../../app/app.constant';
 import { CreateGroupPage } from './create-group/create-group';
+import { ContainerService } from '../../service/container-service';
 
 @IonicPage()
 @Component({

@@ -5,7 +5,8 @@ import {CollectionDetailsEtbPageModule} from './../pages/collection-details-etb/
 import {ViewMoreActivityPageModule} from './../pages/view-more-activity/view-more-activity.module';
 import {EnrolledCourseDetailsPageModule} from './../pages/enrolled-course-details/enrolled-course-details.module';
 import {CourseBatchesPageModule} from './../pages/course-batches/course-batches.module';
-import {ContainerService, TabOptions} from 'sunbird';
+// import {ContainerService, TabOptions} from 'sunbird';
+import { ContainerService, TabOptions } from '../service/container-service';
 import {GuestProfilePage} from '../pages/profile/guest-profile/guest-profile';
 import {ProfilePage} from '../pages/profile/profile';
 import {ResourcesPage} from '../pages/resources/resources';
@@ -24,20 +25,28 @@ import {ReportsPageModule} from '../pages/reports/reports.module';
 import {UserReportModule} from '../pages/reports/user-report/user-report.module';
 import {QrCodeResultPageModule} from '../pages/qr-code-result/qr-code-result.module';
 import {TermsAndConditionsPageModule} from '@app/pages/terms-and-conditions/terms-and-conditions.module';
+// import {TabsPageModule} from '@app/pages/tabs/tabs.module';
 
 // const HOME_TAB = { root: HomePage, icon: "home", label: "HOME_BNAV", index: 0, tabsHideOnSubPages: true };
 const COURSE_TAB = {
     root: CoursesPage,
     icon: 'courses',
     label: 'COURSES_BNAV',
-    index: 1,
+    index: 3,
+    tabsHideOnSubPages: true
+};
+const SCANNER_TAB = {
+    root: ResourcesPage,
+    icon: 'qr-scanner',
+   // label: 'LIBRARY_BNAV',
+    index: 2,
     tabsHideOnSubPages: true
 };
 const LIBRARY_TAB = {
     root: ResourcesPage,
     icon: 'resources',
     label: 'LIBRARY_BNAV',
-    index: 2,
+    index: 1,
     tabsHideOnSubPages: true,
     isSelected: true
 };
@@ -67,15 +76,17 @@ const PROFILE_TAB = {
 export const GUEST_TEACHER_TABS = [
     // HOME_TAB,
     COURSE_TAB,
-    LIBRARY_TAB,
-    GUEST_PROFILE_TAB
+    SCANNER_TAB,
+    LIBRARY_TAB
+   // GUEST_PROFILE_TAB
 ];
 
 export const LOGIN_TEACHER_TABS = [
     // HOME_TAB,
     COURSE_TAB,
-    LIBRARY_TAB,
-    PROFILE_TAB
+    SCANNER_TAB,
+    LIBRARY_TAB
+    // PROFILE_TAB
 ];
 
 export const GUEST_STUDENT_TABS = [
@@ -86,8 +97,9 @@ export const GUEST_STUDENT_TABS = [
 export const GUEST_TEACHER_SWITCH_TABS = [
     // HOME_TAB,
     COURSE_TAB,
-    LIBRARY_TAB,
-    GUEST_PROFILE_SWITCH_TAB
+    SCANNER_TAB,
+    LIBRARY_TAB
+   // GUEST_PROFILE_SWITCH_TAB
 ];
 
 export const GUEST_STUDENT_SWITCH_TABS = [

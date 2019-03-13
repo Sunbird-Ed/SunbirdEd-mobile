@@ -26,8 +26,8 @@ import {
   Group,
   OAuthService,
   ProfileType,
-  TabsPage,
-  ContainerService,
+  // TabsPage,
+  // ContainerService,
   SharedPreferences,
   AddUpdateProfilesRequest,
   InteractType,
@@ -38,6 +38,8 @@ import {
   ObjectType,
   AuthService
 } from 'sunbird';
+import { TabsPage } from '@app/pages/tabs/tabs';
+import { ContainerService } from '../../../service/container-service';
 import { Events } from 'ionic-angular';
 import { AppGlobalService } from '../../../service/app-global.service';
 import {
