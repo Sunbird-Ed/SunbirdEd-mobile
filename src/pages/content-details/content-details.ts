@@ -437,7 +437,9 @@ export class ContentDetailsPage {
   extractApiResponse(data) {
     this.content = data.result.contentData;
     this.content.downloadable = data.result.isAvailableLocally;
-    this.content.lastUpdatedTime = data.result.lastUpdatedTime;
+    if (data.result.lastUpdatedTime !== '0') {
+      this.playOnlineSpinner = false;
+    }
     this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
     this.content.contentMarker = data.result.contentMarker ? data.result.contentMarker : [];
 
@@ -962,6 +964,7 @@ export class ContentDetailsPage {
       this.zone.run(() => {
         if (data === 'delete.success') {
           this.content.streamingUrl = this.streamingUrl;
+          this.playOnlineSpinner = false;
           this.content.downloadable = false;
           const playContent = JSON.parse(this.content.playContent);
           playContent.isAvailableLocally = false;
