@@ -1,13 +1,8 @@
-import {
-  Component,
-  NgZone,
-  ViewChild,
-  Inject
-} from '@angular/core';
+import {Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {
   AlertController,
-  IonicPage,
   Events,
+  IonicPage,
   Navbar,
   NavController,
   NavParams,
@@ -19,15 +14,14 @@ import {SocialSharing} from '@ionic-native/social-sharing';
 
 import {
   BuildParamService,
-  FileUtil,
-  ShareUtil,
-  CourseService as course_Service,
-  GetContentStateRequest,
   ContentService as content_service,
-  ChildContentRequest,
+  CourseService as course_Service,
+  FileUtil,
+  GetContentStateRequest,
   SharedPreferences,
+  ShareUtil,
 } from 'sunbird';
-import {ContentActionsComponent, ContentRatingAlertComponent, CourseCard} from '@app/component';
+import {ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
 import {CollectionDetailsPage} from '@app/pages/collection-details/collection-details';
 import {ContentDetailsPage} from '@app/pages/content-details/content-details';
 import {ContentType, EventTopics, MimeType, PreferenceKey, ShareUrl} from '@app/app';
@@ -36,7 +30,14 @@ import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGenerat
 import {DatePipe} from '@angular/common';
 import {
   Batch,
+  ChildContentRequest,
+  Content,
+  ContentService,
   CorrelationData,
+  CourseBatchesRequest,
+  CourseBatchStatus,
+  CourseEnrollmentType,
+  CourseService,
   Environment,
   ErrorType,
   ImpressionType,
@@ -47,17 +48,9 @@ import {
   ProfileService,
   ProfileType,
   ServerProfileDetailsRequest,
+  TelemetryErrorCode,
   TelemetryObject,
-  CourseService,
-  CourseBatchesRequest,
-  UnenrollCourseRequest,
-  CourseEnrollmentType,
-  CourseBatchStatus,
-  ContentService,
-   ContentImportResponse,
-   Content,
-   TelemetryErrorCode,
-   Course
+  UnenrollCourseRequest
 } from 'sunbird-sdk';
 
 @IonicPage()
@@ -145,7 +138,6 @@ export class EnrolledCourseDetailsPage {
   isDownloadCompleted = false;
   batchDetails: any;
   batchExp: Boolean = false;
-  private corRelationList: Array<CorrelationData>;
   userId = '';
   userRating = 0;
   ratingComment = '';
@@ -165,8 +157,8 @@ export class EnrolledCourseDetailsPage {
   /**Whole child content is stored and it is used to find first child */
   childContentsData;
   isBatchNotStarted = false;
-
   @ViewChild(Navbar) navBar: Navbar;
+  private corRelationList: Array<CorrelationData>;
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
@@ -394,7 +386,7 @@ export class EnrolledCourseDetailsPage {
     this.contentService.getContentDetails(option).toPromise()
       .then((data: Content) => {
         this.zone.run(() => {
-            this.extractApiResponse(data);
+          this.extractApiResponse(data);
         });
       })
       .catch((error: any) => {
@@ -483,7 +475,7 @@ export class EnrolledCourseDetailsPage {
    * Get batch details
    */
   getBatchDetails() {
-    this.courseService.getBatchDetails({ batchId: this.courseCardData.batchId }).toPromise()
+    this.courseService.getBatchDetails({batchId: this.courseCardData.batchId}).toPromise()
       .then((data: Batch) => {
         this.zone.run(() => {
           if (data) {
@@ -730,23 +722,19 @@ export class EnrolledCourseDetailsPage {
    */
   setChildContents(): void {
     this.showChildrenLoader = true;
-    const option = new ChildContentRequest();
-    option.contentId = this.identifier;
-    option.hierarchyInfo = null;
-
-    if (!this.courseCardData.batchId) {
-      option.level = 1;
-    }
-
-    this.acontentService.getChildContents(option)
-      .then((data: any) => {
-        data = JSON.parse(data);
+    const option: ChildContentRequest = {
+      contentId: this.identifier,
+      hierarchyInfo: null,
+      level: !this.courseCardData.batchId ? 1 : 0,
+    };
+    this.contentService.getChildContents(option).toPromise()
+      .then((data: Content) => {
         this.zone.run(() => {
-          if (data && data.result && data.result.children) {
-            this.enrolledCourseMimeType = data.result.mimeType;
-            this.childrenData = data.result.children;
-            this.startData = data.result.children;
-            this.childContentsData = data.result;
+          if (data && data.children) {
+            this.enrolledCourseMimeType = data.mimeType;
+            this.childrenData = data.children;
+            this.startData = data.children;
+            this.childContentsData = data;
             this.getContentState(!this.isNavigatingWithinCourse);
           }
           if (this.courseCardData.batchId) {
@@ -755,8 +743,7 @@ export class EnrolledCourseDetailsPage {
           }
           this.showChildrenLoader = false;
         });
-      })
-      .catch((error: string) => {
+      }).catch(() => {
         this.zone.run(() => {
           this.showChildrenLoader = false;
         });
@@ -863,7 +850,7 @@ export class EnrolledCourseDetailsPage {
     if (this.batchId) {
       this.courseCardData.batchId = this.batchId;
     }
-    this.showResumeBtn = this.courseCardData.lastReadContentId ? true : false;
+    this.showResumeBtn = !!this.courseCardData.lastReadContentId;
     this.setContentDetails(this.identifier);
     // If courseCardData does not have a batch id then it is not a enrolled course
     this.subscribeGenieEvent();

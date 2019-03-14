@@ -15,7 +15,7 @@ import {FileTransfer, FileTransferObject} from '@ionic-native/file-transfer';
 import {FileOpener} from '@ionic-native/file-opener';
 import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
 import {UpgradePopover} from '@app/pages/upgrade';
-import {QRScannerResultHandler} from '@app/pages/qrscanner';
+import {QRScannerResultHandler} from '../../src/pages/qrscanner';
 import {BroadcastComponent} from '@app/component/broadcast/broadcast';
 import {LogoutHandlerService} from '@app/service/handlers/logout-handler.service';
 import {TncUpdateHandlerService} from '@app/service/handlers/tnc-update-handler.service';
@@ -82,6 +82,9 @@ export const sunbirdSdkServicesProvidersFactory: () => Provider[] = () => {
   }, {
     provide: 'CONTENT_FEEDBACK_SERVICE',
     useFactory: () => SunbirdSdk.instance.contentFeedbackService
+  }, {
+    provide: 'EVENTS_BUS_SERVICE',
+    useFactory: () => SunbirdSdk.instance.eventsBusService
   }];
 };
 
@@ -113,7 +116,7 @@ export const sunbirdSdkFactory =
           }
         },
         dbConfig: {
-          debugMode: true,
+          debugMode: false,
           dbName: 'GenieServices.db'
         },
         contentServiceConfig: {

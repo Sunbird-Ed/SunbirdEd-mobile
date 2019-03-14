@@ -4,13 +4,16 @@ import {ContentService,} from 'sunbird';
 import {
   Content,
   ContentRequest,
+  ContentSearchCriteria,
+  ContentSearchResult,
   ContentService as NewContentService,
   Course,
   CourseService,
   Environment,
   ImpressionType,
   LogLevel,
-  PageId
+  PageId,
+  SearchType
 } from 'sunbird-sdk';
 import * as _ from 'lodash';
 import {ContentType, ViewMore} from '../../app/app.constant';
@@ -169,39 +172,30 @@ export class ViewMoreActivityPage implements OnInit {
   search() {
     const loader = this.commonUtilService.getLoader();
     loader.present();
-
-    this.contentService.getSearchCriteriaFromRequest(this.searchQuery)
-      .then((criteria: any) => {
-        const contentSearchCriteria = JSON.parse(criteria);
-        contentSearchCriteria.limit = 10;
-        contentSearchCriteria.offset = this.offset === 0 ? contentSearchCriteria.offset : this.offset;
-
-        this.contentService.searchContent(contentSearchCriteria, true, false, false)
-          .then((data: any) => {
-            data = JSON.parse(data);
-            this.ngZone.run(() => {
-              if (data.result && data.result.contentDataList) {
-                this.loadMoreBtn = data.result.contentDataList.length >= this.searchLimit;
-                if (this.isLoadMore) {
-                  _.forEach(data.result.contentDataList, (value) => {
-                    this.searchList.push(value);
-                  });
-                } else {
-                  this.searchList = data.result.contentDataList;
-                }
-              } else {
-                this.loadMoreBtn = false;
-              }
-              loader.dismiss();
-            });
-            this.generateImpressionEvent();
-            this.generateLogEvent(data.result);
-          })
-          .catch(() => {
-            console.error('Error: while fetching view more content');
-            loader.dismiss();
-          });
-      }).catch(() => {
+    const searchCriteria: ContentSearchCriteria = {
+      searchType: SearchType.FILTER
+    };
+    this.newContentService.searchContent(searchCriteria, this.searchQuery).toPromise()
+      .then((data: ContentSearchResult) => {
+        this.ngZone.run(() => {
+          if (data && data.contentDataList) {
+            this.loadMoreBtn = data.contentDataList.length >= this.searchLimit;
+            if (this.isLoadMore) {
+              _.forEach(data.contentDataList, (value) => {
+                this.searchList.push(value);
+              });
+            } else {
+              this.searchList = data.contentDataList;
+            }
+          } else {
+            this.loadMoreBtn = false;
+          }
+          loader.dismiss();
+        });
+        this.generateImpressionEvent();
+        this.generateLogEvent(data);
+      })
+      .catch(() => {
         console.error('Error: while fetching view more content');
         loader.dismiss();
       });
@@ -271,7 +265,7 @@ export class ViewMoreActivityPage implements OnInit {
     this.courseService.getEnrolledCourses(option).toPromise()
       .then((data: Course[]) => {
         if (data) {
-         // data = JSON.parse(data);
+          // data = JSON.parse(data);
           this.searchList = data ? data : [];
           this.loadMoreBtn = false;
         }
@@ -438,7 +432,6 @@ export class ViewMoreActivityPage implements OnInit {
       this.events.unsubscribe('genie.event');
       this.tabBarElement.style.display = 'flex';
       this.isLoadMore = false;
-      this.pageType = this.pageType;
       this.showOverlay = false;
     });
   }

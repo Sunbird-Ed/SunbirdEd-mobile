@@ -1,23 +1,13 @@
 import {ViewMoreActivityPage} from './../view-more-activity/view-more-activity';
-import {Component, NgZone, OnInit, Inject} from '@angular/core';
+import {Component, Inject, NgZone, OnInit} from '@angular/core';
 import {Events, IonicPage, NavController, PopoverController} from 'ionic-angular';
 import {AppVersion} from '@ionic-native/app-version';
-import {
-  ContentService,
-  SharedPreferences
-} from 'sunbird';
+import {ContentService, SharedPreferences} from 'sunbird';
 import {QRResultCallback, SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
 import {SearchPage} from '../search/search';
 import {ContentDetailsPage} from '../content-details/content-details';
 import * as _ from 'lodash';
-import {
-  ContentCard,
-  ContentType,
-  EventTopics,
-  PreferenceKey,
-  ProfileConstants,
-  ViewMore
-} from '../../app/app.constant';
+import {ContentCard, ContentType, EventTopics, PreferenceKey, ProfileConstants, ViewMore} from '../../app/app.constant';
 import {PageFilter, PageFilterCallback} from '../page-filter/page.filter';
 import {Network} from '@ionic-native/network';
 import {AppGlobalService} from '../../service/app-global.service';
@@ -27,18 +17,20 @@ import {updateFilterInSearchQuery} from '../../util/filter.util';
 import {FormAndFrameworkUtilService} from '../profile/formandframeworkutil.service';
 import {CommonUtilService} from '../../service/common-util.service';
 import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
-import {ProfileType,
-  PageAssembleService,
-  PageAssembleCriteria,
-  PageAssembleFilter,
-  PageName,
+import {
+  Content,
+  ContentService as NewContentService,
+  Course,
   CourseService,
   Environment,
   ImpressionType,
   InteractSubtype,
   InteractType,
+  PageAssembleCriteria,
+  PageAssembleService,
   PageId,
-  Course
+  PageName,
+  ProfileType
 } from 'sunbird-sdk';
 
 @IonicPage()
@@ -131,6 +123,7 @@ export class CoursesPage implements OnInit {
     private qrScanner: SunbirdQRScanner,
     private popCtrl: PopoverController,
     private events: Events,
+    @Inject('CONTENT_SERVICE') private newContentService: NewContentService,
     private contentService: ContentService,
     private preference: SharedPreferences,
     private appGlobalService: AppGlobalService,
@@ -399,7 +392,6 @@ export class CoursesPage implements OnInit {
 
     this.pageService.getPageAssemble(pageAssembleCriteria).toPromise()
     .then((res: any) => {
-      res = res;
       this.ngZone.run(() => {
         const sections = res.sections;
         const newSections = [];
@@ -663,10 +655,9 @@ export class CoursesPage implements OnInit {
 
   getContentDetails(content) {
     const identifier = content.contentId || content.identifier;
-    this.contentService.getContentDetail({ contentId: identifier })
-      .then((data: any) => {
-        data = JSON.parse(data);
-        if (data && data.result && data.result.isAvailableLocally) {
+    this.newContentService.getContentDetails({contentId: identifier}).toPromise()
+      .then((data: Content) => {
+        if (data && data.isAvailableLocally) {
           this.showOverlay = false;
           this.navigateToContentDetailsPage(content);
         } else {

@@ -38,7 +38,7 @@ import {
   ContentAccessStatus,
   ContentDetailRequest,
   ContentMarkerRequest,
-  ContentService as newContentService,
+  ContentService as NewContentService,
   CorrelationData,
   Environment,
   GetAllProfileRequest,
@@ -126,10 +126,10 @@ export class ContentDetailsPage {
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
-    @Inject('CONTENT_SERVICE') private newContentService: newContentService,
+    @Inject('CONTENT_SERVICE') private newContentService: NewContentService,
+    private contentService: ContentService,
     private navCtrl: NavController,
     private navParams: NavParams,
-    private contentService: ContentService,
     private zone: NgZone,
     private events: Events,
     private fileUtil: FileUtil,

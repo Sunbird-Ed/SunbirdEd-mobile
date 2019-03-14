@@ -11,12 +11,15 @@ import {
   PopoverController
 } from 'ionic-angular';
 import {
-  ChildContentRequest,
-  ContentMarkerRequest,
   ContentService,
   CorrelationData,
+  Environment,
   FileUtil,
-  ProfileRequest,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  MarkerType,
+  PageId,
   SharedPreferences,
   TabsPage
 } from 'sunbird';
@@ -30,18 +33,16 @@ import {TelemetryGeneratorService} from '../../service/telemetry-generator.servi
 import * as _ from 'lodash';
 import {ProfileSettingsPage} from '../profile-settings/profile-settings';
 import {
-  Environment,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  PageId,
-  Rollup,
-  MarkerType,
+  ChildContentRequest,
+  Content,
+  ContentMarkerRequest,
+  ContentService as NewContentService,
   Framework,
   FrameworkCategoryCodesGroup,
   FrameworkDetailsRequest,
   FrameworkService,
   FrameworkUtilService,
+  GetAllProfileRequest,
   GetSuggestedFrameworksRequest,
   Profile,
   ProfileService,
@@ -65,11 +66,6 @@ export class QrCodeResultPage {
   searchIdentifier: string;
 
   /**
-   * Contains children content data
-   */
-  childrenData: Array<any>;
-
-  /**
    * Show loader while importing content
    */
   showChildrenLoader: boolean;
@@ -77,7 +73,7 @@ export class QrCodeResultPage {
   /**
    * Contains card data of previous state
    */
-  content: any;
+  content: Content;
 
   /**
    * Contains Parent Content Details
@@ -101,28 +97,20 @@ export class QrCodeResultPage {
   boardList: Array<any> = [];
   mediumList: Array<any> = [];
   gradeList: Array<any> = [];
-  subjectList: Array<any> = [];
-  profileCategories: any;
   isSingleContent = false;
   showLoading: Boolean;
   isDownloadStarted: Boolean;
-
-  public isPlayerLaunched = false;
   userCount = 0;
-  apiLevel: number;
-  appAvailability: string;
-  downloadAndPlay: boolean;
-  public objRollup: Rollup;
   /**
    * To hold previous state data
    */
   cardData: any;
   @ViewChild(Navbar) navBar: Navbar;
   downloadProgress: any = 0;
-  isDownloadCompleted: boolean;
   isUpdateAvailable: boolean;
 
   constructor(
+    @Inject('CONTENT_SERVICE') private newContentService: NewContentService,
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -218,21 +206,17 @@ export class QrCodeResultPage {
   }
 
   getChildContents() {
-    const request: ChildContentRequest = { contentId: this.identifier };
-    this.contentService.getChildContents(
-      request)
-      .then((data: any) => {
-        data = JSON.parse(data);
+    const request: ChildContentRequest = {contentId: this.identifier, hierarchyInfo: []};
+    this.newContentService.getChildContents(
+      request).toPromise()
+      .then((data: Content) => {
         this.parents.splice(0, this.parents.length);
-        this.parents.push(data.result);
+        this.parents.push(data);
         this.results = [];
         this.profile = this.appGlobalService.getCurrentUser();
-        const contentData = JSON.parse(JSON.stringify(data.result.contentData));
-        /* if (!this.navParams.get('onboarding') && contentData && contentData.medium) {
-           this.commonUtilService.changeAppLanguage(contentData.medium);
-         } */
+        const contentData = data.contentData;
         this.checkProfileData(contentData, this.profile);
-        this.findContentNode(data.result);
+        this.findContentNode(data);
 
         if (this.results && this.results.length === 0) {
           this.telemetryGeneratorService.generateImpressionTelemetry(ImpressionType.VIEW,
@@ -254,48 +238,48 @@ export class QrCodeResultPage {
 
   }
 
-  private showAllChild(content: any) {
-    this.zone.run(() => {
-      if (content.children === undefined) {
-        if (content.mimeType !== MimeType.COLLECTION) {
-          this.results.push(content);
-
-          const path = [];
-          this.parents.forEach(ele => {
-            path.push(ele);
-          });
-          path.splice(-1, 1);
-          this.paths.push(path);
-        }
-        return;
+  calculateAvailableUserCount() {
+    const profileRequest: GetAllProfileRequest = {
+      local: true,
+      server: false
+    };
+    this.profileService.getAllProfiles(profileRequest)
+      .map((profiles) => profiles.filter((profile) => !!profile.handle))
+      .subscribe(profiles => {
+      if (profiles) {
+        this.userCount = profiles.length;
       }
-      content.children.forEach(child => {
-        this.parents.push(child);
-        this.showAllChild(child);
-        this.parents.splice(-1, 1);
-      });
+      if (this.appGlobalService.isUserLoggedIn()) {
+        this.userCount += 1;
+      }
+    }, () => {
     });
   }
 
-  private findContentNode(data: any) {
-    if (data && data !== undefined && data.identifier === this.searchIdentifier) {
-      this.showAllChild(data);
-      return true;
+  /**
+   * Play content
+   */
+  playContent(content: Content) {
+    const extraInfoMap = { hierarchyInfo: [] };
+    if (this.cardData && this.cardData.hierarchyInfo) {
+      extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
     }
-
-    if (data && data.children !== undefined) {
-      data.children.forEach(child => {
-        this.parents.push(child);
-        const isFound = this.findContentNode(child);
-
-        if (isFound === true) {
-          return true;
-        }
-        this.parents.splice(-1, 1);
+    const req: ContentMarkerRequest = {
+      uid: this.appGlobalService.getCurrentUser().uid,
+      contentId: content.identifier,
+      data: JSON.stringify(content.contentData),
+      marker: MarkerType.PREVIEWED,
+      isMarked: true,
+      extraInfo: extraInfoMap
+    };
+    this.newContentService.setContentMarker(req).toPromise()
+      .then(() => {
+      }).catch(() => {
       });
-    }
-
-    return false;
+    const request: any = {};
+    request.streaming = true;
+    AppGlobalService.isPlayerLaunched = true;
+    (<any>window).geniecanvas.play(content, JSON.stringify(request));
   }
 
   playOnline(content) {
@@ -330,60 +314,6 @@ export class QrCodeResultPage {
     }
   }
 
-  calculateAvailableUserCount() {
-    const profileRequest: ProfileRequest = {
-      local: true,
-      server: false
-    };
-    this.profileService.getAllProfiles(profileRequest)
-      .map((profiles) => profiles.filter((profile) => !!profile.handle))
-      .subscribe(profiles => {
-      if (profiles) {
-        this.userCount = profiles.length;
-      }
-      if (this.appGlobalService.isUserLoggedIn()) {
-        this.userCount += 1;
-      }
-    }, () => {
-    });
-  }
-
-  /** funtion add elipses to the texts**/
-
-  addElipsesInLongText(msg: string) {
-    if (this.commonUtilService.translateMessage(msg).length >= 12) {
-      return this.commonUtilService.translateMessage(msg).slice(0, 8) + '....';
-    } else {
-      return this.commonUtilService.translateMessage(msg);
-    }
-  }
-
-  /**
-   * Play content
-   */
-  playContent(content) {
-    const extraInfoMap = { hierarchyInfo: [] };
-    if (this.cardData && this.cardData.hierarchyInfo) {
-      extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
-    }
-    const req: ContentMarkerRequest = {
-      uid: this.appGlobalService.getCurrentUser().uid,
-      contentId: content.identifier,
-      data: JSON.stringify(content.contentData),
-      marker: MarkerType.PREVIEWED,
-      isMarked: true,
-      extraInfoMap: extraInfoMap
-    };
-    this.contentService.setContentMarker(req)
-      .then((resp) => {
-      }).catch((err) => {
-      });
-    const request: any = {};
-    request.streaming = true;
-    AppGlobalService.isPlayerLaunched = true;
-    (<any>window).geniecanvas.play(content, JSON.stringify(request));
-  }
-
   editProfile(): void {
     const req: Profile = {
       board: this.profile.board,
@@ -397,9 +327,6 @@ export class QrCodeResultPage {
       createdAt: this.profile.createdAt,
       syllabus: this.profile.syllabus
     };
-    // Shorthand for above code
-    // req = (({board, grade, medium, subject, uid, handle, profileType, source, createdAt, syllabus}) =>
-    // ({board, grade, medium, subject, uid, handle, profileType, source, createdAt, syllabus}))(this.profile);
     if (this.profile.grade && this.profile.grade.length > 0) {
       this.profile.grade.forEach(gradeCode => {
         for (let i = 0; i < this.gradeList.length; i++) {
@@ -414,16 +341,66 @@ export class QrCodeResultPage {
 
     this.profileService.updateProfile(req).toPromise()
       .then((res: any) => {
-        const updateProfileRes = JSON.parse(res);
-        if (updateProfileRes.syllabus && updateProfileRes.syllabus.length && updateProfileRes.board && updateProfileRes.board.length
-          && updateProfileRes.grade && updateProfileRes.grade.length && updateProfileRes.medium && updateProfileRes.medium.length) {
+        if (res.syllabus && res.syllabus.length && res.board && res.board.length
+          && res.grade && res.grade.length && res.medium && res.medium.length) {
           this.events.publish(AppGlobalService.USER_INFO_UPDATED);
           this.events.publish('refresh:profile');
         }
-        this.appGlobalService.guestUserProfile = JSON.parse(res);
+        this.appGlobalService.guestUserProfile = res;
       })
       .catch(() => {
       });
+  }
+
+  /** funtion add elipses to the texts**/
+
+  addElipsesInLongText(msg: string) {
+    if (this.commonUtilService.translateMessage(msg).length >= 12) {
+      return this.commonUtilService.translateMessage(msg).slice(0, 8) + '....';
+    } else {
+      return this.commonUtilService.translateMessage(msg);
+    }
+  }
+
+  /**
+   * To set content details in local variable
+   * @param {string} identifier identifier of content / course
+   */
+  setContentDetails(identifier, refreshContentDetails: boolean | true) {
+    const option = {
+      contentId: identifier,
+      refreshContentDetails: refreshContentDetails,
+      attachFeedback: true,
+      attachContentAccess: true
+    };
+    this.newContentService.getContentDetails(option).toPromise()
+      .then((data: any) => {
+      })
+      .catch((error: any) => {
+      });
+  }
+
+  private showAllChild(content: Content) {
+    this.zone.run(() => {
+      if (content.children === undefined) {
+        if (content.mimeType !== MimeType.COLLECTION) {
+          this.results.push(content);
+
+          const path = [];
+          this.parents.forEach(ele => {
+            path.push(ele);
+          });
+          path.splice(-1, 1);
+          this.paths.push(path);
+        }
+        return;
+      }
+      content.children.forEach(child => {
+        this.parents.push(child);
+        this.showAllChild(child);
+        this.parents.splice(-1, 1);
+      });
+    });
   }
 
   setGrade(reset, grades) {
@@ -640,22 +617,25 @@ export class QrCodeResultPage {
     });
   }
 
-  /**
-   * To set content details in local variable
-   * @param {string} identifier identifier of content / course
-   */
-  setContentDetails(identifier, refreshContentDetails: boolean | true) {
-    const option = {
-      contentId: identifier,
-      refreshContentDetails: refreshContentDetails,
-      attachFeedback: true,
-      attachContentAccess: true
-    };
-    this.contentService.getContentDetail(option)
-      .then((data: any) => {
-      })
-      .catch((error: any) => {
+  private findContentNode(data: any) {
+    if (data && data.identifier === this.searchIdentifier) {
+      this.showAllChild(data);
+      return true;
+    }
+
+    if (data && data.children !== undefined) {
+      data.children.forEach(child => {
+        this.parents.push(child);
+        const isFound = this.findContentNode(child);
+
+        if (isFound === true) {
+          return true;
+        }
+        this.parents.splice(-1, 1);
       });
+    }
+
+    return false;
   }
 
   /**
