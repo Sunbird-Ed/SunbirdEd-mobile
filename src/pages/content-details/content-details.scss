@@ -13,6 +13,12 @@ page-content-details {
     
     .scroll-content { 
         margin-bottom: 0px !important;
-    }
+    } 
+}
+.sb-dt-content.sb-dt-content-main
+{
+    display: grid;
+    grid-gap: 8px;
+    grid-template-columns: auto;
 }
 
