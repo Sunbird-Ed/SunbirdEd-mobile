@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import {
   BuildParamService,
   ContainerService,
@@ -32,7 +33,10 @@ import {AuthService,
         InteractSubtype,
         InteractType,
         PageId,
-      } from "sunbird-sdk";
+        TelemetryService,
+        TelemetryAutoSyncUtil
+      } from 'sunbird-sdk';
+import { tap } from 'rxjs/operators';
 
 const KEY_SUNBIRD_SUPPORT_FILE_PATH = 'sunbird_support_file_path';
 
@@ -44,6 +48,8 @@ export class MyApp {
   @ViewChild(Nav) nav;
   rootPage: any;
   public counter = 0;
+  private telemetryAutoSyncUtil: TelemetryAutoSyncUtil;
+  
 
   readonly permissionList = [
     'android.permission.CAMERA',
@@ -54,6 +60,7 @@ export class MyApp {
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
     @Inject('AUTH_SERVICE') private authService: AuthService,
     private preferences: SharedPreferences,
     private platform: Platform,
@@ -75,12 +82,14 @@ export class MyApp {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private buildParamService: BuildParamService,
     private popoverCtrl: PopoverController,
-    private tncUpdateHandlerService: TncUpdateHandlerService
+    private tncUpdateHandlerService: TncUpdateHandlerService,
   ) {
+    this.telemetryAutoSyncUtil =  new TelemetryAutoSyncUtil(this.telemetryService);
     platform.ready().then(async () => {
       this.imageLoaderConfig.enableDebugMode();
       this.imageLoaderConfig.setMaximumCacheSize(100 * 1024 * 1024);
 
+      this.autoSyncTelemetry();
       this.subscribeEvents();
 
       await this.registerDeeplinks();
@@ -97,7 +106,9 @@ export class MyApp {
       window['thisRef'] = this;
       statusBar.styleDefault();
       this.handleBackButton();
+
     });
+
   }
 
   private static getPageIdForPageName(pageName: string): string {
@@ -446,6 +457,17 @@ export class MyApp {
           }, 5000);
         }
       });
+  }
+
+  private autoSyncTelemetry() {
+    this.telemetryAutoSyncUtil.start(30 * 100)
+      .mergeMap(() => {
+        return Observable.combineLatest(
+          this.platform.pause.pipe( tap(() => this.telemetryAutoSyncUtil.pause()) ),
+          this.platform.resume.pipe( tap(() => this.telemetryAutoSyncUtil.continue()) )
+        );
+      })
+      .subscribe();
   }
 
   // updateCallback(error) {
