@@ -1,11 +1,14 @@
 <ion-header>
   <ion-navbar>
     <ion-input type="search" #searchInput dir="{{commonUtilService.getAppDirection()}}" placeholder="Search"
-      [(ngModel)]="searchKeywords" (keyup.enter)="handleSearch()" clearInput></ion-input>
+      [(ngModel)]="searchKeywords" (keyup.enter)="handleSearch()"></ion-input>
     <ion-buttons end>
       <button ion-button (click)="showFilter()" *ngIf="filterIcon">
-        <img [src]="filterIcon" class="tool-icon" float-end />
+        <ion-icon name="options" float-end class="search-bar-icons"></ion-icon>
       </button>
+      <button ion-button icon-only (click)="handleSearch()">
+				<ion-icon name="search" class="search-bar-icons"></ion-icon>
+			</button>
     </ion-buttons>
   </ion-navbar>
 </ion-header>
@@ -87,8 +90,8 @@
       <div class="sb-view-all-container">
           <div class="sb-view-all-items sb-search-items">
             <div class="sb-card-result sb-card-details">
-                <div class="sb-card-result-content"> Showing Results for {{searchKeywords}}</div>
-                <div class="sb-card-res-count">{{searchContentResult.length}} Results</div>
+                <div class="sb-card-result-content"> {{'SHOW_RESULTS'|translate: {'%s': searchKeywords} }}</div>
+                <div class="sb-card-res-count">{{searchContentResult.length}} {{'RESULTS'|translate}}</div>
             </div>
           </div>
         </div>
