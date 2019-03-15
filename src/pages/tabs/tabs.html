@@ -5,6 +5,7 @@
   Ionic pages and navigation.
 -->
 <ion-tabs (ionChange)="ionChange($event)" #myTabs>
-  <ion-tab *ngFor="let tab of tabs" [root]="tab.root" tabTitle="{{tab.label | translate}}" [tabIcon]="tab.icon" [tabsHideOnSubPages]="tab.tabsHideOnSubPages" [ngClass] ="{'sb-scan-tab': tabs.icon === qr-scanner, 'sb-tab': tabs.icon !== qr-scanner  }"></ion-tab>
+  <ion-tab *ngFor="let tab of tabs" [ngClass]="{'disabled': tab.disabled}" [root]="tab.root"
+    tabTitle="{{tab.label | translate}}" [tabIcon]="tab.icon" [tabsHideOnSubPages]="tab.tabsHideOnSubPages" [enabled]="!tab.disabled" (ionSelect)="customClick(tab)"></ion-tab>
   <div class="shadow"></div>
 </ion-tabs>
