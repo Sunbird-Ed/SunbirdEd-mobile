@@ -23,7 +23,8 @@ import {
 } from 'sunbird';
 import {
   NavController,
-  Events
+  Events,
+  ToastController
 } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
@@ -150,6 +151,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   currentMedium: string;
   defaultImg: string;
   refresh: boolean;
+  toast: any;
   constructor(
     public navCtrl: NavController,
     private ngZone: NgZone,
@@ -163,7 +165,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     private commonUtilService: CommonUtilService,
     private frameworkService: FrameworkService,
     private translate: TranslateService,
-    private network: Network
+    private network: Network,
+    public toastController: ToastController
   ) {
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {
@@ -234,6 +237,26 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 	 */
   ngOnInit() {
     this.getCurrentUser();
+    this.commonUtilService.subject.subscribe((res) => {
+      if  (!res) {
+        this.presentToastWithOptions();
+      } else {
+        if (this.toast) {
+        this.toast.dismiss();
+      }
+      }
+    });
+  }
+
+  async presentToastWithOptions() {
+    this.toast = await this.toastController.create({
+      message: 'You are offline',
+      showCloseButton: true,
+      position: 'top',
+      closeButtonText: '',
+      cssClass: 'toastAfterHeader'
+    });
+   this.toast.present();
   }
 
   generateNetworkType() {
@@ -253,6 +276,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   ionViewWillLeave(): void {
     this.events.unsubscribe('genie.event');
+    this.commonUtilService.subject.unsubscribe();
   }
 
   /**
@@ -854,6 +878,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.swipeDownToRefresh();
     }
   }
+
 
   showDisabled(resource) {
     return !resource.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable;

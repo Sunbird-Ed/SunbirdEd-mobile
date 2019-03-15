@@ -36,4 +36,12 @@ ion-spinner {
   .main-container{
    background: #FFF
   }
+  .offline-header{
+    color: $gray-300;
+  }
+  .offline-content{
+    color:$gray-300 !important;
+    width:65%; 
+    margin: auto;
+  }
 }

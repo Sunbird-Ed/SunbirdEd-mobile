@@ -22,6 +22,7 @@ import { appLanguages } from './../app/app.constant';
 import { QRScannerAlert } from './../pages/qrscanner/qrscanner_alert';
 
 import { TelemetryGeneratorService } from '../service/telemetry-generator.service';
+import { Subject } from 'rxjs';
 export interface NetworkInfo {
     isNetworkAvailable: boolean;
 }
@@ -30,6 +31,7 @@ export class CommonUtilService implements OnDestroy {
     networkInfo: NetworkInfo = {
         isNetworkAvailable: false
     };
+    subject = new Subject<boolean>();
     connectSubscription: any;
     disconnectSubscription: any;
     private alert?: Alert;
@@ -192,15 +194,21 @@ export class CommonUtilService implements OnDestroy {
         };
 
         if (this.network.type === 'none') {
+            console.log('onNetworkType none');
             updateNetworkAvailabilityStatus(false);
         } else {
+            console.log('onNetworkType available');
             updateNetworkAvailabilityStatus(true);
         }
 
         this.connectSubscription = this.network.onDisconnect().subscribe(() => {
+            console.log('onDisconnect subscribe');
+            this.subject.next(false);
             updateNetworkAvailabilityStatus(false);
         });
         this.disconnectSubscription = this.network.onConnect().subscribe(() => {
+            console.log('onConnect subscribe');
+            this.subject.next(true);
             updateNetworkAvailabilityStatus(true);
         });
 
