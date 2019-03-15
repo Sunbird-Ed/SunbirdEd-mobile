@@ -109,6 +109,7 @@
   "DISTRICT_OPTION_TEXT": "Select district",
   "DONE": "Done",
   "DOWNLOAD": "Download",
+  "DOWNLOAD_BNAV": "DOWNLOADS",
   "DOWNLOADING": "DOWNLOADING {{%s}} %",
   "DOWNLOADING_1": "Downloading {{%s}}",
   "DOWNLOADING_2": "Downloading",

@@ -1,7 +1,7 @@
 
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, ComponentFactoryResolver } from '@angular/core';
 import { ContainerService } from '../../service/container-service';
-import { Tabs, Tab, Events } from 'ionic-angular';
+import { Tabs, Tab, Events, ToastController } from 'ionic-angular';
 import { NavParams } from 'ionic-angular';
 // import { ResourcesPage } from '../resources/resources';
 // import {ResourcesPageModule} from '@app/pages/resources/resources.module';
@@ -16,7 +16,8 @@ export class TabsPage {
 
   tabs = [];
 
-  constructor(private container: ContainerService, private navParams: NavParams, private events: Events) {
+  constructor(private container: ContainerService, private navParams: NavParams, private events: Events,
+    public toastCtrl: ToastController) {
   }
 
   ionViewWillEnter() {
@@ -39,5 +40,30 @@ export class TabsPage {
     console.log('TabTitle', tab.tabTitle);
     this.events.publish('tab.change', tab.tabTitle);
 
+  }
+
+  public customClick(tab) {
+    if (tab.disabled && tab.availableLater) {
+      const toast = this.toastCtrl.create({
+        message: 'Will be available in later release',
+        duration: 3000,
+        position: 'middle',
+        cssClass: 'sb-toast available-later',
+        dismissOnPageChange: true,
+        showCloseButton: false
+      });
+      toast.present();
+    }
+    if (tab.disabled && !tab.availableLater) {
+      const toast = this.toastCtrl.create({
+        message: 'Available for teachers only',
+        duration: 3000,
+        position: 'middle',
+        cssClass: 'sb-toast available-later',
+        dismissOnPageChange: true,
+        showCloseButton: false
+      });
+      toast.present();
+    }
   }
 }

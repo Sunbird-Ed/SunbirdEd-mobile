@@ -152,6 +152,10 @@ h6 {
       background-position: center center;
       background-repeat: no-repeat;
     }
+    .tab-button-icon[ng-reflect-name=downloads],
+    .tab-button-icon[aria-label=downloads] {
+      background-image: url(../assets/imgs/ic_scanqr_white.png);
+    }
   }
   a[aria-selected=true] {
     //führ eventuellen text
@@ -185,14 +189,19 @@ h6 {
       background-position: center center;
       background-repeat: no-repeat;
     }
+    .tab-button-icon[ng-reflect-name=downloads],
+    .tab-button-icon[aria-label=downloads] {
+      background-image: url(../assets/imgs/ic_scanqr_white.png);
+    }
   }
 }
+
 
 .tabs-md {
   a[aria-selected=false] {
     .tab-button-icon[ng-reflect-name=courses],
     .tab-button-icon[aria-label=courses] {
-      background-image: url(../assets/imgs/ic_courses.png);
+      background-image: url(../assets/imgs/ic_courses1.png);
     }
     .tab-button-icon[ng-reflect-name=home],
     .tab-button-icon[aria-label=home] {
@@ -200,7 +209,7 @@ h6 {
     }
     .tab-button-icon[ng-reflect-name=resources],
     .tab-button-icon[aria-label=resources] {
-      background-image: url(../assets/imgs/ic_notebook.png);
+      background-image: url(../assets/imgs/ic_library.png);
     }
     .tab-button-icon[ng-reflect-name=groups],
     .tab-button-icon[aria-label=groups] {
@@ -208,14 +217,33 @@ h6 {
     }
     .tab-button-icon[ng-reflect-name=profile],
     .tab-button-icon[aria-label=profile] {
-      background-image: url(../assets/imgs/ic_profile.png);
+      background-image: url(../assets/imgs/ic_profile1.png);
     }
     .tab-button-icon[ng-reflect-name=qr-scanner],
     .tab-button-icon[aria-label=qr-scanner] {
       background-image: url(../assets/imgs/ic_scanqr_white.png);
-      background-size: 25px;
+      background-size: 30px;
       background-position: center center;
       background-repeat: no-repeat;
+    }
+    .tab-button-icon[ng-reflect-name=downloads],
+    .tab-button-icon[aria-label=downloads] {
+      background-image: url(../assets/imgs/ic_download.png);
+    }
+    &.tab-disabled{
+      pointer-events: all; 
+      .tab-button-icon[ng-reflect-name=courses],
+      .tab-button-icon[aria-label=courses] {
+        background-image: url(../assets/imgs/ic_courses_disabled.png);
+      }
+      .tab-button-icon[ng-reflect-name=resources],
+      .tab-button-icon[aria-label=resources] {
+        background-image: url(../assets/imgs/ic_library_disabled.png);
+      }
+      .tab-button-icon[ng-reflect-name=downloads],
+      .tab-button-icon[aria-label=downloads] {
+        background-image: url(../assets/imgs/ic_download_disabled.png);
+      }
     }
   }
   a[aria-selected=true] {
@@ -225,7 +253,7 @@ h6 {
     //}
     .tab-button-icon[ng-reflect-name=courses],
     .tab-button-icon[aria-label=courses] {
-      background-image: url(../assets/imgs/ic_courses_blue.png);
+      background-image: url(../assets/imgs/ic_courses_selected.png);
     }
     .tab-button-icon[ng-reflect-name=home],
     .tab-button-icon[aria-label=home] {
@@ -233,7 +261,7 @@ h6 {
     }
     .tab-button-icon[ng-reflect-name=resources],
     .tab-button-icon[aria-label=resources] {
-      background-image: url(../assets/imgs/ic_notebook_blue.png);
+      background-image: url(../assets/imgs/ic_library_selected.png);
     }
     .tab-button-icon[ng-reflect-name=groups],
     .tab-button-icon[aria-label=groups] {
@@ -241,17 +269,29 @@ h6 {
     }
     .tab-button-icon[ng-reflect-name=profile],
     .tab-button-icon[aria-label=profile] {
-      background-image: url(../assets/imgs/ic_profile_blue.png);
+      background-image: url(../assets/imgs/ic_profile_selected.png);
     }
     .tab-button-icon[ng-reflect-name=qr-scanner],
     .tab-button-icon[aria-label=qr-scanner] {
       background-image: url(../assets/imgs/ic_scanqr_white.png);
-      background-size: 25px;
+      background-size: 30px;
       background-position: center center;
       background-repeat: no-repeat;
     }
+    .tab-button-icon[ng-reflect-name=downloads],
+    .tab-button-icon[aria-label=downloads] {
+      background-image: url(../assets/imgs/ic_download_selected.png);
+    }
   }
+  .tab-button[aria-selected=true] {
+    color: $primary-color;
+  }
+  
 }
+
+.tabs-md[tabsLayout=icon-top] .has-icon .tab-button-text {
+  margin-top: 4px !important;
+};
 
 .tabs-wp {
   a[aria-selected=false] {
@@ -278,9 +318,13 @@ h6 {
     .tab-button-icon[ng-reflect-name=qr-scanner],
     .tab-button-icon[aria-label=qr-scanner] {
       background-image: url(../assets/imgs/ic_scanqr_white.png);
-      background-size: 25px;
+      background-size: 30px;
       background-position: center center;
       background-repeat: no-repeat;
+    }
+    .tab-button-icon[ng-reflect-name=downloads],
+    .tab-button-icon[aria-label=downloads] {
+      background-image: url(../assets/imgs/ic_scanqr_white.png);
     }
   }
   a[aria-selected=true] {
@@ -311,9 +355,13 @@ h6 {
     .tab-button-icon[ng-reflect-name=qr-scanner],
     .tab-button-icon[aria-label=qr-scanner] {
       background-image: url(../assets/imgs/ic_scanqr_white.png);
-      background-size: 25px;
+      background-size: 30px;
       background-position: center center;
       background-repeat: no-repeat;
+    }
+    .tab-button-icon[ng-reflect-name=downloads],
+    .tab-button-icon[aria-label=downloads] {
+      background-image: url(../assets/imgs/ic_scanqr_white.png);
     }
   }
 }
