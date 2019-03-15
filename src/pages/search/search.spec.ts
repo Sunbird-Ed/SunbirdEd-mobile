@@ -142,9 +142,8 @@ describe.only('SearchPage', () => {
         setTimeout(() => {
             expect(commonUtilServiceMock.getTranslatedValue).toHaveBeenCalled();
             expect(navCtrlMock.push).toHaveBeenCalledWith(FilterPage,
-                { filterCriteria: mockRes.dialCodesearchResultResponse2.result.filterCriteria });
-            expect(navCtrlMock.push).toHaveBeenCalled();
-            done();
+                {  filterCriteria: mockRes.dialCodesearchResultResponse2.result.filterCriteria });
+             done();
         }, 0);
     });
     it('should cancel the download cancelDownload()', (done) => {

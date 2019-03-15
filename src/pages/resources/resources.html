@@ -1,14 +1,14 @@
 <ion-header style="z-index: 300 !important">
 	<ion-navbar>
-		<ion-title class = "ML4">
+		<ion-title>
 			{{ 'LIBRARY_LW' | translate}}
 		</ion-title>
 		<ion-buttons end>
-			<button ion-button icon-only (click)="scanQRCode()" id="qrIcon" class="qrIcon">
+			<button ion-button icon-only (click)="scanQRCode()" id="qrIcon">
 				<img src="assets/imgs/ic_scanqr.png" class="tool-icon" float-end />
 			</button>
-			<button ion-button icon-only (click)="search()" class="MR16 ML16 searchIcon" style="margin-top:10px !important">
-					<ion-icon class="tool-icon" float-end name="search"></ion-icon>
+			<button ion-button icon-only (click)="search()">
+				<img src="assets/imgs/ic_action_search.png" class="tool-icon" float-end/>
 			</button>
 		
 		</ion-buttons>
@@ -18,19 +18,24 @@
 	</div>
 </ion-header>
 
-<ion-content overflow-scroll="true" class="course-scroll-holder1" style="background: #EBEBEB;">
+<ion-content style="background: #EBEBEB;">
+	<div ion-fixed style="width: 100%;">
+		<div class="horizontal-scroll  PLR15px bg-white">
+			<a class="medium-pill MR24" *ngFor="let medium of categoryMediums; let i = index;" [ngClass]="{'active': medium?.selected}" [@appear] (click)="mediumClick(medium?.name)">{{medium?.name}}&nbsp;{{'MEDIUM' | translate }}</a>
+		</div>
+	
+		<div class="horizontal-scroll  class-filter-cotainer class-shadow" id="gradeScroll" [@ScrollHorizontal]="{value: currentGrade?.selected, params: {left_indent: current_index * 72}}">
+			<a class="class-pill " *ngFor="let grade of categoryGradeLevels; let i = index; let first = first" 
+			[ngClass]="{'active': grade?.selected, '': !grade?.selected}" attr.id="class{{i}}" (click)="classClick(i);">
+				{{grade?.name}} 
+			</a>
+		</div>
+	</div>
+	<div style="margin-top:100px">
 	<ion-refresher (ionRefresh)="swipeDownToRefresh($event)"></ion-refresher>
-	<div class="horizontal-scroll  PLR15px bg-white">
-		<a class="medium-pill MR24" *ngFor="let medium of categoryMediums; let i = index;" [ngClass]="{'active': medium?.selected}" [@appear] (click)="mediumClick(medium?.name)">{{medium?.name}} Medium</a>
+	<div style="margin: 40px; padding-top: 20px" *ngIf ="refresh">
+		<ion-spinner icon="spiral"></ion-spinner>
 	</div>
-
-	<div class="horizontal-scroll  class-filter-cotainer class-shadow" id="gradeScroll" [@ScrollHorizontal]="{value: currentGrade?.selected, params: {left_indent: current_index * 72}}">
-		<a class="class-pill " *ngFor="let grade of categoryGradeLevels; let i = index; let first = first" 
-		[ngClass]="{'active': grade?.selected, '': !grade?.selected}" attr.id="class{{i}}" (click)="classClick(i);" [@appear]="{value: grade?.selected, params: {left_indent: i * 72}}">
-			{{grade?.name}} 
-		</a>
-	</div>
-
 	<div class="course-scroll-holder" [ngClass]="{'empty-saved-resources' : (localResources && localResources.length === 0 || showLoader)}"
 	 *ngIf="localResources && localResources.length">
 		<div class="item PL10 PR10">
@@ -76,7 +81,6 @@
 		</ion-scroll>
 	</div>
 	<div class="devider-line"></div>
-	
 	<div *ngFor="let items of storyAndWorksheets">
 	<section *ngIf="items?.contents">
 		<div class="section-solid P15">
@@ -111,7 +115,7 @@
 	  </section>
 	</div>
 
-	<div *ngIf="pageApiLoader && storyAndWorksheets && storyAndWorksheets.length === 0">
+	<div *ngIf="searchApiLoader && storyAndWorksheets && storyAndWorksheets.length === 0">
 		<div class="course-scroll-holder" style="height: 500px;">
 			<ion-spinner padding style="padding-top: 110px;"></ion-spinner>
 		</div>
@@ -129,4 +133,5 @@
 	<div *ngIf="showSignInCard" class="signin-card-bg">
 		<sign-in-card (valueChange)="showOfflineNetworkWarning($event)" [source]="source"></sign-in-card>
 	</div>
+</div>
 </ion-content>

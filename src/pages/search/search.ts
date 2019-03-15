@@ -264,11 +264,13 @@ export class SearchPage {
       if (this.isDialCodeSearch && !isRootContent) {
         params.isCreateNavigationStack = true;
 
+        this.navCtrl.push(QrCodeResultPage, params);
         if (this.isSingleContent) {
           this.isSingleContent = false;
-          this.navCtrl.pop();
+          const view = this.navCtrl.getActive();
+          this.navCtrl.removeView(view);
         }
-        this.navCtrl.push(QrCodeResultPage, params);
+
       } else {
         // this.navCtrl.push(CollectionDetailsPage, params);
         this.navCtrl.push(CollectionDetailsEtbPage, params);
@@ -876,7 +878,8 @@ export class SearchPage {
         this.audienceFilter = AudienceFilter.GUEST_TEACHER;
       }
 
-      this.profile = this.appGlobalService.getCurrentUser();
+      // TODO : revisit for refactoring
+      this.profile = undefined;
     } else {
       this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
       this.profile = undefined;

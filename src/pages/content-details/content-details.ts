@@ -117,6 +117,7 @@ export class ContentDetailsPage {
   unregisterBackButton: any;
   userCount = 0;
   shouldGenerateTelemetry = true;
+  playOnlineSpinner: boolean;
   @ViewChild(Navbar) navBar: Navbar;
   showMessage: any;
   isUsrGrpAlrtOpen: Boolean = false;
@@ -186,6 +187,7 @@ export class ContentDetailsPage {
     this.source = this.navParams.get('source');
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.downloadAndPlay = this.navParams.get('downloadAndPlay');
+    this.playOnlineSpinner = true;
 
     if (this.isResumedCourse) {
       if (this.isUsrGrpAlrtOpen) {
@@ -428,7 +430,9 @@ export class ContentDetailsPage {
   extractApiResponse(data: Content) {
     this.content = data;
     this.contentDownloadable[this.content.identifier] = data.isAvailableLocally;
-
+    if (this.content.lastUpdatedTime !== '0') {
+      this.playOnlineSpinner = false;
+    }
     this.content.contentAccess = data.contentAccess ? data.contentAccess : [];
     this.content.contentMarker = data.contentMarker ? data.contentMarker : [];
 
@@ -719,8 +723,13 @@ export class ContentDetailsPage {
         if (res.data && res.type === 'streamingUrlAvailable') {
           console.log('res.data', res.data);
           this.zone.run(() => {
-            if (res.data.identifier === this.identifier) {
               this.content.contentData.streamingUrl = res.data.streamingUrl;
+              if (res.data.identifier === this.identifier) {
+                if (res.data.streamingUrl) {
+                  // this.playContent.contentData.streamingUrl = res.data.streamingUrl;
+                } else {
+                  this.playOnlineSpinner = false;
+                }
             }
           });
         }
@@ -954,6 +963,7 @@ export class ContentDetailsPage {
           this.contentDownloadable[this.content.identifier] = false;
           const playContent = this.playingContent;
           playContent.isAvailableLocally = false;
+          this.content.streamingUrl = this.streamingUrl;
         }
       });
     });

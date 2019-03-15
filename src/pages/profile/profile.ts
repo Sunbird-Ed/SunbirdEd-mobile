@@ -61,7 +61,7 @@ export class ProfilePage {
   isLoggedInUser = false;
   isRefreshProfile = false;
   loggedInUserId = '';
-
+  refresh: boolean;
   profileName: string;
   onProfile = true;
   trainingsCompleted = [];
@@ -151,22 +151,30 @@ export class ProfilePage {
   doRefresh(refresher?) {
     const loader = this.getLoader();
     this.isRefreshProfile = true;
+    if (!refresher) {
     loader.present();
-    this.refreshProfileData()
+    } else {
+       refresher.complete();
+       this.refresh = true;
+    }
+    return this.refreshProfileData()
       .then(() => {
-        setTimeout(() => {
-          if (refresher) {
-            refresher.complete();
-          }
-          this.events.publish('refresh:profile');
-          loader.dismiss();
-        }, 500);
-        // This method is used to handle trainings completed by user
-        this.getEnrolledCourses();
-        this.searchContent();
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            this.events.publish('refresh:profile');
+            this.refresh = false;
+            loader.dismiss();
+            resolve();
+          }, 500);
+          // This method is used to handle trainings completed by user
+
+          this.getEnrolledCourses();
+          this.searchContent();
+        });
       })
       .catch(error => {
         console.error('Error while Fetching Data', error);
+        this.refresh = false;
         loader.dismiss();
       });
   }
@@ -401,7 +409,7 @@ export class ProfilePage {
         const enrolledCourses = res;
         console.log('course is ', res);
         for (let i = 0, len = enrolledCourses.length; i < len; i++) {
-          if ((enrolledCourses[i].status === 2) || (enrolledCourses[i].leafNodesCount === enrolledCourses[i].progress)) {
+          if (enrolledCourses[i].status === 2) {
             this.trainingsCompleted.push(enrolledCourses[i]);
           }
         }
@@ -526,10 +534,13 @@ export class ProfilePage {
       });
   }
 
-  editMobileNumber() {
+  editMobileNumber(event) {
+    const newTitle = this.profile.phone ?
+                     this.commonUtilService.translateMessage('EDIT_PHONE_POPUP_TITLE') :
+                     this.commonUtilService.translateMessage('ENTER_PHONE_POPUP_TITLE');
     const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
       phone: this.profile.phone,
-      title: this.commonUtilService.translateMessage('EDIT_PHONE_POPUP_TITLE'),
+      title: newTitle,
       description: '',
       type: 'phone',
       userId: this.profile.userId
@@ -546,10 +557,13 @@ export class ProfilePage {
     });
   }
 
-  editEmail() {
+  editEmail(event) {
+    const newTitle = this.profile.email ?
+                     this.commonUtilService.translateMessage('EDIT_EMAIL_POPUP_TITLE') :
+                     this.commonUtilService.translateMessage('EMAIL_PLACEHOLDER');
     const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
       email: this.profile.email,
-      title: this.commonUtilService.translateMessage('EDIT_EMAIL_POPUP_TITLE'),
+      title: newTitle,
       description: '',
       type: 'email'
     }, {

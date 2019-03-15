@@ -24,23 +24,14 @@
 <ion-content padding>
 
   <!-- Testing with data from API -->
-  <section class="MT5 P0">
+  <section class="MT5 P0" *ngIf="contentDetail && contentDetail !== '' ">
     <div class="details-card MB5">
       <div class="content">
         <div class="left">
           <div class="item">
             <div class="flex">
-              <div (click)="rateContent()">
-                <span class="MR5 f14 font-weight-bold">{{ contentDetail?.me_totalRatings ?
-                  contentDetail?.me_totalRatings : 0 }}</span>
-                <span class="yellow-gold">
-                  <ion-icon ios="ios-star" md="md-star"></ion-icon>
-                </span>
-              </div>
               <div>
-                <div class="title"> {{(contentDetail?.name && contentDetail?.name?.length > 25) ? (contentDetail?.name
-                  |
-                  slice:0:25) + '...' : (contentDetail?.name)}}</div>
+                <div class="title">{{contentDetail?.name}}</div>
               </div>
               <div *ngIf="contentDetail?.creator || contentDetail?.owner">
                 <span class="light-black f12">by</span>
@@ -54,9 +45,15 @@
             </div>
           </div>
         </div>
-        <div class="right">
+        <div class="right W-88">
           <div class="img-container">
             <img src="{{ localImage || contentDetail?.appIcon || defaultAppIcon}}">
+          </div>
+          <div *ngIf="contentDetail?.me_totalRatings" class="rating" (click)="rateContent()">
+            <span class="MR5 f14 font-weight-bold">{{ contentDetail?.me_totalRatings }}</span>
+            <span class="yellow-gold">
+              <ion-icon ios="ios-star" md="md-star"></ion-icon>
+            </span>
           </div>
         </div>
       </div>
@@ -70,10 +67,7 @@
   <div *ngIf="showChildrenLoader">
     <ion-row style="padding-top: 30px;" padding>
       <ion-col text-center>
-        <p *ngIf="downloadProgress !== 100">{{ 'FETCHING_CONTENTS' | translate: {'%s': downloadProgress ?
-          downloadProgress : '0'} }}</p>
-        <p *ngIf="downloadProgress === 100">{{ 'LOADING_CONTENT' | translate }}</p>
-        <ion-spinner padding></ion-spinner>
+        <p>{{ 'LOADING_CONTENT' | translate }}...</p>
       </ion-col>
     </ion-row>
   </div>
@@ -120,89 +114,11 @@
               </span></div>
         </div>
       </ion-grid>
-      <div class="hidden-content" *ngIf="isGroupShown(i) && (item?.children && item?.children?.length)">
-          <!-- Looping Inside First Children data of the Textbook -->
-          <div *ngFor="let firstChildren of item?.children; let j = index;">
-              <div class="separator-line"></div>
-            <div class="P10 MT5" *ngIf="firstChildren?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && firstChildren?.children">{{firstChildren?.contentData?.name}}
-            </div>
-            <ion-row *ngIf="firstChildren?.contentData?.mimeType !== 'application/vnd.ekstep.content-collection'"
-              (click)="navigateToDetailsPage(firstChildren, depth + '.' + (i + 1))">
-              <ion-col col-1>
-                <div>
-                  <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle" class="play-icon"></ion-icon>
-                </div>
-              </ion-col>
-              <ion-col col-11>
-                <div [ngClass]="{'text-selected':firstChildren?.isAvailableLocally,'text-unselected':!firstChildren?.isAvailableLocally}">{{firstChildren?.contentData?.name}}
-                  <span>
-                    <ion-icon class="checkmark-icon" name="checkmark-circle-outline" *ngIf="firstChildren?.isAvailableLocally"></ion-icon>
-                  </span></div>
-              </ion-col>
-            </ion-row>
-            <!-- <ion-row *ngIf="firstChildren?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !firstChildren?.children"> -->
-              <div class="font-grey-text P10" *ngIf="firstChildren?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !firstChildren?.children">{{firstChildren?.contentData?.name}} 
-                <span class="grey-icon-span">
-                  <ion-icon ios="ios-alert" md="md-alert" class="grey-icon ML5"></ion-icon>
-                </span></div>
-            <!-- </ion-row> -->
-            <!-- Looping Inside Second Children data of the Textbook -->
-            <div class="secondChildren" *ngIf="firstChildren?.children">
-              <div *ngFor="let secondChildren of firstChildren?.children">
-                <div class="separator-line"></div>
-                <div class="P10 MT5" *ngIf="secondChildren?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && firstChildren?.children">{{secondChildren?.contentData?.name}}
-                </div>
-                <ion-row *ngIf="secondChildren?.contentData?.mimeType !== 'application/vnd.ekstep.content-collection'"
-                  (click)="navigateToDetailsPage(secondChildren, depth + '.' + (i + 1))">
-                  <ion-col col-1>
-                    <div>
-                      <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle" class="play-icon"></ion-icon>
-                    </div>
-                  </ion-col>
-                  <ion-col col-11>
-                    <div [ngClass]="{'text-selected':secondChildren?.isAvailableLocally,'text-unselected':!secondChildren?.isAvailableLocally}">{{secondChildren?.contentData?.name}}
-                      <span>
-                        <ion-icon class="checkmark-icon" name="checkmark-circle-outline" *ngIf="secondChildren?.isAvailableLocally"></ion-icon>
-                      </span></div>
-                  </ion-col>
-                </ion-row>
-                <!-- <ion-row *ngIf="secondChildren?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !firstChildren?.children"> -->
-                  <div class="font-grey-text P10" *ngIf="secondChildren?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !firstChildren?.children">{{secondChildren?.contentData?.name}} 
-                    <span class="grey-icon-span">
-                      <ion-icon ios="ios-alert" md="md-alert" class="grey-icon ML5"></ion-icon>
-                    </span></div>
-                <!-- </ion-row> -->
-                <!-- Looping Inside Second Children data of the Textbook -->
-              <div class="thirdChildren" *ngIf="secondChildren?.children">
-                  <div *ngFor="let thirdChildren of secondChildren?.children">
-                    <div class="separator-line"></div>
-                    <div class="P10 MT5" *ngIf="thirdChildren?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && secondChildren?.children">{{thirdChildren?.contentData?.name}}
-                    </div>
-                    <ion-row *ngIf="thirdChildren?.contentData?.mimeType !== 'application/vnd.ekstep.content-collection'"
-                      (click)="navigateToDetailsPage(thirdChildren, depth + '.' + (i + 1))">
-                      <ion-col col-1>
-                        <div>
-                          <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle" class="play-icon"></ion-icon>
-                        </div>
-                      </ion-col>
-                      <ion-col col-11>
-                        <div [ngClass]="{'text-selected':thirdChildren?.isAvailableLocally,'text-unselected':!thirdChildren?.isAvailableLocally}">{{thirdChildren?.contentData?.name}}
-                          <span>
-                            <ion-icon class="checkmark-icon" name="checkmark-circle-outline" *ngIf="thirdChildren?.isAvailableLocally"></ion-icon>
-                          </span></div>
-                      </ion-col>
-                    </ion-row>
-                    <!-- <ion-row *ngIf="thirdChildren?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !secondChildren?.children"> -->
-                      <div class="font-grey-text P10" *ngIf="thirdChildren?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !secondChildren?.children" >{{thirdChildren?.contentData?.name}}
-                         <span class="grey-icon-span">
-                          <ion-icon ios="ios-alert" md="md-alert" class="grey-icon ML5"></ion-icon>
-                        </span></div>
-                    <!-- </ion-row> -->
-                  </div>
-                 </div>  <!--End of the thirdChildren Loop -->
-              </div>   <!--//End of the secondChildren Loop -->
-            </div>   <!-- End of the firstChildren Loop -->
-        </div>  <!--hidden-content-->
+      <div class="hidden-content margin-10" *ngIf="isGroupShown(i) && (item?.children && item?.children?.length)">
+        <div *ngFor="let firstChildren of item?.children; let j = index;">
+          <!-- <div class="separator-line"></div> -->
+          <collection-child [childData]="firstChildren" [index]="j" [depth]="depth" [corRelationList]="corRelationList" [isDepthChild]="isDepthChild"></collection-child>
+        </div>
       </div>
     </ion-card>
   </section>

@@ -212,7 +212,6 @@ export class ProfileSettingsPage {
             this.syllabusList.push(value);
           });
           this.loader.dismiss();
-
           if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
             const frameworkDetailsRequest: FrameworkDetailsRequest = {
               frameworkId: this.profile.syllabus[0] ? this.profile.syllabus[0] : '',
@@ -222,12 +221,11 @@ export class ProfileSettingsPage {
               .then((framework: Framework) => {
                 this.categories = framework.categories;
                 this.resetForm(0, false);
-              }).catch(() => {
-              this.loader.dismiss();
-              this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
-            });
-          } else {
-            this.loader.dismiss();
+              }).catch(error => {
+                console.error('Error', error);
+                this.loader.dismiss();
+                this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
+              });
           }
         } else {
           this.loader.dismiss();
@@ -549,6 +547,4 @@ export class ProfileSettingsPage {
       PageId.ONBOARDING_PROFILE_PREFERENCES,
       Environment.ONBOARDING);
   }
-
-
 }

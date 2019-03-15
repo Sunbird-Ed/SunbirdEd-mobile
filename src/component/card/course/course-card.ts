@@ -106,7 +106,6 @@ export class CourseCard implements OnInit {
       telemetryObject,
       values);
     if (layoutName === this.layoutInProgress || content.contentType === ContentType.COURSE) {
-      this.saveContentContext(content);
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content
       });

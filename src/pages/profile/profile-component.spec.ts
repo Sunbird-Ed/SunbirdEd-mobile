@@ -108,9 +108,8 @@ describe('ProfilePage', () => {
         const refresher = {
             complete: jest.fn()
         };
-        refresher.complete();
         // act
-        profilePage.doRefresh('profile');
+        profilePage.doRefresh(refresher);
         // assert
         setTimeout(() => {
             expect(refresher.complete).toHaveBeenCalled();
@@ -126,7 +125,6 @@ describe('ProfilePage', () => {
         const refresher = {
             complete: jest.fn()
         };
-        profilePage.loader = loader;
         loadingControllerMock.create.mockReturnValue(loader);
         spyOn(profilePage, 'refreshProfileData').and.returnValue(Promise.reject('error'));
         refresher.complete();
@@ -462,6 +460,9 @@ describe('ProfilePage', () => {
             present: jest.fn(),
             onDidDismiss: jest.fn()
         };
+        profilePage.profile = {
+            phone: true
+        };
         popUpMock.present.mockImplementation(() => { });
         popoverCtrlMock.create.mockReturnValue(popUpMock);
         // act
@@ -471,11 +472,50 @@ describe('ProfilePage', () => {
         expect(popoverCtrlMock.create).toHaveBeenCalled();
         expect(popUpMock.present).toHaveBeenCalled();
     });
+    it('it should call the popup for edit the email', () => {
+        // arrange
+        const popUpMock = {
+            present: jest.fn(),
+            onDidDismiss: jest.fn()
+        };
+        profilePage.profile = {
+            email: true
+        };
+        popUpMock.present.mockImplementation(() => { });
+        popoverCtrlMock.create.mockReturnValue(popUpMock);
+        // act
+        profilePage.editEmail({});
+        // assert
+        expect(commonUtilServiceMock.translateMessage).toHaveBeenCalledWith('EDIT_EMAIL_POPUP_TITLE');
+        expect(popoverCtrlMock.create).toHaveBeenCalled();
+        expect(popUpMock.present).toHaveBeenCalled();
+    });
+    it('it should call the popup for enter the email', () => {
+        // arrange
+        const popUpMock = {
+            present: jest.fn(),
+            onDidDismiss: jest.fn()
+        };
+        profilePage.profile = {
+            email: false
+        };
+        popUpMock.present.mockImplementation(() => { });
+        popoverCtrlMock.create.mockReturnValue(popUpMock);
+        // act
+        profilePage.editEmail({});
+        // assert
+        expect(commonUtilServiceMock.translateMessage).toHaveBeenCalledWith('EMAIL_PLACEHOLDER');
+        expect(popoverCtrlMock.create).toHaveBeenCalled();
+        expect(popUpMock.present).toHaveBeenCalled();
+    });
     it('it should call the popup onDidDismiss for editMobileNumber', () => {
         // arrange
         const popUpMock = {
             present: jest.fn(),
             onDidDismiss: jest.fn()
+        };
+        profilePage.profile = {
+            phone: false
         };
         popUpMock.onDidDismiss.mockImplementation((edited, key) => {
             edited(true);
@@ -486,7 +526,7 @@ describe('ProfilePage', () => {
         // act
         profilePage.editMobileNumber({});
         // assert
-        expect(commonUtilServiceMock.translateMessage).toHaveBeenCalledWith('EDIT_PHONE_POPUP_TITLE');
+        expect(commonUtilServiceMock.translateMessage).toHaveBeenCalledWith('ENTER_PHONE_POPUP_TITLE');
         expect(popUpMock.onDidDismiss).toHaveBeenCalled();
         expect(popUpMock.present).toHaveBeenCalled();
     });
@@ -508,7 +548,7 @@ describe('ProfilePage', () => {
         // act
         profilePage.editEmail({});
         // assert
-        expect(commonUtilServiceMock.translateMessage).toHaveBeenCalledWith('EDIT_EMAIL_POPUP_TITLE');
+        expect(commonUtilServiceMock.translateMessage).toHaveBeenCalledWith('EMAIL_PLACEHOLDER');
         expect(popUpMock.onDidDismiss).toHaveBeenCalled();
         expect(popUpMock.present).toHaveBeenCalled();
     });

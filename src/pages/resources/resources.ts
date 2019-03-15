@@ -102,9 +102,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   showLoader = false;
 
   /**
-   * Flag to show latest and popular course loader
-   */
-  pageApiLoader = true;
+	 * Flag to show latest and popular course loader
+	 */
+  searchApiLoader = true;
   isOnBoardingCardCompleted = false;
   public source = PageId.LIBRARY;
   resourceFilter: any;
@@ -133,6 +133,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   defaultImg: string;
   isUpgradePopoverShown: boolean = false;
 
+  refresh: boolean;
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     public navCtrl: NavController,
@@ -218,8 +219,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
    * Angular life cycle hooks
    */
   ngOnInit() {
-    this.setSavedContent();
-    this.loadRecentlyViewedContent();
+    this.getCurrentUser();
   }
 
   generateNetworkType() {
@@ -245,17 +245,24 @@ export class ResourcesPage implements OnInit, AfterViewInit {
    * It will fetch the guest user profile details
    */
   getCurrentUser(): void {
+    this.guestUser = !this.appGlobalService.isUserLoggedIn();
     const profileType = this.appGlobalService.getGuestUserType();
     this.showSignInCard = false;
-    if (profileType === ProfileType.TEACHER) {
-      this.showSignInCard = this.appGlobalService.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER;
-      this.audienceFilter = AudienceFilter.GUEST_TEACHER;
-    } else if (profileType === ProfileType.STUDENT) {
-      this.showSignInCard = this.appGlobalService.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT;
-      this.audienceFilter = AudienceFilter.GUEST_STUDENT;
+
+    if (this.guestUser) {
+      if (profileType === ProfileType.TEACHER) {
+        this.showSignInCard = this.appGlobalService.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER;
+        this.audienceFilter = AudienceFilter.GUEST_TEACHER;
+      } else if (profileType === ProfileType.STUDENT) {
+        this.showSignInCard = this.appGlobalService.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT;
+        this.audienceFilter = AudienceFilter.GUEST_STUDENT;
+      }
+    } else {
+      this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
     }
-    this.setSavedContent();
+
     this.profile = this.appGlobalService.getCurrentUser();
+    this.setSavedContent();
     this.loadRecentlyViewedContent();
   }
 
@@ -329,11 +336,18 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .then(data => {
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
-          if (Boolean(value.isAvailableLocally) && value.basePath && value.contentData.appIcon) {
-            value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
-          } else if (!Boolean(value.isAvailableLocally)) {
-            value.contentData.appIcon = value.contentData.appIcon;
+          if (value.contentData.appIcon) {
+            if (value.contentData.appIcon.includes('http:') || value.contentData.appIcon.includes('https:')) {
+              if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+                value.contentData.appIcon = value.contentData.appIcon;
+              } else {
+                value.contentData.appIcon = this.defaultImg;
+              }
+            } else if (value.basePath) {
+              value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
+            }
           }
+
         });
         this.ngZone.run(() => {
           this.localResources = data;
@@ -364,10 +378,16 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .then(data => {
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
-          if (Boolean(value.isAvailableLocally) && value.basePath && value.contentData.appIcon) {
-            value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
-          } else if (!Boolean(value.isAvailableLocally)) {
-            value.contentData.appIcon = value.contentData.appIcon;
+          if (value.contentData.appIcon) {
+            if (value.contentData.appIcon.includes('http:') || value.contentData.appIcon.includes('https:')) {
+              if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+                value.contentData.appIcon = value.contentData.appIcon;
+              } else {
+                value.contentData.appIcon = this.defaultImg;
+              }
+            } else if (value.basePath) {
+              value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
+            }
           }
         });
         this.ngZone.run(() => {
@@ -387,7 +407,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
    */
   getPopularContent(isAfterLanguageChange = false, contentSearchCriteria?: ContentSearchCriteria) {
     // if (this.isOnBoardingCardCompleted || !this.guestUser) {
-    this.pageApiLoader = true;
+    this.storyAndWorksheets = [];
+    this.searchApiLoader = true;
     // this.noInternetConnection = false;
     const that = this;
 
@@ -435,9 +456,20 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.storyAndWorksheets = [];
     const loader = this.commonUtilService.getLoader();
     loader.present();
-    this.newContentService.searchContentGroupedByPageSection(this.getGroupByPageReq).toPromise()
+    if (!this.refresh) {
+      this.searchApiLoader = true;
+    } else {
+      this.searchApiLoader = false;
+    }
+    const reqvalues = new Map();
+    reqvalues['pageReq'] = this.getGroupByPageReq;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+        InteractSubtype.RESOURCE_PAGE_REQUEST,
+        Environment.HOME,
+        this.source, undefined,
+        reqvalues);
+        this.newContentService.searchContentGroupedByPageSection(this.getGroupByPageReq).toPromise()
       .then((response: any) => {
-        loader.dismiss();
         this.ngZone.run(() => {
           // TODO Temporary code - should be fixed at backend
           const sections = response.sections;
@@ -456,9 +488,25 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             newSections.push(element);
           });
           // END OF TEMPORARY CODE
+
           this.storyAndWorksheets = newSections;
+          const sectionInfo = {};
+          for (let i = 0; i < this.storyAndWorksheets.length; i++) {
+             const sectionName = this.storyAndWorksheets[i].name,
+                  count = this.storyAndWorksheets[i].contents.length;
+                  sectionInfo[sectionName] = count;
+          }
+
+          const resvalues = new Map();
+          resvalues['pageRes'] = sectionInfo;
+          this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+            InteractSubtype.RESOURCE_PAGE_LOADED,
+            Environment.HOME,
+            this.source, undefined,
+            resvalues);
           this.pageLoadedSuccess = true;
-          this.pageApiLoader = false;
+          this.refresh = false;
+          this.searchApiLoader = false;
           // this.noInternetConnection = false;
           this.generateExtraInfoTelemetry(newSections.length);
           this.checkEmptySearchResult(isAfterLanguageChange);
@@ -466,14 +514,25 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       })
       .catch(error => {
         loader.dismiss();
+        console.log('error while getting popular resources...', error);
         this.ngZone.run(() => {
-          this.pageApiLoader = false;
+          this.refresh = false;
+          this.searchApiLoader = false;
           if (error === 'CONNECTION_ERROR') {
           } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
-            if (!isAfterLanguageChange) {
-              this.commonUtilService.showToast('ERROR_FETCHING_DATA');
-            }
+            if (!isAfterLanguageChange) { this.commonUtilService.showToast('ERROR_FETCHING_DATA'); }
+          } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable) {
+            this.commonUtilService.showToast(
+              this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
+              `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
           }
+          const errvalues = new Map();
+          errvalues['isNetworkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
+          this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+            InteractSubtype.RESOURCE_PAGE_ERROR,
+            Environment.HOME,
+            this.source, undefined,
+            errvalues);
         });
       });
   }
@@ -568,20 +627,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewWillEnter() {
-    this.guestUser = !this.appGlobalService.isUserLoggedIn();
-    if (this.guestUser) {
-      this.getCurrentUser();
-    } else {
-      this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
-      this.profile = this.appGlobalService.getCurrentUser();
-    }
+    this.getCategoryData();
+
+    this.getCurrentUser();
 
     if (!this.pageLoadedSuccess) {
       this.getPopularContent();
     }
     this.subscribeGenieEvents();
-
-    this.getCategoryData();
   }
 
   subscribeGenieEvents() {
@@ -599,27 +652,20 @@ export class ResourcesPage implements OnInit, AfterViewInit {
    * @param refresher
    */
   swipeDownToRefresh(refresher?) {
+    this.refresh = true;
+    this.storyAndWorksheets = [];
+
+    this.getCategoryData();
+    this.getCurrentUser();
     if (refresher) {
       refresher.complete();
       this.telemetryGeneratorService.generatePullToRefreshTelemetry(PageId.LIBRARY, Environment.HOME);
-    }
-
-    this.storyAndWorksheets = [];
-    this.setSavedContent();
-    this.loadRecentlyViewedContent();
-    this.guestUser = !this.appGlobalService.isUserLoggedIn();
-
-    if (this.guestUser) {
-      this.getCurrentUser();
+      this.getGroupByPage();
     } else {
-      this.profile = this.appGlobalService.getCurrentUser();
-      this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
-    }
+          this.getPopularContent();
+         }
 
-    this.getPopularContent(false);
-    this.getCategoryData();
   }
-
 
   generateImpressionEvent() {
     this.telemetryGeneratorService.generateImpressionTelemetry(
@@ -672,6 +718,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   findWithAttr(array, attr, value) {
     for (let i = 0; i < array.length; i += 1) {
+      console.log(array[i][attr]);
       if (array[i][attr].toLowerCase() === value.toLowerCase()) {
         return i;
       }
@@ -769,7 +816,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         this.categoryGradeLevels[i].selected = '';
       }
     }
-    document.getElementById('gradeScroll').scrollTo({top: 0, left: index * 60, behavior: 'smooth'});
+    document.getElementById('gradeScroll').scrollTo({ top: 0, left: index * 60, behavior: 'smooth' });
   }
 
   mediumClick(mediumName: string) {

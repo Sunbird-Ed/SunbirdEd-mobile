@@ -409,12 +409,20 @@ export class CollectionDetailsEtbPage {
   /**
    * Function to extract api response.
    */
-  extractApiResponse(data: Content) {
+  extractApiResponse(data) {
     this.contentDetail = data.contentData ? data.contentData : [];
     this.contentDetail.isAvailableLocally = data.isAvailableLocally;
-    if (this.contentDetail.isAvailableLocally) {
-      this.localImage = (data.basePath + '/' + this.contentDetail.appIcon);
-      // console.log('LocalImage', this.localImage);
+
+    if (this.contentDetail.appIcon) {
+      if (this.contentDetail.appIcon.includes('http:') || this.contentDetail.appIcon.includes('https:')) {
+          if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+                  this.contentDetail.appIcon = this.contentDetail.appIcon;
+            } else {
+                  this.contentDetail.appIcon = this.defaultAppIcon;
+            }
+      } else if (data.result.basePath) {
+        this.localImage = data.result.basePath + '/' + this.contentDetail.appIcon;
+      }
     }
     this.objId = this.contentDetail.identifier;
     this.objVer = this.contentDetail.pkgVersion;

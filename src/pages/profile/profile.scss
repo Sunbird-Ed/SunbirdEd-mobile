@@ -1,4 +1,18 @@
 page-profile {
+    .refreshspinner {
+        stroke:#024f9d !important;
+        width: 30px;
+        left: 0;
+        top: 0;
+        height: 40px;
+        position: relative!important;
+      }
+    .spinner-div{
+        padding: 40px;
+        background-color: #ECEFF0;
+        text-align: center;
+        border : none !important;
+    }
     .profile-last-login-text {
         color: #bdbdbd;
         text-align: center;
@@ -362,6 +376,7 @@ page-profile {
         border-radius: 64px !important;
     }
     
+
 }
 
 .padding-right-10 {

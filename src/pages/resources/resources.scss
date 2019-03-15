@@ -129,13 +129,12 @@ page-resources {
       .course-scroll-holder {
         background-color: #FDFEFE;
       }
+      .scroll-content:nth-child(2) {
+        padding-bottom: 0px !important ;
+      }
       .toolbar-title-md {
         margin-left: -5px !important;
-        font-weight: normal !important;
-        font-style: normal;
-        font-stretch: normal;
-        line-height: 1.5;
-        letter-spacing: -0.1px;
+        @include margin(null, null, null, -5px !important);
       }
       .course-page-color {
         background: #efeff4;
@@ -254,10 +253,6 @@ page-resources {
     }
     .class-pill {
       min-width: auto;
-      // height: 30px;
-      // border-radius: 15px !important;
-      // box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.12);
-      // background-color: #ffffff;
       padding: 15px 0px 15px 0px;
       @include margin( 0 11px 0 15px);
       white-space:nowrap;
@@ -270,13 +265,10 @@ page-resources {
       letter-spacing: -0.5px;
       text-align: center;
       text-transform: capitalize;
-      opacity: 0.7;
+      opacity: 0.5;
       height: 20px;
       &.active {
-        // box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.19);
-        // background-color: #024f9d;
-        // color: #ffffff;
-        opacity: 1.5;
+        opacity: 1;
       }
       &:last-child {
         @include padding(15px, 30px, 15px, 0);
@@ -378,5 +370,8 @@ page-resources {
           }
         }
       }
+    }
+    ion-spinner * {
+      stroke:#024f9d !important;
     }
 }

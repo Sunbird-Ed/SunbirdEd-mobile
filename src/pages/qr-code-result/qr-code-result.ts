@@ -256,6 +256,41 @@ export class QrCodeResultPage {
     });
   }
 
+  private showAllChild(content: any) {
+    this.zone.run(() => {
+      if (content.children === undefined) {
+        if (content.mimeType !== MimeType.COLLECTION) {
+          if (content.contentData.appIcon) {
+            if (content.contentData.appIcon.includes('http:') || content.contentData.appIcon.includes('https:')) {
+                if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+                        content.contentData.appIcon = content.contentData.appIcon;
+                  } else {
+                        content.contentData.appIcon = this.defaultImg;
+                  }
+            } else if (content.basePath) {
+              content.contentData.appIcon = content.basePath + '/' + content.contentData.appIcon;
+            }
+          }
+          this.results.push(content);
+
+          const path = [];
+          this.parents.forEach(ele => {
+            path.push(ele);
+          });
+          path.splice(-1, 1);
+          this.paths.push(path);
+        }
+        return;
+      }
+      content.children.forEach(child => {
+        this.parents.push(child);
+        this.showAllChild(child);
+        this.parents.splice(-1, 1);
+      });
+    });
+  }
+
+
   /**
    * Play content
    */
@@ -380,28 +415,6 @@ export class QrCodeResultPage {
       });
   }
 
-  private showAllChild(content: Content) {
-    this.zone.run(() => {
-      if (content.children === undefined) {
-        if (content.mimeType !== MimeType.COLLECTION) {
-          this.results.push(content);
-
-          const path = [];
-          this.parents.forEach(ele => {
-            path.push(ele);
-          });
-          path.splice(-1, 1);
-          this.paths.push(path);
-        }
-        return;
-      }
-      content.children.forEach(child => {
-        this.parents.push(child);
-        this.showAllChild(child);
-        this.parents.splice(-1, 1);
-      });
-    });
-  }
 
   setGrade(reset, grades) {
     if (reset) {
@@ -672,11 +685,11 @@ export class QrCodeResultPage {
   }
 
   /**
-   * Function to get import content api request params
-   *
-   * @param {Array<string>} identifiers contains list of content identifier(s)
-   * @param {boolean} isChild
-   */
+ * Function to get import content api request params
+ *
+ * @param {Array<string>} identifiers contains list of content identifier(s)
+ * @param {boolean} isChild
+ */
   getImportContentRequestBody(identifiers: Array<string>, isChild: boolean) {
     const requestParams = [];
     _.forEach(identifiers, (value) => {

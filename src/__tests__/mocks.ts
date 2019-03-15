@@ -77,7 +77,8 @@ export const navCtrlMock = createSpyObj<NavController>([
   'pop',
   'push',
   'setRoot',
-  'popTo'
+  'popTo',
+  'canGoBack'
 ]);
 
 export const navParamsMock = createSpyObj<NavParams>([
@@ -135,7 +136,8 @@ export const commonUtilServiceMock = createSpyObj<CommonUtilService>([
   'getTranslatedValue',
   'showContentComingSoonAlert',
   'toLocaleUpperCase',
-  'showExitPopUp'
+  'showExitPopUp',
+  'isRTL'
 ]);
 
 export const eventsMock = createSpyObj<Events>([
@@ -154,7 +156,8 @@ export const contentServiceMock = createSpyObj<ContentService>([
   'getChildContents',
   'sendFeedback',
   'deleteContent',
-  'getAllLocalContents'
+  'getAllLocalContents',
+  'setContentMarker'
 ]);
 
 export const popoverCtrlMock = createSpyObj<PopoverController>([
@@ -401,3 +404,4 @@ export const generateOTPRequestMock = createSpyObj<GenerateOTPRequest>([
 ]);
 
 export const networkMock = createSpyObj<Network>([]);
+
