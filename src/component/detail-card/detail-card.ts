@@ -20,6 +20,8 @@ export class DetailCardComponent implements OnInit {
 
 
   @Output() downloadAllContent = new EventEmitter();
+  @Output() showOverflowMenuEvent = new EventEmitter();
+  @Output() shareEvent = new EventEmitter();
   text: string;
 
   constructor() {
@@ -31,6 +33,14 @@ export class DetailCardComponent implements OnInit {
   downloadAllContents() {
     this.downloadAllContent.emit();
     console.log('emited!');
+  }
+
+  showOverflowMenu() {
+    this.showOverflowMenuEvent.emit();
+  }
+
+  share() {
+    this.shareEvent.emit();
   }
 
 }

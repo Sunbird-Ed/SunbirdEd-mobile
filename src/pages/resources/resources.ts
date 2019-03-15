@@ -518,8 +518,11 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             newSections.push(element);
           });
           // END OF TEMPORARY CODE
-
-          this.storyAndWorksheets = newSections;
+          if (this.profile.subject && this.profile.subject.length) {
+            this.storyAndWorksheets = this.orderBySubject([...newSections]);
+          } else {
+             this.storyAndWorksheets = newSections;
+          }
           const sectionInfo = {};
           for (let i = 0; i < this.storyAndWorksheets.length; i++) {
              const sectionName = this.storyAndWorksheets[i].name,
@@ -564,6 +567,23 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             errvalues);
         });
       });
+  }
+
+  orderBySubject(searchResults: any[]) {
+      let selectedSubject: string[];
+       const filteredSubject: string[] = [];
+      selectedSubject = this.applyProfileFilter(this.profile.subject,
+                        selectedSubject, 'subject');
+        for ( let i = 0; i < selectedSubject.length; i++) {
+          const index = searchResults.findIndex((el) => {
+            return el.name === selectedSubject[i];
+          });
+          if (index !== -1) {
+            filteredSubject.push(searchResults.splice(index, 1)[0]);
+          }
+        }
+        filteredSubject.push(...searchResults);
+        return filteredSubject;
   }
   generateExtraInfoTelemetry(sectionsCount) {
     const values = new Map();

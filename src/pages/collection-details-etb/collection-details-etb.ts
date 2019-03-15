@@ -737,7 +737,6 @@ export class CollectionDetailsEtbPage {
     this.downloadIdentifiers = [];
     this.queuedIdentifiers = [];
     this.isDepthChild = this.isDepthChild;
-    this.showDownloadBtn = false;
     this.isDownloadCompleted = false;
     this.currentCount = 0;
     this.downloadPercentage = 0;

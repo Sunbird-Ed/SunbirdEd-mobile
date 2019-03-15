@@ -7,7 +7,7 @@
     </div>
     <div class="sb-card-details">
       <div class="title">{{course?.contentData.name}}</div>
-      <div><span class="info class">{{course?.contentData.gradeLevel}}</span><span class="separator-dot"></span><span class="info subject">{{course?.contentData.subject}}</span></div>
+      <div><span class="info class">{{course?.contentData.gradeLevel}}</span><span  *ngIf="course?.contentData.gradeLevel && course?.contentData.subject" class="separator-dot"></span><span class="info subject">{{course?.contentData.subject}}</span></div>
     </div>
 </div>
 
