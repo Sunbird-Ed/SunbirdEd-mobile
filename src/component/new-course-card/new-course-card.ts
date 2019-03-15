@@ -48,8 +48,7 @@ export class NewCourseCardComponent implements OnInit {
     public commonUtilService: CommonUtilService,
     public navCtrl: NavController
   ) {
-    console.log('Hello NewCourseCardComponent Component');
-    this.text = 'Hello World';
+    this.defaultImg = 'assets/imgs/ic_launcher.png';
 
   }
 

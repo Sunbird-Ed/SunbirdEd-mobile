@@ -30,7 +30,6 @@
     @include margin(0,($base-block-space * 1),($base-block-space * 1), ($base-block-space * 1));
     @include padding($base-block-space * 1);
     .sb-content-info-heading{
-      min-height: ($base-block-space * 7);
       color: $gray-800;
       font-size: ($font-size-base);
       @include padding($base-block-space * 1);

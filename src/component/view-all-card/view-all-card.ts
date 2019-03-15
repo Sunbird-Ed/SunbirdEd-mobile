@@ -14,6 +14,7 @@ import { Component, Input } from '@angular/core';
 export class ViewAllCardComponent {
 
   text: string;
+  defaultImg: string;
   @Input() content: any;
   @Input() type: any;
   @Input() sectionName: any;
@@ -21,8 +22,7 @@ export class ViewAllCardComponent {
   constructor(
     public commonUtilService: CommonUtilService
   ) {
-    console.log('Hello ViewAllCardComponent Component');
-    this.text = 'Hello World';
+    this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
 
 
