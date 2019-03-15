@@ -1,40 +1,35 @@
-import { Injectable } from '@angular/core';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import {Inject, Injectable} from '@angular/core';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {ImpressionSubtype, ImpressionType} from 'sunbird';
 import {
-    ContentDetailRequest,
-    ContentService,
-    ImpressionType,
-    ImpressionSubtype
-} from 'sunbird';
-import {
-    InteractType,
-    InteractSubtype,
-    Environment,
-    PageId,
-    TelemetryObject,
-    Mode,
-    CorrelationData,
+  Content,
+  ContentDetailRequest,
+  ContentService,
+  CorrelationData,
+  Environment,
+  InteractSubtype,
+  InteractType,
+  Mode,
+  PageId,
+  TelemetryObject,
 } from 'sunbird-sdk';
-import { SearchPage } from '../search/search';
-import {
-    ContentType,
-    MimeType
-} from '../../app/app.constant';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
-import { ContentDetailsPage } from '../content-details/content-details';
-import { CollectionDetailsPage } from '../collection-details/collection-details';
-import { CommonUtilService } from '../../service/common-util.service';
-import { App } from 'ionic-angular';
+import {SearchPage} from '../search/search';
+import {ContentType, MimeType} from '../../app/app.constant';
+import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
+import {ContentDetailsPage} from '../content-details/content-details';
+import {CollectionDetailsPage} from '../collection-details/collection-details';
+import {CommonUtilService} from '../../service/common-util.service';
+import {App} from 'ionic-angular';
 
 @Injectable()
 export class QRScannerResultHandler {
     private static readonly CORRELATION_TYPE = 'qr';
     source: string;
     constructor(
-        private app: App,
-        private contentService: ContentService,
-        private commonUtilService: CommonUtilService,
-        private telemetryGeneratorService: TelemetryGeneratorService) {
+      private app: App,
+      @Inject('CONTENT_SERVICE') private contentService: ContentService,
+      private commonUtilService: CommonUtilService,
+      private telemetryGeneratorService: TelemetryGeneratorService) {
     }
 
     isDialCode(scannedData: string): boolean {
@@ -75,18 +70,17 @@ export class QRScannerResultHandler {
             contentId: contentId
         };
 
-        this.contentService.getContentDetail(request)
-        .then((response: any) => {
-            const data = JSON.parse(response);
-            this.navigateToDetailsPage(data.result,
-                this.getCorRelationList(data.result.identifier, QRScannerResultHandler.CORRELATION_TYPE));
+      this.contentService.getContentDetails(request).toPromise()
+        .then((content: Content) => {
+          this.navigateToDetailsPage(content,
+            this.getCorRelationList(content.identifier, QRScannerResultHandler.CORRELATION_TYPE));
                 this.telemetryGeneratorService.generateImpressionTelemetry(
                     ImpressionType.SEARCH, '',
                     ImpressionSubtype.QR_CODE_VALID,
                     PageId.QRCodeScanner,
                     Environment.HOME,
                 );
-        }) .catch((error) => {
+        }).catch(() => {
             if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
                 this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
             } else {

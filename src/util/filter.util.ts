@@ -1,4 +1,5 @@
-import { AppGlobalService } from '../service/app-global.service';
+import {AppGlobalService} from '../service/app-global.service';
+import {SearchType} from "sunbird-sdk";
 
 const applyProfileFilter = (profileFilter: Array<any>, assembleFilter: Array<any>,
     categoryKey: string, appGlobalService: AppGlobalService) => {
@@ -38,6 +39,7 @@ export const updateFilterInSearchQuery = (queryParams, appliedFilter, profile, m
 
     const queryObj = JSON.parse(queryParams);
     const filter = queryObj.request.filters;
+  queryObj.request['searchType'] = isFilterApplied ? SearchType.FILTER : SearchType.SEARCH;
 
     if (mode === 'soft') {
         queryObj.request.mode = mode;

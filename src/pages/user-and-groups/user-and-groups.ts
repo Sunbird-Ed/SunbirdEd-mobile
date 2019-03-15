@@ -672,7 +672,7 @@ export class UserAndGroupsPage {
   }
 
   private setAsCurrentUser(selectedUser, isBeingPlayed: boolean) {
-    this.groupService.setActiveSessionForGroup(null)
+    this.groupService.removeActiveGroupSession()
       .subscribe(() => {
         },
         () => {

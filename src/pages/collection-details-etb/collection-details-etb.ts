@@ -1,19 +1,30 @@
-import {Component, NgZone, ViewChild} from '@angular/core';
+import {Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController} from 'ionic-angular';
 import {TranslateService} from '@ngx-translate/core';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
-
-import {BuildParamService, ContentService, FileUtil, ShareUtil} from 'sunbird';
+import {BuildParamService, FileUtil, ShareUtil} from 'sunbird';
 import {ContentDetailsPage} from '@app/pages/content-details/content-details';
 import {ConfirmAlertComponent, ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
 import {ContentType, MimeType, ShareUrl} from '@app/app';
 import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
 import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
 import {
+  Content,
+  ContentDetailRequest,
+  ContentEvent,
+  ContentEventType,
+  ContentImport,
+  ContentImportRequest,
+  ContentImportResponse,
+  ContentImportStatus,
+  ContentService as NewContentService,
   CorrelationData,
+  DownloadProgress,
   Environment,
   ErrorType,
+  EventNamespace,
+  EventsBusService,
   ImpressionType,
   InteractSubtype,
   InteractType,
@@ -24,6 +35,7 @@ import {
   TelemetryErrorCode,
   TelemetryObject
 } from 'sunbird-sdk';
+import {Subscription} from 'rxjs';
 
 /**
  * Generated class for the CollectionDetailsEtbPage page.
@@ -31,6 +43,7 @@ import {
  * See https://ionicframework.com/docs/components/#navigation for more info on
  * Ionic pages and navigation.
  */
+declare const cordova;
 
 @IonicPage()
 @Component({
@@ -173,15 +186,16 @@ export class CollectionDetailsEtbPage {
   public source = '';
   isChildClickable = false;
   shownGroup = null;
-
   // Local Image
   localImage = '';
-
   @ViewChild(Navbar) navBar: Navbar;
+  private downloadEventSubscription: Subscription;
+  private contentEventSubscription: Subscription;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
-    private contentService: ContentService,
+    @Inject('CONTENT_SERVICE') private newContentService: NewContentService,
+    @Inject('EVENTS_BUS_SERVICE') private eventBusService: EventsBusService,
     private zone: NgZone,
     private events: Events,
     private popoverCtrl: PopoverController,
@@ -231,7 +245,6 @@ export class CollectionDetailsEtbPage {
 
       // check for parent content
       this.parentContent = this.navParams.get('parentContent');
-
       if (depth) {
         this.depth = depth;
         this.showDownloadBtn = false;
@@ -255,18 +268,21 @@ export class CollectionDetailsEtbPage {
       this.subscribeGenieEvent();
     });
   }
+
   // toggle the card
-   toggleGroup(group) {
+  toggleGroup(group) {
     if (this.isGroupShown(group)) {
       this.shownGroup = null;
     } else {
       this.shownGroup = group;
     }
   }
+
   // to check whether the card is toggled or not
   isGroupShown(group) {
     return this.shownGroup === group;
   }
+
   changeValue(event, text) {
     console.log('EVENT Thrown', event);
     console.log('Tetx Inside ChnageValue', text);
@@ -319,8 +335,8 @@ export class CollectionDetailsEtbPage {
           comment: this.ratingComment,
           pageId: PageId.COLLECTION_DETAIL,
         }, {
-            cssClass: 'content-rating-alert'
-          });
+          cssClass: 'content-rating-alert'
+        });
         popUp.present();
         popUp.onDidDismiss(data => {
           if (data && data.message === 'rating.success') {
@@ -337,10 +353,11 @@ export class CollectionDetailsEtbPage {
       }
     }
   }
+
   /**
- * Get the session to know if the user is logged-in or guest
- *
- */
+   * Get the session to know if the user is logged-in or guest
+   *
+   */
 
   checkLoggedInOrGuestUser() {
     this.guestUser = !this.appGlobalService.isUserLoggedIn();
@@ -366,19 +383,16 @@ export class CollectionDetailsEtbPage {
   setContentDetails(identifier, refreshContentDetails: boolean | true) {
     const loader = this.commonUtilService.getLoader();
     loader.present();
-    const option = {
+    const option: ContentDetailRequest = {
       contentId: identifier,
-      refreshContentDetails: refreshContentDetails,
       attachFeedback: true,
-      attachContentAccess: true
+      attachContentAccess: true,
     };
-    this.contentService.getContentDetail(option)
-      .then((data: any) => {
+    this.newContentService.getContentDetails(option).toPromise()
+      .then((data: Content) => {
         this.zone.run(() => {
-          data = JSON.parse(data);
-          // console.log('Data', data);
           loader.dismiss().then(() => {
-            if (data && data.result) {
+            if (data) {
               this.extractApiResponse(data);
             }
           });
@@ -395,12 +409,12 @@ export class CollectionDetailsEtbPage {
   /**
    * Function to extract api response.
    */
-  extractApiResponse(data) {
-    this.contentDetail = data.result.contentData ? data.result.contentData : [];
-    this.contentDetail.isAvailableLocally = data.result.isAvailableLocally;
+  extractApiResponse(data: Content) {
+    this.contentDetail = data.contentData ? data.contentData : [];
+    this.contentDetail.isAvailableLocally = data.isAvailableLocally;
     if (this.contentDetail.isAvailableLocally) {
-      this.localImage = (data.result.basePath + '/' + this.contentDetail.appIcon);
-     // console.log('LocalImage', this.localImage);
+      this.localImage = (data.basePath + '/' + this.contentDetail.appIcon);
+      // console.log('LocalImage', this.localImage);
     }
     this.objId = this.contentDetail.identifier;
     this.objVer = this.contentDetail.pkgVersion;
@@ -418,16 +432,16 @@ export class CollectionDetailsEtbPage {
     }
 
     // User Rating
-    const contentFeedback: any = data.result.contentFeedback ? data.result.contentFeedback : [];
+    const contentFeedback: any = data.contentFeedback ? data.contentFeedback : [];
     if (contentFeedback !== undefined && contentFeedback.length !== 0) {
       this.userRating = contentFeedback[0].rating;
       this.ratingComment = contentFeedback[0].comments;
     }
 
 
-    if (Boolean(data.result.isAvailableLocally)) {
+    if (Boolean(data.isAvailableLocally)) {
       this.showLoading = false;
-      if (data.result.isUpdateAvailable && !this.isUpdateAvailable) {
+      if (data.isUpdateAvailable && !this.isUpdateAvailable) {
         this.isUpdateAvailable = true;
         this.showLoading = true;
         this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.contentDetail, false);
@@ -455,13 +469,17 @@ export class CollectionDetailsEtbPage {
     } else {
       _.forEach(hierarchyInfo, (value, key) => {
         switch (key) {
-          case 0: this.objRollup.l1 = value.identifier;
+          case 0:
+            this.objRollup.l1 = value.identifier;
             break;
-          case 1: this.objRollup.l2 = value.identifier;
+          case 1:
+            this.objRollup.l2 = value.identifier;
             break;
-          case 2: this.objRollup.l3 = value.identifier;
+          case 2:
+            this.objRollup.l3 = value.identifier;
             break;
-          case 3: this.objRollup.l4 = value.identifier;
+          case 3:
+            this.objRollup.l4 = value.identifier;
             break;
         }
       });
@@ -490,12 +508,12 @@ export class CollectionDetailsEtbPage {
    * @param {Array<string>} identifiers contains list of content identifier(s)
    * @param {boolean} isChild
    */
-  getImportContentRequestBody(identifiers: Array<string>, isChild: boolean) {
+  getImportContentRequestBody(identifiers: Array<string>, isChild: boolean): Array<ContentImport> {
     const requestParams = [];
     _.forEach(identifiers, (value) => {
       requestParams.push({
         isChildContent: isChild,
-        destinationFolder: this.fileUtil.internalStoragePath(),
+        destinationFolder: cordova.file.externalDataDirectory,
         contentId: value,
         correlationData: this.corRelationList !== undefined ? this.corRelationList : []
       });
@@ -511,22 +529,19 @@ export class CollectionDetailsEtbPage {
    * @param {boolean} isChild
    */
   importContent(identifiers: Array<string>, isChild: boolean, isDownloadAllClicked?) {
-    const option = {
-      contentImportMap: _.extend({}, this.getImportContentRequestBody(identifiers, isChild)),
+    const option: ContentImportRequest = {
+      contentImportArray: this.getImportContentRequestBody(identifiers, isChild),
       contentStatusArray: []
     };
-
     // Call content service
-    this.contentService.importContent(option)
-      .then((data: any) => {
+    this.newContentService.importContent(option).toPromise()
+      .then((data: ContentImportResponse[]) => {
         this.zone.run(() => {
-          data = JSON.parse(data);
-
-          if (data.result && data.result.length && this.isDownloadStarted) {
-            _.forEach(data.result, (value) => {
-              if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
+          if (data && data.length && this.isDownloadStarted) {
+            _.forEach(data, (value) => {
+              if (value.status === ContentImportStatus.ENQUEUED_FOR_DOWNLOAD) {
                 this.queuedIdentifiers.push(value.identifier);
-              } else if (value.status === 'NOT_FOUND') {
+              } else if (value.status === ContentImportStatus.NOT_FOUND) {
                 this.faultyIdentifiers.push(value.identifier);
               }
             });
@@ -559,7 +574,7 @@ export class CollectionDetailsEtbPage {
               );
               this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
             }
-          } else if (data.result && data.result[0].status === 'NOT_FOUND') {
+          } else if (data && data[0].status === ContentImportStatus.NOT_FOUND) {
             this.showLoading = false;
             this.showChildrenLoader = false;
             this.childrenData.length = 0;
@@ -574,11 +589,10 @@ export class CollectionDetailsEtbPage {
           this.isDownloadStarted = false;
           this.showLoading = false;
           if (Boolean(this.isUpdateAvailable)) {
-          //  this.showChildrenLoader = true;
+            //  this.showChildrenLoader = true;
             this.setChildContents();
           } else {
-            const errorRes = JSON.parse(error);
-            if (errorRes && (errorRes.error === 'NETWORK_ERROR' || errorRes.error === 'CONNECTION_ERROR')) {
+            if (error && (error.error === 'NETWORK_ERROR' || error.error === 'CONNECTION_ERROR')) {
               this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
             } else {
               this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
@@ -595,25 +609,23 @@ export class CollectionDetailsEtbPage {
    */
   setChildContents() {
     const hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
-    const option = { contentId: this.identifier, hierarchyInfo: hierarchyInfo }; // TODO: remove level
-    this.contentService.getChildContents(option)
-      .then((data: any) => {
-        data = JSON.parse(data);
+    const option = {contentId: this.identifier, hierarchyInfo: hierarchyInfo}; // TODO: remove level
+    this.newContentService.getChildContents(option).toPromise()
+      .then((data: Content) => {
         this.zone.run(() => {
-          if (data && data.result && data.result.children) {
-          //  console.log('ChildrenData', this.childrenData);
-            this.childrenData = data.result.children;
+          if (data && data.children) {
+            //  console.log('ChildrenData', this.childrenData);
+            this.childrenData = data.children;
           }
 
           if (!this.isDepthChild) {
             this.downloadSize = 0;
-            this.getContentsSize(data.result.children || []);
+            this.getContentsSize(data.children || []);
           }
           this.showChildrenLoader = false;
         });
       })
-      .catch((error: string) => {
-        console.log('Error: while fetching child contents ===>>>', error);
+      .catch(() => {
         this.zone.run(() => {
           this.showChildrenLoader = false;
         });
@@ -684,6 +696,7 @@ export class CollectionDetailsEtbPage {
       }
     });
   }
+
   navigateToContentPage(content: any, depth) {
     const stateData = this.navParams.get('contentState');
     this.navCtrl.push(ContentDetailsPage, {
@@ -694,6 +707,7 @@ export class CollectionDetailsEtbPage {
       corRelation: this.corRelationList
     });
   }
+
   /**
    * Reset all values
    */
@@ -718,79 +732,94 @@ export class CollectionDetailsEtbPage {
    * Subscribe genie event to get content download progress
    */
   subscribeGenieEvent() {
-    this.events.subscribe('genie.event', (data) => {
-      this.zone.run(() => {
-        data = JSON.parse(data);
-        const res = data;
+    // this.events.subscribe('genie.event', (data) => {
+    //   this.zone.run(() => {
+    //     data = JSON.parse(data);
+    //     const res = data;
+    //
+    //     if (res.type === 'downloadProgress' && res.data.downloadProgress) {
+    //       if (res.data.downloadProgress === -1 || res.data.downloadProgress === '-1') {
+    //         this.downloadProgress = 0;
+    //       } else if (res.data.identifier === this.contentDetail.identifier) {
+    //         this.downloadProgress = res.data.downloadProgress;
+    //       }
+    //
+    //       if (this.downloadProgress === 100) {
+    //         this.showLoading = false;
+    //         this.contentDetail.isAvailableLocally = true;
+    //       }
+    //     }
+    //     // Get child content
+    //     if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
+    //
+    //       if (this.queuedIdentifiers.length && this.isDownloadStarted) {
+    //         if (_.includes(this.queuedIdentifiers, res.data.identifier)) {
+    //           this.currentCount++;
+    //           this.downloadPercentage = +((this.currentCount / this.queuedIdentifiers.length) * (100)).toFixed(0);
+    //         }
+    //         if (this.queuedIdentifiers.length === this.currentCount) {
+    //           this.showLoading = false;
+    //           this.isDownloadStarted = false;
+    //           this.showDownloadBtn = false;
+    //           this.isDownloadCompleted = true;
+    //           this.contentDetail.isAvailableLocally = true;
+    //           this.downloadPercentage = 0;
+    //           this.updateSavedResources();
+    //           this.setChildContents();
+    //         }
+    //       } else if (this.parentContent && res.data.identifier === this.contentDetail.identifier) {
+    //         // this condition is for when the child content update is available and we have downloaded parent content
+    //         // but we have to refresh only the child content.
+    //         this.showLoading = false;
+    //         this.setContentDetails(this.identifier, false);
+    //       } else {
+    //         if (this.isUpdateAvailable && res.data.identifier === this.contentDetail.identifier) {
+    //           this.showLoading = false;
+    //           this.setContentDetails(this.identifier, false);
+    //         } else {
+    //           if (res.data.identifier === this.contentDetail.identifier) {
+    //             this.showLoading = false;
+    //             this.updateSavedResources();
+    //             this.setChildContents();
+    //             this.contentDetail.isAvailableLocally = true;
+    //           }
+    //
+    //         }
+    //       }
+    //     }
+    //
+    //     // For content update available
+    //     const hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
+    //
+    //     if (res.data && res.type === 'contentUpdateAvailable' && hierarchyInfo === null) {
+    //       this.zone.run(() => {
+    //         if (this.parentContent) {
+    //           const parentIdentifier = this.parentContent.contentId || this.parentContent.identifier;
+    //           this.showLoading = true;
+    //           this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.contentDetail, false);
+    //           this.importContent([parentIdentifier], false);
+    //         } else {
+    //           this.setContentDetails(this.identifier, false);
+    //         }
+    //       });
+    //     }
+    //   });
+    // });
 
-        if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-          if (res.data.downloadProgress === -1 || res.data.downloadProgress === '-1') {
-            this.downloadProgress = 0;
-          } else if (res.data.identifier === this.contentDetail.identifier) {
-            this.downloadProgress = res.data.downloadProgress;
-          }
-
-          if (this.downloadProgress === 100) {
-            this.showLoading = false;
-            this.contentDetail.isAvailableLocally = true;
-          }
+    this.downloadEventSubscription = this.eventBusService.events(EventNamespace.DOWNLOADS)
+      .filter((event: DownloadProgress) => {
+        return event.identifier === this.identifier
+      }).subscribe((event: DownloadProgress) => {
+        this.downloadProgress = Math.round(event.progress);
+      }) as any;
+    this.contentEventSubscription = this.eventBusService.events(EventNamespace.CONTENT)
+      .filter((event: ContentEvent) => {
+        if (event.contentId === this.identifier && event.type === ContentEventType.IMPORT_COMPLETED) {
+          return true;
         }
-        // Get child content
-        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
-
-          if (this.queuedIdentifiers.length && this.isDownloadStarted) {
-            if (_.includes(this.queuedIdentifiers, res.data.identifier)) {
-              this.currentCount++;
-              this.downloadPercentage = +((this.currentCount / this.queuedIdentifiers.length) * (100)).toFixed(0);
-            }
-            if (this.queuedIdentifiers.length === this.currentCount) {
-              this.showLoading = false;
-              this.isDownloadStarted = false;
-              this.showDownloadBtn = false;
-              this.isDownloadCompleted = true;
-              this.contentDetail.isAvailableLocally = true;
-              this.downloadPercentage = 0;
-              this.updateSavedResources();
-              this.setChildContents();
-            }
-          } else if (this.parentContent && res.data.identifier === this.contentDetail.identifier) {
-            // this condition is for when the child content update is available and we have downloaded parent content
-            // but we have to refresh only the child content.
-            this.showLoading = false;
-            this.setContentDetails(this.identifier, false);
-          } else {
-            if (this.isUpdateAvailable && res.data.identifier === this.contentDetail.identifier) {
-              this.showLoading = false;
-              this.setContentDetails(this.identifier, false);
-            } else {
-              if (res.data.identifier === this.contentDetail.identifier) {
-                this.showLoading = false;
-                this.updateSavedResources();
-                this.setChildContents();
-                this.contentDetail.isAvailableLocally = true;
-              }
-
-            }
-          }
-        }
-
-        // For content update available
-        const hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
-
-        if (res.data && res.type === 'contentUpdateAvailable' && hierarchyInfo === null) {
-          this.zone.run(() => {
-            if (this.parentContent) {
-              const parentIdentifier = this.parentContent.contentId || this.parentContent.identifier;
-              this.showLoading = true;
-              this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.contentDetail, false);
-              this.importContent([parentIdentifier], false);
-            } else {
-              this.setContentDetails(this.identifier, false);
-            }
-          });
-        }
-      });
-    });
+      }).subscribe(() => {
+        this.setContentDetails(this.identifier, false);
+      }) as any;
   }
 
   updateSavedResources() {
@@ -861,8 +890,8 @@ export class CollectionDetailsEtbPage {
       pageName: PageId.COLLECTION_DETAIL,
       corRelationList: this.corRelationList
     }, {
-        cssClass: 'content-action'
-      });
+      cssClass: 'content-action'
+    });
     popover.present({
       ev: event
     });
@@ -953,12 +982,13 @@ export class CollectionDetailsEtbPage {
 
   cancelDownload() {
     this.telemetryGeneratorService.generateCancelDownloadTelemetry(this.contentDetail);
-    this.contentService.cancelDownload(this.identifier).then(() => {
-      this.zone.run(() => {
-        this.showLoading = false;
-        this.navCtrl.pop();
-      });
-    }).catch(() => {
+    this.newContentService.cancelDownload(this.identifier).toPromise()
+      .then(() => {
+        this.zone.run(() => {
+          this.showLoading = false;
+          this.navCtrl.pop();
+        });
+      }).catch(() => {
       this.zone.run(() => {
         this.showLoading = false;
         this.navCtrl.pop();
@@ -991,6 +1021,8 @@ export class CollectionDetailsEtbPage {
     // this.downloadProgress = '';
     this.downloadProgress = 0;
     this.events.unsubscribe('genie.event');
+    this.downloadEventSubscription.unsubscribe();
+    this.contentEventSubscription.unsubscribe();
   }
 
 }

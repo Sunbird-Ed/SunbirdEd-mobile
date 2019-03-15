@@ -23,6 +23,7 @@ import {EditContactVerifyPopupComponent} from '@app/component';
 import {
   AuthService,
   ContentSearchCriteria,
+  ContentSearchResult,
   ContentService,
   ContentSortCriteria,
   Course,
@@ -517,7 +518,7 @@ export class ProfilePage {
     };
 
     this.contentService.searchContent(contentSearchCriteria).toPromise()
-      .then((result) => {
+      .then((result: ContentSearchResult) => {
         this.contentCreatedByMe = result.contentDataList;
       })
       .catch((error: any) => {

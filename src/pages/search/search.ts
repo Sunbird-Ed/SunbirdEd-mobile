@@ -1,10 +1,15 @@
 import {Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {Events, IonicPage, Navbar, NavController, NavParams, Platform} from 'ionic-angular';
-import {ContentService, CorrelationData, FileUtil, SharedPreferences, TabsPage} from 'sunbird';
+import {CorrelationData, FileUtil, SharedPreferences, TabsPage} from 'sunbird';
 import {
   Content,
   ContentDetailRequest,
+  ContentImport,
+  ContentImportRequest,
+  ContentImportResponse,
+  ContentImportStatus,
   ContentSearchCriteria,
+  ContentSearchResult,
   ContentService as NewContentService,
   Environment,
   ImpressionType,
@@ -34,6 +39,8 @@ import {CommonUtilService} from '../../service/common-util.service';
 import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
 import {QrCodeResultPage} from '../qr-code-result/qr-code-result';
 import {TranslateService} from '@ngx-translate/core';
+
+declare const cordova;
 
 @IonicPage()
 @Component({
@@ -100,7 +107,6 @@ export class SearchPage {
   private corRelationList: Array<CorrelationData>;
 
   constructor(
-    private contentService: ContentService,
     @Inject('CONTENT_SERVICE') private newContentService: NewContentService,
     private navParams: NavParams,
     private navCtrl: NavController,
@@ -274,7 +280,7 @@ export class SearchPage {
 
   showFilter() {
     this.formAndFrameworkUtilService.getLibraryFilterConfig().then((data) => {
-      const filterCriteriaData = this.responseData.result.filterCriteria;
+      const filterCriteriaData = this.responseData.filterCriteria;
       filterCriteriaData.facetFilters.forEach(element => {
         data.forEach(item => {
           if (element.name === item.code) {
@@ -283,16 +289,16 @@ export class SearchPage {
           }
         });
       });
-      this.navCtrl.push(FilterPage, {filterCriteria: this.responseData.result.filterCriteria});
+      this.navCtrl.push(FilterPage, {filterCriteria: this.responseData.filterCriteria});
     });
   }
 
   applyFilter() {
     this.showLoader = true;
-    this.responseData.result.filterCriteria.mode = 'hard';
+    this.responseData.filterCriteria.mode = 'hard';
 
-    this.newContentService.searchContent(this.responseData.result.filterCriteria).toPromise()
-      .then((responseData: any) => {
+    this.newContentService.searchContent(this.responseData.filterCriteria).toPromise()
+      .then((responseData: ContentSearchResult) => {
 
         this.zone.run(() => {
           this.responseData = responseData;
@@ -307,7 +313,7 @@ export class SearchPage {
               const values = new Map();
               values['from'] = this.source;
               values['searchCount'] = this.responseData.length;
-              values['searchCriteria'] = this.responseData.result.filterCriteria;
+              values['searchCriteria'] = this.responseData.filterCriteria;
               this.telemetryGeneratorService.generateExtraInfoTelemetry(values, PageId.SEARCH);
             }
             this.updateFilterIcon();
@@ -365,7 +371,7 @@ export class SearchPage {
     }
 
     this.newContentService.searchContent(contentSearchRequest).toPromise()
-      .then((response: any) => {
+      .then((response: ContentSearchResult) => {
 
         this.zone.run(() => {
           this.responseData = response;
@@ -378,11 +384,11 @@ export class SearchPage {
             this.isEmptyResult = false;
 
 
-            this.generateLogEvent(response.result);
+            this.generateLogEvent(response);
             const values = new Map();
             values['from'] = this.source;
             values['searchCount'] = this.searchContentResult.length;
-            values['searchCriteria'] = response.result.request;
+            values['searchCriteria'] = response.request;
             this.telemetryGeneratorService.generateExtraInfoTelemetry(values, PageId.SEARCH);
           } else {
             this.isEmptyResult = true;
@@ -454,7 +460,7 @@ export class SearchPage {
     }
 
     this.event.subscribe('search.applyFilter', (filterCriteria) => {
-      this.responseData.result.filterCriteria = filterCriteria;
+      this.responseData.filterCriteria = filterCriteria;
       this.applyFilter();
     });
   }
@@ -698,11 +704,11 @@ export class SearchPage {
       this.filterIcon = undefined;
     }
 
-    if (!this.responseData.result.filterCriteria) {
+    if (!this.responseData.filterCriteria) {
       return;
     }
 
-    this.responseData.result.filterCriteria.facetFilters.forEach(facet => {
+    this.responseData.filterCriteria.facetFilters.forEach(facet => {
       if (facet.values && facet.values.length > 0) {
         facet.values.forEach(value => {
           if (value.apply) {
@@ -752,19 +758,18 @@ export class SearchPage {
       this.isDownloadStarted = true;
     });
 
-    const option = {
-      contentImportMap: _.extend({}, this.getImportContentRequestBody([parent.identifier], false)),
+    const option: ContentImportRequest = {
+      contentImportArray: this.getImportContentRequestBody([parent.identifier], false),
       contentStatusArray: []
     };
     // Call content service
-    this.contentService.importContent(option)
-      .then((data: any) => {
+    this.newContentService.importContent(option).toPromise()
+      .then((data: ContentImportResponse[]) => {
         this.zone.run(() => {
-          data = JSON.parse(data);
 
-          if (data.result && data.result.length && this.isDownloadStarted) {
-            _.forEach(data.result, (value) => {
-              if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
+          if (data && data.length && this.isDownloadStarted) {
+            _.forEach(data, (value) => {
+              if (value.status === ContentImportStatus.ENQUEUED_FOR_DOWNLOAD) {
                 this.queuedIdentifiers.push(value.identifier);
               }
             });
@@ -833,13 +838,13 @@ export class SearchPage {
    * @param {Array<string>} identifiers contains list of content identifier(s)
    * @param {boolean} isChild
    */
-  getImportContentRequestBody(identifiers: Array<string>, isChild: boolean) {
+  getImportContentRequestBody(identifiers: Array<string>, isChild: boolean): Array<ContentImport> {
     const requestParams = [];
     _.forEach(identifiers, (value) => {
       requestParams.push({
         isChildContent: isChild,
         // TODO - check with Anil for destination folder path
-        destinationFolder: this.fileUtil.internalStoragePath(),
+        destinationFolder: cordova.file.externalDataDirectory,
         contentId: value,
         correlationData: this.corRelationList !== undefined ? this.corRelationList : []
       });
@@ -849,7 +854,7 @@ export class SearchPage {
   }
 
   cancelDownload() {
-    this.contentService.cancelDownload(this.parentContent.identifier).then(() => {
+    this.newContentService.cancelDownload(this.parentContent.identifier).toPromise().then(() => {
       this.zone.run(() => {
         this.showLoading = false;
       });
