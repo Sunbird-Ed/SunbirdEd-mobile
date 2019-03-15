@@ -145,6 +145,13 @@ h6 {
     .tab-button-icon[aria-label=profile] {
       background-image: url(../assets/imgs/ic_profile.png);
     }
+    .tab-button-icon[ng-reflect-name=qr-scanner],
+    .tab-button-icon[aria-label=qr-scanner] {
+      background-image: url(../assets/imgs/ic_scanqr_white.png);
+      background-size: 25px;
+      background-position: center center;
+      background-repeat: no-repeat;
+    }
   }
   a[aria-selected=true] {
     //führ eventuellen text
@@ -170,6 +177,13 @@ h6 {
     .tab-button-icon[ng-reflect-name=profile],
     .tab-button-icon[aria-label=profile] {
       background-image: url(../assets/imgs/ic_profile_blue.png);
+    }
+    .tab-button-icon[ng-reflect-name=qr-scanner],
+    .tab-button-icon[aria-label=qr-scanner] {
+      background-image: url(../assets/imgs/ic_scanqr_white.png);
+      background-size: 25px;
+      background-position: center center;
+      background-repeat: no-repeat;
     }
   }
 }
@@ -196,6 +210,13 @@ h6 {
     .tab-button-icon[aria-label=profile] {
       background-image: url(../assets/imgs/ic_profile.png);
     }
+    .tab-button-icon[ng-reflect-name=qr-scanner],
+    .tab-button-icon[aria-label=qr-scanner] {
+      background-image: url(../assets/imgs/ic_scanqr_white.png);
+      background-size: 25px;
+      background-position: center center;
+      background-repeat: no-repeat;
+    }
   }
   a[aria-selected=true] {
     //führ eventuellen text
@@ -221,6 +242,13 @@ h6 {
     .tab-button-icon[ng-reflect-name=profile],
     .tab-button-icon[aria-label=profile] {
       background-image: url(../assets/imgs/ic_profile_blue.png);
+    }
+    .tab-button-icon[ng-reflect-name=qr-scanner],
+    .tab-button-icon[aria-label=qr-scanner] {
+      background-image: url(../assets/imgs/ic_scanqr_white.png);
+      background-size: 25px;
+      background-position: center center;
+      background-repeat: no-repeat;
     }
   }
 }
@@ -247,6 +275,13 @@ h6 {
     .tab-button-icon[aria-label=profile] {
       background-image: url(../assets/imgs/ic_profile.png);
     }
+    .tab-button-icon[ng-reflect-name=qr-scanner],
+    .tab-button-icon[aria-label=qr-scanner] {
+      background-image: url(../assets/imgs/ic_scanqr_white.png);
+      background-size: 25px;
+      background-position: center center;
+      background-repeat: no-repeat;
+    }
   }
   a[aria-selected=true] {
     //führ eventuellen text
@@ -272,6 +307,13 @@ h6 {
     .tab-button-icon[ng-reflect-name=profile],
     .tab-button-icon[aria-label=profile] {
       background-image: url(../assets/imgs/ic_profile_blue.png);
+    }
+    .tab-button-icon[ng-reflect-name=qr-scanner],
+    .tab-button-icon[aria-label=qr-scanner] {
+      background-image: url(../assets/imgs/ic_scanqr_white.png);
+      background-size: 25px;
+      background-position: center center;
+      background-repeat: no-repeat;
     }
   }
 }
@@ -528,4 +570,15 @@ padding-top: 12px !important;
   font-size: 1.6rem;    
   max-width: 55vw;    
   width: auto !important;    
+}
+
+.separator-dot{
+  width: 4px;
+  height: 4px;
+  background-color: #d8d8d8;
+  border-radius:50%;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0px 8px;
+  font-size: 12px;
 }

@@ -211,7 +211,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     });
 
     this.events.subscribe('tab.change', (data) => {
-      this.ngZone.run(() => {
+      // this.ngZone.run(() => {
+        console.log('Dataa--', data);
         if (data === 'LIBRARY') {
           if (this.appliedFilter) {
             this.filterIcon = './assets/imgs/ic_action_filter.png';
@@ -220,8 +221,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             this.isFilterApplied = false;
             this.getPopularContent();
           }
-        }
-      });
+        } else if (data === '') {
+          this.qrScanner.startScanner(PageId.LIBRARY);
+      }
+      // });
     });
 
   }
@@ -515,14 +518,18 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             newSections.push(element);
           });
           // END OF TEMPORARY CODE
-
-          this.storyAndWorksheets = newSections;
+          if (this.profile.subject && this.profile.subject.length) {
+            this.storyAndWorksheets = this.orderBySubject([...newSections]);
+          } else {
+             this.storyAndWorksheets = newSections;
+          }
           const sectionInfo = {};
           for (let i = 0; i < this.storyAndWorksheets.length; i++) {
              const sectionName = this.storyAndWorksheets[i].name,
                   count = this.storyAndWorksheets[i].contents.length;
                   sectionInfo[sectionName] = count;
           }
+
           const resvalues = new Map();
           resvalues['pageRes'] = sectionInfo;
           this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
@@ -546,6 +553,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           if (error === 'CONNECTION_ERROR') {
           } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
             if (!isAfterLanguageChange) { this.commonUtilService.showToast('ERROR_FETCHING_DATA'); }
+          } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable) {
+            this.commonUtilService.showToast(
+              this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
+              `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
           }
           const errvalues = new Map();
           errvalues['isNetworkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
@@ -556,6 +567,23 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             errvalues);
         });
       });
+  }
+
+  orderBySubject(searchResults: any[]) {
+      let selectedSubject: string[];
+       const filteredSubject: string[] = [];
+      selectedSubject = this.applyProfileFilter(this.profile.subject,
+                        selectedSubject, 'subject');
+        for ( let i = 0; i < selectedSubject.length; i++) {
+          const index = searchResults.findIndex((el) => {
+            return el.name === selectedSubject[i];
+          });
+          if (index !== -1) {
+            filteredSubject.push(searchResults.splice(index, 1)[0]);
+          }
+        }
+        filteredSubject.push(...searchResults);
+        return filteredSubject;
   }
   generateExtraInfoTelemetry(sectionsCount) {
     const values = new Map();

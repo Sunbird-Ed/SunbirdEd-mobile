@@ -11,7 +11,7 @@ import { NavController } from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
 import {
   OAuthService,
-  ContainerService,
+ // ContainerService,
   UserProfileService,
   ProfileService,
   AuthService,
@@ -32,6 +32,7 @@ import {
 import { generateInteractTelemetry } from '../../app/telemetryutil';
 import { ProfileConstants } from '../../app/app.constant';
 import { FormAndFrameworkUtilService } from '../../pages/profile/formandframeworkutil.service';
+import { ContainerService } from '../../service/container-service';
 
 @Component({
   selector: 'sign-in-card',

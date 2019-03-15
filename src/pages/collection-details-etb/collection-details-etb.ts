@@ -36,7 +36,8 @@ import {
   CorrelationData,
   TelemetryObject,
   ErrorCode,
-  ErrorType
+  ErrorType,
+  ChildContentRequest
 } from 'sunbird';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import { ContentActionsComponent, SbPopoverComponent, ConfirmAlertComponent, ContentRatingAlertComponent } from '@app/component';
@@ -639,8 +640,8 @@ export class CollectionDetailsEtbPage {
    */
   setChildContents() {
     const hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
-    const option = { contentId: this.identifier, hierarchyInfo: hierarchyInfo }; // TODO: remove level
-    this.contentService.getChildContents(option)
+    const request: ChildContentRequest = { contentId: this.identifier, hierarchyInfo: hierarchyInfo }; // TODO: remove level
+    this.contentService.getChildContents(request)
       .then((data: any) => {
         data = JSON.parse(data);
         this.zone.run(() => {
@@ -752,7 +753,6 @@ export class CollectionDetailsEtbPage {
     this.downloadIdentifiers = [];
     this.queuedIdentifiers = [];
     this.isDepthChild = this.isDepthChild;
-    this.showDownloadBtn = false;
     this.isDownloadCompleted = false;
     this.currentCount = 0;
     this.downloadPercentage = 0;

@@ -12,15 +12,16 @@ import {
 import { AppGlobalService } from '../../service/app-global.service';
 import {
   ProfileService,
-  TabsPage,
+  // TabsPage,
   InteractSubtype,
   PageId,
   InteractType,
   ProfileType,
-  ContainerService,
+  // ContainerService,
   FrameworkService,
   SuggestedFrameworkRequest
 } from 'sunbird';
+import { TabsPage } from '@app/pages/tabs/tabs';
 import {
   Component,
   ViewChild
@@ -54,6 +55,7 @@ import * as _ from 'lodash';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { CommonUtilService } from '../../service/common-util.service';
+import { ContainerService } from '../../service/container-service';
 
 @IonicPage()
 @Component({

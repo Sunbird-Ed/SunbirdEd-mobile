@@ -1,160 +1,60 @@
 
-<ion-content padding [ngClass]="{'content-with-footer': content}" *ngIf="!new">
-	<div class="content-details-holder" *ngIf="content">
-		<h6 class="font-size-20">{{content?.name}}</h6>
-		<!-- Owner and download info -->
-		<ion-grid class="padding-0">
-			<div *ngIf="content?.creator || content?.owner">
-				<span class="text-gray-color">{{ 'CONTENT_CREATED_BY' | translate }}</span>
-				<span class="content-meta-title">{{ content?.creator || content?.owner }}</span>
-			</div>
-			<ion-row class="padding-top-10 credits" (click)="viewCredits()" *ngIf="content?.creator || content?.attributions">
-				{{ 'CREDITS' | translate }}
-			</ion-row>
-			<ion-row class="padding-top-10">
-				<ion-col class="padding-0">
-					<div class="size_txt padding-bottom-5" no-margin>
-						<span class="content-size">{{ content?.contentType }}</span>
-						<!--Size 0 if not -->
-						<span class="content-size">[{{ content?.size | fileSize }}] &lrm;</span>
-					</div>
-					<ion-row>
-						<div class="col-2">
-							<rating align-items-start (click)="rateContent('manual');" [(ngModel)]="content.me_averageRating" readOnly="true"
-							 max="5" no-padding></rating>
-						</div>
-						<div class="margin-top-3 text-gray-color col-1">
-							&nbsp;({{ content?.me_totalRatings ? content?.me_totalRatings : 0 }})
-						</div>
-					</ion-row>
-
-				</ion-col>
-				<ion-col offset-2 *ngIf="content.me_totalDownloads">
-					<div class="padding-bottom-5 text-align-end content-meta-title">{{ content?.me_totalDownloads }}</div>
-					<div float-right class="text-gray-color">{{ 'DOWNLOADS' | translate }}</div>
-				</ion-col>
-			</ion-row>
-		</ion-grid>
-		<br />
-
-		<!-- Read more / less -->
-		<div class="about-section" *ngIf="content?.description || content?.gradeLevel || content?.subject || content?.board">
-			<h6 class="padding-10 background-gray font-size-20">{{ 'ABOUT' | translate }}</h6>
-			<p *ngIf="!showMoreFlag" class="text-gray-color">
-				{{ (content?.description && content?.description?.length > 100) ? (content?.description | slice:0:99) + '...' :
-				(content?.description)
-				}} </p>
-			<div class="course-details" *ngIf="showMoreFlag">
-				<p *ngIf="content?.description && content?.description?.length" class="text-gray-color">
-					{{ content?.description }}
-				</p>
-				<div *ngIf="content?.gradeLevel && content?.gradeLevel?.length" margin-top>
-					<div class="content-meta-title" text-uppercase>{{ 'CLASS' | translate }}</div>
-					<span class="text-gray-color">{{content?.gradeLevel}}</span>
-				</div>
-				<div *ngIf="content?.subject" margin-top>
-					<div class="content-meta-title" text-uppercase>{{ 'SUBJECT' | translate }}</div>
-					<span class="text-gray-color">{{content?.subject}}</span>
-				</div>
-				<div *ngIf="content?.board" margin-top>
-					<div class="content-meta-title" text-uppercase>{{ 'BOARD' | translate }}</div>
-					<span class="text-gray-color">{{content?.board}}</span>
-				</div>
-
-				<div *ngIf="content?.medium" margin-top>
-					<div class="content-meta-title" text-uppercase>{{ 'MEDIUM' | translate }}</div>
-					<span class="text-gray-color">{{content?.medium}}</span>
-				</div>
-			</div>
-
-			<div class="read-more" *ngIf="content?.description?.length > 100 || content?.gradeLevel || content?.subject" (click)="showMoreFlag = !showMoreFlag">
-				<div *ngIf="showMoreFlag" class="padding-top-10">
-					<ion-grid no-padding>
-						<ion-row>
-							<ion-col col-3 class="col-3-no-space" (click)="readLessorReadMore('READ_LESS')">
-								<span> {{ 'READ_LESS' | translate }} </span>
-							</ion-col>
-							<ion-col col-1>
-								<ion-icon class="line-height" name="ios-arrow-up"></ion-icon>
-							</ion-col>
-						</ion-row>
-					</ion-grid>
-				</div>
-				<div *ngIf="!showMoreFlag">
-
-					<ion-grid no-padding>
-						<ion-row>
-							<ion-col col-3 class="col-3-no-space" (click)="readLessorReadMore('READ_MORE`')">
-								<span> {{ 'READ_MORE' | translate }} </span>
-							</ion-col>
-							<ion-col col-1>
-								<ion-icon class="line-height" name="ios-arrow-down"></ion-icon>
-							</ion-col>
-						</ion-row>
-					</ion-grid>
-				</div>
-			</div>
-		</div>
-		<br />
-		<div class="license-section padding-10 background-gray" *ngIf="content?.license">
-			<div class="row" *ngIf="showLicense">
-				<span *ngIf="content?.license">
-					<div class="size_txt content-meta-title">{{ 'LICENSE' | translate }}</div>
-					<div class="margin-top-5 text-gray-color">{{ content?.license }}</div>
-				</span>
-			</div>
-			<span class="read-more text-gray-color">
-				<span *ngIf="showLicense" (click)="showLicense = false">
-					<br /> {{ 'HIDE_CREDITS_INFO' | translate }}
-					<ion-icon name="ios-arrow-up"></ion-icon>
-				</span>
-				<span *ngIf="!showLicense" (click)="showLicense = true">
-					{{ 'VIEW_CREDITS_INFO' | translate }}
-					<ion-icon name="ios-arrow-down"></ion-icon>
-				</span>
-			</span>
-		</div>
-		<div padding-top></div>
-	</div>
-</ion-content>
 <!-- New content details -->
-<ion-content *ngIf="new">
-	<div class="sb-play-container sb-player-container" *ngIf="content?.downloadable || content?.streamingUrl">
-		<img class="sb-player-container" src='{{content?.appIcon}}'>
-		<div class="sb-circle">
-			<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
-		</div>
-		<div class="sb-common-player-group sb-play-title-group">
-			<button ion-button clear icon-only class="sb-common-title" (click)="showSwitchUserAlert(false)">
-				<ion-icon ios="ios-play" md="md-play" class="sb-common-white-icon"></ion-icon>
-			</button>
-		</div>
-		<div class="sb-online-message">You are online now</div>
-	</div>
-	<div class="sb-download-container sb-player-container" *ngIf="!content?.downloadable && !content?.streamingUrl">
+<ion-content *ngIf="new && content">
+	<div class="sb-play-container sb-player-container" *ngIf="commonUtilService.networkInfo.isNetworkAvailable">
+		<div *ngIf="content?.downloadable">
 			<img class="sb-player-container" src='{{content?.appIcon}}'>
-		<div class="sb-circle">
-			<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
-		</div>
-		<div class="sb-common-player-group sb-common-title-group">
-			<button ion-button clear icon-only class="sb-common-title">
-				<ion-icon ios="ios-cloud-download" md="md-cloud-download" class="sb-common-white-icon"></ion-icon>
-			</button>
-			<div class="sb-common-footer-text">Please download to play</div>
-		</div>
-	</div>
-	<div class="sb-player-container sb-offline-container" *ngIf="!commonUtilService.networkInfo.isNetworkAvailable">
-		<div class="sb-circle">
-			<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
-		</div>
-		<div class="sb-common-player-group sb-common-title-group">
-			<div class="sb-offline-title">
-				<ion-icon ios="ios-notifications-off" md="md-notifications-off" class="sb-offline-white-icon"></ion-icon>
+			<div class="sb-overlay-container">
+				<div class="sb-circle" (click)="handleNavBackButton()">
+					<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
+				</div>
+				<div class="sb-common-player-group sb-play-title-group">
+					<button ion-button clear icon-only class="sb-common-title" (click)="showSwitchUserAlert(false)">
+						<ion-icon ios="ios-play" md="md-play" class="sb-common-white-icon"></ion-icon>
+					</button>
+				</div>
 			</div>
-			<div class="sb-common-footer-text">You are not connected to the internet</div>
-			<div class="sb-common-footer-text sb-sub-footer">Only downloaded content can be played offline</div>
+		</div>
+		<div *ngIf="!content?.downloadable">
+			<div class="sb-circle" (click)="handleNavBackButton()">
+				<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
+			</div>
+			<div class="sb-common-player-group sb-common-title-group">
+				<button ion-button clear icon-only class="sb-common-title">
+					<ion-icon ios="ios-cloud-download" md="md-cloud-download" class="sb-common-white-icon"></ion-icon>
+				</button>
+				<div class="sb-common-footer-text">Please download to play</div>
+			</div>
 		</div>
 	</div>
+	<div *ngIf="!commonUtilService.networkInfo.isNetworkAvailable">
+		<div class="sb-play-container sb-player-container" *ngIf="content?.downloadable">
+			<img class="sb-player-container" src='{{content?.appIcon}}'>
+			<div class="sb-overlay-container">
+				<div class="sb-circle" (click)="handleNavBackButton()">
+					<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
+				</div>
+				<div class="sb-common-player-group sb-play-title-group">
+					<button ion-button clear icon-only class="sb-common-title" (click)="showSwitchUserAlert(false)">
+						<ion-icon ios="ios-play" md="md-play" class="sb-common-white-icon"></ion-icon>
+					</button>
+				</div>
+			</div>
+		</div>
+		<div class="sb-player-container sb-offline-container" *ngIf="!content?.downloadable">
+			<div class="sb-circle" (click)="handleNavBackButton()">
+				<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
+			</div>
+			<div class="sb-common-player-group sb-common-title-group">
+				<div class="sb-offline-title">
+					<ion-icon ios="ios-notifications-off" md="md-notifications-off" class="sb-offline-white-icon"></ion-icon>
+				</div>
+				<div class="sb-common-footer-text">You are not connected to the internet</div>
+				<div class="sb-common-footer-text sb-sub-footer">Only downloaded content can be played offline</div>
+			</div>
+		</div>
+	</div>
+
 
 	<div class="breadcrumb-container">
 		<div class="step-indicator">
@@ -168,13 +68,11 @@
 	</div>
 	<div class="sb-detail-card-info">
 		<div class="sb-dt-card">
-			<div class="sb-dt-content">
-
+			<div class="sb-dt-content sb-dt-content-main">
 				<div class="left">
-
 					<div class="sb-dt-title"> {{content?.name}}</div>
 					<div class="sb-dt-source">
-						<span class="sb-by">by</span>
+						<span class="sb-by">{{ 'CONTENT_CREATED_BY' | translate }}</span>
 						<span class="sb-user">{{content?.creator || content?.owner}}</span>
 					</div>
 					<div class="sb-dt-class-info">
@@ -182,15 +80,17 @@
 						<span class="sb-separator-dot"></span>
 						<span class="sb-dt-label sb-dt-subject">{{content?.subject}}</span>
 					</div>
-					<div>
-						<button ion-button outline small>Practice</button>
+				</div>
+			</div>
+
+
+			<div class="sb-dt-content pt-0">
+				<div class="left" *ngIf="content?.resourceType">
+					<div class="sb-practice">
+						<button ion-button outline small>{{content?.resourceType}}</button>
 					</div>
 				</div>
-
 				<div class="right">
-					<div class="img-container">
-							<img src='{{content?.appIcon}}'>
-					</div>
 					<div (click)="rateContent('manual')" class="sb-rating-view">
 						<span class="sb-rating-value">{{ content?.me_totalRatings ? content?.me_totalRatings : 0 }}</span>
 						<span class="sb-rating-star">
@@ -198,7 +98,6 @@
 						</span>
 					</div>
 				</div>
-
 			</div>
 
 			<div class="sb-separator-line"></div>
@@ -206,10 +105,28 @@
 			<div class="sb-dt-card-actions">
 
 				<div class="sb-btn-tile-group">
-					<button *ngIf="!content?.downloadable" (click)="downloadContent()" ion-button clear icon-only class="sb-btn-tile">
-						<ion-icon ios="ios-cloud-download" md="md-cloud-download" class="sb-dt-card-blue-icon"></ion-icon>
-						<span class="sb-btn-footer-text">{{'DOWNLOAD' | translate}}</span>
-					</button>
+					<div *ngIf="content && !appGlobalService?.CONTENT_STREAMING_ENABLED ">
+						<button *ngIf="!content?.downloadable" (click)="downloadContent()" ion-button clear icon-only class="sb-btn-tile">
+							<ion-icon ios="ios-cloud-download" md="md-cloud-download" class="sb-dt-card-blue-icon"></ion-icon>
+							<span class="sb-btn-footer-text">{{'DOWNLOAD' | translate}}</span>
+						</button>
+
+					</div>
+					<div *ngIf="content && appGlobalService?.CONTENT_STREAMING_ENABLED">
+						<div *ngIf="!content.streamingUrl">
+							<button *ngIf="!content?.downloadable" (click)="downloadContent()" ion-button clear icon-only class="sb-btn-tile">
+								<ion-icon ios="ios-cloud-download" md="md-cloud-download" class="sb-dt-card-blue-icon"></ion-icon>
+								<span class="sb-btn-footer-text">{{'DOWNLOAD' | translate}}</span>
+							</button>
+						</div>
+
+						<div *ngIf="content.streamingUrl">
+							<button *ngIf="!content?.downloadable" (click)="downloadContent()" ion-button clear icon-only class="sb-btn-tile">
+								<ion-icon ios="ios-cloud-download" md="md-cloud-download" class="sb-dt-card-blue-icon"></ion-icon>
+								<span class="sb-btn-footer-text">{{'DOWNLOAD' | translate}}</span>
+							</button>
+						</div>
+					</div>
 					<button ion-button clear icon-only class="sb-btn-tile" *ngIf="content?.downloadable" (click)="deleteContent()">
 						<ion-icon ios="ios-trash" md="md-trash" class="sb-dt-card-danger-icon"></ion-icon>
 						<span class="sb-btn-footer-text">{{'DELETE' | translate}}</span>
@@ -226,44 +143,45 @@
 			</div>
 		</div>
 	</div>
+
 	<div class="sb-content-info-container">
 
-		<div class="sb-content-info-items">
+		<div class="sb-content-info-items" *ngIf="content?.description || content?.gradeLevel || content?.subject || content?.board">
 			<div class="sb-content-info-title">{{'ABOUT' | translate}}</div>
 
 			<ion-card class="sb-content-info-card">
-				<div class="sb-content-info-heading">{{content?.name}}</div>
-				<div class="sb-info">
-					<div class="sb-content-title">{{content?.board}}</div>
-					<div class="sb-content-title-data">State(Tamilnadu)</div>
+				<div class="sb-content-info-heading" *ngIf="content?.description && content?.description?.length">{{content?.description}}</div>
+				<div class="sb-info" *ngIf="content?.board">
+					<div class="sb-content-title">{{ 'BOARD' | translate }}</div>
+					<div class="sb-content-title-data">{{content?.board}}</div>
 				</div>
-				<div class="sb-info">
+				<div class="sb-info" *ngIf="content?.medium">
 					<div class="sb-content-title">{{'MEDIUM' | translate}}</div>
 					<div class="sb-content-title-data">{{content?.medium}}</div>
 				</div>
-				<div class="sb-info">
+				<div class="sb-info" *ngIf="content?.gradeLevel && content?.gradeLevel?.length">
 					<div class="sb-content-title">{{'CLASS' | translate}}</div>
 					<div class="sb-content-title-data">{{content?.gradeLevel}}</div>
 				</div>
-				<div class="sb-info">
+				<div class="sb-info" *ngIf="content?.subject">
 					<div class="sb-content-title">{{'SUBJECT' | translate}}</div>
 					<div class="sb-content-title-data">{{content?.subject}}</div>
 				</div>
-				<div class="sb-info">
+				<div class="sb-info" *ngIf="content?.license">
 					<div class="sb-content-title">{{'LICENSE' | translate}}</div>
-					<div class="sb-content-title-data">MIT CCBY</div>
+					<div class="sb-content-title-data">{{content?.license}}</div>
 				</div>
-				<div class="sb-info">
+				<div class="sb-info" *ngIf="content?.creators || content?.creator">
 					<div class="sb-content-title">{{'CREATORS' | translate}}</div>
-					<div class="sb-content-title-data">{{content?.creator|| content?.owner}}</div>
+					<div class="sb-content-title-data">{{mergeProperties('creators', 'creator')}}</div>
 				</div>
-				<div class="sb-info">
+				<div class="sb-info" *ngIf="content?.contributors || content?.owner">
 					<div class="sb-content-title">{{'CONTRIBUTORS' | translate}}</div>
-					<div class="sb-content-title-data">MIT CCBY</div>
+					<div class="sb-content-title-data"> {{mergeProperties('contributors', 'owner')}}</div>
 				</div>
-				<div class="sb-info">
-					<div class="sb-content-title">{{'ACKNOWLEDGEMENT' | translate}}</div>
-					<div class="sb-content-title-data">MIT CCBY</div>
+				<div class="sb-info" *ngIf="content?.attributions">
+					<div class="sb-content-title">{{'ATTRIBUTIONS' | translate}}</div>
+					<div class="sb-content-title-data">{{content?.attributions}}</div>
 				</div>
 
 			</ion-card>
@@ -303,8 +221,8 @@
 
 	<ion-footer *ngIf="content && appGlobalService?.CONTENT_STREAMING_ENABLED">
 		<ion-toolbar padding *ngIf="!content?.streamingUrl">
-			<button ion-button block *ngIf="!content?.downloadable && playOnlineSpinner" (click)="showSwitchUserAlert(true)"
-			 text-uppercase [disabled]="!content?.streamingUrl" [ngStyle]="{'opacity':!commonUtilService.networkInfo.isNetworkAvailable  || !content?.streamingUrl ? '0.4': '1' }">{{'PLAY_ONLINE'
+			<button ion-button block *ngIf="content?.lastUpdatedTime != 0 && commonUtilService?.networkInfo?.isNetworkAvailable && !content?.downloadable && playOnlineSpinner"
+			 (click)="showSwitchUserAlert(true)" text-uppercase [disabled]="!content?.streamingUrl" [ngStyle]="{'opacity':!commonUtilService.networkInfo.isNetworkAvailable  || !content?.streamingUrl ? '0.4': '1' }">{{'PLAY_ONLINE'
 				| translate}}
 				<ion-spinner icon="spiral" class="button-spinner"></ion-spinner>
 			</button>

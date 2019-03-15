@@ -21,7 +21,7 @@ import {
   UpdateUserInfoRequest,
   UserProfileService,
   ProfileService,
-  ContainerService,
+  // ContainerService,
   TabsPage,
   FrameworkService,
   SuggestedFrameworkRequest
@@ -35,6 +35,7 @@ import {
   FrameworkCategory
 } from '@app/app';
 import { Select } from 'ionic-angular';
+import { ContainerService } from '../../service/container-service';
 
 @IonicPage()
 @Component({
@@ -311,7 +312,7 @@ export class CategoriesEditPage {
       if (this.showOnlyMandatoryFields) {
         this.gradeSelect.open();
       } else {
-        this.showErrorToastMessage('GRADE');
+        this.showErrorToastMessage('CLASS');
       }
     } else {
       this.submitForm(formVal);

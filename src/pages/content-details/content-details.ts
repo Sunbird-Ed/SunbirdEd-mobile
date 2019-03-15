@@ -238,7 +238,7 @@ export class ContentDetailsPage {
       this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
     }
     this.popToPreviousPage(true);
-    this.backButtonFunc();
+   // this.backButtonFunc();
   }
 
   handleDeviceBackButton() {
@@ -252,7 +252,7 @@ export class ContentDetailsPage {
       if (this.shouldGenerateEndTelemetry) {
         this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
       }
-      this.backButtonFunc();
+      // this.backButtonFunc();
     }, 11);
   }
 
@@ -469,6 +469,7 @@ export class ContentDetailsPage {
 
   extractApiResponse(data) {
     this.content = data.result.contentData;
+   // console.log('DATA RESULT Content  ==>', this.content);
     this.content.downloadable = data.result.isAvailableLocally;
     if (this.content.appIcon) {
       if (this.content.appIcon.includes('http:') || this.content.appIcon.includes('https:')) {
@@ -483,6 +484,7 @@ export class ContentDetailsPage {
       }
     }
 
+    this.content.lastUpdatedTime = data.result.lastUpdatedTime;
     this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
     this.content.contentMarker = data.result.contentMarker ? data.result.contentMarker : [];
 
@@ -551,7 +553,7 @@ export class ContentDetailsPage {
     }
 
     if (this.downloadAndPlay) {
-      if (!this.content.downloadable) {
+      if (!this.content.downloadable || this.isUpdateAvail) {
         /**
          * Content is not downloaded then call the following method
          * It will download the content and play it
@@ -779,6 +781,9 @@ export class ContentDetailsPage {
             if (res.data.identifier === this.identifier) {
               if (res.data.streamingUrl) {
                 this.content.streamingUrl = res.data.streamingUrl;
+                const playContent = JSON.parse(this.content.playContent);
+                playContent.contentData.streamingUrl = res.data.streamingUrl;
+                this.content.playContent = JSON.stringify(playContent);
               } else {
                 this.playOnlineSpinner = false;
               }
@@ -1175,5 +1180,26 @@ export class ContentDetailsPage {
       });
     popover.present();
   }
+
+   /* SUDO
+    if firstprperty is there and secondprperty is not there, then return firstprperty value
+    else if firstprperty is not there and secondprperty is there, then return secondprperty value
+    else do the merger of firstprperty and secondprperty value and return merged value
+  */
+ mergeProperties(firstProp, secondProp) {
+  if (this.content[firstProp] && !this.content[secondProp]) {
+    return this.content[firstProp];
+  } else if (!this.content[firstProp] && this.content[secondProp]) {
+    return this.content[secondProp];
+  } else {
+    let first: any;
+    let second: any;
+    first = this.content[firstProp].split(', ');
+    second = this.content[secondProp].split(', ');
+    first = second.concat(first);
+    first = Array.from(new Set(first));
+    return first.join(', ');
+  }
+}
 }
 

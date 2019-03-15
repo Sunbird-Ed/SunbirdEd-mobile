@@ -7,7 +7,7 @@ import {TranslateLoader, TranslateModule, TranslateService} from '@ngx-translate
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {PluginModules} from './module.service';
-import {EventService, FrameworkModule, TabsPage} from 'sunbird';
+import {EventService, FrameworkModule} from 'sunbird';
 import {AppVersion} from '@ionic-native/app-version';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import {ImageLoader, ImageLoaderConfig, IonicImageLoader} from 'ionic-image-loader';
@@ -15,6 +15,8 @@ import {FileTransfer, FileTransferObject} from '@ionic-native/file-transfer';
 import {FileOpener} from '@ionic-native/file-opener';
 import {AppGlobalService} from '../service/app-global.service';
 import {CourseUtilService} from '../service/course-util.service';
+import {TabsPage} from '../pages/tabs/tabs';
+import {ContainerService} from '../service/container-service';
 import {UpgradePopover} from '../pages/upgrade/upgrade-popover';
 import {TelemetryGeneratorService} from '../service/telemetry-generator.service';
 import {QRScannerResultHandler} from '../pages/qrscanner/qrscanresulthandler.service';
@@ -77,6 +79,7 @@ export const createTranslateLoader = (httpClient: HttpClient) => {
     CommonUtilService,
     LogoutHandlerService,
     TncUpdateHandlerService,
+    ContainerService,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ],
   exports: [

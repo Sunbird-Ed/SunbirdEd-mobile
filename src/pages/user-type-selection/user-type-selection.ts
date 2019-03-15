@@ -13,24 +13,26 @@ import {
 } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import {
-  TabsPage,
+  // TabsPage,
   SharedPreferences,
   InteractType,
   InteractSubtype,
   Environment,
   PageId,
   ImpressionType,
-  ContainerService,
+  // ContainerService,
   Profile,
   UserSource,
   ProfileType,
   ProfileService
 } from 'sunbird';
+import { TabsPage } from '@app/pages/tabs/tabs';
 import { Map, initTabs, GUEST_TEACHER_TABS, GUEST_STUDENT_TABS, PreferenceKey } from '@app/app';
 import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
 import { SunbirdQRScanner } from '@app/pages/qrscanner';
 import { ProfileSettingsPage } from '@app/pages/profile-settings/profile-settings';
 import { LanguageSettingsPage } from '@app/pages/language-settings/language-settings';
+import { ContainerService } from '../../service/container-service';
 
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
