@@ -435,7 +435,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.storyAndWorksheets = [];
     const loader = this.commonUtilService.getLoader();
     loader.present();
-    this.newContentService.getGroupByPage(this.getGroupByPageReq).toPromise()
+    this.newContentService.searchContentGroupedByPageSection(this.getGroupByPageReq).toPromise()
       .then((response: any) => {
         loader.dismiss();
         this.ngZone.run(() => {
