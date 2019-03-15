@@ -250,7 +250,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   async presentToastWithOptions() {
     this.toast = await this.toastController.create({
-      message: 'You are offline',
+      message: this.commonUtilService.translateMessage('NO_INTERNET_TITLE'),
       showCloseButton: true,
       position: 'top',
       closeButtonText: '',

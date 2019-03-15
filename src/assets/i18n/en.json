@@ -264,6 +264,7 @@
   "OFF": "Off",
   "RATE": "Rate",
   "OFFLINE_WARNING": "Ensure your device is connected to the internet",
+  "OFFLINE_WARNING_ETBUI": "Please connect to the internet to view the content",
   "OKAY": "OK",
   "ONBOARD_SCAN_QR_CODE": "Scan QR Codes here",
   "ONBOARD_SCAN_QR_CODE_DESC": "You can now scan QR codes from your textbook to view associated {{%s}} content",
