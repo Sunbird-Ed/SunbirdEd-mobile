@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-plugin-genie-sdk" version="1.0.0">
+    <name>Cordova Plugin Template</name>
+    <description></description>
+    <license>MIT</license>
+    <keywords></keywords>
+
+    <js-module src="www/plugin.js" name="plugin">
+        <clobbers target="GenieSDK" />
+    </js-module>
+    <js-module src="www/telemetry.js" name="telemetry">
+        <clobbers target="telemetry" />
+    </js-module>
+    <js-module src="www/content.js" name="content">
+        <clobbers target="content" />
+    </js-module>
+    <js-module src="www/auth.js" name="auth">
+        <clobbers target="auth" />
+    </js-module>
+    <js-module src="www/profile.js" name="profile">
+        <clobbers target="profile" />
+    </js-module>
+    <js-module src="www/userprofile.js" name="userprofile">
+        <clobbers target="userprofile" />
+    </js-module>
+    <js-module src="www/framework.js" name="framework">
+        <clobbers target="framework" />
+    </js-module>
+    <js-module src="www/event.js" name="event">
+        <clobbers target="event" />
+    </js-module>
+    <js-module src="www/downloadService.js" name="downloadService">
+        <clobbers target="downloadService" />
+    </js-module>
+    <js-module src="www/course.js" name="course">
+        <clobbers target="course" />
+    </js-module>
+    <js-module src="www/pageAssemble.js" name="pageAssemble">
+        <clobbers target="pageAssemble" />
+    </js-module>
+    <js-module src="www/permission.js" name="permission">
+        <clobbers target="permission" />
+    </js-module>
+    <js-module src="www/announcement.js" name="announcement">
+        <clobbers target="announcement" />
+    </js-module>
+    <js-module src="www/preferences.js" name="preferences">
+        <clobbers target="preferences" />
+    </js-module>
+    <js-module src="www/share.js" name="share">
+        <clobbers target="share" />
+    </js-module>
+    <js-module src="www/genieSdkUtil.js" name="genieSdkUtil">
+        <clobbers target="genieSdkUtil" />
+    </js-module>
+    <js-module src="www/form.js" name="form">
+        <clobbers target="form" />
+    </js-module>
+    <js-module src="www/report.js" name="report">
+        <clobbers target="report" />
+    </js-module>
+    <js-module src="www/dialcode.js" name="dialcode">
+        <clobbers target="dialcode" />
+    </js-module>
+    <js-module src="www/group.js" name="group">
+        <clobbers target="group" />
+    </js-module>
+    <!-- android -->
+    <platform name="android">
+
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="GenieSDK">
+                <param name="android-package" value="org.genie.GenieSDK" />
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="application">
+            <receiver
+            android:name="org.sunbird.utm.ReferrerReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
+        </config-file>
+
+        <hook type="after_prepare" src="add_application_name.js" />
+
+        <source-file src="src/android/org/genie/GenieSDK.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/genie/ReportHandler.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/genie/ShareHandler.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/genie/TelemetryHandler.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/genie/ContentHandler.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/genie/AuthHandler.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/genie/ProfileHandler.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/genie/UserProfileHandler.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/genie/FrameworkHandler.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/genie/GenieEventHandler.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/genie/GenieSdkEventListener.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/genie/DownloadService.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/genie/CourseHandler.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/genie/PageHandler.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/genie/PermissionHandler.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/genie/AnnouncementHandler.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/genie/KeycloakOAuthSessionService.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/genie/SharedPreferencesHandler.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/genie/GenieSdkUtilHandler.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/genie/FormHandler.java" target-dir="src/org/genie" />
+        <source-file src="src/android/org/genie/DialCodeHandler.java" target-dir="src/org/genie" />
+        <source-file src="src/android/org/sunbird/SunbirdApplication.java" target-dir="src/org/sunbird/" />
+        <source-file src="src/android/org/sunbird/ForegroundService.java" target-dir="src/org/sunbird/" />
+        <source-file src="src/android/org/genie/SDKParams.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/genie/GroupHandler.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/genie/Constants.java" target-dir="src/org/genie/" />
+        <source-file src="src/android/org/sunbird/sync/SyncConfiguration.java" target-dir="src/org/sunbird/sync" />
+        <source-file src="src/android/org/sunbird/sync/TelemetrySyncOperation.java" target-dir="src/org/sunbird/sync" />
+        <source-file src="src/android/org/sunbird/utm/ReferrerReceiver.java" target-dir="src/org/sunbird/utm" />
+        <source-file src="src/android/org/sunbird/utm/UTMData.java" target-dir="src/org/sunbird/utm" />
+
+
+    </platform>
+
+    <!-- ios -->
+    <!-- <platform name="ios">
+        <js-module src="www/plugin.js" name="plugin">
+            <runs/>
+            <clobbers target="GenieSDK" />
+        </js-module>
+        <config-file target="config.xml" parent="/*">
+            <feature name="MyCordovaPlugin">
+                <param name="ios-package" value="MyCordovaPlugin" onload="true" />
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/MyCordovaPlugin.h" />
+        <source-file src="src/ios/MyCordovaPlugin.m" />
+    </platform> -->
+</plugin>

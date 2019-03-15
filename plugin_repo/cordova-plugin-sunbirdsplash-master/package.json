@@ -1,0 +1,12 @@
+{
+  "name": "cordova-plugin-sunbirdsplash",
+  "version": "1.0.0",
+  "cordova": {
+    "id": "cordova-plugin-sunbirdsplash",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "description": "A starting point for a Cordova Plugin"
+}

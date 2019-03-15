@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    id="cordova-plugin-file-support"
+    version="1.0.0">
+    <name>Cordova Plugin for adding support file</name>
+    <description></description>
+    <license>MIT</license>
+    <keywords></keywords>
+    <dependency id="cordova-plugin-genie-sdk" url="https://github.com/project-sunbird/cordova-plugin-genie-sdk.git"/>
+    <js-module src="www/plugin.js" name="plugin">
+        <clobbers target="supportfile" />
+    </js-module>
+    
+    <!-- android -->
+    <platform name="android">
+
+      <config-file target="res/xml/config.xml" parent="/*">
+        <feature name="supportfile">
+          <param name="android-package" value="org.sunbird.support.SunbirdSupport" />
+          <param name="onload" value="true" />
+        </feature>
+      </config-file>
+
+      <source-file src="src/android/org/sunbird/support/SunbirdFileHandler.java" target-dir="src/org/sunbird/support" />
+      <source-file src="src/android/org/sunbird/support/DeviceSpec.java" target-dir="src/org/sunbird/support" />
+      <source-file src="src/android/org/sunbird/support/SunbirdSupport.java" target-dir="src/org/sunbird/support" />
+
+    </platform>
+
+</plugin>

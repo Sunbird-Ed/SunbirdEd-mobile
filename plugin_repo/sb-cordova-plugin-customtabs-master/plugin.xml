@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="sb-cordova-plugin-customtabs"
+        version="1.0.0">
+    <name>Cordova plugin for launching url in custom tabs.</name>
+    <description></description>
+    <license>MIT</license>
+    <keywords></keywords>
+
+    <js-module src="www/plugin.js" name="customtabs">
+        <clobbers target="customtabs"/>
+    </js-module>
+
+    <preference name="URL_SCHEME" />
+
+    <preference name="URL_HOST" />
+
+    <framework src="build-extras.gradle" custom="true" type="gradleReference"/>
+
+    <!-- android -->
+    <platform name="android">
+
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="customtabs">
+                <param name="android-package" value="org.sunbird.customtabs.CustomTabsPlugin"/>
+                <param name="onload" value="true"/>
+            </feature>
+        </config-file>
+
+        <source-file src="src/android/org/sunbird/customtabs/CustomTabsPlugin.java" target-dir="src/org/sunbird/customtabs"/>
+        <source-file src="src/android/org/sunbird/customtabs/CallbackActivity.java" target-dir="src/org/sunbird/customtabs"/>
+        <source-file src="src/android/org/sunbird/customtabs/CustomTabsHelper.java" target-dir="src/org/sunbird/customtabs"/>
+        <source-file src="src/android/org/sunbird/customtabs/CordovaContext.java" target-dir="src/org/sunbird/customtabs"/>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <activity android:name="org.sunbird.customtabs.CallbackActivity" android:label="@string/app_name" android:theme="@android:style/Theme.NoDisplay">
+                <intent-filter>
+                    <action android:name="android.intent.action.VIEW" />
+
+                    <category android:name="android.intent.category.DEFAULT" />
+                    <category android:name="android.intent.category.BROWSABLE" />
+
+                    <data android:host="$URL_HOST" android:scheme="$URL_SCHEME" />
+
+                </intent-filter>
+            </activity>
+        </config-file>
+
+    </platform>
+
+</plugin>
