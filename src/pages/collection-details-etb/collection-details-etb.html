@@ -6,10 +6,10 @@
 -->
 <ion-header>
   <ion-navbar>
-    <ion-title>
-      <!-- <ion-icon md="md-share" float-right></ion-icon> -->
-    </ion-title>
-    <ion-buttons end *ngIf="!isDepthChild">
+    <!-- <ion-title>
+      <ion-icon md="md-share" float-right></ion-icon>
+    </ion-title> -->
+    <!-- <ion-buttons end *ngIf="!isDepthChild">
       <button ion-button icon-only (click)="share()">
         <ion-icon md="md-share" float-right></ion-icon>
       </button>
@@ -17,14 +17,15 @@
         style="font-size: 1.8rem;">
         <ion-icon md="md-more" float-end></ion-icon>
       </button>
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-navbar>
 </ion-header>
 
 
 <ion-content no-padding>
   <div class="p-8">
-    <detail-card (downloadAllContent)="showDownloadConfirmationAlert($event)" [contentDetail]="contentDetail"
+    <detail-card (downloadAllContent)="showDownloadConfirmationAlert($event)" (shareEvent)="share()"
+      (showOverflowMenuEvent)="showOverflowMenu($event)" [contentDetail]="contentDetail"
       [localImage]="localImage" [showDownloadBtn]="showDownloadBtn" [isDepthChild]='isDepthChild'
       [isDownloadStarted]="isDownloadStarted" [defaultAppIcon]="defaultAppIcon"></detail-card>
 
@@ -91,14 +92,14 @@
         <ion-grid class="sb-accordian-header">
           <ion-row (click)="toggleGroup(i)">
             <ion-col col-11>
-              <div class="sb-topic-text"> UNIT 1.2</div>
+              <div class="sb-topic-text"> {{item?.contentData?.name}} </div>
             </ion-col>
-            <ion-col col-1 *ngIf="!isGroupShown(100)">
+            <ion-col col-1 *ngIf="!isGroupShown(i)">
               <div>
                 <ion-icon ios="ios-arrow-dropdown" md="md-arrow-dropdown" class="sb-accordian-arrow"></ion-icon>
               </div>
             </ion-col>
-            <ion-col col-1 *ngIf="isGroupShown(100)">
+            <ion-col col-1 *ngIf="isGroupShown(i)">
               <div>
                 <ion-icon ios="ios-arrow-dropup" md="md-arrow-dropup" class="sb-accordian-arrow"></ion-icon>
               </div>
@@ -144,12 +145,14 @@
             (click)="navigateToDetailsPage(item, depth + '.' + (i + 1))">
             <ion-col col-1>
               <div>
-                <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle" class="sb-play-icon">
+                <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle"
+                [ngClass]="{'sb-accordian-grey-icon': !commonUtilService.networkInfo.isNetworkAvailable && !childData?.isAvailableLocally, 'sb-play-icon': commonUtilService.networkInfo.isNetworkAvailable || childData?.isAvailableLocally}">
                 </ion-icon>
               </div>
             </ion-col>
             <ion-col col-11>
-              <div [ngClass]="{'sb-play-selected':item?.isAvailableLocally,'sb-play-unselected':!item?.isAvailableLocally}">
+              <div [ngClass]="{'sb-accordian-grey-text': !commonUtilService.networkInfo.isNetworkAvailable && !childData?.isAvailableLocally,
+              'sb-play-selected':childData?.isAvailableLocally,'sb-play-unselected':!childData?.isAvailableLocally}">
                 {{item?.contentData?.name}}
                 <span>
                     <ion-icon class="sb-checkmark-icon" name="checkmark-circle-outline" *ngIf="item?.isAvailableLocally"></ion-icon>
@@ -169,14 +172,14 @@
           </div>
           <!-- </div> -->
         </ion-grid>
-        <div class="sb-separator-line"></div>
+        <!-- <div class="sb-separator-line"></div> -->
         <div class="sb-hidden-content px-16 pt-8" *ngIf="isGroupShown(i) && (item?.children && item?.children?.length)">
           <div *ngFor="let firstChildren of item?.children; let j = index;">
             <!-- <div class="separator-line"></div> -->
             <div class="sb-topics-container">
-              <collection-child [childData]="firstChildren" [index]="j" [depth]="depth"
-                [corRelationList]="corRelationList" [isDepthChild]="isDepthChild"
-                [isOnline]="commonUtilService.networkInfo.isNetworkAvailable"></collection-child>
+              <collection-child
+                [childData]="firstChildren" [index]="j" [depth]="depth"
+                [corRelationList]="corRelationList" [isDepthChild]="isDepthChild"></collection-child>
             </div>
           </div>
         </div>
