@@ -1,6 +1,6 @@
 import {CommonUtilService} from './../../../service/common-util.service';
 import {NavController} from 'ionic-angular/navigation/nav-controller';
-import {Component, NgZone} from '@angular/core';
+import {Component, NgZone, Inject} from '@angular/core';
 import {LoadingController, NavParams} from 'ionic-angular';
 import {
   DeviceInfoService,
@@ -19,7 +19,11 @@ import {UserReportPage} from '../user-report/user-report';
 import {File} from '@ionic-native/file';
 import {FileTransfer, FileTransferObject} from '@ionic-native/file-transfer';
 import {DatePipe} from '@angular/common';
-import {Profile} from 'sunbird-sdk';
+import {
+    Profile,
+    SummarizerService,
+    SummaryRequest
+} from 'sunbird-sdk';
 
 
 @Component({
@@ -54,7 +58,7 @@ export class GroupReportListPage {
         prop: 'index'
     }, {
         name: this.translateMessage('MARKS'),
-        prop: 'max_score'
+        prop: 'maxScore'
     }, {
         name: this.translateMessage('ACCURACY'),
         prop: 'accuracy'
@@ -74,7 +78,7 @@ export class GroupReportListPage {
         private loading: LoadingController,
         private zone: NgZone,
         private transfer: FileTransfer,
-        private reportService: ReportService,
+        @Inject('SUMMARIZER_SERVICE') public summarizerService: SummarizerService,
         private translate: TranslateService,
         private telemetryGeneratorService: TelemetryGeneratorService,
         private appGlobalService: AppGlobalService,
@@ -121,20 +125,20 @@ export class GroupReportListPage {
         const that = this;
         const uids = this.navParams.get('uids');
         const users = this.navParams.get('users');
-        const params = {
-            uids: uids,
+        const summaryRequest: SummaryRequest = {
+            qId: '',
+            uids: [''],
             contentId: this.reportSummary.contentId,
-            hierarchyData: null,
-            qId: ''
+            hierarchyData: null
         };
         if (fromUserList) {
-            params.uids = [this.reportSummary.uid];
+            summaryRequest.uids = [this.reportSummary.uid];
         }
         if (event === 'users' && !this.fromUserAssessment) {
             this.reportType = event;
             loader.present();
-            this.reportService.getReportsByUser(params).then((data: any) => {
-                data = JSON.parse(data);
+            this.summarizerService.getReportsByUser(summaryRequest).toPromise()
+            .then((data: any) => {
                 this.groupReport = data;
                 let averageScore: any = 0;
                 let averageTime = 0;
@@ -143,7 +147,7 @@ export class GroupReportListPage {
                     averageScore += report.score;
                     report.totalTimespent = that.formatTime(report.totalTimespent);
                     report.name = this.reportSummary.name;
-                    that.reportService.getDetailReport([report.uid], report.contentId)
+                    that.summarizerService.getLearnerAssessmentDetails(summaryRequest).toPromise()
                         .then(reportsMap => {
                             const data1 = reportsMap.get(report.uid);
                             const rows = data1.reportDetailsList.map(row => {
@@ -157,7 +161,7 @@ export class GroupReportListPage {
                                     'qtitle': row.qtitle,
                                     'qid': row.qid,
                                     'name': report.userName,
-                                    'timestamp': report.createdAt
+                                    'timestamp': report.createdAt,
                                 };
                             });
                             report.assessmentData = rows;
@@ -192,15 +196,15 @@ export class GroupReportListPage {
             if (event === 'questions') {
                 this.reportType = event;
                 loader.present();
-                this.reportService.getReportsByQuestion(params).then((data: any) => {
-                    data = JSON.parse(data);
+                this.summarizerService.getReportByQuestions(summaryRequest).toPromise()
+                .then((data: any) => {
                     this.response = data;
                     let averageTime = 0;
                     let averageScore: any = 0;
                     data.forEach((question) => {
                         question.index = 'Q' + (('00' + question.qindex).slice(-3));
                         averageTime += question.time_spent;
-                        averageScore += question.score;
+                        averageScore += question.maxScore;
                         question.accuracy = (question.correct_users_count || '0') + '/' + question.occurenceCount;
                         question.users = users;
                         question.uids = uids;

@@ -1,7 +1,7 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, Inject } from '@angular/core';
 import { NavController, NavParams, LoadingController } from 'ionic-angular';
 import { GroupReportListPage } from '../group-report-list/group-report-list';
-import { ReportService, ContentService, SummarizerContentFilterCriteria,  } from 'sunbird';
+import { ContentService, SummarizerContentFilterCriteria, } from 'sunbird';
 import {
     ImpressionType,
     Environment,
@@ -10,7 +10,10 @@ import {
     InteractSubtype,
     ObjectType,
     TelemetryObject,
-    ReportSummary
+    ReportSummary,
+    SummarizerService,
+    SummaryRequest,
+    LearnerAssessmentSummary
 } from 'sunbird-sdk';
 import { UserReportPage } from '../user-report/user-report';
 import { ContentType } from '../../../app/app.constant';
@@ -26,14 +29,15 @@ export class ReportListPage {
     isFromGroups: boolean;
     uids: Array<string>;
     listOfUsers;
-    listOfReports: Array<ReportSummary> = [];
+    listOfReports: Array<LearnerAssessmentSummary> = [];
     groupinfo: any;
     handle: string;
-
+    assessment: {};
+    reportSummary: ReportSummary;
     constructor(private navCtrl: NavController,
         private navParams: NavParams,
         private loading: LoadingController,
-        public reportService: ReportService,
+        @Inject('SUMMARIZER_SERVICE') public summarizerService: SummarizerService,
         public ngZone: NgZone,
         private contentService: ContentService,
         private telemetryGeneratorService: TelemetryGeneratorService) {
@@ -64,20 +68,23 @@ export class ReportListPage {
             attachContentAccess: true,
             attachFeedback: true
         };
-        this.contentService.getLocalContents(requestParams)
-            .then(contentList => {
-                this.reportService.getListOfReports(this.uids)
-                    .then(list => {
-                        this.ngZone.run(() => {
-                            loader.dismiss();
-                            this.listOfReports = list;
-                        });
-                    })
-                    .catch(err => {
-                        loader.dismiss();
-                    });
+
+        const summaryRequest: SummaryRequest = {
+            qId: '',
+            uids: [''],
+            contentId: '',
+            hierarchyData: null,
+        };
+
+        this.summarizerService.getSummary(summaryRequest).toPromise()
+            .then((list: LearnerAssessmentSummary[]) => {
+                this.ngZone.run(() => {
+                    loader.dismiss();
+                    this.listOfReports = list;
+                });
             })
             .catch(err => {
+                console.log('getsummary error :', err);
                 loader.dismiss();
             });
 
