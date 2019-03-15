@@ -1,4 +1,3 @@
-
 import {
   Component,
   NgZone,
@@ -48,6 +47,7 @@ import {
 } from '@app/app';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService } from '@app/service';
+import { SbDownloadPopupComponent } from '@app/component/popups/sb-download-popup/sb-download-popup';
 
 /**
  * Generated class for the CollectionDetailsEtbPage page.
@@ -208,6 +208,7 @@ export class CollectionDetailsEtbPage {
   localImage = '';
 
   @ViewChild(Navbar) navBar: Navbar;
+  showDownload: boolean;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -257,6 +258,7 @@ export class CollectionDetailsEtbPage {
     this.zone.run(() => {
       this.resetVariables();
       this.cardData = this.navParams.get('content');
+      console.log('this.cardData', this.cardData);
       this.corRelationList = this.navParams.get('corRelation');
       const depth = this.navParams.get('depth');
       this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
@@ -355,8 +357,16 @@ export class CollectionDetailsEtbPage {
           rating: this.userRating,
           comment: this.ratingComment,
           pageId: PageId.COLLECTION_DETAIL,
-        }, {
-            cssClass: 'content-rating-alert'
+          sbPopoverHeading: this.commonUtilService.translateMessage('RATE_THE_CONTENT'),
+         actionsButtons: [
+          {
+            btntext: 'Rate',
+            btnClass: 'popover-color'
+          },
+        ],
+      },
+      {
+            cssClass: 'sb-popover info'
           });
         popUp.present();
         popUp.onDidDismiss(data => {
@@ -749,6 +759,7 @@ export class CollectionDetailsEtbPage {
     this.cardData = '';
     this.childrenData = [];
     this.contentDetail = '';
+    this.showDownload = false;
     this.showDownloadBtn = false;
     this.downloadIdentifiers = [];
     this.queuedIdentifiers = [];
@@ -767,12 +778,16 @@ export class CollectionDetailsEtbPage {
       this.zone.run(() => {
         data = JSON.parse(data);
         const res = data;
-
+        console.log('Geni Event');
+        console.log(data);
+        console.log(res.data.downloadProgress);
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
           if (res.data.downloadProgress === -1 || res.data.downloadProgress === '-1') {
             this.downloadProgress = 0;
+            console.log('first download', this.downloadProgress);
           } else if (res.data.identifier === this.contentDetail.identifier) {
             this.downloadProgress = res.data.downloadProgress;
+            console.log('second download', this.downloadProgress);
           }
 
           if (this.downloadProgress === 100) {
@@ -793,6 +808,7 @@ export class CollectionDetailsEtbPage {
               this.isDownloadStarted = false;
               this.showDownloadBtn = false;
               this.isDownloadCompleted = true;
+              this.showDownload = false;
               this.contentDetail.isAvailableLocally = true;
               this.downloadPercentage = 0;
               this.updateSavedResources();
@@ -873,8 +889,10 @@ export class CollectionDetailsEtbPage {
     this.showLoading = true;
     this.isDownloadStarted = true;
     this.downloadPercentage = 0;
+    this.showDownload = true;
     this.importContent(this.downloadIdentifiers, true, true);
-  }
+      }
+
 
   /**
    * To get readable file size
@@ -980,21 +998,35 @@ export class CollectionDetailsEtbPage {
 
   showDownloadConfirmationAlert(myEvent) {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-      const popover = this.popoverCtrl.create(ConfirmAlertComponent, {}, {
-        cssClass: 'confirm-alert-box'
-      });
-      popover.present({
-        ev: myEvent
+      const popover = this.popoverCtrl.create(ConfirmAlertComponent,  {
+        sbPopoverHeading: this.commonUtilService.translateMessage('DOWNLOAD'),
+        sbPopoverMainTitle: this.contentDetail.name + this.contentDetail.subject,
+        actionsButtons: [
+          {
+            btntext: this.commonUtilService.translateMessage('DOWNLOAD'),
+            btnClass: 'popover-color'
+          },
+        ],
+        icon: null,
+        metaInfo: this.contentDetail.contentTypesCount.TextBookUnit +
+         'items' +  '(' + this.fileSizePipe.transform(this.downloadSize, 2) + ')',
+        //  '(' + this.fileSizePipe.transform(this.contentDetail.size, 2) + ')'
+      }, {
+          cssClass: 'sb-popover info',
+        });
+        popover.present({
+        ev: event
       });
       popover.onDidDismiss((canDownload: boolean = false) => {
-        if (canDownload) {
-          this.downloadAllContent();
+        console.log('downloaddddddd content');
+            if (canDownload) {
+           this.downloadAllContent();
         }
       });
     } else {
       this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
     }
-  }
+}
 
   cancelDownload() {
     this.telemetryGeneratorService.generateCancelDownloadTelemetry(this.contentDetail);
@@ -1037,7 +1069,7 @@ export class CollectionDetailsEtbPage {
     this.downloadProgress = 0;
     this.events.unsubscribe('genie.event');
   }
-  showOver() {
+  showPopOver() {
     const confirm = this.popoverCtrl.create(SbPopoverComponent, {
       content: this.contentDetail,
       isChild: this.isDepthChild,
@@ -1113,8 +1145,9 @@ export class CollectionDetailsEtbPage {
       undefined,
       this.objRollup,
       this.corRelationList);
-
-    this.contentService.deleteContent(this.getDeleteRequestBody()).then((res: any) => {
+      const tmp = this.getDeleteRequestBody();
+      console.log('tmpppppppppppp', tmp);
+    this.contentService.deleteContent(tmp).then((res: any) => {
       const data = JSON.parse(res);
       if (data.result && data.result.status === 'NOT_FOUND') {
         this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));

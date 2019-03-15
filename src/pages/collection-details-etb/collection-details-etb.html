@@ -13,8 +13,7 @@
       <button ion-button icon-only (click)="share()">
         <ion-icon md="md-share" float-right></ion-icon>
       </button>
-      <button *ngIf="contentDetail?.isAvailableLocally" ion-button icon-only (click)="showOverflowMenu($event)"
-        style="font-size: 1.8rem;">
+      <button *ngIf="contentDetail?.isAvailableLocally" ion-button icon-only (click)="showOverflowMenu($event)" style="font-size: 1.8rem;">
         <ion-icon md="md-more" float-end></ion-icon>
       </button>
     </ion-buttons> -->
@@ -25,7 +24,7 @@
 <ion-content no-padding>
   <div class="p-8">
     <detail-card (downloadAllContent)="showDownloadConfirmationAlert($event)" (shareEvent)="share()"
-      (showOverflowMenuEvent)="showOverflowMenu($event)" [contentDetail]="contentDetail"
+      (showOverflowMenuEvent)="showPopOver($event)" [contentDetail]="contentDetail"
       [localImage]="localImage" [showDownloadBtn]="showDownloadBtn" [isDepthChild]='isDepthChild'
       [isDownloadStarted]="isDownloadStarted" [defaultAppIcon]="defaultAppIcon"></detail-card>
 
@@ -118,8 +117,8 @@
 
 
 
-        <!-- new -->
-        <!-- <ion-grid class="sb-accordian-header" (click)="toggleGroup(i)"> -->
+          <!-- new -->
+          <!-- <ion-grid class="sb-accordian-header" (click)="toggleGroup(i)"> -->
           <!-- <ion-row (click)="toggleGroup(i)" *ngIf="item?.children">
             <ion-col col-11>
               <div class="sb-topic-text"> {{item?.contentData?.name}}</div>
@@ -140,8 +139,7 @@
               *ngIf="item?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && item?.children">
               {{item?.contentData?.name}}
             </div> -->
-          <ion-row
-            *ngIf="item?.contentData?.mimeType !== 'application/vnd.ekstep.content-collection' && !item?.children"
+          <ion-row *ngIf="item?.contentData?.mimeType !== 'application/vnd.ekstep.content-collection' && !item?.children"
             (click)="navigateToDetailsPage(item, depth + '.' + (i + 1))">
             <ion-col col-1>
               <div>
@@ -155,16 +153,15 @@
               'sb-play-selected':childData?.isAvailableLocally,'sb-play-unselected':!childData?.isAvailableLocally}">
                 {{item?.contentData?.name}}
                 <span>
-                    <ion-icon class="sb-checkmark-icon" name="checkmark-circle-outline" *ngIf="item?.isAvailableLocally"></ion-icon>
-                <!-- </span>
+                  <ion-icon class="sb-checkmark-icon" name="checkmark-circle-outline" *ngIf="item?.isAvailableLocally"></ion-icon>
+                  <!-- </span>
                 <span>
                   <ion-icon class="checkmark-icon" name="checkmark-circle-outline" *ngIf="item?.isAvailableLocally">
                   </ion-icon> -->
                 </span></div>
             </ion-col>
           </ion-row>
-          <div class="font-grey-text P10"
-            *ngIf="item?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !item?.children">
+          <div class="font-grey-text P10" *ngIf="item?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !item?.children">
             {{item?.contentData?.name}}
             <span class="grey-icon-span">
               <ion-icon ios="ios-alert" md="md-alert" class="grey-icon ML5"></ion-icon>
@@ -185,7 +182,6 @@
         </div>
       </ion-card>
     </section>
-
   </div>
 </ion-content>
 
@@ -212,3 +208,4 @@
     <button ion-button small (click)="cancelDownload()">{{ 'CANCEL' | translate }}</button>
   </div>
 </ion-backdrop>
+<sb-download-popup *ngIf="showDownload" (cancelDownloadEmit)="cancelDownload($event)" [currentCount]="currentCount" [queuedIdentifiers]="queuedIdentifiers" [downloadSize]="downloadSize"></sb-download-popup>
