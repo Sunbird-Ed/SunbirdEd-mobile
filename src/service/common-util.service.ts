@@ -194,20 +194,16 @@ export class CommonUtilService implements OnDestroy {
         };
 
         if (this.network.type === 'none') {
-            console.log('onNetworkType none');
             updateNetworkAvailabilityStatus(false);
         } else {
-            console.log('onNetworkType available');
             updateNetworkAvailabilityStatus(true);
         }
 
         this.connectSubscription = this.network.onDisconnect().subscribe(() => {
-            console.log('onDisconnect subscribe');
             this.subject.next(false);
             updateNetworkAvailabilityStatus(false);
         });
         this.disconnectSubscription = this.network.onConnect().subscribe(() => {
-            console.log('onConnect subscribe');
             this.subject.next(true);
             updateNetworkAvailabilityStatus(true);
         });
