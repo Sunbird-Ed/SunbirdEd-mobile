@@ -28,10 +28,10 @@
   </ion-row>
 </ion-footer> -->
 
-<ion-header class="sb-popover-header">
+<!-- <ion-header class="sb-popover-header">
     <ion-toolbar class="sb-popover-toolbar">
       <ion-title class="sb-popover-title">{{ 'ENJOYED_THIS_CONTENT' | translate }}
-          <ion-icon name="close" class="sb-modal-close" (click)="closePopover()"></ion-icon> </ion-title>
+          <ion-icon name="close" class="sb-modal-close" (click)="cancel()"></ion-icon> </ion-title>
     </ion-toolbar>
   </ion-header>
 <ion-content no-padding class="sb-popover-container">
@@ -56,4 +56,32 @@
     <div class="sb-popover-footer">
       <button ion-button class="sb-popover-action-btn popover-color" [disabled]="!showCommentBox" (click)="submit()">{{ 'BTN_SUBMIT' | translate }}</button>
     </div>
-  </ion-footer>
+  </ion-footer> -->
+
+  <ion-header class="sb-popover-header">
+      <ion-toolbar class="sb-popover-toolbar">
+        <ion-title class="sb-popover-title">Rate the Content
+            <ion-icon name="close" class="sb-modal-close" (click)="closePopover()"></ion-icon> </ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content no-padding class="sb-popover-container">
+        <div class="sb-popover-items">
+            <rating [(ngModel)]="userRating" (ngModelChange)="rateContent($event)"></rating>
+            <div class="sb-popover-content-details" *ngIf="this.userRating">
+              <div class="main-title">
+                <div class="meta-info">
+                  You have rated {{userRating}}
+                </div>
+              </div>
+            </div>
+            <ion-input *ngIf="showCommentBox" [(ngModel)]="comment" placeholder="Feedback (Optional)" style="border-bottom : 2px;"></ion-input>
+            <div *ngIf="showCommentBox" class="sb-line"></div>
+        </div>
+    </ion-content>
+  
+    <ion-footer>
+        <div class="sb-popover-footer">
+          <button ion-button class="sb-popover-action-btn popover-color" (click)="submit()">{{ 'BTN_SUBMIT' | translate }}</button>
+        </div>
+      </ion-footer>
+  

@@ -14,7 +14,7 @@ import {
   IonicApp,
   AlertController
 } from 'ionic-angular';
-import { FileSizePipe  } from '@app/pipes/file-size/file-size';
+import { FileSizePipe } from '@app/pipes/file-size/file-size';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
 import {
@@ -51,7 +51,8 @@ import {
   ContentRatingAlertComponent,
   ContentActionsComponent,
   BookmarkComponent,
-  SbPopoverComponent
+  SbPopoverComponent,
+  ConfirmAlertComponent
 } from '@app/component';
 import {
   AppGlobalService,
@@ -66,6 +67,7 @@ import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup'
 import { Observable } from 'rxjs';
 import { XwalkConstants } from '../../app/app.constant';
 import { ValueTransformer } from '@angular/compiler/src/util';
+import { SbDownloadPopupComponent } from '@app/component/popups/sb-download-popup/sb-download-popup';
 
 
 @IonicPage()
@@ -142,6 +144,7 @@ export class ContentDetailsPage {
   showMessage: any;
   localImage: any;
   isUsrGrpAlrtOpen: Boolean = false;
+  showDownload: boolean;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -346,48 +349,33 @@ export class ContentDetailsPage {
    * Function to rate content
    */
 
-
-  // const popover = this.popoverCtrl.create(SbRatingComponent, {
-  //   sbPopoverHeading:"Rate the content",
-  //   actionsButtons:[
-  //     {
-  //       btntext: "Rate",
-  //       btnClass: 'popover-color'
-  //     },
-  //   ],
-  //   icon: {md:"md-sad",
-  //   ios:"ios-sad",
-  //   className:""},
-  //   metaInfo:"You have rated 3 stars",
-  //  sbPopoverContent:"Some content might not be playable offline."
-  // }, {
-  //   cssClass: 'sb-popover info',
-  // });
-
   rateContent(popupType: string) {
     const paramsMap = new Map();
     if (this.isContentPlayed || this.content.contentAccess.length) {
 
       paramsMap['IsPlayed'] = 'Y';
-      const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
-        content: this.content,
-        pageId: PageId.CONTENT_DETAIL,
-        rating: this.userRating,
-        comment: this.ratingComment,
-        popupType: popupType,
+      const popover = this.popoverCtrl.create(ContentRatingAlertComponent, {
+        sbPopoverHeading: 'Rate the content',
         actionsButtons: [
           {
             btntext: 'Rate',
             btnClass: 'popover-color'
           },
         ],
+        icon: {
+          md: 'md-sad',
+          ios: 'ios-sad',
+          className: ''
+        },
+        metaInfo: 'You have rated 3 stars',
+        sbPopoverContent: 'Some content might not be playable offline.',
       }, {
-          cssClass: 'sb-popover info'
+          cssClass: 'sb-popover info',
         });
-      popUp.present({
+      popover.present({
         ev: event
       });
-      popUp.onDidDismiss(data => {
+      popover.onDidDismiss(data => {
         if (data && data.message === 'rating.success') {
           this.userRating = data.rating;
           this.ratingComment = data.comment;
@@ -407,6 +395,46 @@ export class ContentDetailsPage {
       this.objRollup,
       this.corRelationList);
   }
+
+
+  //     const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
+  //       content: this.content,
+  //       pageId: PageId.CONTENT_DETAIL,
+  //       rating: this.userRating,
+  //       comment: this.ratingComment,
+  //       popupType: popupType,
+  //       actionsButtons: [
+  //         {
+  //           btntext: 'Rate',
+  //           btnClass: 'popover-color'
+  //         },
+  //       ],
+  //     }, {
+  //         cssClass: 'sb-popover info'
+  //       });
+  //     popUp.present({
+  //       ev: event
+  //     });
+  //     popUp.onDidDismiss(data => {
+  //       if (data && data.message === 'rating.success') {
+  //         this.userRating = data.rating;
+  //         this.ratingComment = data.comment;
+  //       }
+  //     });
+  //   } else {
+  //     paramsMap['IsPlayed'] = 'N';
+  //     this.commonUtilService.showToast('TRY_BEFORE_RATING');
+  //   }
+  //   this.telemetryGeneratorService.generateInteractTelemetry(
+  //     InteractType.TOUCH,
+  //     InteractSubtype.RATING_CLICKED,
+  //     Environment.HOME,
+  //     PageId.CONTENT_DETAIL,
+  //     undefined,
+  //     paramsMap,
+  //     this.objRollup,
+  //     this.corRelationList);
+  // }
 
   /**
    * To set content details in local variable
@@ -480,7 +508,7 @@ export class ContentDetailsPage {
         }
       } else if (data.result.basePath) {
         this.content.appIcon = data.result.basePath + '/' + this.content.appIcon;
-        console.log('local Image' , this.localImage);
+        console.log('local Image', this.localImage);
       }
     }
 
@@ -752,6 +780,7 @@ export class ContentDetailsPage {
         const res = data;
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
           this.downloadProgress = res.data.downloadProgress === -1 ? '0' : res.data.downloadProgress;
+          console.log('from content details', this.downloadProgress);
         }
 
         // Get child content
@@ -793,13 +822,62 @@ export class ContentDetailsPage {
       });
     });
   }
+  /**
+   * confirming popUp content
+   */
+  openConfirmPopUp() {
+    console.log('hhfhh', this.cardData);
+    console.log('djncjevej', this.content);
+    // const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
+    //   sbPopoverHeading: this.commonUtilService.translateMessage('DOWNLOAD'),
+    //   sbPopoverMainTitle: this.cardData.name + this.cardData.subject,
+    //   actionsButtons: [
+    //     {
+    //       btntext: this.commonUtilService.translateMessage('DOWNLOAD'),
+    //       btnClass: 'popover-color'
+    //     },
+    //   ],
+    //   icon: null,
+    //   metaInfo: this.cardData.contentType +
+    //     'items' + '(' + this.fileSizePipe.transform(this.cardData.size, 2) + ')',
+    // }, {
+    //     cssClass: 'sb-popover info',
+    //   });
+    // popover.present({
+    //   ev: event
+    // });
+    // popover.onDidDismiss((canDownload: boolean = false) => {
+    //   if (canDownload) {
+    //     this.downloadContent();
+    //   }
+    // });
+    const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
+      sbPopoverMainTitle: this.cardData.name + this.cardData.subject,
+      icon: null,
+      metaInfo: this.cardData.contentTypesCount +
+           'items' + '(' + this.fileSizePipe.transform(this.cardData.size, 2) + ')',
+      sbPopoverContent: this.commonUtilService.translateMessage('SOME_CONTENT_MIGHT_NOT_BE_PLAYABLE_OFFLINE'),
+    }, {
+        cssClass: 'sb-popover info',
+      });
+    popover.present({
+      ev: event
+    });
+    popover.onDidDismiss((canDownload: boolean = false) => {
+      if (canDownload) {
+        this.downloadContent();
+      }
+    });
 
+
+  }
   /**
    * Download content
    */
   downloadContent() {
     this.zone.run(() => {
       if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+        this.showDownload = true;
         this.downloadProgress = '0';
         this.isDownloadStarted = true;
         const values = new Map();
@@ -814,8 +892,6 @@ export class ContentDetailsPage {
           values,
           this.objRollup,
           this.corRelationList);
-      } else {
-        this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
       }
     });
   }
@@ -844,7 +920,6 @@ export class ContentDetailsPage {
       return this.commonUtilService.translateMessage(msg);
     }
   }
-
   /**
    * alert for playing the content
    */
@@ -1058,7 +1133,7 @@ export class ContentDetailsPage {
         },
       ],
       icon: null,
-      metaInfo:  'items' + '(' + this.fileSizePipe.transform(this.content.size, 2) + ')',
+      metaInfo: 'items' + '(' + this.fileSizePipe.transform(this.content.size, 2) + ')',
       sbPopoverContent: 'Are you sure you want to delete ?'
     }, {
         cssClass: 'sb-popover danger',
