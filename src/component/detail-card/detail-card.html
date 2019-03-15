@@ -6,7 +6,7 @@
 
       <div class="sb-dt-title"> {{contentDetail?.name}}</div>
       <div class="sb-dt-source" *ngIf="contentDetail?.creator || contentDetail?.owner">
-        <span class="sb-by">by</span>
+        <span class="sb-by">{{ 'CONTENT_CREATED_BY' | translate }}</span>
         <span class="sb-user">{{ contentDetail?.creator || contentDetail?.owner }}</span>
       </div>
       <div class="sb-dt-class-info" *ngIf="contentDetail?.gradeLevel || contentDetail?.subject">
@@ -51,15 +51,15 @@
     <div class="sb-btn-tile-group">
       <button ion-button clear icon-only class="sb-btn-tile" *ngIf="showDownloadBtn && !isDepthChild && !isDownloadStarted" (click)="downloadAllContents()">
         <ion-icon ios="ios-cloud-download" md="md-cloud-download" class="sb-dt-card-blue-icon"></ion-icon>
-        <span class="sb-btn-footer-text">Download</span>
+        <span class="sb-btn-footer-text">{{ 'DOWNLOAD' | translate }}</span>
       </button>
       <button ion-button clear icon-only class="sb-btn-tile" *ngIf="contentDetail?.isAvailableLocally" (click)="showOverflowMenu()">
         <ion-icon ios="ios-trash" md="md-trash" class="sb-dt-card-danger-icon"></ion-icon>
-        <span class="sb-btn-footer-text">Delete</span>
+        <span class="sb-btn-footer-text">{{ 'REMOVE' | translate }}</span>
       </button>
       <button ion-button clear icon-only class="sb-btn-tile" (click)="share()">
         <ion-icon ios="ios-share" md="md-share" class="sb-dt-card-blue-icon"></ion-icon>
-        <span class="sb-btn-footer-text">Share</span>
+        <span class="sb-btn-footer-text">{{ 'SHARE' | translate }}</span>
       </button>
       <!-- <button ion-button clear icon-only class="sb-btn-tile">
         <ion-icon ios="ios-sync" md="md-sync" class="sb-dt-card-blue-icon"></ion-icon>
