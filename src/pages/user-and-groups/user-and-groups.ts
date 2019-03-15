@@ -144,7 +144,7 @@ export class UserAndGroupsPage {
   }
 
   getCurrentGroup() {
-    this.groupService.getActiveSessionGroup().subscribe(val => {
+    this.groupService.getActiveSessionGroup().subscribe((val: Group) => {
       const group = val;
       if (group) {
         this.zone.run(() => {
@@ -258,7 +258,7 @@ export class UserAndGroupsPage {
 
   getAllGroup() {
     this.zone.run(() => {
-      this.groupService.getAllGroups().subscribe((groups) => {
+      this.groupService.getAllGroups().subscribe((groups: Group[]) => {
         if (groups && groups.length) {
           this.showEmptyGroupsMessage = false;
           this.groupList = groups.sort((prev: Group, next: Group) => {

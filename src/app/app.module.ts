@@ -82,6 +82,9 @@ export const sunbirdSdkServicesProvidersFactory: () => Provider[] = () => {
   }, {
     provide: 'CONTENT_FEEDBACK_SERVICE',
     useFactory: () => SunbirdSdk.instance.contentFeedbackService
+  }, {
+    provide: 'SUMMARIZER_SERVICE',
+    useFactory: () => SunbirdSdk.instance.summarizerService
   }];
 };
 
@@ -93,7 +96,7 @@ export const sunbirdSdkFactory =
           debugMode: false
         },
         apiConfig: {
-          debugMode: true,
+          debugMode: false,
           host: 'https://staging.ntp.net.in',
           baseUrl: 'https://staging.ntp.net.in/api',
           user_authentication: {
@@ -113,7 +116,7 @@ export const sunbirdSdkFactory =
           }
         },
         dbConfig: {
-          debugMode: true,
+          debugMode: false,
           dbName: 'GenieServices.db'
         },
         contentServiceConfig: {
@@ -130,9 +133,9 @@ export const sunbirdSdkFactory =
         frameworkServiceConfig: {
           channelApiPath: '/api/channel/v1',
           frameworkApiPath: '/api/framework/v1',
-          searchOrganizationApiPath: '/api/org/v1',
           frameworkConfigDirPath: '/data/framework',
           channelConfigDirPath: '/data/channel',
+          searchOrganizationApiPath: '/api/org/v1',
           systemSettingsDefaultChannelIdKey: 'custodianOrgId'
         },
         profileServiceConfig: {

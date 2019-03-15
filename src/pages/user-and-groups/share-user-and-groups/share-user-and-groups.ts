@@ -66,7 +66,7 @@ export class ShareUserAndGroupPage {
         uid: ''
       };
 
-      this.groupService.getAllGroups(groupRequest).subscribe((groups) => {
+      this.groupService.getAllGroups(groupRequest).subscribe((groups: Group[]) => {
         if (groups && groups.length) {
           this.groupList = groups;
         }
