@@ -32,7 +32,6 @@ import {
   ContentService,
   DownloadEventType,
   DownloadProgress,
-  Environment,
   EventsBusEvent,
   EventsBusService,
   Framework,
@@ -47,6 +46,7 @@ import {
 } from 'sunbird-sdk';
 import {Subscription} from 'rxjs';
 import {
+  Environment,
   ImpressionType,
   InteractSubtype,
   InteractType,

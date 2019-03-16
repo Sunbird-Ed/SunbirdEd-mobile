@@ -7,9 +7,6 @@ import {Component, Inject} from '@angular/core';
 import {
   AuthService,
   CorrelationData,
-  Environment,
-  InteractSubtype,
-  InteractType,
   OAuthSession,
   Rollup,
   TelemetryObject
@@ -18,6 +15,11 @@ import {CommonUtilService} from '../../service/common-util.service';
 import {ReportIssuesComponent} from '../report-issues/report-issues';
 import {UnenrollAlertComponent} from '../unenroll-alert/unenroll-alert';
 import {ContentService} from 'sunbird';
+import {
+  Environment,
+  InteractSubtype,
+  InteractType
+} from '../../service/telemetry-constants';
 
 @Component({
   selector: 'content-actions',

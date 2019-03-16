@@ -53,7 +53,7 @@ export class TelemetryGeneratorService {
         }
 
         if (object && object.version) {
-            telemetryInteractRequest.objVer = object.version;
+            telemetryInteractRequest.objVer = object.version + '';
         }
         this.telemetryService.interact(telemetryInteractRequest).subscribe();
     }
@@ -67,7 +67,7 @@ export class TelemetryGeneratorService {
         telemetryImpressionRequest.env = env;
         telemetryImpressionRequest.objId = objectId ? objectId : '';
         telemetryImpressionRequest.objType = objectType ? objectType : '';
-        telemetryImpressionRequest.objVer = objectVersion ? objectVersion : '';
+        telemetryImpressionRequest.objVer = objectVersion ? objectVersion + '' : '';
 
         if (rollup !== undefined) {
             telemetryImpressionRequest.rollup = rollup;
@@ -93,7 +93,7 @@ export class TelemetryGeneratorService {
         }
 
         if (object && object.version) {
-            telemetryEndRequest.objVer = object.version;
+            telemetryEndRequest.objVer = object.version + '';
         }
         if (rollup) {
             telemetryEndRequest.rollup = rollup;
@@ -118,7 +118,7 @@ export class TelemetryGeneratorService {
         }
 
         if (object && object.version) {
-            telemetryStartRequest.objVer = object.version;
+            telemetryStartRequest.objVer = object.version + '';
         }
         if (rollup !== undefined) {
             telemetryStartRequest.rollup = rollup;

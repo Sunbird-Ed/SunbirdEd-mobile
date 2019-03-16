@@ -29,14 +29,16 @@ import {AuthService,
         OAuthSession,
         ProfileService,
         ProfileType,
-        Environment,
-        InteractSubtype,
-        InteractType,
-        PageId,
         TelemetryService,
         TelemetryAutoSyncUtil
       } from 'sunbird-sdk';
 import { tap } from 'rxjs/operators';
+import {
+  Environment,
+  InteractSubtype,
+  InteractType,
+  PageId
+} from '../service/telemetry-constants';
 
 const KEY_SUNBIRD_SUPPORT_FILE_PATH = 'sunbird_support_file_path';
 
@@ -49,7 +51,6 @@ export class MyApp {
   rootPage: any;
   public counter = 0;
   private telemetryAutoSyncUtil: TelemetryAutoSyncUtil;
-  
 
   readonly permissionList = [
     'android.permission.CAMERA',
