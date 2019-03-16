@@ -22,16 +22,18 @@ import {
   ContentService as NewContentService,
   Course,
   CourseService,
+  PageAssembleCriteria,
+  PageAssembleService,
+  PageName,
+  ProfileType
+} from 'sunbird-sdk';
+import {
   Environment,
   ImpressionType,
   InteractSubtype,
   InteractType,
-  PageAssembleCriteria,
-  PageAssembleService,
-  PageId,
-  PageName,
-  ProfileType
-} from 'sunbird-sdk';
+  PageId
+} from '../../service/telemetry-constants';
 
 @IonicPage()
 @Component({

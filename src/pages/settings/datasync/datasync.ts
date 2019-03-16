@@ -7,19 +7,21 @@ import {
   ShareUtil
 } from 'sunbird';
 import {
-  PageId,
-  Environment,
-  ImpressionType,
-  TelemetryService,
-  InteractType,
-  InteractSubtype,
   TelemetrySyncStat,
-  TelemetryStat
+  TelemetryStat,
+  TelemetryService
 } from 'sunbird-sdk';
 import { DataSyncType } from './datasynctype.enum';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { TelemetryGeneratorService } from '@app/service';
+import {
+  PageId,
+  Environment,
+  ImpressionType,
+  InteractType,
+  InteractSubtype,
+} from '../../../service/telemetry-constants';
 
 const KEY_DATA_SYNC_TYPE = 'sync_config';
 const KEY_DATA_SYNC_TIME = 'data_sync_time';

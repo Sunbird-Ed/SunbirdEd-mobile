@@ -6,11 +6,6 @@ import {
   ContentDetailRequest,
   ContentService,
   CorrelationData,
-  Environment,
-  InteractSubtype,
-  InteractType,
-  Mode,
-  PageId,
   TelemetryObject,
 } from 'sunbird-sdk';
 import {SearchPage} from '../search/search';
@@ -20,6 +15,13 @@ import {ContentDetailsPage} from '../content-details/content-details';
 import {CollectionDetailsPage} from '../collection-details/collection-details';
 import {CommonUtilService} from '../../service/common-util.service';
 import {App} from 'ionic-angular';
+import {
+    Environment,
+    InteractSubtype,
+    InteractType,
+    Mode,
+    PageId,
+} from '../../service/telemetry-constants';
 
 @Injectable()
 export class QRScannerResultHandler {

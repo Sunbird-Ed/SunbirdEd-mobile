@@ -18,15 +18,9 @@ import {PopoverPage} from './popover/popover';
 import {ContainerService, SharedPreferences, TabsPage} from 'sunbird';
 import {
   AuthService,
-  Environment,
   GetAllProfileRequest,
   Group,
   GroupService,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  ObjectType,
-  PageId,
   Profile,
   ProfileService,
   ProfileType,
@@ -47,6 +41,14 @@ import {TelemetryGeneratorService} from '../../service/telemetry-generator.servi
 import {Map} from '../../app/telemetryutil';
 import {PreferenceKey} from '../../app/app.constant';
 import {CreateGroupPage} from './create-group/create-group';
+import {
+  Environment,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  ObjectType,
+  PageId,
+} from '../../service/telemetry-constants';
 
 @IonicPage()
 @Component({

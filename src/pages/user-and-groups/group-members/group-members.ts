@@ -1,18 +1,20 @@
 import {Component, Inject, NgZone} from '@angular/core';
 import {IonicPage, LoadingController, NavController, NavParams} from 'ionic-angular';
 import {
-  AddUpdateProfilesRequest,
+  AddUpdateProfilesRequest
+} from 'sunbird';
+import {GetAllProfileRequest, Group, GroupService, Profile, ProfileService} from 'sunbird-sdk';
+import {GuestEditProfilePage} from '../../profile/guest-edit.profile/guest-edit.profile';
+import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
+import {CommonUtilService} from '../../../service/common-util.service';
+import {
   Environment,
   ImpressionType,
   InteractSubtype,
   InteractType,
   ObjectType,
   PageId
-} from 'sunbird';
-import {GetAllProfileRequest, Group, GroupService, Profile, ProfileService} from 'sunbird-sdk';
-import {GuestEditProfilePage} from '../../profile/guest-edit.profile/guest-edit.profile';
-import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
-import {CommonUtilService} from '../../../service/common-util.service';
+} from '../../../service/telemetry-constants';
 
 @IonicPage()
 @Component({

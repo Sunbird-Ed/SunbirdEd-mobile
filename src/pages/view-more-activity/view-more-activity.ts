@@ -1,6 +1,6 @@
 import {Events, IonicPage, NavController, NavParams} from 'ionic-angular';
 import {Component, Inject, NgZone, OnInit} from '@angular/core';
-import {ContentService,} from 'sunbird';
+import {ContentService} from 'sunbird';
 import {
   Content,
   ContentRequest,
@@ -9,10 +9,6 @@ import {
   ContentService as NewContentService,
   Course,
   CourseService,
-  Environment,
-  ImpressionType,
-  LogLevel,
-  PageId,
   SearchType
 } from 'sunbird-sdk';
 import * as _ from 'lodash';
@@ -21,6 +17,12 @@ import {ContentDetailsPage} from '../content-details/content-details';
 import {CourseUtilService} from '../../service/course-util.service';
 import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
 import {CommonUtilService} from '../../service/common-util.service';
+import {
+  Environment,
+  ImpressionType,
+  LogLevel,
+  PageId,
+} from '../../service/telemetry-constants';
 
 @IonicPage()
 @Component({

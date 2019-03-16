@@ -4,7 +4,7 @@ import {CommonUtilService} from '../../../service/common-util.service';
 import {Component, Inject, ViewChild} from '@angular/core';
 import {Events, LoadingController, NavController, NavParams, Select} from 'ionic-angular';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ContainerService, FrameworkService,} from 'sunbird';
+import {ContainerService, FrameworkService} from 'sunbird';
 import {TranslateService} from '@ngx-translate/core';
 
 import {Location} from '@app/app';

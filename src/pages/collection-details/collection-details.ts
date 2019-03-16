@@ -20,6 +20,12 @@ import {
   ContentImportStatus,
   ContentService,
   CorrelationData,
+  ProfileType,
+  Rollup,
+  TelemetryErrorCode,
+  TelemetryObject
+} from 'sunbird-sdk';
+import {
   Environment,
   ErrorType,
   ImpressionType,
@@ -27,11 +33,7 @@ import {
   InteractType,
   Mode,
   PageId,
-  ProfileType,
-  Rollup,
-  TelemetryErrorCode,
-  TelemetryObject
-} from 'sunbird-sdk';
+} from '../../service/telemetry-constants';
 
 @IonicPage()
 @Component({

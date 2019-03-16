@@ -23,21 +23,24 @@ import {
   CorrelationData,
   DownloadEventType,
   DownloadProgress,
-  Environment,
-  ErrorType,
   EventsBusEvent,
+  EventNamespace,
   EventsBusService,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  Mode,
-  PageId,
   ProfileType,
   Rollup,
   TelemetryErrorCode,
   TelemetryObject
 } from 'sunbird-sdk';
-import {Subscription} from "rxjs";
+import {Subscription} from 'rxjs';
+import {
+  Environment,
+  ErrorType,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  Mode,
+  PageId
+} from '../../service/telemetry-constants';
 
 /**
  * Generated class for the CollectionDetailsEtbPage page.

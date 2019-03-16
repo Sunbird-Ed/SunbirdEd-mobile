@@ -42,14 +42,16 @@ import {
   FrameworkUtilService,
   GetAllProfileRequest,
   GetSuggestedFrameworksRequest,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  PageId,
   Profile,
   ProfileService
 } from 'sunbird-sdk';
 import {Subscription} from 'rxjs';
+import {
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  PageId
+} from '../../service/telemetry-constants';
 
 @IonicPage()
 @Component({

@@ -1,9 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import {
     TelemetryService,
-    InteractSubtype,
-    InteractType,
-    PageId,
     TelemetryInteractRequest,
     Rollup,
     TelemetryImpressionRequest,
@@ -12,13 +9,17 @@ import {
     TelemetryLogRequest,
     TelemetryErrorRequest,
     TelemetryObject,
-    CorrelationData,
-    Environment,
-    Mode,
-    ImpressionType,
-
+    CorrelationData
 } from 'sunbird-sdk';
 import { Map } from '../app/telemetryutil';
+import {
+    InteractSubtype,
+    InteractType,
+    PageId,
+    Environment,
+    Mode,
+    ImpressionType
+} from '../service/telemetry-constants';
 
 @Injectable()
 export class TelemetryGeneratorService {

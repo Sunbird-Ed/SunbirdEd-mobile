@@ -11,11 +11,6 @@ import {
 import { ReportListPage } from './report-list/report-list';
 import {
   GroupService,
-  InteractSubtype,
-  InteractType,
-  PageId,
-  Environment,
-  ImpressionType,
   TelemetryObject,
   ObjectType,
   ProfileService,
@@ -24,6 +19,13 @@ import {
   Group
 } from 'sunbird-sdk';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import {
+  InteractSubtype,
+  InteractType,
+  PageId,
+  Environment,
+  ImpressionType
+} from '../../service/telemetry-constants';
 
 
 @Component({

@@ -31,21 +31,24 @@ import {
   ContentRequest,
   ContentSearchCriteria,
   ContentService,
-  Environment,
+  ContentService as newContentService,
   FrameworkCategoryCode,
   FrameworkCategoryCodesGroup,
   FrameworkUtilService,
   GetFrameworkCategoryTermsRequest,
-  ImpressionType,
-  InteractType,
-  PageId,
   Profile,
   ProfileService,
   ProfileType,
   SearchType,
   TelemetryObject
 } from 'sunbird-sdk';
-import {InteractSubtype} from '../../service/interactSubtype-constant';
+import {
+  Environment,
+  ImpressionType,
+  InteractType,
+  PageId,
+  InteractSubtype
+} from '../../service/telemetry-constants';
 
 @Component({
   selector: 'page-resources',

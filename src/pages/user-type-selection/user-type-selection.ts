@@ -3,11 +3,6 @@ import {Events, IonicPage, Navbar, NavController, NavParams, Platform} from 'ion
 import {TranslateService} from '@ngx-translate/core';
 import {
   ContainerService,
-  Environment,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  PageId,
   SharedPreferences,
   TabsPage
 } from 'sunbird';
@@ -17,6 +12,13 @@ import {SunbirdQRScanner} from '@app/pages/qrscanner';
 import {ProfileSettingsPage} from '@app/pages/profile-settings/profile-settings';
 import {LanguageSettingsPage} from '@app/pages/language-settings/language-settings';
 import {Profile, ProfileService, ProfileSource, ProfileType} from "sunbird-sdk";
+import {
+  Environment,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  PageId,
+} from '../../service/telemetry-constants';
 
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
