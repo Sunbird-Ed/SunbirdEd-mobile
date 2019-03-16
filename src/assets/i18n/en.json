@@ -264,6 +264,7 @@
   "OFF": "Off",
   "RATE": "Rate",
   "OFFLINE_WARNING": "Ensure your device is connected to the internet",
+  "OFFLINE_WARNING_ETBUI": "Please connect to the internet to view the content",
   "OKAY": "OK",
   "ONBOARD_SCAN_QR_CODE": "Scan QR Codes here",
   "ONBOARD_SCAN_QR_CODE_DESC": "You can now scan QR codes from your textbook to view associated {{%s}} content",
@@ -456,5 +457,7 @@
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
   "COURSE_WILL_BE_AVAILABLE": "Course will be available from  {{%s}}",
   "ERROR_WHILE_LOGIN": "Error While Login",
-  "EMPTY_LIBRARY_TEXTBOOK_FILTER":"No books found for {{%s}}"
+  "EMPTY_LIBRARY_TEXTBOOK_FILTER":"No books found for {{%s}}",
+  "SHOW_RECENT":"Showing {{%s}} items",
+  "SHOW_RESULTS":"Showing results of \"{{%s}}\""
 }

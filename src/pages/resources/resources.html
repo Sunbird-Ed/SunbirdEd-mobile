@@ -131,14 +131,12 @@
 		</div>
 	</div>
 
-	<div padding text-center *ngIf="!commonUtilService?.networkInfo?.isNetworkAvailable">
-		<img height="80" width="100" src="assets/imgs/ic_offline.png" />
-		<h6 ion-text color="secondary_black">
+	<div padding text-center class = "mt-32 mb-32" *ngIf="!commonUtilService?.networkInfo?.isNetworkAvailable">
+		<img src="assets/imgs/ic_offline_orange_lg.png" />
+		<h6 class="offline-header" ion-text >
 			<b>{{ 'NO_INTERNET_TITLE' | translate }}</b>
 		</h6>
-		<p color="dark_gray">{{ 'OFFLINE_WARNING' | translate }}</p>
-		<b ion-text text-uppercase color="primary" (click)="checkNetworkStatus(true); showOfflineNetworkWarning();">{{'RETRY_ACTION'
-			| translate}}</b>
+		<p class="offline-content">{{ 'OFFLINE_WARNING_ETBUI' | translate }}</p>
 	</div>
 	<div *ngIf="showSignInCard" class="signin-card-bg">
 		<sign-in-card (valueChange)="showOfflineNetworkWarning($event)" [source]="source"></sign-in-card>
