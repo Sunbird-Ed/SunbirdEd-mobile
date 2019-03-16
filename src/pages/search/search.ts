@@ -1,17 +1,22 @@
-import {Component, Inject, NgZone, ViewChild, OnDestroy} from '@angular/core';
+import {Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
 import {Events, IonicPage, Navbar, NavController, NavParams, Platform} from 'ionic-angular';
 import {CorrelationData, FileUtil, SharedPreferences, TabsPage} from 'sunbird';
 import {
   Content,
   ContentDetailRequest,
+  ContentEventType,
   ContentImport,
   ContentImportRequest,
   ContentImportResponse,
   ContentImportStatus,
   ContentSearchCriteria,
   ContentSearchResult,
-  ContentService as NewContentService,
+  ContentService,
+  DownloadEventType,
+  DownloadProgress,
   Environment,
+  EventsBusEvent,
+  EventsBusService,
   ImpressionType,
   InteractSubtype,
   InteractType,
@@ -24,12 +29,7 @@ import {
   PageName,
   ProfileType,
   SearchType,
-  TelemetryObject,
-  EventsBusService,
-  EventBusEvent,
-  DownloadEventType,
-  DownloadProgress,
-  ContentEventType
+  TelemetryObject
 } from 'sunbird-sdk';
 import {FilterPage} from './filters/filter';
 import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
@@ -44,7 +44,7 @@ import {CommonUtilService} from '../../service/common-util.service';
 import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
 import {QrCodeResultPage} from '../qr-code-result/qr-code-result';
 import {TranslateService} from '@ngx-translate/core';
-import { Observable, Subscription } from 'rxjs';
+import {Subscription} from 'rxjs';
 
 declare const cordova;
 
@@ -115,7 +115,7 @@ export class SearchPage implements  OnDestroy {
   private corRelationList: Array<CorrelationData>;
 
   constructor(
-    @Inject('CONTENT_SERVICE') private newContentService: NewContentService,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private navParams: NavParams,
     private navCtrl: NavController,
     private zone: NgZone,
@@ -317,7 +317,7 @@ export class SearchPage implements  OnDestroy {
     this.showLoader = true;
     this.responseData.filterCriteria.mode = 'hard';
 
-    this.newContentService.searchContent(this.responseData.filterCriteria).toPromise()
+    this.contentService.searchContent(this.responseData.filterCriteria).toPromise()
       .then((responseData: ContentSearchResult) => {
 
         this.zone.run(() => {
@@ -390,7 +390,7 @@ export class SearchPage implements  OnDestroy {
 
     }
 
-    this.newContentService.searchContent(contentSearchRequest).toPromise()
+    this.contentService.searchContent(contentSearchRequest).toPromise()
       .then((response: ContentSearchResult) => {
 
         this.zone.run(() => {
@@ -753,7 +753,7 @@ export class SearchPage implements  OnDestroy {
       contentId: identifier
     };
 
-    this.newContentService.getContentDetails(contentRequest).toPromise()
+    this.contentService.getContentDetails(contentRequest).toPromise()
       .then((data: Content) => {
         if (data) {
           if (data.isAvailableLocally) {
@@ -785,7 +785,7 @@ export class SearchPage implements  OnDestroy {
       contentStatusArray: []
     };
     // Call content service
-    this.newContentService.importContent(option).toPromise()
+    this.contentService.importContent(option).toPromise()
       .then((data: ContentImportResponse[]) => {
         this.zone.run(() => {
 
@@ -816,7 +816,7 @@ export class SearchPage implements  OnDestroy {
    * Subscribe genie event to get content download progress
    */
   subscribeSdkEvent() {
-    this.eventSubscription = this.eventsBusService.events().subscribe((event: EventBusEvent) => {
+    this.eventSubscription = this.eventsBusService.events().subscribe((event: EventsBusEvent) => {
       this.zone.run(() => {
         if (event.type === DownloadEventType.PROGRESS && event.payload.progress) {
           const downloadEvent = event as DownloadProgress;
@@ -875,7 +875,7 @@ export class SearchPage implements  OnDestroy {
   }
 
   cancelDownload() {
-    this.newContentService.cancelDownload(this.parentContent.identifier).toPromise().then(() => {
+    this.contentService.cancelDownload(this.parentContent.identifier).toPromise().then(() => {
       this.zone.run(() => {
         this.showLoading = false;
       });

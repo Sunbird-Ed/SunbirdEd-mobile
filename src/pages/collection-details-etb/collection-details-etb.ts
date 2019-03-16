@@ -25,7 +25,7 @@ import {
   DownloadProgress,
   Environment,
   ErrorType,
-  EventBusEvent,
+  EventsBusEvent,
   EventsBusService,
   ImpressionType,
   InteractSubtype,
@@ -722,7 +722,7 @@ export class CollectionDetailsEtbPage {
    * Subscribe genie event to get content download progress
    */
   subscribeGenieEvent() {
-    this.eventSubscription = this.eventBusService.events().subscribe((event: EventBusEvent) => {
+    this.eventSubscription = this.eventBusService.events().subscribe((event: EventsBusEvent) => {
       this.zone.run(() => {
         if (event.type === DownloadEventType.PROGRESS) {
           const downloadEvent = event as DownloadProgress;

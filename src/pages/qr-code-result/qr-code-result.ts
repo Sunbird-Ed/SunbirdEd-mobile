@@ -1,5 +1,5 @@
 import {CommonUtilService} from './../../service/common-util.service';
-import {Component, Inject, NgZone, ViewChild, OnDestroy} from '@angular/core';
+import {Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
 import {
   AlertController,
   Events,
@@ -10,14 +10,7 @@ import {
   Platform,
   PopoverController
 } from 'ionic-angular';
-import {
-  ContentService,
-  CorrelationData,
-  FileUtil,
-  MarkerType,
-  SharedPreferences,
-  TabsPage
-} from 'sunbird';
+import {CorrelationData, FileUtil, MarkerType, SharedPreferences, TabsPage} from 'sunbird';
 import {ContentDetailsPage} from '../content-details/content-details';
 import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
 import {ContentType, MimeType} from '../../app/app.constant';
@@ -30,12 +23,18 @@ import {ProfileSettingsPage} from '../profile-settings/profile-settings';
 import {
   ChildContentRequest,
   Content,
-  ContentMarkerRequest,
   ContentDetailRequest,
-  ContentImportRequest,
+  ContentEventType,
   ContentImport,
+  ContentImportRequest,
   ContentImportResponse,
-  ContentService as NewContentService,
+  ContentMarkerRequest,
+  ContentService,
+  DownloadEventType,
+  DownloadProgress,
+  Environment,
+  EventsBusEvent,
+  EventsBusService,
   Framework,
   FrameworkCategoryCodesGroup,
   FrameworkDetailsRequest,
@@ -43,20 +42,14 @@ import {
   FrameworkUtilService,
   GetAllProfileRequest,
   GetSuggestedFrameworksRequest,
-  Profile,
-  ProfileService,
   ImpressionType,
   InteractSubtype,
   InteractType,
-  Environment,
   PageId,
-  EventsBusService,
-  EventBusEvent,
-  DownloadEventType,
-  DownloadProgress,
-  ContentEventType
+  Profile,
+  ProfileService
 } from 'sunbird-sdk';
-import { Observable, Subscription } from 'rxjs';
+import {Subscription} from 'rxjs';
 
 @IonicPage()
 @Component({
@@ -121,11 +114,10 @@ export class QrCodeResultPage implements OnDestroy {
   eventSubscription: Subscription;
 
   constructor(
-    @Inject('CONTENT_SERVICE') private newContentService: NewContentService,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     public navCtrl: NavController,
     public navParams: NavParams,
-    public contentService: ContentService,
     public zone: NgZone,
     public translate: TranslateService,
     public platform: Platform,
@@ -192,13 +184,13 @@ export class QrCodeResultPage implements OnDestroy {
       this.unregisterBackButton();
     }
     this.downloadProgress = 0;
-    if  (this.eventSubscription)  {
+    if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
     }
   }
 
   ngOnDestroy() {
-    if  (this.eventSubscription)  {
+    if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
     }
   }
@@ -227,7 +219,7 @@ export class QrCodeResultPage implements OnDestroy {
 
   getChildContents() {
     const request: ChildContentRequest = {contentId: this.identifier, hierarchyInfo: []};
-    this.newContentService.getChildContents(
+    this.contentService.getChildContents(
       request).toPromise()
       .then((data: Content) => {
         this.parents.splice(0, this.parents.length);
@@ -266,56 +258,21 @@ export class QrCodeResultPage implements OnDestroy {
     this.profileService.getAllProfiles(profileRequest)
       .map((profiles) => profiles.filter((profile) => !!profile.handle))
       .subscribe(profiles => {
-      if (profiles) {
-        this.userCount = profiles.length;
-      }
-      if (this.appGlobalService.isUserLoggedIn()) {
-        this.userCount += 1;
-      }
-    }, () => {
-    });
-  }
-
-  private showAllChild(content: any) {
-    this.zone.run(() => {
-      if (content.children === undefined) {
-        if (content.mimeType !== MimeType.COLLECTION) {
-          if (content.contentData.appIcon) {
-            if (content.contentData.appIcon.includes('http:') || content.contentData.appIcon.includes('https:')) {
-                if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-                        content.contentData.appIcon = content.contentData.appIcon;
-                  } else {
-                        content.contentData.appIcon = this.defaultImg;
-                  }
-            } else if (content.basePath) {
-              content.contentData.appIcon = content.basePath + '/' + content.contentData.appIcon;
-            }
-          }
-          this.results.push(content);
-
-          const path = [];
-          this.parents.forEach(ele => {
-            path.push(ele);
-          });
-          path.splice(-1, 1);
-          this.paths.push(path);
+        if (profiles) {
+          this.userCount = profiles.length;
         }
-        return;
-      }
-      content.children.forEach(child => {
-        this.parents.push(child);
-        this.showAllChild(child);
-        this.parents.splice(-1, 1);
+        if (this.appGlobalService.isUserLoggedIn()) {
+          this.userCount += 1;
+        }
+      }, () => {
       });
-    });
   }
-
 
   /**
    * Play content
    */
   playContent(content: Content) {
-    const extraInfoMap = { hierarchyInfo: [] };
+    const extraInfoMap = {hierarchyInfo: []};
     if (this.cardData && this.cardData.hierarchyInfo) {
       extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
     }
@@ -327,10 +284,10 @@ export class QrCodeResultPage implements OnDestroy {
       isMarked: true,
       extraInfo: extraInfoMap
     };
-    this.newContentService.setContentMarker(req).toPromise()
+    this.contentService.setContentMarker(req).toPromise()
       .then(() => {
       }).catch(() => {
-      });
+    });
     const request: any = {};
     request.streaming = true;
     AppGlobalService.isPlayerLaunched = true;
@@ -427,13 +384,12 @@ export class QrCodeResultPage implements OnDestroy {
       attachFeedback: true,
       attachContentAccess: true
     };
-    this.newContentService.getContentDetails(option).toPromise()
+    this.contentService.getContentDetails(option).toPromise()
       .then((data: any) => {
       })
       .catch((error: any) => {
       });
   }
-
 
   setGrade(reset, grades) {
     if (reset) {
@@ -597,7 +553,7 @@ export class QrCodeResultPage implements OnDestroy {
                     this.setCurrentProfile(0, data);
                   }
                 }).catch(() => {
-                });
+              });
 
               return;
             }
@@ -614,7 +570,7 @@ export class QrCodeResultPage implements OnDestroy {
    * Subscribe genie event to get content download progress
    */
   subscribeSdkEvent() {
-    this.eventSubscription = this.eventsBusService.events().subscribe((event: EventBusEvent) => {
+    this.eventSubscription = this.eventsBusService.events().subscribe((event: EventsBusEvent) => {
       this.zone.run(() => {
 
         if (event.type === DownloadEventType.PROGRESS && event.payload.progress) {
@@ -651,27 +607,6 @@ export class QrCodeResultPage implements OnDestroy {
     }) as any;
   }
 
-  private findContentNode(data: any) {
-    if (data && data.identifier === this.searchIdentifier) {
-      this.showAllChild(data);
-      return true;
-    }
-
-    if (data && data.children !== undefined) {
-      data.children.forEach(child => {
-        this.parents.push(child);
-        const isFound = this.findContentNode(child);
-
-        if (isFound === true) {
-          return true;
-        }
-        this.parents.splice(-1, 1);
-      });
-    }
-
-    return false;
-  }
-
   /**
    * Function to get import content api request params
    *
@@ -685,7 +620,7 @@ export class QrCodeResultPage implements OnDestroy {
     };
 
     // Call content service
-    this.newContentService.importContent(option).toPromise()
+    this.contentService.importContent(option).toPromise()
       .then((data: ContentImportResponse[]) => {
         this.zone.run(() => {
           data = data;
@@ -727,13 +662,13 @@ export class QrCodeResultPage implements OnDestroy {
 
   cancelDownload() {
     this.telemetryGeneratorService.generateCancelDownloadTelemetry(this.content);
-    this.newContentService.cancelDownload(this.identifier).toPromise()
-    .then(() => {
-      this.zone.run(() => {
-        this.showLoading = false;
-        this.navCtrl.pop();
-      });
-    }).catch(() => {
+    this.contentService.cancelDownload(this.identifier).toPromise()
+      .then(() => {
+        this.zone.run(() => {
+          this.showLoading = false;
+          this.navCtrl.pop();
+        });
+      }).catch(() => {
       this.zone.run(() => {
         this.showLoading = false;
         this.navCtrl.pop();
@@ -756,5 +691,60 @@ export class QrCodeResultPage implements OnDestroy {
     } else {
       this.navCtrl.setRoot(ProfileSettingsPage);
     }
+  }
+
+  private showAllChild(content: any) {
+    this.zone.run(() => {
+      if (content.children === undefined) {
+        if (content.mimeType !== MimeType.COLLECTION) {
+          if (content.contentData.appIcon) {
+            if (content.contentData.appIcon.includes('http:') || content.contentData.appIcon.includes('https:')) {
+              if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+                content.contentData.appIcon = content.contentData.appIcon;
+              } else {
+                content.contentData.appIcon = this.defaultImg;
+              }
+            } else if (content.basePath) {
+              content.contentData.appIcon = content.basePath + '/' + content.contentData.appIcon;
+            }
+          }
+          this.results.push(content);
+
+          const path = [];
+          this.parents.forEach(ele => {
+            path.push(ele);
+          });
+          path.splice(-1, 1);
+          this.paths.push(path);
+        }
+        return;
+      }
+      content.children.forEach(child => {
+        this.parents.push(child);
+        this.showAllChild(child);
+        this.parents.splice(-1, 1);
+      });
+    });
+  }
+
+  private findContentNode(data: any) {
+    if (data && data.identifier === this.searchIdentifier) {
+      this.showAllChild(data);
+      return true;
+    }
+
+    if (data && data.children !== undefined) {
+      data.children.forEach(child => {
+        this.parents.push(child);
+        const isFound = this.findContentNode(child);
+
+        if (isFound === true) {
+          return true;
+        }
+        this.parents.splice(-1, 1);
+      });
+    }
+
+    return false;
   }
 }

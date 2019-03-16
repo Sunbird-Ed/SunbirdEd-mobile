@@ -1,4 +1,4 @@
-import { Component, Inject, NgZone, ViewChild } from '@angular/core';
+import {Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {
   AlertController,
   Events,
@@ -10,7 +10,7 @@ import {
   Platform,
   PopoverController
 } from 'ionic-angular';
-import { SocialSharing } from '@ionic-native/social-sharing';
+import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
 import {
   BuildParamService,
@@ -22,25 +22,34 @@ import {
   SharedPreferences,
   ShareUtil
 } from 'sunbird';
-import { PreferenceKey, XwalkConstants } from '../../app/app.constant';
-import { Map, ShareUrl } from '@app/app';
-import { BookmarkComponent, ContentActionsComponent, ContentRatingAlertComponent } from '@app/component';
-import { AppGlobalService, CourseUtilService } from '@app/service';
-import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
-import { Network } from '@ionic-native/network';
-import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
+import {PreferenceKey, XwalkConstants} from '../../app/app.constant';
+import {Map, ShareUrl} from '@app/app';
+import {BookmarkComponent, ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
+import {AppGlobalService, CourseUtilService} from '@app/service';
+import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
+import {Network} from '@ionic-native/network';
+import {UserAndGroupsPage} from '../user-and-groups/user-and-groups';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {CommonUtilService} from '../../service/common-util.service';
+import {DialogPopupComponent} from '../../component/dialog-popup/dialog-popup';
 import {
   Content,
   ContentAccess,
   ContentAccessStatus,
   ContentDetailRequest,
+  ContentEventType,
+  ContentImport,
+  ContentImportCompleted,
+  ContentImportRequest,
+  ContentImportResponse,
   ContentMarkerRequest,
   ContentService as NewContentService,
   CorrelationData,
+  DownloadEventType,
+  DownloadProgress,
   Environment,
+  EventsBusEvent,
+  EventsBusService,
   GetAllProfileRequest,
   ImpressionType,
   InteractSubtype,
@@ -49,20 +58,9 @@ import {
   PageId,
   ProfileService,
   Rollup,
-  TelemetryObject,
-  ContentImportRequest,
-  ContentImportResponse,
-  ContentImport,
-  EventsBusService,
-  EventNamespace,
-  DownloadProgress,
-  ContentEvent,
-  ContentEventType,
-  EventBusEvent,
-  DownloadEventType,
-  ContentImportCompleted
+  TelemetryObject
 } from 'sunbird-sdk';
-import { Subscription } from 'rxjs';
+import {Subscription} from 'rxjs';
 
 declare const cordova;
 @IonicPage()
@@ -704,7 +702,7 @@ export class ContentDetailsPage {
    * Subscribe genie event to get content download progress
    */
   subscribeGenieEvent() {
-    this.eventBusService.events().subscribe((event: EventBusEvent) => {
+    this.eventBusService.events().subscribe((event: EventsBusEvent) => {
       this.zone.run(() => {
         if (event.type === DownloadEventType.PROGRESS) {
           const downloadEvent = event as DownloadProgress;

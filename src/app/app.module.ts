@@ -117,6 +117,8 @@ export const sunbirdSdkFactory =
           cached_requests: {
             timeToLive: 30 * 60 * 60 * 1000
           }
+        }, eventsBusConfig: {
+          debugMode: true
         },
         dbConfig: {
           debugMode: false,
@@ -170,7 +172,7 @@ export const sunbirdSdkFactory =
         }
       });
     };
-};
+  };
 
 @NgModule({
   declarations: [
