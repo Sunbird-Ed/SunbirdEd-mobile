@@ -38,13 +38,6 @@ import {
   CourseBatchStatus,
   CourseEnrollmentType,
   CourseService,
-  Environment,
-  ErrorType,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  Mode,
-  PageId,
   ProfileService,
   ProfileType,
   ServerProfileDetailsRequest,
@@ -54,6 +47,15 @@ import {
   UnenrollCourseRequest,
   FetchEnrolledCourseRequest
 } from 'sunbird-sdk';
+import {
+  Environment,
+  ErrorType,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  Mode,
+  PageId
+} from '../../service/telemetry-constants';
 
 
 @IonicPage()

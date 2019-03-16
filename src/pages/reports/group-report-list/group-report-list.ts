@@ -4,10 +4,6 @@ import {Component, NgZone, Inject} from '@angular/core';
 import {LoadingController, NavParams} from 'ionic-angular';
 import {
   DeviceInfoService,
-  Environment,
-  InteractSubtype,
-  InteractType,
-  PageId,
   ReportService,
   ReportSummary
 } from 'sunbird';
@@ -24,6 +20,12 @@ import {
     SummarizerService,
     SummaryRequest
 } from 'sunbird-sdk';
+import {
+    Environment,
+    InteractSubtype,
+    InteractType,
+    PageId,
+} from '../../../service/telemetry-constants';
 
 
 @Component({

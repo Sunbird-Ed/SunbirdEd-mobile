@@ -6,14 +6,16 @@ import {OnboardingPage} from '@app/pages/onboarding/onboarding';
 import {App, Events} from 'ionic-angular';
 import {
   AuthService,
-  Environment,
-  InteractSubtype,
-  InteractType,
-  PageId,
   ProfileService,
   ProfileType
 } from 'sunbird-sdk';
 import {Observable} from "rxjs";
+import {
+  Environment,
+  InteractSubtype,
+  InteractType,
+  PageId
+} from '../../service/telemetry-constants';
 
 @Injectable()
 export class LogoutHandlerService {

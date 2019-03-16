@@ -47,20 +47,22 @@ import {
   CorrelationData,
   DownloadEventType,
   DownloadProgress,
-  Environment,
   EventsBusEvent,
   EventsBusService,
   GetAllProfileRequest,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  Mode,
-  PageId,
   ProfileService,
   Rollup,
   TelemetryObject
 } from 'sunbird-sdk';
 import {Subscription} from 'rxjs';
+import {
+  Environment,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  Mode,
+  PageId,
+} from '../../service/telemetry-constants';
 
 declare const cordova;
 @IonicPage()
@@ -135,8 +137,6 @@ export class ContentDetailsPage {
   private ratingComment = '';
   private corRelationList: Array<CorrelationData>;
 
-  private downloadEventSubscription: Subscription;
-  private contentEventSubscription: Subscription;
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('CONTENT_SERVICE') private newContentService: NewContentService,
@@ -702,7 +702,7 @@ export class ContentDetailsPage {
    * Subscribe genie event to get content download progress
    */
   subscribeGenieEvent() {
-    this.eventBusService.events().subscribe((event: EventsBusEvent) => {
+  this.eventBusService.events().subscribe((event: EventsBusEvent) => {
       this.zone.run(() => {
         if (event.type === DownloadEventType.PROGRESS) {
           const downloadEvent = event as DownloadProgress;

@@ -27,13 +27,9 @@ import {
   TabsPage
 } from 'sunbird';
 import {
-  Environment,
   GetAllProfileRequest,
   Group,
   GroupService,
-  InteractSubtype,
-  InteractType,
-  PageId,
   Profile,
   ProfileService,
   ProfileType,
@@ -51,6 +47,12 @@ import {GuestEditProfilePage} from '../../profile/guest-edit.profile/guest-edit.
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
 import {Map} from '../../../app/telemetryutil';
 import {PreferenceKey} from '../../../app/app.constant';
+import {
+  Environment,
+  InteractSubtype,
+  InteractType,
+  PageId
+} from '../../../service/telemetry-constants';
 
 @IonicPage()
 @Component({

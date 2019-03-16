@@ -1,9 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import {
     TelemetryService,
-    InteractSubtype,
-    InteractType,
-    PageId,
     TelemetryInteractRequest,
     Rollup,
     TelemetryImpressionRequest,
@@ -12,13 +9,17 @@ import {
     TelemetryLogRequest,
     TelemetryErrorRequest,
     TelemetryObject,
-    CorrelationData,
-    Environment,
-    Mode,
-    ImpressionType,
-
+    CorrelationData
 } from 'sunbird-sdk';
 import { Map } from '../app/telemetryutil';
+import {
+    InteractSubtype,
+    InteractType,
+    PageId,
+    Environment,
+    Mode,
+    ImpressionType
+} from '../service/telemetry-constants';
 
 @Injectable()
 export class TelemetryGeneratorService {
@@ -52,7 +53,7 @@ export class TelemetryGeneratorService {
         }
 
         if (object && object.version) {
-            telemetryInteractRequest.objVer = object.version;
+            telemetryInteractRequest.objVer = object.version + '';
         }
         this.telemetryService.interact(telemetryInteractRequest).subscribe();
     }
@@ -66,7 +67,7 @@ export class TelemetryGeneratorService {
         telemetryImpressionRequest.env = env;
         telemetryImpressionRequest.objId = objectId ? objectId : '';
         telemetryImpressionRequest.objType = objectType ? objectType : '';
-        telemetryImpressionRequest.objVer = objectVersion ? objectVersion : '';
+        telemetryImpressionRequest.objVer = objectVersion ? objectVersion + '' : '';
 
         if (rollup !== undefined) {
             telemetryImpressionRequest.rollup = rollup;
@@ -92,7 +93,7 @@ export class TelemetryGeneratorService {
         }
 
         if (object && object.version) {
-            telemetryEndRequest.objVer = object.version;
+            telemetryEndRequest.objVer = object.version + '';
         }
         if (rollup) {
             telemetryEndRequest.rollup = rollup;
@@ -117,7 +118,7 @@ export class TelemetryGeneratorService {
         }
 
         if (object && object.version) {
-            telemetryStartRequest.objVer = object.version;
+            telemetryStartRequest.objVer = object.version + '';
         }
         if (rollup !== undefined) {
             telemetryStartRequest.rollup = rollup;

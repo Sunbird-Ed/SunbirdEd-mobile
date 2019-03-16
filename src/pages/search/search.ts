@@ -14,18 +14,12 @@ import {
   ContentService,
   DownloadEventType,
   DownloadProgress,
-  Environment,
   EventsBusEvent,
   EventsBusService,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  LogLevel,
-  Mode,
+  ContentService as NewContentService,
   PageAssembleCriteria,
   PageAssembleFilter,
   PageAssembleService,
-  PageId,
   PageName,
   ProfileType,
   SearchType,
@@ -45,6 +39,15 @@ import {TelemetryGeneratorService} from '../../service/telemetry-generator.servi
 import {QrCodeResultPage} from '../qr-code-result/qr-code-result';
 import {TranslateService} from '@ngx-translate/core';
 import {Subscription} from 'rxjs';
+import {
+  Environment,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  LogLevel,
+  Mode,
+  PageId
+} from '../../service/telemetry-constants';
 
 declare const cordova;
 

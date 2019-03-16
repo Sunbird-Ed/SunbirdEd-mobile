@@ -1,6 +1,6 @@
 import { AppGlobalService } from '@app/service';
 import { CommonUtilService } from './../../service/common-util.service';
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { NavController, DateTime } from 'ionic-angular';
 import { DatasyncPage } from './datasync/datasync';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
@@ -10,18 +10,19 @@ import { TranslateService } from '@ngx-translate/core';
 import { AppVersion } from '@ionic-native/app-version';
 import {
   SharedPreferences,
-  InteractType,
-  InteractSubtype,
   ShareUtil,
+  DeviceInfoService,
   Impression,
+} from 'sunbird';
+import { PreferenceKey } from '../../app/app.constant';
+import {
   ImpressionType,
   Environment,
   PageId,
-  DeviceInfoService,
-  TelemetryService
-} from 'sunbird';
-import { generateInteractTelemetry, generateImpressionTelemetry } from '../../app/telemetryutil';
-import { PreferenceKey } from '../../app/app.constant';
+  InteractType,
+  InteractSubtype
+} from '../../service/telemetry-constants';
+import { TelemetryGeneratorService } from '@app/service';
 
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
 const SUBJECT_NAME = 'support request';
@@ -45,10 +46,10 @@ export class SettingsPage {
     private translate: TranslateService,
     private deviceInfoService: DeviceInfoService,
     private preference: SharedPreferences,
-    private telemetryService: TelemetryService,
     private shareUtil: ShareUtil,
     private commonUtilService: CommonUtilService,
-    private appGlobalService: AppGlobalService
+    private appGlobalService: AppGlobalService,
+    private telemetryGeneratorService: TelemetryGeneratorService,
   ) { }
 
   ionViewWillEnter() {
@@ -65,13 +66,13 @@ export class SettingsPage {
     impression.type = ImpressionType.VIEW;
     impression.pageId = PageId.SETTINGS;
     impression.env = Environment.SETTINGS;
-    this.telemetryService.impression(generateImpressionTelemetry(
+    this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
       PageId.SETTINGS,
       Environment.SETTINGS, '', '', '',
       undefined,
       undefined
-    ));
+    );
   }
 
   ionViewDidEnter() {
@@ -150,12 +151,12 @@ export class SettingsPage {
   }
 
   generateInteractTelemetry(interactionType, interactSubtype) {
-    this.telemetryService.interact(generateInteractTelemetry(
+    this.telemetryGeneratorService.generateInteractTelemetry(
       interactionType, interactSubtype,
       PageId.SETTINGS,
       Environment.SETTINGS, null,
       undefined,
       undefined
-    ));
+    );
   }
 }

@@ -18,7 +18,7 @@ import {
   Environment,
   InteractType,
   InteractSubtype
-} from 'sunbird-sdk';
+} from '../../../service/telemetry-constants';
 
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
 

@@ -15,7 +15,8 @@ import { ContentType, MimeType, ContentCard, PreferenceKey } from '../../../app/
 import { CourseUtilService } from '../../../service/course-util.service';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import {SharedPreferences} from 'sunbird';
-import { InteractType, InteractSubtype, TelemetryObject } from 'sunbird-sdk';
+import {TelemetryObject} from 'sunbird-sdk';
+import {InteractType, InteractSubtype} from '../../../service/telemetry-constants';
 
 /**
  * The course card component

@@ -13,7 +13,7 @@ import {
 } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
-import { SharedPreferences, InteractType, InteractSubtype } from 'sunbird';
+import { SharedPreferences} from 'sunbird';
 import { Network } from '@ionic-native/network';
 
 import { PreferenceKey } from '../app/app.constant';
@@ -22,6 +22,7 @@ import { appLanguages } from './../app/app.constant';
 import { QRScannerAlert } from './../pages/qrscanner/qrscanner_alert';
 
 import { TelemetryGeneratorService } from '../service/telemetry-generator.service';
+import { InteractType, InteractSubtype } from '../service/telemetry-constants';
 export interface NetworkInfo {
     isNetworkAvailable: boolean;
 }

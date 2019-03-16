@@ -14,12 +14,8 @@ import {FormAndFrameworkUtilService} from '../../pages/profile/formandframeworku
 import {
   ApiService,
   AuthService,
-  Environment,
-  InteractSubtype,
-  InteractType,
   OAuthSession,
   OAuthSessionProvider,
-  PageId,
   Profile,
   ProfileService,
   ProfileSource,
@@ -27,6 +23,12 @@ import {
   SdkConfig,
   ServerProfileDetailsRequest
 } from 'sunbird-sdk';
+import {
+  Environment,
+  InteractSubtype,
+  InteractType,
+  PageId
+} from '../../service/telemetry-constants';
 
 @Component({
   selector: 'sign-in-card',

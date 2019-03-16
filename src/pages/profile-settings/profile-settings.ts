@@ -3,10 +3,6 @@ import {App, IonicApp, NavParams, Select} from 'ionic-angular/index';
 import {AppGlobalService} from '../../service/app-global.service';
 import {
   ContainerService,
-  Environment,
-  InteractSubtype,
-  InteractType,
-  PageId,
   SharedPreferences,
   TabsPage
 } from 'sunbird';
@@ -32,6 +28,12 @@ import {
   ProfileType,
   CategoryTerm
 } from 'sunbird-sdk';
+import {
+  Environment,
+  InteractSubtype,
+  InteractType,
+  PageId,
+} from '../../service/telemetry-constants';
 
 @IonicPage()
 @Component({

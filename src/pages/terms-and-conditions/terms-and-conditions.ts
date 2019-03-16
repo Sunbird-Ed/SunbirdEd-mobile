@@ -6,7 +6,7 @@ import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {CommonUtilService, TelemetryGeneratorService} from '@app/service';
 import {TranslateService} from '@ngx-translate/core';
 import {AppVersion} from '@ionic-native/app-version';
-import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from 'sunbird';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
 import {ProfileService, ServerProfile} from 'sunbird-sdk';
 
 @Component({

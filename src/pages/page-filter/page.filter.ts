@@ -3,7 +3,6 @@ import {Events, NavParams, Platform, PopoverController, ViewController} from 'io
 import {AppGlobalService} from '../../service/app-global.service';
 import * as _ from 'lodash';
 import {TranslateService} from '@ngx-translate/core';
-import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from 'sunbird';
 import {PageFilterOptions} from './options/filter.options';
 import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
 import {CommonUtilService} from '../../service/common-util.service';
@@ -16,6 +15,7 @@ import {
   GetFrameworkCategoryTermsRequest,
   PageAssembleFilter
 } from 'sunbird-sdk';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
 
 @Component({
   selector: 'page-filter',

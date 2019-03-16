@@ -4,11 +4,6 @@ import {Events, LoadingController, Navbar, NavController, Platform} from 'ionic-
 import {AppVersion} from '@ionic-native/app-version';
 import {
   ContainerService,
-  Environment,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  PageId,
   SharedPreferences,
   TabsPage,
 } from 'sunbird';
@@ -38,6 +33,13 @@ import {
   ServerProfileDetailsRequest
 } from 'sunbird-sdk';
 import {CategoriesEditPage} from "@app/pages/categories-edit/categories-edit";
+import {
+  Environment,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  PageId
+} from '../../service/telemetry-constants';
 
 @Component({
   selector: 'page-onboarding',
@@ -222,7 +224,7 @@ export class OnboardingPage {
                 });
             }).catch((e) => {
             reject(e);
-          })
+          });
         }
       });
     });

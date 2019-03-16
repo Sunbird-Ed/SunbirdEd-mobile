@@ -9,6 +9,12 @@ import {
   PermissionService,
   TabsPage
 } from 'sunbird';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {QRScannerResultHandler} from './qrscanresulthandler.service';
+import {ProfileSettingsPage} from '../profile-settings/profile-settings';
+import {AppGlobalService} from '../../service/app-global.service';
+import {Subscription} from 'rxjs';
+import {Profile, ProfileType, TelemetryObject} from 'sunbird-sdk';
 import {
   Environment,
   ImpressionSubtype,
@@ -16,15 +22,8 @@ import {
   InteractSubtype,
   InteractType,
   Mode,
-  PageId,
-  TelemetryObject
-} from 'sunbird-sdk';
-import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
-import {QRScannerResultHandler} from './qrscanresulthandler.service';
-import {ProfileSettingsPage} from '../profile-settings/profile-settings';
-import {AppGlobalService} from '../../service/app-global.service';
-import {Subscription} from 'rxjs';
-import {Profile, ProfileType} from 'sunbird-sdk';
+  PageId
+} from '../../service/telemetry-constants';
 
 @Injectable()
 export class SunbirdQRScanner {

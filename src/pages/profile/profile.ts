@@ -28,12 +28,7 @@ import {
   ContentSortCriteria,
   Course,
   CourseService,
-  Environment,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
   OAuthSession,
-  PageId,
   ProfileService,
   SearchType,
   ServerProfileDetailsRequest,
@@ -41,6 +36,13 @@ import {
   TelemetryObject,
   UpdateServerProfileInfoRequest
 } from 'sunbird-sdk';
+import {
+  Environment,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  PageId
+} from '../../service/telemetry-constants';
 
 /**
  * The Profile page

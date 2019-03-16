@@ -1,9 +1,10 @@
 import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
 import { PopoverController } from 'ionic-angular';
-import {TelemetryObject, PageId, InteractSubtype, ObjectType, InteractType, Environment, ReportSummary} from 'sunbird-sdk';
+import {TelemetryObject, ReportSummary} from 'sunbird-sdk';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { UserReportPage } from '../../pages/reports/user-report/user-report';
 import { NavController } from 'ionic-angular';
+import {PageId, InteractSubtype, ObjectType, InteractType, Environment} from '../../service/telemetry-constants';
 
 @Component({
   selector: 'assessment-details',

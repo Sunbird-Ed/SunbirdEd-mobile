@@ -14,12 +14,6 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import * as _ from 'lodash';
 import {
   ContainerService,
-  Environment,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  ObjectType,
-  PageId,
   SharedPreferences,
   TabsPage
 } from 'sunbird';
@@ -42,6 +36,14 @@ import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs} from '../../../app/mod
 import {AppGlobalService} from '../../../service/app-global.service';
 import {CommonUtilService} from '../../../service/common-util.service';
 import {PreferenceKey} from '../../../app/app.constant';
+import {
+  Environment,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  ObjectType,
+  PageId,
+} from '../../../service/telemetry-constants';
 
 @Component({
   selector: 'page-guest-edit.profile',

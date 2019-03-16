@@ -9,16 +9,18 @@ import {
   Content,
   ContentFeedback,
   ContentFeedbackService,
+  TelemetryLogRequest,
+  TelemetryService
+} from 'sunbird-sdk';
+import {
   Environment,
   ImpressionSubtype,
   ImpressionType,
   InteractSubtype,
   InteractType,
   LogLevel,
-  LogType,
-  TelemetryLogRequest,
-  TelemetryService
-} from 'sunbird-sdk';
+  LogType
+} from '../../service/telemetry-constants';
 
 @Component({
   selector: 'content-rating-alert',
@@ -176,7 +178,7 @@ export class ContentRatingAlertComponent {
       viewDismissData.message = 'rating.error';
       // TODO: ask anil to show error message(s)
       this.viewCtrl.dismiss(viewDismissData);
-    })
+    });
   }
 
   showMessage(msg) {

@@ -17,7 +17,7 @@ import {
     InteractSubtype,
     InteractType,
     PageId,
-} from 'sunbird-sdk';
+} from '../../../service/telemetry-constants';
 
 @Component({
     selector: 'menu-overflow',

@@ -1,11 +1,12 @@
 import {Component, NgZone, Inject} from '@angular/core';
 import {Events, IonicPage, NavController, NavParams, Platform} from 'ionic-angular';
 import {TranslateService} from '@ngx-translate/core';
-import {Environment, ImpressionType, InteractSubtype, InteractType, PageId, SharedPreferences} from 'sunbird-sdk';
+import {SharedPreferences} from 'sunbird-sdk';
 import {appLanguages, Map, PreferenceKey} from '@app/app';
 import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
 import {OnboardingPage} from '@app/pages/onboarding/onboarding';
 import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
 
 
 @IonicPage()

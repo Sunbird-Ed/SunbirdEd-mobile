@@ -17,7 +17,7 @@ import {
   PageId,
   ImpressionType,
   ObjectType,
-} from 'sunbird';
+} from '../../../service/telemetry-constants';
 import { Group, GroupService } from 'sunbird-sdk';
 import { GroupMembersPage } from './../group-members/group-members';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';

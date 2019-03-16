@@ -3,12 +3,6 @@ import { NavController, NavParams, LoadingController } from 'ionic-angular';
 import { GroupReportListPage } from '../group-report-list/group-report-list';
 import { ContentService, SummarizerContentFilterCriteria, } from 'sunbird';
 import {
-    ImpressionType,
-    Environment,
-    PageId,
-    InteractType,
-    InteractSubtype,
-    ObjectType,
     TelemetryObject,
     ReportSummary,
     SummarizerService,
@@ -18,6 +12,14 @@ import {
 import { UserReportPage } from '../user-report/user-report';
 import { ContentType } from '../../../app/app.constant';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
+import {
+    ImpressionType,
+    Environment,
+    PageId,
+    InteractType,
+    InteractSubtype,
+    ObjectType
+} from '../../../service/telemetry-constants';
 
 @Component({
     selector: 'group-list-page',

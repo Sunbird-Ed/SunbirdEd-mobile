@@ -13,9 +13,10 @@ import { ContentDetailsPage } from '../../../pages/content-details/content-detai
 import { ContentType, MimeType, ContentCard, PreferenceKey, CardSectionName } from '../../../app/app.constant';
 import { CourseUtilService } from '../../../service/course-util.service';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import { InteractType, InteractSubtype, TelemetryObject } from 'sunbird-sdk';
+import {TelemetryObject} from 'sunbird-sdk';
 import {SharedPreferences} from 'sunbird';
 import { CollectionDetailsEtbPage } from '../../../pages/collection-details-etb/collection-details-etb';
+import {InteractType, InteractSubtype} from '../../../service/telemetry-constants';
 
 /**
  * The course card component

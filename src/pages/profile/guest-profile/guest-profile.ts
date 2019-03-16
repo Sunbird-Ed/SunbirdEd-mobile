@@ -2,7 +2,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {Component, Inject} from '@angular/core';
 import {Events, NavController, PopoverController} from 'ionic-angular';
 import * as _ from 'lodash';
-import {Environment, ImpressionType, PageId, SharedPreferences,} from 'sunbird';
+import {SharedPreferences} from 'sunbird';
 import {GuestEditProfilePage, OverflowMenuComponent} from '@app/pages/profile';
 import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
 import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
@@ -17,6 +17,7 @@ import {
   ProfileService,
   ProfileType,
 } from 'sunbird-sdk';
+import {Environment, ImpressionType, PageId} from '../../../service/telemetry-constants'
 
 @Component({
   selector: 'page-guest-profile',

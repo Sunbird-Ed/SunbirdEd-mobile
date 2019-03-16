@@ -6,11 +6,13 @@ import {TelemetryGeneratorService} from '@app/service';
 import {CommonUtilService} from '../../../service/common-util.service';
 import {
   ProfileService,
-  ServerProfileSearchCriteria,
+  ServerProfileSearchCriteria
+} from 'sunbird-sdk';
+import {
   Environment,
   ImpressionType,
   PageId
-} from 'sunbird-sdk';
+} from '../../../service/telemetry-constants';
 
 @Component({
   selector: 'user-search',

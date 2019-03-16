@@ -8,13 +8,15 @@ import {
   Platform
 } from 'ionic-angular';
 import {
-  Environment,
-  InteractType,
   TelemetryObject
 } from 'sunbird-sdk';
 import { ProfileConstants } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import {
+  Environment,
+  InteractType
+} from '../../service/telemetry-constants';
 
 @Component({
   selector: 'view-credits',

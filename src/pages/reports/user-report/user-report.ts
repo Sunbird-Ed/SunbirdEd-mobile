@@ -2,9 +2,6 @@ import { Component, NgZone, Inject } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { DeviceInfoService } from 'sunbird';
 import {
-   ImpressionType,
-   PageId,
-   Environment,
    SummarizerService,
    SummaryRequest,
    ReportSummary
@@ -19,6 +16,11 @@ import { AppVersion } from '@ionic-native/app-version';
 import { AppGlobalService } from '../../../service/app-global.service';
 import { DatePipe } from '@angular/common';
 import { CommonUtilService } from '@app/service';
+import {
+  ImpressionType,
+  PageId,
+  Environment,
+} from '../../../service/telemetry-constants';
 
 @IonicPage()
 @Component({
