@@ -316,6 +316,7 @@ export class SearchPage implements  OnDestroy {
   applyFilter() {
     this.showLoader = true;
     this.responseData.filterCriteria.mode = 'hard';
+    this.responseData.filterCriteria.searchType = SearchType.FILTER;
 
     this.contentService.searchContent(this.responseData.filterCriteria).toPromise()
       .then((responseData: ContentSearchResult) => {

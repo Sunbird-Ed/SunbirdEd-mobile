@@ -3,7 +3,7 @@ import {Events, NavParams, Platform, PopoverController, ViewController} from 'io
 import {AppGlobalService} from '../../service/app-global.service';
 import * as _ from 'lodash';
 import {TranslateService} from '@ngx-translate/core';
-import {Environment, ImpressionType, InteractSubtype, InteractType, PageAssembleFilter, PageId,} from 'sunbird';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from 'sunbird';
 import {PageFilterOptions} from './options/filter.options';
 import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
 import {CommonUtilService} from '../../service/common-util.service';
@@ -13,7 +13,8 @@ import {
   FrameworkCategoryCode,
   FrameworkCategoryCodesGroup,
   FrameworkUtilService,
-  GetFrameworkCategoryTermsRequest
+  GetFrameworkCategoryTermsRequest,
+  PageAssembleFilter
 } from 'sunbird-sdk';
 
 @Component({
@@ -21,7 +22,7 @@ import {
   templateUrl: './page.filter.html'
 })
 export class PageFilter {
-  pagetAssemblefilter = new PageAssembleFilter();
+  pagetAssemblefilter: PageAssembleFilter;
 
   callback: PageFilterCallback;
 

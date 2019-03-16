@@ -5,13 +5,13 @@ import {
   Platform,
   ViewController
 } from 'ionic-angular';
-import { PageAssembleFilter } from 'sunbird';
+import { PageAssembleFilter } from 'sunbird-sdk';
 @Component({
   selector: 'page-filter-options',
   templateUrl: './filter.options.html'
 })
 export class PageFilterOptions {
-  pagetAssemblefilter = new PageAssembleFilter();
+  pagetAssemblefilter: PageAssembleFilter;
   facets: any;
   backButtonFunc = undefined;
   selected: boolean;
