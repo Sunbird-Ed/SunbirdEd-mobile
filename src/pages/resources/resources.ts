@@ -458,8 +458,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   getGroupByPage(isAfterLanguageChange = false) {
     this.storyAndWorksheets = [];
-    const loader = this.commonUtilService.getLoader();
-    loader.present();
     if (!this.refresh) {
       this.searchApiLoader = true;
     } else {
@@ -517,7 +515,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         });
       })
       .catch(error => {
-        loader.dismiss();
         console.log('error while getting popular resources...', error);
         this.ngZone.run(() => {
           this.refresh = false;
