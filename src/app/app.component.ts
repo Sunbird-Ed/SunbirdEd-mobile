@@ -1,9 +1,7 @@
 import { Observable } from 'rxjs';
 import {
   BuildParamService,
-  ContainerService,
   PermissionService,
-  TabsPage,
 } from 'sunbird';
 import {ProfileSettingsPage} from './../pages/profile-settings/profile-settings';
 import {Component, Inject, NgZone, ViewChild} from '@angular/core';
@@ -39,6 +37,9 @@ import {
   InteractType,
   PageId
 } from '../service/telemetry-constants';
+import { TabsPage } from '@app/pages/tabs/tabs';
+import { ContainerService } from '@app/service/container.services';
+
 
 const KEY_SUNBIRD_SUPPORT_FILE_PATH = 'sunbird_support_file_path';
 

@@ -3,9 +3,6 @@ import {Component, EventEmitter, Inject, Input, NgZone, Output} from '@angular/c
 import {TranslateService} from '@ngx-translate/core';
 import {NavController} from 'ionic-angular';
 import {AppVersion} from '@ionic-native/app-version';
-import {
-  ContainerService,
-} from 'sunbird';
 import {initTabs, LOGIN_TEACHER_TABS} from '../../app/module.service';
 import {TelemetryGeneratorService} from '@app/service';
 import {ProfileConstants} from '../../app/app.constant';
@@ -29,6 +26,7 @@ import {
   InteractType,
   PageId
 } from '../../service/telemetry-constants';
+import { ContainerService } from '../../service/container.services';
 
 @Component({
   selector: 'sign-in-card',

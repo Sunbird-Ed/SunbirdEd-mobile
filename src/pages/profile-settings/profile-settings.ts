@@ -1,10 +1,6 @@
 import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs} from './../../app/module.service';
 import {App, IonicApp, NavParams, Select} from 'ionic-angular/index';
 import {AppGlobalService} from '../../service/app-global.service';
-import {
-  ContainerService,
-  TabsPage
-} from 'sunbird';
 import {Component, Inject, ViewChild} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
@@ -34,6 +30,8 @@ import {
   InteractType,
   PageId,
 } from '../../service/telemetry-constants';
+import { ContainerService } from '../../service/container.services';
+import { TabsPage } from '@app/pages/tabs/tabs';
 
 @IonicPage()
 @Component({

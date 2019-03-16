@@ -5,9 +5,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {App, Platform, Popover, PopoverController} from 'ionic-angular';
 import {QRAlertCallBack, QRScannerAlert} from './qrscanner_alert';
 import {
-  ContainerService,
-  PermissionService,
-  TabsPage
+  PermissionService
 } from 'sunbird';
 import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
 import {QRScannerResultHandler} from './qrscanresulthandler.service';
@@ -24,6 +22,8 @@ import {
   Mode,
   PageId
 } from '../../service/telemetry-constants';
+import { ContainerService } from '@app/service/container.services';
+import { TabsPage } from '../tabs/tabs';
 
 @Injectable()
 export class SunbirdQRScanner {

@@ -3,7 +3,6 @@ import { CommonUtilService } from './../../service/common-util.service';
 import { Component, Inject, ViewChild } from '@angular/core';
 import { Events, IonicPage, LoadingController, NavController, NavParams, Select } from 'ionic-angular';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ContainerService, TabsPage, } from 'sunbird';
 import { TranslateService } from '@ngx-translate/core';
 import { initTabs, LOGIN_TEACHER_TABS } from '@app/app';
 import {
@@ -19,6 +18,8 @@ import {
   CategoryTerm,
   UpdateServerProfileInfoRequest
 } from 'sunbird-sdk';
+import { ContainerService } from '@app/service/container.services';
+import { TabsPage } from '../tabs/tabs';
 
 @IonicPage()
 @Component({

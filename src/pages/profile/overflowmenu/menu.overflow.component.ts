@@ -2,9 +2,6 @@ import {CommonUtilService} from './../../../service/common-util.service';
 import {Component, ViewChild} from '@angular/core';
 import {App, Nav, NavParams, ViewController} from 'ionic-angular';
 import {SettingsPage} from '../../settings/settings';
-import {
-  ContainerService,
-} from 'sunbird';
 import {UserAndGroupsPage} from '../../user-and-groups/user-and-groups';
 import {TranslateService} from '@ngx-translate/core';
 import {ReportsPage} from '../../reports/reports';
@@ -17,6 +14,7 @@ import {
     InteractType,
     PageId,
 } from '../../../service/telemetry-constants';
+import { ContainerService } from '@app/service/container.services';
 
 @Component({
     selector: 'menu-overflow',

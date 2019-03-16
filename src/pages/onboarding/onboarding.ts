@@ -2,10 +2,7 @@ import {FormAndFrameworkUtilService} from './../profile/formandframeworkutil.ser
 import {Component, Inject, ViewChild} from '@angular/core';
 import {Events, LoadingController, Navbar, NavController, Platform} from 'ionic-angular';
 import {AppVersion} from '@ionic-native/app-version';
-import {
-  ContainerService,
-  TabsPage,
-} from 'sunbird';
+
 
 import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
 import {
@@ -40,6 +37,8 @@ import {
   InteractType,
   PageId
 } from '../../service/telemetry-constants';
+import { ContainerService } from '@app/service/container.services';
+import { TabsPage } from '../tabs/tabs';
 
 @Component({
   selector: 'page-onboarding',

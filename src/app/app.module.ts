@@ -7,7 +7,7 @@ import {TranslateLoader, TranslateModule, TranslateService} from '@ngx-translate
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {PluginModules} from './module.service';
-import {EventService, FrameworkModule, TabsPage} from 'sunbird';
+import {EventService, FrameworkModule} from 'sunbird';
 import {AppVersion} from '@ionic-native/app-version';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import {ImageLoader, ImageLoaderConfig, IonicImageLoader} from 'ionic-image-loader';
@@ -22,6 +22,7 @@ import {TncUpdateHandlerService} from '@app/service/handlers/tnc-update-handler.
 import {SunbirdSdk} from 'sunbird-sdk';
 import {UniqueDeviceID} from '@ionic-native/unique-device-id';
 import {Device} from '@ionic-native/device';
+import { TabsPage } from '@app/pages/tabs/tabs';
 
 export const translateHttpLoaderFactory = (httpClient: HttpClient) => {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');

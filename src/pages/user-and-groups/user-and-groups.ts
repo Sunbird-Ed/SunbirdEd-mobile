@@ -15,7 +15,6 @@ import {
   PopoverController
 } from 'ionic-angular';
 import {PopoverPage} from './popover/popover';
-import {ContainerService, TabsPage} from 'sunbird';
 import {
   AuthService,
   GetAllProfileRequest,
@@ -50,6 +49,8 @@ import {
   ObjectType,
   PageId,
 } from '../../service/telemetry-constants';
+import { ContainerService } from '@app/service/container.services';
+import { TabsPage } from '../tabs/tabs';
 
 @IonicPage()
 @Component({

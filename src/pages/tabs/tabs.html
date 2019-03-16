@@ -1,0 +1,4 @@
+<ion-tabs (ionChange)="ionChange($event)" #myTabs>
+  <ion-tab *ngFor="let tab of tabs" [root]="tab.root" tabTitle="{{tab.label | translate}}&zwnj;" [tabIcon]="tab.icon" [tabsHideOnSubPages]="tab.tabsHideOnSubPages"></ion-tab>
+</ion-tabs>
+

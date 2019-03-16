@@ -13,10 +13,6 @@ import {Component, Inject} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import * as _ from 'lodash';
 import {
-  ContainerService,
-  TabsPage
-} from 'sunbird';
-import {
   FrameworkService,
   FrameworkUtilService,
   GetSuggestedFrameworksRequest,
@@ -44,7 +40,8 @@ import {
   ObjectType,
   PageId,
 } from '../../../service/telemetry-constants';
-
+import { ContainerService } from '../../../service/container.services';
+import { TabsPage } from '@app/pages/tabs/tabs';
 @Component({
   selector: 'page-guest-edit.profile',
   templateUrl: 'guest-edit.profile.html'

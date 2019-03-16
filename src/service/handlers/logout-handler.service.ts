@@ -1,5 +1,4 @@
 import {Inject, Injectable} from '@angular/core';
-import {ContainerService, TabsPage} from 'sunbird';
 import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, PreferenceKey} from '@app/app';
 import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
 import {OnboardingPage} from '@app/pages/onboarding/onboarding';
@@ -17,6 +16,8 @@ import {
   InteractType,
   PageId
 } from '../../service/telemetry-constants';
+import { ContainerService } from '../container.services';
+import { TabsPage } from '@app/pages/tabs/tabs';
 
 @Injectable()
 export class LogoutHandlerService {

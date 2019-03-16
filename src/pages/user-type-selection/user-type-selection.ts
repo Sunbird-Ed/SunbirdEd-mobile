@@ -1,10 +1,6 @@
 import {Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {Events, IonicPage, Navbar, NavController, NavParams, Platform} from 'ionic-angular';
 import {TranslateService} from '@ngx-translate/core';
-import {
-  ContainerService,
-  TabsPage
-} from 'sunbird';
 import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, Map, PreferenceKey} from '@app/app';
 import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
 import {SunbirdQRScanner} from '@app/pages/qrscanner';
@@ -18,6 +14,8 @@ import {
   InteractType,
   PageId,
 } from '../../service/telemetry-constants';
+import { ContainerService } from '@app/service/container.services';
+import { TabsPage } from '../tabs/tabs';
 
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';

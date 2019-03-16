@@ -9,7 +9,6 @@ import {ProfilePage} from './profile';
 import {GuestProfilePage} from './guest-profile/guest-profile';
 import {GuestEditProfilePage} from './guest-edit.profile/guest-edit.profile';
 import {OverflowMenuComponent} from './overflowmenu/menu.overflow.component';
-import {ContainerService} from 'sunbird';
 import {SettingsPageModule} from '../settings/settings.module';
 import {UserSearchComponent} from './user-search/user-search';
 import {DirectivesModule} from '../../directives/directives.module';
@@ -17,6 +16,7 @@ import {ComponentsModule} from '../../component/components.module';
 import {IonicImageLoader} from 'ionic-image-loader';
 import {CategoriesEditPageModule} from '../categories-edit/categories-edit.module';
 import {PersonalDetailsEditPage} from './personal-details-edit.profile/personal-details-edit.profile';
+import { ContainerService } from '@app/service/container.services';
 
 @NgModule({
   declarations: [
