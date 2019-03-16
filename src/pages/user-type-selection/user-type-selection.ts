@@ -209,7 +209,7 @@ export class UserTypeSelectionPage {
       } else {
         if (isUserTypeChanged) {
           this.profile.profileType = this.selectedUserType;
-          this.profileService.updateProfile(this.profile)
+          this.profileService.updateProfile(this.profile).toPromise()
             .then((res: any) => {
               this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
             }).catch(error => {
@@ -222,7 +222,7 @@ export class UserTypeSelectionPage {
     } else if (this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
       if (isUserTypeChanged) {
         this.profile.profileType = this.selectedUserType;
-        this.profileService.updateProfile(this.profile)
+        this.profileService.updateProfile(this.profile).toPromise()
           .then((res: any) => {
             this.navCtrl.push(ProfileSettingsPage);
           }).catch(error => {

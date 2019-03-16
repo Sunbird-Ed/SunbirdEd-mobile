@@ -51,8 +51,9 @@ import {
   TelemetryErrorCode,
   TelemetryObject,
   ErrorCode,
-  UnenrollCourseRequest
-} from 'sunbird';
+  UnenrollCourseRequest,
+  FetchEnrolledCourseRequest
+} from 'sunbird-sdk';
 
 
 @IonicPage()
@@ -123,6 +124,7 @@ export class EnrolledCourseDetailsPage {
   public batches: Array<any>;
 
   isNavigatingWithinCourse = false;
+
 
   /**
    * To hold start date of a course
@@ -242,12 +244,10 @@ export class EnrolledCourseDetailsPage {
   }
 
   updateEnrolledCourseList(unenrolledCourse) {
-    const enrolledCoursesRequest: EnrolledCoursesRequest = {
+    const fetchEnrolledCourseRequest: FetchEnrolledCourseRequest = {
       userId: this.appGlobalService.getUserId(),
-      refreshEnrolledCourses: false,
-      returnRefreshedEnrolledCourses: true
     };
-    this.courseService.getEnrolledCourses(enrolledCoursesRequest)
+    this.courseService.getEnrolledCourses(fetchEnrolledCourseRequest).toPromise()
       .then((enrolledCourses: any) => {
         if (enrolledCourses) {
           enrolledCourses = JSON.parse(enrolledCourses);
@@ -507,8 +507,8 @@ export class EnrolledCourseDetailsPage {
     this.courseService.getBatchDetails({batchId: this.courseCardData.batchId}).toPromise()
       .then((data: Batch) => {
         this.zone.run(() => {
-          if (data.result) {
-            this.batchDetails = data.result;
+          if (data) {
+            this.batchDetails = data;
             this.saveContentContext(this.appGlobalService.getUserId(),
               this.batchDetails.courseId, this.courseCardData.batchId, this.batchDetails.status);
             this.preference.getString(PreferenceKey.COURSE_IDENTIFIER)
@@ -1007,11 +1007,11 @@ export class EnrolledCourseDetailsPage {
     };
     const reqvalues = new Map();
     reqvalues['enrollReq'] = courseBatchesRequest;
-    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-      InteractSubtype.ENROLL_CLICKED,
-        Environment.HOME,
-        PageId.CONTENT_DETAIL, undefined,
-        reqvalues);
+    // this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+    //   InteractSubtype.ENROLL_CLICKED,
+    //     Environment.HOME,
+    //     PageId.CONTENT_DETAIL, undefined,
+    //     reqvalues);
 
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       if (!this.guestUser) {
