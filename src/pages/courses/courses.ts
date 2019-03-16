@@ -2,7 +2,6 @@ import {ViewMoreActivityPage} from './../view-more-activity/view-more-activity';
 import {Component, Inject, NgZone, OnInit} from '@angular/core';
 import {Events, IonicPage, NavController, PopoverController} from 'ionic-angular';
 import {AppVersion} from '@ionic-native/app-version';
-import {ContentService} from 'sunbird';
 import {QRResultCallback, SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
 import {SearchPage} from '../search/search';
 import {ContentDetailsPage} from '../content-details/content-details';
@@ -19,22 +18,25 @@ import {CommonUtilService} from '../../service/common-util.service';
 import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
 import {
   Content,
-  ContentService as NewContentService,
+  ContentEventType,
+  ContentImportRequest,
+  ContentImportResponse,
+  ContentImportStatus,
+  ContentService,
   Course,
   CourseService,
+  DownloadEventType,
+  DownloadProgress,
+  EventsBusEvent,
+  EventsBusService,
   PageAssembleCriteria,
   PageAssembleService,
   PageName,
   ProfileType,
   SharedPreferences
 } from 'sunbird-sdk';
-import {
-  Environment,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  PageId
-} from '../../service/telemetry-constants';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
+import {Subscription} from "rxjs";
 
 @IonicPage()
 @Component({
@@ -92,11 +94,12 @@ export class CoursesPage implements OnInit {
   showOverlay = false;
   resumeContentData: any;
   tabBarElement: any;
-  private mode = 'soft';
   isFilterApplied = false;
   callback: QRResultCallback;
   pageFilterCallBack: PageFilterCallback;
   isUpgradePopoverShown = false;
+  private mode = 'soft';
+  private eventSubscription: Subscription;
 
   /**
    * Default method of class CoursesPage
@@ -109,6 +112,7 @@ export class CoursesPage implements OnInit {
    * @param qrScanner
    * @param popCtrl
    * @param events
+   * @param eventBusService
    * @param contentService
    * @param preference
    * @param appGlobalService
@@ -126,14 +130,14 @@ export class CoursesPage implements OnInit {
     private qrScanner: SunbirdQRScanner,
     private popCtrl: PopoverController,
     private events: Events,
-    @Inject('CONTENT_SERVICE') private newContentService: NewContentService,
-    private contentService: ContentService,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private appGlobalService: AppGlobalService,
     private courseUtilService: CourseUtilService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private network: Network,
+    @Inject('EVENTS_BUS_SERVICE') private eventBusService: EventsBusService,
     @Inject('PAGE_ASSEMBLE_SERVICE') private pageService: PageAssembleService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences
   ) {
@@ -156,18 +160,21 @@ export class CoursesPage implements OnInit {
   }
 
   /**
- * Angular life cycle hooks
- */
+   * Angular life cycle hooks
+   */
   ngOnInit() {
     this.getCourseTabData();
   }
+
   ionViewDidEnter() {
     this.isVisible = true;
   }
+
   ionViewWillEnter() {
     this.getEnrolledCourses();
 
   }
+
   ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
@@ -214,16 +221,12 @@ export class CoursesPage implements OnInit {
     });
   }
 
-  ionViewCanLeave() {
-    this.ngZone.run(() => {
-      this.events.unsubscribe('genie.event');
-    });
-  }
-
-  ionViewWillLeave(): void {
+  ionViewWillLeave() {
     this.tabBarElement.style.display = 'flex';
     this.ngZone.run(() => {
-      this.events.unsubscribe('genie.event');
+      if (this.eventSubscription) {
+        this.eventSubscription.unsubscribe();
+      }
       this.isVisible = false;
       this.showOverlay = false;
       this.downloadPercentage = 0;
@@ -238,6 +241,7 @@ export class CoursesPage implements OnInit {
       PageId.LIBRARY
     );
   }
+
   subscribeUtilityEvents() {
     // Event for optional and forceful upgrade
     this.events.subscribe('force_optional_upgrade', async (upgrade) => {
@@ -393,30 +397,30 @@ export class CoursesPage implements OnInit {
     // pageAssembleCriteria.hardRefresh = hardRefresh;
 
     this.pageService.getPageAssemble(pageAssembleCriteria).toPromise()
-    .then((res: any) => {
-      this.ngZone.run(() => {
-        const sections = res.sections;
-        const newSections = [];
-        sections.forEach(element => {
-          element.display = JSON.parse(element.display);
-          if (element.display.name) {
-            if (_.has(element.display.name, this.selectedLanguage)) {
-              const langs = [];
-              _.forEach(element.display.name, (value, key) => {
-                langs[key] = value;
-              });
-              element.name = langs[this.selectedLanguage];
+      .then((res: any) => {
+        this.ngZone.run(() => {
+          const sections = res.sections;
+          const newSections = [];
+          sections.forEach(element => {
+            element.display = JSON.parse(element.display);
+            if (element.display.name) {
+              if (_.has(element.display.name, this.selectedLanguage)) {
+                const langs = [];
+                _.forEach(element.display.name, (value, key) => {
+                  langs[key] = value;
+                });
+                element.name = langs[this.selectedLanguage];
+              }
             }
-          }
-          newSections.push(element);
-        });
+            newSections.push(element);
+          });
 
-        this.popularAndLatestCourses = newSections;
-        this.pageApiLoader = !this.pageApiLoader;
-        this.generateExtraInfoTelemetry(newSections.length);
-        this.checkEmptySearchResult();
-      });
-    }).catch((error: string) => {
+          this.popularAndLatestCourses = newSections;
+          this.pageApiLoader = !this.pageApiLoader;
+          this.generateExtraInfoTelemetry(newSections.length);
+          this.checkEmptySearchResult();
+        });
+      }).catch((error: string) => {
       this.ngZone.run(() => {
         this.pageApiLoader = false;
         if (error === 'CONNECTION_ERROR') {
@@ -549,7 +553,7 @@ export class CoursesPage implements OnInit {
   }
 
   search() {
-    this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_COURSE_TAB, source: PageId.COURSES });
+    this.navCtrl.push(SearchPage, {contentType: ContentType.FOR_COURSE_TAB, source: PageId.COURSES});
   }
 
   showFilter() {
@@ -624,7 +628,7 @@ export class CoursesPage implements OnInit {
   }
 
   showFilterPage(filterOptions) {
-    this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' }).present();
+    this.popCtrl.create(PageFilter, filterOptions, {cssClass: 'resource-filter'}).present();
   }
 
   checkEmptySearchResult(isAfterLanguageChange = false) {
@@ -658,7 +662,7 @@ export class CoursesPage implements OnInit {
 
   getContentDetails(content) {
     const identifier = content.contentId || content.identifier;
-    this.newContentService.getContentDetails({contentId: identifier}).toPromise()
+    this.contentService.getContentDetails({contentId: identifier}).toPromise()
       .then((data: Content) => {
         if (data && data.isAvailableLocally) {
           this.showOverlay = false;
@@ -707,7 +711,7 @@ export class CoursesPage implements OnInit {
   navigateToContentDetailsPage(content) {
     const identifier = content.contentId || content.identifier;
     this.navCtrl.push(ContentDetailsPage, {
-      content: { identifier: content.lastReadContentId },
+      content: {identifier: content.lastReadContentId},
       depth: '1',
       contentState: {
         batchId: content.batchId ? content.batchId : '',
@@ -720,20 +724,19 @@ export class CoursesPage implements OnInit {
   }
 
   importContent(identifiers, isChild) {
-    const option = {
-      contentImportMap: this.courseUtilService.getImportContentRequestBody(identifiers, isChild),
+    const option: ContentImportRequest = {
+      contentImportArray: this.courseUtilService.getImportContentRequestBody(identifiers, isChild),
       contentStatusArray: []
     };
 
-    this.contentService.importContent(option)
-      .then((data: any) => {
-        data = JSON.parse(data);
+    this.contentService.importContent(option).toPromise()
+      .then((data: ContentImportResponse[]) => {
         this.ngZone.run(() => {
           this.tabBarElement.style.display = 'none';
-          if (data.result && data.result.length) {
-            const importStatus = data.result[0];
+          if (data && data.length) {
+            const importStatus = data[0];
 
-            if (importStatus.status !== 'ENQUEUED_FOR_DOWNLOAD') {
+            if (importStatus.status !== ContentImportStatus.ENQUEUED_FOR_DOWNLOAD) {
               this.removeOverlayAndShowError();
             }
           }
@@ -757,35 +760,32 @@ export class CoursesPage implements OnInit {
   }
 
   subscribeGenieEvent() {
-    this.events.subscribe('genie.event', (data) => {
+    this.eventSubscription = this.eventBusService.events().subscribe((event: EventsBusEvent) => {
       this.ngZone.run(() => {
-        const res = JSON.parse(data);
-        if (res.type === 'downloadProgress'
-          && res.data.downloadProgress) {
-          this.downloadPercentage = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
+        if (event.type === DownloadEventType.PROGRESS) {
+          const downloadEvent = event as DownloadProgress;
+          this.downloadPercentage = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
         }
 
-        if (res.data
-          && res.data.status === 'IMPORT_COMPLETED'
-          && res.type === 'contentImport'
-          && this.downloadPercentage === 100) {
+        if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED && this.downloadPercentage === 100) {
           this.showOverlay = false;
           this.navigateToContentDetailsPage(this.resumeContentData);
         }
       });
-    });
+    }) as any;
   }
 
   cancelDownload() {
     this.ngZone.run(() => {
-      this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier).then(() => {
-        this.tabBarElement.style.display = 'flex';
-        this.showOverlay = false;
-      }).catch(() => {
+      this.contentService.cancelDownload(this.resumeContentData.contentId ||
+        this.resumeContentData.identifier).toPromise()
+        .then(() => {
+          this.tabBarElement.style.display = 'flex';
+          this.showOverlay = false;
+        }).catch(() => {
         this.tabBarElement.style.display = 'flex';
         this.showOverlay = false;
       });
     });
   }
-
 }

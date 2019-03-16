@@ -45,13 +45,9 @@ import {
   ProfileService
 } from 'sunbird-sdk';
 import {Subscription} from 'rxjs';
-import {
-  Environment,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  PageId
-} from '../../service/telemetry-constants';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
+
+declare const cordova;
 
 @IonicPage()
 @Component({
@@ -158,7 +154,7 @@ export class QrCodeResultPage implements OnDestroy {
       this.isParentContentAvailable = false;
       this.identifier = this.content.identifier;
     }
-    this.setContentDetails(this.identifier, true);
+    this.setContentDetails(this.identifier);
     this.getChildContents();
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.handleBackButton(InteractSubtype.DEVICE_BACK_CLICKED);
@@ -379,7 +375,7 @@ export class QrCodeResultPage implements OnDestroy {
    * To set content details in local variable
    * @param {string} identifier identifier of content / course
    */
-  setContentDetails(identifier, refreshContentDetails: boolean | true) {
+  setContentDetails(identifier) {
     const option: ContentDetailRequest = {
       contentId: identifier,
       attachFeedback: true,
@@ -652,7 +648,7 @@ export class QrCodeResultPage implements OnDestroy {
     _.forEach(identifiers, (value) => {
       requestParams.push({
         isChildContent: isChild,
-        destinationFolder: this.fileUtil.internalStoragePath(),
+        destinationFolder: cordova.file.externalDataDirectory,
         contentId: value,
         correlationData: this.corRelationList !== undefined ? this.corRelationList : []
       });

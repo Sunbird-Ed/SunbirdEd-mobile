@@ -14,7 +14,6 @@ import {SocialSharing} from '@ionic-native/social-sharing';
 
 import {
   BuildParamService,
-  ContentService as content_service,
   CourseService as course_Service,
   FileUtil,
   GetContentStateRequest,
@@ -31,22 +30,33 @@ import {
   Batch,
   ChildContentRequest,
   Content,
+  ContentEventType,
+  ContentImport,
+  ContentImportCompleted,
+  ContentImportRequest,
+  ContentImportResponse,
+  ContentImportStatus,
   ContentService,
+  ContentUpdate,
   CorrelationData,
   CourseBatchesRequest,
   CourseBatchStatus,
   CourseEnrollmentType,
   CourseService,
+  DownloadEventType,
+  DownloadProgress,
+  EventsBusEvent,
+  EventsBusService,
+  FetchEnrolledCourseRequest,
   ProfileService,
   ProfileType,
   ServerProfileDetailsRequest,
+  SharedPreferences,
   TelemetryErrorCode,
   TelemetryObject,
-  ErrorCode,
-  UnenrollCourseRequest,
-  FetchEnrolledCourseRequest,
-  SharedPreferences
+  UnenrollCourseRequest
 } from 'sunbird-sdk';
+import {Subscription} from "rxjs";
 import {
   Environment,
   ErrorType,
@@ -164,6 +174,7 @@ export class EnrolledCourseDetailsPage {
   childContentsData;
   isBatchNotStarted = false;
   @ViewChild(Navbar) navBar: Navbar;
+  private eventSubscription: Subscription;
   private corRelationList: Array<CorrelationData>;
 
   constructor(
@@ -176,6 +187,7 @@ export class EnrolledCourseDetailsPage {
     private events: Events,
     private fileUtil: FileUtil,
     private popoverCtrl: PopoverController,
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     @Inject('COURSE_SERVICE') private courseService: CourseService,
     private buildParamService: BuildParamService,
     private shareUtil: ShareUtil,
@@ -187,7 +199,6 @@ export class EnrolledCourseDetailsPage {
     private commonUtilService: CommonUtilService,
     private datePipe: DatePipe,
     private acourseService: course_Service,
-    private acontentService: content_service,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
   ) {
 
@@ -272,22 +283,6 @@ export class EnrolledCourseDetailsPage {
       });
   }
 
-  private removeUnenrolledCourse(unenrolledCourse) {
-    const enrolledCourses = this.appGlobalService.getEnrolledCourseList();
-    const found = enrolledCourses.find((ele) => {
-      return ele.courseId === unenrolledCourse.courseId;
-    });
-    let indx = -1;
-    if (found) {
-      indx = enrolledCourses.indexOf(found);
-    }
-    if (indx !== -1) {
-      enrolledCourses.splice(indx, 1);
-    }
-    this.appGlobalService.setEnrolledCourseList(enrolledCourses);
-    this.events.publish(EventTopics.REFRESH_ENROLL_COURSE_LIST, {});
-  }
-
   /**
    * Get the session to know if the user is logged-in or guest
    *
@@ -322,8 +317,8 @@ export class EnrolledCourseDetailsPage {
           comment: this.ratingComment,
           pageId: PageId.COURSE_DETAIL
         }, {
-            cssClass: 'content-rating-alert'
-          });
+          cssClass: 'content-rating-alert'
+        });
         popUp.present();
         popUp.onDidDismiss(data => {
           if (data && data.message === 'rating.success') {
@@ -340,7 +335,6 @@ export class EnrolledCourseDetailsPage {
       }
     }
   }
-
 
   showOverflowMenu(event) {
     const data = {
@@ -603,7 +597,7 @@ export class EnrolledCourseDetailsPage {
    * @param {Array<string>} identifiers contains list of content identifier(s)
    * @param {boolean} isChild
    */
-  getImportContentRequestBody(identifiers, isChild: boolean) {
+  getImportContentRequestBody(identifiers, isChild: boolean): Array<ContentImport> {
     const requestParams = [];
     _.forEach(identifiers, (value) => {
       requestParams.push({
@@ -624,24 +618,23 @@ export class EnrolledCourseDetailsPage {
    * @param {boolean} isChild
    */
   importContent(identifiers, isChild: boolean, isDownloadAllClicked?) {
-    this.showChildrenLoader = this.downloadIdentifiers.length === 0 ? true : false;
-    const option = {
-      contentImportMap: _.extend({}, this.getImportContentRequestBody(identifiers, isChild)),
+    this.showChildrenLoader = this.downloadIdentifiers.length === 0;
+    const option: ContentImportRequest = {
+      contentImportArray: this.getImportContentRequestBody(identifiers, isChild),
       contentStatusArray: []
     };
 
-    this.acontentService.importContent(option)
-      .then((data: any) => {
-        data = JSON.parse(data);
+    this.contentService.importContent(option).toPromise()
+      .then((data: ContentImportResponse[]) => {
         this.zone.run(() => {
-          if (data.result && data.result[0].status === 'NOT_FOUND') {
+          if (data && data[0].status === ContentImportStatus.NOT_FOUND) {
             this.showLoading = false;
           }
-          if (data.result && data.result.length && this.isDownloadStarted) {
-            _.forEach(data.result, (value) => {
-              if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
+          if (data && data.length && this.isDownloadStarted) {
+            _.forEach(data, (value) => {
+              if (value.status === ContentImportStatus.ENQUEUED_FOR_DOWNLOAD) {
                 this.queuedIdentifiers.push(value.identifier);
-              } else if (value.status === 'NOT_FOUND') {
+              } else if (value.status === ContentImportStatus.NOT_FOUND) {
                 this.faultyIdentifiers.push(value.identifier);
               }
             });
@@ -680,8 +673,7 @@ export class EnrolledCourseDetailsPage {
           } else {
             this.showChildrenLoader = false;
           }
-          const errorRes = JSON.parse(error);
-          if (errorRes && errorRes.error === 'NETWORK_ERROR') {
+          if (error && error.error === 'NETWORK_ERROR') {
             this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
           } else {
             this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
@@ -791,10 +783,10 @@ export class EnrolledCourseDetailsPage {
           this.showChildrenLoader = false;
         });
       }).catch(() => {
-        this.zone.run(() => {
-          this.showChildrenLoader = false;
-        });
+      this.zone.run(() => {
+        this.showChildrenLoader = false;
       });
+    });
   }
 
   /**
@@ -840,12 +832,13 @@ export class EnrolledCourseDetailsPage {
 
   cancelDownload() {
     this.telemetryGeneratorService.generateCancelDownloadTelemetry(this.course);
-    this.acontentService.cancelDownload(this.identifier).then(() => {
-      this.zone.run(() => {
-        this.showLoading = false;
-        this.navCtrl.pop();
-      });
-    }).catch(() => {
+    this.contentService.cancelDownload(this.identifier).toPromise()
+      .then(() => {
+        this.zone.run(() => {
+          this.showLoading = false;
+          this.navCtrl.pop();
+        });
+      }).catch(() => {
       this.zone.run(() => {
         this.showLoading = false;
         this.navCtrl.pop();
@@ -903,7 +896,6 @@ export class EnrolledCourseDetailsPage {
     this.subscribeGenieEvent();
   }
 
-
   isCourseEnrolled(identifier: string) {
     // get all the enrolled courses
     const enrolledCourses = this.appGlobalService.getEnrolledCourseList();
@@ -929,19 +921,17 @@ export class EnrolledCourseDetailsPage {
    * Subscribe genie event to get content download progress
    */
   subscribeGenieEvent() {
-    this.events.subscribe('genie.event', (data) => {
+    this.eventSubscription = this.eventsBusService.events()
+      .subscribe((event: EventsBusEvent) => {
       this.zone.run(() => {
-        data = JSON.parse(data);
-        const res = data;
-
         // Show download percentage
-        if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-          if (res.data.downloadProgress === -1 || res.data.downloadProgress === '-1') {
+        if (event.payload && event.type === DownloadEventType.PROGRESS) {
+          const downloadEvent = event as DownloadProgress;
+          if (downloadEvent.payload.progress === -1) {
             this.downloadProgress = 0;
           } else {
-            this.downloadProgress = res.data.downloadProgress;
+            this.downloadProgress = downloadEvent.payload.progress;
           }
-
           if (this.downloadProgress === 100) {
             this.getBatchDetails();
             this.showLoading = false;
@@ -949,10 +939,11 @@ export class EnrolledCourseDetailsPage {
         }
 
         // Get child content
-        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
+        if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
+          const contentImportCompleted = event as ContentImportCompleted;
           this.showLoading = false;
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {
-            if (_.includes(this.queuedIdentifiers, res.data.identifier)) {
+            if (_.includes(this.queuedIdentifiers, contentImportCompleted.payload.contentId)) {
               this.currentCount++;
             }
 
@@ -971,8 +962,8 @@ export class EnrolledCourseDetailsPage {
 
         // For content update available
         const hierarchyInfo = this.courseCardData.hierarchyInfo ? this.courseCardData.hierarchyInfo : null;
-
-        if (res.data && res.type === 'contentUpdateAvailable' && hierarchyInfo === null) {
+        const contentUpdateEvent = event as ContentUpdate;
+        if (contentUpdateEvent.payload && contentUpdateEvent.type === ContentEventType.UPDATE && hierarchyInfo === null) {
           this.zone.run(() => {
             this.showLoading = true;
             this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.course, false);
@@ -981,7 +972,7 @@ export class EnrolledCourseDetailsPage {
         }
 
       });
-    });
+      }) as any;
   }
 
   /**
@@ -989,7 +980,9 @@ export class EnrolledCourseDetailsPage {
    */
   ionViewWillLeave(): void {
     this.isNavigatingWithinCourse = true;
-    this.events.unsubscribe('genie.event');
+    if (this.eventSubscription) {
+      this.eventSubscription.unsubscribe();
+    }
     // TODO: this.events.unsubscribe(EventTopics.UNENROL_COURSE_SUCCESS);
   }
 
@@ -1204,6 +1197,22 @@ export class EnrolledCourseDetailsPage {
     } else {
       // to be handled when there won't be any batchId
     }
+  }
+
+  private removeUnenrolledCourse(unenrolledCourse) {
+    const enrolledCourses = this.appGlobalService.getEnrolledCourseList();
+    const found = enrolledCourses.find((ele) => {
+      return ele.courseId === unenrolledCourse.courseId;
+    });
+    let indx = -1;
+    if (found) {
+      indx = enrolledCourses.indexOf(found);
+    }
+    if (indx !== -1) {
+      enrolledCourses.splice(indx, 1);
+    }
+    this.appGlobalService.setEnrolledCourseList(enrolledCourses);
+    this.events.publish(EventTopics.REFRESH_ENROLL_COURSE_LIST, {});
   }
 
 }

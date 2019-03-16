@@ -1,9 +1,11 @@
-import { ViewCreditsComponent } from '@app/component';
-import { Injectable } from '@angular/core';
+import {ViewCreditsComponent} from '@app/component';
+import {Injectable} from '@angular/core';
 import * as _ from 'lodash';
-import { PopoverController } from 'ionic-angular';
-import { FileUtil } from 'sunbird';
+import {PopoverController} from 'ionic-angular';
+import {FileUtil} from 'sunbird';
+import {ContentImport} from 'sunbird-sdk';
 
+declare const cordova;
 @Injectable()
 export class CourseUtilService {
 
@@ -39,18 +41,18 @@ export class CourseUtilService {
      * @param {object} identifiers
      * @param {boolean} isChild
      */
-    getImportContentRequestBody(identifiers, isChild: boolean) {
+    getImportContentRequestBody(identifiers, isChild: boolean): Array<ContentImport> {
         const requestParams = [];
         _.forEach(identifiers, (value, key) => {
             requestParams.push({
                 isChildContent: isChild,
-                destinationFolder: this.fileUtil.internalStoragePath(),
+              destinationFolder: cordova.file.externalDataDirectory,
                 contentId: value,
                 correlationData: []
             });
         });
 
-        return _.extend({}, requestParams);
+      return requestParams;
     }
 
     /**

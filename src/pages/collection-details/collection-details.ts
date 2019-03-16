@@ -14,12 +14,19 @@ import {
   ChildContentRequest,
   Content,
   ContentDetailRequest,
+  ContentEventType,
   ContentImport,
+  ContentImportCompleted,
   ContentImportRequest,
   ContentImportResponse,
   ContentImportStatus,
   ContentService,
+  ContentUpdate,
   CorrelationData,
+  DownloadEventType,
+  DownloadProgress,
+  EventsBusEvent,
+  EventsBusService,
   ProfileType,
   Rollup,
   TelemetryErrorCode,
@@ -34,7 +41,9 @@ import {
   Mode,
   PageId,
 } from '../../service/telemetry-constants';
+import {Subscription} from "rxjs";
 
+declare const cordova;
 @IonicPage()
 @Component({
   selector: 'page-collection-details',
@@ -169,8 +178,8 @@ export class CollectionDetailsPage {
   public shouldGenerateEndTelemetry = false;
   public source = '';
   isChildClickable = false;
-
   @ViewChild(Navbar) navBar: Navbar;
+  private eventSubscription: Subscription;
 
   constructor(
     private navCtrl: NavController,
@@ -178,6 +187,7 @@ export class CollectionDetailsPage {
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private zone: NgZone,
     private events: Events,
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     private popoverCtrl: PopoverController,
     private fileUtil: FileUtil,
     private platform: Platform,
@@ -445,6 +455,7 @@ export class CollectionDetailsPage {
       });
     }
   }
+
   /**
    * Function to get import content api request params
    *
@@ -456,7 +467,7 @@ export class CollectionDetailsPage {
     _.forEach(identifiers, (value) => {
       requestParams.push({
         isChildContent: isChild,
-        destinationFolder: this.fileUtil.internalStoragePath(),
+        destinationFolder: cordova.file.externalDataDirectory,
         contentId: value,
         correlationData: this.corRelationList !== undefined ? this.corRelationList : []
       });
@@ -666,28 +677,23 @@ export class CollectionDetailsPage {
    * Subscribe genie event to get content download progress
    */
   subscribeGenieEvent() {
-    this.events.subscribe('genie.event', (data) => {
+    this.eventSubscription = this.eventsBusService.events().subscribe((event: EventsBusEvent) => {
       this.zone.run(() => {
-        data = JSON.parse(data);
-        const res = data;
-
-        if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-          if (res.data.downloadProgress === -1 || res.data.downloadProgress === '-1') {
-            this.downloadProgress = 0;
-          } else if (res.data.identifier === this.contentDetail.identifier) {
-            this.downloadProgress = res.data.downloadProgress;
-          }
-
-          if (this.downloadProgress === 100) {
-            this.showLoading = false;
-            this.contentDetail.isAvailableLocally = true;
+        if (event.type === DownloadEventType.PROGRESS) {
+          const downloadEvent = event as DownloadProgress;
+          if (downloadEvent.payload.identifier === this.contentDetail.identifier) {
+            this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
+            if (this.downloadProgress === 100) {
+              this.showLoading = false;
+              this.contentDetail.isAvailableLocally = true;
+            }
           }
         }
         // Get child content
-        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
-
+        if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
+          const contentImportEvent = event as ContentImportCompleted;
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {
-            if (_.includes(this.queuedIdentifiers, res.data.identifier)) {
+            if (_.includes(this.queuedIdentifiers, contentImportEvent.payload.contentId)) {
               this.currentCount++;
               this.downloadPercentage = +((this.currentCount / this.queuedIdentifiers.length) * (100)).toFixed(0);
             }
@@ -700,17 +706,17 @@ export class CollectionDetailsPage {
               this.downloadPercentage = 0;
               this.updateSavedResources();
             }
-          } else if (this.parentContent && res.data.identifier === this.contentDetail.identifier) {
+          } else if (this.parentContent && contentImportEvent.payload.contentId === this.contentDetail.identifier) {
             // this condition is for when the child content update is available and we have downloaded parent content
             // but we have to refresh only the child content.
             this.showLoading = false;
             this.setContentDetails(this.identifier);
           } else {
-            if (this.isUpdateAvailable && res.data.identifier === this.contentDetail.identifier) {
+            if (this.isUpdateAvailable && contentImportEvent.payload.contentId === this.contentDetail.identifier) {
               this.showLoading = false;
               this.setContentDetails(this.identifier);
             } else {
-              if (res.data.identifier === this.contentDetail.identifier) {
+              if (contentImportEvent.payload.contentId === this.contentDetail.identifier) {
                 this.showLoading = false;
                 this.updateSavedResources();
                 this.setChildContents();
@@ -723,8 +729,8 @@ export class CollectionDetailsPage {
 
         // For content update available
         const hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
-
-        if (res.data && res.type === 'contentUpdateAvailable' && hierarchyInfo === null) {
+        const contentUpdateEvent = event as ContentUpdate;
+        if (contentUpdateEvent.payload && contentUpdateEvent.type === ContentEventType.UPDATE && hierarchyInfo === null) {
           this.zone.run(() => {
             if (this.parentContent) {
               const parentIdentifier = this.parentContent.contentId || this.parentContent.identifier;
@@ -737,7 +743,7 @@ export class CollectionDetailsPage {
           });
         }
       });
-    });
+    }) as any;
   }
 
   updateSavedResources() {
@@ -937,8 +943,9 @@ export class CollectionDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillLeave(): void {
-    // this.downloadProgress = '';
     this.downloadProgress = 0;
-    this.events.unsubscribe('genie.event');
+    if (this.eventSubscription) {
+      this.eventSubscription.unsubscribe();
+    }
   }
 }

@@ -1,24 +1,18 @@
-import { Component, NgZone, Inject } from '@angular/core';
-import { NavController, NavParams, LoadingController } from 'ionic-angular';
-import { GroupReportListPage } from '../group-report-list/group-report-list';
-import { ContentService, SummarizerContentFilterCriteria, } from 'sunbird';
+import {Component, Inject, NgZone} from '@angular/core';
+import {LoadingController, NavController, NavParams} from 'ionic-angular';
+import {GroupReportListPage} from '../group-report-list/group-report-list';
+import {SummarizerContentFilterCriteria} from 'sunbird';
+import {LearnerAssessmentSummary, ReportSummary, SummarizerService, SummaryRequest, TelemetryObject} from 'sunbird-sdk';
+import {UserReportPage} from '../user-report/user-report';
+import {ContentType} from '../../../app/app.constant';
+import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
 import {
-    TelemetryObject,
-    ReportSummary,
-    SummarizerService,
-    SummaryRequest,
-    LearnerAssessmentSummary
-} from 'sunbird-sdk';
-import { UserReportPage } from '../user-report/user-report';
-import { ContentType } from '../../../app/app.constant';
-import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import {
-    ImpressionType,
-    Environment,
-    PageId,
-    InteractType,
-    InteractSubtype,
-    ObjectType
+  Environment,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  ObjectType,
+  PageId
 } from '../../../service/telemetry-constants';
 
 @Component({
@@ -41,7 +35,6 @@ export class ReportListPage {
         private loading: LoadingController,
         @Inject('SUMMARIZER_SERVICE') public summarizerService: SummarizerService,
         public ngZone: NgZone,
-        private contentService: ContentService,
         private telemetryGeneratorService: TelemetryGeneratorService) {
 
     }

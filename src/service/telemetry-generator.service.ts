@@ -1,25 +1,18 @@
-import { Injectable, Inject } from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {
-    TelemetryService,
-    TelemetryInteractRequest,
-    Rollup,
-    TelemetryImpressionRequest,
-    TelemetryEndRequest,
-    TelemetryStartRequest,
-    TelemetryLogRequest,
-    TelemetryErrorRequest,
-    TelemetryObject,
-    CorrelationData
+  CorrelationData,
+  Rollup,
+  TelemetryEndRequest,
+  TelemetryErrorRequest,
+  TelemetryImpressionRequest,
+  TelemetryInteractRequest,
+  TelemetryLogRequest,
+  TelemetryObject,
+  TelemetryService,
+  TelemetryStartRequest
 } from 'sunbird-sdk';
-import { Map } from '../app/telemetryutil';
-import {
-    InteractSubtype,
-    InteractType,
-    PageId,
-    Environment,
-    Mode,
-    ImpressionType
-} from '../service/telemetry-constants';
+import {Map} from '../app/telemetryutil';
+import {Environment, ImpressionType, InteractSubtype, InteractType, Mode, PageId} from '../service/telemetry-constants';
 
 @Injectable()
 export class TelemetryGeneratorService {
@@ -149,7 +142,7 @@ export class TelemetryGeneratorService {
 
     generateErrorTelemetry(env, errCode, errorType, pageId, stackTrace) {
         const telemetryErrorRequest = new TelemetryErrorRequest();
-        telemetryErrorRequest.env = env;
+      // telemetryErrorRequest.env = env;
         telemetryErrorRequest.errorCode = errCode;
         telemetryErrorRequest.errorType = errorType;
         telemetryErrorRequest.pageId = pageId;

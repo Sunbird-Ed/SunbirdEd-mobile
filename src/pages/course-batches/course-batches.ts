@@ -1,27 +1,8 @@
-import {
-  Component,
-  NgZone,
-  OnInit,
-  Inject
-} from '@angular/core';
-import {
-  CourseBatchesRequest,
-  CourseBatchStatus,
-  CourseEnrollmentType,
-} from 'sunbird';
-import {CourseService, AuthService, OAuthSession, EnrollCourseRequest, Batch} from 'sunbird-sdk';
-import {
-  IonicPage,
-  NavController,
-  NavParams,
-  Events
-} from 'ionic-angular';
-import * as _ from 'lodash';
-import {
-  ProfileConstants,
-  EventTopics
-} from '../../app/app.constant';
-import { CommonUtilService } from '../../service/common-util.service';
+import {Component, Inject, NgZone, OnInit} from '@angular/core';
+import {AuthService, Batch, CourseService, EnrollCourseRequest, OAuthSession} from 'sunbird-sdk';
+import {Events, IonicPage, NavController, NavParams} from 'ionic-angular';
+import {EventTopics} from '../../app/app.constant';
+import {CommonUtilService} from '../../service/common-util.service';
 
 /**
  * Generated class for the CourseBatchesPage page.

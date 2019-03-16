@@ -6,6 +6,8 @@ import {Platform, ToastController, ViewController} from 'ionic-angular';
 import {Component, Inject} from '@angular/core';
 import {
   AuthService,
+  ContentDeleteRequest,
+  ContentService,
   CorrelationData,
   OAuthSession,
   Rollup,
@@ -14,12 +16,7 @@ import {
 import {CommonUtilService} from '../../service/common-util.service';
 import {ReportIssuesComponent} from '../report-issues/report-issues';
 import {UnenrollAlertComponent} from '../unenroll-alert/unenroll-alert';
-import {ContentService} from 'sunbird';
-import {
-  Environment,
-  InteractSubtype,
-  InteractType
-} from '../../service/telemetry-constants';
+import {Environment, InteractSubtype, InteractType} from '../../service/telemetry-constants';
 
 @Component({
   selector: 'content-actions',
@@ -41,7 +38,7 @@ export class ContentActionsComponent {
 
   constructor(
     public viewCtrl: ViewController,
-    private contentService: ContentService,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private navParams: NavParams,
     private toastCtrl: ToastController,
     public popoverCtrl: PopoverController,
@@ -92,7 +89,7 @@ export class ContentActionsComponent {
    * Construct content delete request body
    */
   getDeleteRequestBody() {
-    const apiParams = {
+    const apiParams: ContentDeleteRequest = {
       contentDeleteList: [{
         contentId: this.contentId,
         isChildContent: this.isChild
@@ -170,7 +167,7 @@ export class ContentActionsComponent {
       this.corRelationList);
 
 
-    this.contentService.deleteContent(this.getDeleteRequestBody()).then((res: any) => {
+    this.contentService.deleteContent(this.getDeleteRequestBody()).toPromise().then((res: any) => {
       const data = JSON.parse(res);
       if (data.result && data.result.status === 'NOT_FOUND') {
         this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));

@@ -1,14 +1,21 @@
 import {Events, IonicPage, NavController, NavParams} from 'ionic-angular';
 import {Component, Inject, NgZone, OnInit} from '@angular/core';
-import {ContentService} from 'sunbird';
 import {
   Content,
+  ContentEventType,
+  ContentImportRequest,
+  ContentImportResponse,
+  ContentImportStatus,
   ContentRequest,
   ContentSearchCriteria,
   ContentSearchResult,
-  ContentService as NewContentService,
+  ContentService,
   Course,
   CourseService,
+  DownloadEventType,
+  DownloadProgress,
+  EventsBusEvent,
+  EventsBusService,
   SearchType
 } from 'sunbird-sdk';
 import * as _ from 'lodash';
@@ -17,12 +24,8 @@ import {ContentDetailsPage} from '../content-details/content-details';
 import {CourseUtilService} from '../../service/course-util.service';
 import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
 import {CommonUtilService} from '../../service/common-util.service';
-import {
-  Environment,
-  ImpressionType,
-  LogLevel,
-  PageId,
-} from '../../service/telemetry-constants';
+import {Environment, ImpressionType, LogLevel, PageId,} from '../../service/telemetry-constants';
+import {Subscription} from "rxjs";
 
 @IonicPage()
 @Component({
@@ -111,13 +114,15 @@ export class ViewMoreActivityPage implements OnInit {
   uid: any;
   audience: any;
   defaultImg: string;
+  private eventSubscription: Subscription;
+
   constructor(
-    @Inject('CONTENT_SERVICE') private newContentService: NewContentService,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private navCtrl: NavController,
     private navParams: NavParams,
     private events: Events,
     private ngZone: NgZone,
-    private contentService: ContentService,
+    @Inject('EVENTS_BUS_SERVICE') private eventBusService: EventsBusService,
     @Inject('COURSE_SERVICE') private courseService: CourseService,
     private courseUtilService: CourseUtilService,
     private commonUtilService: CommonUtilService,
@@ -178,7 +183,7 @@ export class ViewMoreActivityPage implements OnInit {
     const searchCriteria: ContentSearchCriteria = {
       searchType: SearchType.FILTER
     };
-    this.newContentService.searchContent(searchCriteria, this.searchQuery).toPromise()
+    this.contentService.searchContent(searchCriteria, this.searchQuery).toPromise()
       .then((data: ContentSearchResult) => {
         this.ngZone.run(() => {
           if (data && data.contentDataList) {
@@ -295,18 +300,18 @@ export class ViewMoreActivityPage implements OnInit {
       contentTypes: recentlyViewed ? ContentType.FOR_RECENTLY_VIEWED : ContentType.FOR_LIBRARY_TAB,
       limit: recentlyViewed ? 20 : 0
     };
-    this.newContentService.getContents(requestParams).toPromise()
+    this.contentService.getContents(requestParams).toPromise()
       .then(data => {
         const contentData = [];
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
           if (value.contentData.appIcon) {
             if (value.contentData.appIcon.includes('http:') || value.contentData.appIcon.includes('https:')) {
-                if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-                        value.contentData.appIcon = value.contentData.appIcon;
-                  } else {
-                        value.contentData.appIcon = this.defaultImg;
-                  }
+              if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+                value.contentData.appIcon = value.contentData.appIcon;
+              } else {
+                value.contentData.appIcon = this.defaultImg;
+              }
             } else if (value.basePath) {
               value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
             }
@@ -326,7 +331,7 @@ export class ViewMoreActivityPage implements OnInit {
 
   getContentDetails(content) {
     const identifier = content.contentId || content.identifier;
-    this.newContentService.getContentDetails({contentId: identifier}).toPromise()
+    this.contentService.getContentDetails({contentId: identifier}).toPromise()
       .then((data: Content) => {
         if (Boolean(data.isAvailableLocally)) {
           this.navCtrl.push(ContentDetailsPage, {
@@ -354,18 +359,17 @@ export class ViewMoreActivityPage implements OnInit {
 
   importContent(identifiers, isChild) {
     this.queuedIdentifiers.length = 0;
-    const option = {
-      contentImportMap: this.courseUtilService.getImportContentRequestBody(identifiers, isChild),
+    const option: ContentImportRequest = {
+      contentImportArray: this.courseUtilService.getImportContentRequestBody(identifiers, isChild),
       contentStatusArray: []
     };
 
-    this.contentService.importContent(option)
-      .then((data: any) => {
-        data = JSON.parse(data);
+    this.contentService.importContent(option).toPromise()
+      .then((data: ContentImportResponse[]) => {
         this.ngZone.run(() => {
-          if (data.result && data.result.length) {
-            _.forEach(data.result, (value) => {
-              if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
+          if (data && data.length) {
+            _.forEach(data, (value) => {
+              if (value.status === ContentImportStatus.ENQUEUED_FOR_DOWNLOAD) {
                 this.queuedIdentifiers.push(value.identifier);
               }
             });
@@ -386,14 +390,13 @@ export class ViewMoreActivityPage implements OnInit {
   }
 
   subscribeGenieEvent() {
-    this.events.subscribe('genie.event', (data) => {
+    this.eventSubscription = this.eventBusService.events().subscribe((event: EventsBusEvent) => {
       this.ngZone.run(() => {
-        data = JSON.parse(data);
-        const res = data;
-        if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-          this.downloadPercentage = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
+        if (event.type === DownloadEventType.PROGRESS) {
+          const downloadEvent = event as DownloadProgress;
+          this.downloadPercentage = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
         }
-        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport' && this.downloadPercentage === 100) {
+        if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED && this.downloadPercentage === 100) {
           this.showOverlay = false;
           this.navCtrl.push(ContentDetailsPage, {
             content: {identifier: this.resumeContentData.lastReadContentId},
@@ -408,12 +411,13 @@ export class ViewMoreActivityPage implements OnInit {
           });
         }
       });
-    });
+    }) as any;
   }
 
   cancelDownload() {
     this.ngZone.run(() => {
-      this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier).then(() => {
+      this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier)
+        .toPromise().then(() => {
         this.showOverlay = false;
       }).catch(() => {
         this.showOverlay = false;
@@ -436,9 +440,11 @@ export class ViewMoreActivityPage implements OnInit {
   /**
    * Ionic life cycle hook
    */
-  ionViewCanLeave() {
+  ionViewWillLeave() {
     this.ngZone.run(() => {
-      this.events.unsubscribe('genie.event');
+      if (this.eventSubscription) {
+        this.eventSubscription.unsubscribe();
+      }
       this.tabBarElement.style.display = 'flex';
       this.isLoadMore = false;
       this.showOverlay = false;

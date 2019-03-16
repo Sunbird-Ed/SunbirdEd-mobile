@@ -17,23 +17,17 @@ import {PopoverPage} from '../popover/popover';
 import {GroupDetailNavPopoverPage} from '../group-detail-nav-popover/group-detail-nav-popover';
 import {CreateGroupPage} from '../create-group/create-group';
 import {AddOrRemoveGroupUserPage} from '../add-or-remove-group-user/add-or-remove-group-user';
+import {AddUpdateProfilesRequest, ContainerService, ObjectType, TabsPage} from 'sunbird';
 import {
-  AddUpdateProfilesRequest,
   AuthService,
-  ContainerService,
-  OAuthService,
-  ObjectType,
-  TabsPage
-} from 'sunbird';
-import {
   GetAllProfileRequest,
   Group,
   GroupService,
   Profile,
   ProfileService,
   ProfileType,
-  TelemetryObject,
-  SharedPreferences
+  SharedPreferences,
+  TelemetryObject
 } from 'sunbird-sdk';
 import {AppGlobalService} from '../../../service/app-global.service';
 import {
@@ -47,12 +41,7 @@ import {GuestEditProfilePage} from '../../profile/guest-edit.profile/guest-edit.
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
 import {Map} from '../../../app/telemetryutil';
 import {PreferenceKey} from '../../../app/app.constant';
-import {
-  Environment,
-  InteractSubtype,
-  InteractType,
-  PageId
-} from '../../../service/telemetry-constants';
+import {Environment, InteractSubtype, InteractType, PageId} from '../../../service/telemetry-constants';
 
 @IonicPage()
 @Component({
@@ -82,14 +71,13 @@ export class GroupDetailsPage {
     private translate: TranslateService,
     private popOverCtrl: PopoverController,
     private alertCtrl: AlertController,
-    private oauth: OAuthService,
     private container: ContainerService,
     private app: App,
     private event: Events,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private authService: AuthService,
+    @Inject('AUTH_SERVICE') private authService: AuthService,
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
@@ -256,17 +244,17 @@ export class GroupDetailsPage {
       telemetryObject
     );
     if (isBeingPlayed) {
-      this.authService.endSession();
+      this.authService.resignSession().subscribe();
       (<any>window).splashscreen.clearPrefs();
       this.setAsCurrentUser(selectedUser, true);
     } else {
       if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-        this.oauth.doLogOut().then(() => {
+        this.authService.resignSession().toPromise().then(() => {
           (<any>window).splashscreen.clearPrefs();
           this.setAsCurrentUser(selectedUser, false);
         });
       } else {
-        this.authService.endSession();
+        this.authService.resignSession().subscribe();
         (<any>window).splashscreen.clearPrefs();
         this.setAsCurrentUser(selectedUser, false);
       }

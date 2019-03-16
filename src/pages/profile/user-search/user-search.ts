@@ -1,18 +1,11 @@
 import {Component, Inject, NgZone, Renderer2, ViewChild} from '@angular/core';
-import {AuthService, Visit} from 'sunbird';
+import {Visit} from 'sunbird';
 import {LoadingController, NavController} from 'ionic-angular';
 import {ProfilePage} from './../profile';
 import {TelemetryGeneratorService} from '@app/service';
 import {CommonUtilService} from '../../../service/common-util.service';
-import {
-  ProfileService,
-  ServerProfileSearchCriteria
-} from 'sunbird-sdk';
-import {
-  Environment,
-  ImpressionType,
-  PageId
-} from '../../../service/telemetry-constants';
+import {AuthService, ProfileService, ServerProfileSearchCriteria} from 'sunbird-sdk';
+import {Environment, ImpressionType, PageId} from '../../../service/telemetry-constants';
 
 @Component({
   selector: 'user-search',
@@ -39,8 +32,8 @@ export class UserSearchComponent {
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    @Inject('AUTH_SERVICE') private authService: AuthService,
     private navCtrl: NavController,
-    private authService: AuthService,
     private zone: NgZone,
     private renderer: Renderer2,
     private loadingCtrl: LoadingController,
@@ -62,7 +55,7 @@ export class UserSearchComponent {
       // this.renderer.invokeElementMethod(event.target, 'blur');
       this.renderer.selectRootElement(event.target).blur();
     }
-    this.authService.getSessionData(session => {
+    this.authService.getSession().toPromise().then(session => {
       if (Boolean(session)) {
         const req: ServerProfileSearchCriteria = {
           query: this.searchInput,
