@@ -31,26 +31,27 @@
           <div class="item">
             <div class="flex">
               <div>
-                <div class="title">{{contentDetail?.name}}</div>
+                <div class="title">{{contentDetail?.contentData.name}}</div>
               </div>
-              <div *ngIf="contentDetail?.creator || contentDetail?.owner">
+              <div *ngIf="contentDetail?.contentData.creator || contentDetail?.contentData.owner">
                 <span class="light-black f12">by</span>
-                <span class="info f16">{{ contentDetail?.creator || contentDetail?.owner }}</span>
+                <span
+                  class="info f16">{{ contentDetail?.contentData.creator || contentDetail?.contentData.owner }}</span>
               </div>
-              <div *ngIf="contentDetail?.gradeLevel || contentDetail?.subject">
-                <span class="info">{{contentDetail?.gradeLevel}}</span>
+              <div *ngIf="contentDetail?.contentData.gradeLevel || contentDetail?.contentData.subject">
+                <span class="info">{{contentDetail?.contentData.gradeLevel}}</span>
                 <span class="separator-dot"></span>
-                <span class="info">{{contentDetail?.subject}}</span>
+                <span class="info">{{contentDetail?.contentData.subject}}</span>
               </div>
             </div>
           </div>
         </div>
         <div class="right W-88">
           <div class="img-container">
-            <img src="{{ localImage || contentDetail?.appIcon || defaultAppIcon}}">
+            <img src="{{ localImage || contentDetail?.contentData.appIcon || defaultAppIcon}}">
           </div>
-          <div *ngIf="contentDetail?.me_totalRatings" class="rating" (click)="rateContent()">
-            <span class="MR5 f14 font-weight-bold">{{ contentDetail?.me_totalRatings }}</span>
+          <div *ngIf="contentDetail?.contentData.me_totalRatings" class="rating" (click)="rateContent()">
+            <span class="MR5 f14 font-weight-bold">{{ contentDetail?.contentData.me_totalRatings }}</span>
             <span class="yellow-gold">
               <ion-icon ios="ios-star" md="md-star"></ion-icon>
             </span>

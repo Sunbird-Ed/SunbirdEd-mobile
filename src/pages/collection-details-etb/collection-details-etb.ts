@@ -12,18 +12,20 @@ import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGenerat
 import {
   Content,
   ContentDetailRequest,
-  ContentEvent,
   ContentEventType,
   ContentImport,
+  ContentImportCompleted,
   ContentImportRequest,
   ContentImportResponse,
   ContentImportStatus,
-  ContentService as NewContentService,
+  ContentService,
+  ContentUpdate,
   CorrelationData,
+  DownloadEventType,
   DownloadProgress,
   Environment,
   ErrorType,
-  EventNamespace,
+  EventBusEvent,
   EventsBusService,
   ImpressionType,
   InteractSubtype,
@@ -35,7 +37,7 @@ import {
   TelemetryErrorCode,
   TelemetryObject
 } from 'sunbird-sdk';
-import {Subscription} from 'rxjs';
+import {Subscription} from "rxjs";
 
 /**
  * Generated class for the CollectionDetailsEtbPage page.
@@ -56,7 +58,7 @@ export class CollectionDetailsEtbPage {
   selected: boolean;
   isSelected: boolean;
 
-  contentDetail: any;
+  contentDetail?: Content;
   childrenData: Array<any>;
 
   /**
@@ -188,13 +190,13 @@ export class CollectionDetailsEtbPage {
   shownGroup = null;
   // Local Image
   localImage = '';
+  private eventSubscription: Subscription;
   @ViewChild(Navbar) navBar: Navbar;
-  private downloadEventSubscription: Subscription;
-  private contentEventSubscription: Subscription;
+
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
-    @Inject('CONTENT_SERVICE') private newContentService: NewContentService,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
     @Inject('EVENTS_BUS_SERVICE') private eventBusService: EventsBusService,
     private zone: NgZone,
     private events: Events,
@@ -210,7 +212,6 @@ export class CollectionDetailsEtbPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private courseUtilService: CourseUtilService
   ) {
-
     this.objRollup = new Rollup();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
@@ -230,7 +231,7 @@ export class CollectionDetailsEtbPage {
   /**
    * Ionic life cycle hook
    */
-  ionViewWillEnter(): void {
+  ionViewWillEnter() {
     this.zone.run(() => {
       this.resetVariables();
       this.cardData = this.navParams.get('content');
@@ -264,7 +265,7 @@ export class CollectionDetailsEtbPage {
       }
 
       this.didViewLoad = true;
-      this.setContentDetails(this.identifier, true);
+      this.setContentDetails(this.identifier);
       this.subscribeGenieEvent();
     });
   }
@@ -356,9 +357,7 @@ export class CollectionDetailsEtbPage {
 
   /**
    * Get the session to know if the user is logged-in or guest
-   *
    */
-
   checkLoggedInOrGuestUser() {
     this.guestUser = !this.appGlobalService.isUserLoggedIn();
   }
@@ -380,7 +379,7 @@ export class CollectionDetailsEtbPage {
    * To set content details in local variable
    * @param {string} identifier identifier of content / course
    */
-  setContentDetails(identifier, refreshContentDetails: boolean | true) {
+  setContentDetails(identifier) {
     const loader = this.commonUtilService.getLoader();
     loader.present();
     const option: ContentDetailRequest = {
@@ -388,7 +387,7 @@ export class CollectionDetailsEtbPage {
       attachFeedback: true,
       attachContentAccess: true,
     };
-    this.newContentService.getContentDetails(option).toPromise()
+    this.contentService.getContentDetails(option).toPromise()
       .then((data: Content) => {
         this.zone.run(() => {
           loader.dismiss().then(() => {
@@ -409,33 +408,33 @@ export class CollectionDetailsEtbPage {
   /**
    * Function to extract api response.
    */
-  extractApiResponse(data) {
-    this.contentDetail = data.contentData ? data.contentData : [];
+  extractApiResponse(data: Content) {
+    this.contentDetail = data;
     this.contentDetail.isAvailableLocally = data.isAvailableLocally;
 
-    if (this.contentDetail.appIcon) {
-      if (this.contentDetail.appIcon.includes('http:') || this.contentDetail.appIcon.includes('https:')) {
+    if (this.contentDetail.contentData.appIcon) {
+      if (this.contentDetail.contentData.appIcon.includes('http:') || this.contentDetail.contentData.appIcon.includes('https:')) {
           if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-                  this.contentDetail.appIcon = this.contentDetail.appIcon;
+            this.contentDetail.contentData.appIcon = this.contentDetail.contentData.appIcon;
             } else {
-                  this.contentDetail.appIcon = this.defaultAppIcon;
+            this.contentDetail.contentData.appIcon = this.defaultAppIcon;
             }
-      } else if (data.result.basePath) {
-        this.localImage = data.result.basePath + '/' + this.contentDetail.appIcon;
+      } else if (data.basePath) {
+        this.localImage = data.basePath + '/' + this.contentDetail.contentData.appIcon;
       }
     }
     this.objId = this.contentDetail.identifier;
-    this.objVer = this.contentDetail.pkgVersion;
-    if (this.contentDetail.gradeLevel && this.contentDetail.gradeLevel.length) {
-      this.contentDetail.gradeLevel = this.contentDetail.gradeLevel.join(', ');
+    this.objVer = this.contentDetail.contentData.pkgVersion;
+    if (this.contentDetail.contentData.gradeLevel && this.contentDetail.contentData.gradeLevel.length) {
+      this.contentDetail.contentData.gradeLevel ? this.contentDetail.contentData.gradeLevel.join(', ') : '';
     }
-    if (this.contentDetail.attributions && this.contentDetail.attributions.length) {
-      this.contentDetail.attributions = this.contentDetail.attributions.join(', ');
+    if (this.contentDetail.contentData.attributions && this.contentDetail.contentData.attributions.length) {
+      this.contentDetail.contentData.attributions ? this.contentDetail.contentData.attributions.join(', ') : '';
     }
-    if (this.contentDetail.me_totalRatings) {
-      const rating = this.contentDetail.me_totalRatings.split('.');
+    if (this.contentDetail.contentData.me_totalRatings) {
+      const rating = this.contentDetail.contentData.me_totalRatings.split('.');
       if (rating && rating[0]) {
-        this.contentDetail.me_totalRatings = rating[0];
+        this.contentDetail.contentData.me_totalRatings = rating[0];
       }
     }
 
@@ -464,10 +463,9 @@ export class CollectionDetailsEtbPage {
       this.importContent([this.identifier], false);
     }
 
-    if (this.contentDetail.me_totalDownloads) {
-      this.contentDetail.me_totalDownloads = this.contentDetail.me_totalDownloads.split('.')[0];
+    if (this.contentDetail.contentData.me_totalDownloads) {
+      this.contentDetail.contentData.me_totalDownloads = this.contentDetail.contentData.me_totalDownloads.split('.')[0];
     }
-    this.setCollectionStructure();
   }
 
   generateRollUp() {
@@ -492,22 +490,6 @@ export class CollectionDetailsEtbPage {
         }
       });
     }
-  }
-
-  /**
-   * Set collection structure
-   */
-  setCollectionStructure() {
-    this.showChildrenLoader = true;
-    if (this.contentDetail.contentTypesCount) {
-      this.contentDetail.contentTypesCount = JSON.parse(this.contentDetail.contentTypesCount);
-    } else if (this.cardData.contentTypesCount) {
-      if (!_.isObject(this.cardData.contentTypesCount)) {
-        this.contentDetail.contentTypesCount = JSON.parse(this.cardData.contentTypesCount);
-      }
-    } /*else {
-      this.contentDetail.contentTypesCount;
-    }*/
   }
 
   /**
@@ -542,7 +524,7 @@ export class CollectionDetailsEtbPage {
       contentStatusArray: []
     };
     // Call content service
-    this.newContentService.importContent(option).toPromise()
+    this.contentService.importContent(option).toPromise()
       .then((data: ContentImportResponse[]) => {
         this.zone.run(() => {
           if (data && data.length && this.isDownloadStarted) {
@@ -618,7 +600,7 @@ export class CollectionDetailsEtbPage {
   setChildContents() {
     const hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
     const option = {contentId: this.identifier, hierarchyInfo: hierarchyInfo}; // TODO: remove level
-    this.newContentService.getChildContents(option).toPromise()
+    this.contentService.getChildContents(option).toPromise()
       .then((data: Content) => {
         this.zone.run(() => {
           if (data && data.children) {
@@ -725,7 +707,7 @@ export class CollectionDetailsEtbPage {
     this.downloadProgress = 0;
     this.cardData = '';
     this.childrenData = [];
-    this.contentDetail = '';
+    this.contentDetail = undefined;
     this.showDownloadBtn = false;
     this.downloadIdentifiers = [];
     this.queuedIdentifiers = [];
@@ -740,94 +722,77 @@ export class CollectionDetailsEtbPage {
    * Subscribe genie event to get content download progress
    */
   subscribeGenieEvent() {
-    // this.events.subscribe('genie.event', (data) => {
-    //   this.zone.run(() => {
-    //     data = JSON.parse(data);
-    //     const res = data;
-    //
-    //     if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-    //       if (res.data.downloadProgress === -1 || res.data.downloadProgress === '-1') {
-    //         this.downloadProgress = 0;
-    //       } else if (res.data.identifier === this.contentDetail.identifier) {
-    //         this.downloadProgress = res.data.downloadProgress;
-    //       }
-    //
-    //       if (this.downloadProgress === 100) {
-    //         this.showLoading = false;
-    //         this.contentDetail.isAvailableLocally = true;
-    //       }
-    //     }
-    //     // Get child content
-    //     if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
-    //
-    //       if (this.queuedIdentifiers.length && this.isDownloadStarted) {
-    //         if (_.includes(this.queuedIdentifiers, res.data.identifier)) {
-    //           this.currentCount++;
-    //           this.downloadPercentage = +((this.currentCount / this.queuedIdentifiers.length) * (100)).toFixed(0);
-    //         }
-    //         if (this.queuedIdentifiers.length === this.currentCount) {
-    //           this.showLoading = false;
-    //           this.isDownloadStarted = false;
-    //           this.showDownloadBtn = false;
-    //           this.isDownloadCompleted = true;
-    //           this.contentDetail.isAvailableLocally = true;
-    //           this.downloadPercentage = 0;
-    //           this.updateSavedResources();
-    //           this.setChildContents();
-    //         }
-    //       } else if (this.parentContent && res.data.identifier === this.contentDetail.identifier) {
-    //         // this condition is for when the child content update is available and we have downloaded parent content
-    //         // but we have to refresh only the child content.
-    //         this.showLoading = false;
-    //         this.setContentDetails(this.identifier, false);
-    //       } else {
-    //         if (this.isUpdateAvailable && res.data.identifier === this.contentDetail.identifier) {
-    //           this.showLoading = false;
-    //           this.setContentDetails(this.identifier, false);
-    //         } else {
-    //           if (res.data.identifier === this.contentDetail.identifier) {
-    //             this.showLoading = false;
-    //             this.updateSavedResources();
-    //             this.setChildContents();
-    //             this.contentDetail.isAvailableLocally = true;
-    //           }
-    //
-    //         }
-    //       }
-    //     }
-    //
-    //     // For content update available
-    //     const hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
-    //
-    //     if (res.data && res.type === 'contentUpdateAvailable' && hierarchyInfo === null) {
-    //       this.zone.run(() => {
-    //         if (this.parentContent) {
-    //           const parentIdentifier = this.parentContent.contentId || this.parentContent.identifier;
-    //           this.showLoading = true;
-    //           this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.contentDetail, false);
-    //           this.importContent([parentIdentifier], false);
-    //         } else {
-    //           this.setContentDetails(this.identifier, false);
-    //         }
-    //       });
-    //     }
-    //   });
-    // });
+    this.eventSubscription = this.eventBusService.events().subscribe((event: EventBusEvent) => {
+      this.zone.run(() => {
+        if (event.type === DownloadEventType.PROGRESS) {
+          const downloadEvent = event as DownloadProgress;
 
-    // this.downloadEventSubscription = this.eventBusService.events(EventNamespace.DOWNLOADS)
-    //   .filter((event: DownloadProgress) => {
-    //     return event.identifier === this.identifier
-    //   }).subscribe((event: DownloadProgress) => {
-    //     this.downloadProgress = Math.round(event.progress);
-    //   }) as any;
-    // this.contentEventSubscription = this.eventBusService.events(EventNamespace.CONTENT)
-    //   .filter((event: ContentEvent) => {
-    //     if (event.contentId === this.identifier && event.type === ContentEventType.IMPORT_COMPLETED) {
-    //       return true;
-    //     }
-    //   }).subscribe(() => {
-    //     this.setContentDetails(this.identifier, false);
-    //   }) as any;
+          if (downloadEvent.payload.identifier === this.contentDetail.identifier) {
+            this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
+            if (this.downloadProgress === 100) {
+              this.showLoading = false;
+              this.contentDetail.isAvailableLocally = true;
+            }
+          }
+        }
+
+        // Get child content
+        if (event.type === ContentEventType.IMPORT_COMPLETED) {
+          const contentImportedEvent = event as ContentImportCompleted;
+
+          if (this.queuedIdentifiers.length && this.isDownloadStarted) {
+            if (_.includes(this.queuedIdentifiers, contentImportedEvent.payload.contentId)) {
+              this.currentCount++;
+              this.downloadPercentage = +((this.currentCount / this.queuedIdentifiers.length) * (100)).toFixed(0);
+            }
+            if (this.queuedIdentifiers.length === this.currentCount) {
+              this.showLoading = false;
+              this.isDownloadStarted = false;
+              this.showDownloadBtn = false;
+              this.isDownloadCompleted = true;
+              this.contentDetail.isAvailableLocally = true;
+              this.downloadPercentage = 0;
+              this.updateSavedResources();
+              this.setChildContents();
+            }
+          } else if (this.parentContent && contentImportedEvent.payload.contentId === this.contentDetail.identifier) {
+            // this condition is for when the child content update is available and we have downloaded parent content
+            // but we have to refresh only the child content.
+            this.showLoading = false;
+            this.setContentDetails(this.identifier);
+          } else {
+            if (this.isUpdateAvailable && contentImportedEvent.payload.contentId === this.contentDetail.identifier) {
+              this.showLoading = false;
+              this.setContentDetails(this.identifier);
+            } else {
+              if (contentImportedEvent.payload.contentId === this.contentDetail.identifier) {
+                this.showLoading = false;
+                this.updateSavedResources();
+                this.setChildContents();
+                this.contentDetail.isAvailableLocally = true;
+              }
+
+            }
+          }
+        }
+
+        // For content update available
+        const hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
+        const contentUpdateEvent = event as ContentUpdate;
+        if (contentUpdateEvent.type === ContentEventType.UPDATE && hierarchyInfo === null) {
+          this.zone.run(() => {
+            if (this.parentContent) {
+              const parentIdentifier = this.parentContent.contentId || this.parentContent.identifier;
+              this.showLoading = true;
+              this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.contentDetail, false);
+              this.importContent([parentIdentifier], false);
+            } else {
+              this.setContentDetails(this.identifier);
+            }
+          });
+        }
+      });
+    }) as any;
   }
 
   updateSavedResources() {
@@ -990,7 +955,7 @@ export class CollectionDetailsEtbPage {
 
   cancelDownload() {
     this.telemetryGeneratorService.generateCancelDownloadTelemetry(this.contentDetail);
-    this.newContentService.cancelDownload(this.identifier).toPromise()
+    this.contentService.cancelDownload(this.identifier).toPromise()
       .then(() => {
         this.zone.run(() => {
           this.showLoading = false;
@@ -1025,12 +990,8 @@ export class CollectionDetailsEtbPage {
   /**
    * Ionic life cycle hook
    */
-  ionViewWillLeave(): void {
-    // this.downloadProgress = '';
+  ionViewWillLeave() {
     this.downloadProgress = 0;
-    this.events.unsubscribe('genie.event');
-    this.downloadEventSubscription.unsubscribe();
-    this.contentEventSubscription.unsubscribe();
+    this.eventSubscription.unsubscribe();
   }
-
 }

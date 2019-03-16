@@ -30,7 +30,7 @@ import {
   CategoryTerm,
   ContentRequest,
   ContentSearchCriteria,
-  ContentService as newContentService,
+  ContentService,
   Environment,
   FrameworkCategoryCode,
   FrameworkCategoryCodesGroup,
@@ -102,8 +102,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   showLoader = false;
 
   /**
-	 * Flag to show latest and popular course loader
-	 */
+   * Flag to show latest and popular course loader
+   */
   searchApiLoader = true;
   isOnBoardingCardCompleted = false;
   public source = PageId.LIBRARY;
@@ -134,6 +134,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   isUpgradePopoverShown: boolean = false;
 
   refresh: boolean;
+
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     public navCtrl: NavController,
@@ -148,7 +149,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     private translate: TranslateService,
     private network: Network,
     @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
-    @Inject('CONTENT_SERVICE') private newContentService: newContentService
+    @Inject('CONTENT_SERVICE') private contentService: ContentService
   ) {
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {
@@ -332,7 +333,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       contentTypes: ContentType.FOR_LIBRARY_TAB,
       audience: this.audienceFilter
     };
-    this.newContentService.getContents(requestParams).toPromise()
+    this.contentService.getContents(requestParams).toPromise()
       .then(data => {
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
@@ -374,7 +375,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       recentlyViewed: true,
       limit: 20
     };
-    this.newContentService.getContents(requestParams).toPromise()
+    this.contentService.getContents(requestParams).toPromise()
       .then(data => {
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
@@ -464,11 +465,11 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     const reqvalues = new Map();
     reqvalues['pageReq'] = this.getGroupByPageReq;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-        InteractSubtype.RESOURCE_PAGE_REQUEST,
-        Environment.HOME,
-        this.source, undefined,
-        reqvalues);
-        this.newContentService.searchContentGroupedByPageSection(this.getGroupByPageReq).toPromise()
+      InteractSubtype.RESOURCE_PAGE_REQUEST,
+      Environment.HOME,
+      this.source, undefined,
+      reqvalues);
+    this.contentService.searchContentGroupedByPageSection(this.getGroupByPageReq).toPromise()
       .then((response: any) => {
         this.ngZone.run(() => {
           // TODO Temporary code - should be fixed at backend
@@ -492,9 +493,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.storyAndWorksheets = newSections;
           const sectionInfo = {};
           for (let i = 0; i < this.storyAndWorksheets.length; i++) {
-             const sectionName = this.storyAndWorksheets[i].name,
-                  count = this.storyAndWorksheets[i].contents.length;
-                  sectionInfo[sectionName] = count;
+            const sectionName = this.storyAndWorksheets[i].name,
+              count = this.storyAndWorksheets[i].contents.length;
+            sectionInfo[sectionName] = count;
           }
 
           const resvalues = new Map();
@@ -520,11 +521,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.searchApiLoader = false;
           if (error === 'CONNECTION_ERROR') {
           } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
-            if (!isAfterLanguageChange) { this.commonUtilService.showToast('ERROR_FETCHING_DATA'); }
+            if (!isAfterLanguageChange) {
+              this.commonUtilService.showToast('ERROR_FETCHING_DATA');
+            }
           } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable) {
             this.commonUtilService.showToast(
               this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
-              `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
+                `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
           }
           const errvalues = new Map();
           errvalues['isNetworkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
@@ -662,8 +665,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.telemetryGeneratorService.generatePullToRefreshTelemetry(PageId.LIBRARY, Environment.HOME);
       this.getGroupByPage();
     } else {
-          this.getPopularContent();
-         }
+      this.getPopularContent();
+    }
 
   }
 
@@ -816,7 +819,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         this.categoryGradeLevels[i].selected = '';
       }
     }
-    document.getElementById('gradeScroll').scrollTo({ top: 0, left: index * 60, behavior: 'smooth' });
+    document.getElementById('gradeScroll').scrollTo({top: 0, left: index * 60, behavior: 'smooth'});
   }
 
   mediumClick(mediumName: string) {
