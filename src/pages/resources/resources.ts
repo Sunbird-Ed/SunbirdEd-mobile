@@ -37,7 +37,6 @@ import {
   FrameworkUtilService,
   GetFrameworkCategoryTermsRequest,
   ImpressionType,
-  InteractSubtype,
   InteractType,
   PageId,
   Profile,
@@ -46,6 +45,7 @@ import {
   SearchType,
   TelemetryObject
 } from 'sunbird-sdk';
+import {InteractSubtype} from '../../service/interactSubtype-constant';
 
 @Component({
   selector: 'page-resources',

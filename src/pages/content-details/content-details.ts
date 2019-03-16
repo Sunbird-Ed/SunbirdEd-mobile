@@ -1,4 +1,4 @@
-import {Component, Inject, NgZone, ViewChild} from '@angular/core';
+import { Component, Inject, NgZone, ViewChild } from '@angular/core';
 import {
   AlertController,
   Events,
@@ -10,7 +10,7 @@ import {
   Platform,
   PopoverController
 } from 'ionic-angular';
-import {SocialSharing} from '@ionic-native/social-sharing';
+import { SocialSharing } from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
 import {
   BuildParamService,
@@ -22,16 +22,16 @@ import {
   SharedPreferences,
   ShareUtil
 } from 'sunbird';
-import {PreferenceKey, XwalkConstants} from '../../app/app.constant';
-import {Map, ShareUrl} from '@app/app';
-import {BookmarkComponent, ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
-import {AppGlobalService, CourseUtilService} from '@app/service';
-import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
-import {Network} from '@ionic-native/network';
-import {UserAndGroupsPage} from '../user-and-groups/user-and-groups';
-import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
-import {CommonUtilService} from '../../service/common-util.service';
-import {DialogPopupComponent} from '../../component/dialog-popup/dialog-popup';
+import { PreferenceKey, XwalkConstants } from '../../app/app.constant';
+import { Map, ShareUrl } from '@app/app';
+import { BookmarkComponent, ContentActionsComponent, ContentRatingAlertComponent } from '@app/component';
+import { AppGlobalService, CourseUtilService } from '@app/service';
+import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
+import { Network } from '@ionic-native/network';
+import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { CommonUtilService } from '../../service/common-util.service';
+import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
 import {
   Content,
   ContentAccess,
@@ -50,9 +50,21 @@ import {
   ProfileService,
   Rollup,
   TelemetryObject,
+  ContentImportRequest,
+  ContentImportResponse,
+  ContentImport,
+  EventsBusService,
+  EventNamespace,
+  DownloadProgress,
+  ContentEvent,
+  ContentEventType,
+  EventBusEvent,
+  DownloadEventType,
+  ContentImportCompleted
 } from 'sunbird-sdk';
+import { Subscription } from 'rxjs';
 
-
+declare const cordova;
 @IonicPage()
 @Component({
   selector: 'page-content-details',
@@ -77,7 +89,7 @@ export class ContentDetailsPage {
    */
   depth: string;
   isDownloadStarted = false;
-  downloadProgress: string;
+  downloadProgress: any;
   cancelDownloading = false;
   loader: any;
   userId = '';
@@ -125,9 +137,12 @@ export class ContentDetailsPage {
   private ratingComment = '';
   private corRelationList: Array<CorrelationData>;
 
+  private downloadEventSubscription: Subscription;
+  private contentEventSubscription: Subscription;
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('CONTENT_SERVICE') private newContentService: NewContentService,
+    @Inject('EVENTS_BUS_SERVICE') private eventBusService: EventsBusService,
     private contentService: ContentService,
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -285,8 +300,8 @@ export class ContentDetailsPage {
           this.userCount += 1;
         }
       }).catch((error) => {
-      console.error('Error occurred= ', error);
-    });
+        console.error('Error occurred= ', error);
+      });
   }
 
   checkCurrentUserType() {
@@ -342,8 +357,8 @@ export class ContentDetailsPage {
         comment: this.ratingComment,
         popupType: popupType
       }, {
-        cssClass: 'content-rating-alert'
-      });
+          cssClass: 'content-rating-alert'
+        });
       popUp.present({
         ev: event
       });
@@ -374,6 +389,7 @@ export class ContentDetailsPage {
    * @param refreshContentDetails
    * @param showRating
    */
+
   setContentDetails(identifier, refreshContentDetails: boolean | true, showRating: boolean) {
     let loader;
     if (!showRating) {
@@ -383,8 +399,7 @@ export class ContentDetailsPage {
     const req: ContentDetailRequest = {
       contentId: identifier,
       attachFeedback: true,
-      attachContentAccess: true,
-      attachContentMarker: true
+      attachContentAccess: true
     };
 
     this.newContentService.getContentDetails(req).toPromise()
@@ -430,7 +445,7 @@ export class ContentDetailsPage {
   extractApiResponse(data: Content) {
     this.content = data;
     this.contentDownloadable[this.content.identifier] = data.isAvailableLocally;
-    if (this.content.lastUpdatedTime !== '0') {
+    if (this.content.lastUpdatedTime !== 0) {
       this.playOnlineSpinner = false;
     }
     this.content.contentAccess = data.contentAccess ? data.contentAccess : [];
@@ -641,12 +656,12 @@ export class ContentDetailsPage {
    * @param {Array<string>} identifiers contains list of content identifier(s)
    * @param {boolean} isChild
    */
-  getImportContentRequestBody(identifiers: Array<string>, isChild: boolean) {
+  getImportContentRequestBody(identifiers: Array<string>, isChild: boolean): Array<ContentImport> {
     const requestParams = [];
     _.forEach(identifiers, (value) => {
       requestParams.push({
         isChildContent: isChild,
-        destinationFolder: this.fileUtil.internalStoragePath(),
+        destinationFolder: cordova.file.externalDataDirectory,
         contentId: value,
         correlationData: this.corRelationList !== undefined ? this.corRelationList : []
       });
@@ -662,16 +677,15 @@ export class ContentDetailsPage {
    * @param {boolean} isChild
    */
   importContent(identifiers: Array<string>, isChild: boolean) {
-    const option = {
-      contentImportMap: _.extend({}, this.getImportContentRequestBody(identifiers, isChild)),
+    const contentImportRequest: ContentImportRequest = {
+      contentImportArray: this.getImportContentRequestBody(identifiers, isChild),
       contentStatusArray: []
     };
 
     // Call content service
-    this.contentService.importContent(option)
-      .then((data: any) => {
-        data = JSON.parse(data);
-        if (data.result && data.result[0].status === 'NOT_FOUND') {
+    this.newContentService.importContent(contentImportRequest).toPromise()
+      .then((data: ContentImportResponse[]) => {
+        if (data && data[0].status === -1) {
           this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
         }
       })
@@ -690,16 +704,16 @@ export class ContentDetailsPage {
    * Subscribe genie event to get content download progress
    */
   subscribeGenieEvent() {
-    this.events.subscribe('genie.event', (data) => {
+    this.eventBusService.events().subscribe((event: EventBusEvent) => {
       this.zone.run(() => {
-        data = JSON.parse(data);
-        const res = data;
-        if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-          this.downloadProgress = res.data.downloadProgress === -1 ? '0' : res.data.downloadProgress;
+        if (event.type === DownloadEventType.PROGRESS) {
+          const downloadEvent = event as DownloadProgress;
+          this.downloadProgress = downloadEvent.payload.progress === -1 ? '0' : Math.round(downloadEvent.payload.progress);
         }
 
         // Get child content
-        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
+        if (event.type === ContentEventType.IMPORT_COMPLETED) {
+          const contentImportedEvent = event as ContentImportCompleted;
           if (this.isDownloadStarted) {
             this.isDownloadStarted = false;
             this.cancelDownloading = false;
@@ -712,27 +726,28 @@ export class ContentDetailsPage {
           }
         }
 
+
         // For content update available
-        if (res.data && res.type === 'contentUpdateAvailable') {
+        if (event.type === ContentEventType.UPDATE) {
           this.zone.run(() => {
             this.isUpdateAvail = true;
           });
         }
 
         // For streaming url available
-        if (res.data && res.type === 'streamingUrlAvailable') {
-          console.log('res.data', res.data);
-          this.zone.run(() => {
-              this.content.contentData.streamingUrl = res.data.streamingUrl;
-              if (res.data.identifier === this.identifier) {
-                if (res.data.streamingUrl) {
-                  // this.playContent.contentData.streamingUrl = res.data.streamingUrl;
-                } else {
-                  this.playOnlineSpinner = false;
-                }
-            }
-          });
-        }
+        // if (event.type === ContentEventType.P) {
+        //   console.log('res.data', res.data);
+        //   this.zone.run(() => {
+        //       this.content.contentData.streamingUrl = res.data.streamingUrl;
+        //       if (res.data.identifier === this.identifier) {
+        //         if (res.data.streamingUrl) {
+        //           // this.playContent.contentData.streamingUrl = res.data.streamingUrl;
+        //         } else {
+        //           this.playOnlineSpinner = false;
+        //         }
+        //     }
+        //   });
+        // }
       });
     });
   }
@@ -764,20 +779,21 @@ export class ContentDetailsPage {
   }
 
   cancelDownload() {
-    this.contentService.cancelDownload(this.identifier).then(() => {
-      this.zone.run(() => {
-        this.telemetryGeneratorService.generateContentCancelClickedTelemetry(this.content, this.downloadProgress);
-        this.isDownloadStarted = false;
-        this.downloadProgress = '';
-        if (!this.isUpdateAvail) {
-          this.contentDownloadable[this.content.identifier] = false;
-        }
+    this.newContentService.cancelDownload(this.identifier).toPromise()
+      .then(() => {
+        this.zone.run(() => {
+          this.telemetryGeneratorService.generateContentCancelClickedTelemetry(this.content, this.downloadProgress);
+          this.isDownloadStarted = false;
+          this.downloadProgress = '';
+          if (!this.isUpdateAvail) {
+            this.contentDownloadable[this.content.identifier] = false;
+          }
+        });
+      }).catch((error: any) => {
+        this.zone.run(() => {
+          console.log('Error: download error =>>>>>', error);
+        });
       });
-    }).catch((error: any) => {
-      this.zone.run(() => {
-        console.log('Error: download error =>>>>>', error);
-      });
-    });
   }
 
   /** function add eclipses to the texts**/
@@ -880,7 +896,7 @@ export class ContentDetailsPage {
       });
 
       if (isStreaming) {
-        const extraInfoMap = {hierarchyInfo: []};
+        const extraInfoMap = { hierarchyInfo: [] };
         if (this.cardData && this.cardData.hierarchyInfo) {
           extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
         }
@@ -904,7 +920,7 @@ export class ContentDetailsPage {
             console.log('setContentMarker', data);
             this.profileService.addContentAccess(request).subscribe();
           }).catch(() => {
-        });
+          });
       }
       this.downloadAndPlay = false;
       const request: any = {};
@@ -931,8 +947,8 @@ export class ContentDetailsPage {
       .then((res: any) => {
         this.apiLevel = res;
       }).catch((error: any) => {
-      console.error('Error ', error);
-    });
+        console.error('Error ', error);
+      });
   }
 
   showOverflowMenu(event) {
@@ -951,8 +967,8 @@ export class ContentDetailsPage {
       pageName: PageId.CONTENT_DETAIL,
       corRelationList: this.corRelationList
     }, {
-      cssClass: 'content-action'
-    });
+        cssClass: 'content-action'
+      });
     popover.present({
       ev: event
     });
@@ -963,7 +979,7 @@ export class ContentDetailsPage {
           this.contentDownloadable[this.content.identifier] = false;
           const playContent = this.playingContent;
           playContent.isAvailableLocally = false;
-          this.content.streamingUrl = this.streamingUrl;
+       //   this.content.streamingUrl = this.streamingUrl;
         }
       });
     });
@@ -977,8 +993,8 @@ export class ContentDetailsPage {
       corRelationList: this.corRelationList,
       position: 'bottom'
     }, {
-      cssClass: 'bookmark-menu'
-    });
+        cssClass: 'bookmark-menu'
+      });
     popover.present({
       ev: event
     });
@@ -1067,8 +1083,8 @@ export class ContentDetailsPage {
       body: this.commonUtilService.translateMessage('ANDROID_NOT_SUPPORTED_DESC'),
       buttonText: this.commonUtilService.translateMessage('INSTALL_CROSSWALK')
     }, {
-      cssClass: 'popover-alert'
-    });
+        cssClass: 'popover-alert'
+      });
     popover.present();
   }
 }

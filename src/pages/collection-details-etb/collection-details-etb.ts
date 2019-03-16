@@ -814,20 +814,20 @@ export class CollectionDetailsEtbPage {
     //   });
     // });
 
-    this.downloadEventSubscription = this.eventBusService.events(EventNamespace.DOWNLOADS)
-      .filter((event: DownloadProgress) => {
-        return event.identifier === this.identifier
-      }).subscribe((event: DownloadProgress) => {
-        this.downloadProgress = Math.round(event.progress);
-      }) as any;
-    this.contentEventSubscription = this.eventBusService.events(EventNamespace.CONTENT)
-      .filter((event: ContentEvent) => {
-        if (event.contentId === this.identifier && event.type === ContentEventType.IMPORT_COMPLETED) {
-          return true;
-        }
-      }).subscribe(() => {
-        this.setContentDetails(this.identifier, false);
-      }) as any;
+    // this.downloadEventSubscription = this.eventBusService.events(EventNamespace.DOWNLOADS)
+    //   .filter((event: DownloadProgress) => {
+    //     return event.identifier === this.identifier
+    //   }).subscribe((event: DownloadProgress) => {
+    //     this.downloadProgress = Math.round(event.progress);
+    //   }) as any;
+    // this.contentEventSubscription = this.eventBusService.events(EventNamespace.CONTENT)
+    //   .filter((event: ContentEvent) => {
+    //     if (event.contentId === this.identifier && event.type === ContentEventType.IMPORT_COMPLETED) {
+    //       return true;
+    //     }
+    //   }).subscribe(() => {
+    //     this.setContentDetails(this.identifier, false);
+    //   }) as any;
   }
 
   updateSavedResources() {
