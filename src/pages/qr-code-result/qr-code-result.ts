@@ -1,5 +1,5 @@
 import {CommonUtilService} from './../../service/common-util.service';
-import {Component, Inject, NgZone, ViewChild} from '@angular/core';
+import {Component, Inject, NgZone, ViewChild, OnDestroy} from '@angular/core';
 import {
   AlertController,
   Events,
@@ -13,13 +13,8 @@ import {
 import {
   ContentService,
   CorrelationData,
-  Environment,
   FileUtil,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
   MarkerType,
-  PageId,
   SharedPreferences,
   TabsPage
 } from 'sunbird';
@@ -36,6 +31,10 @@ import {
   ChildContentRequest,
   Content,
   ContentMarkerRequest,
+  ContentDetailRequest,
+  ContentImportRequest,
+  ContentImport,
+  ContentImportResponse,
   ContentService as NewContentService,
   Framework,
   FrameworkCategoryCodesGroup,
@@ -46,14 +45,25 @@ import {
   GetSuggestedFrameworksRequest,
   Profile,
   ProfileService,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  Environment,
+  PageId,
+  EventsBusService,
+  EventBusEvent,
+  DownloadEventType,
+  DownloadProgress,
+  ContentEventType
 } from 'sunbird-sdk';
+import { Observable, Subscription } from 'rxjs';
 
 @IonicPage()
 @Component({
   selector: 'page-qr-code-result',
   templateUrl: 'qr-code-result.html'
 })
-export class QrCodeResultPage {
+export class QrCodeResultPage implements OnDestroy {
   unregisterBackButton: any;
   /**
    * To hold identifier
@@ -108,6 +118,7 @@ export class QrCodeResultPage {
   @ViewChild(Navbar) navBar: Navbar;
   downloadProgress: any = 0;
   isUpdateAvailable: boolean;
+  eventSubscription: Subscription;
 
   constructor(
     @Inject('CONTENT_SERVICE') private newContentService: NewContentService,
@@ -127,7 +138,8 @@ export class QrCodeResultPage {
     private commonUtilService: CommonUtilService,
     private fileUtil: FileUtil,
     @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
-    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService
+    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService
   ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
@@ -158,7 +170,7 @@ export class QrCodeResultPage {
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.handleBackButton(InteractSubtype.DEVICE_BACK_CLICKED);
     }, 10);
-    this.subscribeGenieEvent();
+    this.subscribeSdkEvent();
   }
 
   ionViewDidLoad() {
@@ -180,7 +192,15 @@ export class QrCodeResultPage {
       this.unregisterBackButton();
     }
     this.downloadProgress = 0;
-    this.events.unsubscribe('genie.event');
+    if  (this.eventSubscription)  {
+      this.eventSubscription.unsubscribe();
+    }
+  }
+
+  ngOnDestroy() {
+    if  (this.eventSubscription)  {
+      this.eventSubscription.unsubscribe();
+    }
   }
 
   handleBackButton(clickSource) {
@@ -402,9 +422,8 @@ export class QrCodeResultPage {
    * @param {string} identifier identifier of content / course
    */
   setContentDetails(identifier, refreshContentDetails: boolean | true) {
-    const option = {
+    const option: ContentDetailRequest = {
       contentId: identifier,
-      refreshContentDetails: refreshContentDetails,
       attachFeedback: true,
       attachContentAccess: true
     };
@@ -494,6 +513,8 @@ export class QrCodeResultPage {
    * @param {object} profile
    */
   checkProfileData(data, profile) {
+    console.log('dial data', data);
+    console.log('local profile', profile);
     if (data && data.framework) {
 
       const getSuggestedFrameworksRequest: GetSuggestedFrameworksRequest = {
@@ -592,23 +613,22 @@ export class QrCodeResultPage {
   /**
    * Subscribe genie event to get content download progress
    */
-  subscribeGenieEvent() {
-    this.events.subscribe('genie.event', (data) => {
+  subscribeSdkEvent() {
+    this.eventSubscription = this.eventsBusService.events().subscribe((event: EventBusEvent) => {
       this.zone.run(() => {
-        data = JSON.parse(data);
-        const res = data;
 
-        if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-          if (res.data.downloadProgress === -1 || res.data.downloadProgress === '-1') {
+        if (event.type === DownloadEventType.PROGRESS && event.payload.progress) {
+          const downloadEvent = event as DownloadProgress;
+          if (downloadEvent.payload.progress === -1) {
             this.downloadProgress = 0;
-          } else if (res.data.identifier === this.content.identifier) {
-            this.downloadProgress = res.data.downloadProgress;
+          } else if (downloadEvent.payload.identifier === this.content.identifier) {
+            this.downloadProgress = downloadEvent.payload.progress;
           }
 
         }
         // Get child content
-        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
-
+        // if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
+        if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
           this.showLoading = false;
           this.isDownloadStarted = false;
           this.results = [];
@@ -617,7 +637,8 @@ export class QrCodeResultPage {
           this.getChildContents();
         }
         // For content update available
-        if (res.data && res.type === 'contentUpdateAvailable' && res.data.identifier === this.identifier) {
+        // if (res.data && res.type === 'contentUpdateAvailable' && res.data.identifier === this.identifier) {
+        if (event.payload && event.type === ContentEventType.UPDATE && event.payload.contentId === this.identifier) {
           this.zone.run(() => {
             if (this.parentContent) {
               const parentIdentifier = this.parentContent.contentId || this.parentContent.identifier;
@@ -627,7 +648,7 @@ export class QrCodeResultPage {
           });
         }
       });
-    });
+    }) as any;
   }
 
   private findContentNode(data: any) {
@@ -658,23 +679,23 @@ export class QrCodeResultPage {
    * @param {boolean} isChild
    */
   importContent(identifiers: Array<string>, isChild: boolean, isDownloadAllClicked?) {
-    const option = {
-      contentImportMap: _.extend({}, this.getImportContentRequestBody(identifiers, isChild)),
+    const option: ContentImportRequest = {
+      contentImportArray: this.getImportContentRequestBody(identifiers, isChild),
       contentStatusArray: []
     };
 
     // Call content service
-    this.contentService.importContent(option)
-      .then((data: any) => {
+    this.newContentService.importContent(option).toPromise()
+      .then((data: ContentImportResponse[]) => {
         this.zone.run(() => {
-          data = JSON.parse(data);
+          data = data;
         });
       })
       .catch((error: any) => {
         this.zone.run(() => {
           this.isDownloadStarted = false;
           this.showLoading = false;
-          const errorRes = JSON.parse(error);
+          const errorRes = error;
           if (errorRes && (errorRes.error === 'NETWORK_ERROR' || errorRes.error === 'CONNECTION_ERROR')) {
             this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
           } else {
@@ -685,12 +706,12 @@ export class QrCodeResultPage {
   }
 
   /**
- * Function to get import content api request params
- *
- * @param {Array<string>} identifiers contains list of content identifier(s)
- * @param {boolean} isChild
- */
-  getImportContentRequestBody(identifiers: Array<string>, isChild: boolean) {
+   * Function to get import content api request params
+   *
+   * @param {Array<string>} identifiers contains list of content identifier(s)
+   * @param {boolean} isChild
+   */
+  getImportContentRequestBody(identifiers: Array<string>, isChild: boolean): Array<ContentImport> {
     const requestParams = [];
     _.forEach(identifiers, (value) => {
       requestParams.push({
@@ -706,7 +727,8 @@ export class QrCodeResultPage {
 
   cancelDownload() {
     this.telemetryGeneratorService.generateCancelDownloadTelemetry(this.content);
-    this.contentService.cancelDownload(this.identifier).then(() => {
+    this.newContentService.cancelDownload(this.identifier).toPromise()
+    .then(() => {
       this.zone.run(() => {
         this.showLoading = false;
         this.navCtrl.pop();

@@ -1,4 +1,4 @@
-import {Component, Inject, NgZone, ViewChild} from '@angular/core';
+import {Component, Inject, NgZone, ViewChild, OnDestroy} from '@angular/core';
 import {Events, IonicPage, Navbar, NavController, NavParams, Platform} from 'ionic-angular';
 import {CorrelationData, FileUtil, SharedPreferences, TabsPage} from 'sunbird';
 import {
@@ -25,6 +25,11 @@ import {
   ProfileType,
   SearchType,
   TelemetryObject,
+  EventsBusService,
+  EventBusEvent,
+  DownloadEventType,
+  DownloadProgress,
+  ContentEventType
 } from 'sunbird-sdk';
 import {FilterPage} from './filters/filter';
 import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
@@ -39,6 +44,7 @@ import {CommonUtilService} from '../../service/common-util.service';
 import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
 import {QrCodeResultPage} from '../qr-code-result/qr-code-result';
 import {TranslateService} from '@ngx-translate/core';
+import { Observable, Subscription } from 'rxjs';
 
 declare const cordova;
 
@@ -47,7 +53,7 @@ declare const cordova;
   selector: 'page-search',
   templateUrl: './search.html'
 })
-export class SearchPage {
+export class SearchPage implements  OnDestroy {
 
   showLoading: boolean;
   downloadProgress: any;
@@ -95,6 +101,8 @@ export class SearchPage {
 
   audienceFilter = [];
 
+  eventSubscription?: Subscription;
+
   displayDialCodeResult: any;
   profile: any;
   isFirstLaunch = false;
@@ -121,7 +129,8 @@ export class SearchPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private preference: SharedPreferences,
     private translate: TranslateService,
-    @Inject('PAGE_ASSEMBLE_SERVICE') private pageService: PageAssembleService
+    @Inject('PAGE_ASSEMBLE_SERVICE') private pageService: PageAssembleService,
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService
   ) {
 
     this.checkUserSession();
@@ -163,6 +172,15 @@ export class SearchPage {
     this.events.unsubscribe('genie.event');
     if (this.backButtonFunc) {
       this.backButtonFunc();
+    }
+    if  (this.eventSubscription)  {
+      this.eventSubscription.unsubscribe();
+    }
+  }
+
+  ngOnDestroy() {
+    if  (this.eventSubscription)  {
+      this.eventSubscription.unsubscribe();
     }
   }
 
@@ -548,6 +566,7 @@ export class SearchPage {
   }
 
   processDialCodeResult(dialResult) {
+    console.log('dialresult', dialResult);
     const displayDialCodeResult = [];
     dialResult.forEach(searchResult => {
       const collectionArray: Array<any> = searchResult.collections;
@@ -603,6 +622,7 @@ export class SearchPage {
       }
     });
     this.displayDialCodeResult = displayDialCodeResult;
+    console.log('this.displayDialCodeResult', this.displayDialCodeResult);
     if (this.displayDialCodeResult.length === 0 && !this.isSingleContent) {
       this.navCtrl.pop();
       if (this.shouldGenerateEndTelemetry) {
@@ -741,7 +761,7 @@ export class SearchPage {
               this.showContentDetails(child);
             });
           } else {
-            this.subscribeGenieEvent();
+            this.subscribeSdkEvent();
             this.downloadParentContent(parent);
           }
         } else {
@@ -795,14 +815,12 @@ export class SearchPage {
   /**
    * Subscribe genie event to get content download progress
    */
-  subscribeGenieEvent() {
-    this.events.subscribe('genie.event', (data) => {
+  subscribeSdkEvent() {
+    this.eventSubscription = this.eventsBusService.events().subscribe((event: EventBusEvent) => {
       this.zone.run(() => {
-        data = JSON.parse(data);
-        const res = data;
-
-        if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-          this.downloadProgress = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
+        if (event.type === DownloadEventType.PROGRESS && event.payload.progress) {
+          const downloadEvent = event as DownloadProgress;
+          this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
           this.loadingDisplayText = 'Loading content ' + this.downloadProgress + ' %';
 
           if (this.downloadProgress === 100) {
@@ -811,18 +829,19 @@ export class SearchPage {
           }
         }
 
-        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
-          if (this.queuedIdentifiers.length && this.isDownloadStarted) {
-            if (_.includes(this.queuedIdentifiers, res.data.identifier)) {
-              this.currentCount++;
-            }
-            if (this.queuedIdentifiers.length === this.currentCount) {
-              this.showLoading = false;
-              this.showContentDetails(this.childContent);
-              this.events.publish('savedResources:update', {
-                update: true
-              });
-            }
+        // if (event.payload && event.payload.status === 'IMPORT_COMPLETED' && event.type === 'contentImport') {
+          if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
+            if (this.queuedIdentifiers.length && this.isDownloadStarted) {
+              if (_.includes(this.queuedIdentifiers, event.payload.contentId)) {
+                this.currentCount++;
+              }
+              if (this.queuedIdentifiers.length === this.currentCount) {
+                this.showLoading = false;
+                this.showContentDetails(this.childContent);
+                this.events.publish('savedResources:update', {
+                  update: true
+                });
+              }
           } else {
             this.events.publish('savedResources:update', {
               update: true
@@ -831,7 +850,7 @@ export class SearchPage {
         }
 
       });
-    });
+    }) as any;
   }
 
   /**
