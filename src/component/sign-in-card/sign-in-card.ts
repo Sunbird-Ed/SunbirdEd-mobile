@@ -5,7 +5,6 @@ import {NavController} from 'ionic-angular';
 import {AppVersion} from '@ionic-native/app-version';
 import {
   ContainerService,
-  SharedPreferences
 } from 'sunbird';
 import {initTabs, LOGIN_TEACHER_TABS} from '../../app/module.service';
 import {TelemetryGeneratorService} from '@app/service';
@@ -21,7 +20,8 @@ import {
   ProfileSource,
   ProfileType,
   SdkConfig,
-  ServerProfileDetailsRequest
+  ServerProfileDetailsRequest,
+  SharedPreferences
 } from 'sunbird-sdk';
 import {
   Environment,
@@ -55,12 +55,12 @@ export class SignInCardComponent {
     @Inject('AUTH_SERVICE') private authService: AuthService,
     @Inject('API_SERVICE') private apiService: ApiService,
     @Inject('SDK_CONFIG') private sdkConfig: SdkConfig,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     public translate: TranslateService,
     public navCtrl: NavController,
     private container: ContainerService,
     private ngZone: NgZone,
     private appVersion: AppVersion,
-    private sharedPreferences: SharedPreferences,
     private commonUtilService: CommonUtilService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService
@@ -116,7 +116,7 @@ export class SignInCardComponent {
         .then(() => {
           loader.dismiss();
           that.ngZone.run(() => {
-            that.sharedPreferences.putString('SHOW_WELCOME_TOAST', 'true');
+            that.preferences.putString('SHOW_WELCOME_TOAST', 'true').toPromise().then();
             window.location.reload();
             // TabsPage.prototype.ionVieit wWillEnter();
           });

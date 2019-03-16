@@ -19,7 +19,6 @@ import {
   DeviceInfoService,
   FileUtil,
   MarkerType,
-  SharedPreferences,
   ShareUtil
 } from 'sunbird';
 import {PreferenceKey, XwalkConstants} from '../../app/app.constant';
@@ -52,7 +51,8 @@ import {
   GetAllProfileRequest,
   ProfileService,
   Rollup,
-  TelemetryObject
+  TelemetryObject,
+  SharedPreferences
 } from 'sunbird-sdk';
 import {Subscription} from 'rxjs';
 import {
@@ -141,6 +141,7 @@ export class ContentDetailsPage {
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('CONTENT_SERVICE') private newContentService: NewContentService,
     @Inject('EVENTS_BUS_SERVICE') private eventBusService: EventsBusService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     private contentService: ContentService,
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -149,7 +150,6 @@ export class ContentDetailsPage {
     private fileUtil: FileUtil,
     private popoverCtrl: PopoverController,
     private shareUtil: ShareUtil,
-    private preference: SharedPreferences,
     private social: SocialSharing,
     private platform: Platform,
     private buildParamService: BuildParamService,
@@ -316,7 +316,7 @@ export class ContentDetailsPage {
   }
 
   checkBookmarkStatus() {
-    this.preference.getString(PreferenceKey.IS_BOOKMARK_VIEWED).then(val => {
+    this.preferences.getString(PreferenceKey.IS_BOOKMARK_VIEWED).toPromise().then(val => {
       if (!val) {
         this.showBookmarkMenu();
       }

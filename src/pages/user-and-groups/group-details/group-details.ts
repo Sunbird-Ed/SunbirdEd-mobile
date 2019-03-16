@@ -23,7 +23,6 @@ import {
   ContainerService,
   OAuthService,
   ObjectType,
-  SharedPreferences,
   TabsPage
 } from 'sunbird';
 import {
@@ -33,7 +32,8 @@ import {
   Profile,
   ProfileService,
   ProfileType,
-  TelemetryObject
+  TelemetryObject,
+  SharedPreferences
 } from 'sunbird-sdk';
 import {AppGlobalService} from '../../../service/app-global.service';
 import {
@@ -84,7 +84,6 @@ export class GroupDetailsPage {
     private alertCtrl: AlertController,
     private oauth: OAuthService,
     private container: ContainerService,
-    private preferences: SharedPreferences,
     private app: App,
     private event: Events,
     private loadingCtrl: LoadingController,
@@ -92,7 +91,8 @@ export class GroupDetailsPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private authService: AuthService,
     private appGlobalService: AppGlobalService,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
   ) {
     this.group = this.navParams.get('groupInfo');
     this.currentUserId = this.navParams.get('currentUserId');
@@ -493,10 +493,10 @@ export class GroupDetailsPage {
           }
           if (selectedUser.profileType === ProfileType.STUDENT) {
             initTabs(this.container, isBeingPlayed ? GUEST_STUDENT_TABS : GUEST_STUDENT_SWITCH_TABS);
-            this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT);
+            this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise().then();
           } else {
             initTabs(this.container, isBeingPlayed ? GUEST_TEACHER_TABS : GUEST_TEACHER_SWITCH_TABS);
-            this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
+            this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();
           }
 
           this.event.publish('refresh:profile');

@@ -9,7 +9,6 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { TranslateService } from '@ngx-translate/core';
 import { AppVersion } from '@ionic-native/app-version';
 import {
-  SharedPreferences,
   ShareUtil,
   DeviceInfoService,
   Impression,
@@ -23,6 +22,7 @@ import {
   InteractSubtype
 } from '../../service/telemetry-constants';
 import { TelemetryGeneratorService } from '@app/service';
+import { SharedPreferences } from 'sunbird-sdk';
 
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
 const SUBJECT_NAME = 'support request';
@@ -45,11 +45,11 @@ export class SettingsPage {
     private socialSharing: SocialSharing,
     private translate: TranslateService,
     private deviceInfoService: DeviceInfoService,
-    private preference: SharedPreferences,
     private shareUtil: ShareUtil,
     private commonUtilService: CommonUtilService,
     private appGlobalService: AppGlobalService,
     private telemetryGeneratorService: TelemetryGeneratorService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
   ) { }
 
   ionViewWillEnter() {
@@ -77,7 +77,7 @@ export class SettingsPage {
 
   ionViewDidEnter() {
     this.chosenLanguageString = this.commonUtilService.translateMessage('CURRENT_LANGUAGE');
-    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE)
+    this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE).toPromise()
       .then(value => {
         this.selectedLanguage = `${this.chosenLanguageString} : ${value}`;
       });
@@ -116,19 +116,21 @@ export class SettingsPage {
     (<any>window).supportfile.shareSunbirdConfigurations((result) => {
       const loader = this.commonUtilService.getLoader();
       loader.present();
-      this.preference.putString(KEY_SUNBIRD_CONFIG_FILE_PATH, JSON.parse(result));
-      this.preference.getString(KEY_SUNBIRD_CONFIG_FILE_PATH)
-        .then(val => {
-          loader.dismiss();
-          if (Boolean(val)) {
-            this.fileUrl = 'file://' + val;
-            this.subjectDetails = this.appName + ' ' + SUBJECT_NAME + '-' + this.deviceId;
-            this.socialSharing.shareViaEmail('', this.subjectDetails, [this.appGlobalService.SUPPORT_EMAIL], null, null, this.fileUrl)
-              .catch(error => {
-                console.error(error);
-              });
-          }
-        });
+      this.preferences.putString(KEY_SUNBIRD_CONFIG_FILE_PATH, JSON.parse(result)).toPromise()
+      .then( (resp) => {
+        this.preferences.getString(KEY_SUNBIRD_CONFIG_FILE_PATH).toPromise()
+          .then(val => {
+            loader.dismiss();
+            if (Boolean(val)) {
+              this.fileUrl = 'file://' + val;
+              this.subjectDetails = this.appName + ' ' + SUBJECT_NAME + '-' + this.deviceId;
+              this.socialSharing.shareViaEmail('', this.subjectDetails, [this.appGlobalService.SUPPORT_EMAIL], null, null, this.fileUrl)
+                .catch(error => {
+                  console.error(error);
+                });
+            }
+          });
+      });
     }, (error) => {
       console.error('ERROR - ' + error);
     });

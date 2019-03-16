@@ -3,7 +3,6 @@ import {App, IonicApp, NavParams, Select} from 'ionic-angular/index';
 import {AppGlobalService} from '../../service/app-global.service';
 import {
   ContainerService,
-  SharedPreferences,
   TabsPage
 } from 'sunbird';
 import {Component, Inject, ViewChild} from '@angular/core';
@@ -26,7 +25,8 @@ import {
   Profile,
   ProfileService,
   ProfileType,
-  CategoryTerm
+  CategoryTerm,
+  SharedPreferences
 } from 'sunbird-sdk';
 import {
   Environment,
@@ -89,7 +89,6 @@ export class ProfileSettingsPage {
     private fb: FormBuilder,
     private translate: TranslateService,
     private loadingCtrl: LoadingController,
-    private preference: SharedPreferences,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private appGlobalService: AppGlobalService,
     private events: Events,
@@ -101,10 +100,11 @@ export class ProfileSettingsPage {
     private app: App,
     private telemetryService: TelemetryGeneratorService,
     @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
-    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService
+    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
 
   ) {
-    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+    this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
       .then(val => {
         if (val && val.length) {
           this.selectedLanguage = val;
@@ -519,7 +519,7 @@ export class ProfileSettingsPage {
         this.appGlobalService.setOnBoardingCompleted();
         this.telemetryGeneratorService.generateProfilePopulatedTelemetry(PageId.DIAL_CODE_SCAN_RESULT, req.syllabus[0], 'manual');
         if (this.navParams.get('isChangeRoleRequest')) {
-          this.preference.putString(PreferenceKey.SELECTED_USER_TYPE, req.profileType);
+          this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, req.profileType).toPromise().then();
         }
 
         this.navCtrl.push(TabsPage, {

@@ -18,7 +18,6 @@ import {
   CourseService as course_Service,
   FileUtil,
   GetContentStateRequest,
-  SharedPreferences,
   ShareUtil,
 } from 'sunbird';
 import {ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
@@ -45,7 +44,8 @@ import {
   TelemetryObject,
   ErrorCode,
   UnenrollCourseRequest,
-  FetchEnrolledCourseRequest
+  FetchEnrolledCourseRequest,
+  SharedPreferences
 } from 'sunbird-sdk';
 import {
   Environment,
@@ -180,7 +180,6 @@ export class EnrolledCourseDetailsPage {
     private buildParamService: BuildParamService,
     private shareUtil: ShareUtil,
     private social: SocialSharing,
-    private preference: SharedPreferences,
     private courseUtilService: CourseUtilService,
     private platform: Platform,
     private appGlobalService: AppGlobalService,
@@ -188,7 +187,8 @@ export class EnrolledCourseDetailsPage {
     private commonUtilService: CommonUtilService,
     private datePipe: DatePipe,
     private acourseService: course_Service,
-    private acontentService: content_service
+    private acontentService: content_service,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
   ) {
 
     this.appGlobalService.getUserId();
@@ -513,7 +513,7 @@ export class EnrolledCourseDetailsPage {
             this.batchDetails = data;
             this.saveContentContext(this.appGlobalService.getUserId(),
               this.batchDetails.courseId, this.courseCardData.batchId, this.batchDetails.status);
-            this.preference.getString(PreferenceKey.COURSE_IDENTIFIER)
+            this.preferences.getString(PreferenceKey.COURSE_IDENTIFIER).toPromise()
               .then(val => {
                 if (val === this.batchDetails.identifier) {
                   this.batchExp = true;
@@ -531,7 +531,7 @@ export class EnrolledCourseDetailsPage {
                           role: 'cancel',
                           cssClass: 'doneButton',
                           handler: () => {
-                            this.preference.putString(PreferenceKey.COURSE_IDENTIFIER, this.batchDetails.identifier);
+                            this.preferences.putString(PreferenceKey.COURSE_IDENTIFIER, this.batchDetails.identifier).toPromise().then();
                           }
                         }
                       ]
@@ -568,7 +568,7 @@ export class EnrolledCourseDetailsPage {
     }
 
     // store the contentContextMap in shared preference and access it from SDK
-    this.preference.putString(PreferenceKey.CONTENT_CONTEXT, JSON.stringify(contentContextMap));
+    this.preferences.putString(PreferenceKey.CONTENT_CONTEXT, JSON.stringify(contentContextMap)).toPromise().then();
   }
 
   getBatchCreatorName() {

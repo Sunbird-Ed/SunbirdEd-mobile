@@ -3,7 +3,6 @@ import {Events, IonicPage, Navbar, NavController, NavParams, Platform} from 'ion
 import {TranslateService} from '@ngx-translate/core';
 import {
   ContainerService,
-  SharedPreferences,
   TabsPage
 } from 'sunbird';
 import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, Map, PreferenceKey} from '@app/app';
@@ -11,7 +10,7 @@ import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@a
 import {SunbirdQRScanner} from '@app/pages/qrscanner';
 import {ProfileSettingsPage} from '@app/pages/profile-settings/profile-settings';
 import {LanguageSettingsPage} from '@app/pages/language-settings/language-settings';
-import {Profile, ProfileService, ProfileSource, ProfileType} from "sunbird-sdk";
+import {Profile, ProfileService, ProfileSource, ProfileType, SharedPreferences} from 'sunbird-sdk';
 import {
   Environment,
   ImpressionType,
@@ -51,7 +50,6 @@ export class UserTypeSelectionPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     private translate: TranslateService,
-    private preference: SharedPreferences,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private container: ContainerService,
     private zone: NgZone,
@@ -59,7 +57,8 @@ export class UserTypeSelectionPage {
     private commonUtilService: CommonUtilService,
     private appGlobalService: AppGlobalService,
     private scannerService: SunbirdQRScanner,
-    private platform: Platform
+    private platform: Platform,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences
   ) { }
 
   ionViewDidLoad() {
@@ -123,7 +122,7 @@ export class UserTypeSelectionPage {
         this.commonUtilService.translateMessage(userType)
       );
       if (!this.isChangeRoleRequest) {
-        this.preference.putString(PreferenceKey.SELECTED_USER_TYPE, this.selectedUserType);
+        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, this.selectedUserType).toPromise().then();
       }
     });
   }
@@ -158,7 +157,7 @@ export class UserTypeSelectionPage {
             const userId = success.uid;
             this.event.publish(AppGlobalService.USER_INFO_UPDATED);
             if (userId !== 'null') {
-              this.preference.putString('GUEST_USER_ID_BEFORE_LOGIN', userId);
+              this.preferences.putString('GUEST_USER_ID_BEFORE_LOGIN', userId).toPromise().then();
             }
             this.profile = success;
             this.gotoTabsPage();

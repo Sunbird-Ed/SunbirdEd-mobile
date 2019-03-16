@@ -1,5 +1,4 @@
 import {Inject, Injectable} from '@angular/core';
-import {SharedPreferences} from 'sunbird';
 import {AppGlobalService} from '../../service/app-global.service';
 import {AppVersion} from '@ionic-native/app-version';
 import {PreferenceKey} from '../../app/app.constant';
@@ -20,7 +19,9 @@ import {
   ProfileService,
   SystemSettings,
   SystemSettingsOrgIds,
-  SystemSettingsService
+  SystemSettingsService,
+  SharedPreferences
+
 } from 'sunbird-sdk';
 
 @Injectable()
@@ -39,14 +40,14 @@ export class FormAndFrameworkUtilService {
       @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
       @Inject('FORM_SERVICE') private formService: FormService,
       @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
-      private preference: SharedPreferences,
+      @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
       private appGlobalService: AppGlobalService,
       private appVersion: AppVersion,
       private translate: TranslateService,
       private events: Events
     ) {
         // Get language selected
-        this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+        this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
             .then(val => {
                 if (val && val.length) {
                     this.selectedLanguage = val;

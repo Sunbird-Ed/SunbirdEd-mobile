@@ -3,7 +3,6 @@ import {
   BuildParamService,
   ContainerService,
   PermissionService,
-  SharedPreferences,
   TabsPage,
 } from 'sunbird';
 import {ProfileSettingsPage} from './../pages/profile-settings/profile-settings';
@@ -30,7 +29,8 @@ import {AuthService,
         ProfileService,
         ProfileType,
         TelemetryService,
-        TelemetryAutoSyncUtil
+        TelemetryAutoSyncUtil,
+        SharedPreferences
       } from 'sunbird-sdk';
 import { tap } from 'rxjs/operators';
 import {
@@ -63,7 +63,7 @@ export class MyApp {
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
     @Inject('AUTH_SERVICE') private authService: AuthService,
-    private preferences: SharedPreferences,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     private platform: Platform,
     private statusBar: StatusBar,
     private toastCtrl: ToastController,
@@ -74,7 +74,6 @@ export class MyApp {
     private translate: TranslateService,
     private events: Events,
     private zone: NgZone,
-    private preference: SharedPreferences,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private event: Events,
     private container: ContainerService,
@@ -189,10 +188,10 @@ export class MyApp {
 
                 if (currentUser.profileType === ProfileType.STUDENT) {
                   initTabs(this.container, GUEST_STUDENT_TABS);
-                  this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT);
+                  this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise().then();
                 } else {
                   initTabs(this.container, GUEST_TEACHER_TABS);
-                  this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
+                  this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();
                 }
 
                 this.event.publish('refresh:profile');
@@ -257,7 +256,7 @@ export class MyApp {
     const session = await this.authService.getSession().toPromise();
 
     if (!session) {
-      this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
+      this.preferences.getString(PreferenceKey.SELECTED_USER_TYPE).toPromise()
         .then(async (profileType: ProfileType | undefined) => {
           if (!profileType) {
             this.appGlobalService.isProfileSettingsCompleted = false;
@@ -267,12 +266,12 @@ export class MyApp {
 
           switch (profileType.toUpperCase()) {
             case ProfileType.TEACHER: {
-              await this.preference.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
+              await this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise();
               initTabs(this.containerService, GUEST_TEACHER_TABS);
               break;
             }
             case ProfileType.STUDENT: {
-              await this.preference.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT);
+              await this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise();
               initTabs(this.containerService, GUEST_STUDENT_TABS);
               break;
             }
@@ -296,7 +295,7 @@ export class MyApp {
             } else {
               this.appGlobalService.isProfileSettingsCompleted = false;
               try {
-                if (await this.preference.getString(PreferenceKey.IS_ONBOARDING_COMPLETED) === 'true') {
+                if ((await this.preferences.getString(PreferenceKey.IS_ONBOARDING_COMPLETED).toPromise()) === 'true') {
                   this.getProfileSettingConfig(true);
                 } else {
                   await this.nav.insertPages(0, [{page: LanguageSettingsPage}, {page: UserTypeSelectionPage}]);
@@ -318,8 +317,8 @@ export class MyApp {
 
             initTabs(this.containerService, LOGIN_TEACHER_TABS);
 
-            if (await this.preference.getString('SHOW_WELCOME_TOAST') === 'true') {
-              this.preference.putString('SHOW_WELCOME_TOAST', 'false');
+            if ((await this.preferences.getString('SHOW_WELCOME_TOAST').toPromise()) === 'true') {
+              this.preferences.putString('SHOW_WELCOME_TOAST', 'false').toPromise().then();
 
               const serverProfile = await this.profileService.getServerProfilesDetails({
                 userId: session.userToken,
@@ -355,7 +354,7 @@ export class MyApp {
   }
 
   private async getSelectedLanguage() {
-    const selectedLanguage = await this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE);
+    const selectedLanguage = await this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise();
     if (selectedLanguage) {
       await this.translate.use(selectedLanguage).toPromise();
     }
@@ -370,7 +369,7 @@ export class MyApp {
   private async makeEntryInSupportFolder() {
     return new Promise((resolve => {
       (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
-        this.preference.putString(KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result));
+        this.preferences.putString(KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result)).toPromise().then();
         resolve();
       }, () => {
       });
@@ -378,10 +377,10 @@ export class MyApp {
   }
 
   private async saveDefaultSyncSetting() {
-    return this.preference.getString('sync_config')
+    return this.preferences.getString('sync_config').toPromise()
       .then(val => {
         if (val === undefined || val === '' || val === null) {
-          this.preference.putString('sync_config', 'ALWAYS_ON');
+          this.preferences.putString('sync_config', 'ALWAYS_ON').toPromise().then();
         }
       });
   }
@@ -444,11 +443,8 @@ export class MyApp {
   }
 
   private async showAppWalkThroughScreen() {
-    return this.preference.getString('show_app_walkthrough_screen')
-      .then(value => {
-        const val = (value === '') ? 'true' : 'false';
-        this.preference.putString('show_app_walkthrough_screen', val);
-      });
+    const showAppWalkthrough = (await this.preferences.getString('show_app_walkthrough_screen').toPromise()) === '' ? 'true' : 'false';
+    await this.preferences.putString('show_app_walkthrough_screen', showAppWalkthrough).toPromise();
   }
 
   // TODO: this method will be used to communicate with the openrap device

@@ -2,7 +2,7 @@ import {ViewMoreActivityPage} from './../view-more-activity/view-more-activity';
 import {Component, Inject, NgZone, OnInit} from '@angular/core';
 import {Events, IonicPage, NavController, PopoverController} from 'ionic-angular';
 import {AppVersion} from '@ionic-native/app-version';
-import {ContentService, SharedPreferences} from 'sunbird';
+import {ContentService} from 'sunbird';
 import {QRResultCallback, SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
 import {SearchPage} from '../search/search';
 import {ContentDetailsPage} from '../content-details/content-details';
@@ -25,7 +25,8 @@ import {
   PageAssembleCriteria,
   PageAssembleService,
   PageName,
-  ProfileType
+  ProfileType,
+  SharedPreferences
 } from 'sunbird-sdk';
 import {
   Environment,
@@ -127,17 +128,17 @@ export class CoursesPage implements OnInit {
     private events: Events,
     @Inject('CONTENT_SERVICE') private newContentService: NewContentService,
     private contentService: ContentService,
-    private preference: SharedPreferences,
     private appGlobalService: AppGlobalService,
     private courseUtilService: CourseUtilService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private network: Network,
-    @Inject('PAGE_ASSEMBLE_SERVICE') private pageService: PageAssembleService
+    @Inject('PAGE_ASSEMBLE_SERVICE') private pageService: PageAssembleService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences
   ) {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
-    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+    this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
       .then(val => {
         if (val && val.length) {
           this.selectedLanguage = val;
@@ -175,7 +176,7 @@ export class CoursesPage implements OnInit {
     );
 
     this.appGlobalService.generateConfigInteractEvent(PageId.COURSES, this.isOnBoardingCardCompleted);
-    this.preference.getString('show_app_walkthrough_screen')
+    this.preferences.getString('show_app_walkthrough_screen').toPromise()
       .then(value => {
         if (value === 'true') {
           const driver = new Driver({
@@ -203,7 +204,7 @@ export class CoursesPage implements OnInit {
             element.appendChild(img);
           }, 100);
           this.telemetryGeneratorService.generatePageViewTelemetry(PageId.ONBOARDING_QR_SHOWCASE, Environment.ONBOARDING, PageId.COURSES);
-          this.preference.putString('show_app_walkthrough_screen', 'false');
+          this.preferences.putString('show_app_walkthrough_screen', 'false').toPromise().then();
         }
       });
     this.events.subscribe('event:showScanner', (data) => {

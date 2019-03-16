@@ -2,14 +2,14 @@ import { CommonUtilService } from './../../../service/common-util.service';
 import { Component, NgZone, Inject } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import {
-  SharedPreferences,
   Impression,
   ShareUtil
 } from 'sunbird';
 import {
   TelemetrySyncStat,
   TelemetryStat,
-  TelemetryService
+  TelemetryService,
+  SharedPreferences
 } from 'sunbird-sdk';
 import { DataSyncType } from './datasynctype.enum';
 import { TranslateService } from '@ngx-translate/core';
@@ -45,12 +45,12 @@ export class DatasyncPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
-    private preference: SharedPreferences,
     private translate: TranslateService,
     private shareUtil: ShareUtil,
     private social: SocialSharing,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
   ) { }
 
   init() {
@@ -59,7 +59,7 @@ export class DatasyncPage {
     this.getLastSyncTime();
 
     // check what sync option is selected
-    that.preference.getString(KEY_DATA_SYNC_TYPE)
+    that.preferences.getString(KEY_DATA_SYNC_TYPE).toPromise()
       .then(val => {
         if (Boolean(val)) {
           if (val === 'OFF') {
@@ -93,7 +93,7 @@ export class DatasyncPage {
   onSelected() {
     /*istanbul ignore else */
     if (this.dataSyncType !== undefined) {
-      this.preference.putString(KEY_DATA_SYNC_TYPE, this.dataSyncType);
+      this.preferences.putString(KEY_DATA_SYNC_TYPE, this.dataSyncType).toPromise().then();
     }
   }
 
@@ -153,7 +153,7 @@ export class DatasyncPage {
           that.latestSync = this.lastSyncedTimeString + ' ' + dateAndTime;
 
           // store the latest sync time
-          this.preference.putString(KEY_DATA_SYNC_TIME, dateAndTime);
+          this.preferences.putString(KEY_DATA_SYNC_TIME, dateAndTime).toPromise().then();
 
           loader.dismiss();
           this.commonUtilService.showToast('DATA_SYNC_SUCCESSFUL');

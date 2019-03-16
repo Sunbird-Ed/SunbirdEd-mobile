@@ -1,6 +1,5 @@
 import {Search} from './../../app/app.constant';
 import {AfterViewInit, Component, Inject, NgZone, OnInit} from '@angular/core';
-import {SharedPreferences} from 'sunbird';
 import {Events, NavController} from 'ionic-angular';
 import * as _ from 'lodash';
 import {ViewMoreActivityPage} from '../view-more-activity/view-more-activity';
@@ -40,7 +39,8 @@ import {
   ProfileService,
   ProfileType,
   SearchType,
-  TelemetryObject
+  TelemetryObject,
+  SharedPreferences
 } from 'sunbird-sdk';
 import {
   Environment,
@@ -144,7 +144,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     private ngZone: NgZone,
     private qrScanner: SunbirdQRScanner,
     private events: Events,
-    private preference: SharedPreferences,
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
     private telemetryGeneratorService: TelemetryGeneratorService,
@@ -152,9 +151,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     private translate: TranslateService,
     private network: Network,
     @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
-    @Inject('CONTENT_SERVICE') private contentService: ContentService
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
   ) {
-    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+    this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
       .then(val => {
         if (val && val.length) {
           this.selectedLanguage = val;
@@ -599,7 +599,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewDidEnter() {
-    this.preference.getString('show_app_walkthrough_screen')
+    this.preferences.getString('show_app_walkthrough_screen').toPromise()
       .then(value => {
         if (value === 'true') {
           const driver = new Driver({
@@ -627,7 +627,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             element.appendChild(img);
           }, 100);
           this.telemetryGeneratorService.generatePageViewTelemetry(PageId.ONBOARDING_QR_SHOWCASE, Environment.ONBOARDING, PageId.LIBRARY);
-          this.preference.putString('show_app_walkthrough_screen', 'false');
+          this.preferences.putString('show_app_walkthrough_screen', 'false').toPromise().then();
         }
       });
   }

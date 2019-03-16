@@ -14,7 +14,6 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import * as _ from 'lodash';
 import {
   ContainerService,
-  SharedPreferences,
   TabsPage
 } from 'sunbird';
 import {
@@ -29,7 +28,8 @@ import {
   ProfileService,
   ProfileType,
   ProfileSource,
-  CategoryTerm
+  CategoryTerm,
+  SharedPreferences
 } from 'sunbird-sdk';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
 import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs} from '../../../app/module.service';
@@ -110,11 +110,11 @@ export class GuestEditProfilePage {
     private container: ContainerService,
     private app: App,
     private appGlobalService: AppGlobalService,
-    private preferences: SharedPreferences,
     private commonUtilService: CommonUtilService,
     private alertCtrl: AlertController,
     @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
-    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService
+    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
   ) {
     this.isNewUser = Boolean(this.navParams.get('isNewUser'));
     this.isCurrentUser = Boolean(this.navParams.get('isCurrentUser'));
@@ -589,10 +589,10 @@ export class GuestEditProfilePage {
 
     if (this.previousProfileType && this.previousProfileType !== formVal.profileType) {
       if (formVal.profileType === ProfileType.STUDENT) {
-        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT);
+        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise().then();
         initTabs(this.container, GUEST_STUDENT_TABS);
       } else {
-        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
+        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();
         initTabs(this.container, GUEST_TEACHER_TABS);
       }
 

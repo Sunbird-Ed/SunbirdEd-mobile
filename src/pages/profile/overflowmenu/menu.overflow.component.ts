@@ -4,7 +4,6 @@ import {App, Nav, NavParams, ViewController} from 'ionic-angular';
 import {SettingsPage} from '../../settings/settings';
 import {
   ContainerService,
-  SharedPreferences,
 } from 'sunbird';
 import {UserAndGroupsPage} from '../../user-and-groups/user-and-groups';
 import {TranslateService} from '@ngx-translate/core';
@@ -34,7 +33,6 @@ export class OverflowMenuComponent {
       public viewCtrl: ViewController,
       private logoutHandlerService: LogoutHandlerService,
       private app: App,
-      private preferences: SharedPreferences,
       private translate: TranslateService,
       private telemetryGeneratorService: TelemetryGeneratorService,
       private appGlobalService: AppGlobalService,

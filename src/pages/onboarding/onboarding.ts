@@ -4,7 +4,6 @@ import {Events, LoadingController, Navbar, NavController, Platform} from 'ionic-
 import {AppVersion} from '@ionic-native/app-version';
 import {
   ContainerService,
-  SharedPreferences,
   TabsPage,
 } from 'sunbird';
 
@@ -30,7 +29,8 @@ import {
   ProfileSource,
   ProfileType,
   SdkConfig,
-  ServerProfileDetailsRequest
+  ServerProfileDetailsRequest,
+  SharedPreferences
 } from 'sunbird-sdk';
 import {CategoriesEditPage} from "@app/pages/categories-edit/categories-edit";
 import {
@@ -59,10 +59,10 @@ export class OnboardingPage {
     @Inject('AUTH_SERVICE') private authService: AuthService,
     @Inject('API_SERVICE') private apiService: ApiService,
     @Inject('SDK_CONFIG') private sdkConfig: SdkConfig,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     public navCtrl: NavController,
     private container: ContainerService,
     private loadingCtrl: LoadingController,
-    private preferences: SharedPreferences,
     private platform: Platform,
     private commonUtilService: CommonUtilService,
     private appVersion: AppVersion,
@@ -236,7 +236,7 @@ export class OnboardingPage {
       InteractSubtype.BROWSE_AS_GUEST_CLICKED,
       Environment.HOME,
       PageId.ONBOARDING);
-    this.preferences.getString(PreferenceKey.SELECTED_USER_TYPE)
+    this.preferences.getString(PreferenceKey.SELECTED_USER_TYPE).toPromise()
       .then(val => {
         if (val === ProfileType.STUDENT) {
           initTabs(this.container, GUEST_STUDENT_TABS);
@@ -244,7 +244,7 @@ export class OnboardingPage {
           initTabs(this.container, GUEST_TEACHER_TABS);
         }
       });
-    this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN')
+    this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN').toPromise()
       .then(val => {
         if (val !== '') {
           const profile: Profile = {

@@ -1,5 +1,5 @@
 import {Inject, Injectable} from '@angular/core';
-import {ContainerService, SharedPreferences, TabsPage} from 'sunbird';
+import {ContainerService, TabsPage} from 'sunbird';
 import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, PreferenceKey} from '@app/app';
 import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
 import {OnboardingPage} from '@app/pages/onboarding/onboarding';
@@ -7,9 +7,10 @@ import {App, Events} from 'ionic-angular';
 import {
   AuthService,
   ProfileService,
-  ProfileType
+  ProfileType,
+  SharedPreferences
 } from 'sunbird-sdk';
-import {Observable} from "rxjs";
+import {Observable} from 'rxjs';
 import {
   Environment,
   InteractSubtype,
@@ -23,12 +24,12 @@ export class LogoutHandlerService {
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('AUTH_SERVICE') private authService: AuthService,
     private commonUtilService: CommonUtilService,
-    private sharedPreferences: SharedPreferences,
     private events: Events,
     private appGlobalService: AppGlobalService,
     private app: App,
     private containerService: ContainerService,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences
   ) {
   }
 
@@ -41,10 +42,10 @@ export class LogoutHandlerService {
 
       this.authService.getSession()
         .mergeMap(() => {
-          return Observable.fromPromise(this.sharedPreferences.getString('GUEST_USER_ID_BEFORE_LOGIN'))
+          return Observable.fromPromise(this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN').toPromise())
             .do((guest_user_id: string) => {
               if (!guest_user_id) {
-                this.sharedPreferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
+                this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();
               }
             })
             .mergeMap((guest_user_id: string) => {
@@ -71,7 +72,7 @@ export class LogoutHandlerService {
     if (this.appGlobalService.DISPLAY_ONBOARDING_PAGE) {
       this.app.getRootNav().setRoot(OnboardingPage);
     } else {
-      this.sharedPreferences.getString(PreferenceKey.SELECTED_USER_TYPE)
+      this.preferences.getString(PreferenceKey.SELECTED_USER_TYPE).toPromise()
         .then(val => {
           this.appGlobalService.getGuestUserInfo();
           if (val === ProfileType.STUDENT) {

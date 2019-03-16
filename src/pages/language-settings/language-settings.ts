@@ -37,7 +37,7 @@ export class LanguageSettingsPage {
     private platform: Platform,
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
-    @Inject('SHARED_PREFERENCES')private preferences: SharedPreferences,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
   ) { }
 
   ionViewDidLoad() {

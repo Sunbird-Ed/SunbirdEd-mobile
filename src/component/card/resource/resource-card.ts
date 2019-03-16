@@ -1,7 +1,8 @@
 import {
   Component,
   Input,
-  OnInit
+  OnInit,
+  Inject
 } from '@angular/core';
 import {
   NavController,
@@ -13,8 +14,7 @@ import { ContentDetailsPage } from '../../../pages/content-details/content-detai
 import { ContentType, MimeType, ContentCard, PreferenceKey, CardSectionName } from '../../../app/app.constant';
 import { CourseUtilService } from '../../../service/course-util.service';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import {TelemetryObject} from 'sunbird-sdk';
-import {SharedPreferences} from 'sunbird';
+import {TelemetryObject, SharedPreferences} from 'sunbird-sdk';
 import { CollectionDetailsEtbPage } from '../../../pages/collection-details-etb/collection-details-etb';
 import {InteractType, InteractSubtype} from '../../../service/telemetry-constants';
 
@@ -77,7 +77,7 @@ export class ResourceCard implements OnInit {
     private courseUtilService: CourseUtilService,
     private events: Events,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private preference: SharedPreferences) {
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
 
@@ -163,7 +163,7 @@ export class ResourceCard implements OnInit {
     contentContextMap['batchId'] = content.batchId;
 
     // store the contentContextMap in shared preference and access it from SDK
-    this.preference.putString(PreferenceKey.CONTENT_CONTEXT, JSON.stringify(contentContextMap));
+    this.preferences.putString(PreferenceKey.CONTENT_CONTEXT, JSON.stringify(contentContextMap)).toPromise().then();
   }
 }
 

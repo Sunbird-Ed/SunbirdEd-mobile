@@ -15,7 +15,7 @@ import {
   PopoverController
 } from 'ionic-angular';
 import {PopoverPage} from './popover/popover';
-import {ContainerService, SharedPreferences, TabsPage} from 'sunbird';
+import {ContainerService, TabsPage} from 'sunbird';
 import {
   AuthService,
   GetAllProfileRequest,
@@ -25,6 +25,7 @@ import {
   ProfileService,
   ProfileType,
   TelemetryObject,
+  SharedPreferences
 } from 'sunbird-sdk';
 import {GuestEditProfilePage} from '../profile/guest-edit.profile/guest-edit.profile';
 import {ShareUserAndGroupPage} from './share-user-and-groups/share-user-and-groups';
@@ -96,11 +97,11 @@ export class UserAndGroupsPage {
     private event: Events,
     private appGlobalService: AppGlobalService,
     private container: ContainerService,
-    private preferences: SharedPreferences,
     private app: App,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private loadingCtrl: LoadingController,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
   ) {
 
     /* Check userList length and show message or list accordingly */
@@ -689,10 +690,10 @@ export class UserAndGroupsPage {
         }
         if (selectedUser.profileType === ProfileType.STUDENT) {
           initTabs(this.container, isBeingPlayed ? GUEST_STUDENT_TABS : GUEST_STUDENT_SWITCH_TABS);
-          this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT);
+          this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise().then();
         } else {
           initTabs(this.container, isBeingPlayed ? GUEST_TEACHER_TABS : GUEST_TEACHER_SWITCH_TABS);
-          this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
+          this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();
         }
         this.event.publish('refresh:profile');
         this.event.publish(AppGlobalService.USER_INFO_UPDATED);

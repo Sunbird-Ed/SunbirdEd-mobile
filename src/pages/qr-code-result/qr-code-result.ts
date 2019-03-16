@@ -10,7 +10,7 @@ import {
   Platform,
   PopoverController
 } from 'ionic-angular';
-import {CorrelationData, FileUtil, MarkerType, SharedPreferences, TabsPage} from 'sunbird';
+import {CorrelationData, FileUtil, MarkerType, TabsPage} from 'sunbird';
 import {ContentDetailsPage} from '../content-details/content-details';
 import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
 import {ContentType, MimeType} from '../../app/app.constant';
@@ -127,7 +127,6 @@ export class QrCodeResultPage implements OnDestroy {
     private alertCtrl: AlertController,
     private appGlobalService: AppGlobalService,
     private events: Events,
-    private preferences: SharedPreferences,
     private popOverCtrl: PopoverController,
     private commonUtilService: CommonUtilService,
     private fileUtil: FileUtil,

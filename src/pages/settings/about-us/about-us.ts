@@ -1,5 +1,5 @@
 import { CommonUtilService } from './../../../service/common-util.service';
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { AboutAppPage } from '../about-app/about-app';
 import { TermsofservicePage } from '../termsofservice/termsofservice';
@@ -9,7 +9,6 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import {
   DeviceInfoService,
   BuildParamService,
-  SharedPreferences
 } from 'sunbird';
 import { TelemetryGeneratorService } from '@app/service';
 import {
@@ -19,6 +18,7 @@ import {
   InteractType,
   InteractSubtype
 } from '../../../service/telemetry-constants';
+import {SharedPreferences} from 'sunbird-sdk';
 
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
 
@@ -38,10 +38,11 @@ export class AboutUsPage {
     private deviceInfoService: DeviceInfoService,
     private buildParamService: BuildParamService,
     private appVersion: AppVersion,
-    private preference: SharedPreferences,
     private socialSharing: SocialSharing,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+
   ) { }
 
   ionViewDidLoad() {
@@ -75,8 +76,9 @@ export class AboutUsPage {
     (<any>window).supportfile.shareSunbirdConfigurations((result) => {
       const loader = this.commonUtilService.getLoader();
       loader.present();
-      this.preference.putString(KEY_SUNBIRD_CONFIG_FILE_PATH, JSON.parse(result));
-      this.preference.getString(KEY_SUNBIRD_CONFIG_FILE_PATH)
+      this.preferences.putString(KEY_SUNBIRD_CONFIG_FILE_PATH, JSON.parse(result)).toPromise()
+      .then( (res) => {
+        this.preferences.getString(KEY_SUNBIRD_CONFIG_FILE_PATH).toPromise()
         .then(val => {
           loader.dismiss();
 
@@ -91,6 +93,7 @@ export class AboutUsPage {
           }
 
         });
+      });
     }, (error) => {
       console.error('ERROR - ' + error);
     });

@@ -1,5 +1,5 @@
 import {Inject, Injectable, OnDestroy} from '@angular/core';
-import {BuildParamService, Environment, InteractSubtype, InteractType, PageId, SharedPreferences} from 'sunbird';
+import {BuildParamService, Environment, InteractSubtype, InteractType, PageId} from 'sunbird';
 import {Events, PopoverController, PopoverOptions} from 'ionic-angular';
 import {UpgradePopover} from '../pages/upgrade/upgrade-popover';
 import {GenericAppConfig, PreferenceKey} from '../app/app.constant';
@@ -14,7 +14,8 @@ import {
   OAuthSession,
   Profile,
   ProfileService,
-  ProfileType
+  ProfileType,
+  SharedPreferences
 } from 'sunbird-sdk';
 
 @Injectable()
@@ -57,10 +58,11 @@ export class AppGlobalService implements OnDestroy {
         @Inject('AUTH_SERVICE') private authService: AuthService,
         @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
         private event: Events,
-        private preference: SharedPreferences,
         private popoverCtrl: PopoverController,
         private buildParamService: BuildParamService,
-        private telemetryGeneratorService: TelemetryGeneratorService
+        private telemetryGeneratorService: TelemetryGeneratorService,
+        @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences
+
     ) {
 
         this.initValues();
@@ -334,7 +336,7 @@ export class AppGlobalService implements OnDestroy {
 
     setOnBoardingCompleted() {
         this.isOnBoardingCompleted = true;
-        this.preference.putString(PreferenceKey.IS_ONBOARDING_COMPLETED, 'true');
+        this.preferences.putString(PreferenceKey.IS_ONBOARDING_COMPLETED, 'true').toPromise().then();
     }
 
     private initValues() {
@@ -351,7 +353,7 @@ export class AppGlobalService implements OnDestroy {
             this.getCurrentUserProfile();
         });
 
-        this.preference.getString(PreferenceKey.IS_ONBOARDING_COMPLETED)
+        this.preferences.getString(PreferenceKey.IS_ONBOARDING_COMPLETED).toPromise()
             .then((result) => {
                 this.isOnBoardingCompleted = (result === 'true') ? true : false;
             });
@@ -405,7 +407,7 @@ export class AppGlobalService implements OnDestroy {
 
     public getGuestUserInfo(): Promise<string> {
         return new Promise((resolve, reject) => {
-            this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
+            this.preferences.getString(PreferenceKey.SELECTED_USER_TYPE).toPromise()
                 .then(val => {
                     if (val) {
                         if (val === ProfileType.STUDENT) {

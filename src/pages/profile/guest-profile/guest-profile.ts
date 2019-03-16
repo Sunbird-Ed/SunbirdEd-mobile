@@ -2,7 +2,6 @@ import {TranslateService} from '@ngx-translate/core';
 import {Component, Inject} from '@angular/core';
 import {Events, NavController, PopoverController} from 'ionic-angular';
 import * as _ from 'lodash';
-import {SharedPreferences} from 'sunbird';
 import {GuestEditProfilePage, OverflowMenuComponent} from '@app/pages/profile';
 import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
 import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
@@ -16,6 +15,7 @@ import {
   GetSuggestedFrameworksRequest,
   ProfileService,
   ProfileType,
+  SharedPreferences
 } from 'sunbird-sdk';
 import {Environment, ImpressionType, PageId} from '../../../service/telemetry-constants'
 
@@ -48,18 +48,18 @@ export class GuestProfilePage {
     private navCtrl: NavController,
     private popoverCtrl: PopoverController,
     private events: Events,
-    private preference: SharedPreferences,
     private commonUtilService: CommonUtilService,
     private appGlobalService: AppGlobalService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private translate: TranslateService,
     @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
-    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService
+    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences
   ) {
 
 
     // language code
-    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+    this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
       .then(val => {
         if (val && val.length) {
           this.selectedLanguage = val;

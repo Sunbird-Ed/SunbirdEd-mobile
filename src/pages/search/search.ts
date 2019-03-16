@@ -1,6 +1,6 @@
 import {Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
 import {Events, IonicPage, Navbar, NavController, NavParams, Platform} from 'ionic-angular';
-import {CorrelationData, FileUtil, SharedPreferences, TabsPage} from 'sunbird';
+import {CorrelationData, FileUtil, TabsPage} from 'sunbird';
 import {
   Content,
   ContentDetailRequest,
@@ -23,7 +23,8 @@ import {
   PageName,
   ProfileType,
   SearchType,
-  TelemetryObject
+  TelemetryObject,
+  SharedPreferences
 } from 'sunbird-sdk';
 import {FilterPage} from './filters/filter';
 import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
@@ -130,10 +131,10 @@ export class SearchPage implements  OnDestroy {
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private preference: SharedPreferences,
     private translate: TranslateService,
     @Inject('PAGE_ASSEMBLE_SERVICE') private pageService: PageAssembleService,
-    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences
   ) {
 
     this.checkUserSession();
@@ -187,7 +188,7 @@ export class SearchPage implements  OnDestroy {
   }
 
   getFrameworkId() {
-    this.preference.getString('current_framework_id')
+    this.preferences.getString('current_framework_id').toPromise()
       .then(value => {
         this.currentFrameworkId = value;
 
