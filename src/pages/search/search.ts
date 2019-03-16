@@ -169,7 +169,6 @@ export class SearchPage implements  OnDestroy {
   }
 
   ionViewWillLeave() {
-    this.events.unsubscribe('genie.event');
     if (this.backButtonFunc) {
       this.backButtonFunc();
     }
