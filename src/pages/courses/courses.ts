@@ -563,6 +563,7 @@ export class CoursesPage implements OnInit {
         that.ngZone.run(() => {
           const criteria: PageAssembleCriteria = {
             name: PageName.COURSE,
+            source: 'app'
           };
           criteria.filters = filter;
           that.courseFilter = appliedFilter;

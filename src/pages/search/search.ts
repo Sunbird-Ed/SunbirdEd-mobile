@@ -172,7 +172,6 @@ export class SearchPage implements  OnDestroy {
   }
 
   ionViewWillLeave() {
-    this.events.unsubscribe('genie.event');
     if (this.backButtonFunc) {
       this.backButtonFunc();
     }
@@ -319,6 +318,7 @@ export class SearchPage implements  OnDestroy {
   applyFilter() {
     this.showLoader = true;
     this.responseData.filterCriteria.mode = 'hard';
+    this.responseData.filterCriteria.searchType = SearchType.FILTER;
 
     this.contentService.searchContent(this.responseData.filterCriteria).toPromise()
       .then((responseData: ContentSearchResult) => {
