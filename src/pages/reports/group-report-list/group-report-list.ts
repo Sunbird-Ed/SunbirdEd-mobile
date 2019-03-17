@@ -3,7 +3,6 @@ import {NavController} from 'ionic-angular/navigation/nav-controller';
 import {Component, NgZone, Inject} from '@angular/core';
 import {LoadingController, NavParams} from 'ionic-angular';
 import {
-  DeviceInfoService,
   ReportService,
   ReportSummary
 } from 'sunbird';
@@ -18,7 +17,8 @@ import {DatePipe} from '@angular/common';
 import {
     Profile,
     SummarizerService,
-    SummaryRequest
+    SummaryRequest,
+    DeviceInfo
 } from 'sunbird-sdk';
 import {
     Environment,
@@ -86,27 +86,22 @@ export class GroupReportListPage {
         private appGlobalService: AppGlobalService,
         private file: File,
         private datePipe: DatePipe,
-        private deviceInfoService: DeviceInfoService,
+        @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
         private navCtrl: NavController,
         private commonUtilService: CommonUtilService) {
         this.downloadDirectory = this.file.dataDirectory;
-        this.deviceInfoService.getDownloadDirectoryPath()
-            .then((response: any) => {
-                this.downloadDirectory = response;
-            })
-            .catch();
+        // this.deviceInfoService.getDownloadDirectoryPath()
+        //     .then((response: any) => {
+        //         this.downloadDirectory = response;
+        //     })
+        //     .catch();    //TODO
     }
     fileTransfer: FileTransferObject = this.transfer.create();
     ionViewWillEnter() {
         this.fetchAssessment(this.reportType, false);
     }
     ionViewDidLoad() {
-        this.deviceInfoService.getDeviceID()
-            .then((res: any) => {
-                this.deviceId = res;
-            })
-          .catch(() => {
-            });
+        this.deviceId =  this.deviceInfo.getDeviceID();
         this.profile = this.appGlobalService.getCurrentUser();
         this.groupinfo = this.navParams.get('group');
     }

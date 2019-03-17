@@ -12,7 +12,10 @@ import {
 } from 'ionic-angular';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
-import {BuildParamService, CourseService, DeviceInfoService, FileUtil, MarkerType, ShareUtil} from 'sunbird';
+import {
+  MarkerType,
+  ShareUtil
+} from 'sunbird';
 import {PreferenceKey, XwalkConstants} from '../../app/app.constant';
 import {Map, ShareUrl} from '@app/app';
 import {BookmarkComponent, ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
@@ -54,6 +57,7 @@ import {
   Mode,
   PageId,
 } from '../../service/telemetry-constants';
+import {} from '../../service/app-global.service';
 
 declare const cordova;
 
@@ -139,20 +143,16 @@ export class ContentDetailsPage {
     private navParams: NavParams,
     private zone: NgZone,
     private events: Events,
-    private fileUtil: FileUtil,
     private popoverCtrl: PopoverController,
     private shareUtil: ShareUtil,
     private social: SocialSharing,
     private platform: Platform,
-    private buildParamService: BuildParamService,
-    private courseService: CourseService,
     private appGlobalService: AppGlobalService,
     private alertCtrl: AlertController,
     private ionicApp: IonicApp,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
     private courseUtilService: CourseUtilService,
-    private deviceInfoService: DeviceInfoService,
     private network: Network
   ) {
 
@@ -162,8 +162,8 @@ export class ContentDetailsPage {
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     this.handlePageResume();
-    this.checkDeviceAPILevel();
-    this.checkappAvailability();
+    // this.checkDeviceAPILevel();
+    // this.checkappAvailability();
   }
 
   ionViewDidLoad() {
@@ -258,7 +258,7 @@ export class ContentDetailsPage {
   }
 
   subscribePlayEvent() {
-    this.buildParamService.getBuildConfigParam('BASE_URL')
+    this.appGlobalService.getBuildConfigValue('BASE_URL')
       .then(response => {
         this.baseUrl = response;
       });
@@ -923,24 +923,25 @@ export class ContentDetailsPage {
     }
   }
 
-  checkappAvailability() {
-    this.deviceInfoService.checkAppAvailability(XwalkConstants.APP_ID)
-      .then((response: any) => {
-        this.appAvailability = response;
-      })
-      .catch((error: any) => {
-        console.error('Error ', error);
-      });
-  }
+  // TODO
+  // checkappAvailability() {
+  //   this.deviceInfoService.checkAppAvailability(XwalkConstants.APP_ID)
+  //     .then((response: any) => {
+  //       this.appAvailability = response;
+  //     })
+  //     .catch((error: any) => {
+  //       console.error('Error ', error);
+  //     });
+  // }
 
-  checkDeviceAPILevel() {
-    this.deviceInfoService.getDeviceAPILevel()
-      .then((res: any) => {
-        this.apiLevel = res;
-      }).catch((error: any) => {
-      console.error('Error ', error);
-    });
-  }
+  // checkDeviceAPILevel() {
+  //   this.deviceInfoService.getDeviceAPILevel()
+  //     .then((res: any) => {
+  //       this.apiLevel = res;
+  //     }).catch((error: any) => {
+  //       console.error('Error ', error);
+  //     });
+  // }
 
   showOverflowMenu(event) {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,

@@ -10,7 +10,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { AppVersion } from '@ionic-native/app-version';
 import {
   ShareUtil,
-  DeviceInfoService,
   Impression,
 } from 'sunbird';
 import { PreferenceKey } from '../../app/app.constant';
@@ -22,7 +21,7 @@ import {
   InteractSubtype
 } from '../../service/telemetry-constants';
 import { TelemetryGeneratorService } from '@app/service';
-import { SharedPreferences } from 'sunbird-sdk';
+import { SharedPreferences, DeviceInfo } from 'sunbird-sdk';
 
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
 const SUBJECT_NAME = 'support request';
@@ -44,7 +43,8 @@ export class SettingsPage {
     private appVersion: AppVersion,
     private socialSharing: SocialSharing,
     private translate: TranslateService,
-    private deviceInfoService: DeviceInfoService,
+    @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
+    private preference: SharedPreferences,
     private shareUtil: ShareUtil,
     private commonUtilService: CommonUtilService,
     private appGlobalService: AppGlobalService,
@@ -109,10 +109,9 @@ export class SettingsPage {
   }
   sendMessage() {
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SUPPORT_CLICKED);
-    this.deviceInfoService.getDeviceID().then((res: any) => {
-      this.deviceId = res;
-    }).catch((error: any) => {
-    });
+
+      this.deviceId =  this.deviceInfo.getDeviceID();
+
     (<any>window).supportfile.shareSunbirdConfigurations((result) => {
       const loader = this.commonUtilService.getLoader();
       loader.present();

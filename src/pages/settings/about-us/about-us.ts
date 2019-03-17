@@ -6,11 +6,7 @@ import { TermsofservicePage } from '../termsofservice/termsofservice';
 import { PrivacypolicyPage } from '../privacypolicy/privacypolicy';
 import { AppVersion } from '@ionic-native/app-version';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import {
-  DeviceInfoService,
-  BuildParamService,
-} from 'sunbird';
-import { TelemetryGeneratorService } from '@app/service';
+import { TelemetryGeneratorService, AppGlobalService } from '@app/service';
 import {
   ImpressionType,
   PageId,
@@ -18,7 +14,7 @@ import {
   InteractType,
   InteractSubtype
 } from '../../../service/telemetry-constants';
-import {SharedPreferences} from 'sunbird-sdk';
+import {SharedPreferences, DeviceInfo} from 'sunbird-sdk';
 
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
 
@@ -35,25 +31,21 @@ export class AboutUsPage {
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    private deviceInfoService: DeviceInfoService,
-    private buildParamService: BuildParamService,
+    @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
     private appVersion: AppVersion,
     private socialSharing: SocialSharing,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
 
+    private appGlobalService: AppGlobalService
   ) { }
 
   ionViewDidLoad() {
     this.version = 'app version will be shown here';
 
-    this.deviceInfoService.getDeviceID()
-      .then((res: any) => {
-        this.deviceId = res;
-      })
-      .catch((err: any) => {
-      });
+    this.deviceId = this.deviceInfo.getDeviceID();
+
     this.appVersion.getAppName()
       .then((appName: any) => {
         return appName;
@@ -132,7 +124,7 @@ export class AboutUsPage {
   }
 
   getVersionName(appName): any {
-    this.buildParamService.getBuildConfigParam('VERSION_NAME')
+    this.appGlobalService.getBuildConfigValue('VERSION_NAME')
       .then(response => {
         this.getVersionCode(appName, response);
         return response;
@@ -143,7 +135,7 @@ export class AboutUsPage {
   }
 
   getVersionCode(appName, versionName): any {
-    this.buildParamService.getBuildConfigParam('VERSION_CODE')
+    this.appGlobalService.getBuildConfigValue('VERSION_CODE')
       .then(response => {
         this.version = appName + ' v' + versionName + '.' + response;
         return response;

@@ -18,6 +18,8 @@ import {
   SharedPreferences
 } from 'sunbird-sdk';
 
+declare const buildconfigreader;
+
 @Injectable()
 export class AppGlobalService implements OnDestroy {
     public static readonly USER_INFO_UPDATED = 'user-profile-changed';
@@ -572,5 +574,21 @@ export class AppGlobalService implements OnDestroy {
     ngOnDestroy() {
         this.event.unsubscribe(AppGlobalService.USER_INFO_UPDATED);
         this.event.unsubscribe('refresh:profile');
+    }
+
+    getBuildConfigValue(property): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            try {
+                buildconfigreader.getBuildConfigValue('org.sunbird.app', property, (entry: string) => {
+                    resolve(entry);
+                }, err => {
+                    console.error(err);
+                    reject(err);
+                });
+            } catch (xc) {
+                console.error(xc);
+                reject(xc);
+            }
+        });
     }
 }
