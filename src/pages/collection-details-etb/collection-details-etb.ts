@@ -3,7 +3,7 @@ import {Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverCo
 import {TranslateService} from '@ngx-translate/core';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
-import {BuildParamService, FileUtil, ShareUtil} from 'sunbird';
+import {FileUtil, ShareUtil} from 'sunbird';
 import {ContentDetailsPage} from '@app/pages/content-details/content-details';
 import {ConfirmAlertComponent, ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
 import {ContentType, MimeType, ShareUrl} from '@app/app';
@@ -209,7 +209,6 @@ export class CollectionDetailsEtbPage {
     private translate: TranslateService,
     private social: SocialSharing,
     private shareUtil: ShareUtil,
-    private buildParamService: BuildParamService,
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
@@ -318,7 +317,7 @@ export class CollectionDetailsEtbPage {
   }
 
   getBaseURL() {
-    this.buildParamService.getBuildConfigParam('BASE_URL')
+    this.appGlobalService.getBuildConfigValue('BASE_URL')
       .then(response => {
         this.baseUrl = response;
       })

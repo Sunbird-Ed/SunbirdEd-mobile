@@ -1,10 +1,10 @@
 import { Component, NgZone, Inject } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
-import { DeviceInfoService } from 'sunbird';
 import {
    SummarizerService,
    SummaryRequest,
-   ReportSummary
+   ReportSummary,
+   DeviceInfo
 } from 'sunbird-sdk';
 import { ReportAlert } from '../report-alert/report-alert';
 import { TranslateService } from '@ngx-translate/core';
@@ -43,16 +43,16 @@ export class UserReportPage {
     private zone: NgZone,
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
-    private deviceInfoService: DeviceInfoService,
+    @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService) {
 
     this.downloadDirectory = this.file.dataDirectory;
-    this.deviceInfoService.getDownloadDirectoryPath()
-      .then((response: any) => {
-        this.downloadDirectory = response;
-      })
-      .catch();
+    // this.deviceInfoService.getDownloadDirectoryPath()
+    //   .then((response: any) => {
+    //     this.downloadDirectory = response;
+    //   })
+    //   .catch();        //TODO
   }
   totalScore;
   maxTotalScore;
@@ -100,13 +100,9 @@ export class UserReportPage {
       PageId.REPORTS_USER_ASSESMENT_DETAILS,
       Environment.USER
     );
-    this.deviceInfoService.getDeviceID()
-      .then((res: any) => {
-        this.deviceId = res;
-      })
-      .catch((err: any) => {
-        console.error('Error', err);
-      });
+
+    this.deviceId = this.deviceInfo.getDeviceID();
+
     this.appVersion.getAppName()
       .then((appName: any) => {
         return appName;
