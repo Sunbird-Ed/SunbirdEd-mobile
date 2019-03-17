@@ -1,4 +1,4 @@
-import {Component, Inject, NgZone, ViewChild} from '@angular/core';
+import { Component, Inject, NgZone, ViewChild } from '@angular/core';
 import {
   AlertController,
   Events,
@@ -10,21 +10,21 @@ import {
   Platform,
   PopoverController
 } from 'ionic-angular';
-import {SocialSharing} from '@ionic-native/social-sharing';
+import { SocialSharing } from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
 import {
   ShareUtil
 } from 'sunbird';
-import {PreferenceKey, XwalkConstants} from '../../app/app.constant';
-import {Map, ShareUrl} from '@app/app';
-import {BookmarkComponent, ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
-import {AppGlobalService, CourseUtilService} from '@app/service';
-import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
-import {Network} from '@ionic-native/network';
-import {UserAndGroupsPage} from '../user-and-groups/user-and-groups';
-import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
-import {CommonUtilService} from '../../service/common-util.service';
-import {DialogPopupComponent} from '../../component/dialog-popup/dialog-popup';
+import { PreferenceKey, XwalkConstants } from '../../app/app.constant';
+import { Map, ShareUrl } from '@app/app';
+import { BookmarkComponent, ContentActionsComponent, ContentRatingAlertComponent } from '@app/component';
+import { AppGlobalService, CourseUtilService } from '@app/service';
+import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
+import { Network } from '@ionic-native/network';
+import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { CommonUtilService } from '../../service/common-util.service';
+import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
 import {
   Content,
   ContentAccess,
@@ -42,12 +42,17 @@ import {
   EventsBusEvent,
   EventsBusService,
   GetAllProfileRequest,
+  SharedPreferences,
+  MarkerType,
   ProfileService,
   Rollup,
-  SharedPreferences,
   TelemetryObject,
-  MarkerType,
+  PlayerService,
+  DeviceInfo
 } from 'sunbird-sdk';
+import { CanvasPlayerService } from '../player/canvas-player.service';
+import { PlayerPage } from '../player/player';
+import { File } from '@ionic-native/file';
 import {Subscription} from 'rxjs';
 import {
   Environment,
@@ -139,6 +144,7 @@ export class ContentDetailsPage {
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     @Inject('EVENTS_BUS_SERVICE') private eventBusService: EventsBusService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    @Inject('PLAYER_SERVICE') private playerService: PlayerService,
     private navCtrl: NavController,
     private navParams: NavParams,
     private zone: NgZone,
@@ -153,7 +159,9 @@ export class ContentDetailsPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
     private courseUtilService: CourseUtilService,
-    private network: Network
+    private network: Network,
+    private canvasPlayerService: CanvasPlayerService,
+    private file: File
   ) {
 
     this.objRollup = new Rollup();
@@ -919,7 +927,38 @@ export class ContentDetailsPage {
         request.streaming = isStreaming;
       }
 
-      (<any>window).geniecanvas.play(JSON.stringify(this.playingContent), JSON.stringify(request));
+      this.playerService.getPlayerConfig(this.playingContent, request).subscribe((data) => {
+        console.log("responseData", data);
+
+        if (data.metaData.mimeType === 'application/vnd.ekstep.ecml-archive') {
+          console.log('externalApplicationStorageDirectory', this.file.externalApplicationStorageDirectory);
+
+          this.file.checkFile(`file://${data.metaData.basePath}`, 'index.ecml').then((isAvailable) => {
+            console.log('isAvailable', isAvailable);
+            this.canvasPlayerService.xmlToJSon(`${data.metaData.basePath}index.ecml`).then((json) => {
+              console.log('response', json);
+              data['data'] = json;
+
+              this.navCtrl.push(PlayerPage, { config: data });
+            }).catch((error) => {
+              console.log('error1', error);
+            });
+          }).catch((err) => {
+            console.log('err', err);
+            this.canvasPlayerService.readJSON(`${data.metaData.basePath}index.json`).then((json) => {
+              console.log('response', json);
+              data['data'] = json;
+              this.navCtrl.push(PlayerPage, { config: data });
+            }).catch((e) => {
+              console.log('readJSON error', e);
+            });
+          });
+
+        } else {
+          this.navCtrl.push(PlayerPage, { config: data });
+        }
+      });
+      //  (<any>window).geniecanvas.play(JSON.stringify(this.playingContent), JSON.stringify(request));
     }
   }
 

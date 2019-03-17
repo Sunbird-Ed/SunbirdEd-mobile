@@ -92,8 +92,12 @@ export const sunbirdSdkServicesProvidersFactory: () => Provider[] = () => {
   }, {
     provide: 'DEVICE_INFO',
     useFactory: () => SunbirdSdk.instance.deviceInfo
-  }];
-};
+  }, {
+    provide: 'PLAYER_SERVICE',
+    useFactory: () => SunbirdSdk.instance.playerService
+  }
+];
+}
 
 export const sunbirdSdkFactory =
   () => {
@@ -174,6 +178,19 @@ export const sunbirdSdkFactory =
         },
         sharedPreferencesConfig: {
           debugMode: true
+        },
+        playerConfig: {
+          showEndPage: false,
+          splash: {
+            webLink: "",
+            text: "",
+            icon: "",
+            bgImage: ""
+          },
+          overlay: {
+            enableUserSwitcher: false,
+            showUser: false
+          }
         }
       });
     };

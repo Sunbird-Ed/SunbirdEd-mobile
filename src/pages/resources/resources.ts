@@ -49,6 +49,7 @@ import {
   PageId,
   InteractSubtype
 } from '../../service/telemetry-constants';
+import { PlayerPage } from '../player/player';
 
 @Component({
   selector: 'page-resources',
@@ -167,6 +168,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       });
     this.defaultImg = 'assets/imgs/ic_launcher.png';
     this.generateNetworkType();
+    
   }
 
   subscribeUtilityEvents() {
@@ -856,5 +858,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.navCtrl.push(CollectionDetailsEtbPage, {
       content: item
     });
+  }
+
+  launchContent() {
+    this.navCtrl.push(PlayerPage);
   }
 }

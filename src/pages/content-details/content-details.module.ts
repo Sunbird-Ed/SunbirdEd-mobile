@@ -1,3 +1,4 @@
+import { PlayerPageModule } from './../player/player.module';
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
@@ -26,7 +27,8 @@ import { ComponentsModule } from '../../component/components.module';
     DirectivesModule,
     Ionic2RatingModule,
     PipesModule,
-    ComponentsModule
+    ComponentsModule,
+    PlayerPageModule
   ],
   providers: [
     SocialSharing
