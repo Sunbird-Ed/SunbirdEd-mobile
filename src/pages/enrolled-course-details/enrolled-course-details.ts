@@ -13,9 +13,7 @@ import * as _ from 'lodash';
 import {SocialSharing} from '@ionic-native/social-sharing';
 
 import {
-  BuildParamService,
   CourseService as course_Service,
-  FileUtil,
   GetContentStateRequest,
   ShareUtil,
 } from 'sunbird';
@@ -54,7 +52,7 @@ import {
   SharedPreferences,
   TelemetryErrorCode,
   TelemetryObject,
-  UnenrollCourseRequest
+  UnenrollCourseRequest,
 } from 'sunbird-sdk';
 import {Subscription} from "rxjs";
 import {
@@ -66,6 +64,8 @@ import {
   Mode,
   PageId
 } from '../../service/telemetry-constants';
+
+declare const cordova;
 
 
 @IonicPage()
@@ -185,11 +185,9 @@ export class EnrolledCourseDetailsPage {
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private zone: NgZone,
     private events: Events,
-    private fileUtil: FileUtil,
     private popoverCtrl: PopoverController,
     @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     @Inject('COURSE_SERVICE') private courseService: CourseService,
-    private buildParamService: BuildParamService,
     private shareUtil: ShareUtil,
     private social: SocialSharing,
     private courseUtilService: CourseUtilService,
@@ -209,7 +207,7 @@ export class EnrolledCourseDetailsPage {
   }
 
   subscribeUtilityEvents() {
-    this.buildParamService.getBuildConfigParam('BASE_URL')
+    this.appGlobalService.getBuildConfigValue('BASE_URL')
       .then(response => {
         this.baseUrl = response;
       })
@@ -602,7 +600,7 @@ export class EnrolledCourseDetailsPage {
     _.forEach(identifiers, (value) => {
       requestParams.push({
         isChildContent: isChild,
-        destinationFolder: this.fileUtil.internalStoragePath(),
+        destinationFolder: cordova.file.externalDataDirectory,
         contentId: value,
         correlationData: this.corRelationList !== undefined ? this.corRelationList : []
       });
