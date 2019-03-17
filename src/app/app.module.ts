@@ -89,6 +89,9 @@ export const sunbirdSdkServicesProvidersFactory: () => Provider[] = () => {
   }, {
     provide: 'EVENTS_BUS_SERVICE',
     useFactory: () => SunbirdSdk.instance.eventsBusService
+  }, {
+    provide: 'DEVICE_INFO',
+    useFactory: () => SunbirdSdk.instance.deviceInfo
   }];
 };
 
@@ -100,7 +103,7 @@ export const sunbirdSdkFactory =
           debugMode: false
         },
         apiConfig: {
-          debugMode: true,
+          debugMode: false,
           host: 'https://staging.ntp.net.in',
           baseUrl: 'https://staging.ntp.net.in/api',
           user_authentication: {
@@ -118,7 +121,8 @@ export const sunbirdSdkFactory =
           cached_requests: {
             timeToLive: 30 * 60 * 60 * 1000
           }
-        }, eventsBusConfig: {
+        },
+         eventsBusConfig: {
           debugMode: true
         },
         dbConfig: {
