@@ -44,7 +44,6 @@ export class SettingsPage {
     private socialSharing: SocialSharing,
     private translate: TranslateService,
     @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
-    private preference: SharedPreferences,
     private shareUtil: ShareUtil,
     private commonUtilService: CommonUtilService,
     private appGlobalService: AppGlobalService,

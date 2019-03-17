@@ -13,7 +13,6 @@ import {
 import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
 import {
-  MarkerType,
   ShareUtil
 } from 'sunbird';
 import {PreferenceKey, XwalkConstants} from '../../app/app.constant';
@@ -46,7 +45,8 @@ import {
   ProfileService,
   Rollup,
   SharedPreferences,
-  TelemetryObject
+  TelemetryObject,
+  MarkerType,
 } from 'sunbird-sdk';
 import {Subscription} from 'rxjs';
 import {
