@@ -1,6 +1,6 @@
 import {Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
 import {Events, IonicPage, Navbar, NavController, NavParams, Platform} from 'ionic-angular';
-import {FileUtil} from 'sunbird';
+import {CorrelationData, TabsPage} from 'sunbird';
 import {
   Content,
   ContentDetailRequest,
@@ -12,7 +12,6 @@ import {
   ContentSearchCriteria,
   ContentSearchResult,
   ContentService,
-  CorrelationData,
   DownloadEventType,
   DownloadProgress,
   EventsBusEvent,
@@ -49,7 +48,6 @@ import {
   Mode,
   PageId
 } from '../../service/telemetry-constants';
-import {TabsPage} from '@app/pages/tabs/tabs';
 
 declare const cordova;
 

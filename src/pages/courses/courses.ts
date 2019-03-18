@@ -36,7 +36,7 @@ import {
   SharedPreferences
 } from 'sunbird-sdk';
 import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
-import {Subscription} from 'rxjs';
+import {Subscription} from "rxjs";
 
 @IonicPage()
 @Component({

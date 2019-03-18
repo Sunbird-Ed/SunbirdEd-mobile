@@ -10,10 +10,6 @@ import {
   ObjectType,
   PageId,
 } from '../../../service/telemetry-constants';
-import {GroupMembersPage} from './../group-members/group-members';
-import {GuestEditProfilePage} from '../../profile/guest-edit.profile/guest-edit.profile';
-import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
-import {CommonUtilService} from '../../../service/common-util.service';
 import {
   Framework,
   FrameworkCategoryCode,
@@ -26,6 +22,10 @@ import {
   Group,
   GroupService
 } from 'sunbird-sdk';
+import {GroupMembersPage} from './../group-members/group-members';
+import {GuestEditProfilePage} from '../../profile/guest-edit.profile/guest-edit.profile';
+import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
+import {CommonUtilService} from '../../../service/common-util.service';
 
 @IonicPage()
 @Component({

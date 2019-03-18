@@ -1,5 +1,6 @@
 import {Inject, Injectable} from '@angular/core';
 import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {ImpressionSubtype, ImpressionType} from 'sunbird';
 import {Content, ContentDetailRequest, ContentService, CorrelationData, TelemetryObject,} from 'sunbird-sdk';
 import {SearchPage} from '../search/search';
 import {ContentType, MimeType} from '../../app/app.constant';
@@ -8,15 +9,7 @@ import {ContentDetailsPage} from '../content-details/content-details';
 import {CollectionDetailsPage} from '../collection-details/collection-details';
 import {CommonUtilService} from '../../service/common-util.service';
 import {App} from 'ionic-angular';
-import {
-  Environment,
-  ImpressionSubtype,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  Mode,
-  PageId,
-} from '../../service/telemetry-constants';
+import {Environment, InteractSubtype, InteractType, Mode, PageId,} from '../../service/telemetry-constants';
 
 @Injectable()
 export class QRScannerResultHandler {

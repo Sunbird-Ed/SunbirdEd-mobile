@@ -50,9 +50,7 @@ export class ViewMoreCardComponent implements OnInit {
    * Default method of cass SearchListComponent
    * @param {NavController} navCtrl To navigate user from one page to another
    * @param {NavParams} navParams ref of navigation params
-   * @param zone
-   * @param courseUtilService
-   * @param events
+   * @param {NgZone} ngZone To bind data
    */
   constructor(
     public navCtrl: NavController,

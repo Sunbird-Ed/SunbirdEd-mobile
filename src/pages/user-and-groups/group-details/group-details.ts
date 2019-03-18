@@ -17,6 +17,7 @@ import {PopoverPage} from '../popover/popover';
 import {GroupDetailNavPopoverPage} from '../group-detail-nav-popover/group-detail-nav-popover';
 import {CreateGroupPage} from '../create-group/create-group';
 import {AddOrRemoveGroupUserPage} from '../add-or-remove-group-user/add-or-remove-group-user';
+import {AddUpdateProfilesRequest, ObjectType} from 'sunbird';
 import {
   AuthService,
   GetAllProfileRequest,
@@ -24,7 +25,6 @@ import {
   GroupService,
   Profile,
   ProfileService,
-  ProfilesToGroupRequest,
   ProfileType,
   SharedPreferences,
   TelemetryObject
@@ -41,7 +41,7 @@ import {GuestEditProfilePage} from '../../profile/guest-edit.profile/guest-edit.
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
 import {Map} from '../../../app/telemetryutil';
 import {PreferenceKey} from '../../../app/app.constant';
-import {Environment, InteractSubtype, InteractType, ObjectType, PageId} from '../../../service/telemetry-constants';
+import {Environment, InteractSubtype, InteractType, PageId} from '../../../service/telemetry-constants';
 import {ContainerService} from '@app/service/container.services';
 import {TabsPage} from '@app/pages/tabs/tabs';
 
@@ -99,7 +99,6 @@ export class GroupDetailsPage {
   ionViewWillEnter() {
     this.getAllProfile();
   }
-
   resizeContent() {
     this.content.resize();
   }
@@ -132,6 +131,7 @@ export class GroupDetailsPage {
       });
     });
   }
+
 
 
   selectUser(index: number, name: string) {
@@ -222,7 +222,6 @@ export class GroupDetailsPage {
     );
 
   }
-
   // takes to content details page and launches player
   play() {
     const selectedUser = this.userList[this.selectedUserIndex];
@@ -424,7 +423,7 @@ export class GroupDetailsPage {
 
       }
     });
-    const req: ProfilesToGroupRequest = {
+    const req: AddUpdateProfilesRequest = {
       groupId: this.group.gid,
       uidList: this.userUids
     };

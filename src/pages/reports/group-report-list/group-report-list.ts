@@ -2,6 +2,7 @@ import {CommonUtilService} from './../../../service/common-util.service';
 import {NavController} from 'ionic-angular/navigation/nav-controller';
 import {Component, Inject, NgZone} from '@angular/core';
 import {LoadingController, NavParams} from 'ionic-angular';
+import {ReportSummary} from 'sunbird';
 import {GroupReportAlert} from '../group-report-alert/group-report-alert';
 import {TranslateService} from '@ngx-translate/core';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
@@ -10,7 +11,7 @@ import {UserReportPage} from '../user-report/user-report';
 import {File} from '@ionic-native/file';
 import {FileTransfer, FileTransferObject} from '@ionic-native/file-transfer';
 import {DatePipe} from '@angular/common';
-import {DeviceInfo, Profile, ReportSummary, SummarizerService, SummaryRequest} from 'sunbird-sdk';
+import {DeviceInfo, Profile, SummarizerService, SummaryRequest} from 'sunbird-sdk';
 import {Environment, InteractSubtype, InteractType, PageId,} from '../../../service/telemetry-constants';
 
 

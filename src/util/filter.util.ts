@@ -82,7 +82,7 @@ export const updateFilterInSearchQuery = (queryParams, appliedFilter, profile, m
     }
 
     queryObj.request.filters = filter;
-  queryParams = queryObj;
+  queryParams = JSON.stringify(queryObj);
 
 
     return queryParams;

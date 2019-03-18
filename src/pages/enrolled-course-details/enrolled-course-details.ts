@@ -921,8 +921,10 @@ export class EnrolledCourseDetailsPage {
         // Show download percentage
         if (event.payload && event.type === DownloadEventType.PROGRESS) {
           const downloadEvent = event as DownloadProgress;
-          if (downloadEvent.payload.identifier === this.course.identifier) {
-            this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
+          if (downloadEvent.payload.progress === -1) {
+            this.downloadProgress = 0;
+          } else {
+            this.downloadProgress = downloadEvent.payload.progress;
           }
           if (this.downloadProgress === 100) {
             this.getBatchDetails();

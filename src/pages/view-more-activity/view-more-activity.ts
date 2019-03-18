@@ -25,7 +25,7 @@ import {CourseUtilService} from '../../service/course-util.service';
 import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
 import {CommonUtilService} from '../../service/common-util.service';
 import {Environment, ImpressionType, LogLevel, PageId,} from '../../service/telemetry-constants';
-import {Subscription} from 'rxjs';
+import {Subscription} from "rxjs";
 
 @IonicPage()
 @Component({
