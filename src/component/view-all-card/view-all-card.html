@@ -1,7 +1,7 @@
 <div class="sb-card" [ngClass]="{'offline': !content.isAvailableLocally && !commonUtilService.networkInfo.isNetworkAvailable}">
     <div class="img-container">
       <img *ngIf="!(!content.isAvailableLocally && !commonUtilService.networkInfo.isNetworkAvailable)" src="{{ content.contentData.courseLogoUrl || content.contentData.appIcon || defaultImg }}">
-      <ion-icon *ngIf="!content.isAvailableLocally && !commonUtilService.networkInfo.isNetworkAvailable" ios="ios-notifications-off" md="md-notifications-off" class="white offline-icon"></ion-icon>
+      <img *ngIf="!content.isAvailableLocally && !commonUtilService.networkInfo.isNetworkAvailable" src="assets/imgs/ic_offline_white_sm.png"/>      
     </div>
     <div class="sb-card-details">
       <div class="title">{{content.contentData.name}}</div>
