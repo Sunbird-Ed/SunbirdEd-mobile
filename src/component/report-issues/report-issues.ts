@@ -1,9 +1,5 @@
 import {
-  ContentService,
-  InteractType,
-  InteractSubtype,
-  PageId,
-  Environment
+  ContentService
 } from 'sunbird';
 import {
   Component
@@ -26,6 +22,12 @@ import {
 import { AppGlobalService } from '../../service/app-global.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import {
+  InteractType,
+  InteractSubtype,
+  PageId,
+  Environment
+} from '../../service/telemetry-constants';
 
 @Component({
   selector: 'report-issues',
