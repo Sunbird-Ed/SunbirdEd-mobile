@@ -125,7 +125,6 @@ export class SearchPage implements  OnDestroy {
     private navCtrl: NavController,
     private zone: NgZone,
     private event: Events,
-    private fileUtil: FileUtil,
     private events: Events,
     private appGlobalService: AppGlobalService,
     private platform: Platform,
