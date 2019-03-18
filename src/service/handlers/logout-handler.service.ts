@@ -43,7 +43,7 @@ export class LogoutHandlerService {
 
       this.authService.getSession()
         .mergeMap(() => {
-          return Observable.fromPromise(this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN').toPromise())
+          return this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN')
             .do((guest_user_id: string) => {
               if (!guest_user_id) {
                 this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();

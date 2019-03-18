@@ -1,6 +1,5 @@
 import {Component, Inject, NgZone} from '@angular/core';
 import {LoadingController} from 'ionic-angular';
-import {FileUtil} from 'sunbird';
 import {GetAllProfileRequest, Group, GroupService, Profile, ProfileService} from 'sunbird-sdk';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
@@ -26,7 +25,6 @@ export class ShareUserAndGroupPage {
     @Inject('GROUP_SERVICE') private groupService: GroupService,
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     private zone: NgZone,
-    private fileUtil: FileUtil,
     private socialShare: SocialSharing,
     private loadingCtrl: LoadingController,
     private telemetryGeneratorService: TelemetryGeneratorService

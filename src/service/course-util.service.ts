@@ -2,7 +2,6 @@ import {ViewCreditsComponent} from '@app/component';
 import {Injectable} from '@angular/core';
 import * as _ from 'lodash';
 import {PopoverController} from 'ionic-angular';
-import {FileUtil} from 'sunbird';
 import {ContentImport} from 'sunbird-sdk';
 
 declare const cordova;
@@ -10,7 +9,6 @@ declare const cordova;
 export class CourseUtilService {
 
     constructor(
-        private fileUtil: FileUtil,
         private popOverCtrl: PopoverController,
     ) { }
 
