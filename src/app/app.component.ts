@@ -1,6 +1,5 @@
 import { Observable } from 'rxjs';
 import {
-  BuildParamService,
   PermissionService,
 } from 'sunbird';
 import {ProfileSettingsPage} from './../pages/profile-settings/profile-settings';
@@ -81,7 +80,6 @@ export class MyApp {
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private buildParamService: BuildParamService,
     private popoverCtrl: PopoverController,
     private tncUpdateHandlerService: TncUpdateHandlerService,
   ) {
@@ -240,7 +238,7 @@ export class MyApp {
   }
 
   getProfileSettingConfig(hideBackButton = false) {
-    this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE)
+    this.appGlobalService.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE)
       .then(response => {
         if (response === 'true') {
           this.nav.setRoot('ProfileSettingsPage', {hideBackButton: hideBackButton});
@@ -278,7 +276,8 @@ export class MyApp {
             }
           }
 
-          const display_cat_page: string = await this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE);
+          const display_cat_page: string = await this.appGlobalService
+          .getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE);
 
           if (display_cat_page === 'false') {
             await this.nav.setRoot(TabsPage);
