@@ -1,5 +1,6 @@
 import {Inject, Injectable, OnDestroy} from '@angular/core';
-import {BuildParamService, Environment, InteractSubtype, InteractType, PageId} from 'sunbird';
+import {Environment, InteractSubtype, InteractType, PageId} from './telemetry-constants';
+import {BuildParamService} from 'sunbird';
 import {Events, PopoverController, PopoverOptions} from 'ionic-angular';
 import {UpgradePopover} from '../pages/upgrade/upgrade-popover';
 import {GenericAppConfig, PreferenceKey} from '../app/app.constant';

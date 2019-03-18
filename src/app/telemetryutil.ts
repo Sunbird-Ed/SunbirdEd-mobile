@@ -1,4 +1,7 @@
-import { Impression, Interact, Start, Mode, Environment, End, Rollup, CorrelationData } from 'sunbird';
+import {CorrelationData} from 'sunbird-sdk';
+import {Impression, Interact, Start, End, Rollup} from 'sunbird';
+import {Mode, Environment} from '../service/telemetry-constants';
+
 
 export const generateImpressionTelemetry = (type, subtype, pageid, env,
     objectId, objectType, objectVersion,
