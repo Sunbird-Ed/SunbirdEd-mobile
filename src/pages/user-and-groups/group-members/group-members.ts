@@ -1,9 +1,6 @@
 import {Component, Inject, NgZone} from '@angular/core';
 import {IonicPage, LoadingController, NavController, NavParams} from 'ionic-angular';
-import {
-  AddUpdateProfilesRequest
-} from 'sunbird';
-import {GetAllProfileRequest, Group, GroupService, Profile, ProfileService} from 'sunbird-sdk';
+import {GetAllProfileRequest, Group, GroupService, Profile, ProfileService, ProfilesToGroupRequest} from 'sunbird-sdk';
 import {GuestEditProfilePage} from '../../profile/guest-edit.profile/guest-edit.profile';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
 import {CommonUtilService} from '../../../service/common-util.service';
@@ -146,18 +143,18 @@ export class GroupMembersPage {
     });
     this.groupService.createGroup(this.group)
       .toPromise().then(res => {
-        this.telemetryGeneratorService.generateInteractTelemetry(
-          InteractType.OTHER,
-          InteractSubtype.CREATE_GROUP_SUCCESS,
-          Environment.USER,
-          PageId.CREATE_GROUP
-        );
-        const req: AddUpdateProfilesRequest = {
-          groupId: res.gid,
-          uidList: selectedUids
-        };
-        return this.groupService.addProfilesToGroup(req).toPromise();
-      })
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.OTHER,
+        InteractSubtype.CREATE_GROUP_SUCCESS,
+        Environment.USER,
+        PageId.CREATE_GROUP
+      );
+      const req: ProfilesToGroupRequest = {
+        groupId: res.gid,
+        uidList: selectedUids
+      };
+      return this.groupService.addProfilesToGroup(req).toPromise();
+    })
       .then(success => {
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('GROUP_CREATE_SUCCESS'));
@@ -171,8 +168,8 @@ export class GroupMembersPage {
   }
 
   /**
- * Returns Loader Object
- */
+   * Returns Loader Object
+   */
   getLoader(): any {
     return this.loadingCtrl.create({
       duration: 30000,

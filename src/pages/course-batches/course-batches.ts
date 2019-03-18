@@ -65,6 +65,8 @@ export class CourseBatchesPage implements OnInit {
    * @param {NavParams} navParams To get url params
    * @param {NgZone} zone To bind data
    * @param {AuthService} authService To get logged-in user data
+   * @param commonUtilService
+   * @param events
    */
   constructor(
     @Inject('AUTH_SERVICE') private authService: AuthService,

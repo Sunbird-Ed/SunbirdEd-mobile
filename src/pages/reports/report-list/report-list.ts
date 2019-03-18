@@ -1,10 +1,8 @@
 import {Component, Inject, NgZone} from '@angular/core';
 import {LoadingController, NavController, NavParams} from 'ionic-angular';
 import {GroupReportListPage} from '../group-report-list/group-report-list';
-import {SummarizerContentFilterCriteria} from 'sunbird';
 import {LearnerAssessmentSummary, ReportSummary, SummarizerService, SummaryRequest, TelemetryObject} from 'sunbird-sdk';
 import {UserReportPage} from '../user-report/user-report';
-import {ContentType} from '../../../app/app.constant';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
 import {
   Environment,
@@ -56,13 +54,14 @@ export class ReportListPage {
         });
         loader.present();
 
-
-        const requestParams: SummarizerContentFilterCriteria = {
-            contentTypes: ContentType.FOR_LIBRARY_TAB,
-            uids: this.uids,
-            attachContentAccess: true,
-            attachFeedback: true
-        };
+      /*
+      const requestParams: SummarizerContentFilterCriteria = {
+          contentTypes: ContentType.FOR_LIBRARY_TAB,
+          uids: this.uids,
+          attachContentAccess: true,
+          attachFeedback: true
+      };
+      */
 
         const summaryRequest: SummaryRequest = {
             qId: '',

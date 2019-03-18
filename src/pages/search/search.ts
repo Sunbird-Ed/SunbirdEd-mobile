@@ -1,6 +1,6 @@
 import {Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
 import {Events, IonicPage, Navbar, NavController, NavParams, Platform} from 'ionic-angular';
-import {CorrelationData, FileUtil, TabsPage} from 'sunbird';
+import {FileUtil} from 'sunbird';
 import {
   Content,
   ContentDetailRequest,
@@ -12,19 +12,19 @@ import {
   ContentSearchCriteria,
   ContentSearchResult,
   ContentService,
+  CorrelationData,
   DownloadEventType,
   DownloadProgress,
   EventsBusEvent,
   EventsBusService,
-  ContentService as NewContentService,
   PageAssembleCriteria,
   PageAssembleFilter,
   PageAssembleService,
   PageName,
   ProfileType,
   SearchType,
-  TelemetryObject,
-  SharedPreferences
+  SharedPreferences,
+  TelemetryObject
 } from 'sunbird-sdk';
 import {FilterPage} from './filters/filter';
 import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
@@ -49,6 +49,7 @@ import {
   Mode,
   PageId
 } from '../../service/telemetry-constants';
+import {TabsPage} from '@app/pages/tabs/tabs';
 
 declare const cordova;
 

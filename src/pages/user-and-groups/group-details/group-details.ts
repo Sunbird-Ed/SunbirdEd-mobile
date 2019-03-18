@@ -17,7 +17,6 @@ import {PopoverPage} from '../popover/popover';
 import {GroupDetailNavPopoverPage} from '../group-detail-nav-popover/group-detail-nav-popover';
 import {CreateGroupPage} from '../create-group/create-group';
 import {AddOrRemoveGroupUserPage} from '../add-or-remove-group-user/add-or-remove-group-user';
-import {AddUpdateProfilesRequest, ObjectType} from 'sunbird';
 import {
   AuthService,
   GetAllProfileRequest,
@@ -25,6 +24,7 @@ import {
   GroupService,
   Profile,
   ProfileService,
+  ProfilesToGroupRequest,
   ProfileType,
   SharedPreferences,
   TelemetryObject
@@ -41,9 +41,9 @@ import {GuestEditProfilePage} from '../../profile/guest-edit.profile/guest-edit.
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
 import {Map} from '../../../app/telemetryutil';
 import {PreferenceKey} from '../../../app/app.constant';
-import {Environment, InteractSubtype, InteractType, PageId} from '../../../service/telemetry-constants';
-import { ContainerService } from '@app/service/container.services';
-import { TabsPage } from '@app/pages/tabs/tabs';
+import {Environment, InteractSubtype, InteractType, ObjectType, PageId} from '../../../service/telemetry-constants';
+import {ContainerService} from '@app/service/container.services';
+import {TabsPage} from '@app/pages/tabs/tabs';
 
 @IonicPage()
 @Component({
@@ -99,6 +99,7 @@ export class GroupDetailsPage {
   ionViewWillEnter() {
     this.getAllProfile();
   }
+
   resizeContent() {
     this.content.resize();
   }
@@ -116,22 +117,21 @@ export class GroupDetailsPage {
         .map((profiles) => profiles.filter((profile) => !!profile.handle))
         .toPromise()
         .then((profiles) => {
-        this.zone.run(() => {
-          if (profiles && profiles.length) {
-            this.userList = profiles;
-            this.userList.forEach((item) => {
-              this.userUids.push(item.uid);
-            });
-            this.isNoUsers = (this.userList.length) ? false : true;
-            loader.dismiss();
-          }
-        });
+          this.zone.run(() => {
+            if (profiles && profiles.length) {
+              this.userList = profiles;
+              this.userList.forEach((item) => {
+                this.userUids.push(item.uid);
+              });
+              this.isNoUsers = (this.userList.length) ? false : true;
+              loader.dismiss();
+            }
+          });
         }).catch(() => {
         loader.dismiss();
       });
     });
   }
-
 
 
   selectUser(index: number, name: string) {
@@ -142,8 +142,8 @@ export class GroupDetailsPage {
   }
 
   /**
-  * Shows Prompt for switch Account
-  */
+   * Shows Prompt for switch Account
+   */
   switchAccountConfirmBox() {
     // Generate Switch User click event
     this.telemetryGeneratorService.generateInteractTelemetry(
@@ -222,6 +222,7 @@ export class GroupDetailsPage {
     );
 
   }
+
   // takes to content details page and launches player
   play() {
     const selectedUser = this.userList[this.selectedUserIndex];
@@ -274,36 +275,36 @@ export class GroupDetailsPage {
 
   presentPopoverNav(myEvent) {
     const popover = this.popOverCtrl.create(GroupDetailNavPopoverPage, {
-      goToEditGroup: () => {
-        this.navCtrl.push(CreateGroupPage, {
-          groupInfo: this.group
-        });
-        popover.dismiss();
-      },
-      deleteGroup: () => {
+        goToEditGroup: () => {
+          this.navCtrl.push(CreateGroupPage, {
+            groupInfo: this.group
+          });
+          popover.dismiss();
+        },
+        deleteGroup: () => {
 
-        this.deleteGroupConfirmBox();
-        popover.dismiss();
+          this.deleteGroupConfirmBox();
+          popover.dismiss();
+        },
+        addUsers: () => {
+          this.navCtrl.push(AddOrRemoveGroupUserPage, {
+            isAddUsers: true,
+            groupInfo: this.group,
+            groupMembers: this.userList
+          });
+          popover.dismiss();
+        },
+        removeUser: () => {
+          this.navCtrl.push(AddOrRemoveGroupUserPage, {
+            isAddUsers: false,
+            groupInfo: this.group,
+            groupMembers: this.userList
+          });
+          popover.dismiss();
+        },
+        noUsers: (this.userList.length) ? true : false,
+        isActiveGroup: this.isCurrentGroupActive
       },
-      addUsers: () => {
-        this.navCtrl.push(AddOrRemoveGroupUserPage, {
-          isAddUsers: true,
-          groupInfo: this.group,
-          groupMembers: this.userList
-        });
-        popover.dismiss();
-      },
-      removeUser: () => {
-        this.navCtrl.push(AddOrRemoveGroupUserPage, {
-          isAddUsers: false,
-          groupInfo: this.group,
-          groupMembers: this.userList
-        });
-        popover.dismiss();
-      },
-      noUsers: (this.userList.length) ? true : false,
-      isActiveGroup: this.isCurrentGroupActive
-    },
       {
         cssClass: 'user-popover'
       });
@@ -320,19 +321,19 @@ export class GroupDetailsPage {
     }
     const popover = this.popOverCtrl.create(PopoverPage, {
 
-      edit: () => {
-        this.navCtrl.push(GuestEditProfilePage, {
-          profile: this.userList[index]
-        });
-        popover.dismiss();
-      },
-      delete: () => {
-        this.userDeleteGroupConfirmBox(index);
-        popover.dismiss();
+        edit: () => {
+          this.navCtrl.push(GuestEditProfilePage, {
+            profile: this.userList[index]
+          });
+          popover.dismiss();
+        },
+        delete: () => {
+          this.userDeleteGroupConfirmBox(index);
+          popover.dismiss();
 
+        },
+        isCurrentUser: isActiveUser
       },
-      isCurrentUser: isActiveUser
-    },
       {
         cssClass: 'user-popover'
       });
@@ -423,7 +424,7 @@ export class GroupDetailsPage {
 
       }
     });
-    const req: AddUpdateProfilesRequest = {
+    const req: ProfilesToGroupRequest = {
       groupId: this.group.gid,
       uidList: this.userUids
     };
@@ -434,18 +435,18 @@ export class GroupDetailsPage {
         this.isNoUsers = (this.userList.length) ? false : true;
       }, error => {
 
-    });
+      });
   }
 
   /**
-  * Used to Translate message to current Language
-  * @param {string} messageConst Message Constant to be translated
-  * @param {string} field Field to be place in language string
-  * @returns {string} field Translated Message
-  */
+   * Used to Translate message to current Language
+   * @param {string} messageConst Message Constant to be translated
+   * @param {string} field Field to be place in language string
+   * @returns {string} field Translated Message
+   */
   translateMessage(messageConst: string, field?: string): string {
     let translatedMsg = '';
-    this.translate.get(messageConst, { '%s': field }).subscribe(
+    this.translate.get(messageConst, {'%s': field}).subscribe(
       (value: any) => {
         translatedMsg = value;
       }
@@ -472,41 +473,6 @@ export class GroupDetailsPage {
     return '';
   }
 
-  private setAsCurrentUser(selectedUser, isBeingPlayed: boolean) {
-    this.groupService.setActiveSessionForGroup(this.group.gid)
-      .subscribe(() => {
-        this.profileService.setActiveSessionForProfile(selectedUser.uid).toPromise()
-          .then(() => {
-          if (isBeingPlayed) {
-            this.event.publish('playConfig', this.playConfig);
-            this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
-          }
-          if (selectedUser.profileType === ProfileType.STUDENT) {
-            initTabs(this.container, isBeingPlayed ? GUEST_STUDENT_TABS : GUEST_STUDENT_SWITCH_TABS);
-            this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise().then();
-          } else {
-            initTabs(this.container, isBeingPlayed ? GUEST_TEACHER_TABS : GUEST_TEACHER_SWITCH_TABS);
-            this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();
-          }
-
-          this.event.publish('refresh:profile');
-          this.event.publish(AppGlobalService.USER_INFO_UPDATED);
-
-          this.app.getRootNav().setRoot(TabsPage);
-
-          const toast = this.toastCtrl.create({
-            message: this.translateMessage('SWITCHING_TO', selectedUser.handle),
-            duration: 2000,
-            position: 'bottom'
-          });
-          toast.present();
-
-          }, () => {
-        });
-      }, () => {
-      });
-  }
-
   navigateToAddUser() {
     this.navCtrl.push(GuestEditProfilePage, {
       isNewUser: true
@@ -518,5 +484,40 @@ export class GroupDetailsPage {
       duration: 30000,
       spinner: 'crescent'
     });
+  }
+
+  private setAsCurrentUser(selectedUser, isBeingPlayed: boolean) {
+    this.groupService.setActiveSessionForGroup(this.group.gid)
+      .subscribe(() => {
+        this.profileService.setActiveSessionForProfile(selectedUser.uid).toPromise()
+          .then(() => {
+            if (isBeingPlayed) {
+              this.event.publish('playConfig', this.playConfig);
+              this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
+            }
+            if (selectedUser.profileType === ProfileType.STUDENT) {
+              initTabs(this.container, isBeingPlayed ? GUEST_STUDENT_TABS : GUEST_STUDENT_SWITCH_TABS);
+              this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise().then();
+            } else {
+              initTabs(this.container, isBeingPlayed ? GUEST_TEACHER_TABS : GUEST_TEACHER_SWITCH_TABS);
+              this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();
+            }
+
+            this.event.publish('refresh:profile');
+            this.event.publish(AppGlobalService.USER_INFO_UPDATED);
+
+            this.app.getRootNav().setRoot(TabsPage);
+
+            const toast = this.toastCtrl.create({
+              message: this.translateMessage('SWITCHING_TO', selectedUser.handle),
+              duration: 2000,
+              position: 'bottom'
+            });
+            toast.present();
+
+          }, () => {
+          });
+      }, () => {
+      });
   }
 }

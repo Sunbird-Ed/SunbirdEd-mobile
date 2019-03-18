@@ -1,9 +1,10 @@
 import {Component, Inject, NgZone} from '@angular/core';
 import {LoadingController} from 'ionic-angular';
 import {FileUtil} from 'sunbird';
-import {GetAllProfileRequest, Group, GroupService, Profile, ProfileService} from 'sunbird-sdk';
+import {GetAllProfileRequest, Group, GroupService, Profile, ProfileExportRequest, ProfileService} from 'sunbird-sdk';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
+import {Environment, InteractSubtype, InteractType, PageId} from "@app/service/telemetry-constants";
 
 @Component({
   selector: 'page-share-user-and-groups',
@@ -195,7 +196,7 @@ export class ShareUserAndGroupPage {
     });
   }
 
-  /*
+  // TODO exportProfile
   share() {
 
     if (this.selectedUserList && this.selectedGroupList) {
@@ -223,8 +224,8 @@ export class ShareUserAndGroupPage {
     });
 
     loader.present();
-    this.profileService.exportProfile(profileExportRequest).then((path: any) => {
-      path = JSON.parse(path);
+    this.profileService.exportProfile(profileExportRequest).toPromise()
+      .then((path: any) => {
       loader.dismiss();
       if (this.selectedUserList && this.selectedGroupList) {
         const valueMap = new Map();
@@ -244,5 +245,4 @@ export class ShareUserAndGroupPage {
       loader.dismiss();
     });
   }
-  */
 }

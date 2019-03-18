@@ -1,37 +1,30 @@
-import { Component, Inject } from '@angular/core';
+import {Component, Inject} from '@angular/core';
+import {IonicPage, NavController, NavParams} from 'ionic-angular';
+import {TranslateService} from '@ngx-translate/core';
+import {FormBuilder, FormGroup, Validators,} from '@angular/forms';
 import {
-  IonicPage,
-  NavController,
-  NavParams
-} from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
-import {
-  InteractType,
-  InteractSubtype,
   Environment,
-  PageId,
   ImpressionType,
+  InteractSubtype,
+  InteractType,
   ObjectType,
+  PageId,
 } from '../../../service/telemetry-constants';
-import { Group, GroupService } from 'sunbird-sdk';
-import { GroupMembersPage } from './../group-members/group-members';
-import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
-import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../../service/common-util.service';
+import {GroupMembersPage} from './../group-members/group-members';
+import {GuestEditProfilePage} from '../../profile/guest-edit.profile/guest-edit.profile';
+import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
+import {CommonUtilService} from '../../../service/common-util.service';
 import {
+  Framework,
+  FrameworkCategoryCode,
+  FrameworkCategoryCodesGroup,
+  FrameworkDetailsRequest,
   FrameworkService,
   FrameworkUtilService,
-  GetSuggestedFrameworksRequest,
-  FrameworkDetailsRequest,
-  Framework,
-  FrameworkCategoryCodesGroup,
   GetFrameworkCategoryTermsRequest,
-  FrameworkCategoryCode
+  GetSuggestedFrameworksRequest,
+  Group,
+  GroupService
 } from 'sunbird-sdk';
 
 @IonicPage()

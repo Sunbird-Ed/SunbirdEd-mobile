@@ -30,7 +30,6 @@ import {
   ContentRequest,
   ContentSearchCriteria,
   ContentService,
-  ContentService as newContentService,
   FrameworkCategoryCode,
   FrameworkCategoryCodesGroup,
   FrameworkUtilService,
@@ -39,17 +38,11 @@ import {
   ProfileService,
   ProfileType,
   SearchType,
-  TelemetryObject,
-  SharedPreferences
+  SharedPreferences,
+  TelemetryObject
 } from 'sunbird-sdk';
-import {
-  Environment,
-  ImpressionType,
-  InteractType,
-  PageId,
-  InteractSubtype
-} from '../../service/telemetry-constants';
-import { PlayerPage } from '../player/player';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
+import {PlayerPage} from '../player/player';
 
 @Component({
   selector: 'page-resources',

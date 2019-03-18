@@ -12,11 +12,7 @@ import {
 import * as _ from 'lodash';
 import {SocialSharing} from '@ionic-native/social-sharing';
 
-import {
-  CourseService as course_Service,
-  GetContentStateRequest,
-  ShareUtil,
-} from 'sunbird';
+import {CourseService as course_Service, GetContentStateRequest, ShareUtil,} from 'sunbird';
 import {ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
 import {CollectionDetailsPage} from '@app/pages/collection-details/collection-details';
 import {ContentDetailsPage} from '@app/pages/content-details/content-details';
@@ -925,10 +921,8 @@ export class EnrolledCourseDetailsPage {
         // Show download percentage
         if (event.payload && event.type === DownloadEventType.PROGRESS) {
           const downloadEvent = event as DownloadProgress;
-          if (downloadEvent.payload.progress === -1) {
-            this.downloadProgress = 0;
-          } else {
-            this.downloadProgress = downloadEvent.payload.progress;
+          if (downloadEvent.payload.identifier === this.course.identifier) {
+            this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
           }
           if (this.downloadProgress === 100) {
             this.getBatchDetails();

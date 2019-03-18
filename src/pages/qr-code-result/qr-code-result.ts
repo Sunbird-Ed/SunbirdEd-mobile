@@ -10,7 +10,7 @@ import {
   Platform,
   PopoverController
 } from 'ionic-angular';
-import {CorrelationData, FileUtil, MarkerType, TabsPage} from 'sunbird';
+import {FileUtil, MarkerType} from 'sunbird';
 import {ContentDetailsPage} from '../content-details/content-details';
 import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
 import {ContentType, MimeType} from '../../app/app.constant';
@@ -30,6 +30,7 @@ import {
   ContentImportResponse,
   ContentMarkerRequest,
   ContentService,
+  CorrelationData,
   DownloadEventType,
   DownloadProgress,
   EventsBusEvent,
@@ -45,6 +46,7 @@ import {
   ProfileService
 } from 'sunbird-sdk';
 import {Subscription} from 'rxjs';
+import {TabsPage} from '@app/pages/tabs/tabs';
 import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
 
 declare const cordova;

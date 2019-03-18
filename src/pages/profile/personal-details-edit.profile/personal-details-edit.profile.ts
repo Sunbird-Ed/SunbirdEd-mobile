@@ -4,12 +4,9 @@ import {CommonUtilService} from '../../../service/common-util.service';
 import {Component, Inject, ViewChild} from '@angular/core';
 import {Events, LoadingController, NavController, NavParams, Select} from 'ionic-angular';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import { FrameworkService} from 'sunbird';
 import {TranslateService} from '@ngx-translate/core';
-
 import {Location} from '@app/app';
 import {LocationSearchCriteria, ProfileService} from 'sunbird-sdk';
-import { ContainerService } from '@app/service/container.services';
 
 @Component({
   selector: 'personal-details-edit',
@@ -51,8 +48,6 @@ export class PersonalDetailsEditPage {
     private translate: TranslateService,
     private appGlobalService: AppGlobalService,
     private events: Events,
-    private container: ContainerService,
-    private framework: FrameworkService
   ) {
     // this.profile = this.appGlobalService.getCurrentUser();
     this.profile = this.navParams.get('profile');
