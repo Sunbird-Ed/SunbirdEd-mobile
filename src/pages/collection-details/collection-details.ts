@@ -41,7 +41,7 @@ import {
   Mode,
   PageId,
 } from '../../service/telemetry-constants';
-import {Subscription} from "rxjs";
+import {Subscription} from 'rxjs';
 
 declare const cordova;
 @IonicPage()

@@ -111,7 +111,9 @@ export enum ImpressionType {
 }
 export enum ImpressionSubtype {
     QRCodeScanInitiate = 'qr-code-scan-initiate',
-    RATING_POPUP = 'rating-popup'
+    RATING_POPUP = 'rating-popup',
+    QR_CODE_VALID = 'qr-code-valid',
+    INVALID_QR_CODE = 'invalid-qr-code'
 }
 export enum InteractType {
     TOUCH = 'TOUCH',

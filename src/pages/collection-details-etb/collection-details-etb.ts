@@ -24,7 +24,6 @@ import {
   DownloadEventType,
   DownloadProgress,
   EventsBusEvent,
-  EventNamespace,
   EventsBusService,
   ProfileType,
   Rollup,
@@ -193,8 +192,8 @@ export class CollectionDetailsEtbPage {
   shownGroup = null;
   // Local Image
   localImage = '';
-  private eventSubscription: Subscription;
   @ViewChild(Navbar) navBar: Navbar;
+  private eventSubscription: Subscription;
 
   constructor(
     private navCtrl: NavController,
@@ -416,11 +415,11 @@ export class CollectionDetailsEtbPage {
 
     if (this.contentDetail.contentData.appIcon) {
       if (this.contentDetail.contentData.appIcon.includes('http:') || this.contentDetail.contentData.appIcon.includes('https:')) {
-          if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-            this.contentDetail.contentData.appIcon = this.contentDetail.contentData.appIcon;
-            } else {
-            this.contentDetail.contentData.appIcon = this.defaultAppIcon;
-            }
+        if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+          this.contentDetail.contentData.appIcon = this.contentDetail.contentData.appIcon;
+        } else {
+          this.contentDetail.contentData.appIcon = this.defaultAppIcon;
+        }
       } else if (data.basePath) {
         this.localImage = data.basePath + '/' + this.contentDetail.contentData.appIcon;
       }
@@ -994,6 +993,8 @@ export class CollectionDetailsEtbPage {
    */
   ionViewWillLeave() {
     this.downloadProgress = 0;
-    this.eventSubscription.unsubscribe();
+    if (this.eventSubscription) {
+      this.eventSubscription.unsubscribe();
+    }
   }
 }

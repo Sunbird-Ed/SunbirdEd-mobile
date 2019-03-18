@@ -704,7 +704,7 @@ export class ContentDetailsPage {
       this.zone.run(() => {
         if (event.type === DownloadEventType.PROGRESS) {
           const downloadEvent = event as DownloadProgress;
-          this.downloadProgress = downloadEvent.payload.progress === -1 ? '0' : Math.round(downloadEvent.payload.progress);
+          this.downloadProgress = downloadEvent.payload.progress === -1 ? '0' : downloadEvent.payload.progress;
         }
 
         // Get child content

@@ -1,6 +1,5 @@
 import {Component, Inject, NgZone} from '@angular/core';
 import {AlertController, IonicPage, LoadingController, NavController, NavParams} from 'ionic-angular';
-import {AddUpdateProfilesRequest} from 'sunbird';
 import {
   GetAllProfileRequest,
   Group,
@@ -8,6 +7,7 @@ import {
   ObjectType,
   Profile,
   ProfileService,
+  ProfilesToGroupRequest,
   TelemetryObject,
 } from 'sunbird-sdk';
 import {GuestEditProfilePage} from '../../profile/guest-edit.profile/guest-edit.profile';
@@ -188,7 +188,7 @@ export class AddOrRemoveGroupUserPage {
     });
 
 
-    const req: AddUpdateProfilesRequest = {
+    const req: ProfilesToGroupRequest = {
       groupId: this.groupInfo.gid,
       uidList: groupMembersUids.concat(this.getSelectedUids())
     };
@@ -251,7 +251,7 @@ export class AddOrRemoveGroupUserPage {
       valuesMap
     );
     const loader = this.getLoader();
-    const req: AddUpdateProfilesRequest = {
+    const req: ProfilesToGroupRequest = {
       groupId: this.groupInfo.gid,
       uidList: this.selectedUids
     };

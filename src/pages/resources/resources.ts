@@ -27,9 +27,12 @@ import {animate, group, state, style, transition, trigger} from '@angular/animat
 import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
 import {
   CategoryTerm,
+  ContentEventType,
   ContentRequest,
   ContentSearchCriteria,
   ContentService,
+  EventsBusEvent,
+  EventsBusService,
   FrameworkCategoryCode,
   FrameworkCategoryCodesGroup,
   FrameworkUtilService,
@@ -43,6 +46,7 @@ import {
 } from 'sunbird-sdk';
 import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
 import {PlayerPage} from '../player/player';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'page-resources',
@@ -131,9 +135,11 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   isUpgradePopoverShown: boolean = false;
 
   refresh: boolean;
+  private eventSubscription: Subscription;
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     public navCtrl: NavController,
     private ngZone: NgZone,
     private qrScanner: SunbirdQRScanner,
@@ -161,7 +167,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       });
     this.defaultImg = 'assets/imgs/ic_launcher.png';
     this.generateNetworkType();
-    
+
   }
 
   subscribeUtilityEvents() {
@@ -236,8 +242,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     });
   }
 
-  ionViewWillLeave(): void {
-    this.events.unsubscribe('genie.event');
+  ionViewWillLeave() {
+    if (this.eventSubscription) {
+      this.eventSubscription.unsubscribe();
+    }
   }
 
   /**
@@ -636,13 +644,12 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   subscribeGenieEvents() {
-    this.events.subscribe('genie.event', (data) => {
-      const res = JSON.parse(data);
-      if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
+    this.eventSubscription = this.eventsBusService.events().subscribe((event: EventsBusEvent) => {
+      if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
         this.setSavedContent();
         this.loadRecentlyViewedContent();
       }
-    });
+    }) as any;
   }
 
   /**

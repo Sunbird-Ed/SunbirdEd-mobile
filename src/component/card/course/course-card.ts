@@ -1,22 +1,13 @@
-import {
-  Component,
-  Input,
-  OnInit,
-  Inject
-} from '@angular/core';
-import {
-  NavController,
-  Events
-} from 'ionic-angular';
-import { EnrolledCourseDetailsPage } from '../../../pages/enrolled-course-details/enrolled-course-details';
-import { CollectionDetailsPage } from '../../../pages/collection-details/collection-details';
-import { CollectionDetailsEtbPage } from '../../../pages/collection-details-etb/collection-details-etb';
-import { ContentDetailsPage } from '../../../pages/content-details/content-details';
-import { ContentType, MimeType, ContentCard, PreferenceKey } from '../../../app/app.constant';
-import { CourseUtilService } from '../../../service/course-util.service';
-import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import {TelemetryObject, SharedPreferences} from 'sunbird-sdk';
-import {InteractType, InteractSubtype} from '../../../service/telemetry-constants';
+import {Component, Inject, Input, OnInit} from '@angular/core';
+import {Events, NavController} from 'ionic-angular';
+import {EnrolledCourseDetailsPage} from '../../../pages/enrolled-course-details/enrolled-course-details';
+import {CollectionDetailsEtbPage} from '../../../pages/collection-details-etb/collection-details-etb';
+import {ContentDetailsPage} from '../../../pages/content-details/content-details';
+import {ContentCard, ContentType, MimeType, PreferenceKey} from '../../../app/app.constant';
+import {CourseUtilService} from '../../../service/course-util.service';
+import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
+import {SharedPreferences, TelemetryObject} from 'sunbird-sdk';
+import {InteractSubtype, InteractType} from '../../../service/telemetry-constants';
 
 /**
  * The course card component
@@ -70,6 +61,10 @@ export class CourseCard implements OnInit {
    * Default method of class CourseCard
    *
    * @param navCtrl To navigate user from one page to another
+   * @param courseUtilService
+   * @param events
+   * @param telemetryGeneratorService
+   * @param preferences
    */
   constructor(public navCtrl: NavController,
     private courseUtilService: CourseUtilService,
