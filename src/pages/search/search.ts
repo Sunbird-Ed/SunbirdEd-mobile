@@ -1,6 +1,5 @@
 import {Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
 import {Events, IonicPage, Navbar, NavController, NavParams, Platform} from 'ionic-angular';
-import {CorrelationData, FileUtil, TabsPage} from 'sunbird';
 import {
   Content,
   ContentDetailRequest,
@@ -24,7 +23,8 @@ import {
   ProfileType,
   SearchType,
   TelemetryObject,
-  SharedPreferences
+  SharedPreferences,
+  CorrelationData
 } from 'sunbird-sdk';
 import {FilterPage} from './filters/filter';
 import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
@@ -49,6 +49,7 @@ import {
   Mode,
   PageId
 } from '../../service/telemetry-constants';
+import { TabsPage } from '@app/pages/tabs/tabs';
 
 declare const cordova;
 
@@ -124,7 +125,6 @@ export class SearchPage implements  OnDestroy {
     private navCtrl: NavController,
     private zone: NgZone,
     private event: Events,
-    private fileUtil: FileUtil,
     private events: Events,
     private appGlobalService: AppGlobalService,
     private platform: Platform,

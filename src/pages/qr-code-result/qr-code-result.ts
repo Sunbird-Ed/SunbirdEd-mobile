@@ -10,7 +10,6 @@ import {
   Platform,
   PopoverController
 } from 'ionic-angular';
-import {CorrelationData, FileUtil, MarkerType, TabsPage} from 'sunbird';
 import {ContentDetailsPage} from '../content-details/content-details';
 import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
 import {ContentType, MimeType} from '../../app/app.constant';
@@ -42,10 +41,13 @@ import {
   GetAllProfileRequest,
   GetSuggestedFrameworksRequest,
   Profile,
-  ProfileService
+  ProfileService,
+  MarkerType,
+  CorrelationData
 } from 'sunbird-sdk';
 import {Subscription} from 'rxjs';
 import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
+import { TabsPage } from '@app/pages/tabs/tabs';
 
 declare const cordova;
 
@@ -125,7 +127,6 @@ export class QrCodeResultPage implements OnDestroy {
     private events: Events,
     private popOverCtrl: PopoverController,
     private commonUtilService: CommonUtilService,
-    private fileUtil: FileUtil,
     @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
     @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
     @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService
