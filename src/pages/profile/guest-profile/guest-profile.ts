@@ -17,7 +17,7 @@ import {
   ProfileType,
   SharedPreferences
 } from 'sunbird-sdk';
-import {Environment, ImpressionType, PageId} from '../../../service/telemetry-constants'
+import {Environment, ImpressionType, PageId} from '../../../service/telemetry-constants';
 
 @Component({
   selector: 'page-guest-profile',
