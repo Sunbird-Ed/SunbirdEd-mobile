@@ -120,11 +120,11 @@ export class DatasyncPage {
     const loader = this.commonUtilService.getLoader();
     loader.present();
     const telemetryExportRequest: TelemetryExportRequest = {
-      destinationFolder: cordova.file.dataDirectory
+      destinationFolder: cordova.file.externalDataDirectory
     };
     this.telemetryService.exportTelemetry(telemetryExportRequest).subscribe((data:  TelemetryExportResponse) => {
       loader.dismiss();
-      this.social.share('', '', 'file://' + telemetryExportRequest, '');
+      this.social.share('', '', 'file://' + data.exportedFilePath, '');
     }, () => {
       loader.dismiss();
       this.commonUtilService.showToast('SHARE_TELEMETRY_FAILED');
