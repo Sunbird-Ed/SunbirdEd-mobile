@@ -4,9 +4,6 @@ import {Injectable} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {App, Platform, Popover, PopoverController} from 'ionic-angular';
 import {QRAlertCallBack, QRScannerAlert} from './qrscanner_alert';
-import {
-  PermissionService
-} from 'sunbird';
 import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
 import {QRScannerResultHandler} from './qrscanresulthandler.service';
 import {ProfileSettingsPage} from '../profile-settings/profile-settings';
@@ -46,7 +43,6 @@ export class SunbirdQRScanner {
   constructor(
     private popCtrl: PopoverController,
     private translate: TranslateService,
-    private permission: PermissionService,
     private platform: Platform,
     private qrScannerResultHandler: QRScannerResultHandler,
     private telemetryGeneratorService: TelemetryGeneratorService,
@@ -84,44 +80,46 @@ export class SunbirdQRScanner {
     this.generateImpressionTelemetry(source);
     this.generateStartEvent(source);
 
-    this.permission.hasPermission(this.permissionList).then((response: any) => {
-      const result = JSON.parse(response);
-      if (result.status) {
-        const permissionResult = result.result;
-        const askPermission = [];
-        this.permissionList.forEach(element => {
-          if (!permissionResult[element]) {
-            askPermission.push(element);
-          }
-        });
+    // TODO
+    // this.permission.hasPermission(this.permissionList).then((response: any) => {
+    //   const result = JSON.parse(response);
+    //   if (result.status) {
+    //     const permissionResult = result.result;
+    //     const askPermission = [];
+    //     this.permissionList.forEach(element => {
+    //       if (!permissionResult[element]) {
+    //         askPermission.push(element);
+    //       }
+    //     });
 
-        if (askPermission.length > 0) {
-          this.permission.requestPermission(askPermission).then((res: any) => {
-            const requestResult = JSON.parse(res);
-            if (requestResult.status) {
-              let permissionGranted = true;
-              const permissionRequestResult = requestResult.result;
-              askPermission.forEach(element => {
-                if (!permissionRequestResult[element]) {
-                  permissionGranted = false;
-                }
-              });
+    //     if (askPermission.length > 0) {
+    //       this.permission.requestPermission(askPermission).then((res: any) => {
+    //         const requestResult = JSON.parse(res);
+    //         if (requestResult.status) {
+    //           let permissionGranted = true;
+    //           const permissionRequestResult = requestResult.result;
+    //           askPermission.forEach(element => {
+    //             if (!permissionRequestResult[element]) {
+    //               permissionGranted = false;
+    //             }
+    //           });
 
-              if (permissionGranted) {
-                this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source);
-              } else {
-                this.commonUtil.showToast('PERMISSION_DENIED');
-              }
-            }
-          }).catch((error) => {
+    //           if (permissionGranted) {
+    //             this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source);
+    //           } else {
+    //             this.commonUtil.showToast('PERMISSION_DENIED');
+    //           }
+    //         }
+    //       }).catch((error) => {
 
-          });
-        } else {
-          this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source);
-        }
-      }
-    }).catch(() => {
-    });
+    //       });
+    //     } else {
+    //       this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source);
+    //     }
+    //   }
+    // }).catch(() => {
+    // });
+    this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source);
   }
 
   public stopScanner() {

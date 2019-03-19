@@ -12,7 +12,6 @@ import {
 import * as _ from 'lodash';
 import {SocialSharing} from '@ionic-native/social-sharing';
 
-import {CourseService as course_Service, GetContentStateRequest} from 'sunbird';
 import {ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
 import {CollectionDetailsPage} from '@app/pages/collection-details/collection-details';
 import {ContentDetailsPage} from '@app/pages/content-details/content-details';
@@ -192,7 +191,7 @@ export class EnrolledCourseDetailsPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
     private datePipe: DatePipe,
-    private acourseService: course_Service,
+    // private acourseService: course_Service,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
   ) {
 
@@ -1179,25 +1178,26 @@ export class EnrolledCourseDetailsPage {
     this.courseUtilService.showCredits(this.course, PageId.CONTENT_DETAIL, undefined, this.corRelationList);
   }
 
+  // TODO
   getContentState(returnRefresh: boolean) {
-    if (this.courseCardData.batchId) {
-      const request: GetContentStateRequest = {
-        userId: this.appGlobalService.getUserId(),
-        courseIds: [this.identifier],
-        returnRefreshedContentStates: returnRefresh,
-        batchId: this.batchId
-      };
-      this.acourseService.getContentState(request).then((success: any) => {
-        success = JSON.parse(success);
-        if (this.childrenData) {
-          this.getStatusOfChildContent(this.childrenData, success);
-        }
-      }).catch((error: any) => {
+    // if (this.courseCardData.batchId) {
+    //   const request: GetContentStateRequest = {
+    //     userId: this.appGlobalService.getUserId(),
+    //     courseIds: [this.identifier],
+    //     returnRefreshedContentStates: returnRefresh,
+    //     batchId: this.batchId
+    //   };
+    //   this.acourseService.getContentState(request).then((success: any) => {
+    //     success = JSON.parse(success);
+    //     if (this.childrenData) {
+    //       this.getStatusOfChildContent(this.childrenData, success);
+    //     }
+    //   }).catch((error: any) => {
 
-      });
-    } else {
-      // to be handled when there won't be any batchId
-    }
+    //   });
+    // } else {
+    //   // to be handled when there won't be any batchId
+    // }
   }
 
   private removeUnenrolledCourse(unenrolledCourse) {

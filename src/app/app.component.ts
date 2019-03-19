@@ -1,7 +1,4 @@
 import { Observable } from 'rxjs';
-import {
-  PermissionService,
-} from 'sunbird';
 import {ProfileSettingsPage} from './../pages/profile-settings/profile-settings';
 import {Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {App, Events, Nav, Platform, PopoverController, ToastController} from 'ionic-angular';
@@ -68,7 +65,6 @@ export class MyApp {
     private statusBar: StatusBar,
     private toastCtrl: ToastController,
     private containerService: ContainerService,
-    private permission: PermissionService,
     private imageLoaderConfig: ImageLoaderConfig,
     private app: App,
     private translate: TranslateService,
@@ -360,20 +356,21 @@ export class MyApp {
     }
   }
 
+  // TODO
   private async makeEntriesInSupportFolder() {
-    this.permission.hasPermission(this.permissionList);
-    this.permission.requestPermission(this.permissionList);
+    // this.permission.hasPermission(this.permissionList);
+    // this.permission.requestPermission(this.permissionList);
     this.makeEntryInSupportFolder();
   }
 
   private async makeEntryInSupportFolder() {
-    return new Promise((resolve => {
-      (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
-        this.preferences.putString(KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result)).toPromise().then();
-        resolve();
-      }, () => {
-      });
-    }));
+    // return new Promise((resolve => {
+    //   (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
+    //     this.preferences.putString(KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result)).toPromise().then();
+    //     resolve();
+    //   }, () => {
+    //   });
+    // }));
   }
 
   private async saveDefaultSyncSetting() {

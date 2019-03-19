@@ -7,7 +7,6 @@ import {TranslateLoader, TranslateModule, TranslateService} from '@ngx-translate
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {PluginModules} from './module.service';
-import {EventService, FrameworkModule} from 'sunbird';
 import {AppVersion} from '@ionic-native/app-version';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import {ImageLoader, ImageLoaderConfig, IonicImageLoader} from 'ionic-image-loader';
@@ -97,7 +96,7 @@ export const sunbirdSdkServicesProvidersFactory: () => Provider[] = () => {
     useFactory: () => SunbirdSdk.instance.playerService
   }
 ];
-}
+};
 
 export const sunbirdSdkFactory =
   () => {
@@ -107,7 +106,7 @@ export const sunbirdSdkFactory =
           debugMode: false
         },
         apiConfig: {
-          debugMode: false,
+          debugMode: true,
           host: 'https://staging.ntp.net.in',
           baseUrl: 'https://staging.ntp.net.in/api',
           user_authentication: {
@@ -177,15 +176,15 @@ export const sunbirdSdkFactory =
           telemetrySyncThreshold: 3
         },
         sharedPreferencesConfig: {
-          debugMode: true
+          debugMode: false
         },
         playerConfig: {
           showEndPage: false,
           splash: {
-            webLink: "",
-            text: "",
-            icon: "",
-            bgImage: ""
+            webLink: '',
+            text: '',
+            icon: '',
+            bgImage: ''
           },
           overlay: {
             enableUserSwitcher: false,
@@ -206,7 +205,6 @@ export const sunbirdSdkFactory =
   imports: [
     HttpClientModule,
     BrowserModule,
-    FrameworkModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -260,7 +258,6 @@ export class AppModule {
 
   constructor(
     private translate: TranslateService,
-    private eventService: EventService,
     private events: Events,
     private imageConfig: ImageLoaderConfig) {
 
@@ -280,15 +277,16 @@ export class AppModule {
     this.translate.setDefaultLang('en');
   }
 
+  // TODO
   private registerForEvent() {
-    this.eventService.register((response) => {
-      const res = JSON.parse(response);
-      if (res && res.type === 'genericEvent') {
-        this.events.publish('generic.event', response);
-      } else {
-        this.events.publish('genie.event', response);
-      }
-    }, () => {
-    });
+    // this.eventService.register((response) => {
+    //   const res = JSON.parse(response);
+    //   if (res && res.type === 'genericEvent') {
+    //     this.events.publish('generic.event', response);
+    //   } else {
+    //     this.events.publish('genie.event', response);
+    //   }
+    // }, () => {
+    // });
   }
 }
