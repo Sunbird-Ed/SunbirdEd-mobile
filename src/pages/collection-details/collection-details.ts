@@ -14,6 +14,7 @@ import {
 } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
+// import { SbPopoverComponent } from '../../component';
 import * as _ from 'lodash';
 
 import {
@@ -35,7 +36,7 @@ import {
   ErrorType
 } from 'sunbird';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
-import { ContentActionsComponent, ConfirmAlertComponent, ContentRatingAlertComponent } from '@app/component';
+import { ContentActionsComponent, SbPopoverComponent, ConfirmAlertComponent, ContentRatingAlertComponent } from '@app/component';
 import {
   ContentType,
   MimeType,
@@ -966,4 +967,7 @@ export class CollectionDetailsPage {
     this.downloadProgress = 0;
     this.events.unsubscribe('genie.event');
   }
+
+
+
 }
