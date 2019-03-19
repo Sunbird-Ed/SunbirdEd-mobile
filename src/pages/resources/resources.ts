@@ -1,3 +1,4 @@
+import { Subscription } from 'rxjs';
 import { UserAndGroupsPage } from './../user-and-groups/user-and-groups';
 import { Search } from './../../app/app.constant';
 import {
@@ -152,6 +153,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   defaultImg: string;
   refresh: boolean;
   toast: any;
+  networkSubscription: Subscription;
   constructor(
     public navCtrl: NavController,
     private ngZone: NgZone,
@@ -237,15 +239,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 	 */
   ngOnInit() {
     this.getCurrentUser();
-    this.commonUtilService.subject.subscribe((res) => {
-      if  (!res) {
-        this.presentToastWithOptions();
-      } else {
-        if (this.toast) {
-        this.toast.dismiss();
-      }
-      }
-    });
   }
 
   async presentToastWithOptions() {
@@ -257,6 +250,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       cssClass: 'toastAfterHeader'
     });
    this.toast.present();
+   this.toast.onDidDismiss(() => {
+     this.toast = undefined;
+   });
   }
 
   generateNetworkType() {
@@ -276,8 +272,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   ionViewWillLeave(): void {
     this.events.unsubscribe('genie.event');
-    this.commonUtilService.subject.unsubscribe();
-  }
+    if (this.networkSubscription) {
+      this.networkSubscription.unsubscribe();
+      if (this.toast) {
+        this.toast.dismiss();
+        this.toast = undefined;
+      }
+    }
+}
 
   /**
 	 * It will fetch the guest user profile details
@@ -707,6 +709,16 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.getPopularContent();
     }
     this.subscribeGenieEvents();
+    this.networkSubscription = this.commonUtilService.subject.subscribe((res) => {
+      if  (!res) {
+        this.presentToastWithOptions();
+      } else {
+        if (this.toast) {
+        this.toast.dismiss();
+        this.toast = undefined;
+      }
+      }
+    });
   }
 
   subscribeGenieEvents() {

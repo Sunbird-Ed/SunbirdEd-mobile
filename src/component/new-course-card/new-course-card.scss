@@ -7,4 +7,10 @@ new-course-card{
             align-items: center;
         }
     }
+    .grade_ellipsis{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; 
+    }
+
 }
