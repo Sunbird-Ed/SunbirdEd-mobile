@@ -251,7 +251,7 @@
             *ngIf="isUpdateAvail && contentDownloadable[content.identifier] && downloadProgress !== 100"
             (click)="downloadContent()"
             text-uppercase [ngStyle]="{'background': '-webkit-linear-gradient(left, #DBECFF '  +downloadProgress+ '%, white 0%)' , 'width': isDownloadStarted === true ? '80%' : '100%' , 'pointer-events': isDownloadStarted === true ? 'none': 'auto'}">
-      {{ isDownloadStarted ? ('UPDATING_CONTENT' | translate:{'%s': downloadProgress ? (downloadProgress | number: '1.0') : 0}) : ('UPDATE_CONTENT' |
+      {{ isDownloadStarted ? ('UPDATING_CONTENT' | translate:{'%s': downloadProgress ? (downloadProgress | number: '1.0-0') : 0}) : ('UPDATE_CONTENT' |
       translate:{
       '%s': content.contentData?.size
 			| fileSize}) }}

@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import {Observable} from 'rxjs';
 import {ProfileSettingsPage} from './../pages/profile-settings/profile-settings';
 import {Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {App, Events, Nav, Platform, PopoverController, ToastController} from 'ionic-angular';
@@ -10,7 +10,6 @@ import {TranslateService} from '@ngx-translate/core';
 import {SearchPage} from '@app/pages/search';
 import {CollectionDetailsPage} from '../pages/collection-details/collection-details';
 import {ContentDetailsPage} from '../pages/content-details/content-details';
-import {generateInteractTelemetry} from './telemetryutil';
 import {ContentType, EventTopics, GenericAppConfig, MimeType, PreferenceKey, ProfileConstants} from './app.constant';
 import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
 import {FormAndFrameworkUtilService} from '@app/pages/profile';
@@ -18,24 +17,21 @@ import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@a
 import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
 import {CategoriesEditPage} from '@app/pages/categories-edit/categories-edit';
 import {TncUpdateHandlerService} from '@app/service/handlers/tnc-update-handler.service';
-import {AuthService,
-        OAuthSession,
-        ProfileService,
-        ProfileType,
-        TelemetryService,
-        TelemetryAutoSyncUtil,
-        SharedPreferences
-      } from 'sunbird-sdk';
-import { tap } from 'rxjs/operators';
 import {
-  Environment,
-  InteractSubtype,
-  InteractType,
-  PageId
-} from '../service/telemetry-constants';
-import { TabsPage } from '@app/pages/tabs/tabs';
-import { ContainerService } from '@app/service/container.services';
-
+  AuthService,
+  OAuthSession,
+  ProfileService,
+  ProfileType,
+  SharedPreferences,
+  TelemetryAutoSyncUtil,
+  TelemetryService
+} from 'sunbird-sdk';
+import {tap} from 'rxjs/operators';
+import {Environment, InteractSubtype, InteractType, PageId} from '../service/telemetry-constants';
+import {TabsPage} from '@app/pages/tabs/tabs';
+import {ContainerService} from '@app/service/container.services';
+import {AndroidPermissionsService} from '../service/android-permissions/android-permissions.service';
+import {AndroidPermission, AndroidPermissionsStatus} from "@app/service/android-permissions/android-permission";
 
 const KEY_SUNBIRD_SUPPORT_FILE_PATH = 'sunbird_support_file_path';
 
@@ -47,14 +43,12 @@ export class MyApp {
   @ViewChild(Nav) nav;
   rootPage: any;
   public counter = 0;
-  private telemetryAutoSyncUtil: TelemetryAutoSyncUtil;
-
   readonly permissionList = [
-    'android.permission.CAMERA',
-    'android.permission.WRITE_EXTERNAL_STORAGE',
-    'android.permission.ACCESS_FINE_LOCATION',
-    'android.permission.RECORD_AUDIO'
-  ];
+    AndroidPermission.WRITE_EXTERNAL_STORAGE,
+    AndroidPermission.RECORD_AUDIO,
+    AndroidPermission.CAMERA,
+    AndroidPermission.ACCESS_FINE_LOCATION];
+  private telemetryAutoSyncUtil: TelemetryAutoSyncUtil;
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
@@ -65,6 +59,7 @@ export class MyApp {
     private statusBar: StatusBar,
     private toastCtrl: ToastController,
     private containerService: ContainerService,
+    private permission: AndroidPermissionsService,
     private imageLoaderConfig: ImageLoaderConfig,
     private app: App,
     private translate: TranslateService,
@@ -79,7 +74,7 @@ export class MyApp {
     private popoverCtrl: PopoverController,
     private tncUpdateHandlerService: TncUpdateHandlerService,
   ) {
-    this.telemetryAutoSyncUtil =  new TelemetryAutoSyncUtil(this.telemetryService);
+    this.telemetryAutoSyncUtil = new TelemetryAutoSyncUtil(this.telemetryService);
     platform.ready().then(async () => {
       this.imageLoaderConfig.enableDebugMode();
       this.imageLoaderConfig.setMaximumCacheSize(100 * 1024 * 1024);
@@ -169,7 +164,8 @@ export class MyApp {
         let action;
         try {
           action = JSON.parse(response.data.action);
-        } catch (Error) { }
+        } catch (Error) {
+        }
         const values = new Map();
         values['openrapInfo'] = action;
         if (response && response.data.action && response.data.action === 'logout') {
@@ -229,10 +225,6 @@ export class MyApp {
     });
   }
 
-  private async checkForTncUpdate() {
-    await this.tncUpdateHandlerService.checkForTncUpdate();
-  }
-
   getProfileSettingConfig(hideBackButton = false) {
     this.appGlobalService.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE)
       .then(response => {
@@ -245,6 +237,10 @@ export class MyApp {
       .catch(error => {
         this.nav.setRoot(TabsPage);
       });
+  }
+
+  private async checkForTncUpdate() {
+    await this.tncUpdateHandlerService.checkForTncUpdate();
   }
 
   private async navigateToAppropriatePage() {
@@ -273,7 +269,7 @@ export class MyApp {
           }
 
           const display_cat_page: string = await this.appGlobalService
-          .getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE);
+            .getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE);
 
           if (display_cat_page === 'false') {
             await this.nav.setRoot(TabsPage);
@@ -356,21 +352,30 @@ export class MyApp {
     }
   }
 
-  // TODO
   private async makeEntriesInSupportFolder() {
-    // this.permission.hasPermission(this.permissionList);
-    // this.permission.requestPermission(this.permissionList);
-    this.makeEntryInSupportFolder();
+    await this.permission.checkPermissions(this.permissionList)
+      .mergeMap((statusMap: { [key: string]: AndroidPermissionsStatus }) => {
+        const toRequest: AndroidPermission[] = [];
+
+        for (let permission in statusMap) {
+          if (!statusMap[permission].hasPermission) {
+            toRequest.push(permission as AndroidPermission);
+          }
+        }
+
+        return this.permission.requestPermissions(toRequest);
+      }).do(() => this.makeEntryInSupportFolder())
+      .toPromise();
   }
 
   private async makeEntryInSupportFolder() {
-    // return new Promise((resolve => {
-    //   (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
-    //     this.preferences.putString(KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result)).toPromise().then();
-    //     resolve();
-    //   }, () => {
-    //   });
-    // }));
+    return new Promise((resolve => {
+      (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
+        this.preferences.putString(KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result)).toPromise().then();
+        resolve();
+      }, () => {
+      });
+    }));
   }
 
   private async saveDefaultSyncSetting() {
@@ -470,8 +475,8 @@ export class MyApp {
     this.telemetryAutoSyncUtil.start(30 * 100)
       .mergeMap(() => {
         return Observable.combineLatest(
-          this.platform.pause.pipe( tap(() => this.telemetryAutoSyncUtil.pause()) ),
-          this.platform.resume.pipe( tap(() => this.telemetryAutoSyncUtil.continue()) )
+          this.platform.pause.pipe(tap(() => this.telemetryAutoSyncUtil.pause())),
+          this.platform.resume.pipe(tap(() => this.telemetryAutoSyncUtil.continue()))
         );
       })
       .subscribe();
