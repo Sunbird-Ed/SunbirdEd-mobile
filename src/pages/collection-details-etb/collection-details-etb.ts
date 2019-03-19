@@ -3,7 +3,7 @@ import {Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverCo
 import {TranslateService} from '@ngx-translate/core';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
-import {FileUtil, ShareUtil} from 'sunbird';
+import {ShareUtil} from 'sunbird';
 import {ContentDetailsPage} from '@app/pages/content-details/content-details';
 import {ConfirmAlertComponent, ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
 import {ContentType, MimeType, ShareUrl} from '@app/app';
@@ -203,7 +203,6 @@ export class CollectionDetailsEtbPage {
     private zone: NgZone,
     private events: Events,
     private popoverCtrl: PopoverController,
-    private fileUtil: FileUtil,
     private platform: Platform,
     private translate: TranslateService,
     private social: SocialSharing,
