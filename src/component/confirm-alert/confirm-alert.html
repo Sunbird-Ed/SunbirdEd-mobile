@@ -1,8 +1,8 @@
-<ion-content>
+<!-- <ion-content> -->
   <!-- <h5 class="font-weight-700 padding-left-custom">{{'DOWNLOAD_ALL' | translate}}
     <button class="close-button" ion-button icon-only float-end outline (click)="selectOption(false)"><ion-icon class="icon-size" name="close"></ion-icon></button>
   </h5> -->
-  <ion-grid>
+  <!-- <ion-grid>
     <ion-row>
       <ion-col col-10 no-padding>
         <h5 class="font-weight-700 padding-left-5">{{'DOWNLOAD_ALL' | translate }}</h5>
@@ -22,4 +22,81 @@
       <button (click)="selectOption(true)" ion-button block>{{ 'CONFIRM' | translate }}</button>
     </ion-col>
   </ion-row>
+</ion-content> -->
+<!-- (click)="closePopover()" -->
+<!-- <ion-toolbar class="sb-popover-toolbar">
+    <ion-title class="sb-popover-title">{{ 'ENJOYED_THIS_CONTENT' | translate }}
+        <ion-icon name="close" class="sb-modal-close" (click)="closePopover()"></ion-icon> </ion-title>
+  </ion-toolbar> -->
+
+<!-- <ion-header class="sb-popover-header">
+  <ion-toolbar class="sb-popover-toolbar">
+    <ion-title class="sb-popover-title">{{ 'DOWNLOAD_ALL' | translate }}
+        <ion-icon name="close" class="sb-modal-close" (click)="closePopover()"></ion-icon> </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content no-padding class="sb-popover-container">
+  <div class="sb-popover-items">
+      <div class="icon-container">
+        <ion-icon ios="{{icon?.ios}}" md="{{icon?.md}}"></ion-icon>
+      </div> -->
+
+      <!-- <div class="sb-popover-content-details"> -->
+        <!-- <div class="main-title">
+          {{'DOWNLOAD_ALL' | translate }}
+          <div class="meta-info">
+            {{metaInfo}}
+          </div>
+        </div>
+        <div class="sb-popover-content">
+          {{sbPopoverContent}}
+        </div>
+      </div> -->
+  <!-- </div>
 </ion-content>
+
+<ion-footer>
+<div class="sb-popover-footer">
+    <ion-row>
+        <ion-col padding>
+          <button (click)="selectOption(false)" ion-button class="sb-popover-action-btn" block>{{ 'CANCEL' | translate }}</button>
+        </ion-col>
+        <ion-col padding>
+          <button (click)="selectOption(true)" ion-button class="sb-popover-action-btn" block>{{ 'CONFIRM' | translate }}</button>
+        </ion-col>
+      </ion-row> -->
+  <!-- <button ion-button class="sb-popover-action-btn" [ngClass]="btn.btnClass" *ngFor="let btn of actionsButtons"> {{btn.btntext }}</button> -->
+<!-- </div>
+</ion-footer> -->
+<ion-header class="sb-popover-header">
+  <ion-toolbar class="sb-popover-toolbar">
+    <ion-title class="sb-popover-title">{{'DOWNLOAD' | translate}}
+        <ion-icon name="close" class="sb-modal-close" (click)="closePopover()"></ion-icon> </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content no-padding class="sb-popover-container">
+    <div class="sb-popover-items">
+        <div class="icon-container">
+          <ion-icon ios="{{icon?.ios}}" md="{{icon?.md}}"></ion-icon>
+        </div>
+
+        <div class="sb-popover-content-details">
+          <div class="main-title">
+            {{sbPopoverMainTitle}}
+            <div class="meta-info">
+              {{metaInfo}}
+            </div>
+          </div>
+          <div class="sb-popover-content">
+            {{sbPopoverContent}}
+          </div>
+        </div>
+    </div>
+</ion-content>
+
+<ion-footer>
+  <div class="sb-popover-footer">
+    <button ion-button class="sb-popover-action-btn " (click)='selectOption(true)'>{{ 'DOWNLOAD' | translate}}</button>
+  </div>
+</ion-footer>

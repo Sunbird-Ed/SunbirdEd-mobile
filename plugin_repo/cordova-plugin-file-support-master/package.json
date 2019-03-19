@@ -1,0 +1,12 @@
+{
+  "name": "cordova-plugin-file-support",
+  "version": "1.0.0",
+  "cordova": {
+    "id": "cordova-plugin-file-support",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "description": "A Cordova Plugin for sunbird file support"
+}

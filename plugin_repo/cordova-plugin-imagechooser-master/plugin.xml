@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    id="cordova-plugin-imagechooser"
+    version="1.0.0">
+    <name>Cordova Plugin for selecting image</name>
+    <description></description>
+    <license>MIT</license>
+    <keywords></keywords>
+
+    <js-module src="www/plugin.js" name="plugin">
+        <clobbers target="imagechooser" />
+    </js-module>
+    
+    <!-- android -->
+    <platform name="android">
+
+      <config-file target="res/xml/config.xml" parent="/*">
+        <feature name="imagechooser">
+          <param name="android-package" value="org.sunbird.ImageChooser" />
+          <param name="onload" value="true" />
+        </feature>
+      </config-file>
+
+      <source-file src="src/android/org/sunbird/ImageChooser.java" target-dir="src/org/sunbird/" />
+      <source-file src="src/android/org/sunbird/ImagePicker.java" target-dir="src/org/sunbird/" />
+
+    </platform>
+
+    <!-- ios -->
+    <!-- <platform name="ios">
+        <js-module src="www/plugin.js" name="plugin">
+            <runs/>
+            <clobbers target="GenieSDK" />
+        </js-module>
+        <config-file target="config.xml" parent="/*">
+            <feature name="MyCordovaPlugin">
+                <param name="ios-package" value="MyCordovaPlugin" onload="true" />
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/MyCordovaPlugin.h" />
+        <source-file src="src/ios/MyCordovaPlugin.m" />
+    </platform> -->
+</plugin>
