@@ -23,7 +23,7 @@
 				<button ion-button clear icon-only class="sb-common-title">
 					<ion-icon ios="ios-cloud-download" md="md-cloud-download" class="sb-common-white-icon"></ion-icon>
 				</button>
-				<div class="sb-common-footer-text">Please download to play</div>
+				<div class="sb-common-footer-text">{{'PLEASE_DOWNLOAD_TO_PLAY' | translate}}</div>
 			</div>
 		</div>
 	</div>
@@ -49,8 +49,8 @@
 				<div class="sb-offline-title">
 					<ion-icon ios="ios-notifications-off" md="md-notifications-off" class="sb-offline-white-icon"></ion-icon>
 				</div>
-				<div class="sb-common-footer-text">You are not connected to the internet</div>
-				<div class="sb-common-footer-text sb-sub-footer">Only downloaded content can be played offline</div>
+				<div class="sb-common-footer-text">{{'YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET' | translate}}</div>
+				<div class="sb-common-footer-text sb-sub-footer">{{'ONLY_DOWNLOADED_CONTENT_CAN_BE_PLAYED_OFFLINE' | translate}}</div>
 			</div>
 		</div>
 	</div>
@@ -90,7 +90,7 @@
 						<button ion-button outline small>{{content?.resourceType}}</button>
 					</div>
 				</div>
-				<div class="right">
+				<div class="right" *ngIf="contentDetail?.me_totalRatings">
 					<div (click)="rateContent('manual')" class="sb-rating-view">
 						<span class="sb-rating-value">{{ content?.me_totalRatings ? content?.me_totalRatings : 0 }}</span>
 						<span class="sb-rating-star">
@@ -139,6 +139,10 @@
 					<button ion-button clear icon-only class="sb-btn-tile" (click)="rateContent('manual')">
 						<ion-icon ios="ios-star-outline" md="md-star-outline" class="sb-dt-card-blue-icon"></ion-icon>
 						<span class="sb-btn-footer-text">{{'RATE' | translate}}</span>
+					</button>
+					<button ion-button clear icon-only class="sb-btn-tile" (click)="downloadContent()" *ngIf="content?.downloadable && this.isUpdateAvail">
+						<ion-icon ios="ios-refresh" md="md-refresh" class="sb-dt-card-blue-icon"></ion-icon>
+						<span class="sb-btn-footer-text">{{'UPDATE' | translate}}</span>
 					</button>
 				</div>
 			</div>

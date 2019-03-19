@@ -135,6 +135,11 @@ export class ContentRatingAlertComponent {
     this.showCommentBox = false;
     this.viewCtrl.dismiss();
   }
+  closePopover() {
+    this.showCommentBox = false;
+    this.viewCtrl.dismiss();
+  }
+
   submit() {
     const option = {
       contentId: this.content.identifier,

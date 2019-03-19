@@ -12,7 +12,8 @@ import {
   Navbar,
   Platform,
   IonicApp,
-  AlertController
+  AlertController,
+  ToastController
 } from 'ionic-angular';
 import { FileSizePipe } from '@app/pipes/file-size/file-size';
 import { SocialSharing } from '@ionic-native/social-sharing';
@@ -76,6 +77,7 @@ import { SbDownloadPopupComponent } from '@app/component/popups/sb-download-popu
   templateUrl: 'content-details.html',
 })
 export class ContentDetailsPage {
+  [x: string]: any;
   apiLevel: number;
   appAvailability: string;
   content: any;
@@ -145,6 +147,8 @@ export class ContentDetailsPage {
   localImage: any;
   isUsrGrpAlrtOpen: Boolean = false;
   showDownload: boolean;
+  contentPath: Array<any> [];
+  FileSizePipe: any;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -168,6 +172,7 @@ export class ContentDetailsPage {
     private courseUtilService: CourseUtilService,
     private deviceInfoService: DeviceInfoService,
     private network: Network,
+    public  toastController: ToastController,
     private fileSizePipe: FileSizePipe
   ) {
 
@@ -180,14 +185,15 @@ export class ContentDetailsPage {
     this.checkDeviceAPILevel();
     this.checkappAvailability();
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
+
   }
 
   ionViewDidLoad() {
-    this.navBar.backButtonClick = (e: UIEvent) => {
-      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
-        true, this.cardData.identifier, this.corRelationList);
-      this.handleNavBackButton();
-    };
+    // this.navBar.backButtonClick = (e: UIEvent) => {
+    //   this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
+    //     true, this.cardData.identifier, this.corRelationList);
+    //   this.handleNavBackButton();
+    // };
     this.handleDeviceBackButton();
 
     if (!AppGlobalService.isPlayerLaunched) {
@@ -209,6 +215,9 @@ export class ContentDetailsPage {
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.downloadAndPlay = this.navParams.get('downloadAndPlay');
     this.playOnlineSpinner = true;
+    this.contentPath = this.navParams.get('paths');
+    console.log('BreadCrumbs', this.contentPath);
+   console.log('NAVPARAMS FROM COLLECTION ', this.navParams.get('paths'));
 
     if (this.isResumedCourse) {
       if (this.isUsrGrpAlrtOpen) {
@@ -241,7 +250,7 @@ export class ContentDetailsPage {
       this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
     }
     this.popToPreviousPage(true);
-   // this.backButtonFunc();
+    // this.backButtonFunc();
   }
 
   handleDeviceBackButton() {
@@ -280,6 +289,18 @@ export class ContentDetailsPage {
     this.events.subscribe('playConfig', (config) => {
       this.playContent(config.streaming);
     });
+  }
+  // You are Offline Toast
+  presentToastForOffline() {
+    const toast = this.toastController.create({
+      message: 'You are offline',
+      showCloseButton: true,
+      // icon : 'information',
+      position: 'top',
+      closeButtonText: '',
+      cssClass: 'toastAfterHeader'
+    });
+    toast.present();
   }
 
   /**
@@ -355,20 +376,11 @@ export class ContentDetailsPage {
 
       paramsMap['IsPlayed'] = 'Y';
       const popover = this.popoverCtrl.create(ContentRatingAlertComponent, {
-        sbPopoverHeading: 'Rate the content',
-        actionsButtons: [
-          {
-            btntext: 'Rate',
-            btnClass: 'popover-color'
-          },
-        ],
-        icon: {
-          md: 'md-sad',
-          ios: 'ios-sad',
-          className: ''
-        },
-        metaInfo: 'You have rated 3 stars',
-        sbPopoverContent: 'Some content might not be playable offline.',
+        content: this.content,
+        pageId: PageId.CONTENT_DETAIL,
+        rating: this.userRating,
+        comment: this.ratingComment,
+        popupType: popupType,
       }, {
           cssClass: 'sb-popover info',
         });
@@ -497,7 +509,7 @@ export class ContentDetailsPage {
 
   extractApiResponse(data) {
     this.content = data.result.contentData;
-   // console.log('DATA RESULT Content  ==>', this.content);
+    // console.log('DATA RESULT Content  ==>', this.content);
     this.content.downloadable = data.result.isAvailableLocally;
     if (this.content.appIcon) {
       if (this.content.appIcon.includes('http:') || this.content.appIcon.includes('https:')) {
@@ -782,6 +794,11 @@ export class ContentDetailsPage {
           this.downloadProgress = res.data.downloadProgress === -1 ? '0' : res.data.downloadProgress;
           console.log('from content details', this.downloadProgress);
         }
+
+        // Present Toast when the Device is Offline
+        // if (!this.commonUtilService.networkInfo.isNetworkAvailable && !this.content.isAvailableLocally) {
+        // this.presentToastForOffline();
+        // }
 
         // Get child content
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
@@ -1125,7 +1142,7 @@ export class ContentDetailsPage {
       pageName: PageId.CONTENT_DETAIL,
       corRelationList: this.corRelationList,
       sbPopoverHeading: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE'),
-      sbPopoverMainTitle: this.content.name + this.content.subject,
+      sbPopoverMainTitle: this.content.name + '' + this.content.subject,
       actionsButtons: [
         {
           btntext: this.commonUtilService.translateMessage('REMOVE'),
@@ -1256,25 +1273,25 @@ export class ContentDetailsPage {
     popover.present();
   }
 
-   /* SUDO
-    if firstprperty is there and secondprperty is not there, then return firstprperty value
-    else if firstprperty is not there and secondprperty is there, then return secondprperty value
-    else do the merger of firstprperty and secondprperty value and return merged value
-  */
- mergeProperties(firstProp, secondProp) {
-  if (this.content[firstProp] && !this.content[secondProp]) {
-    return this.content[firstProp];
-  } else if (!this.content[firstProp] && this.content[secondProp]) {
-    return this.content[secondProp];
-  } else {
-    let first: any;
-    let second: any;
-    first = this.content[firstProp].split(', ');
-    second = this.content[secondProp].split(', ');
-    first = second.concat(first);
-    first = Array.from(new Set(first));
-    return first.join(', ');
+  /* SUDO
+   if firstprperty is there and secondprperty is not there, then return firstprperty value
+   else if firstprperty is not there and secondprperty is there, then return secondprperty value
+   else do the merger of firstprperty and secondprperty value and return merged value
+ */
+  mergeProperties(firstProp, secondProp) {
+    if (this.content[firstProp] && !this.content[secondProp]) {
+      return this.content[firstProp];
+    } else if (!this.content[firstProp] && this.content[secondProp]) {
+      return this.content[secondProp];
+    } else {
+      let first: any;
+      let second: any;
+      first = this.content[firstProp].split(', ');
+      second = this.content[secondProp].split(', ');
+      first = second.concat(first);
+      first = Array.from(new Set(first));
+      return first.join(', ');
+    }
   }
-}
 }
 
