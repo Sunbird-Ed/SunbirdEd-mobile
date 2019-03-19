@@ -2,14 +2,13 @@ import { CommonUtilService } from './../../../service/common-util.service';
 import { Component, NgZone, Inject } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import {
-  ShareUtil
-} from 'sunbird';
-import {
   TelemetrySyncStat,
   TelemetryStat,
   TelemetryService,
   SharedPreferences,
-  TelemetryImpressionRequest
+  TelemetryImpressionRequest,
+  TelemetryExportResponse,
+  TelemetryExportRequest
 } from 'sunbird-sdk';
 import { DataSyncType } from './datasynctype.enum';
 import { TranslateService } from '@ngx-translate/core';
@@ -23,6 +22,7 @@ import {
   InteractSubtype,
 } from '../../../service/telemetry-constants';
 
+declare const cordova;
 const KEY_DATA_SYNC_TYPE = 'sync_config';
 const KEY_DATA_SYNC_TIME = 'data_sync_time';
 
@@ -45,8 +45,6 @@ export class DatasyncPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
-    private translate: TranslateService,
-    private shareUtil: ShareUtil,
     private social: SocialSharing,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
@@ -121,9 +119,12 @@ export class DatasyncPage {
   shareTelemetry() {
     const loader = this.commonUtilService.getLoader();
     loader.present();
-    this.shareUtil.exportTelemetry(path => {
+    const telemetryExportRequest: TelemetryExportRequest = {
+      destinationFolder: cordova.file.dataDirectory
+    };
+    this.telemetryService.exportTelemetry(telemetryExportRequest).subscribe((data:  TelemetryExportResponse) => {
       loader.dismiss();
-      this.social.share('', '', 'file://' + path, '');
+      this.social.share('', '', 'file://' + telemetryExportRequest, '');
     }, () => {
       loader.dismiss();
       this.commonUtilService.showToast('SHARE_TELEMETRY_FAILED');
