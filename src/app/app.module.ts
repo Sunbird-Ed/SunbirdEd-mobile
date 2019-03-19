@@ -21,7 +21,8 @@ import {TncUpdateHandlerService} from '@app/service/handlers/tnc-update-handler.
 import {SunbirdSdk} from 'sunbird-sdk';
 import {UniqueDeviceID} from '@ionic-native/unique-device-id';
 import {Device} from '@ionic-native/device';
-import { TabsPage } from '@app/pages/tabs/tabs';
+import {TabsPage} from '@app/pages/tabs/tabs';
+import {AndroidPermissionsService} from "@app/service/android-permissions/android-permissions.service";
 
 export const translateHttpLoaderFactory = (httpClient: HttpClient) => {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
@@ -246,6 +247,7 @@ export const sunbirdSdkFactory =
     TncUpdateHandlerService,
     UniqueDeviceID,
     Device,
+    AndroidPermissionsService,
     ...sunbirdSdkServicesProvidersFactory(),
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     {provide: APP_INITIALIZER, useFactory: sunbirdSdkFactory, deps: [], multi: true}
