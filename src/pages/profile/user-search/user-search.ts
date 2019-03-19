@@ -1,10 +1,9 @@
 import {Component, Inject, NgZone, Renderer2, ViewChild} from '@angular/core';
-import {Visit} from 'sunbird';
 import {LoadingController, NavController} from 'ionic-angular';
 import {ProfilePage} from './../profile';
 import {TelemetryGeneratorService} from '@app/service';
 import {CommonUtilService} from '../../../service/common-util.service';
-import {AuthService, ProfileService, ServerProfileSearchCriteria} from 'sunbird-sdk';
+import {AuthService, ProfileService, ServerProfileSearchCriteria, Visit} from 'sunbird-sdk';
 import {Environment, ImpressionType, PageId} from '../../../service/telemetry-constants';
 
 @Component({

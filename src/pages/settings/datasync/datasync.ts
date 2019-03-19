@@ -2,14 +2,14 @@ import { CommonUtilService } from './../../../service/common-util.service';
 import { Component, NgZone, Inject } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import {
-  Impression,
   ShareUtil
 } from 'sunbird';
 import {
   TelemetrySyncStat,
   TelemetryStat,
   TelemetryService,
-  SharedPreferences
+  SharedPreferences,
+  TelemetryImpressionRequest
 } from 'sunbird-sdk';
 import { DataSyncType } from './datasynctype.enum';
 import { TranslateService } from '@ngx-translate/core';
@@ -77,10 +77,10 @@ export class DatasyncPage {
 
   ionViewDidLoad() {
     this.init();
-    const impression = new Impression();
-    impression.type = ImpressionType.VIEW;
-    impression.pageId = PageId.SETTINGS_DATASYNC;
-    impression.env = Environment.SETTINGS;
+    const telemetryImpressionRequest = new TelemetryImpressionRequest();
+    telemetryImpressionRequest.type = ImpressionType.VIEW;
+    telemetryImpressionRequest.pageId = PageId.SETTINGS_DATASYNC;
+    telemetryImpressionRequest.env = Environment.SETTINGS;
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
       PageId.SETTINGS_DATASYNC,

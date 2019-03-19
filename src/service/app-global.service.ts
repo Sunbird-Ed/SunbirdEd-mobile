@@ -1,6 +1,5 @@
 import {Inject, Injectable, OnDestroy} from '@angular/core';
 import {Environment, InteractSubtype, InteractType, PageId} from './telemetry-constants';
-import {BuildParamService} from 'sunbird';
 import {Events, PopoverController, PopoverOptions} from 'ionic-angular';
 import {UpgradePopover} from '../pages/upgrade/upgrade-popover';
 import {GenericAppConfig, PreferenceKey} from '../app/app.constant';
@@ -62,7 +61,6 @@ export class AppGlobalService implements OnDestroy {
         @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
         private event: Events,
         private popoverCtrl: PopoverController,
-        private buildParamService: BuildParamService,
         private telemetryGeneratorService: TelemetryGeneratorService,
         @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences
 
@@ -229,7 +227,7 @@ export class AppGlobalService implements OnDestroy {
     }
 
     readConfig() {
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_CARDS)
+        this.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_CARDS)
             .then(response => {
                 this.DISPLAY_ONBOARDING_CARDS = response === 'true' ? true : false;
             })
@@ -237,7 +235,7 @@ export class AppGlobalService implements OnDestroy {
                 this.DISPLAY_ONBOARDING_CARDS = false;
             });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE)
+        this.getBuildConfigValue(GenericAppConfig.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE)
             .then(response => {
                 this.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE = response === 'true' ? true : false;
             })
@@ -245,7 +243,7 @@ export class AppGlobalService implements OnDestroy {
                 this.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE = false;
             });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_PAGE)
+        this.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_PAGE)
             .then(response => {
                 this.DISPLAY_ONBOARDING_PAGE = response === 'true' ? true : false;
             })
@@ -253,7 +251,7 @@ export class AppGlobalService implements OnDestroy {
                 this.DISPLAY_ONBOARDING_PAGE = false;
             });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER)
+        this.getBuildConfigValue(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER)
             .then(response => {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER = response === 'true' ? true : false;
             })
@@ -261,7 +259,7 @@ export class AppGlobalService implements OnDestroy {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER = false;
             });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER)
+        this.getBuildConfigValue(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER)
             .then(response => {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER = response === 'true' ? true : false;
             })
@@ -269,7 +267,7 @@ export class AppGlobalService implements OnDestroy {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER = false;
             });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER)
+        this.getBuildConfigValue(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER)
             .then(response => {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER = response === 'true' ? true : false;
             })
@@ -277,7 +275,7 @@ export class AppGlobalService implements OnDestroy {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER = false;
             });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT)
+        this.getBuildConfigValue(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT)
             .then(response => {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT = response === 'true' ? true : false;
             })
@@ -285,21 +283,21 @@ export class AppGlobalService implements OnDestroy {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT = false;
             });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT)
+        this.getBuildConfigValue(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT)
             .then(response => {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = response === 'true' ? true : false;
             })
             .catch(error => {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = false;
             });
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.TRACK_USER_TELEMETRY)
+        this.getBuildConfigValue(GenericAppConfig.TRACK_USER_TELEMETRY)
             .then(response => {
                 this.TRACK_USER_TELEMETRY = response === 'true' ? true : false;
             })
             .catch(error => {
                 this.TRACK_USER_TELEMETRY = false;
             });
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.CONTENT_STREAMING_ENABLED)
+        this.getBuildConfigValue(GenericAppConfig.CONTENT_STREAMING_ENABLED)
             .then(response => {
                 this.CONTENT_STREAMING_ENABLED = response === 'true' ? true : false;
             })
@@ -307,28 +305,28 @@ export class AppGlobalService implements OnDestroy {
                 this.CONTENT_STREAMING_ENABLED = false;
             });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_SCAN_PAGE)
+        this.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_SCAN_PAGE)
             .then(response => {
                 this.DISPLAY_ONBOARDING_SCAN_PAGE = response === 'true' ? true : false;
             })
             .catch(error => {
                 this.DISPLAY_ONBOARDING_SCAN_PAGE = false;
             });
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE)
+        this.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE)
             .then(response => {
                 this.DISPLAY_ONBOARDING_CATEGORY_PAGE = response === 'true' ? true : false;
             })
             .catch(error => {
                 this.DISPLAY_ONBOARDING_CATEGORY_PAGE = false;
             });
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.OPEN_RAPDISCOVERY_ENABLED)
+        this.getBuildConfigValue(GenericAppConfig.OPEN_RAPDISCOVERY_ENABLED)
             .then(response => {
                 this.OPEN_RAPDISCOVERY_ENABLED = response === 'true' ? true : false;
             })
             .catch(error => {
                 this.OPEN_RAPDISCOVERY_ENABLED = false;
             });
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.SUPPORT_EMAIL)
+        this.getBuildConfigValue(GenericAppConfig.SUPPORT_EMAIL)
             .then(response => {
                 this.SUPPORT_EMAIL = response;
             })

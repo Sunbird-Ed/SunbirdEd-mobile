@@ -6,11 +6,9 @@ import { DatasyncPage } from './datasync/datasync';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { AboutUsPage } from './about-us/about-us';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { TranslateService } from '@ngx-translate/core';
 import { AppVersion } from '@ionic-native/app-version';
 import {
   ShareUtil,
-  Impression,
 } from 'sunbird';
 import { PreferenceKey } from '../../app/app.constant';
 import {
@@ -18,10 +16,10 @@ import {
   Environment,
   PageId,
   InteractType,
-  InteractSubtype
+  InteractSubtype,
 } from '../../service/telemetry-constants';
 import { TelemetryGeneratorService } from '@app/service';
-import { SharedPreferences, DeviceInfo } from 'sunbird-sdk';
+import { SharedPreferences, DeviceInfo, TelemetryImpressionRequest } from 'sunbird-sdk';
 
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
 const SUBJECT_NAME = 'support request';
@@ -42,7 +40,6 @@ export class SettingsPage {
     private navCtrl: NavController,
     private appVersion: AppVersion,
     private socialSharing: SocialSharing,
-    private translate: TranslateService,
     @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
     private shareUtil: ShareUtil,
     private commonUtilService: CommonUtilService,
@@ -61,10 +58,10 @@ export class SettingsPage {
 
 
   ionViewDidLoad() {
-    const impression = new Impression();
-    impression.type = ImpressionType.VIEW;
-    impression.pageId = PageId.SETTINGS;
-    impression.env = Environment.SETTINGS;
+    const telemetryImpressionRequest = new TelemetryImpressionRequest();
+    telemetryImpressionRequest.type = ImpressionType.VIEW;
+    telemetryImpressionRequest.pageId = PageId.SETTINGS;
+    telemetryImpressionRequest.env = Environment.SETTINGS;
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
       PageId.SETTINGS,
