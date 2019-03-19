@@ -7,9 +7,6 @@ import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { AboutUsPage } from './about-us/about-us';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { AppVersion } from '@ionic-native/app-version';
-import {
-  ShareUtil,
-} from 'sunbird';
 import { PreferenceKey } from '../../app/app.constant';
 import {
   ImpressionType,
@@ -41,7 +38,6 @@ export class SettingsPage {
     private appVersion: AppVersion,
     private socialSharing: SocialSharing,
     @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
-    private shareUtil: ShareUtil,
     private commonUtilService: CommonUtilService,
     private appGlobalService: AppGlobalService,
     private telemetryGeneratorService: TelemetryGeneratorService,
@@ -138,13 +134,14 @@ export class SettingsPage {
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SHARE_APP_CLICKED);
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SHARE_APP_INITIATED);
 
-    this.shareUtil.exportApk(filePath => {
-      this.generateInteractTelemetry(InteractType.OTHER, InteractSubtype.SHARE_APP_SUCCESS);
-      loader.dismiss();
-      this.socialSharing.share('', '', 'file://' + filePath, '');
-    }, error => {
-      loader.dismiss();
-    });
+  // TODO
+    // this.shareUtil.exportApk(filePath => {
+    //   this.generateInteractTelemetry(InteractType.OTHER, InteractSubtype.SHARE_APP_SUCCESS);
+    //   loader.dismiss();
+    //   this.socialSharing.share('', '', 'file://' + filePath, '');
+    // }, error => {
+    //   loader.dismiss();
+    // });
   }
 
   generateInteractTelemetry(interactionType, interactSubtype) {
