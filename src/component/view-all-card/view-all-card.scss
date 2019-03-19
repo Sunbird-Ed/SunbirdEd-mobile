@@ -8,6 +8,7 @@ view-all-card {
         }
     }
     .grade_ellipsis{
+        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis; 
     }

@@ -5,7 +5,7 @@
   </div>
   <div class="sb-card-details">
     <div class="title">{{content?.courseName || content?.name}} </div>
-    <div><span class="info class"> {{content?.subject}}</span><span *ngIf="content?.gradeLevel && content?.subject" class="separator-dot"></span><span class="grade_ellipsis info subject">
+    <div class="grade_ellipsis"><span class="info class"> {{content?.subject}}</span><span *ngIf="content?.gradeLevel && content?.subject" class="separator-dot"></span><span class=" info subject">
         {{content?.gradeLevel}}
       </span></div>
       <!-- [ngClass]="{'active': grade?.selected, '': !grade?.selected}" -->
@@ -19,7 +19,7 @@
   </div>
   <div class="sb-card-details">
     <div class="title">{{content?.courseName || content?.name}} </div>
-    <div><span class="info class">{{content?.subject}}</span><span *ngIf="content?.gradeLevel && content?.subject" class="separator-dot"></span><span class="grade_ellipsis info subject">
+    <div class="grade_ellipsis"><span class="info class">{{content?.subject}}</span><span *ngIf="content?.gradeLevel && content?.subject" class="separator-dot"></span><span class="info subject">
         {{content?.gradeLevel}}
       </span></div>
   </div>
