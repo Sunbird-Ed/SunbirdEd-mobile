@@ -3,7 +3,6 @@ import {Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverCo
 import {TranslateService} from '@ngx-translate/core';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
-import {FileUtil, ShareUtil} from 'sunbird';
 import {ContentDetailsPage} from '@app/pages/content-details/content-details';
 import {ConfirmAlertComponent, ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
 import {ContentType, MimeType, ShareUrl} from '@app/app';
@@ -13,6 +12,7 @@ import {
   Content,
   ContentDetailRequest,
   ContentEventType,
+  ContentExportRequest,
   ContentImport,
   ContentImportCompleted,
   ContentImportRequest,
@@ -203,11 +203,9 @@ export class CollectionDetailsEtbPage {
     private zone: NgZone,
     private events: Events,
     private popoverCtrl: PopoverController,
-    private fileUtil: FileUtil,
     private platform: Platform,
     private translate: TranslateService,
     private social: SocialSharing,
-    private shareUtil: ShareUtil,
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
@@ -808,11 +806,16 @@ export class CollectionDetailsEtbPage {
     loader.present();
     const url = this.baseUrl + ShareUrl.COLLECTION + this.contentDetail.identifier;
     if (this.contentDetail.isAvailableLocally) {
-      this.shareUtil.exportEcar(this.contentDetail.identifier, path => {
-        loader.dismiss();
-        this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.contentDetail.contentType);
-        this.social.share('', '', 'file://' + path, url);
-      }, () => {
+      const exportContentRequest: ContentExportRequest = {
+        contentIds: [this.contentDetail.identifier],
+        destinationFolder: cordova.file.externalDataDirectory
+      };
+      this.contentService.exportContent(exportContentRequest).toPromise()
+        .then(() => {
+          loader.dismiss();
+          this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.contentDetail.contentType);
+          this.social.share('', '', '' + cordova.file.externalDataDirectory, url);
+        }).catch(() => {
         loader.dismiss();
         this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
       });
