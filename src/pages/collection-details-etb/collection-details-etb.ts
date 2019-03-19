@@ -1,4 +1,3 @@
-
 import {
   Component,
   NgZone,
@@ -11,8 +10,11 @@ import {
   Events,
   Platform,
   Navbar,
-  PopoverController
+  PopoverController,
+  ToastController
 } from 'ionic-angular';
+import { FileSizePipe  } from '@app/pipes/file-size/file-size';
+import { ViewController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
@@ -37,7 +39,7 @@ import {
   ChildContentRequest
 } from 'sunbird';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
-import { ContentActionsComponent, ConfirmAlertComponent, ContentRatingAlertComponent } from '@app/component';
+import { ContentActionsComponent, SbPopoverComponent, ConfirmAlertComponent, ContentRatingAlertComponent } from '@app/component';
 import {
   ContentType,
   MimeType,
@@ -45,6 +47,7 @@ import {
 } from '@app/app';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService } from '@app/service';
+import { SbDownloadPopupComponent } from '@app/component/popups/sb-download-popup/sb-download-popup';
 
 /**
  * Generated class for the CollectionDetailsEtbPage page.
@@ -194,11 +197,18 @@ export class CollectionDetailsEtbPage {
   public source = '';
   isChildClickable = false;
   shownGroup = null;
+  content: any;
+  data: any;
+  isChild = false;
+  contentId: string;
+  batchDetails: any;
+  pageName: any;
 
   // Local Image
   localImage = '';
 
   @ViewChild(Navbar) navBar: Navbar;
+  showDownload: boolean;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -215,7 +225,10 @@ export class CollectionDetailsEtbPage {
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private courseUtilService: CourseUtilService
+    private courseUtilService: CourseUtilService,
+    public viewCtrl: ViewController,
+    private toastCtrl: ToastController,
+    private fileSizePipe: FileSizePipe
   ) {
 
     this.objRollup = new Rollup();
@@ -223,6 +236,10 @@ export class CollectionDetailsEtbPage {
     this.checkCurrentUserType();
     this.getBaseURL();
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
+    this.content = this.navParams.get('content');
+    this.data = this.navParams.get('data');
+    this.batchDetails = this.navParams.get('batchDetails');
+    this.pageName = this.navParams.get('pageName');
   }
 
   ionViewDidLoad() {
@@ -241,6 +258,7 @@ export class CollectionDetailsEtbPage {
     this.zone.run(() => {
       this.resetVariables();
       this.cardData = this.navParams.get('content');
+      console.log('this.cardData', this.cardData);
       this.corRelationList = this.navParams.get('corRelation');
       const depth = this.navParams.get('depth');
       this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
@@ -277,7 +295,7 @@ export class CollectionDetailsEtbPage {
     });
   }
   // toggle the card
-   toggleGroup(group) {
+  toggleGroup(group) {
     if (this.isGroupShown(group)) {
       this.shownGroup = null;
     } else {
@@ -339,8 +357,16 @@ export class CollectionDetailsEtbPage {
           rating: this.userRating,
           comment: this.ratingComment,
           pageId: PageId.COLLECTION_DETAIL,
-        }, {
-            cssClass: 'content-rating-alert'
+          sbPopoverHeading: this.commonUtilService.translateMessage('RATE_THE_CONTENT'),
+         actionsButtons: [
+          {
+            btntext: 'Rate',
+            btnClass: 'popover-color'
+          },
+        ],
+      },
+      {
+            cssClass: 'sb-popover info'
           });
         popUp.present();
         popUp.onDidDismiss(data => {
@@ -422,11 +448,11 @@ export class CollectionDetailsEtbPage {
 
     if (this.contentDetail.appIcon) {
       if (this.contentDetail.appIcon.includes('http:') || this.contentDetail.appIcon.includes('https:')) {
-          if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-                  this.contentDetail.appIcon = this.contentDetail.appIcon;
-            } else {
-                  this.contentDetail.appIcon = this.defaultAppIcon;
-            }
+        if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+          this.contentDetail.appIcon = this.contentDetail.appIcon;
+        } else {
+          this.contentDetail.appIcon = this.defaultAppIcon;
+        }
       } else if (data.result.basePath) {
         this.localImage = data.result.basePath + '/' + this.contentDetail.appIcon;
       }
@@ -603,7 +629,7 @@ export class CollectionDetailsEtbPage {
           this.isDownloadStarted = false;
           this.showLoading = false;
           if (Boolean(this.isUpdateAvailable)) {
-          //  this.showChildrenLoader = true;
+            //  this.showChildrenLoader = true;
             this.setChildContents();
           } else {
             const errorRes = JSON.parse(error);
@@ -630,7 +656,7 @@ export class CollectionDetailsEtbPage {
         data = JSON.parse(data);
         this.zone.run(() => {
           if (data && data.result && data.result.children) {
-          //  console.log('ChildrenData', this.childrenData);
+            //  console.log('ChildrenData', this.childrenData);
             this.childrenData = data.result.children;
           }
 
@@ -733,6 +759,7 @@ export class CollectionDetailsEtbPage {
     this.cardData = '';
     this.childrenData = [];
     this.contentDetail = '';
+    this.showDownload = false;
     this.showDownloadBtn = false;
     this.downloadIdentifiers = [];
     this.queuedIdentifiers = [];
@@ -751,12 +778,16 @@ export class CollectionDetailsEtbPage {
       this.zone.run(() => {
         data = JSON.parse(data);
         const res = data;
-
+        console.log('Geni Event');
+        console.log(data);
+        console.log(res.data.downloadProgress);
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
           if (res.data.downloadProgress === -1 || res.data.downloadProgress === '-1') {
             this.downloadProgress = 0;
+            console.log('first download', this.downloadProgress);
           } else if (res.data.identifier === this.contentDetail.identifier) {
             this.downloadProgress = res.data.downloadProgress;
+            console.log('second download', this.downloadProgress);
           }
 
           if (this.downloadProgress === 100) {
@@ -777,6 +808,7 @@ export class CollectionDetailsEtbPage {
               this.isDownloadStarted = false;
               this.showDownloadBtn = false;
               this.isDownloadCompleted = true;
+              this.showDownload = false;
               this.contentDetail.isAvailableLocally = true;
               this.downloadPercentage = 0;
               this.updateSavedResources();
@@ -857,8 +889,10 @@ export class CollectionDetailsEtbPage {
     this.showLoading = true;
     this.isDownloadStarted = true;
     this.downloadPercentage = 0;
+    this.showDownload = true;
     this.importContent(this.downloadIdentifiers, true, true);
-  }
+      }
+
 
   /**
    * To get readable file size
@@ -964,21 +998,35 @@ export class CollectionDetailsEtbPage {
 
   showDownloadConfirmationAlert(myEvent) {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-      const popover = this.popoverCtrl.create(ConfirmAlertComponent, {}, {
-        cssClass: 'confirm-alert-box'
-      });
-      popover.present({
-        ev: myEvent
+      const popover = this.popoverCtrl.create(ConfirmAlertComponent,  {
+        sbPopoverHeading: this.commonUtilService.translateMessage('DOWNLOAD'),
+        sbPopoverMainTitle: this.contentDetail.name + this.contentDetail.subject,
+        actionsButtons: [
+          {
+            btntext: this.commonUtilService.translateMessage('DOWNLOAD'),
+            btnClass: 'popover-color'
+          },
+        ],
+        icon: null,
+        metaInfo: this.contentDetail.contentTypesCount.TextBookUnit +
+         'items' +  '(' + this.fileSizePipe.transform(this.downloadSize, 2) + ')',
+        //  '(' + this.fileSizePipe.transform(this.contentDetail.size, 2) + ')'
+      }, {
+          cssClass: 'sb-popover info',
+        });
+        popover.present({
+        ev: event
       });
       popover.onDidDismiss((canDownload: boolean = false) => {
-        if (canDownload) {
-          this.downloadAllContent();
+        console.log('downloaddddddd content');
+            if (canDownload) {
+           this.downloadAllContent();
         }
       });
     } else {
       this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
     }
-  }
+}
 
   cancelDownload() {
     this.telemetryGeneratorService.generateCancelDownloadTelemetry(this.contentDetail);
@@ -1021,5 +1069,101 @@ export class CollectionDetailsEtbPage {
     this.downloadProgress = 0;
     this.events.unsubscribe('genie.event');
   }
+  showPopOver() {
+    const confirm = this.popoverCtrl.create(SbPopoverComponent, {
+      content: this.contentDetail,
+      isChild: this.isDepthChild,
+      objRollup: this.objRollup,
+      pageName: PageId.COLLECTION_DETAIL,
+      corRelationList: this.corRelationList,
+      sbPopoverHeading: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE'),
+      sbPopoverMainTitle: this.contentDetail.name + this.contentDetail.subject,
+      actionsButtons: [
+        {
+          btntext: this.commonUtilService.translateMessage('REMOVE'),
+          btnClass: 'popover-color'
+        },
+      ],
+      icon: null,
+      metaInfo: this.contentDetail.contentTypesCount.TextBookUnit +
+       'items' + '(' + this.fileSizePipe.transform(this.contentDetail.size, 2) + ')',
+      sbPopoverContent: 'Are you sure you want to delete ?'
+    }, {
+        cssClass: 'sb-popover danger',
+      });
+    confirm.present({
+      ev: event
+    });
+    confirm.onDidDismiss((canDelete: boolean = false) => {
+      if (canDelete) {
+        this.deleteContent();
+      }
+    });
+  }
 
+    /**
+   * Construct content delete request body
+   */
+  getDeleteRequestBody() {
+    const apiParams = {
+      contentDeleteList: [{
+        contentId: this.contentId,
+        isChildContent: this.isChild
+      }]
+    };
+    return apiParams;
+  }
+  showToaster(message) {
+    const toast = this.toastCtrl.create({
+      message: message,
+      duration: 2000,
+      position: 'bottom'
+    });
+    toast.present();
+  }
+
+  getMessageByConstant(constant: string) {
+    let msg = '';
+    this.translate.get(constant).subscribe(
+      (value: any) => {
+        msg = value;
+      }
+    );
+    return msg;
+  }
+  deleteContent() {
+    const telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = this.content.identifier;
+    telemetryObject.type = this.content.contentType;
+    telemetryObject.version = this.content.pkgVersion;
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.DELETE_CLICKED,
+      Environment.HOME,
+      this.pageName,
+      telemetryObject,
+      undefined,
+      this.objRollup,
+      this.corRelationList);
+      const tmp = this.getDeleteRequestBody();
+      console.log('tmpppppppppppp', tmp);
+    this.contentService.deleteContent(tmp).then((res: any) => {
+      const data = JSON.parse(res);
+      if (data.result && data.result.status === 'NOT_FOUND') {
+        this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
+      } else {
+        // Publish saved resources update event
+        this.events.publish('savedResources:update', {
+          update: true
+        });
+        console.log('delete response: ', data);
+        this.showToaster(this.getMessageByConstant('MSG_RESOURCE_DELETED'));
+        this.viewCtrl.dismiss('delete.success');
+      }
+    }).catch((error: any) => {
+      console.log('delete response: ', error);
+      this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
+      this.viewCtrl.dismiss();
+    });
+  }
 }

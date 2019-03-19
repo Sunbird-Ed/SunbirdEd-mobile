@@ -31,6 +31,8 @@ import { ViewAllCardComponent } from './view-all-card/view-all-card';
 import { TextbookCardComponent } from './textbook-card/textbook-card';
 import { CollectionChildComponent } from './collection-child/collection-child';
 import { ApplicationHeaderComponent } from './application-header/application-header';
+import { SbPopoverComponent } from './popups/sb-popover/sb-popover';
+import { SbDownloadPopupComponent } from './popups/sb-download-popup/sb-download-popup';
 
 @NgModule({
     declarations: [
@@ -57,7 +59,9 @@ import { ApplicationHeaderComponent } from './application-header/application-hea
         SearchCardComponent,
         TextbookCardComponent,
         CollectionChildComponent,
-        ApplicationHeaderComponent
+        ApplicationHeaderComponent,
+        SbPopoverComponent,
+        SbDownloadPopupComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -94,7 +98,10 @@ import { ApplicationHeaderComponent } from './application-header/application-hea
         SearchCardComponent,
         TextbookCardComponent,
         CollectionChildComponent,
-        ApplicationHeaderComponent
+        ApplicationHeaderComponent,
+        SbPopoverComponent,
+        SbDownloadPopupComponent
+
     ],
     entryComponents: [
         ConfirmAlertComponent,
@@ -105,7 +112,9 @@ import { ApplicationHeaderComponent } from './application-header/application-hea
         UnenrollAlertComponent,
         EditContactDetailsPopupComponent,
         EditContactVerifyPopupComponent,
-        ApplicationHeaderComponent
+        ApplicationHeaderComponent,
+        SbPopoverComponent,
+        SbDownloadPopupComponent,
     ],
     providers: [
         FormAndFrameworkUtilService

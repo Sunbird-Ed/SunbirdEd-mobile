@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    id="cordova-plugin-sunbirdsplash"
+    version="1.0.0">
+    <name>Cordova Plugin for Splash Screen</name>
+    <description></description>
+    <license>MIT</license>
+    <keywords></keywords>
+
+    <dependency id="cordova-plugin-genie-sdk" url="https://github.com/project-sunbird/cordova-plugin-genie-sdk.git"/>
+
+    <framework src="build-extras.gradle" custom="true" type="gradleReference"/>
+
+    <js-module src="www/plugin.js" name="plugin">
+        <clobbers target="splashscreen" />
+    </js-module>
+    
+    <!-- android -->
+    <platform name="android">
+
+      <config-file target="res/xml/config.xml" parent="/*">
+        <feature name="splashscreen">
+          <param name="android-package" value="org.sunbird.SplashScreen" />
+          <param name="onload" value="true" />
+        </feature>
+      </config-file>
+
+      <config-file target="AndroidManifest.xml" parent="application/activity[@android:name='MainActivity']" mode="merge">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="@string/deeplink_base_url" android:pathPrefix="/public" android:scheme="https" />
+                <data android:host="@string/deeplink_base_url" android:pathPrefix="/public" android:scheme="http" />
+
+                <data android:host="@string/deeplink_base_url" android:pathPrefix="/dial" android:scheme="https" />
+                <data android:host="@string/deeplink_base_url" android:pathPrefix="/dial" android:scheme="http" />
+
+                <data android:host="@string/deeplink_base_url" android:pathPrefix="/play/content" android:scheme="https" />
+                <data android:host="@string/deeplink_base_url" android:pathPrefix="/play/content" android:scheme="http" />
+
+                <data android:host="@string/deeplink_base_url" android:pathPrefix="/play/collection" android:scheme="https" />
+                <data android:host="@string/deeplink_base_url" android:pathPrefix="/play/collection" android:scheme="http" />
+
+                <data android:host="@string/deeplink_base_url" android:pathPrefix="/learn/course" android:scheme="https" />
+                <data android:host="@string/deeplink_base_url" android:pathPrefix="/learn/course" android:scheme="http" />
+
+            </intent-filter>
+
+            <!--Deep link for ecar files-->
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:host="*"
+                    android:mimeType="application/octet-stream"
+                    android:pathPattern=".*\\.ecar" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="*"
+                    android:mimeType="application/ecar"
+                    android:scheme="content" />
+            </intent-filter>
+            <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:mimeType="*/*"
+                    android:scheme="content"
+                    android:host="*" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="file" />
+                <data android:pathPattern=".*\\.ecar" />
+                <data android:pathPattern="/*.*\\.ecar" />
+                <data android:pathPattern="/*.*\\..*\\.ecar" />
+                <data android:pathPattern="/*.*\\..*\\..*\\.ecar" />
+                <data android:pathPattern="/*.*\\..*\\..*\\..*\\.ecar" />
+                <data android:pathPattern="/*.*\\..*\\..*\\..*\\..*\\.ecar" />
+                <data android:pathPattern="/*.*\\..*\\..*\\..*\\..*\\..*\\.ecar" />
+                <data android:pathPattern="/*.*\\..*\\..*\\..*\\..*\\..*\\..*\\.ecar" />
+                <data android:pathPattern="/*.*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.ecar" />
+                <data android:host="*" />
+                <data android:mimeType="application/ecar" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="file" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.ecar" />
+                <data android:pathPattern="/*.*\\.ecar" />
+                <data android:pathPattern="/*.*\\..*\\.ecar" />
+                <data android:pathPattern="/*.*\\..*\\..*\\.ecar" />
+                <data android:pathPattern="/*.*\\..*\\..*\\..*\\.ecar" />
+                <data android:pathPattern="/*.*\\..*\\..*\\..*\\..*\\.ecar" />
+                <data android:pathPattern="/*.*\\..*\\..*\\..*\\..*\\..*\\.ecar" />
+                <data android:pathPattern="/*.*\\..*\\..*\\..*\\..*\\..*\\..*\\.ecar" />
+                <data android:pathPattern="/*.*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.ecar" />
+                <data android:host="*" />
+            </intent-filter>
+
+            <!--Deep link for gsa files-->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="file" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern="/*.*\\.gsa" />
+                <data android:pathPattern="/*.*\\..*\\.gsa" />
+                <data android:pathPattern="/*.*\\..*\\..*\\.gsa" />
+                <data android:pathPattern="/*.*\\..*\\..*\\..*\\.gsa" />
+                <data android:host="*" />
+            </intent-filter>
+
+             <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="*"
+                    android:mimeType="application/gsa"
+                    android:scheme="content" />
+            </intent-filter>
+
+            <!--Deep link for epar files-->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:host="*"
+                    android:mimeType="application/octet-stream"
+                    android:pathPattern=".*\\.epar" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="*"
+                    android:mimeType="application/epar"
+                    android:scheme="content" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="file" />
+                <data android:pathPattern="/*.*\\.epar" />
+                <data android:pathPattern="/*.*\\..*\\.epar" />
+                <data android:pathPattern="/*.*\\..*\\..*\\.epar" />
+                <data android:pathPattern="/*.*\\..*\\..*\\..*\\.epar" />
+                <data android:host="*" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="file" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern="/*.*\\.epar" />
+                <data android:pathPattern="/*.*\\..*\\.epar" />
+                <data android:pathPattern="/*.*\\..*\\..*\\.epar" />
+                <data android:pathPattern="/*.*\\..*\\..*\\..*\\.epar" />
+                <data android:host="*" />
+            </intent-filter>
+
+
+            <!--Deep link clicked/called from content player-->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="c" android:scheme="@string/deeplink_base_url" />
+
+            </intent-filter>
+
+      </config-file>
+
+      <source-file src="src/android/org/sunbird/SplashScreen.java" target-dir="src/org/sunbird/" />
+      <source-file src="src/android/org/sunbird/deeplinks/DeepLinkNavigation.java" target-dir="src/org/sunbird/deeplinks" />
+      <source-file src="src/android/org/sunbird/deeplinks/DeepLinkUtility.java" target-dir="src/org/sunbird/deeplinks" />
+      <source-file src="src/android/org/sunbird/ImportExportUtil.java" target-dir="src/org/sunbird/util" />
+      <source-file src="src/android/org/sunbird/locales/Locale.java" target-dir="src/org/sunbird/locales" />
+
+    </platform>
+
+    <!-- ios -->
+    <!-- <platform name="ios">
+        <js-module src="www/plugin.js" name="plugin">
+            <runs/>
+            <clobbers target="GenieSDK" />
+        </js-module>
+        <config-file target="config.xml" parent="/*">
+            <feature name="MyCordovaPlugin">
+                <param name="ios-package" value="MyCordovaPlugin" onload="true" />
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/MyCordovaPlugin.h" />
+        <source-file src="src/ios/MyCordovaPlugin.m" />
+    </platform> -->
+</plugin>

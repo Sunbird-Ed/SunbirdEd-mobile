@@ -1,0 +1,11 @@
+{
+  "name": "sb-cordova-plugin-customtabs",
+  "version": "1.0.0",
+  "cordova": {
+    "id": "sb-cordova-plugin-customtabs",
+    "platforms": [
+      "android"
+    ]
+  },
+  "description": "Cordova plugin for launching url in custom tabs."
+}
