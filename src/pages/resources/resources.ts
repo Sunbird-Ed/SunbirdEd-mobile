@@ -188,7 +188,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   subscribeUtilityEvents() {
     this.events.subscribe('savedResources:update', (res) => {
       if (res && res.update) {
-        this.setSavedContent();
         this.loadRecentlyViewedContent();
       }
     });
@@ -302,7 +301,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     }
 
     this.profile = this.appGlobalService.getCurrentUser();
-    this.setSavedContent();
     this.loadRecentlyViewedContent();
   }
 
@@ -378,18 +376,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   /**
 	 * Get saved content
 	 */
-  setSavedContent() {
-    // this.localResources = [];
-    console.log('in setSavedContent');
-    // if(this.isOnBoardingCardCompleted || !this.guestUser){
-    // console.log('in setSavedContent isOnBoardingCardCompleted');
-    this.showLoader = true;
+  async setSavedContent() {
     const requestParams: ContentFilterCriteria = {
       uid: this.profile ? this.profile.uid : undefined,
       contentTypes: ContentType.FOR_LIBRARY_TAB,
       audience: this.audienceFilter
     };
-    this.contentService.getAllLocalContents(requestParams)
+    await this.contentService.getAllLocalContents(requestParams)
       .then(data => {
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
@@ -406,9 +399,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           }
 
         });
-        this.ngZone.run(() => {
+         this.ngZone.run(() => {
           this.localResources = data;
-          this.showLoader = false;
         });
       })
       .catch(() => {
@@ -422,7 +414,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   /**
 	 * Load/get recently viewed content
 	 */
-  loadRecentlyViewedContent() {
+ async loadRecentlyViewedContent() {
     this.showLoader = true;
     const requestParams: ContentFilterCriteria = {
       uid: this.profile ? this.profile.uid : undefined,
@@ -431,6 +423,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       recentlyViewed: true,
       limit: 20
     };
+    await this.setSavedContent();
     this.contentService.getAllLocalContents(requestParams)
       .then(data => {
         _.forEach(data, (value) => {
@@ -448,7 +441,27 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           }
         });
         this.ngZone.run(() => {
-          this.recentlyViewedResources = data;
+      // merge downloadedResources after recently viewed, which are not yet viewed
+        if ((data && data.length) && (this.localResources && this.localResources.length)) {
+          // remove if same content is downloaded and viewed.
+              for (let i = 0 ; i < data.length; i++) {
+                  const index = this.localResources.findIndex( (el) => {
+                      return el.identifier === data.identifier;
+                  });
+
+                  if (index !== -1) {
+                    this.localResources.splice(index, 1);
+                  }
+              }
+              data.push(...this.localResources);
+              this.recentlyViewedResources = data;
+          } else {
+                if (!(data && data.length) && (this.localResources && this.localResources.length)) {
+                  this.recentlyViewedResources = this.localResources;
+                } else if ((data && data.length) && !(this.localResources && this.localResources.length)) {
+                 this.recentlyViewedResources = data;
+            }
+          }
           this.showLoader = false;
         });
       })
@@ -725,7 +738,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.events.subscribe('genie.event', (data) => {
       const res = JSON.parse(data);
       if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
-        this.setSavedContent();
         this.loadRecentlyViewedContent();
       }
     });
