@@ -12,7 +12,7 @@ import {
 import * as _ from 'lodash';
 import {SocialSharing} from '@ionic-native/social-sharing';
 
-import {CourseService as course_Service, GetContentStateRequest, ShareUtil,} from 'sunbird';
+import {CourseService as course_Service, GetContentStateRequest} from 'sunbird';
 import {ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
 import {CollectionDetailsPage} from '@app/pages/collection-details/collection-details';
 import {ContentDetailsPage} from '@app/pages/content-details/content-details';
@@ -25,6 +25,7 @@ import {
   ChildContentRequest,
   Content,
   ContentEventType,
+  ContentExportRequest,
   ContentImport,
   ContentImportCompleted,
   ContentImportRequest,
@@ -50,7 +51,7 @@ import {
   TelemetryObject,
   UnenrollCourseRequest,
 } from 'sunbird-sdk';
-import {Subscription} from "rxjs";
+import {Subscription} from 'rxjs';
 import {
   Environment,
   ErrorType,
@@ -184,7 +185,6 @@ export class EnrolledCourseDetailsPage {
     private popoverCtrl: PopoverController,
     @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     @Inject('COURSE_SERVICE') private courseService: CourseService,
-    private shareUtil: ShareUtil,
     private social: SocialSharing,
     private courseUtilService: CourseUtilService,
     private platform: Platform,
@@ -919,12 +919,14 @@ export class EnrolledCourseDetailsPage {
       .subscribe((event: EventsBusEvent) => {
       this.zone.run(() => {
         // Show download percentage
-        if (event.payload && event.type === DownloadEventType.PROGRESS) {
+        if (event.type === DownloadEventType.PROGRESS) {
           const downloadEvent = event as DownloadProgress;
-          if (downloadEvent.payload.progress === -1) {
-            this.downloadProgress = 0;
-          } else {
-            this.downloadProgress = downloadEvent.payload.progress;
+          if (downloadEvent.type === DownloadEventType.PROGRESS && downloadEvent.payload.progress) {
+            if (downloadEvent.payload.progress === -1) {
+              this.downloadProgress = 0;
+            } else {
+              this.downloadProgress = downloadEvent.payload.progress;
+            }
           }
           if (this.downloadProgress === 100) {
             this.getBatchDetails();
@@ -933,7 +935,7 @@ export class EnrolledCourseDetailsPage {
         }
 
         // Get child content
-        if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
+        if (event.type === ContentEventType.IMPORT_COMPLETED) {
           const contentImportCompleted = event as ContentImportCompleted;
           this.showLoading = false;
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {
@@ -1072,11 +1074,16 @@ export class EnrolledCourseDetailsPage {
     loader.present();
     const url = this.baseUrl + ShareUrl.COLLECTION + this.course.identifier;
     if (this.course.isAvailableLocally) {
-      this.shareUtil.exportEcar(this.course.identifier, path => {
-        loader.dismiss();
-        this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_COURSE_SUCCESS, this.course.contentType);
-        this.social.share('', '', 'file://' + path, url);
-      }, () => {
+      const exportContentRequest: ContentExportRequest = {
+        contentIds: [this.course.identifier],
+        destinationFolder: cordova.file.externalDataDirectory
+      };
+      this.contentService.exportContent(exportContentRequest).toPromise()
+        .then(() => {
+          loader.dismiss();
+          this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.course.contentType);
+          this.social.share('', '', '' + cordova.file.externalDataDirectory, url);
+        }).catch(() => {
         loader.dismiss();
         this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
       });

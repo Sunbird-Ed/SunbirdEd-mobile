@@ -6,7 +6,8 @@ import {Platform, ToastController, ViewController} from 'ionic-angular';
 import {Component, Inject} from '@angular/core';
 import {
   AuthService,
-  ContentDeleteRequest,
+  ContentDeleteResponse,
+  ContentDeleteStatus,
   ContentService,
   CorrelationData,
   OAuthSession,
@@ -14,7 +15,6 @@ import {
   TelemetryObject
 } from 'sunbird-sdk';
 import {CommonUtilService} from '../../service/common-util.service';
-import {ReportIssuesComponent} from '../report-issues/report-issues';
 import {UnenrollAlertComponent} from '../unenroll-alert/unenroll-alert';
 import {Environment, InteractSubtype, InteractType} from '../../service/telemetry-constants';
 
@@ -89,13 +89,12 @@ export class ContentActionsComponent {
    * Construct content delete request body
    */
   getDeleteRequestBody() {
-    const apiParams: ContentDeleteRequest = {
+    return {
       contentDeleteList: [{
         contentId: this.contentId,
         isChildContent: this.isChild
       }]
     };
-    return apiParams;
   }
 
   /**
@@ -132,7 +131,7 @@ export class ContentActionsComponent {
       }
       case 1: {
         this.viewCtrl.dismiss();
-        this.reportIssue();
+        // this.reportIssue();
         break;
       }
     }
@@ -167,9 +166,9 @@ export class ContentActionsComponent {
       this.corRelationList);
 
 
-    this.contentService.deleteContent(this.getDeleteRequestBody()).toPromise().then((res: any) => {
-      const data = JSON.parse(res);
-      if (data.result && data.result.status === 'NOT_FOUND') {
+    this.contentService.deleteContent(this.getDeleteRequestBody()).toPromise()
+      .then((data: ContentDeleteResponse[]) => {
+        if (data && data[0].status === ContentDeleteStatus.NOT_FOUND) {
         this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
       } else {
         // Publish saved resources update event
@@ -187,6 +186,7 @@ export class ContentActionsComponent {
     });
   }
 
+  /*
   reportIssue() {
     const popUp = this.popoverCtrl.create(ReportIssuesComponent, {
       content: this.content
@@ -194,7 +194,7 @@ export class ContentActionsComponent {
         cssClass: 'report-issue-box'
       });
     popUp.present();
-  }
+  } */
 
   showToaster(message) {
     const toast = this.toastCtrl.create({
