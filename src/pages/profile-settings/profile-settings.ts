@@ -11,6 +11,7 @@ import {TelemetryGeneratorService} from '../../service/telemetry-generator.servi
 import {SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
 import {CommonUtilService} from '../../service/common-util.service';
 import {
+  CategoryTerm,
   Framework,
   FrameworkCategoryCodesGroup,
   FrameworkDetailsRequest,
@@ -21,17 +22,11 @@ import {
   Profile,
   ProfileService,
   ProfileType,
-  CategoryTerm,
   SharedPreferences
 } from 'sunbird-sdk';
-import {
-  Environment,
-  InteractSubtype,
-  InteractType,
-  PageId,
-} from '../../service/telemetry-constants';
-import { ContainerService } from '../../service/container.services';
-import { TabsPage } from '@app/pages/tabs/tabs';
+import {Environment, InteractSubtype, InteractType, PageId,} from '../../service/telemetry-constants';
+import {ContainerService} from '../../service/container.services';
+import {TabsPage} from '@app/pages/tabs/tabs';
 
 @IonicPage()
 @Component({
@@ -100,7 +95,6 @@ export class ProfileSettingsPage {
     @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
     @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
-
   ) {
     this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
       .then(val => {
@@ -222,10 +216,10 @@ export class ProfileSettingsPage {
                 this.categories = framework.categories;
                 this.resetForm(0, false);
               }).catch(error => {
-                console.error('Error', error);
-                this.loader.dismiss();
-                this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
-              });
+              console.error('Error', error);
+              this.loader.dismiss();
+              this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
+            });
           }
         } else {
           this.loader.dismiss();
@@ -242,40 +236,40 @@ export class ProfileSettingsPage {
   getCategoryData(req: GetFrameworkCategoryTermsRequest, list): void {
     if (this.frameworkId) {
       this.frameworkUtilService.getFrameworkCategoryTerms(req).toPromise()
-      .then((result: CategoryTerm[]) => {
-        if (this.loader !== undefined) {
-          this.loader.dismiss();
-        }
-        this[list] = result;
-        if (list !== 'gradeList') {
-          this[list] = _.orderBy(this[list], ['name'], ['asc']);
-        }
-        if (req.currentCategoryCode === 'board') {
-          const boardName = this.syllabusList.find(framework => this.frameworkId === framework.code);
-          if (boardName) {
-            const boardCode = result.find(board => boardName.name === board.name);
-            if (boardCode) {
-              this.userForm.patchValue({
-                boards: [boardCode.code]
-              });
-              this.resetForm(1, false);
-            } else {
-              this.userForm.patchValue({
-                boards: [result[0].code]
-              });
-              this.resetForm(1, false);
-            }
+        .then((result: CategoryTerm[]) => {
+          if (this.loader !== undefined) {
+            this.loader.dismiss();
           }
-        } else if (this.isEditData) {
-          this.isEditData = false;
-          this.userForm.patchValue({
-            medium: this.profile.medium || []
-          });
-          this.userForm.patchValue({
-            grades: this.profile.grade || []
-          });
-        }
-      });
+          this[list] = result;
+          if (list !== 'gradeList') {
+            this[list] = _.orderBy(this[list], ['name'], ['asc']);
+          }
+          if (req.currentCategoryCode === 'board') {
+            const boardName = this.syllabusList.find(framework => this.frameworkId === framework.code);
+            if (boardName) {
+              const boardCode = result.find(board => boardName.name === board.name);
+              if (boardCode) {
+                this.userForm.patchValue({
+                  boards: [boardCode.code]
+                });
+                this.resetForm(1, false);
+              } else {
+                this.userForm.patchValue({
+                  boards: [result[0].code]
+                });
+                this.resetForm(1, false);
+              }
+            }
+          } else if (this.isEditData) {
+            this.isEditData = false;
+            this.userForm.patchValue({
+              medium: this.profile.medium || []
+            });
+            this.userForm.patchValue({
+              grades: this.profile.grade || []
+            });
+          }
+        });
     }
   }
 
@@ -288,9 +282,9 @@ export class ProfileSettingsPage {
   checkPrevValue(index, currentField, prevSelectedValue: any[]) {
     if (index === 1) {
       const loader = this.commonUtilService.getLoader();
-      this.frameworkId = prevSelectedValue ? (Array.isArray(prevSelectedValue[0]) ? prevSelectedValue[0][0] : prevSelectedValue[0] ) : '';
+      this.frameworkId = prevSelectedValue ? (Array.isArray(prevSelectedValue[0]) ? prevSelectedValue[0][0] : prevSelectedValue[0]) : '';
       const frameworkDetailsRequest: FrameworkDetailsRequest = {
-        frameworkId:  this.frameworkId,
+        frameworkId: this.frameworkId,
         requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
       };
       this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
@@ -548,3 +542,4 @@ export class ProfileSettingsPage {
       Environment.ONBOARDING);
   }
 }
+

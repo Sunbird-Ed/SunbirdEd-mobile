@@ -36,13 +36,7 @@ import {
   TelemetryObject,
   UpdateServerProfileInfoRequest
 } from 'sunbird-sdk';
-import {
-  Environment,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  PageId
-} from '../../service/telemetry-constants';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
 
 /**
  * The Profile page
@@ -529,7 +523,7 @@ export class ProfilePage {
 
     this.contentService.searchContent(contentSearchCriteria).toPromise()
       .then((result: ContentSearchResult) => {
-        this.contentCreatedByMe = result.contentDataList;
+        this.contentCreatedByMe = result.contentDataList || [];
       })
       .catch((error: any) => {
         console.error('Error', error);

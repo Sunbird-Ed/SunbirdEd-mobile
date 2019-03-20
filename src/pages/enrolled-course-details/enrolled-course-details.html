@@ -135,8 +135,8 @@
 			<div *ngIf="showChildrenLoader">
 				<ion-row style="padding-top: 30px;" padding>
 					<ion-col text-center>
-						<p *ngIf="downloadProgress !== 100">{{ 'FETCHING_CONTENTS' | translate: {'%s': downloadProgress ?
-							downloadProgress : '0'} }}</p>
+            <p
+              *ngIf="downloadProgress !== 100">{{ 'FETCHING_CONTENTS' | translate: {'%s': downloadProgress ? (downloadProgress | number: '1.0-0') : 0} }}</p>
 						<p *ngIf="downloadProgress === 100">{{ 'LOADING_CONTENT' | translate }}</p>
 						<ion-spinner padding></ion-spinner>
 					</ion-col>
@@ -186,8 +186,10 @@
 			'DOWNLOAD_ALL_CONTENT' | translate }} ({{ (downloadSize && downloadSize > 0) ? (downloadSize | fileSize) : 'O BYTES'
 			}})
 		</button>
-		<button *ngIf="isDownloadStarted" ion-button block outline>{{ 'DOWNLOADING_2' | translate }}... {{ currentCount }} /
-			{{ queuedIdentifiers.length }}</button>
+    <button *ngIf="isDownloadStarted" ion-button block outline
+            [ngStyle]="{'background': '-webkit-linear-gradient(left, #DBECFF '  +(currentCount/queuedIdentifiers.length)*100+ '%, white 0%)'}">
+      {{ 'DOWNLOADING_2' | translate }}... {{ currentCount }} / {{ queuedIdentifiers?.length }}
+    </button>
 	</ion-toolbar>
 </ion-footer>
 <ion-footer *ngIf="!courseCardData?.batchId && course?.createdBy !== userId && !isAlreadyEnrolled">

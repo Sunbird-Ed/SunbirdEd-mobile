@@ -113,7 +113,7 @@ export class EnrolledCourseDetailsPage {
   courseCardData: any;
 
   /**
-   * To get course structure keys
+   * To get course structure keyspkgVersion
    */
   objectKeys = Object.keys;
 
@@ -256,7 +256,6 @@ export class EnrolledCourseDetailsPage {
     this.courseService.getEnrolledCourses(fetchEnrolledCourseRequest).toPromise()
       .then((enrolledCourses: any) => {
         if (enrolledCourses) {
-          enrolledCourses = JSON.parse(enrolledCourses);
           this.zone.run(() => {
             // this.enrolledCourses = enrolledCourses.result.courses ? enrolledCourses.result.courses : [];
             // maintain the list of courses that are enrolled, and store them in appglobal
@@ -271,7 +270,7 @@ export class EnrolledCourseDetailsPage {
           });
         }
       })
-      .catch((error: any) => {
+      .catch(() => {
         this.removeUnenrolledCourse(unenrolledCourse);
       });
   }
@@ -920,12 +919,8 @@ export class EnrolledCourseDetailsPage {
         // Show download percentage
         if (event.type === DownloadEventType.PROGRESS) {
           const downloadEvent = event as DownloadProgress;
-          if (downloadEvent.type === DownloadEventType.PROGRESS && downloadEvent.payload.progress) {
-            if (downloadEvent.payload.progress === -1) {
-              this.downloadProgress = 0;
-            } else {
-              this.downloadProgress = downloadEvent.payload.progress;
-            }
+          if (downloadEvent.payload.progress) {
+            this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
           }
           if (this.downloadProgress === 100) {
             this.getBatchDetails();
@@ -934,9 +929,9 @@ export class EnrolledCourseDetailsPage {
         }
 
         // Get child content
-        if (event.type === ContentEventType.IMPORT_COMPLETED) {
-          const contentImportCompleted = event as ContentImportCompleted;
+        if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
           this.showLoading = false;
+          const contentImportCompleted = event as ContentImportCompleted;
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {
             if (_.includes(this.queuedIdentifiers, contentImportCompleted.payload.contentId)) {
               this.currentCount++;

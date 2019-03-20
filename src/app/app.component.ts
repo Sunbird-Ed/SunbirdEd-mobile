@@ -125,30 +125,40 @@ export class MyApp {
   }
 
   handleBackButton() {
-    const self = this;
     this.platform.registerBackButtonAction(() => {
 
-      const navObj = self.app.getActiveNavs()[0];
+      const navObj = this.app.getActiveNavs()[0];
       const currentPage = navObj.getActive().name;
 
       if (navObj.canGoBack()) {
-        navObj.pop();
+        return navObj.pop();
       } else {
-        if (self.counter === 0) {
-          self.counter++;
-          this.commonUtilService.showToast('BACK_TO_EXIT');
-          this.telemetryGeneratorService.generateBackClickedTelemetry(MyApp.getPageIdForPageName(currentPage), Environment.HOME, false);
-          setTimeout(() => {
-            self.counter = 0;
-          }, 1500);
-        } else {
-          this.telemetryGeneratorService.generateBackClickedTelemetry(MyApp.getPageIdForPageName(currentPage), Environment.HOME, false);
-          self.platform.exitApp();
-          this.telemetryGeneratorService.generateEndTelemetry('app', '', '', Environment.HOME);
-
-        }
+        this.commonUtilService.showExitPopUp(this.computePageId(currentPage), Environment.HOME, false);
       }
     });
+  }
+
+  computePageId(pageName: string): string {
+    let pageId = '';
+    switch (pageName) {
+      case 'ResourcesPage': {
+        pageId = PageId.LIBRARY;
+        break;
+      }
+      case 'CoursesPage': {
+        pageId = PageId.COURSES;
+        break;
+      }
+      case 'ProfilePage': {
+        pageId = PageId.PROFILE;
+        break;
+      }
+      case 'GuestProfilePage': {
+        pageId = PageId.GUEST_PROFILE;
+        break;
+      }
+    }
+    return pageId;
   }
 
   subscribeEvents() {
@@ -353,7 +363,7 @@ export class MyApp {
   }
 
   private async makeEntriesInSupportFolder() {
-    await this.permission.checkPermissions(this.permissionList)
+    this.permission.checkPermissions(this.permissionList)
       .mergeMap((statusMap: { [key: string]: AndroidPermissionsStatus }) => {
         const toRequest: AndroidPermission[] = [];
 

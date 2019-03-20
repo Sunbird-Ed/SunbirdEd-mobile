@@ -426,6 +426,20 @@ export class CollectionDetailsPage {
     if (this.contentDetail.contentData.me_totalDownloads) {
       this.contentDetail.contentData.me_totalDownloads = this.contentDetail.contentData.me_totalDownloads.split('.')[0];
     }
+    this.setCollectionStructure();
+  }
+
+  setCollectionStructure() {
+    this.showChildrenLoader = true;
+    if (this.contentDetail.contentData.contentTypesCount) {
+      this.contentDetail.contentData.contentTypesCount = JSON.parse(this.contentDetail.contentData.contentTypesCount);
+    } else if (this.cardData.contentTypesCount) {
+      if (!_.isObject(this.cardData.contentTypesCount)) {
+        this.contentDetail.contentData.contentTypesCount = JSON.parse(this.cardData.contentTypesCount);
+      }
+    } /*else {
+      this.contentDetail.contentTypesCount;
+    }*/
   }
 
   generateRollUp() {
@@ -686,7 +700,7 @@ export class CollectionDetailsPage {
           }
         }
         // Get child content
-        if (event.type === ContentEventType.IMPORT_COMPLETED) {
+        if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
           const contentImportEvent = event as ContentImportCompleted;
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {
             if (_.includes(this.queuedIdentifiers, contentImportEvent.payload.contentId)) {
