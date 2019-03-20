@@ -1,4 +1,4 @@
-<div class="sb-popover sb-popover-download  " *ngIf="this.showPopover">
+<div class="sb-popover sb-popover-download  " *ngIf="!this.showPopover">
   <div class="backdrop"></div>
   <div class="popover-content">
     <ion-header class="sb-popover-header">
@@ -8,29 +8,53 @@
             (click)="togglePopover(); this.showPopover = !this.showPopover">Hide</button>
         </ion-title>
       </ion-toolbar>
-      <div class="popover-progress-container">
+      <!-- <div class="popover-progress-container">
         <div class="progress-highlight" [ngStyle]="{'left': (currentCount/queuedIdentifiers.length)*100 + '%'}">
         </div>
-      </div>
+      </div> -->
     </ion-header>
-    <div no-padding class="scroll-content sb-popover-container">
-      <div class="sb-popover-items">
-        <div class="sb-popover-content-details">
-          <div class="main-title">
-            Great Thinkers and their new religions
-            <div class="meta-info">
-                <span *ngIf="isDownloadStarted" ion-button block outline [ngStyle]="{'background': '-webkit-linear-gradient(left, #DBECFF '  +(currentCount/queuedIdentifiers.length)*100+ '%, white 0%)'}">
-              </span>
-              {{ currentCount }} / {{ queuedIdentifiers?.length }}
+    <ion-content class="sb-popover-container noscroll">
+      <!-- <div no-padding class="scroll-content sb-popover-container"> -->
+        <div class="sb-popover-items">
+          <div class="sb-popover-content-details">
+            <div class="sb-progress-percent-text pb-8">{{ !queuedIdentifiers.length ? '0%' : ((currentCount/queuedIdentifiers.length)*100).toFixed(0)+ '%' }}</div>
+            <div class="sb-accordian-grey-text p-0">
+                {{ collectionName }}
+              <div class="meta-info font-weight-bold py-8">
+                  <!-- <span *ngIf="isDownloadStarted" ion-button block outline [ngStyle]="{'background': '-webkit-linear-gradient(left, #DBECFF '  +(currentCount/queuedIdentifiers.length)*100+ '%, white 0%)'}">
+                </span> -->
+                {{ currentCount }} / {{ queuedIdentifiers?.length }}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      <!-- </div> -->
+      </ion-content>
     <ion-footer>
       <div class="sb-popover-footer">
         <!-- <button ion-button class="sb-popover-action-btn sb-btn sb-btn-normal sb-btn-info" (click)="cancelDownload()">{{ 'CANCEL' | translate }}</button> -->
       </div>
     </ion-footer>
   </div>
+</div>
+
+<div class="sb-popover sb-popover-download collapsed" *ngIf="this.showPopover">
+  <div class="collpase">
+    <ion-header class="sb-popover-header">
+      <ion-toolbar class="sb-popover-toolbar">
+        <ion-title class="sb-popover-title"> {{ 'DOWNLOADING_2' | translate }}
+          <span class="meta-info">
+          <button ion-button clear class="sb-modal-close"
+            (click)="togglePopover(); this.showPopover = !this.showPopover">Show</button>
+            </span>
+        </ion-title>
+      </ion-toolbar>
+      <div class="popover-progress-container">
+        <div class="progress-highlight" [ngStyle]="{'left': (currentCount/queuedIdentifiers.length)*100 + '%'}">
+         
+        </div>
+      </div>
+    </ion-header>
+  </div>
+
 </div>

@@ -208,4 +208,6 @@
     <button ion-button small (click)="cancelDownload()">{{ 'CANCEL' | translate }}</button>
   </div>
 </ion-backdrop>
-<sb-download-popup *ngIf="showDownload" (cancelDownloadEmit)="cancelDownload($event)" [currentCount]="currentCount" [queuedIdentifiers]="queuedIdentifiers" [downloadSize]="downloadSize"></sb-download-popup>
+<sb-download-popup *ngIf="showDownload" (cancelDownloadEmit)="cancelDownload($event)" [currentCount]="currentCount"
+[queuedIdentifiers]="queuedIdentifiers" [downloadSize]="downloadSize"
+[collectionName]="contentDetail?.name" ></sb-download-popup>

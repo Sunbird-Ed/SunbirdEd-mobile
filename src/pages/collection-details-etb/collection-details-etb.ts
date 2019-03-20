@@ -891,7 +891,7 @@ export class CollectionDetailsEtbPage {
     this.downloadPercentage = 0;
     this.showDownload = true;
     this.importContent(this.downloadIdentifiers, true, true);
-      }
+  }
 
 
   /**
@@ -1107,7 +1107,7 @@ export class CollectionDetailsEtbPage {
   getDeleteRequestBody() {
     const apiParams = {
       contentDeleteList: [{
-        contentId: this.contentId,
+        contentId: (this.contentDetail && this.contentDetail.identifier) ? this.contentDetail.identifier : '',
         isChildContent: this.isChild
       }]
     };
