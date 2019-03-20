@@ -357,10 +357,14 @@ export class MyApp {
       .mergeMap((statusMap: { [key: string]: AndroidPermissionsStatus }) => {
         const toRequest: AndroidPermission[] = [];
 
-        for (let permission in statusMap) {
+        for (const permission in statusMap) {
           if (!statusMap[permission].hasPermission) {
             toRequest.push(permission as AndroidPermission);
           }
+        }
+
+        if (!toRequest.length) {
+          return Observable.of(undefined);
         }
 
         return this.permission.requestPermissions(toRequest);
