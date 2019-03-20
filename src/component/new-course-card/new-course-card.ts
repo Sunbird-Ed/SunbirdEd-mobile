@@ -2,6 +2,8 @@ import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import { NavController } from 'ionic-angular/navigation/nav-controller';
 import { CommonUtilService } from '@app/service';
 import { Component, Input, OnInit } from '@angular/core';
+import {MimeType} from '../../app/app.constant';
+import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
 
 /**
  * Generated class for the NewCourseCardComponent component.
@@ -61,10 +63,15 @@ export class NewCourseCardComponent implements OnInit {
     if (!course.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable) {
       return false;
     }
-    this.navCtrl.push(ContentDetailsPage, {
-      content: course.contentData
-    });
-
+    if (course.mimeType === MimeType.COLLECTION) {
+      this.navCtrl.push(CollectionDetailsEtbPage, {
+        content: course
+      });
+    } else {
+      this.navCtrl.push(ContentDetailsPage, {
+        content: course.contentData
+      });
+    }
   }
 
 }

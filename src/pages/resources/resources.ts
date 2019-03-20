@@ -446,7 +446,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           // remove if same content is downloaded and viewed.
               for (let i = 0 ; i < data.length; i++) {
                   const index = this.localResources.findIndex( (el) => {
-                      return el.identifier === data.identifier;
+                      return el.identifier === data[i].identifier;
                   });
 
                   if (index !== -1) {
