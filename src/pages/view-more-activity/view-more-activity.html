@@ -40,9 +40,6 @@
       <div class="sb-view-all-container">
         <div class="sb-card-container sb-card-view-all-container">
          <view-all-card *ngFor="let item of searchList" [content]="item" [type]="pageType" [sectionName]="contentCard" (click)=navigateToDetailPage(item)></view-all-card>
-         <!-- <div *ngIf="savedResources && savedResources.length">
-          <view-all-card *ngFor="let item of savedResources" [content]="item" [type]="pageType" [sectionName]="contentCard"></view-all-card>
-        </div> -->
         </div>
       </div>
     </ng-container>
