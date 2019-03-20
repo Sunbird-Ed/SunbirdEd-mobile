@@ -36,20 +36,23 @@ export class PlayerPage {
   ionViewWillEnter() {
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.showConfirm();
-    }, 10);
+    }, 11);
   }
 
 
   ionViewDidLoad() {
-    let that =  this;
+    let that = this;
     this.config = this.navParams.get('config');
-    console.log('config', this.config);
-    console.log('customConfig', customConfig);
     let previewElement: HTMLIFrameElement = document.getElementById('preview') as HTMLIFrameElement;
+    previewElement.src = 'build/content-player/preview.html?date=' + new Date().toLocaleString();
     previewElement.onload = function () {
-      that.config['metaData'].contentData.basePath =  that.config['metaData'].basePath.replace(/\/$/, "");
+      that.config['metaData'].contentData.basePath = that.config['metaData'].basePath.replace(/\/$/, "");
+      that.config['metaData'].contentData.basepath = that.config['metaData'].basePath.replace(/\/$/, "");
       that.config['metadata'] = that.config['metaData'].contentData;
-      (previewElement['contentWindow'] as any).initializePreview(that.config ? that.config : customConfig);
+      delete that.config['metaData'];
+      console.log("config", that.config);
+
+      (previewElement['contentWindow'] as any).initializePreview(that.config);
     }
   }
 

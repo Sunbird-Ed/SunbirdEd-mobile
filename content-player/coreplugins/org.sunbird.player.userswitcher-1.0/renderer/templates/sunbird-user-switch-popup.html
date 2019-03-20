@@ -78,6 +78,7 @@
     text-transform: uppercase;
     margin-top: 15%;
     font-weight: 700;
+    font-size: 100%;
 }
 #sunbirdUserSwitchingModal .modal-content .model-butttons {
     display: table;
@@ -176,7 +177,7 @@ img.user-check{
                     <div class="userswitcher-data">
                         <div class="inline-username-block">
                             <p class="userswitcher-name">{{user.handle}}</p>
-                            <p ng-show="user.grade" class="userswitcher-class">{{user.grade.toString()}}</p>
+                            <span ng-show="user.grade" class="userswitcher-class" ng-repeat="(key, value) in user.gradeValueMap">{{value}}{{$last? ' ': ', '}}</span>
                         </div>
                         <div class="inline-block">
                             <img ng-show="user.selected" class="user-check" ng-src="{{checkMarkIcon}}">

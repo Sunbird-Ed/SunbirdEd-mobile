@@ -924,7 +924,7 @@ export class ContentDetailsPage {
 
       this.playerService.getPlayerConfig(this.playingContent, request).subscribe((data) => {
         console.log("responseData", data);
-
+        data['data'] = {};
         if (data.metaData.mimeType === 'application/vnd.ekstep.ecml-archive') {
           console.log('externalApplicationStorageDirectory', this.file.externalApplicationStorageDirectory);
 

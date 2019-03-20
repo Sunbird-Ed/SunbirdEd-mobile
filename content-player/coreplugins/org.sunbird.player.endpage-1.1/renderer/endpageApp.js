@@ -139,6 +139,7 @@ endPage.controller("endPageController", function($scope, $rootScope, $state,$ele
             contentMetadata = contentToPlay.content.contentData;
             _.extend(contentMetadata,  _.pick(contentToPlay.content, "hierarchyInfo", "isAvailableLocally", "basePath", "rollup"));
             contentMetadata.basepath = contentMetadata.basePath;
+            $rootScope.content = window.content = content = contentMetadata;
         }
 
         if (contentToPlay.content.isAvailableLocally) {
@@ -151,7 +152,6 @@ endPage.controller("endPageController", function($scope, $rootScope, $state,$ele
                 GlobalContext.config = mergeJSON(AppConfig, contentMetadata);
                 window.globalConfig = GlobalContext.config;
 
-                $rootScope.content = window.content = content = contentMetadata;
                 org.ekstep.contentrenderer.initializePreview(object)
                 EkstepRendererAPI.dispatchEvent('renderer:player:show');
         } else {
@@ -166,7 +166,7 @@ endPage.controller("endPageController", function($scope, $rootScope, $state,$ele
 
     $scope.initEndpage = function() {
         $scope.playerMetadata = content;
-        $scope.genieIcon = EkstepRendererAPI.resolvePluginResource($scope.pluginManifest.id, $scope.pluginManifest.ver, "renderer/assets/home.svg");
+        $scope.genieIcon = EkstepRendererAPI.resolvePluginResource($scope.pluginManifest.id, $scope.pluginManifest.ver, "renderer/assets/home.png");
         $scope.scoreIcon = EkstepRendererAPI.resolvePluginResource($scope.pluginManifest.id, $scope.pluginManifest.ver, "renderer/assets/score.svg");
         $scope.leftArrowIcon = EkstepRendererAPI.resolvePluginResource($scope.pluginManifest.id, $scope.pluginManifest.ver, "renderer/assets/left-arrow.svg");
         $scope.rightArrowIcon = EkstepRendererAPI.resolvePluginResource($scope.pluginManifest.id, $scope.pluginManifest.ver, "renderer/assets/right-arrow.svg");
@@ -182,6 +182,7 @@ endPage.controller("endPageController", function($scope, $rootScope, $state,$ele
     EkstepRendererAPI.addEventListener('renderer:endpage:show', function() {
         $scope.showEndPage = true;
         $scope.initEndpage();
+        document.webkitExitFullscreen();
         $scope.safeApply();
     });
     EkstepRendererAPI.addEventListener('renderer:endpage:hide',function() {
