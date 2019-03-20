@@ -46,7 +46,7 @@ const COURSE_TAB_DISABLED = {
 };
 
 const SCANNER_TAB = {
-    root: ResourcesPage,
+    root: '',
     icon: 'qr-scanner',
    // label: 'LIBRARY_BNAV',
     index: 3,
