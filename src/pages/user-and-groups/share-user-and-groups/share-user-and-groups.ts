@@ -1,9 +1,16 @@
 import {Component, Inject, NgZone} from '@angular/core';
 import {LoadingController} from 'ionic-angular';
-import {GetAllProfileRequest, Group, GroupService, Profile, ProfileService} from 'sunbird-sdk';
+import {GetAllProfileRequest, Group, GroupService, Profile, ProfileService, ProfileExportRequest, ProfileExportResponse} from 'sunbird-sdk';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
+import {
+    InteractType,
+    InteractSubtype,
+    Environment,
+    PageId
+} from '../../../service/telemetry-constants';
 
+declare const cordova;
 @Component({
   selector: 'page-share-user-and-groups',
   templateUrl: 'share-user-and-groups.html',
@@ -193,7 +200,6 @@ export class ShareUserAndGroupPage {
     });
   }
 
-  /*
   share() {
 
     if (this.selectedUserList && this.selectedGroupList) {
@@ -212,7 +218,7 @@ export class ShareUserAndGroupPage {
     const profileExportRequest: ProfileExportRequest = {
       userIds: this.selectedUserList,
       groupIds: this.selectedGroupList,
-      destinationFolder: this.fileUtil.internalStoragePath()
+      destinationFolder: cordova.file.externalDataDirectory
     };
 
     const loader = this.loadingCtrl.create({
@@ -221,8 +227,8 @@ export class ShareUserAndGroupPage {
     });
 
     loader.present();
-    this.profileService.exportProfile(profileExportRequest).then((path: any) => {
-      path = JSON.parse(path);
+    this.profileService.exportProfile(profileExportRequest).toPromise()
+    .then((path: ProfileExportResponse) => {
       loader.dismiss();
       if (this.selectedUserList && this.selectedGroupList) {
         const valueMap = new Map();
@@ -242,5 +248,4 @@ export class ShareUserAndGroupPage {
       loader.dismiss();
     });
   }
-  */
 }
