@@ -43,6 +43,7 @@ export class SbDownloadPopupComponent implements OnChanges {
   @Input() queuedIdentifiers: any;
   @Input() currentCount: any;
   @Input() downloadSize: any;
+  @Input() collectionName: any;
   constructor(private events: Events,
     private zone: NgZone,
     private telemetryGeneratorService: TelemetryGeneratorService,
