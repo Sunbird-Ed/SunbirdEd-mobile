@@ -60,7 +60,7 @@
 
   <ion-header class="sb-popover-header">
       <ion-toolbar class="sb-popover-toolbar">
-        <ion-title class="sb-popover-title">Rate the Content
+        <ion-title class="sb-popover-title">{{'RATE_THE_CONTENT' | translate}}
             <ion-icon name="close" class="sb-modal-close" (click)="closePopover()"></ion-icon> </ion-title>
       </ion-toolbar>
     </ion-header>
@@ -78,7 +78,7 @@
             <div *ngIf="showCommentBox" class="sb-line"></div>
         </div>
     </ion-content>
-  
+    
     <ion-footer>
         <div class="sb-popover-footer">
           <button ion-button class="sb-popover-action-btn popover-color" (click)="submit()">{{ 'BTN_SUBMIT' | translate }}</button>
