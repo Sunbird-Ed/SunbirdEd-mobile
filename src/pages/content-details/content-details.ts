@@ -45,7 +45,8 @@ import {
   ProfileService,
   Rollup,
   SharedPreferences,
-  TelemetryObject
+  TelemetryObject,
+  ContentExportResponse
 } from 'sunbird-sdk';
 import {CanvasPlayerService} from '../player/canvas-player.service';
 import {PlayerPage} from '../player/player';
@@ -209,7 +210,7 @@ export class ContentDetailsPage {
       this.generateTelemetry();
     }
 
-    this.setContentDetails(this.identifier, true);
+    this.setContentDetails(this.identifier, false);
     this.subscribeGenieEvent();
   }
 
@@ -1046,10 +1047,10 @@ export class ContentDetailsPage {
         destinationFolder: cordova.file.externalDataDirectory
       };
       this.contentService.exportContent(exportContentRequest).toPromise()
-        .then(() => {
+        .then((response: ContentExportResponse) => {
           loader.dismiss();
           this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.content.contentType);
-          this.social.share('', '', '' + cordova.file.externalDataDirectory, url);
+          this.social.share('', '', '' + response.exportedFilePath, url);
         }).catch(() => {
         loader.dismiss();
         this.commonUtilService.showToast('SHARE_CONTENT_FAILED');

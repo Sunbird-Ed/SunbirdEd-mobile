@@ -28,7 +28,8 @@ import {
   ProfileType,
   Rollup,
   TelemetryErrorCode,
-  TelemetryObject
+  TelemetryObject,
+  ContentExportResponse
 } from 'sunbird-sdk';
 import {Subscription} from 'rxjs';
 import {
@@ -826,10 +827,10 @@ export class CollectionDetailsEtbPage {
         destinationFolder: cordova.file.externalDataDirectory
       };
       this.contentService.exportContent(exportContentRequest).toPromise()
-        .then(() => {
+        .then((contntExportResponse: ContentExportResponse) => {
           loader.dismiss();
           this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.contentDetail.contentType);
-          this.social.share('', '', '' + cordova.file.externalDataDirectory, url);
+          this.social.share('', '', '' + contntExportResponse.exportedFilePath, url);
         }).catch(() => {
         loader.dismiss();
         this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
