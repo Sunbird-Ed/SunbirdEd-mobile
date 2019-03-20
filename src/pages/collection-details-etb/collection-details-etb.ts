@@ -465,6 +465,20 @@ export class CollectionDetailsEtbPage {
     if (this.contentDetail.contentData.me_totalDownloads) {
       this.contentDetail.contentData.me_totalDownloads = this.contentDetail.contentData.me_totalDownloads.split('.')[0];
     }
+    this.setCollectionStructure();
+  }
+
+  setCollectionStructure() {
+    this.showChildrenLoader = true;
+    if (this.contentDetail.contentData.contentTypesCount) {
+      this.contentDetail.contentData.contentTypesCount = JSON.parse(this.contentDetail.contentData.contentTypesCount);
+    } else if (this.cardData.contentTypesCount) {
+      if (!_.isObject(this.cardData.contentTypesCount)) {
+        this.contentDetail.contentData.contentTypesCount = JSON.parse(this.cardData.contentTypesCount);
+      }
+    } /*else {
+      this.contentDetail.contentTypesCount;
+    }*/
   }
 
   generateRollUp() {
@@ -597,6 +611,7 @@ export class CollectionDetailsEtbPage {
    * Function to set child contents
    */
   setChildContents() {
+    this.showChildrenLoader = true;
     const hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
     const option = {contentId: this.identifier, hierarchyInfo: hierarchyInfo}; // TODO: remove level
     this.contentService.getChildContents(option).toPromise()

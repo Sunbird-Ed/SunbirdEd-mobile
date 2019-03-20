@@ -1,4 +1,4 @@
-import {Component, NgZone, Inject} from '@angular/core';
+import {Component, Inject, NgZone} from '@angular/core';
 import {Events, IonicPage, NavController, NavParams, Platform} from 'ionic-angular';
 import {TranslateService} from '@ngx-translate/core';
 import {SharedPreferences} from 'sunbird-sdk';
@@ -63,6 +63,7 @@ export class LanguageSettingsPage {
       } else {
         const pId = this.isFromSettings ? PageId.SETTINGS_LANGUAGE : PageId.ONBOARDING_LANGUAGE_SETTING;
         const env = this.isFromSettings ? Environment.SETTINGS : Environment.ONBOARDING;
+        console.log('from others calling exit popup');
         this.commonUtilService.showExitPopUp(pId, env, false);
       }
       this.unregisterBackButton();
