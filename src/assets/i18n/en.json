@@ -67,6 +67,7 @@
   "CONTENT_COMING_SOON": "We are creating content for this",
   "CONTENT_CREATED_BY": "By",
   "CONTENT_CREATING": "We are creating content for this",
+  "CONTENT_DELETE" :"Are you sure you want to delete?",
   "CONTENT_DELETE_FAILED": "Deleting content failed",
   "CONTENT_FLAGGED_MSG": "Content flagged  ",
   "CONTENT_FLAG_FAIL": "Flagging content failed",

@@ -1141,8 +1141,8 @@ export class ContentDetailsPage {
       objRollup: this.objRollup,
       pageName: PageId.CONTENT_DETAIL,
       corRelationList: this.corRelationList,
-      sbPopoverHeading: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE'),
-      sbPopoverMainTitle: this.content.name + '' + this.content.subject,
+      sbPopoverHeading: this.commonUtilService.translateMessage('DELETE'),
+      sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_DELETE'),
       actionsButtons: [
         {
           btntext: this.commonUtilService.translateMessage('REMOVE'),
@@ -1150,8 +1150,8 @@ export class ContentDetailsPage {
         },
       ],
       icon: null,
-      metaInfo: 'items' + '(' + this.fileSizePipe.transform(this.content.size, 2) + ')',
-      sbPopoverContent: 'Are you sure you want to delete ?'
+      metaInfo: this.content.name,
+      sbPopoverContent: ' 1 item' + ' (' + this.fileSizePipe.transform(this.content.size, 2) + ')',
     }, {
         cssClass: 'sb-popover danger',
       });
