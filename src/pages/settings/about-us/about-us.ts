@@ -6,7 +6,7 @@ import { TermsofservicePage } from '../termsofservice/termsofservice';
 import { PrivacypolicyPage } from '../privacypolicy/privacypolicy';
 import { AppVersion } from '@ionic-native/app-version';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { TelemetryGeneratorService, AppGlobalService } from '@app/service';
+import { TelemetryGeneratorService, AppGlobalService, UtilityService } from '@app/service';
 import {
   ImpressionType,
   PageId,
@@ -37,7 +37,7 @@ export class AboutUsPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
-
+    private utilityService: UtilityService,
     private appGlobalService: AppGlobalService
   ) { }
 
@@ -124,7 +124,7 @@ export class AboutUsPage {
   }
 
   getVersionName(appName): any {
-    this.appGlobalService.getBuildConfigValue('VERSION_NAME')
+    this.utilityService.getBuildConfigValue('VERSION_NAME')
       .then(response => {
         this.getVersionCode(appName, response);
         return response;
@@ -135,7 +135,7 @@ export class AboutUsPage {
   }
 
   getVersionCode(appName, versionName): any {
-    this.appGlobalService.getBuildConfigValue('VERSION_CODE')
+    this.utilityService.getBuildConfigValue('VERSION_CODE')
       .then(response => {
         this.version = appName + ' v' + versionName + '.' + response;
         return response;
