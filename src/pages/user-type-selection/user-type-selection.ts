@@ -13,24 +13,26 @@ import {
 } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import {
-  TabsPage,
+  // TabsPage,
   SharedPreferences,
   InteractType,
   InteractSubtype,
   Environment,
   PageId,
   ImpressionType,
-  ContainerService,
+  // ContainerService,
   Profile,
   UserSource,
   ProfileType,
   ProfileService
 } from 'sunbird';
+import { TabsPage } from '@app/pages/tabs/tabs';
 import { Map, initTabs, GUEST_TEACHER_TABS, GUEST_STUDENT_TABS, PreferenceKey } from '@app/app';
 import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
 import { SunbirdQRScanner } from '@app/pages/qrscanner';
 import { ProfileSettingsPage } from '@app/pages/profile-settings/profile-settings';
 import { LanguageSettingsPage } from '@app/pages/language-settings/language-settings';
+import { ContainerService } from '../../service/container-service';
 
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
@@ -233,30 +235,10 @@ export class UserTypeSelectionPage {
           loginMode: 'guest'
         });
       } else {
-        if (isUserTypeChanged) {
-          this.profile.profileType = this.selectedUserType;
-          this.profileService.updateProfile(this.profile)
-            .then((res: any) => {
-              this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
-            }).catch(error => {
-              console.error('Error=');
-            });
-        } else {
-          this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
-        }
+        this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
       }
     } else if (this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
-      if (isUserTypeChanged) {
-        this.profile.profileType = this.selectedUserType;
-        this.profileService.updateProfile(this.profile)
-          .then((res: any) => {
-            this.navCtrl.push(ProfileSettingsPage);
-          }).catch(error => {
-            console.error('Error=');
-          });
-      } else {
-        this.navCtrl.push(ProfileSettingsPage);
-      }
+      this.navCtrl.push(ProfileSettingsPage);
     } else {
       this.profile.profileType = this.selectedUserType;
       this.profileService.updateProfile(this.profile)

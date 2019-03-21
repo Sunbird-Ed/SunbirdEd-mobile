@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="cordova-plugin-openrap" version="1.0.0"
+    xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>OpenrapPlugin</name>
+    <js-module name="OpenrapPlugin" src="www/OpenrapPlugin.js">
+        <clobbers target="openrap" />
+    </js-module>
+    <platform name="android">
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="openrap">
+                <param name="android-package" value="org.sunbird.openrap.OpenrapPlugin" />
+            </feature>
+        </config-file>
+        <config-file parent="/*" target="AndroidManifest.xml"></config-file>
+        <source-file src="src/android/org/sunbird/openrap/OpenrapPlugin.java" target-dir="src/org/sunbird/openrap" />
+        <source-file src="src/android/org/sunbird/openrap/asynctask/ConnectToOpenrapAsyncTask.java" target-dir="src/org/sunbird/openrap/asynctask" />
+        <source-file src="src/android/org/sunbird/openrap/nsd/OpenrapDiscoveryHelper.java" target-dir="src/org/sunbird/openrap/nsd" />
+        <source-file src="src/android/org/sunbird/openrap/nsd/OpenrapDiscoveryListener.java" target-dir="src/org/sunbird/openrap/nsd" />
+        <source-file src="src/android/org/sunbird/openrap/SDKParams.java" target-dir="src/org/sunbird/openrap" />
+        <source-file src="src/android/org/sunbird/openrap/PreferenceUtil.java" target-dir="src/org/sunbird/openrap" />
+    </platform>
+</plugin>

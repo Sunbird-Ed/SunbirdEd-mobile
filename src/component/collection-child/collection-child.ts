@@ -1,4 +1,4 @@
-import { Component, Input, NgZone } from '@angular/core';
+import { Component, Input, NgZone, AfterViewInit } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import {
@@ -7,12 +7,13 @@ import {
 } from '@app/app/app.constant';
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
+import { CommonUtilService } from '@app/service';
 
 @Component({
     selector: 'collection-child',
     templateUrl: 'collection-child.html'
 })
-export class CollectionChild {
+export class CollectionChildComponent implements AfterViewInit {
 
     @Input() childData: any;
     @Input() index: any;
@@ -24,7 +25,8 @@ export class CollectionChild {
     constructor(
         private navCtrl: NavController,
         private zone: NgZone,
-        private navParams: NavParams
+        private navParams: NavParams,
+        private commonUtilService: CommonUtilService
     ) { }
 
     navigateToDetailsPage(content: any, depth) {
@@ -56,5 +58,8 @@ export class CollectionChild {
                 });
             }
         });
+    }
+
+    ngAfterViewInit(): void {
     }
 }

@@ -28,11 +28,12 @@ import {
   ImpressionType,
   ObjectType,
   ProfileType,
-  ContainerService,
-  TabsPage,
+  // ContainerService,
+  // TabsPage,
   SuggestedFrameworkRequest,
   FrameworkService
 } from 'sunbird';
+import { TabsPage } from '@app/pages/tabs/tabs';
 import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import {
@@ -46,7 +47,7 @@ import {
   PreferenceKey,
   FrameworkCategory
 } from '../../../app/app.constant';
-
+import { ContainerService } from '../../../service/container-service';
 @Component({
   selector: 'page-guest-edit.profile',
   templateUrl: 'guest-edit.profile.html'

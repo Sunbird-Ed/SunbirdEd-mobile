@@ -1,0 +1,12 @@
+{
+  "name": "cordova-plugin-qr-scanner",
+  "version": "1.0.0",
+  "cordova": {
+    "id": "cordova-plugin-qr-scanner",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "description": "A starting point for a Cordova Plugin"
+}

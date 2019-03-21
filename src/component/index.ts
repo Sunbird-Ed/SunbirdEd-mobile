@@ -15,3 +15,4 @@ export * from './bookmark/bookmark';
 export * from './edit-contact-details-popup/edit-contact-details-popup';
 export * from './edit-contact-verify-popup/edit-contact-verify-popup';
 export * from './collection-child/collection-child';
+export * from './popups/sb-popover/sb-popover';

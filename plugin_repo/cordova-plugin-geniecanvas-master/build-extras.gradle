@@ -1,0 +1,38 @@
+configurations.all {
+    resolutionStrategy {
+        force 'com.android.support:support-v4:27.1.0'
+    }
+}
+
+dependencies {
+    compile("org.sunbird.geniecanvas:geniecanvas_sharedxwalk:3.2.279@aar") {
+        exclude module: 'org.ekstep.genieservices'
+        exclude module: 'io.ionic.keyboard'
+    }
+
+    // For testing local aar files
+
+    // compile fileTree(include: ['*.jar'], dir: 'libs')
+    // 	 compile(name:'geniecanvas-local-debug',ext:'aar'){
+    // 	  exclude module: 'org.ekstep.genieservices'
+    // 	  exclude module: 'io.ionic.keyboard'
+ 	//  }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
+        maven {
+            url "https://platform.ekstep.in/downloads/content/repositories/releases"
+        }
+    }
+}
+
+android {
+    defaultConfig {
+        buildConfigField 'String', 'PLAYER_CONFIG', '"org.sunbird.PlayerConfig"'
+    }
+}

@@ -7,7 +7,8 @@ import {
 import {
   Component,
   NgZone,
-  OnInit
+  OnInit,
+  Input
 } from '@angular/core';
 import {
   ContentService,
@@ -16,17 +17,22 @@ import {
   Environment,
   ImpressionType,
   LogLevel,
-  ContentFilterCriteria
+  ContentFilterCriteria,
+  TelemetryObject,
+  InteractType,
+  InteractSubtype
 } from 'sunbird';
 import * as _ from 'lodash';
 import {
   ContentType,
-  ViewMore
+  ViewMore,
+  MimeType
 } from '../../app/app.constant';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { CourseUtilService } from '../../service/course-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
+import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
 
 @IonicPage()
 @Component({
@@ -117,6 +123,27 @@ export class ViewMoreActivityPage implements OnInit {
   uid: any;
   audience: any;
   defaultImg: string;
+  // adding for ETBV2 integration, to show saved resources after recentlyViewed
+  savedResources: Array<any>;
+
+  @Input() course: any;
+
+  /**
+   * Contains layout name
+   *
+   * @example layoutName = Inprogress / popular
+   */
+  @Input() layoutName: string;
+
+  @Input() pageName: string;
+
+  @Input() onProfile = false;
+
+  @Input() index: number;
+
+  @Input() sectionName: string;
+
+  @Input() env: string;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -158,12 +185,13 @@ export class ViewMoreActivityPage implements OnInit {
   }
 
   subscribeUtilityEvents() {
-    this.events.subscribe('savedResources:update', (res) => {
+    this.events.subscribe('savedResources:update', async(res) => {
       if (res && res.update) {
         if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_SAVED) {
           this.getLocalContents(false, this.downloadsOnlyToggle);
         } else if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED) {
-          this.getLocalContents(true, this.downloadsOnlyToggle);
+           await this.getLocalContents(true, this.downloadsOnlyToggle);
+           this.getLocalContents();
         }
       }
     });
@@ -199,6 +227,8 @@ export class ViewMoreActivityPage implements OnInit {
                   });
                 } else {
                   this.searchList = data.result.contentDataList;
+                  console.log('**1 search List =>', this.searchList);
+
                 }
               } else {
                 this.loadMoreBtn = false;
@@ -256,7 +286,7 @@ export class ViewMoreActivityPage implements OnInit {
   /**
 	 * Mapper to call api based on page.Layout name
 	 */
-  mapper() {
+  async mapper() {
     const pageName = this.navParams.get('pageName');
     switch (pageName) {
       case ViewMore.PAGE_COURSE_ENROLLED:
@@ -281,12 +311,14 @@ export class ViewMoreActivityPage implements OnInit {
       case ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED:
         this.loadMoreBtn = false;
         this.localContentsCard = true;
-        this.getLocalContents(true);
+        await this.getLocalContents(true);
+        this.getLocalContents();
         break;
 
       default:
         this.search();
     }
+    console.log('search List =>' , this.searchList);
   }
 
   /**
@@ -307,6 +339,7 @@ export class ViewMoreActivityPage implements OnInit {
           data = JSON.parse(data);
           this.searchList = data.result.courses ? data.result.courses : [];
           this.loadMoreBtn = false;
+          console.log('**2 searchList =>', this.searchList);
         }
         loader.dismiss();
       })
@@ -319,7 +352,7 @@ export class ViewMoreActivityPage implements OnInit {
   /**
 	 * Get local content
 	 */
-  getLocalContents(recentlyViewed?: boolean, downloaded?: boolean) {
+   async getLocalContents(recentlyViewed?: boolean, downloaded?: boolean) {
     const loader = this.commonUtilService.getLoader();
     loader.present();
 
@@ -354,9 +387,28 @@ export class ViewMoreActivityPage implements OnInit {
             }
           }
           contentData.push(value);
+          // if saved resources are available
         });
         this.ngZone.run(() => {
-          this.searchList = contentData;
+          if ((this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED) && recentlyViewed) {
+            this.searchList = contentData;
+          }
+          //
+          if ((this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED) && !recentlyViewed) {
+           this.savedResources = contentData;
+              for (let i = 0 ; i < this.searchList.length; i++) {
+                  const index = this.savedResources.findIndex( (el) => {
+                  return el.identifier === this.searchList[i].identifier;
+              });
+
+              if (index !== -1) {
+                this.savedResources.splice(index, 1);
+              }
+          }
+          //  this.recentlyViewed.push(...this.savedResources);
+           this.searchList.push(...this.savedResources);
+          }
+          console.log('content data is =>' , contentData);
           loader.dismiss();
           this.loadMoreBtn = false;
         });
@@ -464,13 +516,6 @@ export class ViewMoreActivityPage implements OnInit {
     });
   }
 
-  downloadsOnlyToggleChange(e) {
-    if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_SAVED) {
-      this.getLocalContents(false, this.downloadsOnlyToggle);
-    } else if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED) {
-      this.getLocalContents(true, this.downloadsOnlyToggle);
-    }
-  }
 
   showDisabled(resource) {
     return !resource.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable;
@@ -487,5 +532,41 @@ export class ViewMoreActivityPage implements OnInit {
       this.pageType = this.pageType;
       this.showOverlay = false;
     });
+  }
+
+  navigateToDetailPage(content: any): boolean {
+    if (!content.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable) {
+      return false;
+    }
+    const identifier = content.contentId || content.identifier;
+    const telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = identifier;
+    telemetryObject.type = this.isResource(content.contentType) ? ContentType.RESOURCE : content.contentType;
+
+
+    const values = new Map();
+    values['sectionName'] = this.sectionName;
+    values['positionClicked'] = this.index;
+
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.CONTENT_CLICKED,
+      this.env,
+      this.pageName ? this.pageName : this.layoutName,
+      telemetryObject,
+      values);
+    if (content.mimeType === MimeType.COLLECTION) {
+      this.navCtrl.push(CollectionDetailsEtbPage, {
+        content: content
+      });
+    } else {
+      this.navCtrl.push(ContentDetailsPage, {
+        content: content
+      });
+    }
+  }
+
+  isResource(contentType) {
+    return contentType === ContentType.STORY ||
+      contentType === ContentType.WORKSHEET;
   }
 }

@@ -12,8 +12,10 @@ import {
   Navbar,
   Platform,
   IonicApp,
-  AlertController
+  AlertController,
+  ToastController
 } from 'ionic-angular';
+import { FileSizePipe } from '@app/pipes/file-size/file-size';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
 import {
@@ -49,7 +51,9 @@ import {
 import {
   ContentRatingAlertComponent,
   ContentActionsComponent,
-  BookmarkComponent
+  BookmarkComponent,
+  SbPopoverComponent,
+  ConfirmAlertComponent
 } from '@app/component';
 import {
   AppGlobalService,
@@ -64,6 +68,7 @@ import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup'
 import { Observable } from 'rxjs';
 import { XwalkConstants } from '../../app/app.constant';
 import { ValueTransformer } from '@angular/compiler/src/util';
+import { SbDownloadPopupComponent } from '@app/component/popups/sb-download-popup/sb-download-popup';
 
 
 @IonicPage()
@@ -72,12 +77,14 @@ import { ValueTransformer } from '@angular/compiler/src/util';
   templateUrl: 'content-details.html',
 })
 export class ContentDetailsPage {
+  [x: string]: any;
   apiLevel: number;
   appAvailability: string;
   content: any;
   isChildContent = false;
   contentDetails: any;
   identifier: string;
+  new: Boolean = true;
 
   /**
    * To hold previous state data
@@ -125,6 +132,7 @@ export class ContentDetailsPage {
   objType;
   objVer;
   didViewLoad: boolean;
+  contentDetail: any;
   backButtonFunc = undefined;
   baseUrl = '';
   shouldGenerateEndTelemetry = false;
@@ -133,9 +141,14 @@ export class ContentDetailsPage {
   userCount = 0;
   shouldGenerateTelemetry = true;
   playOnlineSpinner: boolean;
+  defaultAppIcon: string;
   @ViewChild(Navbar) navBar: Navbar;
   showMessage: any;
+  localImage: any;
   isUsrGrpAlrtOpen: Boolean = false;
+  showDownload: boolean;
+  contentPath: Array<any> [];
+  FileSizePipe: any;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -158,7 +171,9 @@ export class ContentDetailsPage {
     private commonUtilService: CommonUtilService,
     private courseUtilService: CourseUtilService,
     private deviceInfoService: DeviceInfoService,
-    private network: Network
+    private network: Network,
+    public  toastController: ToastController,
+    private fileSizePipe: FileSizePipe
   ) {
 
     this.objRollup = new Rollup();
@@ -169,14 +184,16 @@ export class ContentDetailsPage {
     this.handlePageResume();
     this.checkDeviceAPILevel();
     this.checkappAvailability();
+    this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
+
   }
 
   ionViewDidLoad() {
-    this.navBar.backButtonClick = (e: UIEvent) => {
-      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
-        true, this.cardData.identifier, this.corRelationList);
-      this.handleNavBackButton();
-    };
+    // this.navBar.backButtonClick = (e: UIEvent) => {
+    //   this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
+    //     true, this.cardData.identifier, this.corRelationList);
+    //   this.handleNavBackButton();
+    // };
     this.handleDeviceBackButton();
 
     if (!AppGlobalService.isPlayerLaunched) {
@@ -198,6 +215,9 @@ export class ContentDetailsPage {
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.downloadAndPlay = this.navParams.get('downloadAndPlay');
     this.playOnlineSpinner = true;
+    this.contentPath = this.navParams.get('paths');
+    console.log('BreadCrumbs', this.contentPath);
+   console.log('NAVPARAMS FROM COLLECTION ', this.navParams.get('paths'));
 
     if (this.isResumedCourse) {
       if (this.isUsrGrpAlrtOpen) {
@@ -230,7 +250,7 @@ export class ContentDetailsPage {
       this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
     }
     this.popToPreviousPage(true);
-    this.backButtonFunc();
+    // this.backButtonFunc();
   }
 
   handleDeviceBackButton() {
@@ -244,7 +264,7 @@ export class ContentDetailsPage {
       if (this.shouldGenerateEndTelemetry) {
         this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
       }
-      this.backButtonFunc();
+      // this.backButtonFunc();
     }, 11);
   }
 
@@ -269,6 +289,18 @@ export class ContentDetailsPage {
     this.events.subscribe('playConfig', (config) => {
       this.playContent(config.streaming);
     });
+  }
+  // You are Offline Toast
+  presentToastForOffline() {
+    const toast = this.toastController.create({
+      message: 'You are offline',
+      showCloseButton: true,
+      // icon : 'information',
+      position: 'top',
+      closeButtonText: '',
+      cssClass: 'toastAfterHeader'
+    });
+    toast.present();
   }
 
   /**
@@ -337,24 +369,25 @@ export class ContentDetailsPage {
   /**
    * Function to rate content
    */
+
   rateContent(popupType: string) {
     const paramsMap = new Map();
     if (this.isContentPlayed || this.content.contentAccess.length) {
 
       paramsMap['IsPlayed'] = 'Y';
-      const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
+      const popover = this.popoverCtrl.create(ContentRatingAlertComponent, {
         content: this.content,
         pageId: PageId.CONTENT_DETAIL,
         rating: this.userRating,
         comment: this.ratingComment,
-        popupType: popupType
+        popupType: popupType,
       }, {
-          cssClass: 'content-rating-alert'
+          cssClass: 'sb-popover info',
         });
-      popUp.present({
+      popover.present({
         ev: event
       });
-      popUp.onDidDismiss(data => {
+      popover.onDidDismiss(data => {
         if (data && data.message === 'rating.success') {
           this.userRating = data.rating;
           this.ratingComment = data.comment;
@@ -374,6 +407,46 @@ export class ContentDetailsPage {
       this.objRollup,
       this.corRelationList);
   }
+
+
+  //     const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
+  //       content: this.content,
+  //       pageId: PageId.CONTENT_DETAIL,
+  //       rating: this.userRating,
+  //       comment: this.ratingComment,
+  //       popupType: popupType,
+  //       actionsButtons: [
+  //         {
+  //           btntext: 'Rate',
+  //           btnClass: 'popover-color'
+  //         },
+  //       ],
+  //     }, {
+  //         cssClass: 'sb-popover info'
+  //       });
+  //     popUp.present({
+  //       ev: event
+  //     });
+  //     popUp.onDidDismiss(data => {
+  //       if (data && data.message === 'rating.success') {
+  //         this.userRating = data.rating;
+  //         this.ratingComment = data.comment;
+  //       }
+  //     });
+  //   } else {
+  //     paramsMap['IsPlayed'] = 'N';
+  //     this.commonUtilService.showToast('TRY_BEFORE_RATING');
+  //   }
+  //   this.telemetryGeneratorService.generateInteractTelemetry(
+  //     InteractType.TOUCH,
+  //     InteractSubtype.RATING_CLICKED,
+  //     Environment.HOME,
+  //     PageId.CONTENT_DETAIL,
+  //     undefined,
+  //     paramsMap,
+  //     this.objRollup,
+  //     this.corRelationList);
+  // }
 
   /**
    * To set content details in local variable
@@ -436,10 +509,28 @@ export class ContentDetailsPage {
 
   extractApiResponse(data) {
     this.content = data.result.contentData;
+    // console.log('DATA RESULT Content  ==>', this.content);
     this.content.downloadable = data.result.isAvailableLocally;
+<<<<<<< HEAD
     if (data.result.lastUpdatedTime !== '0') {
       this.playOnlineSpinner = false;
     }
+=======
+    if (this.content.appIcon) {
+      if (this.content.appIcon.includes('http:') || this.content.appIcon.includes('https:')) {
+        if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+          // this.content.appIcon = this.content.appIcon;
+          // } else {
+          this.content.appIcon = this.defaultAppIcon;
+        }
+      } else if (data.result.basePath) {
+        this.content.appIcon = data.result.basePath + '/' + this.content.appIcon;
+        console.log('local Image', this.localImage);
+      }
+    }
+
+    this.content.lastUpdatedTime = data.result.lastUpdatedTime;
+>>>>>>> upstream/ui-component-integration
     this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
     this.content.contentMarker = data.result.contentMarker ? data.result.contentMarker : [];
 
@@ -707,7 +798,13 @@ export class ContentDetailsPage {
         const res = data;
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
           this.downloadProgress = res.data.downloadProgress === -1 ? '0' : res.data.downloadProgress;
+          console.log('from content details', this.downloadProgress);
         }
+
+        // Present Toast when the Device is Offline
+        // if (!this.commonUtilService.networkInfo.isNetworkAvailable && !this.content.isAvailableLocally) {
+        // this.presentToastForOffline();
+        // }
 
         // Get child content
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
@@ -748,13 +845,62 @@ export class ContentDetailsPage {
       });
     });
   }
+  /**
+   * confirming popUp content
+   */
+  openConfirmPopUp() {
+    console.log('hhfhh', this.cardData);
+    console.log('djncjevej', this.content);
+    // const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
+    //   sbPopoverHeading: this.commonUtilService.translateMessage('DOWNLOAD'),
+    //   sbPopoverMainTitle: this.cardData.name + this.cardData.subject,
+    //   actionsButtons: [
+    //     {
+    //       btntext: this.commonUtilService.translateMessage('DOWNLOAD'),
+    //       btnClass: 'popover-color'
+    //     },
+    //   ],
+    //   icon: null,
+    //   metaInfo: this.cardData.contentType +
+    //     'items' + '(' + this.fileSizePipe.transform(this.cardData.size, 2) + ')',
+    // }, {
+    //     cssClass: 'sb-popover info',
+    //   });
+    // popover.present({
+    //   ev: event
+    // });
+    // popover.onDidDismiss((canDownload: boolean = false) => {
+    //   if (canDownload) {
+    //     this.downloadContent();
+    //   }
+    // });
+    const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
+      sbPopoverMainTitle: this.cardData.name + this.cardData.subject,
+      icon: null,
+      metaInfo: this.cardData.contentTypesCount +
+           'items' + '(' + this.fileSizePipe.transform(this.cardData.size, 2) + ')',
+      sbPopoverContent: this.commonUtilService.translateMessage('SOME_CONTENT_MIGHT_NOT_BE_PLAYABLE_OFFLINE'),
+    }, {
+        cssClass: 'sb-popover info',
+      });
+    popover.present({
+      ev: event
+    });
+    popover.onDidDismiss((canDownload: boolean = false) => {
+      if (canDownload) {
+        this.downloadContent();
+      }
+    });
 
+
+  }
   /**
    * Download content
    */
   downloadContent() {
     this.zone.run(() => {
       if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+        this.showDownload = true;
         this.downloadProgress = '0';
         this.isDownloadStarted = true;
         const values = new Map();
@@ -769,8 +915,6 @@ export class ContentDetailsPage {
           values,
           this.objRollup,
           this.corRelationList);
-      } else {
-        this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
       }
     });
   }
@@ -799,7 +943,6 @@ export class ContentDetailsPage {
       return this.commonUtilService.translateMessage(msg);
     }
   }
-
   /**
    * alert for playing the content
    */
@@ -973,7 +1116,67 @@ export class ContentDetailsPage {
       });
     });
   }
+  deleteContent() {
+    console.log('contenmtttttttttttttt', this.content);
+    // const popover = this.popoverCtrl.create(ContentActionsComponent, {
+    //   content: this.content,
+    //   isChild: this.isChildContent,
+    //   objRollup: this.objRollup,
+    //   pageName: PageId.CONTENT_DETAIL,
+    //   corRelationList: this.corRelationList
+    // }, {
+    //     cssClass: 'content-action'
+    //   });
+    // popover.present({
+    //   ev: event
+    // });
+    // popover.onDidDismiss(data => {
+    //   this.zone.run(() => {
+    //     if (data === 'delete.success') {
+    //       this.content.streamingUrl = this.streamingUrl;
+    //       this.content.downloadable = false;
+    //       const playContent = JSON.parse(this.content.playContent);
+    //       playContent.isAvailableLocally = false;
+    //       this.content.playContent = JSON.stringify(playContent);
+    //     }
+    //   });
+    // });
 
+    const confirm = this.popoverCtrl.create(SbPopoverComponent, {
+      content: this.content,
+      isChild: this.isChildContent,
+      objRollup: this.objRollup,
+      pageName: PageId.CONTENT_DETAIL,
+      corRelationList: this.corRelationList,
+      sbPopoverHeading: this.commonUtilService.translateMessage('DELETE'),
+      sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_DELETE'),
+      actionsButtons: [
+        {
+          btntext: this.commonUtilService.translateMessage('REMOVE'),
+          btnClass: 'popover-color'
+        },
+      ],
+      icon: null,
+      metaInfo: this.content.name,
+      sbPopoverContent: ' 1 item' + ' (' + this.fileSizePipe.transform(this.content.size, 2) + ')',
+    }, {
+        cssClass: 'sb-popover danger',
+      });
+    confirm.present({
+      ev: event
+    });
+    confirm.onDidDismiss(data => {
+      this.zone.run(() => {
+        if (data === 'delete.success') {
+          this.content.streamingUrl = this.streamingUrl;
+          this.content.downloadable = false;
+          const playContent = JSON.parse(this.content.playContent);
+          playContent.isAvailableLocally = false;
+          this.content.playContent = JSON.stringify(playContent);
+        }
+      });
+    });
+  }
   showBookmarkMenu(event?) {
     const popover = this.popoverCtrl.create(BookmarkComponent, {
       content: this.content,
@@ -1075,6 +1278,27 @@ export class ContentDetailsPage {
         cssClass: 'popover-alert'
       });
     popover.present();
+  }
+
+  /* SUDO
+   if firstprperty is there and secondprperty is not there, then return firstprperty value
+   else if firstprperty is not there and secondprperty is there, then return secondprperty value
+   else do the merger of firstprperty and secondprperty value and return merged value
+ */
+  mergeProperties(firstProp, secondProp) {
+    if (this.content[firstProp] && !this.content[secondProp]) {
+      return this.content[firstProp];
+    } else if (!this.content[firstProp] && this.content[secondProp]) {
+      return this.content[secondProp];
+    } else {
+      let first: any;
+      let second: any;
+      first = this.content[firstProp].split(', ');
+      second = this.content[secondProp].split(', ');
+      first = second.concat(first);
+      first = Array.from(new Set(first));
+      return first.join(', ');
+    }
   }
 }
 

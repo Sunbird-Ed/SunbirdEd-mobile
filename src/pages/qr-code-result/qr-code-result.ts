@@ -23,7 +23,7 @@ import {
   ProfileService,
   ProfileRequest,
   SharedPreferences,
-  TabsPage,
+  // TabsPage,
   SuggestedFrameworkRequest,
   FrameworkService,
   FileUtil,
@@ -31,6 +31,7 @@ import {
   ContentMarkerRequest,
   MarkerType
 } from 'sunbird';
+import { TabsPage } from '@app/pages/tabs/tabs';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import {

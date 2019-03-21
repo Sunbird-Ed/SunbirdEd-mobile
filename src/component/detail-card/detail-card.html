@@ -1,0 +1,74 @@
+<!-- Generated template for the DetailCardComponent component -->
+
+<div class="sb-dt-card">
+  <div class="sb-dt-content">
+    <div class="left">
+
+      <div class="sb-dt-title"> {{contentDetail?.name}}</div>
+      <div class="sb-dt-source" *ngIf="contentDetail?.creator || contentDetail?.owner">
+        <span class="sb-by">{{ 'CONTENT_CREATED_BY' | translate }}</span>
+        <span class="sb-user">{{ contentDetail?.creator || contentDetail?.owner }}</span>
+      </div>
+      <div class="sb-dt-class-info" *ngIf="contentDetail?.gradeLevel || contentDetail?.subject">
+        <span class="sb-dt-label sb-dt-class">{{contentDetail?.gradeLevel}}</span>
+        <span class="sb-separator-dot"></span>
+        <span class="sb-dt-label sb-dt-subject">{{contentDetail?.subject}}</span>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="img-container">
+        <img src="{{ localImage || contentDetail?.appIcon || defaultAppIcon}}">
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="sb-dt-content pt-0">
+    <div class="left">
+      <div class="sb-practice">
+        <button ion-button outline small>{{contentDetail?.resourceType}}</button>
+      </div>
+    </div>
+    <div class="right">
+      <div *ngIf="contentDetail?.me_totalRatings" (click)="rateContent()" class="sb-rating-view">
+        <span class="sb-rating-value">{{ contentDetail?.me_totalRatings }}</span>
+        <span class="sb-rating-star">
+          <ion-icon ios="ios-star" md="md-star"></ion-icon>
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+
+
+  <div class="sb-separator-line"></div>
+
+  <div class="sb-dt-card-actions">
+
+    <div class="sb-btn-tile-group">
+      <button ion-button clear icon-only class="sb-btn-tile" *ngIf="showDownloadBtn && !isDepthChild && !isDownloadStarted" (click)="downloadAllContents()">
+        <ion-icon ios="ios-cloud-download" md="md-cloud-download" class="sb-dt-card-blue-icon"></ion-icon>
+        <span class="sb-btn-footer-text">{{ 'DOWNLOAD' | translate }}</span>
+      </button>
+      <button ion-button clear icon-only class="sb-btn-tile" *ngIf="contentDetail?.isAvailableLocally" (click)="showOverflowMenu()">
+        <ion-icon ios="ios-trash" md="md-trash" class="sb-dt-card-danger-icon"></ion-icon>
+        <span class="sb-btn-footer-text">{{ 'REMOVE' | translate }}</span>
+      </button>
+      <button ion-button clear icon-only class="sb-btn-tile" (click)="share()">
+        <ion-icon ios="ios-share" md="md-share" class="sb-dt-card-blue-icon"></ion-icon>
+        <span class="sb-btn-footer-text">{{ 'SHARE' | translate }}</span>
+      </button>
+      <!-- <button ion-button clear icon-only class="sb-btn-tile">
+        <ion-icon ios="ios-sync" md="md-sync" class="sb-dt-card-blue-icon"></ion-icon>
+        <span class="sb-btn-footer-text">Update</span>
+      </button> -->
+      <!-- <button ion-button clear icon-only class="sb-btn-tile">
+        <ion-icon ios="ios-star-outline" md="md-star-outline" class="sb-dt-card-blue-icon"></ion-icon>
+        <span class="sb-btn-footer-text">Rate</span>
+      </button> -->
+    </div>
+  </div>
+</div>

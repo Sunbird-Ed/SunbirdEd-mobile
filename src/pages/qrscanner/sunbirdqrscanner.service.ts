@@ -21,17 +21,19 @@ import {
   ImpressionType,
   ImpressionSubtype,
   TelemetryObject,
-  TabsPage,
+  // TabsPage,
   ProfileType,
-  ContainerService,
+  // ContainerService,
   Profile
 } from 'sunbird';
+import { TabsPage } from '@app/pages/tabs/tabs';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { QRScannerResultHandler } from './qrscanresulthandler.service';
 import { ProfileSettingsPage } from '../profile-settings/profile-settings';
 import { App } from 'ionic-angular';
 import { AppGlobalService } from '../../service/app-global.service';
 import { Subscription } from 'rxjs';
+import { ContainerService } from '../../service/container-service';
 
 @Injectable()
 export class SunbirdQRScanner {
@@ -86,6 +88,8 @@ export class SunbirdQRScanner {
 
     /* Just need to override the back button functionality other wise  on pressing back button it will take to two pages back */
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      console.log('INNNNN BackButton');
+     //  this.stopScanner();
       this.backButtonFunc();
     }, 10);
     this.pauseSubscription = this.platform.pause.subscribe(() => this.stopScanner());
@@ -135,7 +139,9 @@ export class SunbirdQRScanner {
 
   public stopScanner() {
     // Unregister back button listner
+    console.log('InsideSTopScannere===>>');
     this.backButtonFunc();
+    // QRScannerAlert.dismiss();
     (<any>window).qrScanner.stopScanner();
     if (this.pauseSubscription) {
       this.pauseSubscription.unsubscribe();
