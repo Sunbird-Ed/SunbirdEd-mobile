@@ -1,63 +1,52 @@
-import { Search } from './../../app/app.constant';
-import {
-  Component,
-  NgZone,
-  OnInit,
-  AfterViewInit
-} from '@angular/core';
-import {
-  ContentService,
-  ImpressionType,
-  PageId,
-  Environment,
-  InteractType,
-  InteractSubtype,
-  SharedPreferences,
-  ContentFilterCriteria,
-  ProfileType,
-  FrameworkService,
-  CategoryRequest,
-  ContentSearchCriteria,
-  TelemetryObject
-} from 'sunbird';
-import {
-  NavController,
-  Events
-} from 'ionic-angular';
+import {Search} from './../../app/app.constant';
+import {AfterViewInit, Component, Inject, NgZone, OnInit} from '@angular/core';
+import {Events, NavController} from 'ionic-angular';
 import * as _ from 'lodash';
-import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
-import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
-import { SearchPage } from '../search/search';
-import { Map } from '../../app/telemetryutil';
+import {ViewMoreActivityPage} from '../view-more-activity/view-more-activity';
+import {SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
+import {SearchPage} from '../search/search';
+import {Map} from '../../app/telemetryutil';
 import {
-  ContentType,
   AudienceFilter,
-  PreferenceKey,
+  CardSectionName,
   ContentCard,
-  ViewMore,
-  FrameworkCategory,
-  CardSectionName
+  ContentType,
+  PreferenceKey,
+  ViewMore
 } from '../../app/app.constant';
-import {
-  PageFilterCallback
-} from '../page-filter/page.filter';
-import { AppGlobalService } from '../../service/app-global.service';
+import {PageFilterCallback} from '../page-filter/page.filter';
+import {AppGlobalService} from '../../service/app-global.service';
 import Driver from 'driver.js';
-import { AppVersion } from '@ionic-native/app-version';
-import { updateFilterInSearchQuery } from '../../util/filter.util';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { TranslateService } from '@ngx-translate/core';
-import { Network } from '@ionic-native/network';
+import {AppVersion} from '@ionic-native/app-version';
+import {updateFilterInSearchQuery} from '../../util/filter.util';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {CommonUtilService} from '../../service/common-util.service';
+import {TranslateService} from '@ngx-translate/core';
+import {Network} from '@ionic-native/network';
+import {animate, group, state, style, transition, trigger} from '@angular/animations';
+import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
 import {
-  trigger,
-  state,
-  style,
-  animate,
-  transition,
-  group,
-} from '@angular/animations';
-import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
+  CategoryTerm,
+  ContentEventType,
+  ContentRequest,
+  ContentSearchCriteria,
+  ContentService,
+  EventsBusEvent,
+  EventsBusService,
+  FrameworkCategoryCode,
+  FrameworkCategoryCodesGroup,
+  FrameworkUtilService,
+  GetFrameworkCategoryTermsRequest,
+  Profile,
+  ProfileService,
+  ProfileType,
+  SearchType,
+  SharedPreferences,
+  TelemetryObject
+} from 'sunbird-sdk';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
+import {PlayerPage} from '../player/player';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'page-resources',
@@ -66,10 +55,10 @@ import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-d
     trigger('appear', [
       state('true', style({
         left: '{{left_indent}}',
-      }), { params: { left_indent: 0 } }), // default parameters values required
+      }), {params: {left_indent: 0}}), // default parameters values required
 
       transition('* => classAnimate', [
-        style({ width: 5, opacity: 0 }),
+        style({width: 5, opacity: 0}),
         group([
           animate('0.3s 0.2s ease', style({
             transform: 'translateX(0) scale(1.2)', width: '*',
@@ -84,7 +73,7 @@ import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-d
       state('true', style({
         left: '{{left_indent}}',
         transform: 'translateX(-100px)',
-      }), { params: { left_indent: 0 } }), // default parameters values required
+      }), {params: {left_indent: 0}}), // default parameters values required
 
       transition('* => classAnimate', [
         // style({ width: 5, transform: 'translateX(-100px)', opacity: 0 }),
@@ -114,8 +103,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   showLoader = false;
 
   /**
-	 * Flag to show latest and popular course loader
-	 */
+   * Flag to show latest and popular course loader
+   */
   searchApiLoader = true;
   isOnBoardingCardCompleted = false;
   public source = PageId.LIBRARY;
@@ -124,12 +113,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   filterIcon = './assets/imgs/ic_action_filter.png';
   selectedLanguage = 'en';
   audienceFilter = [];
-  profile: any;
+  profile: Profile;
   appLabel: string;
   mode = 'soft';
   isFilterApplied = false;
   pageFilterCallBack: PageFilterCallback;
-  getGroupByPageReq: ContentSearchCriteria = {};
+  getGroupByPageReq: ContentSearchCriteria = {
+    searchType: SearchType.SEARCH
+  };
 
   layoutPopular = ContentCard.LAYOUT_POPULAR;
   layoutSavedContent = ContentCard.LAYOUT_SAVED_CONTENT;
@@ -141,23 +132,29 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   currentGrade: any;
   currentMedium: string;
   defaultImg: string;
+  isUpgradePopoverShown: boolean = false;
+
   refresh: boolean;
+  private eventSubscription: Subscription;
+
   constructor(
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     public navCtrl: NavController,
     private ngZone: NgZone,
-    private contentService: ContentService,
     private qrScanner: SunbirdQRScanner,
     private events: Events,
-    private preference: SharedPreferences,
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
-    private frameworkService: FrameworkService,
     private translate: TranslateService,
-    private network: Network
+    private network: Network,
+    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
   ) {
-    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+    this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
       .then(val => {
         if (val && val.length) {
           this.selectedLanguage = val;
@@ -170,9 +167,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       });
     this.defaultImg = 'assets/imgs/ic_launcher.png';
     this.generateNetworkType();
+
   }
 
   subscribeUtilityEvents() {
+    this.profileService.getActiveSessionProfile().subscribe((profile: Profile) => {
+      this.profile = profile;
+    });
     this.events.subscribe('savedResources:update', (res) => {
       if (res && res.update) {
         this.setSavedContent();
@@ -196,9 +197,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     });
 
     // Event for optional and forceful upgrade
-    this.events.subscribe('force_optional_upgrade', (upgrade) => {
-      if (upgrade) {
-        this.appGlobalService.openPopover(upgrade);
+    this.events.subscribe('force_optional_upgrade', async (upgrade) => {
+      if (upgrade && !this.isUpgradePopoverShown) {
+        await this.appGlobalService.openPopover(upgrade);
+        this.isUpgradePopoverShown = true;
       }
     });
 
@@ -219,8 +221,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   /**
-	 * Angular life cycle hooks
-	 */
+   * Angular life cycle hooks
+   */
   ngOnInit() {
     this.getCurrentUser();
   }
@@ -240,13 +242,15 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     });
   }
 
-  ionViewWillLeave(): void {
-    this.events.unsubscribe('genie.event');
+  ionViewWillLeave() {
+    if (this.eventSubscription) {
+      this.eventSubscription.unsubscribe();
+    }
   }
 
   /**
-	 * It will fetch the guest user profile details
-	 */
+   * It will fetch the guest user profile details
+   */
   getCurrentUser(): void {
     this.guestUser = !this.appGlobalService.isUserLoggedIn();
     const profileType = this.appGlobalService.getGuestUserType();
@@ -300,10 +304,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   /**
-	 * Navigate to search page
-	 *
-	 * @param {string} queryParams search query params
-	 */
+   * Navigate to search page
+   *
+   * @param {string} queryParams search query params
+   */
   navigateToViewMoreContentsPageWithParams(queryParams, headerTitle): void {
     const values = new Map();
     values['SectionName'] = headerTitle;
@@ -324,20 +328,18 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   /**
-	 * Get saved content
-	 */
+   * Get saved content
+   */
   setSavedContent() {
     // this.localResources = [];
-    console.log('in setSavedContent');
     // if(this.isOnBoardingCardCompleted || !this.guestUser){
-    // console.log('in setSavedContent isOnBoardingCardCompleted');
     this.showLoader = true;
-    const requestParams: ContentFilterCriteria = {
+    const requestParams: ContentRequest = {
       uid: this.profile ? this.profile.uid : undefined,
       contentTypes: ContentType.FOR_LIBRARY_TAB,
       audience: this.audienceFilter
     };
-    this.contentService.getAllLocalContents(requestParams)
+    this.contentService.getContents(requestParams).toPromise()
       .then(data => {
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
@@ -368,18 +370,18 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   /**
-	 * Load/get recently viewed content
-	 */
+   * Load/get recently viewed content
+   */
   loadRecentlyViewedContent() {
     this.showLoader = true;
-    const requestParams: ContentFilterCriteria = {
+    const requestParams: ContentRequest = {
       uid: this.profile ? this.profile.uid : undefined,
       contentTypes: ContentType.FOR_RECENTLY_VIEWED,
       audience: this.audienceFilter,
       recentlyViewed: true,
       limit: 20
     };
-    this.contentService.getAllLocalContents(requestParams)
+    this.contentService.getContents(requestParams).toPromise()
       .then(data => {
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
@@ -408,8 +410,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   /**
-	 * Get popular content
-	 */
+   * Get popular content
+   */
   getPopularContent(isAfterLanguageChange = false, contentSearchCriteria?: ContentSearchCriteria) {
     // if (this.isOnBoardingCardCompleted || !this.guestUser) {
     this.storyAndWorksheets = [];
@@ -418,10 +420,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     const that = this;
 
     if (!contentSearchCriteria) {
-      const criteria = new ContentSearchCriteria();
-      criteria.mode = 'hard';
-
-      contentSearchCriteria = criteria;
+      contentSearchCriteria = {
+        mode: 'hard'
+      };
     }
 
     this.mode = contentSearchCriteria.mode;
@@ -468,15 +469,15 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     const reqvalues = new Map();
     reqvalues['pageReq'] = this.getGroupByPageReq;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-        InteractSubtype.RESOURCE_PAGE_REQUEST,
-        Environment.HOME,
-        this.source, undefined,
-        reqvalues);
-    this.contentService.getGroupByPage(this.getGroupByPageReq, this.guestUser)
+      InteractSubtype.RESOURCE_PAGE_REQUEST,
+      Environment.HOME,
+      this.source, undefined,
+      reqvalues);
+    this.contentService.searchContentGroupedByPageSection(this.getGroupByPageReq).toPromise()
       .then((response: any) => {
         this.ngZone.run(() => {
           // TODO Temporary code - should be fixed at backend
-          const sections = JSON.parse(response.sections);
+          const sections = response.sections;
           const newSections = [];
           sections.forEach(element => {
             // element.display = JSON.parse(element.display);
@@ -496,9 +497,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.storyAndWorksheets = newSections;
           const sectionInfo = {};
           for (let i = 0; i < this.storyAndWorksheets.length; i++) {
-             const sectionName = this.storyAndWorksheets[i].name,
-                  count = this.storyAndWorksheets[i].contents.length;
-                  sectionInfo[sectionName] = count;
+            const sectionName = this.storyAndWorksheets[i].name,
+              count = this.storyAndWorksheets[i].contents.length;
+            sectionInfo[sectionName] = count;
           }
 
           const resvalues = new Map();
@@ -523,11 +524,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.searchApiLoader = false;
           if (error === 'CONNECTION_ERROR') {
           } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
-            if (!isAfterLanguageChange) { this.commonUtilService.showToast('ERROR_FETCHING_DATA'); }
+            if (!isAfterLanguageChange) {
+              this.commonUtilService.showToast('ERROR_FETCHING_DATA');
+            }
           } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable) {
             this.commonUtilService.showToast(
               this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
-              `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
+                `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
           }
           const errvalues = new Map();
           errvalues['isNetworkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
@@ -539,6 +542,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         });
       });
   }
+
   generateExtraInfoTelemetry(sectionsCount) {
     const values = new Map();
     values['savedItemVisible'] = (this.localResources && this.localResources.length) ? 'Y' : 'N';
@@ -595,7 +599,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewDidEnter() {
-    this.preference.getString('show_app_walkthrough_screen')
+    this.preferences.getString('show_app_walkthrough_screen').toPromise()
       .then(value => {
         if (value === 'true') {
           const driver = new Driver({
@@ -623,7 +627,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             element.appendChild(img);
           }, 100);
           this.telemetryGeneratorService.generatePageViewTelemetry(PageId.ONBOARDING_QR_SHOWCASE, Environment.ONBOARDING, PageId.LIBRARY);
-          this.preference.putString('show_app_walkthrough_screen', 'false');
+          this.preferences.putString('show_app_walkthrough_screen', 'false').toPromise().then();
         }
       });
   }
@@ -640,19 +644,18 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   subscribeGenieEvents() {
-    this.events.subscribe('genie.event', (data) => {
-      const res = JSON.parse(data);
-      if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
+    this.eventSubscription = this.eventsBusService.events().subscribe((event: EventsBusEvent) => {
+      if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
         this.setSavedContent();
         this.loadRecentlyViewedContent();
       }
-    });
+    }) as any;
   }
 
   /**
-	 *
-	 * @param refresher
-	 */
+   *
+   * @param refresher
+   */
   swipeDownToRefresh(refresher?) {
     this.refresh = true;
     this.storyAndWorksheets = [];
@@ -664,8 +667,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.telemetryGeneratorService.generatePullToRefreshTelemetry(PageId.LIBRARY, Environment.HOME);
       this.getGroupByPage();
     } else {
-          this.getPopularContent();
-         }
+      this.getPopularContent();
+    }
 
   }
 
@@ -690,33 +693,30 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       InteractSubtype.SEARCH_BUTTON_CLICKED,
       Environment.HOME,
       PageId.LIBRARY);
-    this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
+    this.navCtrl.push(SearchPage, {contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY});
   }
 
   getCategoryData() {
-    console.log('this.appGlobalService.getCurrentUser()', this.appGlobalService.getCurrentUser());
     const syllabus: Array<string> = this.appGlobalService.getCurrentUser().syllabus;
     const frameworkId = (syllabus && syllabus.length > 0) ? syllabus[0] : undefined;
-    const categories: Array<string> = FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES;
+    const categories: Array<FrameworkCategoryCode> = FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES;
     this.getMediumData(frameworkId, categories);
     this.getGradeLevelData(frameworkId, categories);
   }
 
   getMediumData(frameworkId, categories): any {
-    const req: CategoryRequest = {
-      currentCategory: FrameworkCategory.MEDIUM,
-      frameworkId: frameworkId,
-      selectedLanguage: this.translate.currentLang,
-      categories: categories
+    const req: GetFrameworkCategoryTermsRequest = {
+      currentCategoryCode: FrameworkCategoryCode.MEDIUM,
+      language: this.translate.currentLang,
+      requiredCategories: categories,
+      frameworkId: frameworkId
     };
-    this.frameworkService.getCategoryData(req)
-      .then(res => {
-        const category = JSON.parse(res);
-        this.categoryMediums = category.terms;
-        this.arrangeMediumsByUserData(this.categoryMediums.map(a => ({ ...a })));
+    this.frameworkUtilService.getFrameworkCategoryTerms(req).toPromise()
+      .then((res: CategoryTerm[]) => {
+        this.categoryMediums = res;
+        this.arrangeMediumsByUserData(this.categoryMediums.map(a => ({...a})));
       })
-      .catch(err => {
-        console.log('Something went wrong!');
+      .catch(() => {
       });
   }
 
@@ -732,7 +732,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   arrangeMediumsByUserData(categoryMediumsParam) {
-    console.log('categoryMediums ========', categoryMediumsParam);
     if (this.appGlobalService.getCurrentUser() &&
       this.appGlobalService.getCurrentUser().medium &&
       this.appGlobalService.getCurrentUser().medium.length) {
@@ -755,16 +754,15 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   getGradeLevelData(frameworkId, categories): any {
-    const req: CategoryRequest = {
-      currentCategory: FrameworkCategory.GRADE_LEVEL,
-      frameworkId: frameworkId,
-      selectedLanguage: this.translate.currentLang,
-      categories: categories
+    const req: GetFrameworkCategoryTermsRequest = {
+      currentCategoryCode: FrameworkCategoryCode.GRADE_LEVEL,
+      language: this.translate.currentLang,
+      requiredCategories: categories,
+      frameworkId: frameworkId
     };
-    this.frameworkService.getCategoryData(req)
-      .then(res => {
-        const category = JSON.parse(res);
-        this.categoryGradeLevels = category.terms;
+    this.frameworkUtilService.getFrameworkCategoryTerms(req).toPromise()
+      .then((res: CategoryTerm[]) => {
+        this.categoryGradeLevels = res;
         for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
           if (this.getGroupByPageReq.grade[0] === this.categoryGradeLevels[i].name) {
             this.classClick(i);
@@ -772,9 +770,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         }
       })
       .catch(err => {
-        console.log('Something went wrong!');
       });
   }
+
   checkEmptySearchResult(isAfterLanguageChange = false) {
     const flags = [];
     _.forEach(this.storyAndWorksheets, (value, key) => {
@@ -785,7 +783,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
     if (flags.length && _.includes(flags, true)) {
     } else {
-      if (!isAfterLanguageChange) { this.commonUtilService.showToast('NO_CONTENTS_FOUND'); }
+      if (!isAfterLanguageChange) {
+        this.commonUtilService.showToast('NO_CONTENTS_FOUND');
+      }
     }
   }
 
@@ -795,6 +795,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.showWarning = false;
     }, 3000);
   }
+
   checkNetworkStatus(showRefresh = false) {
     if (this.commonUtilService.networkInfo.isNetworkAvailable && showRefresh) {
       this.swipeDownToRefresh();
@@ -820,8 +821,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         this.categoryGradeLevels[i].selected = '';
       }
     }
-    document.getElementById('gradeScroll').scrollTo({ top: 0, left: index * 60, behavior: 'smooth' });
+    document.getElementById('gradeScroll').scrollTo({top: 0, left: index * 60, behavior: 'smooth'});
   }
+
   mediumClick(mediumName: string) {
     this.getGroupByPageReq.medium = [mediumName];
     if (this.currentMedium !== mediumName) {
@@ -840,15 +842,12 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   navigateToDetailPage(item, index, sectionName) {
     const identifier = item.contentId || item.identifier;
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.type = item.contentType;
-
-    telemetryObject.id = identifier;
+    let telemetryObject: TelemetryObject;
+    telemetryObject = new TelemetryObject(identifier, item.contentType, undefined);
 
     const values = new Map();
     values['sectionName'] = sectionName;
     values['positionClicked'] = index;
-    console.log('telemetryObject ', telemetryObject);
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.CONTENT_CLICKED,
       'home',
@@ -859,5 +858,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.navCtrl.push(CollectionDetailsEtbPage, {
       content: item
     });
+  }
+
+  launchContent() {
+    this.navCtrl.push(PlayerPage);
   }
 }

@@ -1,65 +1,63 @@
+import {Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
+import {Events, IonicPage, Navbar, NavController, NavParams, Platform} from 'ionic-angular';
 import {
-  Component,
-  NgZone,
-  ViewChild
-} from '@angular/core';
-import {
-  IonicPage,
-  NavParams,
-  NavController,
-  Events,
-  Navbar,
-  Platform
-} from 'ionic-angular';
-import {
-  ContentService,
-  ContentSearchCriteria,
-  LogLevel,
-  ImpressionType,
-  Environment,
-  InteractType,
-  InteractSubtype,
+  Content,
   ContentDetailRequest,
-  FileUtil,
-  ProfileType,
+  ContentEventType,
+  ContentImport,
+  ContentImportRequest,
+  ContentImportResponse,
+  ContentImportStatus,
+  ContentSearchCriteria,
+  ContentSearchResult,
+  ContentService,
   CorrelationData,
-  Mode,
-  TelemetryObject,
-  PageId,
-  TabsPage,
+  DownloadEventType,
+  DownloadProgress,
+  EventsBusEvent,
+  EventsBusService,
   PageAssembleCriteria,
   PageAssembleFilter,
   PageAssembleService,
-  SharedPreferences
-} from 'sunbird';
-import { GenieResponse } from '../settings/datasync/genieresponse';
-import { FilterPage } from './filters/filter';
-import { CollectionDetailsPage } from '../collection-details/collection-details';
-import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
-import { ContentDetailsPage } from '../content-details/content-details';
-import { Map } from '../../app/telemetryutil';
-import * as _ from 'lodash';
-import {
-  ContentType,
-  MimeType,
-  Search,
-  AudienceFilter,
   PageName,
-  PreferenceKey
-} from '../../app/app.constant';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
-import { AppGlobalService } from '../../service/app-global.service';
-import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { QrCodeResultPage } from '../qr-code-result/qr-code-result';
-import { TranslateService } from '@ngx-translate/core';
+  ProfileType,
+  SearchType,
+  SharedPreferences,
+  TelemetryObject
+} from 'sunbird-sdk';
+import {FilterPage} from './filters/filter';
+import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
+import {ContentDetailsPage} from '../content-details/content-details';
+import {Map} from '../../app/telemetryutil';
+import * as _ from 'lodash';
+import {AudienceFilter, ContentType, MimeType, Search} from '../../app/app.constant';
+import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
+import {AppGlobalService} from '../../service/app-global.service';
+import {FormAndFrameworkUtilService} from '../profile/formandframeworkutil.service';
+import {CommonUtilService} from '../../service/common-util.service';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {QrCodeResultPage} from '../qr-code-result/qr-code-result';
+import {TranslateService} from '@ngx-translate/core';
+import {Subscription} from 'rxjs';
+import {
+  Environment,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  LogLevel,
+  Mode,
+  PageId
+} from '../../service/telemetry-constants';
+import {TabsPage} from '@app/pages/tabs/tabs';
+
+declare const cordova;
+
 @IonicPage()
 @Component({
   selector: 'page-search',
   templateUrl: './search.html'
 })
-export class SearchPage {
+export class SearchPage implements  OnDestroy {
 
   showLoading: boolean;
   downloadProgress: any;
@@ -107,36 +105,35 @@ export class SearchPage {
 
   audienceFilter = [];
 
+  eventSubscription?: Subscription;
+
   displayDialCodeResult: any;
-
-  private corRelationList: Array<CorrelationData>;
-
   profile: any;
-
   isFirstLaunch = false;
   shouldGenerateEndTelemetry = false;
   backButtonFunc = undefined;
   isSingleContent = false;
   currentFrameworkId = '';
   selectedLanguageCode = '';
-
   @ViewChild(Navbar) navBar: Navbar;
+  private corRelationList: Array<CorrelationData>;
+
   constructor(
-    private contentService: ContentService,
-    private pageService: PageAssembleService,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private navParams: NavParams,
     private navCtrl: NavController,
     private zone: NgZone,
     private event: Events,
-    private fileUtil: FileUtil,
     private events: Events,
     private appGlobalService: AppGlobalService,
     private platform: Platform,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private preference: SharedPreferences,
-    private translate: TranslateService
+    private translate: TranslateService,
+    @Inject('PAGE_ASSEMBLE_SERVICE') private pageService: PageAssembleService,
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences
   ) {
 
     this.checkUserSession();
@@ -152,7 +149,7 @@ export class SearchPage {
 
   ionViewWillEnter() {
     this.handleDeviceBackButton();
-    const telemetryObject: TelemetryObject = new TelemetryObject();
+    // const telemetryObject = new TelemetryObject();
   }
 
   ionViewDidEnter() {
@@ -175,20 +172,27 @@ export class SearchPage {
   }
 
   ionViewWillLeave() {
-    this.events.unsubscribe('genie.event');
     if (this.backButtonFunc) {
       this.backButtonFunc();
+    }
+    if  (this.eventSubscription)  {
+      this.eventSubscription.unsubscribe();
+    }
+  }
+
+  ngOnDestroy() {
+    if  (this.eventSubscription)  {
+      this.eventSubscription.unsubscribe();
     }
   }
 
   getFrameworkId() {
-    this.preference.getString('current_framework_id')
+    this.preferences.getString('current_framework_id').toPromise()
       .then(value => {
         this.currentFrameworkId = value;
 
       })
-      .catch((err: any) => {
-        console.error('Err', err);
+      .catch(() => {
       });
   }
 
@@ -204,7 +208,7 @@ export class SearchPage {
             loginMode: 'guest'
           });
         } else {
-          this.navCtrl.setRoot('ProfileSettingsPage', { isCreateNavigationStack: false, hideBackButton: true });
+          this.navCtrl.setRoot('ProfileSettingsPage', {isCreateNavigationStack: false, hideBackButton: true});
         }
       } else {
         this.popCurrentPage();
@@ -298,7 +302,7 @@ export class SearchPage {
 
   showFilter() {
     this.formAndFrameworkUtilService.getLibraryFilterConfig().then((data) => {
-      const filterCriteriaData = this.responseData.result.filterCriteria;
+      const filterCriteriaData = this.responseData.filterCriteria;
       filterCriteriaData.facetFilters.forEach(element => {
         data.forEach(item => {
           if (element.name === item.code) {
@@ -307,45 +311,41 @@ export class SearchPage {
           }
         });
       });
-        this.navCtrl.push(FilterPage, { filterCriteria: this.responseData.result.filterCriteria });
+      this.navCtrl.push(FilterPage, {filterCriteria: this.responseData.filterCriteria});
     });
   }
 
   applyFilter() {
     this.showLoader = true;
-    this.responseData.result.filterCriteria.mode = 'hard';
+    this.responseData.filterCriteria.mode = 'hard';
+    this.responseData.filterCriteria.searchType = SearchType.FILTER;
 
-    this.contentService.searchContent(this.responseData.result.filterCriteria, true, false, false).then((responseData: any) => {
+    this.contentService.searchContent(this.responseData.filterCriteria).toPromise()
+      .then((responseData: ContentSearchResult) => {
 
-      this.zone.run(() => {
-        const response: GenieResponse = JSON.parse(responseData);
-        this.responseData = response;
-        if (response.status && response.result) {
+        this.zone.run(() => {
+          this.responseData = responseData;
+          if (responseData) {
 
-          if (this.isDialCodeSearch) {
-            this.processDialCodeResult(response.result);
-          } else {
-            this.searchContentResult = response.result.contentDataList;
-
-            if (this.searchContentResult && this.searchContentResult.length > 0) {
-              this.isEmptyResult = false;
+            if (this.isDialCodeSearch) {
+              this.processDialCodeResult(responseData.contentDataList);
             } else {
-              this.isEmptyResult = true;
+              this.searchContentResult = responseData.contentDataList;
+
+              this.isEmptyResult = !(this.searchContentResult && this.searchContentResult.length > 0);
+              const values = new Map();
+              values['from'] = this.source;
+              values['searchCount'] = this.responseData.length;
+              values['searchCriteria'] = this.responseData.filterCriteria;
+              this.telemetryGeneratorService.generateExtraInfoTelemetry(values, PageId.SEARCH);
             }
-            const values = new Map();
-            values['from'] = this.source;
-            values['searchCount'] = this.responseData.length;
-            values['searchCriteria'] = this.responseData.result.filterCriteria;
-            this.telemetryGeneratorService.generateExtraInfoTelemetry(values, PageId.SEARCH);
+            this.updateFilterIcon();
+          } else {
+            this.isEmptyResult = true;
           }
-          this.updateFilterIcon();
-        } else {
-          this.isEmptyResult = true;
-        }
-        this.showLoader = false;
-      });
-    }).catch((error) => {
-      console.log('Error : ' + JSON.stringify(error));
+          this.showLoader = false;
+        });
+      }).catch(() => {
       this.zone.run(() => {
         this.showLoader = false;
       });
@@ -362,6 +362,7 @@ export class SearchPage {
     (<any>window).cordova.plugins.Keyboard.close();
 
     const contentSearchRequest: ContentSearchCriteria = {
+      searchType: SearchType.SEARCH,
       query: this.searchKeywords,
       contentTypes: this.contentType,
       facets: Search.FACETS,
@@ -391,34 +392,34 @@ export class SearchPage {
       }
 
     }
-    this.contentService.searchContent(contentSearchRequest, false, false, false).then((responseData: any) => {
 
-      this.zone.run(() => {
-        const response: GenieResponse = JSON.parse(responseData);
-        this.responseData = response;
-        if (response.status && response.result) {
+    this.contentService.searchContent(contentSearchRequest).toPromise()
+      .then((response: ContentSearchResult) => {
 
-          this.addCorRelation(response.result.responseMessageId, 'API');
-          this.searchContentResult = response.result.contentDataList;
-          this.updateFilterIcon();
+        this.zone.run(() => {
+          this.responseData = response;
+          if (response) {
 
-          this.isEmptyResult = false;
+            this.addCorRelation(response.responseMessageId, 'API');
+            this.searchContentResult = response.contentDataList;
+            this.updateFilterIcon();
+
+            this.isEmptyResult = false;
 
 
-          this.generateLogEvent(response.result);
-          const values = new Map();
-          values['from'] = this.source;
-          values['searchCount'] = this.searchContentResult.length;
-          values['searchCriteria'] = response.result.request;
-          this.telemetryGeneratorService.generateExtraInfoTelemetry(values, PageId.SEARCH);
-        } else {
-          this.isEmptyResult = true;
-        }
-        this.showEmptyMessage = this.searchContentResult.length === 0 ? true : false;
-        this.showLoader = false;
-      });
-    }).catch((error) => {
-      console.log('Error : ' + JSON.parse(error));
+            this.generateLogEvent(response);
+            const values = new Map();
+            values['from'] = this.source;
+            values['searchCount'] = this.searchContentResult.length;
+            values['searchCriteria'] = response.request;
+            this.telemetryGeneratorService.generateExtraInfoTelemetry(values, PageId.SEARCH);
+          } else {
+            this.isEmptyResult = true;
+          }
+          this.showEmptyMessage = this.searchContentResult.length === 0;
+          this.showLoader = false;
+        });
+      }).catch(() => {
       this.zone.run(() => {
         this.showLoader = false;
         if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
@@ -482,7 +483,7 @@ export class SearchPage {
     }
 
     this.event.subscribe('search.applyFilter', (filterCriteria) => {
-      this.responseData.result.filterCriteria = filterCriteria;
+      this.responseData.filterCriteria = filterCriteria;
       this.applyFilter();
     });
   }
@@ -504,26 +505,28 @@ export class SearchPage {
     }
 
     // Page API START
-    const pagetAssemblefilter = new PageAssembleFilter();
+    const pagetAssemblefilter: PageAssembleFilter = {};
     pagetAssemblefilter.dialcodes = this.dialCode;
 
-    const pageAssembleCriteria = new PageAssembleCriteria();
-    pageAssembleCriteria.name = PageName.DIAL_CODE;
-    pageAssembleCriteria.filters = pagetAssemblefilter;
-    pageAssembleCriteria.hardRefresh = true;
+    const pageAssembleCriteria: PageAssembleCriteria = {
+      name: PageName.DIAL_CODE,
+      filters: pagetAssemblefilter,
+      source: 'app'
+    };
+    // pageAssembleCriteria.hardRefresh = true;
 
-    this.pageService.getPageAssemble(pageAssembleCriteria).then((res: any) => {
-      this.zone.run(() => {
-        const response = JSON.parse(res);
-        const sections = JSON.parse(response.sections);
-        if (sections && sections.length) {
-          this.addCorRelation(sections[0].resmsgId, 'API');
-          this.processDialCodeResult(sections);
-          // this.updateFilterIcon();  // TO DO
-        }
-        this.showLoader = false;
-      });
-    }).catch(error => {
+    this.pageService.getPageAssemble(pageAssembleCriteria).toPromise()
+      .then((res: any) => {
+        this.zone.run(() => {
+          const sections = res.sections;
+          if (sections && sections.length) {
+            this.addCorRelation(sections[0].resmsgId, 'API');
+            this.processDialCodeResult(sections);
+            // this.updateFilterIcon();  // TO DO
+          }
+          this.showLoader = false;
+        });
+      }).catch(error => {
       this.zone.run(() => {
         this.showLoader = false;
         if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
@@ -534,49 +537,12 @@ export class SearchPage {
     // Page API END
   }
 
-  private addCorRelation(id: string, type: string) {
-    if (this.corRelationList === undefined || this.corRelationList === null) {
-      this.corRelationList = new Array<CorrelationData>();
-    }
-    const corRelation: CorrelationData = new CorrelationData();
-    corRelation.id = id;
-    corRelation.type = type;
-    this.corRelationList.push(corRelation);
-  }
-  private generateImpressionEvent() {
-    this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.SEARCH, '',
-      this.source,
-      Environment.HOME, '', '', '',
-      undefined,
-      this.corRelationList);
-  }
-
-  private generateLogEvent(searchResult) {
-    if (searchResult != null) {
-      const contentArray: Array<any> = searchResult.contentDataList;
-      const params = new Array<any>();
-      const paramsMap = new Map();
-      paramsMap['SearchResults'] = contentArray.length;
-      paramsMap['SearchCriteria'] = searchResult.request;
-      params.push(paramsMap);
-      this.telemetryGeneratorService.generateLogEvent(LogLevel.INFO,
-        this.source,
-        Environment.HOME,
-        ImpressionType.SEARCH,
-        params);
-    }
-  }
-
   generateInteractEvent(identifier, contentType, pkgVersion, index) {
     const values = new Map();
     values['SearchPhrase'] = this.searchKeywords;
     values['PositionClicked'] = index;
 
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = identifier;
-    telemetryObject.type = contentType;
-    telemetryObject.version = pkgVersion;
+    const telemetryObject = new TelemetryObject(identifier, contentType, pkgVersion);
 
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.CONTENT_CLICKED,
@@ -590,10 +556,7 @@ export class SearchPage {
 
   generateQRSessionEndEvent(pageId: string, qrData: string) {
     if (pageId !== undefined) {
-      const telemetryObject: TelemetryObject = new TelemetryObject();
-      telemetryObject.id = qrData;
-      telemetryObject.type = 'qr';
-      telemetryObject.version = '';
+      const telemetryObject = new TelemetryObject(qrData, 'qr', '');
       this.telemetryGeneratorService.generateEndTelemetry(
         'qr',
         Mode.PLAY,
@@ -606,6 +569,7 @@ export class SearchPage {
   }
 
   processDialCodeResult(dialResult) {
+    console.log('dialresult', dialResult);
     const displayDialCodeResult = [];
     dialResult.forEach(searchResult => {
       const collectionArray: Array<any> = searchResult.collections;
@@ -661,6 +625,7 @@ export class SearchPage {
       }
     });
     this.displayDialCodeResult = displayDialCodeResult;
+    console.log('this.displayDialCodeResult', this.displayDialCodeResult);
     if (this.displayDialCodeResult.length === 0 && !this.isSingleContent) {
       this.navCtrl.pop();
       if (this.shouldGenerateEndTelemetry) {
@@ -764,10 +729,11 @@ export class SearchPage {
       this.filterIcon = undefined;
     }
 
-    if (!this.responseData.result.filterCriteria) {
+    if (!this.responseData.filterCriteria) {
       return;
     }
-    this.responseData.result.filterCriteria.facetFilters.forEach(facet => {
+
+    this.responseData.filterCriteria.facetFilters.forEach(facet => {
       if (facet.values && facet.values.length > 0) {
         facet.values.forEach(value => {
           if (value.apply) {
@@ -790,18 +756,21 @@ export class SearchPage {
       contentId: identifier
     };
 
-    this.contentService.getContentDetail(contentRequest)
-      .then((data: any) => {
-        data = JSON.parse(data);
-        if (data && data.result) {
-          if (data.result.isAvailableLocally) {
-            this.zone.run(() => { this.showContentDetails(child); });
+    this.contentService.getContentDetails(contentRequest).toPromise()
+      .then((data: Content) => {
+        if (data) {
+          if (data.isAvailableLocally) {
+            this.zone.run(() => {
+              this.showContentDetails(child);
+            });
           } else {
-            this.subscribeGenieEvent();
+            this.subscribeSdkEvent();
             this.downloadParentContent(parent);
           }
         } else {
-          this.zone.run(() => { this.showContentDetails(child); });
+          this.zone.run(() => {
+            this.showContentDetails(child);
+          });
         }
       }, () => {
       });
@@ -814,19 +783,18 @@ export class SearchPage {
       this.isDownloadStarted = true;
     });
 
-    const option = {
-      contentImportMap: _.extend({}, this.getImportContentRequestBody([parent.identifier], false)),
+    const option: ContentImportRequest = {
+      contentImportArray: this.getImportContentRequestBody([parent.identifier], false),
       contentStatusArray: []
     };
     // Call content service
-    this.contentService.importContent(option)
-      .then((data: any) => {
+    this.contentService.importContent(option).toPromise()
+      .then((data: ContentImportResponse[]) => {
         this.zone.run(() => {
-          data = JSON.parse(data);
 
-          if (data.result && data.result.length && this.isDownloadStarted) {
-            _.forEach(data.result, (value) => {
-              if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
+          if (data && data.length && this.isDownloadStarted) {
+            _.forEach(data, (value) => {
+              if (value.status === ContentImportStatus.ENQUEUED_FOR_DOWNLOAD) {
                 this.queuedIdentifiers.push(value.identifier);
               }
             });
@@ -848,16 +816,14 @@ export class SearchPage {
   }
 
   /**
-  * Subscribe genie event to get content download progress
-  */
-  subscribeGenieEvent() {
-    this.events.subscribe('genie.event', (data) => {
+   * Subscribe genie event to get content download progress
+   */
+  subscribeSdkEvent() {
+    this.eventSubscription = this.eventsBusService.events().subscribe((event: EventsBusEvent) => {
       this.zone.run(() => {
-        data = JSON.parse(data);
-        const res = data;
-
-        if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-          this.downloadProgress = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
+        if (event.type === DownloadEventType.PROGRESS && event.payload.progress) {
+          const downloadEvent = event as DownloadProgress;
+          this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
           this.loadingDisplayText = 'Loading content ' + this.downloadProgress + ' %';
 
           if (this.downloadProgress === 100) {
@@ -866,18 +832,19 @@ export class SearchPage {
           }
         }
 
-        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
-          if (this.queuedIdentifiers.length && this.isDownloadStarted) {
-            if (_.includes(this.queuedIdentifiers, res.data.identifier)) {
-              this.currentCount++;
-            }
-            if (this.queuedIdentifiers.length === this.currentCount) {
-              this.showLoading = false;
-              this.showContentDetails(this.childContent);
-              this.events.publish('savedResources:update', {
-                update: true
-              });
-            }
+        // if (event.payload && event.payload.status === 'IMPORT_COMPLETED' && event.type === 'contentImport') {
+          if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
+            if (this.queuedIdentifiers.length && this.isDownloadStarted) {
+              if (_.includes(this.queuedIdentifiers, event.payload.contentId)) {
+                this.currentCount++;
+              }
+              if (this.queuedIdentifiers.length === this.currentCount) {
+                this.showLoading = false;
+                this.showContentDetails(this.childContent);
+                this.events.publish('savedResources:update', {
+                  update: true
+                });
+              }
           } else {
             this.events.publish('savedResources:update', {
               update: true
@@ -886,22 +853,22 @@ export class SearchPage {
         }
 
       });
-    });
+    }) as any;
   }
 
   /**
-  * Function to get import content api request params
-  *
-  * @param {Array<string>} identifiers contains list of content identifier(s)
-  * @param {boolean} isChild
-  */
-  getImportContentRequestBody(identifiers: Array<string>, isChild: boolean) {
+   * Function to get import content api request params
+   *
+   * @param {Array<string>} identifiers contains list of content identifier(s)
+   * @param {boolean} isChild
+   */
+  getImportContentRequestBody(identifiers: Array<string>, isChild: boolean): Array<ContentImport> {
     const requestParams = [];
     _.forEach(identifiers, (value) => {
       requestParams.push({
         isChildContent: isChild,
         // TODO - check with Anil for destination folder path
-        destinationFolder: this.fileUtil.internalStoragePath(),
+        destinationFolder: cordova.file.externalDataDirectory,
         contentId: value,
         correlationData: this.corRelationList !== undefined ? this.corRelationList : []
       });
@@ -911,7 +878,7 @@ export class SearchPage {
   }
 
   cancelDownload() {
-    this.contentService.cancelDownload(this.parentContent.identifier).then(() => {
+    this.contentService.cancelDownload(this.parentContent.identifier).toPromise().then(() => {
       this.zone.run(() => {
         this.showLoading = false;
       });
@@ -938,6 +905,41 @@ export class SearchPage {
     } else {
       this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
       this.profile = undefined;
+    }
+  }
+
+  private addCorRelation(id: string, type: string) {
+    if (this.corRelationList === undefined || this.corRelationList === null) {
+      this.corRelationList = new Array<CorrelationData>();
+    }
+    const corRelation: CorrelationData = new CorrelationData();
+    corRelation.id = id;
+    corRelation.type = type;
+    this.corRelationList.push(corRelation);
+  }
+
+  private generateImpressionEvent() {
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.SEARCH, '',
+      this.source,
+      Environment.HOME, '', '', '',
+      undefined,
+      this.corRelationList);
+  }
+
+  private generateLogEvent(searchResult) {
+    if (searchResult != null) {
+      const contentArray: Array<any> = searchResult.contentDataList;
+      const params = new Array<any>();
+      const paramsMap = new Map();
+      paramsMap['SearchResults'] = contentArray.length;
+      paramsMap['SearchCriteria'] = searchResult.request;
+      params.push(paramsMap);
+      this.telemetryGeneratorService.generateLogEvent(LogLevel.INFO,
+        this.source,
+        Environment.HOME,
+        ImpressionType.SEARCH,
+        params);
     }
   }
 

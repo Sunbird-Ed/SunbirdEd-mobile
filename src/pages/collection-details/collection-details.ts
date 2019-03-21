@@ -1,56 +1,56 @@
-import {
-  Component,
-  NgZone,
-  ViewChild
-} from '@angular/core';
-import {
-  IonicPage,
-  NavController,
-  NavParams,
-  Events,
-  Platform,
-  Navbar,
-  PopoverController
-} from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
-import { SocialSharing } from '@ionic-native/social-sharing';
+import {Component, Inject, NgZone, ViewChild} from '@angular/core';
+import {Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController} from 'ionic-angular';
+import {TranslateService} from '@ngx-translate/core';
+import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
-
+import {ContentDetailsPage} from '@app/pages/content-details/content-details';
+import {ConfirmAlertComponent, ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
+import {ContentType, MimeType, ShareUrl} from '@app/app';
+import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
+import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService, UtilityService} from '@app/service';
 import {
+  ChildContentRequest,
+  Content,
+  ContentDetailRequest,
+  ContentEventType,
+  ContentExportRequest,
+  ContentExportResponse,
+  ContentImport,
+  ContentImportCompleted,
+  ContentImportRequest,
+  ContentImportResponse,
+  ContentImportStatus,
   ContentService,
-  FileUtil,
-  PageId,
-  Environment,
-  Mode,
-  ImpressionType,
-  Rollup,
-  InteractType,
-  InteractSubtype,
-  ShareUtil,
-  BuildParamService,
-  ProfileType,
+  ContentUpdate,
   CorrelationData,
-  TelemetryObject,
-  ErrorCode,
-  ErrorType
-} from 'sunbird';
-import { ContentDetailsPage } from '@app/pages/content-details/content-details';
-import { ContentActionsComponent, ConfirmAlertComponent, ContentRatingAlertComponent } from '@app/component';
+  DownloadEventType,
+  DownloadProgress,
+  EventsBusEvent,
+  EventsBusService,
+  ProfileType,
+  Rollup,
+  TelemetryErrorCode,
+  TelemetryObject
+} from 'sunbird-sdk';
 import {
-  ContentType,
-  MimeType,
-  ShareUrl
-} from '@app/app';
-import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
-import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService } from '@app/service';
+  Environment,
+  ErrorType,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  Mode,
+  PageId,
+} from '../../service/telemetry-constants';
+import {Subscription} from 'rxjs';
 
+declare const cordova;
 @IonicPage()
 @Component({
   selector: 'page-collection-details',
   templateUrl: 'collection-details.html',
 })
 export class CollectionDetailsPage {
-  contentDetail: any;
+  contentDetail?: Content;
   childrenData: Array<any>;
 
   /**
@@ -178,25 +178,25 @@ export class CollectionDetailsPage {
   public shouldGenerateEndTelemetry = false;
   public source = '';
   isChildClickable = false;
-
   @ViewChild(Navbar) navBar: Navbar;
+  private eventSubscription: Subscription;
+
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
-    private contentService: ContentService,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private zone: NgZone,
     private events: Events,
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     private popoverCtrl: PopoverController,
-    private fileUtil: FileUtil,
     private platform: Platform,
     private translate: TranslateService,
     private social: SocialSharing,
-    private shareUtil: ShareUtil,
-    private buildParamService: BuildParamService,
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private courseUtilService: CourseUtilService
+    private courseUtilService: CourseUtilService,
+    private utilityService: UtilityService
   ) {
 
     this.objRollup = new Rollup();
@@ -251,7 +251,7 @@ export class CollectionDetailsPage {
       }
 
       this.didViewLoad = true;
-      this.setContentDetails(this.identifier, true);
+      this.setContentDetails(this.identifier);
       this.subscribeGenieEvent();
     });
   }
@@ -277,7 +277,7 @@ export class CollectionDetailsPage {
   }
 
   getBaseURL() {
-    this.buildParamService.getBuildConfigParam('BASE_URL')
+    this.utilityService.getBuildConfigValue('BASE_URL')
       .then(response => {
         this.baseUrl = response;
       })
@@ -308,8 +308,8 @@ export class CollectionDetailsPage {
           comment: this.ratingComment,
           pageId: PageId.COLLECTION_DETAIL,
         }, {
-            cssClass: 'content-rating-alert'
-          });
+          cssClass: 'content-rating-alert'
+        });
         popUp.present();
         popUp.onDidDismiss(data => {
           if (data && data.message === 'rating.success') {
@@ -328,9 +328,9 @@ export class CollectionDetailsPage {
   }
 
   /**
- * Get the session to know if the user is logged-in or guest
- *
- */
+   * Get the session to know if the user is logged-in or guest
+   *
+   */
 
   checkLoggedInOrGuestUser() {
     this.guestUser = !this.appGlobalService.isUserLoggedIn();
@@ -353,21 +353,19 @@ export class CollectionDetailsPage {
    * To set content details in local variable
    * @param {string} identifier identifier of content / course
    */
-  setContentDetails(identifier, refreshContentDetails: boolean | true) {
+  setContentDetails(identifier) {
     const loader = this.commonUtilService.getLoader();
     loader.present();
-    const option = {
+    const option: ContentDetailRequest = {
       contentId: identifier,
-      refreshContentDetails: refreshContentDetails,
       attachFeedback: true,
       attachContentAccess: true
     };
-    this.contentService.getContentDetail(option)
-      .then((data: any) => {
+    this.contentService.getContentDetails(option).toPromise()
+      .then((data: Content) => {
         this.zone.run(() => {
-          data = JSON.parse(data);
           loader.dismiss().then(() => {
-            if (data && data.result) {
+            if (data) {
               this.extractApiResponse(data);
             }
           });
@@ -384,35 +382,35 @@ export class CollectionDetailsPage {
   /**
    * Function to extract api response.
    */
-  extractApiResponse(data) {
-    this.contentDetail = data.result.contentData ? data.result.contentData : [];
-    this.contentDetail.isAvailableLocally = data.result.isAvailableLocally;
+  extractApiResponse(data: Content) {
+    this.contentDetail = data;
+    this.contentDetail.isAvailableLocally = data.isAvailableLocally;
     this.objId = this.contentDetail.identifier;
-    this.objVer = this.contentDetail.pkgVersion;
-    if (this.contentDetail.gradeLevel && this.contentDetail.gradeLevel.length) {
-      this.contentDetail.gradeLevel = this.contentDetail.gradeLevel.join(', ');
+    this.objVer = this.contentDetail.contentData.pkgVersion;
+    if (this.contentDetail.contentData.gradeLevel && this.contentDetail.contentData.gradeLevel.length) {
+      this.contentDetail.contentData.gradeLevel ? this.contentDetail.contentData.gradeLevel.join(', ') : '';
     }
-    if (this.contentDetail.attributions && this.contentDetail.attributions.length) {
-      this.contentDetail.attributions = this.contentDetail.attributions.join(', ');
+    if (this.contentDetail.contentData.attributions && this.contentDetail.contentData.attributions.length) {
+      this.contentDetail.contentData.attributions ? this.contentDetail.contentData.attributions.join(', ') : '';
     }
-    if (this.contentDetail.me_totalRatings) {
-      const rating = this.contentDetail.me_totalRatings.split('.');
+    if (this.contentDetail.contentData.me_totalRatings) {
+      const rating = this.contentDetail.contentData.me_totalRatings.split('.');
       if (rating && rating[0]) {
-        this.contentDetail.me_totalRatings = rating[0];
+        this.contentDetail.contentData.me_totalRatings = rating[0];
       }
     }
 
     // User Rating
-    const contentFeedback: any = data.result.contentFeedback ? data.result.contentFeedback : [];
+    const contentFeedback: any = data.contentFeedback ? data.contentFeedback : [];
     if (contentFeedback !== undefined && contentFeedback.length !== 0) {
       this.userRating = contentFeedback[0].rating;
       this.ratingComment = contentFeedback[0].comments;
     }
 
 
-    if (Boolean(data.result.isAvailableLocally)) {
+    if (Boolean(data.isAvailableLocally)) {
       this.showLoading = false;
-      if (data.result.isUpdateAvailable && !this.isUpdateAvailable) {
+      if (data.isUpdateAvailable && !this.isUpdateAvailable) {
         this.isUpdateAvailable = true;
         this.showLoading = true;
         this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.contentDetail, false);
@@ -427,10 +425,23 @@ export class CollectionDetailsPage {
       this.importContent([this.identifier], false);
     }
 
-    if (this.contentDetail.me_totalDownloads) {
-      this.contentDetail.me_totalDownloads = this.contentDetail.me_totalDownloads.split('.')[0];
+    if (this.contentDetail.contentData.me_totalDownloads) {
+      this.contentDetail.contentData.me_totalDownloads = this.contentDetail.contentData.me_totalDownloads.split('.')[0];
     }
     this.setCollectionStructure();
+  }
+
+  setCollectionStructure() {
+    this.showChildrenLoader = true;
+    if (this.contentDetail.contentData.contentTypesCount) {
+      this.contentDetail.contentData.contentTypesCount = JSON.parse(this.contentDetail.contentData.contentTypesCount);
+    } else if (this.cardData.contentTypesCount) {
+      if (!_.isObject(this.cardData.contentTypesCount)) {
+        this.contentDetail.contentData.contentTypesCount = JSON.parse(this.cardData.contentTypesCount);
+      }
+    } /*else {
+      this.contentDetail.contentTypesCount;
+    }*/
   }
 
   generateRollUp() {
@@ -440,33 +451,21 @@ export class CollectionDetailsPage {
     } else {
       _.forEach(hierarchyInfo, (value, key) => {
         switch (key) {
-          case 0: this.objRollup.l1 = value.identifier;
+          case 0:
+            this.objRollup.l1 = value.identifier;
             break;
-          case 1: this.objRollup.l2 = value.identifier;
+          case 1:
+            this.objRollup.l2 = value.identifier;
             break;
-          case 2: this.objRollup.l3 = value.identifier;
+          case 2:
+            this.objRollup.l3 = value.identifier;
             break;
-          case 3: this.objRollup.l4 = value.identifier;
+          case 3:
+            this.objRollup.l4 = value.identifier;
             break;
         }
       });
     }
-  }
-
-  /**
-   * Set collection structure
-   */
-  setCollectionStructure() {
-    this.showChildrenLoader = true;
-    if (this.contentDetail.contentTypesCount) {
-      this.contentDetail.contentTypesCount = JSON.parse(this.contentDetail.contentTypesCount);
-    } else if (this.cardData.contentTypesCount) {
-      if (!_.isObject(this.cardData.contentTypesCount)) {
-        this.contentDetail.contentTypesCount = JSON.parse(this.cardData.contentTypesCount);
-      }
-    } /*else {
-      this.contentDetail.contentTypesCount;
-    }*/
   }
 
   /**
@@ -475,12 +474,12 @@ export class CollectionDetailsPage {
    * @param {Array<string>} identifiers contains list of content identifier(s)
    * @param {boolean} isChild
    */
-  getImportContentRequestBody(identifiers: Array<string>, isChild: boolean) {
+  getImportContentRequestBody(identifiers: Array<string>, isChild: boolean): Array<ContentImport> {
     const requestParams = [];
     _.forEach(identifiers, (value) => {
       requestParams.push({
         isChildContent: isChild,
-        destinationFolder: this.fileUtil.internalStoragePath(),
+        destinationFolder: cordova.file.externalDataDirectory,
         contentId: value,
         correlationData: this.corRelationList !== undefined ? this.corRelationList : []
       });
@@ -496,22 +495,21 @@ export class CollectionDetailsPage {
    * @param {boolean} isChild
    */
   importContent(identifiers: Array<string>, isChild: boolean, isDownloadAllClicked?) {
-    const option = {
-      contentImportMap: _.extend({}, this.getImportContentRequestBody(identifiers, isChild)),
+    const option: ContentImportRequest = {
+      contentImportArray: this.getImportContentRequestBody(identifiers, isChild),
       contentStatusArray: []
     };
 
     // Call content service
-    this.contentService.importContent(option)
-      .then((data: any) => {
+    this.contentService.importContent(option).toPromise()
+      .then((data: ContentImportResponse[]) => {
         this.zone.run(() => {
-          data = JSON.parse(data);
 
-          if (data.result && data.result.length && this.isDownloadStarted) {
-            _.forEach(data.result, (value) => {
-              if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
+          if (data && data.length && this.isDownloadStarted) {
+            _.forEach(data, (value) => {
+              if (value.status === ContentImportStatus.ENQUEUED_FOR_DOWNLOAD) {
                 this.queuedIdentifiers.push(value.identifier);
-              } else if (value.status === 'NOT_FOUND') {
+              } else if (value.status === ContentImportStatus.NOT_FOUND) {
                 this.faultyIdentifiers.push(value.identifier);
               }
             });
@@ -537,14 +535,14 @@ export class CollectionDetailsPage {
               stackTrace.parentIdentifier = this.cardData.identifier;
               stackTrace.faultyIdentifiers = this.faultyIdentifiers;
               this.telemetryGeneratorService.generateErrorTelemetry(Environment.HOME,
-                ErrorCode.ERR_DOWNLOAD_FAILED,
+                TelemetryErrorCode.ERR_DOWNLOAD_FAILED,
                 ErrorType.SYSTEM,
                 PageId.COLLECTION_DETAIL,
                 JSON.stringify(stackTrace),
               );
               this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
             }
-          } else if (data.result && data.result[0].status === 'NOT_FOUND') {
+          } else if (data && data[0].status === ContentImportStatus.NOT_FOUND) {
             this.showLoading = false;
             this.showChildrenLoader = false;
             this.childrenData.length = 0;
@@ -561,8 +559,7 @@ export class CollectionDetailsPage {
           if (Boolean(this.isUpdateAvailable)) {
             this.setChildContents();
           } else {
-            const errorRes = JSON.parse(error);
-            if (errorRes && (errorRes.error === 'NETWORK_ERROR' || errorRes.error === 'CONNECTION_ERROR')) {
+            if (error && (error.error === 'NETWORK_ERROR' || error.error === 'CONNECTION_ERROR')) {
               this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
             } else {
               this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');
@@ -579,18 +576,17 @@ export class CollectionDetailsPage {
    */
   setChildContents() {
     const hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
-    const option = { contentId: this.identifier, hierarchyInfo: hierarchyInfo }; // TODO: remove level
-    this.contentService.getChildContents(option)
-      .then((data: any) => {
-        data = JSON.parse(data);
+    const option: ChildContentRequest = {contentId: this.identifier, hierarchyInfo: hierarchyInfo}; // TODO: remove level
+    this.contentService.getChildContents(option).toPromise()
+      .then((data: Content) => {
         this.zone.run(() => {
-          if (data && data.result && data.result.children) {
-            this.childrenData = data.result.children;
+          if (data && data.children) {
+            this.childrenData = data.children;
           }
 
           if (!this.isDepthChild) {
             this.downloadSize = 0;
-            this.getContentsSize(data.result.children || []);
+            this.getContentsSize(data.children || []);
           }
           this.showChildrenLoader = false;
         });
@@ -677,7 +673,7 @@ export class CollectionDetailsPage {
     this.downloadProgress = 0;
     this.cardData = '';
     this.childrenData = [];
-    this.contentDetail = '';
+    this.contentDetail = undefined;
     this.showDownloadBtn = false;
     this.downloadIdentifiers = [];
     this.queuedIdentifiers = [];
@@ -693,28 +689,23 @@ export class CollectionDetailsPage {
    * Subscribe genie event to get content download progress
    */
   subscribeGenieEvent() {
-    this.events.subscribe('genie.event', (data) => {
+    this.eventSubscription = this.eventsBusService.events().subscribe((event: EventsBusEvent) => {
       this.zone.run(() => {
-        data = JSON.parse(data);
-        const res = data;
-
-        if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-          if (res.data.downloadProgress === -1 || res.data.downloadProgress === '-1') {
-            this.downloadProgress = 0;
-          } else if (res.data.identifier === this.contentDetail.identifier) {
-            this.downloadProgress = res.data.downloadProgress;
-          }
-
-          if (this.downloadProgress === 100) {
-            this.showLoading = false;
-            this.contentDetail.isAvailableLocally = true;
+        if (event.type === DownloadEventType.PROGRESS) {
+          const downloadEvent = event as DownloadProgress;
+          if (downloadEvent.payload.identifier === this.contentDetail.identifier) {
+            this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
+            if (this.downloadProgress === 100) {
+              this.contentDetail.isAvailableLocally = true;
+            }
           }
         }
         // Get child content
-        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
-
+        if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
+          this.showLoading = false;
+          const contentImportEvent = event as ContentImportCompleted;
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {
-            if (_.includes(this.queuedIdentifiers, res.data.identifier)) {
+            if (_.includes(this.queuedIdentifiers, contentImportEvent.payload.contentId)) {
               this.currentCount++;
               this.downloadPercentage = +((this.currentCount / this.queuedIdentifiers.length) * (100)).toFixed(0);
             }
@@ -727,17 +718,17 @@ export class CollectionDetailsPage {
               this.downloadPercentage = 0;
               this.updateSavedResources();
             }
-          } else if (this.parentContent && res.data.identifier === this.contentDetail.identifier) {
+          } else if (this.parentContent && contentImportEvent.payload.contentId === this.contentDetail.identifier) {
             // this condition is for when the child content update is available and we have downloaded parent content
             // but we have to refresh only the child content.
             this.showLoading = false;
-            this.setContentDetails(this.identifier, false);
+            this.setContentDetails(this.identifier);
           } else {
-            if (this.isUpdateAvailable && res.data.identifier === this.contentDetail.identifier) {
+            if (this.isUpdateAvailable && contentImportEvent.payload.contentId === this.contentDetail.identifier) {
               this.showLoading = false;
-              this.setContentDetails(this.identifier, false);
+              this.setContentDetails(this.identifier);
             } else {
-              if (res.data.identifier === this.contentDetail.identifier) {
+              if (contentImportEvent.payload.contentId === this.contentDetail.identifier) {
                 this.showLoading = false;
                 this.updateSavedResources();
                 this.setChildContents();
@@ -750,8 +741,8 @@ export class CollectionDetailsPage {
 
         // For content update available
         const hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
-
-        if (res.data && res.type === 'contentUpdateAvailable' && hierarchyInfo === null) {
+        const contentUpdateEvent = event as ContentUpdate;
+        if (contentUpdateEvent.payload && contentUpdateEvent.type === ContentEventType.UPDATE && hierarchyInfo === null) {
           this.zone.run(() => {
             if (this.parentContent) {
               const parentIdentifier = this.parentContent.contentId || this.parentContent.identifier;
@@ -759,12 +750,12 @@ export class CollectionDetailsPage {
               this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.contentDetail, false);
               this.importContent([parentIdentifier], false);
             } else {
-              this.setContentDetails(this.identifier, false);
+              this.setContentDetails(this.identifier);
             }
           });
         }
       });
-    });
+    }) as any;
   }
 
   updateSavedResources() {
@@ -779,11 +770,16 @@ export class CollectionDetailsPage {
     loader.present();
     const url = this.baseUrl + ShareUrl.COLLECTION + this.contentDetail.identifier;
     if (this.contentDetail.isAvailableLocally) {
-      this.shareUtil.exportEcar(this.contentDetail.identifier, path => {
-        loader.dismiss();
-        this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.contentDetail.contentType);
-        this.social.share('', '', 'file://' + path, url);
-      }, () => {
+      const exportContentRequest: ContentExportRequest = {
+        contentIds: [this.contentDetail.identifier],
+        destinationFolder: cordova.file.externalDataDirectory
+      };
+      this.contentService.exportContent(exportContentRequest).toPromise()
+        .then((contentExportResponse: ContentExportResponse) => {
+          loader.dismiss();
+          this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.contentDetail.contentType);
+          this.social.share('', '', contentExportResponse.exportedFilePath, url);
+        }).catch(() => {
         loader.dismiss();
         this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
       });
@@ -835,8 +831,8 @@ export class CollectionDetailsPage {
       pageName: PageId.COLLECTION_DETAIL,
       corRelationList: this.corRelationList
     }, {
-        cssClass: 'content-action'
-      });
+      cssClass: 'content-action'
+    });
     popover.present({
       ev: event
     });
@@ -860,7 +856,7 @@ export class CollectionDetailsPage {
   }
 
   generateStartEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
+    const telemetryObject = new TelemetryObject(objectId, objectType, objectVersion);
     this.telemetryGeneratorService.generateStartTelemetry(
       PageId.COLLECTION_DETAIL,
       telemetryObject,
@@ -869,7 +865,7 @@ export class CollectionDetailsPage {
   }
 
   generateEndEvent(objectId, objectType, objectVersion) {
-    const telemetryObject: TelemetryObject = { id: objectId, type: objectType, version: objectVersion, rollup: undefined };
+    const telemetryObject = new TelemetryObject(objectId, objectType, objectVersion);
     this.telemetryGeneratorService.generateEndTelemetry(
       objectType,
       Mode.PLAY,
@@ -882,7 +878,8 @@ export class CollectionDetailsPage {
 
   generateQRSessionEndEvent(pageId: string, qrData: string) {
     if (pageId !== undefined) {
-      const telemetryObject: TelemetryObject = { id: qrData, type: 'qr', version: '', rollup: undefined };
+      const telemetryObject = new TelemetryObject(qrData, 'qr', '');
+
       this.telemetryGeneratorService.generateEndTelemetry(
         'qr',
         Mode.PLAY,
@@ -927,12 +924,13 @@ export class CollectionDetailsPage {
 
   cancelDownload() {
     this.telemetryGeneratorService.generateCancelDownloadTelemetry(this.contentDetail);
-    this.contentService.cancelDownload(this.identifier).then(() => {
-      this.zone.run(() => {
-        this.showLoading = false;
-        this.navCtrl.pop();
-      });
-    }).catch(() => {
+    this.contentService.cancelDownload(this.identifier).toPromise()
+      .then(() => {
+        this.zone.run(() => {
+          this.showLoading = false;
+          this.navCtrl.pop();
+        });
+      }).catch(() => {
       this.zone.run(() => {
         this.showLoading = false;
         this.navCtrl.pop();
@@ -954,7 +952,7 @@ export class CollectionDetailsPage {
    * @param corRelationList correlation List
    */
   readLessorReadMore(param, objRollup, corRelationList) {
-    const telemetryObject: TelemetryObject = { id: this.objId, type: this.objType, version: this.objVer, rollup: undefined };
+    const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
     this.telemetryGeneratorService.readLessOrReadMore(param, objRollup, corRelationList, telemetryObject);
   }
 
@@ -962,8 +960,9 @@ export class CollectionDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillLeave(): void {
-    // this.downloadProgress = '';
     this.downloadProgress = 0;
-    this.events.unsubscribe('genie.event');
+    if (this.eventSubscription) {
+      this.eventSubscription.unsubscribe();
+    }
   }
 }

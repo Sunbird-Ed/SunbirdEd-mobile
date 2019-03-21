@@ -1,36 +1,21 @@
+import {Component, Inject, NgZone, ViewChild} from '@angular/core';
+import {Events, IonicPage, Navbar, NavController, NavParams, Platform} from 'ionic-angular';
+import {TranslateService} from '@ngx-translate/core';
+import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, Map, PreferenceKey} from '@app/app';
+import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
+import {SunbirdQRScanner} from '@app/pages/qrscanner';
+import {ProfileSettingsPage} from '@app/pages/profile-settings/profile-settings';
+import {LanguageSettingsPage} from '@app/pages/language-settings/language-settings';
+import {Profile, ProfileService, ProfileSource, ProfileType, SharedPreferences} from 'sunbird-sdk';
 import {
-  Component,
-  NgZone,
-  ViewChild
-} from '@angular/core';
-import {
-  IonicPage,
-  NavController,
-  NavParams,
-  Events,
-  Platform,
-  Navbar
-} from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
-import {
-  TabsPage,
-  SharedPreferences,
-  InteractType,
-  InteractSubtype,
   Environment,
-  PageId,
   ImpressionType,
-  ContainerService,
-  Profile,
-  UserSource,
-  ProfileType,
-  ProfileService
-} from 'sunbird';
-import { Map, initTabs, GUEST_TEACHER_TABS, GUEST_STUDENT_TABS, PreferenceKey } from '@app/app';
-import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
-import { SunbirdQRScanner } from '@app/pages/qrscanner';
-import { ProfileSettingsPage } from '@app/pages/profile-settings/profile-settings';
-import { LanguageSettingsPage } from '@app/pages/language-settings/language-settings';
+  InteractSubtype,
+  InteractType,
+  PageId,
+} from '../../service/telemetry-constants';
+import { ContainerService } from '@app/service/container.services';
+import { TabsPage } from '../tabs/tabs';
 
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
@@ -59,11 +44,10 @@ export class UserTypeSelectionPage {
   isChangeRoleRequest = false;
 
   constructor(
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     public navCtrl: NavController,
     public navParams: NavParams,
     private translate: TranslateService,
-    private preference: SharedPreferences,
-    private profileService: ProfileService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private container: ContainerService,
     private zone: NgZone,
@@ -71,7 +55,8 @@ export class UserTypeSelectionPage {
     private commonUtilService: CommonUtilService,
     private appGlobalService: AppGlobalService,
     private scannerService: SunbirdQRScanner,
-    private platform: Platform
+    private platform: Platform,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences
   ) { }
 
   ionViewDidLoad() {
@@ -134,16 +119,14 @@ export class UserTypeSelectionPage {
         'CONTINUE_AS_ROLE',
         this.commonUtilService.translateMessage(userType)
       );
-
       if (!this.isChangeRoleRequest) {
-        this.preference.putString(PreferenceKey.SELECTED_USER_TYPE, this.selectedUserType);
+        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, this.selectedUserType).toPromise().then();
       }
     });
   }
 
   continue() {
     this.generateInteractEvent(this.selectedUserType);
-
     // When user is changing the role via the Guest Profile screen
     if (this.profile !== undefined && this.profile.handle) {
       // if role types are same
@@ -153,43 +136,35 @@ export class UserTypeSelectionPage {
         this.gotoTabsPage(true);
       }
     } else {
-      const profileRequest = new Profile();
-      profileRequest.handle = 'Guest1';
-      profileRequest.profileType = this.selectedUserType;
-      profileRequest.source = UserSource.LOCAL;
+      const profileRequest: Profile = {
+        uid: this.profile.uid,
+        handle: 'Guest1',
+        profileType: this.selectedUserType,
+        source: ProfileSource.LOCAL
+      };
       this.setProfile(profileRequest);
     }
   }
 
-  updateProfile(updateRequest: Profile) {
-    this.profileService.updateProfile(updateRequest)
-      .then(() => {
-        this.gotoTabsPage(true);
-      })
-      .catch((err: any) => {
-        console.error('Err', err);
-      });
-  }
-
   // TODO Remove getCurrentUser as setCurrentProfile is returning uid
   setProfile(profileRequest: Profile) {
-    this.profileService.setCurrentProfile(true, profileRequest).then(() => {
-      this.profileService.getCurrentUser().then((success: any) => {
-        const userId = JSON.parse(success).uid;
-        this.event.publish(AppGlobalService.USER_INFO_UPDATED);
-        if (userId !== 'null') {
-          this.preference.putString('GUEST_USER_ID_BEFORE_LOGIN', userId);
-        }
-        this.profile = JSON.parse(success);
-        this.gotoTabsPage();
-      }).catch(error => {
-        console.error('Error', error);
-        return 'null';
+    this.profileService.updateProfile(profileRequest).toPromise().then(() => {
+      return this.profileService.setActiveSessionForProfile(profileRequest.uid).toPromise().then(() => {
+        return this.profileService.getActiveSessionProfile().toPromise()
+          .then((success: any) => {
+            const userId = success.uid;
+            this.event.publish(AppGlobalService.USER_INFO_UPDATED);
+            if (userId !== 'null') {
+              this.preferences.putString('GUEST_USER_ID_BEFORE_LOGIN', userId).toPromise().then();
+            }
+            this.profile = success;
+            this.gotoTabsPage();
+          }).catch(() => {
+            return 'null';
+          });
+      }).catch(() => {
       });
-    })
-      .catch(err => {
-        console.error('Error', err);
-      });
+    });
   }
 
   /**
@@ -211,15 +186,13 @@ export class UserTypeSelectionPage {
         this.navCtrl.push(ProfileSettingsPage, { isChangeRoleRequest: true, selectedUserType: this.selectedUserType });
       } else {
         this.profile.profileType = this.selectedUserType;
-        this.profileService.updateProfile(this.profile)
-          .then((res: any) => {
-            console.log('tabs page');
+        this.profileService.updateProfile(this.profile).toPromise()
+          .then(() => {
             this.navCtrl.push(TabsPage, {
               loginMode: 'guest'
             });
-          }).catch(error => {
-            console.error('Error=');
-          });
+          }).catch(() => {
+        });
         // this.navCtrl.setRoot(TabsPage);
       }
     } else if (this.appGlobalService.isProfileSettingsCompleted) {
@@ -235,7 +208,7 @@ export class UserTypeSelectionPage {
       } else {
         if (isUserTypeChanged) {
           this.profile.profileType = this.selectedUserType;
-          this.profileService.updateProfile(this.profile)
+          this.profileService.updateProfile(this.profile).toPromise()
             .then((res: any) => {
               this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
             }).catch(error => {
@@ -248,7 +221,7 @@ export class UserTypeSelectionPage {
     } else if (this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
       if (isUserTypeChanged) {
         this.profile.profileType = this.selectedUserType;
-        this.profileService.updateProfile(this.profile)
+        this.profileService.updateProfile(this.profile).toPromise()
           .then((res: any) => {
             this.navCtrl.push(ProfileSettingsPage);
           }).catch(error => {
@@ -259,14 +232,13 @@ export class UserTypeSelectionPage {
       }
     } else {
       this.profile.profileType = this.selectedUserType;
-      this.profileService.updateProfile(this.profile)
-        .then((res: any) => {
+      this.profileService.updateProfile(this.profile).toPromise()
+        .then(() => {
           this.navCtrl.push(TabsPage, {
             loginMode: 'guest'
           });
-        }).catch(error => {
-          console.error('Error=', error);
-        });
+        }).catch(() => {
+      });
     }
   }
 

@@ -1,85 +1,94 @@
-import { Impression, Interact, Start, Mode, Environment, End, Rollup, CorrelationData } from 'sunbird';
+import {
+    CorrelationData,
+    TelemetryImpressionRequest,
+    TelemetryInteractRequest,
+    TelemetryStartRequest,
+    TelemetryEndRequest,
+    Rollup
+} from 'sunbird-sdk';
+import {Mode, Environment} from '../service/telemetry-constants';
+
 
 export const generateImpressionTelemetry = (type, subtype, pageid, env,
     objectId, objectType, objectVersion,
     rollup: Rollup,
-    corRelationList: Array<CorrelationData>): Impression => {
+    corRelationList: Array<CorrelationData>): TelemetryImpressionRequest => {
 
-    const impression = new Impression();
-    impression.type = type;
-    impression.subType = subtype;
-    impression.pageId = pageid;
-    impression.env = env;
-    impression.objId = objectId;
-    impression.objType = objectType;
-    impression.objVer = objectVersion;
+    const telemetryImpressionRequest = new TelemetryImpressionRequest();
+    telemetryImpressionRequest.type = type;
+    telemetryImpressionRequest.subType = subtype;
+    telemetryImpressionRequest.pageId = pageid;
+    telemetryImpressionRequest.env = env;
+    telemetryImpressionRequest.objId = objectId;
+    telemetryImpressionRequest.objType = objectType;
+    telemetryImpressionRequest.objVer = objectVersion;
 
     if (rollup !== undefined) {
-        impression.rollup = rollup;
+        telemetryImpressionRequest.rollup = rollup;
     }
     if (corRelationList !== undefined) {
-        impression.correlationData = corRelationList;
+        telemetryImpressionRequest.correlationData = corRelationList;
     }
-    return impression;
+    return this.telemetryImpressionRequest;
 };
 
 export const generateInteractTelemetry = (interactType, subType, env, pageId,
-    values: Map, rollup: Rollup, corRelationList: Array<CorrelationData>): Interact => {
-    const interact = new Interact();
-    interact.type = interactType;
-    interact.subType = subType;
-    interact.pageId = pageId;
-    interact.id = pageId;
-    interact.env = env;
+    values: Map, rollup: Rollup, corRelationList: Array<CorrelationData>): TelemetryInteractRequest => {
+    const telemetryInteractRequest = new TelemetryInteractRequest();
+    telemetryInteractRequest.type = interactType;
+    telemetryInteractRequest.subType = subType;
+    telemetryInteractRequest.pageId = pageId;
+    telemetryInteractRequest.id = pageId;
+    telemetryInteractRequest.env = env;
     if (values !== null) {
-        interact.valueMap = values;
+        telemetryInteractRequest.valueMap = values;
     }
     if (rollup !== undefined) {
-        interact.rollup = rollup;
+        telemetryInteractRequest.rollup = rollup;
     }
     if (corRelationList !== undefined) {
-        interact.correlationData = corRelationList;
+        telemetryInteractRequest.correlationData = corRelationList;
     }
-    return interact;
+    return telemetryInteractRequest;
 };
 
 export const generateStartTelemetry = (pageId, objectId,
-    objectType, objectVersion, rollup: Rollup, corRelationList: Array<CorrelationData>): Start => {
-    const start = new Start();
-    start.type = objectType;
-    start.pageId = pageId;
-    start.env = Environment.HOME;
-    start.mode = Mode.PLAY;
-    start.objId = objectId;
-    start.objType = objectType;
-    start.objVer = objectVersion;
+    objectType, objectVersion, rollup: Rollup, corRelationList: Array<CorrelationData>): TelemetryStartRequest => {
+    const telemetryStartRequest = new TelemetryStartRequest();
+    telemetryStartRequest.type = objectType;
+    telemetryStartRequest.pageId = pageId;
+    telemetryStartRequest.env = Environment.HOME;
+    telemetryStartRequest.mode = Mode.PLAY;
+    telemetryStartRequest.objId = objectId;
+    telemetryStartRequest.objType = objectType;
+    telemetryStartRequest.objVer = objectVersion;
     if (rollup !== undefined) {
-        start.rollup = rollup;
+        telemetryStartRequest.rollup = rollup;
     }
     if (corRelationList !== undefined) {
-        start.correlationData = corRelationList;
+        telemetryStartRequest.correlationData = corRelationList;
     }
 
-    return start;
+    return telemetryStartRequest;
 };
 
 export const generateEndTelemetry = (type, mode, pageId, objectId,
-    objectType, objectVersion, rollup: Rollup, corRelationList: Array<CorrelationData>): End => {
-    const end = new End();
-    end.type = type;
-    end.pageId = pageId;
-    end.env = Environment.HOME;
-    end.mode = mode;
-    end.objId = objectId;
-    end.objType = objectType;
-    end.objVer = objectVersion;
+    objectType, objectVersion, rollup: Rollup, corRelationList: Array<CorrelationData>): TelemetryEndRequest => {
+    const telemetryEndRequest = new TelemetryEndRequest();
+    telemetryEndRequest.type = type;
+    telemetryEndRequest.pageId = pageId;
+    telemetryEndRequest.env = Environment.HOME;
+    telemetryEndRequest.mode = mode;
+    telemetryEndRequest.objId = objectId;
+    telemetryEndRequest.objType = objectType;
+    telemetryEndRequest.objVer = objectVersion;
     if (rollup !== undefined) {
-        end.rollup = rollup;
+        telemetryEndRequest.rollup = rollup;
     }
     if (corRelationList !== undefined) {
-        end.correlationData = corRelationList;
+        telemetryEndRequest.correlationData = corRelationList;
     }
-    return end;
+    return telemetryEndRequest;
 };
 export class Map {
     [key: string]: any

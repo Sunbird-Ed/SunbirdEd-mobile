@@ -1,6 +1,7 @@
 import {
   Component,
-  NgZone
+  NgZone,
+  Inject
 } from '@angular/core';
 import {
   NavController,
@@ -9,19 +10,23 @@ import {
 } from 'ionic-angular';
 import { ReportListPage } from './report-list/report-list';
 import {
-  ProfileService,
   GroupService,
-  ProfileRequest,
-  GroupRequest,
+  TelemetryObject,
+  ObjectType,
+  ProfileService,
+  GetAllProfileRequest,
+  Profile,
+  Group
+} from 'sunbird-sdk';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import {
   InteractSubtype,
   InteractType,
   PageId,
   Environment,
-  ImpressionType,
-  TelemetryObject,
-  ObjectType
-} from 'sunbird';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+  ImpressionType
+} from '../../service/telemetry-constants';
+
 
 @Component({
   selector: 'reports-page',
@@ -36,8 +41,8 @@ export class ReportsPage {
   private profileDetails: any;
 
   constructor(private navCtrl: NavController,
-    private profileService: ProfileService,
-    private groupService: GroupService,
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    @Inject('GROUP_SERVICE') private groupService: GroupService,
     private ngZone: NgZone,
     private loading: LoadingController,
     private navParams: NavParams,
@@ -50,21 +55,20 @@ export class ReportsPage {
     const that = this;
 
     return new Promise<Array<any>>((resolve, reject) => {
-      const profileRequest: ProfileRequest = {
+      const getAllProfileRequest: GetAllProfileRequest = {
         local: true
       };
-      that.profileService.getAllUserProfile(profileRequest)
-        .then((data) => {
-          let users = JSON.parse(data);
-          that.profileService.getCurrentUser().then((profile: any) => {
-            const currentUser = JSON.parse(profile);
+      that.profileService.getAllProfiles(getAllProfileRequest).toPromise()
+        .then((data: Profile[]) => {
+          that.profileService.getActiveSessionProfile().toPromise()
+          .then((profile: Profile) => {
             if (this.profileDetails) {
-              if (this.profileDetails.id === currentUser.uid) {
-                currentUser.handle = this.profileDetails.firstName;
+              if (this.profileDetails.id === profile.uid) {
+                profile.handle = this.profileDetails.firstName;
               }
             }
-            users = that.filterOutCurrentUser(users, currentUser);
-            resolve([currentUser, users]);
+            data = that.filterOutCurrentUser(data, profile);
+            resolve([profile, data]);
           }) .catch(error => {
             console.error('Error', error);
             reject(error);
@@ -82,14 +86,11 @@ export class ReportsPage {
 
     return new Promise<any>((resolve) => {
 
-      const groupRequest: GroupRequest = {
-        uid: ''
-      };
-
-      that.groupService.getAllGroup(groupRequest)
-        .then((groups) => {
-          if (groups.result) {
-            resolve(groups.result);
+      that.groupService.getAllGroups()
+        .subscribe((groups: Group[]) => {
+          if (groups) {
+            resolve(groups);
+            console.log('group details', groups);
           } else {
             resolve();
           }
@@ -137,9 +138,7 @@ export class ReportsPage {
 
   goToUserReportList(uid: string , handle: string) {
 
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = uid;
-    telemetryObject.type = ObjectType.USER;
+    const telemetryObject = new TelemetryObject(uid, ObjectType.USER, undefined);
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.USER_CLICKED,
@@ -156,9 +155,7 @@ export class ReportsPage {
   }
 
   goToGroupUserReportList(group) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = group.gid;
-    telemetryObject.type = ObjectType.GROUP;
+    const telemetryObject = new TelemetryObject(group.gid, ObjectType.GROUP, undefined);
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.GROUP_CLICKED,
@@ -166,13 +163,12 @@ export class ReportsPage {
       PageId.REPORTS_USER_GROUP,
       telemetryObject
     );
-    const profileRequest: ProfileRequest = { local: true, groupId: group.gid };
-    this.profileService.getAllUserProfile(profileRequest)
-      .then(result => {
+    const getAllProfileRequest: GetAllProfileRequest = { local: true, groupId: group.gid };
+    this.profileService.getAllProfiles(getAllProfileRequest).toPromise()
+      .then((result: Profile[]) => {
         const map = new Map<string, string>();
-        const users: Array<any> = JSON.parse(result);
         const uids: Array<string> = [];
-        users.forEach(user => {
+        result.forEach(user => {
           uids.push(user.uid);
           map.set(user.uid, user.handle);
         });

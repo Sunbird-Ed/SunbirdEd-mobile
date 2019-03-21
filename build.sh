@@ -25,22 +25,6 @@ while IFS="=" read -r key value; do
   esac
 done < "$file"
 
-git clone -b $buildBranch https://github.com/project-sunbird/genie-sdk-wrapper.git
-cd genie-sdk-wrapper
-rm package-lock.json
-npm install
-npm run build
-
-rm $(pwd)/dist/dependencies.json
-
-npm pack $(pwd)/dist
-
-
-cd ..
-npm install
-npm install $(pwd)/genie-sdk-wrapper/*.tgz --save
-
-rm -rf genie-sdk-wrapper
 
 for cordova_plugin in "${CORDOVA[@]}"
 do
@@ -49,7 +33,7 @@ done
 
 for cordova_plugin in "${SUNBIRD_CORDOVA[@]}"
 do
-  ionic cordova plugin add $cordova_plugin#$buildBranch
+  ionic cordova plugin add $cordova_plugin
 done
 
 rm -rf platforms

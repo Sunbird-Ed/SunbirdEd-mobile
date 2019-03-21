@@ -1,20 +1,10 @@
-import {
-  Component,
-  NgZone
-} from '@angular/core';
-import {
-  NavParams,
-  ViewController,
-  Platform
-} from 'ionic-angular';
-import {
-  Environment,
-  InteractType,
-  TelemetryObject
-} from 'sunbird';
-import { ProfileConstants } from '../../app/app.constant';
-import { AppGlobalService } from '../../service/app-global.service';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import {Component, NgZone} from '@angular/core';
+import {NavParams, Platform, ViewController} from 'ionic-angular';
+import {TelemetryObject} from 'sunbird-sdk';
+import {ProfileConstants} from '../../app/app.constant';
+import {AppGlobalService} from '../../service/app-global.service';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {Environment, InteractType} from '../../service/telemetry-constants';
 
 @Component({
   selector: 'view-credits',
@@ -34,8 +24,10 @@ export class ViewCreditsComponent {
    *
    * @param navParams
    * @param viewCtrl
-   * @param authService
-   * @param contentService
+   * @param platform
+   * @param ngZone
+   * @param telemetrygeneratorService
+   * @param appGlobalService
    */
   constructor(
     private navParams: NavParams,
@@ -63,10 +55,8 @@ export class ViewCreditsComponent {
     this.pageId = this.navParams.get('pageId');
     this.rollUp = this.navParams.get('rollUp');
     this.correlation = this.navParams.get('correlation');
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = this.content.identifier;
-    telemetryObject.type = this.content.contentType;
-    telemetryObject.version = this.content.pkgVersion;
+    const telemetryObject = new TelemetryObject(this.content.identifier, this.content.contentType, this.content.pkgVersion);
+
     this.telemetrygeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       'credits-clicked',
       Environment.HOME,

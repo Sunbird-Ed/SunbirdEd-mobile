@@ -1,13 +1,11 @@
-import { CollectionDetailsPage } from './../../pages/collection-details/collection-details';
-import { CollectionDetailsEtbPage } from './../../pages/collection-details-etb/collection-details-etb';
-import { ContentDetailsPage } from './../../pages/content-details/content-details';
-import { EnrolledCourseDetailsPage } from './../../pages/enrolled-course-details/enrolled-course-details';
+import {CollectionDetailsEtbPage} from './../../pages/collection-details-etb/collection-details-etb';
+import {ContentDetailsPage} from './../../pages/content-details/content-details';
+import {EnrolledCourseDetailsPage} from './../../pages/enrolled-course-details/enrolled-course-details';
 
-import { Input, NgZone, OnInit } from '@angular/core';
-import { Component } from '@angular/core';
-import { NavController, NavParams, Events } from 'ionic-angular';
-import { ContentType, MimeType } from '../../app/app.constant';
-import { CourseUtilService } from '../../service/course-util.service';
+import {Component, Input, NgZone, OnInit} from '@angular/core';
+import {Events, NavController, NavParams} from 'ionic-angular';
+import {ContentType, MimeType} from '../../app/app.constant';
+import {CourseUtilService} from '../../service/course-util.service';
 
 /**
  * Generated class for the ViewMoreActivityListComponent component.

@@ -1,20 +1,13 @@
-import {
-  Component,
-  Input,
-  OnInit
-} from '@angular/core';
-import {
-  NavController,
-  Events
-} from 'ionic-angular';
-import { EnrolledCourseDetailsPage } from '../../../pages/enrolled-course-details/enrolled-course-details';
-import { CollectionDetailsPage } from '../../../pages/collection-details/collection-details';
-import { CollectionDetailsEtbPage } from '../../../pages/collection-details-etb/collection-details-etb';
-import { ContentDetailsPage } from '../../../pages/content-details/content-details';
-import { ContentType, MimeType, ContentCard, PreferenceKey } from '../../../app/app.constant';
-import { CourseUtilService } from '../../../service/course-util.service';
-import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import { InteractType, InteractSubtype, TelemetryObject, SharedPreferences } from 'sunbird';
+import {Component, Inject, Input, OnInit} from '@angular/core';
+import {Events, NavController} from 'ionic-angular';
+import {EnrolledCourseDetailsPage} from '../../../pages/enrolled-course-details/enrolled-course-details';
+import {CollectionDetailsEtbPage} from '../../../pages/collection-details-etb/collection-details-etb';
+import {ContentDetailsPage} from '../../../pages/content-details/content-details';
+import {ContentCard, ContentType, MimeType, PreferenceKey} from '../../../app/app.constant';
+import {CourseUtilService} from '../../../service/course-util.service';
+import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
+import {SharedPreferences, TelemetryObject} from 'sunbird-sdk';
+import {InteractSubtype, InteractType} from '../../../service/telemetry-constants';
 
 /**
  * The course card component
@@ -68,12 +61,16 @@ export class CourseCard implements OnInit {
    * Default method of class CourseCard
    *
    * @param navCtrl To navigate user from one page to another
+   * @param courseUtilService
+   * @param events
+   * @param telemetryGeneratorService
+   * @param preferences
    */
   constructor(public navCtrl: NavController,
     private courseUtilService: CourseUtilService,
     private events: Events,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private preference: SharedPreferences) {
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
 
@@ -85,12 +82,12 @@ export class CourseCard implements OnInit {
    */
   navigateToDetailPage(content: any, layoutName: string): void {
     const identifier = content.contentId || content.identifier;
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = identifier;
+    let telemetryObject: TelemetryObject;
     if (layoutName === this.layoutInProgress) {
-      telemetryObject.type = ContentType.COURSE;
+      telemetryObject = new TelemetryObject(identifier, ContentType.COURSE, undefined);
     } else {
-      telemetryObject.type = this.isResource(content.contentType) ? ContentType.RESOURCE : content.contentType;
+      const ObjectType = this.isResource(content.contentType) ? ContentType.RESOURCE : content.contentType;
+      telemetryObject = new TelemetryObject(identifier, ObjectType, undefined);
     }
 
 
@@ -162,7 +159,7 @@ export class CourseCard implements OnInit {
     }
 
     // store the contentContextMap in shared preference and access it from SDK
-    this.preference.putString(PreferenceKey.CONTENT_CONTEXT, JSON.stringify(contentContextMap));
+    this.preferences.putString(PreferenceKey.CONTENT_CONTEXT, JSON.stringify(contentContextMap)).toPromise().then();
   }
 }
 

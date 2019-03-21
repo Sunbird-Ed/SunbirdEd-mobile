@@ -1,58 +1,42 @@
-import { Component, NgZone } from '@angular/core';
+import {Component, Inject, NgZone} from '@angular/core';
 import {
-  NavController,
-  LoadingController,
-  NavParams,
-  Events,
-  PopoverController,
   App,
+  Events,
+  LoadingController,
+  NavController,
+  NavParams,
+  PopoverController,
   ViewController
 } from 'ionic-angular';
+import {OverflowMenuComponent} from '@app/pages/profile';
+import {generateInteractTelemetry} from '@app/app/telemetryutil';
+import {ContentCard, ContentType, MenuOverflow, MimeType, ProfileConstants} from '@app/app/app.constant';
+import {CategoriesEditPage} from '@app/pages/categories-edit/categories-edit';
+import {PersonalDetailsEditPage} from '@app/pages/profile/personal-details-edit.profile/personal-details-edit.profile';
+import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details/enrolled-course-details';
+import {CollectionDetailsPage} from '@app/pages/collection-details/collection-details';
+import {ContentDetailsPage} from '@app/pages/content-details/content-details';
+import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
+import {FormAndFrameworkUtilService} from './formandframeworkutil.service';
+import {EditContactDetailsPopupComponent} from '@app/component/edit-contact-details-popup/edit-contact-details-popup';
+import {EditContactVerifyPopupComponent} from '@app/component';
 import {
   AuthService,
-  UserProfileService,
-  UserProfileDetailsRequest,
-  TelemetryService,
-  ImpressionType,
-  PageId,
-  Environment,
-  InteractType,
-  InteractSubtype,
-  CourseService,
-  TelemetryObject,
-  ProfileService,
-  ContainerService,
-  ContentSortCriteria,
   ContentSearchCriteria,
+  ContentSearchResult,
   ContentService,
+  ContentSortCriteria,
+  Course,
+  CourseService,
+  OAuthSession,
+  ProfileService,
+  SearchType,
+  ServerProfileDetailsRequest,
   SortOrder,
-  UpdateUserInfoRequest
-} from 'sunbird';
-import * as _ from 'lodash';
-import {
-  OverflowMenuComponent
-} from '@app/pages/profile';
-import {
-  generateInteractTelemetry,
-  generateImpressionTelemetry
-} from '@app/app/telemetryutil';
-import {
-  ProfileConstants,
-  MenuOverflow,
-  ContentType,
-  MimeType,
-  ContentCard
-} from '@app/app/app.constant';
-import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
-import { PersonalDetailsEditPage } from '@app/pages/profile/personal-details-edit.profile/personal-details-edit.profile';
-import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details/enrolled-course-details';
-import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
-import { ContentDetailsPage } from '@app/pages/content-details/content-details';
-import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
-import { FormAndFrameworkUtilService } from './formandframeworkutil.service';
-import { EditContactDetailsPopupComponent } from '@app/component/edit-contact-details-popup/edit-contact-details-popup';
-import { EditContactVerifyPopupComponent } from '@app/component';
-
+  TelemetryObject,
+  UpdateServerProfileInfoRequest
+} from 'sunbird-sdk';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
 
 /**
  * The Profile page
@@ -95,6 +79,7 @@ export class ProfilePage {
   startLimit = 0;
   custodianOrgId: string;
   isCustodianOrgId: boolean;
+
   contentCreatedByMe: any = [];
   orgDetails: {
     'state': '',
@@ -105,45 +90,41 @@ export class ProfilePage {
   layoutPopular = ContentCard.LAYOUT_POPULAR;
 
   constructor(
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    @Inject('AUTH_SERVICE') private authService: AuthService,
     private navCtrl: NavController,
     private popoverCtrl: PopoverController,
-    private userProfileService: UserProfileService,
     private zone: NgZone,
-    private authService: AuthService,
-    private telemetryService: TelemetryService,
     private loadingCtrl: LoadingController,
     private navParams: NavParams,
     private events: Events,
     private appGlobalService: AppGlobalService,
-    private courseService: CourseService,
+    @Inject('COURSE_SERVICE') private courseService: CourseService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private profileService: ProfileService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
-    private containerService: ContainerService,
     private commonUtilService: CommonUtilService,
     private app: App,
-    private contentService: ContentService,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
     public viewCtrl: ViewController
   ) {
     this.userId = this.navParams.get('userId') || '';
     this.isRefreshProfile = this.navParams.get('returnRefreshedUserProfileDetails');
-    this.isLoggedInUser = this.userId ? false : true;
+    this.isLoggedInUser = !this.userId;
 
     // Event for optional and forceful upgrade
-    this.events.subscribe('force_optional_upgrade', (upgrade) => {
+    this.events.subscribe('force_optional_upgrade', async (upgrade) => {
       if (upgrade) {
-        this.appGlobalService.openPopover(upgrade);
+        await this.appGlobalService.openPopover(upgrade);
       }
     });
 
     this.events.subscribe('loggedInProfile:update', (framework) => {
       this.updateLocalProfile(framework);
-      this.doRefresh();
     });
 
     this.formAndFrameworkUtilService.getCustodianOrgId().then((orgId: string) => {
       this.custodianOrgId = orgId;
-    }, err => {
+    }, () => {
     });
   }
 
@@ -154,16 +135,16 @@ export class ProfilePage {
         this.imageUri = res.url;
       }
     });
-    this.telemetryService.impression(generateImpressionTelemetry(
+    this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
       PageId.PROFILE,
       Environment.USER, '', '', '',
       undefined,
       undefined
-    ));
+    );
   }
 
-  public doRefresh(refresher?) {
+  doRefresh(refresher?) {
     const loader = this.getLoader();
     this.isRefreshProfile = true;
     if (!refresher) {
@@ -207,65 +188,48 @@ export class ProfilePage {
   refreshProfileData() {
     const that = this;
     return new Promise((resolve, reject) => {
-      that.authService.getSessionData(session => {
-        if (session === null || session === 'null') {
+      that.authService.getSession().toPromise().then((session: OAuthSession) => {
+        if (session === null || session === undefined) {
           reject('session is null');
         } else {
-          const sessionObj = JSON.parse(session);
-          that.loggedInUserId = sessionObj[ProfileConstants.USER_TOKEN];
-          if (that.userId && sessionObj[ProfileConstants.USER_TOKEN] === that.userId) {
+          that.loggedInUserId = session.userToken;
+          if (that.userId && session.userToken === that.userId) {
             that.isLoggedInUser = true;
           }
-
-          const req: UserProfileDetailsRequest = {
-            userId:
-              that.userId && that.userId !== sessionObj[ProfileConstants.USER_TOKEN]
-                ? that.userId
-                : sessionObj[ProfileConstants.USER_TOKEN],
+          const request: ServerProfileDetailsRequest = {
+            userId: that.userId && that.userId !== session.userToken ? that.userId : session.userToken,
             requiredFields: ProfileConstants.REQUIRED_FIELDS
           };
           if (that.isLoggedInUser) {
-            if (that.isRefreshProfile) {
-              req.returnRefreshedUserProfileDetails = true;
-              that.isRefreshProfile = false;
-            } else {
-              req.refreshUserProfileDetails = true;
-            }
-          } else {
-            req.returnRefreshedUserProfileDetails = true;
-            that.isRefreshProfile = false;
+            that.isRefreshProfile = !that.isRefreshProfile;
           }
-          that.userProfileService.getUserProfileDetails(
-            req,
-            (res: any) => {
+          that.profileService.getServerProfilesDetails(request).toPromise()
+            .then((profileData) => {
               that.zone.run(() => {
                 that.resetProfile();
-                const r = JSON.parse(res);
-                that.profile = r;
-                this.profileService.getCurrentUser().then((resp: any) => {
-                  const profile = JSON.parse(resp);
-                  that.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
-                    .then((value) => {
-                      if (!value['status']) {
-                        this.app.getRootNav().setRoot(CategoriesEditPage, { showOnlyMandatoryFields: true, profile: value['profile'] });
-                      }
-                    });
-                });
-                if (r && r.avatar) {
-                  that.imageUri = r.avatar;
-                }
-                that.formatRoles();
-                that.formatOrgDetails();
-                that.formatUserLocation();
-                that.isCustodianOrgId = (that.profile.rootOrg.rootOrgId === this.custodianOrgId);
-                resolve();
+                that.profile = profileData;
+                that.profileService.getActiveSessionProfile().toPromise()
+                  .then((activeProfile) => {
+                    that.formAndFrameworkUtilService.updateLoggedInUser(profileData, activeProfile)
+                      .then((frameWorkData) => {
+                        if (!frameWorkData['status']) {
+                          that.app.getRootNav().setRoot(CategoriesEditPage, {
+                            showOnlyMandatoryFields: true,
+                            profile: frameWorkData['activeProfileData']
+                          });
+                        }
+                      });
+                    if (profileData && profileData.avatar) {
+                      that.imageUri = profileData.avatar;
+                    }
+                    that.formatRoles();
+                    that.formatOrgDetails();
+                    that.formatUserLocation();
+                    that.isCustodianOrgId = (that.profile.rootOrg.rootOrgId === this.custodianOrgId);
+                    resolve();
+                  });
               });
-            },
-            (error: any) => {
-              reject(error);
-              console.error(error);
-            }
-          );
+            });
         }
       });
     });
@@ -298,23 +262,18 @@ export class ProfilePage {
     }
   }
 
+  /**
+   *
+   */
   formatUserLocation() {
-    const len = this.profile.userLocations.length;
-    if (len === 2) {
-      for (let i = 0; i < len; i++) {
+    if (this.profile && this.profile.userLocations && this.profile.userLocations.length) {
+      for (let i = 0, len = this.profile.userLocations.length; i < len; i++) {
         if (this.profile.userLocations[i].type === 'state') {
           this.userLocation.state = this.profile.userLocations[i];
         } else {
           this.userLocation.district = this.profile.userLocations[i];
         }
       }
-    } else if (len === 1) {
-      this.userLocation.state = this.profile.userLocations[len - 1];
-      this.userLocation.district = [];
-
-    } else if (len === 0) {
-      this.userLocation.state = [];
-      this.userLocation.district = [];
     }
   }
 
@@ -322,7 +281,7 @@ export class ProfilePage {
    * Method to handle organisation details.
    */
   formatOrgDetails() {
-    this.orgDetails = { 'state': '', 'district': '', 'block': '' };
+    this.orgDetails = {'state': '', 'district': '', 'block': ''};
     for (let i = 0, len = this.profile.organisations.length; i < len; i++) {
       if (this.profile.organisations[i].locations) {
         for (let j = 0, l = this.profile.organisations[i].locations.length; j < l; j++) {
@@ -355,8 +314,8 @@ export class ProfilePage {
       list: MenuOverflow.MENU_LOGIN,
       profile: this.profile
     }, {
-        cssClass: 'box'
-      });
+      cssClass: 'box'
+    });
     popover.present({
       ev: event
     });
@@ -425,7 +384,7 @@ export class ProfilePage {
    * @returns {object}
    */
   getSubset(keys, obj) {
-    return keys.reduce((a, c) => ({ ...a, [c]: obj[c] }), {});
+    return keys.reduce((a, c) => ({...a, [c]: obj[c]}), {});
   }
 
   /**
@@ -440,10 +399,11 @@ export class ProfilePage {
       returnRefreshedEnrolledCourses: true
     };
     this.trainingsCompleted = [];
-    this.courseService.getEnrolledCourses(option)
-      .then((res: any) => {
-        res = JSON.parse(res);
-        const enrolledCourses = res.result.courses;
+    this.courseService.getEnrolledCourses(option).toPromise()
+      .then((res: Course[]) => {
+       // res = JSON.parse(res);
+        const enrolledCourses = res;
+        console.log('course is ', res);
         for (let i = 0, len = enrolledCourses.length; i < len; i++) {
           if (enrolledCourses[i].status === 2) {
             this.trainingsCompleted.push(enrolledCourses[i]);
@@ -468,12 +428,13 @@ export class ProfilePage {
    */
   navigateToDetailPage(content: any, layoutName: string, index: number): void {
     const identifier = content.contentId || content.identifier;
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = identifier;
+    let telemetryObject: TelemetryObject;
     if (layoutName === ContentCard.LAYOUT_INPROGRESS) {
-      telemetryObject.type = ContentType.COURSE;
+      telemetryObject = new TelemetryObject(identifier, ContentType.COURSE, undefined);
     } else {
-      telemetryObject.type = this.isResource(content.contentType) ? ContentType.RESOURCE : content.contentType;
+      const telemetryObjectType = this.isResource(content.contentType) ? ContentType.RESOURCE : content.contentType;
+      telemetryObject = new TelemetryObject(identifier, telemetryObjectType, undefined);
+
     }
 
 
@@ -504,23 +465,24 @@ export class ProfilePage {
 
   updateLocalProfile(framework) {
     this.profile.framework = framework;
-    this.profileService.getCurrentUser().then((resp: any) => {
-      const profile = JSON.parse(resp);
-      this.formAndFrameworkUtilService.updateLoggedInUser(this.profile, profile)
-        .then((value) => {
-        });
-    });
+    this.profileService.getActiveSessionProfile()
+      .toPromise()
+      .then((resp: any) => {
+        this.formAndFrameworkUtilService.updateLoggedInUser(this.profile, resp)
+          .then((success) => {
+            console.log('updateLocalProfile-- ', success);
+          });
+      });
   }
 
   navigateToCategoriesEditPage() {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-      this.telemetryService.interact(
-        generateInteractTelemetry(InteractType.TOUCH,
-          InteractSubtype.EDIT_CLICKED,
-          Environment.HOME,
-          PageId.PROFILE, null,
-          undefined,
-          undefined));
+      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+        InteractSubtype.EDIT_CLICKED,
+        Environment.HOME,
+        PageId.PROFILE, null,
+        undefined,
+        undefined);
       this.navCtrl.push(CategoriesEditPage);
     } else {
       this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
@@ -529,13 +491,12 @@ export class ProfilePage {
 
   navigateToEditPersonalDetails() {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-      this.telemetryService.interact(
-        generateInteractTelemetry(InteractType.TOUCH,
-          InteractSubtype.EDIT_CLICKED,
-          Environment.HOME,
-          PageId.PROFILE, null,
-          undefined,
-          undefined));
+      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+        InteractSubtype.EDIT_CLICKED,
+        Environment.HOME,
+        PageId.PROFILE, null,
+        undefined,
+        undefined);
       this.navCtrl.push(PersonalDetailsEditPage, {
         profile: this.profile
       });
@@ -556,12 +517,13 @@ export class ProfilePage {
       createdBy: [this.userId || this.loggedInUserId],
       limit: 100,
       contentTypes: ContentType.FOR_PROFILE_TAB,
-      sortCriteria: [contentSortCriteria]
+      sortCriteria: [contentSortCriteria],
+      searchType: SearchType.SEARCH
     };
 
-    this.contentService.searchContent(contentSearchCriteria, false, false, false)
-      .then((result: any) => {
-        this.contentCreatedByMe = JSON.parse(result).result.contentDataList;
+    this.contentService.searchContent(contentSearchCriteria).toPromise()
+      .then((result: ContentSearchResult) => {
+        this.contentCreatedByMe = result.contentDataList || [];
       })
       .catch((error: any) => {
         console.error('Error', error);
@@ -579,8 +541,8 @@ export class ProfilePage {
       type: 'phone',
       userId: this.profile.userId
     }, {
-        cssClass: 'popover-alert'
-      });
+      cssClass: 'popover-alert'
+    });
     popover.present({
       ev: event
     });
@@ -599,11 +561,10 @@ export class ProfilePage {
       email: this.profile.email,
       title: newTitle,
       description: '',
-      type: 'email',
-      userId: this.profile.userId
+      type: 'email'
     }, {
-        cssClass: 'popover-alert'
-      });
+      cssClass: 'popover-alert'
+    });
     popover.present({
       ev: event
     });
@@ -623,9 +584,11 @@ export class ProfilePage {
         description: this.commonUtilService.translateMessage('VERIFY_PHONE_OTP_DESCRIPTION'),
         type: ProfileConstants.CONTACT_TYPE_PHONE
       }, {
-          cssClass: 'popover-alert'
-        });
-      popover.present();
+        cssClass: 'popover-alert'
+      });
+      popover.present({
+        ev: event
+      });
       popover.onDidDismiss((OTPSuccess: boolean = false, phone: any) => {
         if (OTPSuccess) {
           this.viewCtrl.dismiss();
@@ -640,9 +603,11 @@ export class ProfilePage {
         description: this.commonUtilService.translateMessage('VERIFY_EMAIL_OTP_DESCRIPTION'),
         type: ProfileConstants.CONTACT_TYPE_EMAIL
       }, {
-          cssClass: 'popover-alert'
-        });
-      popover.present();
+        cssClass: 'popover-alert'
+      });
+      popover.present({
+        ev: event
+      });
       popover.onDidDismiss((OTPSuccess: boolean = false, email: any) => {
         if (OTPSuccess) {
           this.viewCtrl.dismiss();
@@ -654,19 +619,16 @@ export class ProfilePage {
 
   updatePhoneInfo(phone) {
     const loader = this.getLoader();
-    const req: UpdateUserInfoRequest = {
+    const req: UpdateServerProfileInfoRequest = {
       userId: this.profile.userId,
-      phone: phone,
-      phoneVerified: true
+      phone: phone
     };
-    this.userProfileService.updateUserInfo(req, (res) => {
-      res = JSON.parse(res);
-      loader.dismiss();
-      // setTimeout(() => {
-      this.doRefresh();
-      // }, 1000);
-      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PHONE_EDIT_SUCCESS'));
-    }, (err) => {
+    this.profileService.updateServerProfile(req).toPromise()
+      .then(() => {
+        loader.dismiss();
+        this.doRefresh();
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('PHONE_UPDATE_SUCCESS'));
+      }).catch(() => {
       loader.dismiss();
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
     });
@@ -674,19 +636,17 @@ export class ProfilePage {
 
   updateEmailInfo(email) {
     const loader = this.getLoader();
-    const req: UpdateUserInfoRequest = {
+    const req: UpdateServerProfileInfoRequest = {
       userId: this.profile.userId,
-      email: email,
-      emailVerified: true
+      emailId: email,
+      // emailVerified: true
     };
-    this.userProfileService.updateUserInfo(req, (res) => {
-      res = JSON.parse(res);
-      loader.dismiss();
-      // setTimeout(() => {
-      this.doRefresh();
-      // }, 1000);
-      this.commonUtilService.showToast(this.commonUtilService.translateMessage('EMAIL_EDIT_SUCCESS'));
-    }, (err) => {
+    this.profileService.updateServerProfile(req).toPromise()
+      .then(() => {
+        loader.dismiss();
+        this.doRefresh();
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('EMAIL_UPDATE_SUCCESS'));
+      }).catch(() => {
       loader.dismiss();
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
     });

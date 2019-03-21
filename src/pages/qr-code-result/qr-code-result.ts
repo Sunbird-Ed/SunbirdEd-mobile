@@ -1,98 +1,91 @@
-import { CommonUtilService } from './../../service/common-util.service';
-import { FormAndFrameworkUtilService } from './../profile/formandframeworkutil.service';
+import {CommonUtilService} from './../../service/common-util.service';
+import {Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
 import {
-  Component,
-  NgZone,
-  ViewChild
-} from '@angular/core';
-import {
+  AlertController,
+  Events,
   IonicPage,
+  Navbar,
   NavController,
   NavParams,
   Platform,
-  Navbar,
-  Events
+  PopoverController
 } from 'ionic-angular';
+import {ContentDetailsPage} from '../content-details/content-details';
+import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
+import {ContentType, MimeType} from '../../app/app.constant';
+import {CollectionDetailsPage} from '../collection-details/collection-details';
+import {TranslateService} from '@ngx-translate/core';
+import {AppGlobalService} from '../../service/app-global.service';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import * as _ from 'lodash';
+import {ProfileSettingsPage} from '../profile-settings/profile-settings';
 import {
-  ContentService,
-  CorrelationData,
   ChildContentRequest,
-  InteractSubtype,
-  PageId,
+  Content,
+  ContentDetailRequest,
+  ContentEventType,
+  ContentImport,
+  ContentImportRequest,
+  ContentImportResponse,
+  ContentMarkerRequest,
+  ContentService,
+  DownloadEventType,
+  DownloadProgress,
+  EventsBusEvent,
+  EventsBusService,
+  Framework,
+  FrameworkCategoryCodesGroup,
+  FrameworkDetailsRequest,
+  FrameworkService,
+  FrameworkUtilService,
+  GetAllProfileRequest,
+  GetSuggestedFrameworksRequest,
   Profile,
   ProfileService,
-  ProfileRequest,
-  SharedPreferences,
-  TabsPage,
-  SuggestedFrameworkRequest,
-  FrameworkService,
-  FileUtil,
-  Rollup,
-  ContentMarkerRequest,
+  CorrelationData,
   MarkerType
-} from 'sunbird';
-import { ContentDetailsPage } from '../content-details/content-details';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
-import {
-  ContentType,
-  MimeType,
-  FrameworkCategory
-} from '../../app/app.constant';
-import { CollectionDetailsPage } from '../collection-details/collection-details';
-import { TranslateService } from '@ngx-translate/core';
-import { AppGlobalService } from '../../service/app-global.service';
-import {
-  InteractType,
-  Environment,
-  ImpressionType
-} from 'sunbird';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import * as _ from 'lodash';
-import { PopoverController, Content } from 'ionic-angular';
-import { ProfileSettingsPage } from '../profile-settings/profile-settings';
-import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
-import { AlertController } from 'ionic-angular';
-import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
+} from 'sunbird-sdk';
+import {Subscription} from 'rxjs';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
+import {TabsPage} from '@app/pages/tabs/tabs';
+
+declare const cordova;
+
 @IonicPage()
 @Component({
   selector: 'page-qr-code-result',
   templateUrl: 'qr-code-result.html'
 })
-export class QrCodeResultPage {
+export class QrCodeResultPage implements OnDestroy {
   unregisterBackButton: any;
   /**
-	 * To hold identifier
-	 */
+   * To hold identifier
+   */
   identifier: string;
 
   /**
-	   * To hold identifier
-	   */
+   * To hold identifier
+   */
   searchIdentifier: string;
 
   /**
-	   * Contains children content data
-	   */
-  childrenData: Array<any>;
-
-  /**
-	   * Show loader while importing content
-	   */
+   * Show loader while importing content
+   */
   showChildrenLoader: boolean;
 
   /**
-	   * Contains card data of previous state
-	   */
-  content: any;
+   * Contains card data of previous state
+   */
+  content: Content;
 
   /**
-	   * Contains Parent Content Details
-	   */
+   * Contains Parent Content Details
+   */
   parentContent: any;
 
   /**
-	   * Contains
-	   */
+   * Contains
+   */
   isParentContentAvailable = false;
   profile: Profile;
 
@@ -107,51 +100,43 @@ export class QrCodeResultPage {
   boardList: Array<any> = [];
   mediumList: Array<any> = [];
   gradeList: Array<any> = [];
-  subjectList: Array<any> = [];
-  profileCategories: any;
   isSingleContent = false;
   showLoading: Boolean;
   isDownloadStarted: Boolean;
-
-  public isPlayerLaunched = false;
   userCount = 0;
-  apiLevel: number;
-  appAvailability: string;
-  downloadAndPlay: boolean;
-  public objRollup: Rollup;
   /**
    * To hold previous state data
    */
   cardData: any;
   @ViewChild(Navbar) navBar: Navbar;
   downloadProgress: any = 0;
-  isDownloadCompleted: boolean;
   isUpdateAvailable: boolean;
+  eventSubscription: Subscription;
+
   constructor(
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     public navCtrl: NavController,
     public navParams: NavParams,
-    public contentService: ContentService,
     public zone: NgZone,
     public translate: TranslateService,
     public platform: Platform,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private alertCtrl: AlertController,
     private appGlobalService: AppGlobalService,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
-    private profileService: ProfileService,
     private events: Events,
-    private preferences: SharedPreferences,
     private popOverCtrl: PopoverController,
     private commonUtilService: CommonUtilService,
-    private framework: FrameworkService,
-    private fileUtil: FileUtil
+    @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
+    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService
   ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
 
   /**
-	 * Ionic life cycle hook
-	 */
+   * Ionic life cycle hook
+   */
   ionViewWillEnter(): void {
     this.content = this.navParams.get('content');
     this.corRelationList = this.navParams.get('corRelation');
@@ -170,12 +155,12 @@ export class QrCodeResultPage {
       this.isParentContentAvailable = false;
       this.identifier = this.content.identifier;
     }
-    this.setContentDetails(this.identifier, true);
+    this.setContentDetails(this.identifier);
     this.getChildContents();
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.handleBackButton(InteractSubtype.DEVICE_BACK_CLICKED);
     }, 10);
-    this.subscribeGenieEvent();
+    this.subscribeSdkEvent();
   }
 
   ionViewDidLoad() {
@@ -197,7 +182,15 @@ export class QrCodeResultPage {
       this.unregisterBackButton();
     }
     this.downloadProgress = 0;
-    this.events.unsubscribe('genie.event');
+    if (this.eventSubscription) {
+      this.eventSubscription.unsubscribe();
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.eventSubscription) {
+      this.eventSubscription.unsubscribe();
+    }
   }
 
   handleBackButton(clickSource) {
@@ -223,21 +216,17 @@ export class QrCodeResultPage {
   }
 
   getChildContents() {
-    const request: ChildContentRequest = { contentId: this.identifier };
+    const request: ChildContentRequest = {contentId: this.identifier, hierarchyInfo: []};
     this.contentService.getChildContents(
-      request)
-      .then((data: any) => {
-        data = JSON.parse(data);
+      request).toPromise()
+      .then((data: Content) => {
         this.parents.splice(0, this.parents.length);
-        this.parents.push(data.result);
+        this.parents.push(data);
         this.results = [];
         this.profile = this.appGlobalService.getCurrentUser();
-        const contentData = JSON.parse(JSON.stringify(data.result.contentData));
-        /* if (!this.navParams.get('onboarding') && contentData && contentData.medium) {
-           this.commonUtilService.changeAppLanguage(contentData.medium);
-         } */
+        const contentData = data.contentData;
         this.checkProfileData(contentData, this.profile);
-        this.findContentNode(data.result);
+        this.findContentNode(data);
 
         if (this.results && this.results.length === 0) {
           this.telemetryGeneratorService.generateImpressionTelemetry(ImpressionType.VIEW,
@@ -249,8 +238,7 @@ export class QrCodeResultPage {
         }
 
       })
-      .catch((error: string) => {
-        console.error('Error: while fetching child contents ===>>>', error);
+      .catch(() => {
         this.zone.run(() => {
           this.showChildrenLoader = false;
         });
@@ -260,60 +248,50 @@ export class QrCodeResultPage {
 
   }
 
-  private showAllChild(content: any) {
-    this.zone.run(() => {
-      if (content.children === undefined) {
-        if (content.mimeType !== MimeType.COLLECTION) {
-          if (content.contentData.appIcon) {
-            if (content.contentData.appIcon.includes('http:') || content.contentData.appIcon.includes('https:')) {
-                if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-                        content.contentData.appIcon = content.contentData.appIcon;
-                  } else {
-                        content.contentData.appIcon = this.defaultImg;
-                  }
-            } else if (content.basePath) {
-              content.contentData.appIcon = content.basePath + '/' + content.contentData.appIcon;
-            }
-          }
-          this.results.push(content);
-
-          const path = [];
-          this.parents.forEach(ele => {
-            path.push(ele);
-          });
-          path.splice(-1, 1);
-          this.paths.push(path);
+  calculateAvailableUserCount() {
+    const profileRequest: GetAllProfileRequest = {
+      local: true,
+      server: false
+    };
+    this.profileService.getAllProfiles(profileRequest)
+      .map((profiles) => profiles.filter((profile) => !!profile.handle))
+      .subscribe(profiles => {
+        if (profiles) {
+          this.userCount = profiles.length;
         }
-        return;
-      }
-      content.children.forEach(child => {
-        this.parents.push(child);
-        this.showAllChild(child);
-        this.parents.splice(-1, 1);
+        if (this.appGlobalService.isUserLoggedIn()) {
+          this.userCount += 1;
+        }
+      }, () => {
       });
+  }
+
+  /**
+   * Play content
+   */
+  playContent(content: Content) {
+    const extraInfoMap = {hierarchyInfo: []};
+    if (this.cardData && this.cardData.hierarchyInfo) {
+      extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
+    }
+    const req: ContentMarkerRequest = {
+      uid: this.appGlobalService.getCurrentUser().uid,
+      contentId: content.identifier,
+      data: JSON.stringify(content.contentData),
+      marker: MarkerType.PREVIEWED,
+      isMarked: true,
+      extraInfo: extraInfoMap
+    };
+    this.contentService.setContentMarker(req).toPromise()
+      .then(() => {
+      }).catch(() => {
     });
+    const request: any = {};
+    request.streaming = true;
+    AppGlobalService.isPlayerLaunched = true;
+    (<any>window).geniecanvas.play(content, JSON.stringify(request));
   }
 
-  private findContentNode(data: any) {
-    if (data && data !== undefined && data.identifier === this.searchIdentifier) {
-      this.showAllChild(data);
-      return true;
-    }
-
-    if (data && data.children !== undefined) {
-      data.children.forEach(child => {
-        this.parents.push(child);
-        const isFound = this.findContentNode(child);
-
-        if (isFound === true) {
-          return true;
-        }
-        this.parents.splice(-1, 1);
-      });
-    }
-
-    return false;
-  }
   playOnline(content) {
     if (content.contentData.streamingUrl && !content.isAvailableLocally) {
       this.playContent(content);
@@ -321,6 +299,7 @@ export class QrCodeResultPage {
       this.navigateToDetailsPage(content);
     }
   }
+
   navigateToDetailsPage(content) {
     if (content && content.contentData && content.contentData.contentType === ContentType.COURSE) {
       this.navCtrl.push(EnrolledCourseDetailsPage, {
@@ -344,21 +323,43 @@ export class QrCodeResultPage {
       });
     }
   }
-  calculateAvailableUserCount() {
-    const profileRequest: ProfileRequest = {
-      local: true,
-      server: false
+
+  editProfile(): void {
+    const req: Profile = {
+      board: this.profile.board,
+      grade: this.profile.grade,
+      medium: this.profile.medium,
+      subject: this.profile.subject,
+      uid: this.profile.uid,
+      handle: this.profile.handle,
+      profileType: this.profile.profileType,
+      source: this.profile.source,
+      createdAt: this.profile.createdAt,
+      syllabus: this.profile.syllabus
     };
-    this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
-      if (profiles) {
-        this.userCount = JSON.parse(profiles).length;
-      }
-      if (this.appGlobalService.isUserLoggedIn()) {
-        this.userCount += 1;
-      }
-    }).catch((error) => {
-      console.error('Error occurred= ', error);
-    });
+    if (this.profile.grade && this.profile.grade.length > 0) {
+      this.profile.grade.forEach(gradeCode => {
+        for (let i = 0; i < this.gradeList.length; i++) {
+          if (this.gradeList[i].code === gradeCode) {
+            req.gradeValue = this.profile.gradeValue;
+            req.gradeValue[this.gradeList[i].code] = this.gradeList[i].name;
+            break;
+          }
+        }
+      });
+    }
+
+    this.profileService.updateProfile(req).toPromise()
+      .then((res: any) => {
+        if (res.syllabus && res.syllabus.length && res.board && res.board.length
+          && res.grade && res.grade.length && res.medium && res.medium.length) {
+          this.events.publish(AppGlobalService.USER_INFO_UPDATED);
+          this.events.publish('refresh:profile');
+        }
+        this.appGlobalService.guestUserProfile = res;
+      })
+      .catch(() => {
+      });
   }
 
   /** funtion add elipses to the texts**/
@@ -370,78 +371,28 @@ export class QrCodeResultPage {
       return this.commonUtilService.translateMessage(msg);
     }
   }
-  /**
-     * Play content
-     */
-  playContent(content) {
-    const extraInfoMap = { hierarchyInfo: [] };
-    if (this.cardData && this.cardData.hierarchyInfo) {
-      extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
-    }
-    const req: ContentMarkerRequest = {
-      uid: this.appGlobalService.getCurrentUser().uid,
-      contentId: content.identifier,
-      data: JSON.stringify(content.contentData),
-      marker: MarkerType.PREVIEWED,
-      isMarked: true,
-      extraInfoMap: extraInfoMap
-    };
-    this.contentService.setContentMarker(req)
-      .then((resp) => {
-      }).catch((err) => {
-      });
-    const request: any = {};
-    request.streaming = true;
-    AppGlobalService.isPlayerLaunched = true;
-    (<any>window).geniecanvas.play(content, JSON.stringify(request));
-  }
-  editProfile(): void {
-    const req: Profile = new Profile();
-    req.board = this.profile.board;
-    req.grade = this.profile.grade;
-    req.medium = this.profile.medium;
-    req.subject = this.profile.subject;
-    req.uid = this.profile.uid;
-    req.handle = this.profile.handle;
-    req.profileType = this.profile.profileType;
-    req.source = this.profile.source;
-    req.createdAt = this.profile.createdAt;
-    req.syllabus = this.profile.syllabus;
-    console.log('qrcode editProfile req', req);
-    // Shorthand for above code
-    // req = (({board, grade, medium, subject, uid, handle, profileType, source, createdAt, syllabus}) =>
-    // ({board, grade, medium, subject, uid, handle, profileType, source, createdAt, syllabus}))(this.profile);
-    if (this.profile.grade && this.profile.grade.length > 0) {
-      this.profile.grade.forEach(gradeCode => {
-        for (let i = 0; i < this.gradeList.length; i++) {
-          if (this.gradeList[i].code === gradeCode) {
-            req.gradeValueMap = this.profile.gradeValueMap;
-            req.gradeValueMap[this.gradeList[i].code] = this.gradeList[i].name;
-            break;
-          }
-        }
-      });
-    }
 
-    this.profileService.updateProfile(req)
-      .then((res: any) => {
-        const updateProfileRes = JSON.parse(res);
-        if (updateProfileRes.syllabus && updateProfileRes.syllabus.length && updateProfileRes.board && updateProfileRes.board.length
-          && updateProfileRes.grade && updateProfileRes.grade.length && updateProfileRes.medium && updateProfileRes.medium.length) {
-          this.events.publish(AppGlobalService.USER_INFO_UPDATED);
-          this.events.publish('refresh:profile');
-        }
-        this.appGlobalService.guestUserProfile = JSON.parse(res);
+  /**
+   * To set content details in local variable
+   * @param {string} identifier identifier of content / course
+   */
+  setContentDetails(identifier) {
+    const option: ContentDetailRequest = {
+      contentId: identifier,
+      attachFeedback: true,
+      attachContentAccess: true
+    };
+    this.contentService.getContentDetails(option).toPromise()
+      .then((data: any) => {
       })
-      .catch((err: any) => {
-        console.error('Err', err);
+      .catch((error: any) => {
       });
   }
 
   setGrade(reset, grades) {
     if (reset) {
       this.profile.grade = [];
-      this.profile.gradeValueMap = {};
+      this.profile.gradeValue = {};
     }
     _.each(grades, (grade) => {
       if (grade && this.profile.grade.indexOf(grade) === -1) {
@@ -453,12 +404,13 @@ export class QrCodeResultPage {
       }
     });
   }
+
   /**
-	 * @param categoryList
-	 * @param data
-	 * @param categoryType
-	 * return the code of board,medium and subject based on Name
-	 */
+   * @param categoryList
+   * @param data
+   * @param categoryType
+   * return the code of board,medium and subject based on Name
+   */
   findCode(categoryList: Array<any>, data, categoryType) {
     if (_.find(categoryList, (category) => category.name === data[categoryType])) {
       return _.find(categoryList, (category) => category.name === data[categoryType]).code;
@@ -468,18 +420,18 @@ export class QrCodeResultPage {
   }
 
   /**
-	 * Assigning board, medium, grade and subject to profile
-	 */
+   * Assigning board, medium, grade and subject to profile
+   */
 
   setCurrentProfile(index, data) {
-    console.log('setCurrentProfile index', index);
     if (!this.profile.medium || !this.profile.medium.length) {
       this.profile.medium = [];
     }
-/*     if (!this.profile.subject || !this.profile.subject.length) {
-      this.profile.subject = [];
-    }
- */    switch (index) {
+    /*     if (!this.profile.subject || !this.profile.subject.length) {
+          this.profile.subject = [];
+        }
+     */
+    switch (index) {
       case 0:
         this.profile.syllabus = [data.framework];
         this.profile.board = [data.board];
@@ -501,37 +453,43 @@ export class QrCodeResultPage {
       case 3:
         this.setGrade(false, data.gradeLevel);
         break;
-/*       case 4:
-        this.profile.subject.push(data.subject);
-        break;
- */    }
+      /*       case 4:
+              this.profile.subject.push(data.subject);
+              break;
+       */
+    }
     this.editProfile();
   }
 
   /**
-	 * comparing current profile data with qr result data, If not matching then reset current profile data
-	 * @param {object} data
-	 * @param {object} profile
-	 */
+   * comparing current profile data with qr result data, If not matching then reset current profile data
+   * @param {object} data
+   * @param {object} profile
+   */
   checkProfileData(data, profile) {
+    console.log('dial data', data);
+    console.log('local profile', profile);
     if (data && data.framework) {
 
-      const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
-        isGuestUser: true,
-        selectedLanguage: this.translate.currentLang,
-        categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
+      const getSuggestedFrameworksRequest: GetSuggestedFrameworksRequest = {
+        language: this.translate.currentLang,
+        requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
       };
-      this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
-        .then((res) => {
+      this.frameworkUtilService.getActiveChannelSuggestedFrameworkList(getSuggestedFrameworksRequest).toPromise()
+        .then((res: Framework[]) => {
           let isProfileUpdated = false;
           res.forEach(element => {
             // checking whether content data framework Id exists/valid in syllabus list
             if (data.framework === element.identifier) {
               isProfileUpdated = true;
-              // Get frameworkdetails(categories)
-              this.formAndFrameworkUtilService.getFrameworkDetails(data.framework)
-                .then(catagories => {
-                  this.categories = catagories;
+              const frameworkDetailsRequest: FrameworkDetailsRequest = {
+                frameworkId: data.framework,
+                requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
+              };
+              this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
+                .then((framework: Framework) => {
+                  console.log('framework', framework);
+                  this.categories = framework.categories;
                   this.boardList = _.find(this.categories, (category) => category.code === 'board').terms;
                   this.mediumList = _.find(this.categories, (category) => category.code === 'medium').terms;
                   this.gradeList = _.find(this.categories, (category) => category.code === 'gradeLevel').terms;
@@ -575,14 +533,15 @@ export class QrCodeResultPage {
                             if (!existingGrade) {
                               this.setCurrentProfile(3, data);
                             }
-/*                             let existingSubject = false;
-                            existingSubject = _.find(profile.subject, (subject) => {
-                              return subject === data.subject;
-                            });
-                            if (!existingSubject) {
-                              this.setCurrentProfile(4, data);
-                            }
- */                          }
+                            /*                             let existingSubject = false;
+                                                        existingSubject = _.find(profile.subject, (subject) => {
+                                                          return subject === data.subject;
+                                                        });
+                                                        if (!existingSubject) {
+                                                          this.setCurrentProfile(4, data);
+                                                        }
+                             */
+                          }
                         }
                       } else {
                         this.setCurrentProfile(1, data);
@@ -591,9 +550,8 @@ export class QrCodeResultPage {
                   } else {
                     this.setCurrentProfile(0, data);
                   }
-                }).catch(error => {
-                  console.error('Error', error);
-                });
+                }).catch(() => {
+              });
 
               return;
             }
@@ -601,8 +559,7 @@ export class QrCodeResultPage {
           this.telemetryGeneratorService.generateProfilePopulatedTelemetry(PageId.DIAL_CODE_SCAN_RESULT,
             data.framework, Boolean(isProfileUpdated) ? 'auto' : 'na');
         })
-        .catch((error) => {
-          console.error('Error', error);
+        .catch(() => {
         });
     }
   }
@@ -610,25 +567,22 @@ export class QrCodeResultPage {
   /**
    * Subscribe genie event to get content download progress
    */
-  subscribeGenieEvent() {
-    this.events.subscribe('genie.event', (data) => {
+  subscribeSdkEvent() {
+    this.eventSubscription = this.eventsBusService.events().subscribe((event: EventsBusEvent) => {
       this.zone.run(() => {
-        data = JSON.parse(data);
-        const res = data;
-        console.log('Geni Event!');
-        console.log(res);
 
-        if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-          if (res.data.downloadProgress === -1 || res.data.downloadProgress === '-1') {
+        if (event.type === DownloadEventType.PROGRESS && event.payload.progress) {
+          const downloadEvent = event as DownloadProgress;
+          if (downloadEvent.payload.progress === -1) {
             this.downloadProgress = 0;
-          } else if (res.data.identifier === this.content.identifier) {
-            this.downloadProgress = res.data.downloadProgress;
+          } else if (downloadEvent.payload.identifier === this.content.identifier) {
+            this.downloadProgress = downloadEvent.payload.progress;
           }
 
         }
         // Get child content
-        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
-
+        // if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
+        if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
           this.showLoading = false;
           this.isDownloadStarted = false;
           this.results = [];
@@ -637,7 +591,8 @@ export class QrCodeResultPage {
           this.getChildContents();
         }
         // For content update available
-        if (res.data && res.type === 'contentUpdateAvailable' && res.data.identifier === this.identifier) {
+        // if (res.data && res.type === 'contentUpdateAvailable' && res.data.identifier === this.identifier) {
+        if (event.payload && event.type === ContentEventType.UPDATE && event.payload.contentId === this.identifier) {
           this.zone.run(() => {
             if (this.parentContent) {
               const parentIdentifier = this.parentContent.contentId || this.parentContent.identifier;
@@ -647,25 +602,7 @@ export class QrCodeResultPage {
           });
         }
       });
-    });
-  }
-
-  /**
-   * To set content details in local variable
-   * @param {string} identifier identifier of content / course
-   */
-  setContentDetails(identifier, refreshContentDetails: boolean | true) {
-    const option = {
-      contentId: identifier,
-      refreshContentDetails: refreshContentDetails,
-      attachFeedback: true,
-      attachContentAccess: true
-    };
-    this.contentService.getContentDetail(option)
-      .then((data: any) => {
-      })
-      .catch((error: any) => {
-      });
+    }) as any;
   }
 
   /**
@@ -675,24 +612,23 @@ export class QrCodeResultPage {
    * @param {boolean} isChild
    */
   importContent(identifiers: Array<string>, isChild: boolean, isDownloadAllClicked?) {
-    const option = {
-      contentImportMap: _.extend({}, this.getImportContentRequestBody(identifiers, isChild)),
+    const option: ContentImportRequest = {
+      contentImportArray: this.getImportContentRequestBody(identifiers, isChild),
       contentStatusArray: []
     };
 
     // Call content service
-    this.contentService.importContent(option)
-      .then((data: any) => {
+    this.contentService.importContent(option).toPromise()
+      .then((data: ContentImportResponse[]) => {
         this.zone.run(() => {
-          data = JSON.parse(data);
+          data = data;
         });
       })
       .catch((error: any) => {
         this.zone.run(() => {
-          console.log('error while loading content details', error);
           this.isDownloadStarted = false;
           this.showLoading = false;
-          const errorRes = JSON.parse(error);
+          const errorRes = error;
           if (errorRes && (errorRes.error === 'NETWORK_ERROR' || errorRes.error === 'CONNECTION_ERROR')) {
             this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
           } else {
@@ -703,17 +639,17 @@ export class QrCodeResultPage {
   }
 
   /**
- * Function to get import content api request params
- *
- * @param {Array<string>} identifiers contains list of content identifier(s)
- * @param {boolean} isChild
- */
-  getImportContentRequestBody(identifiers: Array<string>, isChild: boolean) {
+   * Function to get import content api request params
+   *
+   * @param {Array<string>} identifiers contains list of content identifier(s)
+   * @param {boolean} isChild
+   */
+  getImportContentRequestBody(identifiers: Array<string>, isChild: boolean): Array<ContentImport> {
     const requestParams = [];
     _.forEach(identifiers, (value) => {
       requestParams.push({
         isChildContent: isChild,
-        destinationFolder: this.fileUtil.internalStoragePath(),
+        destinationFolder: cordova.file.externalDataDirectory,
         contentId: value,
         correlationData: this.corRelationList !== undefined ? this.corRelationList : []
       });
@@ -724,12 +660,13 @@ export class QrCodeResultPage {
 
   cancelDownload() {
     this.telemetryGeneratorService.generateCancelDownloadTelemetry(this.content);
-    this.contentService.cancelDownload(this.identifier).then(() => {
-      this.zone.run(() => {
-        this.showLoading = false;
-        this.navCtrl.pop();
-      });
-    }).catch(() => {
+    this.contentService.cancelDownload(this.identifier).toPromise()
+      .then(() => {
+        this.zone.run(() => {
+          this.showLoading = false;
+          this.navCtrl.pop();
+        });
+      }).catch(() => {
       this.zone.run(() => {
         this.showLoading = false;
         this.navCtrl.pop();
@@ -752,5 +689,60 @@ export class QrCodeResultPage {
     } else {
       this.navCtrl.setRoot(ProfileSettingsPage);
     }
+  }
+
+  private showAllChild(content: any) {
+    this.zone.run(() => {
+      if (content.children === undefined) {
+        if (content.mimeType !== MimeType.COLLECTION) {
+          if (content.contentData.appIcon) {
+            if (content.contentData.appIcon.includes('http:') || content.contentData.appIcon.includes('https:')) {
+              if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+                content.contentData.appIcon = content.contentData.appIcon;
+              } else {
+                content.contentData.appIcon = this.defaultImg;
+              }
+            } else if (content.basePath) {
+              content.contentData.appIcon = content.basePath + '/' + content.contentData.appIcon;
+            }
+          }
+          this.results.push(content);
+
+          const path = [];
+          this.parents.forEach(ele => {
+            path.push(ele);
+          });
+          path.splice(-1, 1);
+          this.paths.push(path);
+        }
+        return;
+      }
+      content.children.forEach(child => {
+        this.parents.push(child);
+        this.showAllChild(child);
+        this.parents.splice(-1, 1);
+      });
+    });
+  }
+
+  private findContentNode(data: any) {
+    if (data && data.identifier === this.searchIdentifier) {
+      this.showAllChild(data);
+      return true;
+    }
+
+    if (data && data.children !== undefined) {
+      data.children.forEach(child => {
+        this.parents.push(child);
+        const isFound = this.findContentNode(child);
+
+        if (isFound === true) {
+          return true;
+        }
+        this.parents.splice(-1, 1);
+      });
+    }
+
+    return false;
   }
 }

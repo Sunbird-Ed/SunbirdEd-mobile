@@ -1,4 +1,4 @@
-import { Injectable, NgZone, OnDestroy } from '@angular/core';
+import { Injectable, NgZone, OnDestroy, Inject } from '@angular/core';
 import {
     ToastController,
     ToastOptions,
@@ -13,7 +13,7 @@ import {
 } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
-import { SharedPreferences, InteractType, InteractSubtype } from 'sunbird';
+import { SharedPreferences} from 'sunbird-sdk';
 import { Network } from '@ionic-native/network';
 
 import { PreferenceKey } from '../app/app.constant';
@@ -22,6 +22,7 @@ import { appLanguages } from './../app/app.constant';
 import { QRScannerAlert } from './../pages/qrscanner/qrscanner_alert';
 
 import { TelemetryGeneratorService } from '../service/telemetry-generator.service';
+import { InteractType, InteractSubtype } from '../service/telemetry-constants';
 export interface NetworkInfo {
     isNetworkAvailable: boolean;
 }
@@ -37,14 +38,14 @@ export class CommonUtilService implements OnDestroy {
         private toastCtrl: ToastController,
         private translate: TranslateService,
         private loadingCtrl: LoadingController,
-        private preferences: SharedPreferences,
         private events: Events,
         private popOverCtrl: PopoverController,
         private network: Network,
         private zone: NgZone,
         private platform: Platform,
         private alertCtrl: AlertController,
-        private telemetryGeneratorService: TelemetryGeneratorService
+        private telemetryGeneratorService: TelemetryGeneratorService,
+        @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences
     ) {
         this.listenForEvents();
     }
@@ -145,8 +146,8 @@ export class CommonUtilService implements OnDestroy {
 
         if (code) {
             this.translate.use(code);
-            this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE_CODE, code);
-            this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE, name);
+            this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE_CODE, code).toPromise().then();
+            this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE, name).toPromise().then();
         }
     }
 

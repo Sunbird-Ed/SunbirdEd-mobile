@@ -5,7 +5,6 @@ import {CollectionDetailsEtbPageModule} from './../pages/collection-details-etb/
 import {ViewMoreActivityPageModule} from './../pages/view-more-activity/view-more-activity.module';
 import {EnrolledCourseDetailsPageModule} from './../pages/enrolled-course-details/enrolled-course-details.module';
 import {CourseBatchesPageModule} from './../pages/course-batches/course-batches.module';
-import {ContainerService, TabOptions} from 'sunbird';
 import {GuestProfilePage} from '../pages/profile/guest-profile/guest-profile';
 import {ProfilePage} from '../pages/profile/profile';
 import {ResourcesPage} from '../pages/resources/resources';
@@ -24,6 +23,8 @@ import {ReportsPageModule} from '../pages/reports/reports.module';
 import {UserReportModule} from '../pages/reports/user-report/user-report.module';
 import {QrCodeResultPageModule} from '../pages/qr-code-result/qr-code-result.module';
 import {TermsAndConditionsPageModule} from '@app/pages/terms-and-conditions/terms-and-conditions.module';
+import { ContainerService, TabOptions } from '../service/container.services';
+
 
 // const HOME_TAB = { root: HomePage, icon: "home", label: "HOME_BNAV", index: 0, tabsHideOnSubPages: true };
 const COURSE_TAB = {

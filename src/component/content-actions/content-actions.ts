@@ -1,24 +1,22 @@
-import { TelemetryGeneratorService } from './../../service/telemetry-generator.service';
-import { TranslateService } from '@ngx-translate/core';
-import { NavParams } from 'ionic-angular/navigation/nav-params';
-import { PopoverController, Events, AlertController } from 'ionic-angular/index';
-import { ViewController } from 'ionic-angular';
-import { Component } from '@angular/core';
+import {TelemetryGeneratorService} from './../../service/telemetry-generator.service';
+import {TranslateService} from '@ngx-translate/core';
+import {NavParams} from 'ionic-angular/navigation/nav-params';
+import {AlertController, Events, PopoverController} from 'ionic-angular/index';
+import {Platform, ToastController, ViewController} from 'ionic-angular';
+import {Component, Inject} from '@angular/core';
 import {
-  ContentService,
   AuthService,
-  Environment,
-  Rollup,
+  ContentDeleteResponse,
+  ContentDeleteStatus,
+  ContentService,
   CorrelationData,
-  InteractType,
-  InteractSubtype,
+  OAuthSession,
+  Rollup,
   TelemetryObject
-} from 'sunbird';
-import { ToastController, Platform } from 'ionic-angular';
-import { CommonUtilService } from '../../service/common-util.service';
-import { ReportIssuesComponent } from '../report-issues/report-issues';
-import { ProfileConstants } from '../../app/app.constant';
-import { UnenrollAlertComponent } from '../unenroll-alert/unenroll-alert';
+} from 'sunbird-sdk';
+import {CommonUtilService} from '../../service/common-util.service';
+import {UnenrollAlertComponent} from '../unenroll-alert/unenroll-alert';
+import {Environment, InteractSubtype, InteractType} from '../../service/telemetry-constants';
 
 @Component({
   selector: 'content-actions',
@@ -40,11 +38,11 @@ export class ContentActionsComponent {
 
   constructor(
     public viewCtrl: ViewController,
-    private contentService: ContentService,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private navParams: NavParams,
     private toastCtrl: ToastController,
     public popoverCtrl: PopoverController,
-    private authService: AuthService,
+    @Inject('AUTH_SERVICE') private authService: AuthService,
     private alertctrl: AlertController,
     private events: Events,
     private translate: TranslateService,
@@ -72,21 +70,16 @@ export class ContentActionsComponent {
   }
 
   getUserId() {
-    this.authService.getSessionData((session: string) => {
-      if (session === null || session === 'null') {
+    this.authService.getSession().subscribe((session: OAuthSession) => {
+      if (!session) {
         this.userId = '';
       } else {
-        const res = JSON.parse(session);
-        this.userId = res[ProfileConstants.USER_TOKEN] ? res[ProfileConstants.USER_TOKEN] : '';
-        // Needed: this get exeuted if user is on course details page.
+        this.userId = session.userToken ? session.userToken : '';
+        // Needed: this get executed if user is on course details page.
         if (this.pageName === 'course' && this.userId) {
           // If course is not enrolled then hide flag/report issue menu.
           // If course has batchId then it means it is enrolled course
-          if (this.content.batchId) {
-            this.showFlagMenu = true;
-          } else {
-            this.showFlagMenu = false;
-          }
+          this.showFlagMenu = !!this.content.batchId;
         }
       }
     });
@@ -96,13 +89,12 @@ export class ContentActionsComponent {
    * Construct content delete request body
    */
   getDeleteRequestBody() {
-    const apiParams = {
+    return {
       contentDeleteList: [{
         contentId: this.contentId,
         isChildContent: this.isChild
       }]
     };
-    return apiParams;
   }
 
   /**
@@ -139,7 +131,7 @@ export class ContentActionsComponent {
       }
       case 1: {
         this.viewCtrl.dismiss();
-        this.reportIssue();
+        // this.reportIssue();
         break;
       }
     }
@@ -161,10 +153,8 @@ export class ContentActionsComponent {
   }
 
   deleteContent() {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = this.content.identifier;
-    telemetryObject.type = this.content.contentType;
-    telemetryObject.version = this.content.pkgVersion;
+    const telemetryObject = new TelemetryObject(this.content.identifier, this.content.contentType, this.content.pkgVersion);
+
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.DELETE_CLICKED,
@@ -176,9 +166,9 @@ export class ContentActionsComponent {
       this.corRelationList);
 
 
-    this.contentService.deleteContent(this.getDeleteRequestBody()).then((res: any) => {
-      const data = JSON.parse(res);
-      if (data.result && data.result.status === 'NOT_FOUND') {
+    this.contentService.deleteContent(this.getDeleteRequestBody()).toPromise()
+      .then((data: ContentDeleteResponse[]) => {
+        if (data && data[0].status === ContentDeleteStatus.NOT_FOUND) {
         this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
       } else {
         // Publish saved resources update event
@@ -196,6 +186,7 @@ export class ContentActionsComponent {
     });
   }
 
+  /*
   reportIssue() {
     const popUp = this.popoverCtrl.create(ReportIssuesComponent, {
       content: this.content
@@ -203,7 +194,7 @@ export class ContentActionsComponent {
         cssClass: 'report-issue-box'
       });
     popUp.present();
-  }
+  } */
 
   showToaster(message) {
     const toast = this.toastCtrl.create({

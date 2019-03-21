@@ -1,24 +1,14 @@
-import { AppGlobalService } from '../../../service/app-global.service';
-import { FormAndFrameworkUtilService } from '../../profile/formandframeworkutil.service';
-import { CommonUtilService } from '../../../service/common-util.service';
-import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
-import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
-import {
-  CategoryRequest, Profile, UpdateUserInfoRequest, UserProfileService, ProfileService, ContainerService,
-  TabsPage, FrameworkService, SuggestedFrameworkRequest, LocationSearchCriteria
-} from 'sunbird';
-import { TranslateService } from '@ngx-translate/core';
-import * as _ from 'lodash';
-import { Events } from 'ionic-angular';
+import {AppGlobalService} from '../../../service/app-global.service';
+import {FormAndFrameworkUtilService} from '../../profile/formandframeworkutil.service';
+import {CommonUtilService} from '../../../service/common-util.service';
+import {Component, Inject, ViewChild} from '@angular/core';
+import {Events, LoadingController, NavController, NavParams, Select} from 'ionic-angular';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {TranslateService} from '@ngx-translate/core';
 
-import {
-  initTabs,
-  LOGIN_TEACHER_TABS,
-  Location
-} from '@app/app';
-import { Select } from 'ionic-angular';
-import { constants } from 'os';
+import {Location} from '@app/app';
+import {LocationSearchCriteria, ProfileService} from 'sunbird-sdk';
+
 @Component({
   selector: 'personal-details-edit',
   templateUrl: 'personal-details-edit.profile.html',
@@ -49,6 +39,7 @@ export class PersonalDetailsEditPage {
   };
 
   constructor(
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     private navCtrl: NavController,
     private loadingCtrl: LoadingController,
     private navParams: NavParams,
@@ -57,10 +48,7 @@ export class PersonalDetailsEditPage {
     private fb: FormBuilder,
     private translate: TranslateService,
     private appGlobalService: AppGlobalService,
-    private userProfileService: UserProfileService,
     private events: Events,
-    private container: ContainerService,
-    private framework: FrameworkService
   ) {
     // this.profile = this.appGlobalService.getCurrentUser();
     this.profile = this.navParams.get('profile');
@@ -107,13 +95,13 @@ export class PersonalDetailsEditPage {
   getStates() {
     this.loader = this.getLoader();
     const req: LocationSearchCriteria = {
-      type: Location.TYPE_STATE
+      filters: {
+        type: Location.TYPE_STATE
+      }
     };
-    this.userProfileService.searchLocation(req).then((response: any) => {
-      response = JSON.parse(response);
-
-      const locations = JSON.parse(response.result.locationList);
-      if (locations && locations.length) {
+    this.profileService.searchLocation(req).subscribe((success) => {
+      const locations = success;
+      if (locations && Object.keys(locations).length) {
         this.stateList = locations;
       } else {
         this.loader.dismiss();
@@ -125,13 +113,14 @@ export class PersonalDetailsEditPage {
   getDistrict(parentId: string) {
     this.loader = this.getLoader();
     const req: LocationSearchCriteria = {
-      type: Location.TYPE_DISTRICT,
-      parentId: parentId
+      filters: {
+        type: Location.TYPE_DISTRICT,
+        parentId: parentId
+      }
     };
-    this.userProfileService.searchLocation(req).then((response: any) => {
-      response = JSON.parse(response);
-      const districtsTemp = JSON.parse(response.result.locationList);
-      if (districtsTemp && districtsTemp.length) {
+    this.profileService.searchLocation(req).subscribe((success) => {
+      const districtsTemp = success;
+      if (districtsTemp && Object.keys(districtsTemp).length) {
         this.districtList = districtsTemp;
       } else {
         this.profileEditForm.patchValue({
@@ -201,17 +190,16 @@ export class PersonalDetailsEditPage {
       }
     }
 
-    this.userProfileService.updateUserInfo(req,
-      (res: any) => {
+    this.profileService.updateServerProfile(req).toPromise()
+      .then(() => {
         this.loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_SUCCESS'));
         this.events.publish('loggedInProfile:update', req);
         this.navCtrl.pop();
-      },
-      (err: any) => {
-        this.loader.dismiss();
-        this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
-      });
+      }).catch(() => {
+      this.loader.dismiss();
+      this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
+    });
   }
 
   getLoader(): any {
@@ -222,8 +210,8 @@ export class PersonalDetailsEditPage {
   }
 
   /**
-  *  It will validate the name field.
-  */
+   *  It will validate the name field.
+   */
   validateName() {
     const name = this.profileEditForm.getRawValue().name;
     return name.trim();

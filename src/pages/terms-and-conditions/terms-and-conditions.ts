@@ -1,26 +1,27 @@
-import { Component } from '@angular/core';
-import { Loading, LoadingController, NavParams, Platform } from 'ionic-angular';
-import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
-import { LogoutHandlerService } from '@app/service/handlers/logout-handler.service';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { CommonUtilService, TelemetryGeneratorService } from '@app/service';
-import { TranslateService } from '@ngx-translate/core';
-import { AppVersion } from '@ionic-native/app-version';
-import { ImpressionType, PageId, Environment, InteractType, InteractSubtype } from 'sunbird';
+import {Component, Inject} from '@angular/core';
+import {Loading, LoadingController, NavParams, Platform} from 'ionic-angular';
+import {TncUpdateHandlerService} from '@app/service/handlers/tnc-update-handler.service';
+import {LogoutHandlerService} from '@app/service/handlers/logout-handler.service';
+import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
+import {CommonUtilService, TelemetryGeneratorService} from '@app/service';
+import {TranslateService} from '@ngx-translate/core';
+import {AppVersion} from '@ionic-native/app-version';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
+import {ProfileService, ServerProfile} from 'sunbird-sdk';
 
 @Component({
   selector: 'page-terms-and-conditions',
   templateUrl: 'terms-and-conditions.html',
 })
 export class TermsAndConditionsPage {
-
   public tncLatestVersionUrl: SafeUrl;
   public shouldAcceptanceButtonEnabled = false;
   private loading?: Loading;
   private unregisterBackButtonAction?: Function;
-  private userProfileDetails;
+  private userProfileDetails: ServerProfile;
 
   constructor(
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     private navParams: NavParams,
     private platform: Platform,
     private loadingCtrl: LoadingController,
@@ -35,7 +36,7 @@ export class TermsAndConditionsPage {
   }
 
   public async ionViewDidLoad() {
-    this.userProfileDetails = this.navParams.get('userProfileDetails');
+    this.userProfileDetails = (await this.profileService.getActiveSessionProfile().toPromise()).serverProfile;
 
     this.tncLatestVersionUrl = this.sanitizer
       .bypassSecurityTrustResourceUrl(this.userProfileDetails.tncLatestVersionUrl);

@@ -1,160 +1,153 @@
-import { Injectable } from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {
-    TelemetryService,
-    Interact,
-    Rollup,
-    CorrelationData,
-    TelemetryObject,
-    Impression,
-    Log,
-    Start,
-    Environment,
-    Mode,
-    End,
-    ExData,
-    Error,
-    InteractType,
-    InteractSubtype,
-    ImpressionType,
-    PageId
-} from 'sunbird';
-import { Map } from '../app/telemetryutil';
+  CorrelationData,
+  Rollup,
+  TelemetryEndRequest,
+  TelemetryErrorRequest,
+  TelemetryImpressionRequest,
+  TelemetryInteractRequest,
+  TelemetryLogRequest,
+  TelemetryObject,
+  TelemetryService,
+  TelemetryStartRequest
+} from 'sunbird-sdk';
+import {Map} from '../app/telemetryutil';
+import {Environment, ImpressionType, InteractSubtype, InteractType, Mode, PageId} from '../service/telemetry-constants';
 
 @Injectable()
 export class TelemetryGeneratorService {
-    constructor(private telemetryService: TelemetryService) {
+    constructor(@Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService) {
     }
 
-    generateInteractTelemetry(interactType, subType, env, pageId, object?: TelemetryObject, values?: Map,
+    generateInteractTelemetry(interactType, interactSubtype, env, pageId, object?: TelemetryObject, values?: Map,
         rollup?: Rollup, corRelationList?: Array<CorrelationData>) {
-        const interact = new Interact();
-        interact.type = interactType;
-        interact.subType = subType;
-        interact.pageId = pageId;
-        interact.id = pageId;
-        interact.env = env;
+        const telemetryInteractRequest = new TelemetryInteractRequest();
+        telemetryInteractRequest.type = interactType;
+        telemetryInteractRequest.subType = interactSubtype;
+        telemetryInteractRequest.pageId = pageId;
+        telemetryInteractRequest.id = pageId;
+        telemetryInteractRequest.env = env;
         if (values !== null) {
-            interact.valueMap = values;
+            telemetryInteractRequest.valueMap = values;
         }
         if (rollup !== undefined) {
-            interact.rollup = rollup;
+            telemetryInteractRequest.rollup = rollup;
         }
         if (corRelationList !== undefined) {
-            interact.correlationData = corRelationList;
+            telemetryInteractRequest.correlationData = corRelationList;
         }
 
         if (object && object.id) {
-            interact.objId = object.id;
+            telemetryInteractRequest.objId = object.id;
         }
 
         if (object && object.type) {
-            interact.objType = object.type;
+            telemetryInteractRequest.objType = object.type;
         }
 
         if (object && object.version) {
-            interact.objVer = object.version;
+            telemetryInteractRequest.objVer = object.version + '';
         }
-        this.telemetryService.interact(interact);
+        this.telemetryService.interact(telemetryInteractRequest).subscribe();
     }
 
     generateImpressionTelemetry(type, subtype, pageid, env, objectId?: string, objectType?: string,
         objectVersion?: string, rollup?: Rollup, corRelationList?: Array<CorrelationData>) {
-        const impression = new Impression();
-        impression.type = type;
-        impression.subType = subtype;
-        impression.pageId = pageid;
-        impression.env = env;
-        impression.objId = objectId ? objectId : '';
-        impression.objType = objectType ? objectType : '';
-        impression.objVer = objectVersion ? objectVersion : '';
+        const telemetryImpressionRequest = new TelemetryImpressionRequest();
+        telemetryImpressionRequest.type = type;
+        telemetryImpressionRequest.subType = subtype;
+        telemetryImpressionRequest.pageId = pageid;
+        telemetryImpressionRequest.env = env;
+        telemetryImpressionRequest.objId = objectId ? objectId : '';
+        telemetryImpressionRequest.objType = objectType ? objectType : '';
+        telemetryImpressionRequest.objVer = objectVersion ? objectVersion + '' : '';
 
         if (rollup !== undefined) {
-            impression.rollup = rollup;
+            telemetryImpressionRequest.rollup = rollup;
         }
         if (corRelationList !== undefined) {
-            impression.correlationData = corRelationList;
+            telemetryImpressionRequest.correlationData = corRelationList;
         }
-        this.telemetryService.impression(impression);
+        this.telemetryService.impression(telemetryImpressionRequest).subscribe();
     }
 
     generateEndTelemetry(type, mode, pageId, env, object?: TelemetryObject, rollup?: Rollup, corRelationList?: Array<CorrelationData>) {
-        const end = new End();
-        end.type = type;
-        end.pageId = pageId;
-        end.env = env;
-        end.mode = mode;
+        const telemetryEndRequest = new TelemetryEndRequest();
+        telemetryEndRequest.type = type;
+        telemetryEndRequest.pageId = pageId;
+        telemetryEndRequest.env = env;
+        telemetryEndRequest.mode = mode;
         if (object && object.id) {
-            end.objId = object.id;
+            telemetryEndRequest.objId = object.id;
         }
 
         if (object && object.type) {
-            end.objType = object.type;
+            telemetryEndRequest.objType = object.type;
         }
 
         if (object && object.version) {
-            end.objVer = object.version;
+            telemetryEndRequest.objVer = object.version + '';
         }
         if (rollup) {
-            end.rollup = rollup;
+            telemetryEndRequest.rollup = rollup;
         }
         if (corRelationList) {
-            end.correlationData = corRelationList;
+            telemetryEndRequest.correlationData = corRelationList;
         }
-        this.telemetryService.end(end);
+        this.telemetryService.end(telemetryEndRequest).subscribe();
     }
 
     generateStartTelemetry(pageId, object?: TelemetryObject, rollup?: Rollup, corRelationList?: Array<CorrelationData>) {
-        const start = new Start();
-        start.type = object.type;
-        start.pageId = pageId;
-        start.env = Environment.HOME;
-        start.mode = Mode.PLAY;
+        const telemetryStartRequest = new TelemetryStartRequest();
+        telemetryStartRequest.type = object.type;
+        telemetryStartRequest.pageId = pageId;
+        telemetryStartRequest.mode = Mode.PLAY;
         if (object && object.id) {
-            start.objId = object.id;
+            telemetryStartRequest.objId = object.id;
         }
 
         if (object && object.type) {
-            start.objType = object.type;
+            telemetryStartRequest.objType = object.type;
         }
 
         if (object && object.version) {
-            start.objVer = object.version;
+            telemetryStartRequest.objVer = object.version + '';
         }
         if (rollup !== undefined) {
-            start.rollup = rollup;
+            telemetryStartRequest.rollup = rollup;
         }
         if (corRelationList !== undefined) {
-            start.correlationData = corRelationList;
+            telemetryStartRequest.correlationData = corRelationList;
         }
 
-        this.telemetryService.start(start);
+        this.telemetryService.start(telemetryStartRequest).subscribe();
     }
 
     generateLogEvent(logLevel, message, env, type, params: Array<any>) {
-        const log = new Log();
-        log.level = logLevel;
-        log.message = message;
-        log.env = env;
-        log.type = type;
-        log.params = params;
-        this.telemetryService.log(log);
+        const telemetryLogRequest = new TelemetryLogRequest();
+        telemetryLogRequest.level = logLevel;
+        telemetryLogRequest.message = message;
+        telemetryLogRequest.env = env;
+        telemetryLogRequest.type = type;
+        telemetryLogRequest.params = params;
+        this.telemetryService.log(telemetryLogRequest).subscribe();
     }
 
-    generateExDataTelemetry(type, data) {
-        const exData = new ExData();
-        exData.type = type;
-        exData.data = data;
-        this.telemetryService.exdata(exData);
-    }
+    // generateExDataTelemetry(type, data) {
+    //     const exData = new ExData();
+    //     exData.type = type;
+    //     exData.data = data;
+    //     this.telemetryService.exdata(exData);
+    // }
 
     generateErrorTelemetry(env, errCode, errorType, pageId, stackTrace) {
-        const error = new Error();
-        error.env = env;
-        error.errorCode = errCode;
-        error.errorType = errorType;
-        error.pageId = pageId;
-        error.stacktrace = stackTrace;
-        this.telemetryService.error(error);
+        const telemetryErrorRequest = new TelemetryErrorRequest();
+      // telemetryErrorRequest.env = env;
+        telemetryErrorRequest.errorCode = errCode;
+        telemetryErrorRequest.errorType = errorType;
+        telemetryErrorRequest.pageId = pageId;
+        telemetryErrorRequest.stacktrace = stackTrace;
+        this.telemetryService.error(telemetryErrorRequest).subscribe();
     }
 
     generateBackClickedTelemetry(pageId, env, isNavBack: boolean, identifier?: string, corRelationList?) {
@@ -183,10 +176,7 @@ export class TelemetryGeneratorService {
         const values = new Map();
         values['isFirstTime'] = isFirstTime;
         values['size'] = content.size;
-        const telemetryObject: TelemetryObject = new TelemetryObject();
-        telemetryObject.id = content.identifier || content.contentId;
-        telemetryObject.type = content.contentType;
-        telemetryObject.version = content.pkgVersion;
+        const telemetryObject = new TelemetryObject(content.identifier || content.contentId, content.contentType, content.pkgVersion);
         this.generateInteractTelemetry(
             InteractType.OTHER,
             InteractSubtype.LOADING_SPINE,
@@ -198,10 +188,7 @@ export class TelemetryGeneratorService {
 
     generateCancelDownloadTelemetry(content: any) {
         const values = new Map();
-        const telemetryObject: TelemetryObject = new TelemetryObject();
-        telemetryObject.id = content.identifier || content.contentId;
-        telemetryObject.type = content.contentType;
-        telemetryObject.version = content.pkgVersion;
+        const telemetryObject = new TelemetryObject(content.identifier || content.contentId, content.contentType, content.pkgVersion);
         this.generateInteractTelemetry(
             InteractType.TOUCH,
             InteractSubtype.CANCEL_CLICKED,
@@ -215,10 +202,7 @@ export class TelemetryGeneratorService {
         const values = new Map();
         values['downloadingIdentifers'] = downloadingIdentifier;
         values['childrenCount'] = childrenCount;
-        const telemetryObject: TelemetryObject = new TelemetryObject();
-        telemetryObject.id = content.identifier || content.contentId;
-        telemetryObject.type = content.contentType;
-        telemetryObject.version = content.pkgVersion;
+        const telemetryObject = new TelemetryObject(content.identifier || content.contentId, content.contentType, content.pkgVersion);
         this.generateInteractTelemetry(
             InteractType.TOUCH,
             InteractSubtype.DOWNLOAD_ALL_CLICKED,
@@ -284,10 +268,7 @@ export class TelemetryGeneratorService {
             const kbsofar = (content.size / 100) * Number(downloadProgress);
             values['downloadedSoFar'] = this.transform(kbsofar);
         }
-        const telemetryObject: TelemetryObject = new TelemetryObject();
-        telemetryObject.id = content.identifier || content.contentId;
-        telemetryObject.type = content.contentType;
-        telemetryObject.version = content.pkgVersion;
+        const telemetryObject = new TelemetryObject(content.identifier || content.contentId, content.contentType, content.pkgVersion);
         this.generateInteractTelemetry(
             InteractType.TOUCH,
             InteractSubtype.CANCEL_CLICKED,
