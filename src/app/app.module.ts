@@ -12,7 +12,13 @@ import {SocialSharing} from '@ionic-native/social-sharing';
 import {ImageLoader, ImageLoaderConfig, IonicImageLoader} from 'ionic-image-loader';
 import {FileTransfer, FileTransferObject} from '@ionic-native/file-transfer';
 import {FileOpener} from '@ionic-native/file-opener';
-import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService, UtilityService} from '@app/service';
+import {
+  AppGlobalService,
+  CommonUtilService,
+  CourseUtilService,
+  TelemetryGeneratorService,
+  UtilityService
+} from '@app/service';
 import {UpgradePopover} from '@app/pages/upgrade';
 import {QRScannerResultHandler} from '../../src/pages/qrscanner';
 import {BroadcastComponent} from '@app/component/broadcast/broadcast';
@@ -115,7 +121,7 @@ export const sunbirdSdkFactory =
           debugMode: false
         },
         apiConfig: {
-          debugMode: true,
+          debugMode: false,
           host: buildConfigValues['BASE_URL'],
           baseUrl: buildConfigValues['BASE_URL'] + '/api',
           user_authentication: {
