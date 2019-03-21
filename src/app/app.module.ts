@@ -12,7 +12,7 @@ import {SocialSharing} from '@ionic-native/social-sharing';
 import {ImageLoader, ImageLoaderConfig, IonicImageLoader} from 'ionic-image-loader';
 import {FileTransfer, FileTransferObject} from '@ionic-native/file-transfer';
 import {FileOpener} from '@ionic-native/file-opener';
-import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
+import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService, UtilityService} from '@app/service';
 import {UpgradePopover} from '@app/pages/upgrade';
 import {QRScannerResultHandler} from '../../src/pages/qrscanner';
 import {BroadcastComponent} from '@app/component/broadcast/broadcast';
@@ -107,7 +107,7 @@ export const sunbirdSdkFactory =
           debugMode: false
         },
         apiConfig: {
-          debugMode: true,
+          debugMode: false,
           host: 'https://staging.ntp.net.in',
           baseUrl: 'https://staging.ntp.net.in/api',
           user_authentication: {
@@ -246,6 +246,7 @@ export const sunbirdSdkFactory =
     LogoutHandlerService,
     TncUpdateHandlerService,
     UniqueDeviceID,
+    UtilityService,
     Device,
     AndroidPermissionsService,
     ...sunbirdSdkServicesProvidersFactory(),

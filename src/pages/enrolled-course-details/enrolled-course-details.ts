@@ -17,7 +17,7 @@ import {CollectionDetailsPage} from '@app/pages/collection-details/collection-de
 import {ContentDetailsPage} from '@app/pages/content-details/content-details';
 import {ContentType, EventTopics, MimeType, PreferenceKey, ShareUrl} from '@app/app';
 import {CourseBatchesPage} from '@app/pages/course-batches/course-batches';
-import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
+import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService, UtilityService} from '@app/service';
 import {DatePipe} from '@angular/common';
 import {
   Batch,
@@ -191,7 +191,7 @@ export class EnrolledCourseDetailsPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
     private datePipe: DatePipe,
-    // private acourseService: course_Service,
+     private utilityService: UtilityService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
   ) {
 
@@ -202,7 +202,7 @@ export class EnrolledCourseDetailsPage {
   }
 
   subscribeUtilityEvents() {
-    this.appGlobalService.getBuildConfigValue('BASE_URL')
+    this.utilityService.getBuildConfigValue('BASE_URL')
       .then(response => {
         this.baseUrl = response;
       })
