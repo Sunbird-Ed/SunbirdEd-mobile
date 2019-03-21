@@ -3,7 +3,7 @@ import { SunbirdSdk } from 'sunbird-sdk';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as X2JS from 'x2js';
 import { AlertController } from "ionic-angular";
-import { App, ViewController } from 'ionic-angular';
+import { App } from 'ionic-angular';
 
 
 
@@ -20,7 +20,7 @@ export class CanvasPlayerService {
         window.handleAction = (methodName: string, params = []) => {
             switch (methodName) {
                 case "getCurrentUser":
-                    return SunbirdSdk.instance.profileService.getActiveProfileSession().toPromise();
+                    return SunbirdSdk.instance.profileService.getActiveSessionProfile().toPromise();
                 case "getAllUserProfile":
                     return SunbirdSdk.instance.profileService.getAllProfiles(params[0]).toPromise();
                 case "setUser":
@@ -48,7 +48,7 @@ export class CanvasPlayerService {
                     console.log('launchContent to be defined');
                     break;
                 case "send":
-                    return SunbirdSdk.instance.telemetryService.saveTelemetry('');
+                    return SunbirdSdk.instance.telemetryService.saveTelemetry(params[0]).subscribe();
                 default:
                     console.log("Please use valid method");
             }
@@ -109,10 +109,7 @@ export class CanvasPlayerService {
                 {
                     text: 'OK',
                     handler: () => {
-                        console.log('Okay clicked');
-                        // this.navCtrl.pop();
-                        let nav = this.appCtrl.getActiveNav();
-                        nav.pop();
+                        this.appCtrl.getActiveNav().pop();
                     }
                 }
             ]
