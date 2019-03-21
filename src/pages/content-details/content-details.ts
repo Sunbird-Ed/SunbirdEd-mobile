@@ -12,10 +12,10 @@ import {
 } from 'ionic-angular';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
-import {PreferenceKey} from '../../app/app.constant';
+import {PreferenceKey, XwalkConstants} from '../../app/app.constant';
 import {Map, ShareUrl} from '@app/app';
 import {BookmarkComponent, ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
-import {AppGlobalService, CourseUtilService} from '@app/service';
+import {AppGlobalService, CourseUtilService, UtilityService} from '@app/service';
 import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
 import {Network} from '@ionic-native/network';
 import {UserAndGroupsPage} from '../user-and-groups/user-and-groups';
@@ -157,7 +157,8 @@ export class ContentDetailsPage {
     private courseUtilService: CourseUtilService,
     private network: Network,
     private canvasPlayerService: CanvasPlayerService,
-    private file: File
+    private file: File,
+    private utilityService: UtilityService
   ) {
 
     this.objRollup = new Rollup();
@@ -166,8 +167,8 @@ export class ContentDetailsPage {
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     this.handlePageResume();
-    // this.checkDeviceAPILevel();
-    // this.checkappAvailability();
+     this.checkDeviceAPILevel();
+     this.checkappAvailability();
   }
 
   ionViewDidLoad() {
@@ -262,9 +263,10 @@ export class ContentDetailsPage {
   }
 
   subscribePlayEvent() {
-    this.appGlobalService.getBuildConfigValue('BASE_URL')
+    this.utilityService.getBuildConfigValue('BASE_URL')
       .then(response => {
         this.baseUrl = response;
+       console.log('url', this.baseUrl);
       });
     this.launchPlayer = this.navParams.get('launchplayer');
     this.events.subscribe('playConfig', (config) => {
@@ -958,25 +960,26 @@ export class ContentDetailsPage {
     }
   }
 
-  // TODO
-  // checkappAvailability() {
-  //   this.deviceInfoService.checkAppAvailability(XwalkConstants.APP_ID)
-  //     .then((response: any) => {
-  //       this.appAvailability = response;
-  //     })
-  //     .catch((error: any) => {
-  //       console.error('Error ', error);
-  //     });
-  // }
+  checkappAvailability() {
+    this.utilityService.checkAppAvailability(XwalkConstants.APP_ID)
+      .then((response: any) => {
+        this.appAvailability = response;
+        console.log('check App availability', this.appAvailability);
+      })
+      .catch((error: any) => {
+        console.error('Error ', error);
+      });
+  }
 
-  // checkDeviceAPILevel() {
-  //   this.deviceInfoService.getDeviceAPILevel()
-  //     .then((res: any) => {
-  //       this.apiLevel = res;
-  //     }).catch((error: any) => {
-  //       console.error('Error ', error);
-  //     });
-  // }
+  checkDeviceAPILevel() {
+    this.utilityService.getDeviceAPILevel()
+      .then((res: any) => {
+        this.apiLevel = res;
+        console.log('device api level', this.apiLevel);
+      }).catch((error: any) => {
+        console.error('Error ', error);
+      });
+  }
 
   showOverflowMenu(event) {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
