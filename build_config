@@ -13,6 +13,7 @@ cordova-plugin=cordova-plugin-browsertab
 cordova-plugin=cordova-plugin-console
 cordova-plugin=cordova-plugin-network-information
 cordova-plugin=cordova-plugin-awesome-shared-preferences
+cordova-plugin=cordova-plugin-advanced-http
 cordova-plugin=https://github.com/swayangjit/cordova-plugin-buildconfig-reader.git
 cordova-plugin=https://github.com/swayangjit/jjdltc-cordova-plugin-zip.git
 cordova-plugin=https://github.com/swayangjit/cordova-plugin-android-downloadmanager.git
