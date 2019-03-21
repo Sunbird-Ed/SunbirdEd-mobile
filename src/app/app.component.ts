@@ -102,29 +102,6 @@ export class MyApp {
 
   }
 
-  private static getPageIdForPageName(pageName: string): string {
-    let pageId = '';
-    switch (pageName) {
-      case 'ResourcesPage': {
-        pageId = PageId.LIBRARY;
-        break;
-      }
-      case 'CoursesPage': {
-        pageId = PageId.COURSES;
-        break;
-      }
-      case 'ProfilePage': {
-        pageId = PageId.PROFILE;
-        break;
-      }
-      case 'GuestProfilePage': {
-        pageId = PageId.GUEST_PROFILE;
-        break;
-      }
-    }
-    return pageId;
-  }
-
   handleBackButton() {
     this.platform.registerBackButtonAction(() => {
 

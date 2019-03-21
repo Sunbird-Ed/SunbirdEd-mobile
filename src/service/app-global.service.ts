@@ -423,10 +423,10 @@ export class AppGlobalService implements OnDestroy {
                         }
                         this.isGuestUser = true;
                         resolve(this.guestProfileType);
-                    } else {
-                        reject('');
                     }
-                });
+                }).catch(() => {
+              reject()
+            });
         });
     }
 
