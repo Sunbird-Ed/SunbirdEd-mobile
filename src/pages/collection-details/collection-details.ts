@@ -7,13 +7,14 @@ import {ContentDetailsPage} from '@app/pages/content-details/content-details';
 import {ConfirmAlertComponent, ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
 import {ContentType, MimeType, ShareUrl} from '@app/app';
 import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
-import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
+import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService, UtilityService} from '@app/service';
 import {
   ChildContentRequest,
   Content,
   ContentDetailRequest,
   ContentEventType,
   ContentExportRequest,
+  ContentExportResponse,
   ContentImport,
   ContentImportCompleted,
   ContentImportRequest,
@@ -194,7 +195,8 @@ export class CollectionDetailsPage {
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private courseUtilService: CourseUtilService
+    private courseUtilService: CourseUtilService,
+    private utilityService: UtilityService
   ) {
 
     this.objRollup = new Rollup();
@@ -275,7 +277,7 @@ export class CollectionDetailsPage {
   }
 
   getBaseURL() {
-    this.appGlobalService.getBuildConfigValue('BASE_URL')
+    this.utilityService.getBuildConfigValue('BASE_URL')
       .then(response => {
         this.baseUrl = response;
       })
@@ -694,13 +696,13 @@ export class CollectionDetailsPage {
           if (downloadEvent.payload.identifier === this.contentDetail.identifier) {
             this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
             if (this.downloadProgress === 100) {
-              this.showLoading = false;
               this.contentDetail.isAvailableLocally = true;
             }
           }
         }
         // Get child content
         if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
+          this.showLoading = false;
           const contentImportEvent = event as ContentImportCompleted;
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {
             if (_.includes(this.queuedIdentifiers, contentImportEvent.payload.contentId)) {
@@ -773,10 +775,10 @@ export class CollectionDetailsPage {
         destinationFolder: cordova.file.externalDataDirectory
       };
       this.contentService.exportContent(exportContentRequest).toPromise()
-        .then(() => {
+        .then((contentExportResponse: ContentExportResponse) => {
           loader.dismiss();
           this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.contentDetail.contentType);
-          this.social.share('', '', '' + cordova.file.externalDataDirectory, url);
+          this.social.share('', '', contentExportResponse.exportedFilePath, url);
         }).catch(() => {
         loader.dismiss();
         this.commonUtilService.showToast('SHARE_CONTENT_FAILED');

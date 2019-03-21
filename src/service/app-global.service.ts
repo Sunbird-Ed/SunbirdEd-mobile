@@ -17,6 +17,7 @@ import {
   ProfileType,
   SharedPreferences
 } from 'sunbird-sdk';
+import {UtilityService} from './utility-service';
 
 declare const buildconfigreader;
 
@@ -62,8 +63,8 @@ export class AppGlobalService implements OnDestroy {
         private event: Events,
         private popoverCtrl: PopoverController,
         private telemetryGeneratorService: TelemetryGeneratorService,
-        @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences
-
+        @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+        private utilityService: UtilityService
     ) {
 
         this.initValues();
@@ -227,7 +228,7 @@ export class AppGlobalService implements OnDestroy {
     }
 
     readConfig() {
-        this.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_CARDS)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_CARDS)
             .then(response => {
                 this.DISPLAY_ONBOARDING_CARDS = response === 'true' ? true : false;
             })
@@ -235,7 +236,7 @@ export class AppGlobalService implements OnDestroy {
                 this.DISPLAY_ONBOARDING_CARDS = false;
             });
 
-        this.getBuildConfigValue(GenericAppConfig.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE)
             .then(response => {
                 this.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE = response === 'true' ? true : false;
             })
@@ -243,7 +244,7 @@ export class AppGlobalService implements OnDestroy {
                 this.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE = false;
             });
 
-        this.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_PAGE)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_PAGE)
             .then(response => {
                 this.DISPLAY_ONBOARDING_PAGE = response === 'true' ? true : false;
             })
@@ -251,7 +252,7 @@ export class AppGlobalService implements OnDestroy {
                 this.DISPLAY_ONBOARDING_PAGE = false;
             });
 
-        this.getBuildConfigValue(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER)
             .then(response => {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER = response === 'true' ? true : false;
             })
@@ -259,7 +260,7 @@ export class AppGlobalService implements OnDestroy {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER = false;
             });
 
-        this.getBuildConfigValue(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER)
             .then(response => {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER = response === 'true' ? true : false;
             })
@@ -267,7 +268,7 @@ export class AppGlobalService implements OnDestroy {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER = false;
             });
 
-        this.getBuildConfigValue(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER)
             .then(response => {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER = response === 'true' ? true : false;
             })
@@ -275,7 +276,7 @@ export class AppGlobalService implements OnDestroy {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER = false;
             });
 
-        this.getBuildConfigValue(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT)
             .then(response => {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT = response === 'true' ? true : false;
             })
@@ -283,21 +284,21 @@ export class AppGlobalService implements OnDestroy {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT = false;
             });
 
-        this.getBuildConfigValue(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT)
             .then(response => {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = response === 'true' ? true : false;
             })
             .catch(error => {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = false;
             });
-        this.getBuildConfigValue(GenericAppConfig.TRACK_USER_TELEMETRY)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.TRACK_USER_TELEMETRY)
             .then(response => {
                 this.TRACK_USER_TELEMETRY = response === 'true' ? true : false;
             })
             .catch(error => {
                 this.TRACK_USER_TELEMETRY = false;
             });
-        this.getBuildConfigValue(GenericAppConfig.CONTENT_STREAMING_ENABLED)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.CONTENT_STREAMING_ENABLED)
             .then(response => {
                 this.CONTENT_STREAMING_ENABLED = response === 'true' ? true : false;
             })
@@ -305,28 +306,28 @@ export class AppGlobalService implements OnDestroy {
                 this.CONTENT_STREAMING_ENABLED = false;
             });
 
-        this.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_SCAN_PAGE)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_SCAN_PAGE)
             .then(response => {
                 this.DISPLAY_ONBOARDING_SCAN_PAGE = response === 'true' ? true : false;
             })
             .catch(error => {
                 this.DISPLAY_ONBOARDING_SCAN_PAGE = false;
             });
-        this.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE)
             .then(response => {
                 this.DISPLAY_ONBOARDING_CATEGORY_PAGE = response === 'true' ? true : false;
             })
             .catch(error => {
                 this.DISPLAY_ONBOARDING_CATEGORY_PAGE = false;
             });
-        this.getBuildConfigValue(GenericAppConfig.OPEN_RAPDISCOVERY_ENABLED)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.OPEN_RAPDISCOVERY_ENABLED)
             .then(response => {
                 this.OPEN_RAPDISCOVERY_ENABLED = response === 'true' ? true : false;
             })
             .catch(error => {
                 this.OPEN_RAPDISCOVERY_ENABLED = false;
             });
-        this.getBuildConfigValue(GenericAppConfig.SUPPORT_EMAIL)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.SUPPORT_EMAIL)
             .then(response => {
                 this.SUPPORT_EMAIL = response;
             })
@@ -422,10 +423,10 @@ export class AppGlobalService implements OnDestroy {
                         }
                         this.isGuestUser = true;
                         resolve(this.guestProfileType);
-                    } else {
-                        reject('');
                     }
-                });
+                }).catch(() => {
+              reject()
+            });
         });
     }
 
@@ -573,21 +574,5 @@ export class AppGlobalService implements OnDestroy {
     ngOnDestroy() {
         this.event.unsubscribe(AppGlobalService.USER_INFO_UPDATED);
         this.event.unsubscribe('refresh:profile');
-    }
-
-    getBuildConfigValue(property): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
-            try {
-                buildconfigreader.getBuildConfigValue('org.sunbird.app', property, (entry: string) => {
-                    resolve(entry);
-                }, err => {
-                    console.error(err);
-                    reject(err);
-                });
-            } catch (xc) {
-                console.error(xc);
-                reject(xc);
-            }
-        });
     }
 }

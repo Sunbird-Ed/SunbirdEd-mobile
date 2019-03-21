@@ -51,10 +51,12 @@
     "@swimlane/ngx-datatable": "^11.1.5",
     "codelyzer": "^4.4.4",
     "copy-webpack-plugin": "^4.6.0",
-    "cordova-android": "~7.1.4",
+    "cordova-android": "7.0.0",
     "cordova-android-support-gradle-release": "^2.0.1",
+    "cordova-plugin-android-downloadmanager": "git+https://github.com/swayangjit/cordova-plugin-android-downloadmanager.git",
     "cordova-plugin-app-version": "0.1.9",
     "cordova-plugin-awesome-shared-preferences": "git+https://github.com/adriano-di-giovanni/cordova-plugin-shared-preferences.git",
+    "cordova-plugin-buildconfig-reader": "git+https://github.com/swayangjit/cordova-plugin-buildconfig-reader.git",
     "cordova-plugin-console": "1.1.0",
     "cordova-plugin-customconfigparameters": "^3.0.0",
     "cordova-plugin-device": "1.1.7",
@@ -71,6 +73,7 @@
     "cordova-plugin-whitelist": "1.3.3",
     "cordova-plugin-x-socialsharing": "5.4.3",
     "cordova-sqlite-storage": "^2.3.2",
+    "cordova-zip-plugin": "git+https://github.com/swayangjit/jjdltc-cordova-plugin-zip.git",
     "crypto-js": "^3.1.9-1",
     "driver.js": "^0.5.2",
     "es6-promise-plugin": "^4.2.2",
@@ -89,6 +92,7 @@
     "rxjs": "5.5.2",
     "sb-cordova-plugin-customtabs": "https://github.com/Sunbird-Ed/sb-cordova-plugin-customtabs.git",
     "sb-cordova-plugin-db": "git+https://github.com/swayangjit/sb-cordova-plugin-db.git",
+    "sunbird-sdk": "git+https://github.com/Sunbird-Ed/sunbird-mobile-sdk.git#v1.14.36",
     "sw-toolbox": "3.6.0",
     "typescript-collections": "^1.3.2",
     "x2js": "^3.2.6",
@@ -154,7 +158,8 @@
         "URL_SCHEME": "staging.diksha.app",
         "URL_HOST": "mobile"
       },
-      "cordova-plugin-android-downloadmanager": {}
+      "cordova-plugin-android-downloadmanager": {},
+      "cordova-plugin-buildconfig-reader": {}
     },
     "platforms": [
       "android"

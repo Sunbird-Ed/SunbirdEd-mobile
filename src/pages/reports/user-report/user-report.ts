@@ -13,7 +13,7 @@ import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { AppVersion } from '@ionic-native/app-version';
-import { AppGlobalService } from '../../../service/app-global.service';
+import { AppGlobalService, UtilityService } from '@app/service';
 import { DatePipe } from '@angular/common';
 import { CommonUtilService } from '@app/service';
 import {
@@ -45,14 +45,15 @@ export class UserReportPage {
     private appVersion: AppVersion,
     @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private commonUtilService: CommonUtilService) {
+    private commonUtilService: CommonUtilService,
+    private utilityService: UtilityService) {
 
     this.downloadDirectory = this.file.dataDirectory;
-    // this.deviceInfoService.getDownloadDirectoryPath()
-    //   .then((response: any) => {
-    //     this.downloadDirectory = response;
-    //   })
-    //   .catch();        //TODO
+    this.utilityService.getDownloadDirectoryPath()
+      .then((response: any) => {
+        this.downloadDirectory = response;
+      })
+      .catch();
   }
   totalScore;
   maxTotalScore;

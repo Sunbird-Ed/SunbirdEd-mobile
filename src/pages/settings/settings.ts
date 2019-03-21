@@ -1,4 +1,4 @@
-import { AppGlobalService } from '@app/service';
+import { AppGlobalService, UtilityService } from '@app/service';
 import { CommonUtilService } from './../../service/common-util.service';
 import { Component, Inject } from '@angular/core';
 import { NavController, DateTime } from 'ionic-angular';
@@ -16,8 +16,8 @@ import {
   InteractSubtype,
 } from '../../service/telemetry-constants';
 import { TelemetryGeneratorService } from '@app/service';
-import { SharedPreferences, DeviceInfo, TelemetryImpressionRequest } from 'sunbird-sdk';
-
+import { SharedPreferences, DeviceInfo, TelemetryImpressionRequest, TelemetryExportResponse } from 'sunbird-sdk';
+declare const cordova;
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
 const SUBJECT_NAME = 'support request';
 
@@ -41,6 +41,7 @@ export class SettingsPage {
     private commonUtilService: CommonUtilService,
     private appGlobalService: AppGlobalService,
     private telemetryGeneratorService: TelemetryGeneratorService,
+    private utilityService: UtilityService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
   ) { }
 
@@ -134,14 +135,15 @@ export class SettingsPage {
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SHARE_APP_CLICKED);
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SHARE_APP_INITIATED);
 
-  // TODO
-    // this.shareUtil.exportApk(filePath => {
-    //   this.generateInteractTelemetry(InteractType.OTHER, InteractSubtype.SHARE_APP_SUCCESS);
-    //   loader.dismiss();
-    //   this.socialSharing.share('', '', 'file://' + filePath, '');
-    // }, error => {
-    //   loader.dismiss();
-    // });
+
+    this.utilityService.exportApk()
+      .then((filepath) => {this.generateInteractTelemetry(InteractType.OTHER, InteractSubtype.SHARE_APP_SUCCESS);
+      loader.dismiss();
+      this.socialSharing.share('', '', 'file://' + filepath, '');
+    }).catch((error) => {
+      loader.dismiss();
+      console.log(error);
+    });
   }
 
   generateInteractTelemetry(interactionType, interactSubtype) {

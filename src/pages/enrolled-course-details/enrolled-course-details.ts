@@ -17,7 +17,7 @@ import {CollectionDetailsPage} from '@app/pages/collection-details/collection-de
 import {ContentDetailsPage} from '@app/pages/content-details/content-details';
 import {ContentType, EventTopics, MimeType, PreferenceKey, ShareUrl} from '@app/app';
 import {CourseBatchesPage} from '@app/pages/course-batches/course-batches';
-import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
+import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService, UtilityService} from '@app/service';
 import {DatePipe} from '@angular/common';
 import {
   Batch,
@@ -25,6 +25,7 @@ import {
   Content,
   ContentEventType,
   ContentExportRequest,
+  ContentExportResponse,
   ContentImport,
   ContentImportCompleted,
   ContentImportRequest,
@@ -191,7 +192,7 @@ export class EnrolledCourseDetailsPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
     private datePipe: DatePipe,
-    // private acourseService: course_Service,
+     private utilityService: UtilityService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
   ) {
 
@@ -202,7 +203,7 @@ export class EnrolledCourseDetailsPage {
   }
 
   subscribeUtilityEvents() {
-    this.appGlobalService.getBuildConfigValue('BASE_URL')
+    this.utilityService.getBuildConfigValue('BASE_URL')
       .then(response => {
         this.baseUrl = response;
       })
@@ -924,7 +925,6 @@ export class EnrolledCourseDetailsPage {
           }
           if (this.downloadProgress === 100) {
             this.getBatchDetails();
-            this.showLoading = false;
           }
         }
 
@@ -1073,10 +1073,10 @@ export class EnrolledCourseDetailsPage {
         destinationFolder: cordova.file.externalDataDirectory
       };
       this.contentService.exportContent(exportContentRequest).toPromise()
-        .then(() => {
+        .then((contentExportResponse: ContentExportResponse) => {
           loader.dismiss();
           this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.course.contentType);
-          this.social.share('', '', '' + cordova.file.externalDataDirectory, url);
+          this.social.share('', '', '' + contentExportResponse.exportedFilePath, url);
         }).catch(() => {
         loader.dismiss();
         this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
