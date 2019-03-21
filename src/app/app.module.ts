@@ -108,13 +108,13 @@ export const sunbirdSdkServicesProvidersFactory: () => Provider[] = () => {
 export const sunbirdSdkFactory =
   () => {
     return async () => {
-      const buildConfigValues = await new Promise((resolve, reject) => {
+      const buildConfigValues = JSON.parse(await new Promise<string>((resolve, reject) => {
         buildconfigreader.getBuildConfigValues('org.sunbird.app', (v) => {
           resolve(v);
         }, (err) => {
           reject(err);
         });
-      });
+      }));
 
       await SunbirdSdk.instance.init({
         fileConfig: {

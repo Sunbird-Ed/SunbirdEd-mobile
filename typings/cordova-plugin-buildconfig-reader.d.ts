@@ -4,7 +4,7 @@ declare var buildconfigreader: {
     (callbackUrl: string) => void, error: (error: string) => void) => void;
 
   getBuildConfigValues: (packageName: string, success:
-    (callbackUrl: { [key: string]: string }) => void, error: (error: string) => void) => void;
+    (callbackUrl: string) => void, error: (error: string) => void) => void;
 
   rm: (directoryPath: string, direcoryToBeSkipped: string, success:
     (callbackUrl: boolean) => void, error: (error: boolean) => void) => void;
