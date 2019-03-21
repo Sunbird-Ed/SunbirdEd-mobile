@@ -102,24 +102,32 @@ export const sunbirdSdkServicesProvidersFactory: () => Provider[] = () => {
 export const sunbirdSdkFactory =
   () => {
     return async () => {
+      const buildConfigValues = await new Promise((resolve, reject) => {
+        buildconfigreader.getBuildConfigValues('org.sunbird.app', (v) => {
+          resolve(v);
+        }, (err) => {
+          reject(err);
+        });
+      });
+
       await SunbirdSdk.instance.init({
         fileConfig: {
           debugMode: false
         },
         apiConfig: {
           debugMode: true,
-          host: 'https://staging.ntp.net.in',
-          baseUrl: 'https://staging.ntp.net.in/api',
+          host: buildConfigValues['BASE_URL'],
+          baseUrl: buildConfigValues['BASE_URL'] + '/api',
           user_authentication: {
-            redirectUrl: 'staging.diksha.app://mobile',
+            redirectUrl: buildConfigValues['OAUTH_REDIRECT_URL'],
             authUrl: '/auth/realms/sunbird/protocol/openid-connect',
           },
           api_authentication: {
-            mobileAppKey: 'sunbird-0.1',
-            mobileAppSecret: 'eab91d5404434800b81996c1cd699d19',
-            mobileAppConsumer: 'mobile_device',
-            channelId: '505c7c48ac6dc1edc9b08f21db5a571d',
-            producerId: 'staging.diksha.app',
+            mobileAppKey: buildConfigValues['MOBILE_APP_KEY'],
+            mobileAppSecret: buildConfigValues['MOBILE_APP_SECRET'],
+            mobileAppConsumer: buildConfigValues['MOBILE_APP_CONSUMER'],
+            channelId: buildConfigValues['CHANNEL_ID'],
+            producerId: buildConfigValues['PRODUCER_ID'],
             producerUniqueId: 'sunbird.app'
           },
           cached_requests: {
