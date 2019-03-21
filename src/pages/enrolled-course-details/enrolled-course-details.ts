@@ -25,6 +25,7 @@ import {
   Content,
   ContentEventType,
   ContentExportRequest,
+  ContentExportResponse,
   ContentImport,
   ContentImportCompleted,
   ContentImportRequest,
@@ -924,7 +925,6 @@ export class EnrolledCourseDetailsPage {
           }
           if (this.downloadProgress === 100) {
             this.getBatchDetails();
-            this.showLoading = false;
           }
         }
 
@@ -1073,10 +1073,10 @@ export class EnrolledCourseDetailsPage {
         destinationFolder: cordova.file.externalDataDirectory
       };
       this.contentService.exportContent(exportContentRequest).toPromise()
-        .then(() => {
+        .then((contentExportResponse: ContentExportResponse) => {
           loader.dismiss();
           this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.course.contentType);
-          this.social.share('', '', '' + cordova.file.externalDataDirectory, url);
+          this.social.share('', '', '' + contentExportResponse.exportedFilePath, url);
         }).catch(() => {
         loader.dismiss();
         this.commonUtilService.showToast('SHARE_CONTENT_FAILED');

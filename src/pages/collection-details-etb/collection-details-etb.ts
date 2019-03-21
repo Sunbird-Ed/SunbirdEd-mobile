@@ -13,6 +13,7 @@ import {
   ContentDetailRequest,
   ContentEventType,
   ContentExportRequest,
+  ContentExportResponse,
   ContentImport,
   ContentImportCompleted,
   ContentImportRequest,
@@ -28,8 +29,7 @@ import {
   ProfileType,
   Rollup,
   TelemetryErrorCode,
-  TelemetryObject,
-  ContentExportResponse
+  TelemetryObject
 } from 'sunbird-sdk';
 import {Subscription} from 'rxjs';
 import {
@@ -746,7 +746,6 @@ export class CollectionDetailsEtbPage {
           if (downloadEvent.payload.identifier === this.contentDetail.identifier) {
             this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
             if (this.downloadProgress === 100) {
-              this.showLoading = false;
               this.contentDetail.isAvailableLocally = true;
             }
           }
@@ -754,6 +753,7 @@ export class CollectionDetailsEtbPage {
 
         // Get child content
         if (event.type === ContentEventType.IMPORT_COMPLETED) {
+          this.showLoading = false;
           const contentImportedEvent = event as ContentImportCompleted;
 
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {

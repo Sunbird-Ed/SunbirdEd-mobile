@@ -14,6 +14,7 @@ import {
   ContentDetailRequest,
   ContentEventType,
   ContentExportRequest,
+  ContentExportResponse,
   ContentImport,
   ContentImportCompleted,
   ContentImportRequest,
@@ -29,8 +30,7 @@ import {
   ProfileType,
   Rollup,
   TelemetryErrorCode,
-  TelemetryObject,
-  ContentExportResponse
+  TelemetryObject
 } from 'sunbird-sdk';
 import {
   Environment,
@@ -696,13 +696,13 @@ export class CollectionDetailsPage {
           if (downloadEvent.payload.identifier === this.contentDetail.identifier) {
             this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
             if (this.downloadProgress === 100) {
-              this.showLoading = false;
               this.contentDetail.isAvailableLocally = true;
             }
           }
         }
         // Get child content
         if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
+          this.showLoading = false;
           const contentImportEvent = event as ContentImportCompleted;
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {
             if (_.includes(this.queuedIdentifiers, contentImportEvent.payload.contentId)) {
