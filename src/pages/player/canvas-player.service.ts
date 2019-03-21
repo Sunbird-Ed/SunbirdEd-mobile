@@ -2,6 +2,9 @@ import { Injectable } from "@angular/core";
 import { SunbirdSdk } from 'sunbird-sdk';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as X2JS from 'x2js';
+import { AlertController } from "ionic-angular";
+import { App, ViewController } from 'ionic-angular';
+
 
 
 declare global {
@@ -12,7 +15,7 @@ declare global {
 @Injectable()
 
 export class CanvasPlayerService {
-    constructor(private _http: HttpClient) { }
+    constructor(private _http: HttpClient, private alertCtrl: AlertController, private appCtrl: App) { }
     handleAction() {
         window.handleAction = (methodName: string, params = []) => {
             switch (methodName) {
@@ -35,6 +38,7 @@ export class CanvasPlayerService {
                     console.log('languageSearch to be defined');
                     break;
                 case "endGenieCanvas":
+                    this.showConfirm();
                     console.log('endGenieCanvas to be defined');
                     break;
                 case "endContent":
@@ -88,5 +92,31 @@ export class CanvasPlayerService {
                 }
             });
         }
+    }
+
+    showConfirm() {
+        const alert = this.alertCtrl.create({
+            title: 'Confirm',
+            message: 'Would you like to leave this content?',
+            buttons: [
+                {
+                    text: 'CANCEL',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Cancel clicked');
+                    }
+                },
+                {
+                    text: 'OK',
+                    handler: () => {
+                        console.log('Okay clicked');
+                        // this.navCtrl.pop();
+                        let nav = this.appCtrl.getActiveNav();
+                        nav.pop();
+                    }
+                }
+            ]
+        });
+        alert.present();
     }
 }

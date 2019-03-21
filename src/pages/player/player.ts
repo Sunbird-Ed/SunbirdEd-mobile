@@ -26,8 +26,7 @@ export class PlayerPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     private canvasPlayerService: CanvasPlayerService,
-    private platform: Platform,
-    private alertCtrl: AlertController
+    private platform: Platform
   ) {
     this.canvasPlayerService.handleAction();
     // this.canvasPlayerService.xmlToJSon('../assets/sample.xml');
@@ -35,7 +34,7 @@ export class PlayerPage {
 
   ionViewWillEnter() {
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      this.showConfirm();
+      this.canvasPlayerService.showConfirm();
     }, 11);
   }
 
@@ -51,8 +50,9 @@ export class PlayerPage {
       that.config['metadata'] = that.config['metaData'].contentData;
       delete that.config['metaData'];
       console.log("config", that.config);
-
-      (previewElement['contentWindow'] as any).initializePreview(that.config);
+      setTimeout(() => {
+        (previewElement['contentWindow'] as any).initializePreview(that.config);
+      }, 200);
     }
   }
 
@@ -60,27 +60,4 @@ export class PlayerPage {
     this.unregisterBackButton();
   }
 
-  showConfirm() {
-    const alert = this.alertCtrl.create({
-      title: 'Confirm',
-      message: 'Would you like to leave this content?',
-      buttons: [
-        {
-          text: 'CANCEL',
-          role: 'cancel',
-          handler: () => {
-            console.log('Cancel clicked');
-          }
-        },
-        {
-          text: 'OK',
-          handler: () => {
-            console.log('Okay clicked');
-            this.navCtrl.pop();
-          }
-        }
-      ]
-    });
-    alert.present();
-  }
 }
