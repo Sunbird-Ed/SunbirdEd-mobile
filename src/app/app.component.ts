@@ -24,7 +24,7 @@ import {
   ProfileType,
   SharedPreferences,
   TelemetryAutoSyncUtil,
-  TelemetryService
+  TelemetryService,
 } from 'sunbird-sdk';
 import {tap} from 'rxjs/operators';
 import {Environment, InteractSubtype, InteractType, PageId} from '../service/telemetry-constants';
@@ -482,6 +482,8 @@ export class MyApp {
             this.events.publish('force_optional_upgrade', {upgrade: result});
           }, 5000);
         }
+      }).catch(err => {
+        // console.log('checkNewAppVersion err', err, err instanceof NetworkError);
       });
   }
 
