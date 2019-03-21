@@ -13,7 +13,7 @@ import {ContentDetailsPage} from '../pages/content-details/content-details';
 import {ContentType, EventTopics, GenericAppConfig, MimeType, PreferenceKey, ProfileConstants} from './app.constant';
 import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
 import {FormAndFrameworkUtilService} from '@app/pages/profile';
-import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
+import {AppGlobalService, CommonUtilService, TelemetryGeneratorService, UtilityService} from '@app/service';
 import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
 import {CategoriesEditPage} from '@app/pages/categories-edit/categories-edit';
 import {TncUpdateHandlerService} from '@app/service/handlers/tnc-update-handler.service';
@@ -73,6 +73,7 @@ export class MyApp {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private popoverCtrl: PopoverController,
     private tncUpdateHandlerService: TncUpdateHandlerService,
+    private utilityService: UtilityService,
   ) {
     this.telemetryAutoSyncUtil = new TelemetryAutoSyncUtil(this.telemetryService);
     platform.ready().then(async () => {
@@ -99,29 +100,6 @@ export class MyApp {
 
     });
 
-  }
-
-  private static getPageIdForPageName(pageName: string): string {
-    let pageId = '';
-    switch (pageName) {
-      case 'ResourcesPage': {
-        pageId = PageId.LIBRARY;
-        break;
-      }
-      case 'CoursesPage': {
-        pageId = PageId.COURSES;
-        break;
-      }
-      case 'ProfilePage': {
-        pageId = PageId.PROFILE;
-        break;
-      }
-      case 'GuestProfilePage': {
-        pageId = PageId.GUEST_PROFILE;
-        break;
-      }
-    }
-    return pageId;
   }
 
   handleBackButton() {
@@ -236,7 +214,7 @@ export class MyApp {
   }
 
   getProfileSettingConfig(hideBackButton = false) {
-    this.appGlobalService.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE)
+    this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE)
       .then(response => {
         if (response === 'true') {
           this.nav.setRoot('ProfileSettingsPage', {hideBackButton: hideBackButton});
@@ -278,7 +256,7 @@ export class MyApp {
             }
           }
 
-          const display_cat_page: string = await this.appGlobalService
+          const display_cat_page: string = await this.utilityService
             .getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE);
 
           if (display_cat_page === 'false') {
@@ -488,7 +466,7 @@ export class MyApp {
   }
 
   private autoSyncTelemetry() {
-    this.telemetryAutoSyncUtil.start(30 * 100)
+    this.telemetryAutoSyncUtil.start(5 * 1000)
       .mergeMap(() => {
         return Observable.combineLatest(
           this.platform.pause.pipe(tap(() => this.telemetryAutoSyncUtil.pause())),

@@ -5,7 +5,7 @@ import {LoadingController, NavParams} from 'ionic-angular';
 import {GroupReportAlert} from '../group-report-alert/group-report-alert';
 import {TranslateService} from '@ngx-translate/core';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
-import {AppGlobalService} from '../../../service/app-global.service';
+import {AppGlobalService, UtilityService} from '@app/service';
 import {UserReportPage} from '../user-report/user-report';
 import {File} from '@ionic-native/file';
 import {FileTransfer, FileTransferObject} from '@ionic-native/file-transfer';
@@ -70,17 +70,19 @@ export class GroupReportListPage {
         private translate: TranslateService,
         private telemetryGeneratorService: TelemetryGeneratorService,
         private appGlobalService: AppGlobalService,
+        private utilityService: UtilityService,
         private file: File,
         private datePipe: DatePipe,
         @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
         private navCtrl: NavController,
         private commonUtilService: CommonUtilService) {
         this.downloadDirectory = this.file.dataDirectory;
-        // this.deviceInfoService.getDownloadDirectoryPath()
-        //     .then((response: any) => {
-        //         this.downloadDirectory = response;
-        //     })
-        //     .catch();    //TODO
+        this.utilityService.getDownloadDirectoryPath()
+            .then((response: any) => {
+                this.downloadDirectory = response;
+                console.log('download path', this.downloadDirectory);
+            })
+            .catch();
     }
     fileTransfer: FileTransferObject = this.transfer.create();
     ionViewWillEnter() {

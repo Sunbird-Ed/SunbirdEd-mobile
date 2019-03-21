@@ -7,12 +7,13 @@ import {ContentDetailsPage} from '@app/pages/content-details/content-details';
 import {ConfirmAlertComponent, ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
 import {ContentType, MimeType, ShareUrl} from '@app/app';
 import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
-import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService} from '@app/service';
+import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService, UtilityService} from '@app/service';
 import {
   Content,
   ContentDetailRequest,
   ContentEventType,
   ContentExportRequest,
+  ContentExportResponse,
   ContentImport,
   ContentImportCompleted,
   ContentImportRequest,
@@ -209,7 +210,8 @@ export class CollectionDetailsEtbPage {
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private courseUtilService: CourseUtilService
+    private courseUtilService: CourseUtilService,
+    private utilityService: UtilityService
   ) {
     this.objRollup = new Rollup();
     this.checkLoggedInOrGuestUser();
@@ -314,7 +316,7 @@ export class CollectionDetailsEtbPage {
   }
 
   getBaseURL() {
-    this.appGlobalService.getBuildConfigValue('BASE_URL')
+    this.utilityService.getBuildConfigValue('BASE_URL')
       .then(response => {
         this.baseUrl = response;
       })
@@ -744,7 +746,6 @@ export class CollectionDetailsEtbPage {
           if (downloadEvent.payload.identifier === this.contentDetail.identifier) {
             this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
             if (this.downloadProgress === 100) {
-              this.showLoading = false;
               this.contentDetail.isAvailableLocally = true;
             }
           }
@@ -752,6 +753,7 @@ export class CollectionDetailsEtbPage {
 
         // Get child content
         if (event.type === ContentEventType.IMPORT_COMPLETED) {
+          this.showLoading = false;
           const contentImportedEvent = event as ContentImportCompleted;
 
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {
@@ -826,10 +828,10 @@ export class CollectionDetailsEtbPage {
         destinationFolder: cordova.file.externalDataDirectory
       };
       this.contentService.exportContent(exportContentRequest).toPromise()
-        .then(() => {
+        .then((contntExportResponse: ContentExportResponse) => {
           loader.dismiss();
           this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.contentDetail.contentType);
-          this.social.share('', '', '' + cordova.file.externalDataDirectory, url);
+          this.social.share('', '', '' + contntExportResponse.exportedFilePath, url);
         }).catch(() => {
         loader.dismiss();
         this.commonUtilService.showToast('SHARE_CONTENT_FAILED');

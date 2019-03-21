@@ -43,9 +43,6 @@ if (!window.genieservice) {
         return window.parent.handleAction('launchContent');
     }
 
-    send = function (object, apiName) {
-        return window.parent.handleAction.send(object);
-    }
     window.genieservice = (function () {
         return {
             getCurrentUser,
@@ -60,7 +57,6 @@ if (!window.genieservice) {
             launchContent
         }
     })();
-
-    window.telemetry = (function () { return { send } });
+    
     console.log("GenieService Loaded");
 }
