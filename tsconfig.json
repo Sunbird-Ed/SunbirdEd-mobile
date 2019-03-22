@@ -23,7 +23,8 @@
   },
   "include": [
     "src/**/*.ts",
-    "./typings/*.d.ts"
+    "./typings/*.d.ts",
+    "./content-player/**/*.ts"
   ],
   "exclude": [
     "node_modules",

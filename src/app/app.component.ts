@@ -84,7 +84,7 @@ export class MyApp {
       this.subscribeEvents();
 
       await this.registerDeeplinks();
-      await this.openrapDiscovery();
+      //await this.openrapDiscovery();
       await this.saveDefaultSyncSetting();
       await this.showAppWalkThroughScreen();
       await this.checkAppUpdateAvailable();

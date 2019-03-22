@@ -15,7 +15,7 @@ const customConfig = {
       {
         from: './content-player/',
         to: './content-player',
-        toType: 'dir'
+        toType: 'file'
       }
     ]),
   ]
