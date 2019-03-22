@@ -155,7 +155,7 @@ export class UserTypeSelectionPage {
             const userId = success.uid;
             this.event.publish(AppGlobalService.USER_INFO_UPDATED);
             if (userId !== 'null') {
-              this.preferences.putString('GUEST_USER_ID_BEFORE_LOGIN', userId).toPromise().then();
+              this.preferences.putString(PreferenceKey.GUEST_USER_ID_BEFORE_LOGIN, userId).toPromise().then();
             }
             this.profile = success;
             this.gotoTabsPage();

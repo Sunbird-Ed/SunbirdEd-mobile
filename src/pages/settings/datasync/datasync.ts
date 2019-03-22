@@ -14,6 +14,7 @@ import { DataSyncType } from './datasynctype.enum';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { TelemetryGeneratorService } from '@app/service';
+import { PreferenceKey } from '@app/app';
 import {
   PageId,
   Environment,
@@ -23,8 +24,7 @@ import {
 } from '../../../service/telemetry-constants';
 
 declare const cordova;
-const KEY_DATA_SYNC_TYPE = 'sync_config';
-const KEY_DATA_SYNC_TIME = 'data_sync_time';
+
 
 class CMap {
   [key: string]: any
@@ -57,7 +57,7 @@ export class DatasyncPage {
     this.getLastSyncTime();
 
     // check what sync option is selected
-    that.preferences.getString(KEY_DATA_SYNC_TYPE).toPromise()
+    that.preferences.getString(PreferenceKey.KEY_DATA_SYNC_TYPE).toPromise()
       .then(val => {
         if (Boolean(val)) {
           if (val === 'OFF') {
@@ -91,7 +91,7 @@ export class DatasyncPage {
   onSelected() {
     /*istanbul ignore else */
     if (this.dataSyncType !== undefined) {
-      this.preferences.putString(KEY_DATA_SYNC_TYPE, this.dataSyncType).toPromise().then();
+      this.preferences.putString(PreferenceKey.KEY_DATA_SYNC_TYPE, this.dataSyncType).toPromise().then();
     }
   }
 
@@ -154,7 +154,7 @@ export class DatasyncPage {
           that.latestSync = this.lastSyncedTimeString + ' ' + dateAndTime;
 
           // store the latest sync time
-          this.preferences.putString(KEY_DATA_SYNC_TIME, dateAndTime).toPromise().then();
+          this.preferences.putString(PreferenceKey.KEY_DATA_SYNC_TIME, dateAndTime).toPromise().then();
 
           loader.dismiss();
           this.commonUtilService.showToast('DATA_SYNC_SUCCESSFUL');

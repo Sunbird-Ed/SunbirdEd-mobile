@@ -243,7 +243,7 @@ export class OnboardingPage {
           initTabs(this.container, GUEST_TEACHER_TABS);
         }
       });
-    this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN').toPromise()
+    this.preferences.getString(PreferenceKey.GUEST_USER_ID_BEFORE_LOGIN).toPromise()
       .then(val => {
         if (val !== '') {
           const profile: Profile = {
