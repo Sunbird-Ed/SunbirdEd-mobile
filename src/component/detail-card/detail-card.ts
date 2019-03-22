@@ -17,6 +17,8 @@ export class DetailCardComponent implements OnInit {
   @Input() showDownloadBtn: boolean;
   @Input() isDepthChild: boolean;
   @Input() isDownloadStarted: boolean;
+  @Input() queuedIdentifiers: boolean;
+  @Input() currentCount: boolean;
 
 
   @Output() downloadAllContent = new EventEmitter();
