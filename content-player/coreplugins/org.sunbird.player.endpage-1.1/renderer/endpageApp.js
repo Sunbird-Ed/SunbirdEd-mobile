@@ -115,8 +115,8 @@ endPage.controller("endPageController", function($scope, $rootScope, $state,$ele
                 org.ekstep.service.content.getRelevantContent(JSON.stringify(requestBody)).then(function(response){
                     console.log("getRelevantContent in endPage",response);
                     if(response){
-                        $scope.previousContent[contentId] = response.previousContent;
-                        $scope.nextContent[contentId] = response.nextContent;
+                        $scope.previousContent[contentId] = response.prev;
+                        $scope.nextContent[contentId] = response.next;
                     } else{
                         console.log('Error has occurred');
                     }
@@ -138,13 +138,13 @@ endPage.controller("endPageController", function($scope, $rootScope, $state,$ele
         var contentToPlay = (contentType === 'previous') ? $scope.previousContent[contentId] : $scope.nextContent[contentId];
         var contentMetadata = {};
         if(contentToPlay){
-            contentMetadata = contentToPlay.contentData;
-            _.extend(contentMetadata,  _.pick(contentToPlay, "hierarchyInfo", "isAvailableLocally", "basePath", "rollup"));
+            contentMetadata = contentToPlay.content.contentData;
+            _.extend(contentMetadata,  _.pick(contentToPlay.content, "hierarchyInfo", "isAvailableLocally", "basePath", "rollup"));
             contentMetadata.basepath = contentMetadata.basePath;
             $rootScope.content = window.content = content = contentMetadata;
         }
 
-        if (contentToPlay.isAvailableLocally) {
+        if (contentToPlay.content.isAvailableLocally) {
                 EkstepRendererAPI.hideEndPage();
                 var object = {
                     'config': GlobalContext.config,

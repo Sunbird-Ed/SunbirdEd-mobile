@@ -41,18 +41,20 @@ export class PlayerPage {
 
   ionViewDidLoad() {
     let that = this;
+    // this.getConfiguration();
     this.config = this.navParams.get('config');
+    
     let previewElement: HTMLIFrameElement = document.getElementById('preview') as HTMLIFrameElement;
-    previewElement.src = 'build/content-player/preview.html?date=' + new Date().toLocaleString();
+    //previewElement.src = 'build/content-player/preview.html?date=' + new Date().toLocaleString();
+    previewElement.contentWindow.location.reload();
     previewElement.onload = function () {
       that.config['context'].hierarchyInfo = that.config['metaData'].hierarchyInfo;
       that.config['metaData'].contentData.basePath = that.config['metaData'].basePath.replace(/\/$/, "");
       that.config['metaData'].contentData.basepath = that.config['metaData'].basePath.replace(/\/$/, "");      
       that.config['metadata'] = that.config['metaData'];
-      // that.config['metadata'].contentData = {};
-      // that.config['metadata'].hierarchyInfo = that.config['metaData'].hierarchyInfo;
-      // that.config['metadata'].rollup = that.config['metaData'].rollup;
-      // that.config['metadata'].isAvailableLocally = that.config['metaData'].isAvailableLocally;
+      that.config['uid'] = that.config['context'].actor.id;
+
+      console.log("that.config['context'].actor.id", that.config['context'].actor.id);
       delete that.config['metaData'];
       console.log("config", that.config);
       setTimeout(() => {
@@ -62,12 +64,15 @@ export class PlayerPage {
   }
 
   getConfiguration() {
-    this.config = this.navParams.get('config');
+    var mobileConfig = this.navParams.get('config');
+    // mobileConfig.config.metaData.basePath = mobileConfig.config.metaData.basePath.replace(/\/$/, "");
+    // build/content-player/preview.htmlmobileConfig.config.metaData.basepath = mobileConfig.config.metaData.basePath;
+
     var config = {
-      "context": {}, 
-      "config": {}, 
-      "metadata": {}, 
-      "data": {}
+      "context": mobileConfig.context,
+      "config": mobileConfig.config, 
+      "metadata": mobileConfig.metaData, 
+      "data": mobileConfig.data
     }
     return config;
   }

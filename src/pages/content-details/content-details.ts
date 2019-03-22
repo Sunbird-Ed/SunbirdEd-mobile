@@ -473,7 +473,7 @@ export class ContentDetailsPage {
       this.content.contentData.attributions ? this.content.contentData.attributions.join(', ') : '';
     }
     if (this.content.contentData.me_totalRatings) {
-        this.content.contentData.me_totalRatings = parseInt(this.content.contentData.me_totalRatings, 10) + '';
+      this.content.contentData.me_totalRatings = parseInt(this.content.contentData.me_totalRatings, 10) + '';
     }
     this.objId = this.content.identifier;
     this.objVer = this.content.contentData.pkgVersion;
@@ -928,26 +928,30 @@ export class ContentDetailsPage {
         if (data.metaData.mimeType === 'application/vnd.ekstep.ecml-archive') {
           console.log('externalApplicationStorageDirectory', this.file.externalApplicationStorageDirectory);
 
-          this.file.checkFile(`file://${data.metaData.basePath}`, 'index.ecml').then((isAvailable) => {
-            console.log('isAvailable', isAvailable);
-            this.canvasPlayerService.xmlToJSon(`${data.metaData.basePath}index.ecml`).then((json) => {
-              console.log('response', json);
-              data['data'] = json;
+          if (!isStreaming) {
+            this.file.checkFile(`file://${data.metaData.basePath}`, 'index.ecml').then((isAvailable) => {
+              console.log('isAvailable', isAvailable);
+              this.canvasPlayerService.xmlToJSon(`${data.metaData.basePath}index.ecml`).then((json) => {
+                console.log('response', json);
+                data['data'] = json;
 
-              this.navCtrl.push(PlayerPage, { config: data });
-            }).catch((error) => {
-              console.log('error1', error);
+                this.navCtrl.push(PlayerPage, { config: data });
+              }).catch((error) => {
+                console.log('error1', error);
+              });
+            }).catch((err) => {
+              console.log('err', err);
+              this.canvasPlayerService.readJSON(`${data.metaData.basePath}index.json`).then((json) => {
+                console.log('response', json);
+                data['data'] = json;
+                this.navCtrl.push(PlayerPage, { config: data });
+              }).catch((e) => {
+                console.log('readJSON error', e);
+              });
             });
-          }).catch((err) => {
-            console.log('err', err);
-            this.canvasPlayerService.readJSON(`${data.metaData.basePath}index.json`).then((json) => {
-              console.log('response', json);
-              data['data'] = json;
-              this.navCtrl.push(PlayerPage, { config: data });
-            }).catch((e) => {
-              console.log('readJSON error', e);
-            });
-          });
+          } else {
+            this.navCtrl.push(PlayerPage, { config: data });
+          }
 
         } else {
           this.navCtrl.push(PlayerPage, { config: data });
