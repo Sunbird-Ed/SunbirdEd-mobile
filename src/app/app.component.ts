@@ -33,8 +33,6 @@ import {ContainerService} from '@app/service/container.services';
 import {AndroidPermissionsService} from '../service/android-permissions/android-permissions.service';
 import {AndroidPermission, AndroidPermissionsStatus} from "@app/service/android-permissions/android-permission";
 
-const KEY_SUNBIRD_SUPPORT_FILE_PATH = 'sunbird_support_file_path';
-
 @Component({
   templateUrl: 'app.html'
 })
@@ -363,7 +361,7 @@ export class MyApp {
   private async makeEntryInSupportFolder() {
     return new Promise((resolve => {
       (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
-        this.preferences.putString(KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result)).toPromise().then();
+        this.preferences.putString(PreferenceKey.KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result)).toPromise().then();
         resolve();
       }, () => {
       });
