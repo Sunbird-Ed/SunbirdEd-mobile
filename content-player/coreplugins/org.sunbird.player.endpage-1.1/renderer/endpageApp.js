@@ -25,6 +25,7 @@ endPage.controller("endPageController", function($scope, $rootScope, $state,$ele
     };
 
     $scope.getTotalScore = function(id) {
+        console.log("here in getTotalScore");
         var totalScore = 0, maxScore = 0;
         var teleEvents = org.ekstep.service.content.getTelemetryEvents();
         if (!_.isEmpty(teleEvents) && !_.isUndefined(teleEvents.assess)) {
@@ -112,9 +113,10 @@ endPage.controller("endPageController", function($scope, $rootScope, $state,$ele
                 };
                 //Call getPreviousAndNextContent function which is present inside interfaceService.js by passing current content-id and user-id 
                 org.ekstep.service.content.getRelevantContent(JSON.stringify(requestBody)).then(function(response){
+                    console.log("getRelevantContent in endPage",response);
                     if(response){
-                        $scope.previousContent[contentId] = response.prev;
-                        $scope.nextContent[contentId] = response.next;
+                        $scope.previousContent[contentId] = response.previousContent;
+                        $scope.nextContent[contentId] = response.nextContent;
                     } else{
                         console.log('Error has occurred');
                     }
@@ -136,13 +138,13 @@ endPage.controller("endPageController", function($scope, $rootScope, $state,$ele
         var contentToPlay = (contentType === 'previous') ? $scope.previousContent[contentId] : $scope.nextContent[contentId];
         var contentMetadata = {};
         if(contentToPlay){
-            contentMetadata = contentToPlay.content.contentData;
-            _.extend(contentMetadata,  _.pick(contentToPlay.content, "hierarchyInfo", "isAvailableLocally", "basePath", "rollup"));
+            contentMetadata = contentToPlay.contentData;
+            _.extend(contentMetadata,  _.pick(contentToPlay, "hierarchyInfo", "isAvailableLocally", "basePath", "rollup"));
             contentMetadata.basepath = contentMetadata.basePath;
             $rootScope.content = window.content = content = contentMetadata;
         }
 
-        if (contentToPlay.content.isAvailableLocally) {
+        if (contentToPlay.isAvailableLocally) {
                 EkstepRendererAPI.hideEndPage();
                 var object = {
                     'config': GlobalContext.config,
@@ -165,6 +167,7 @@ endPage.controller("endPageController", function($scope, $rootScope, $state,$ele
     };
 
     $scope.initEndpage = function() {
+        console.log('initEndpage', content);
         $scope.playerMetadata = content;
         $scope.genieIcon = EkstepRendererAPI.resolvePluginResource($scope.pluginManifest.id, $scope.pluginManifest.ver, "renderer/assets/home.png");
         $scope.scoreIcon = EkstepRendererAPI.resolvePluginResource($scope.pluginManifest.id, $scope.pluginManifest.ver, "renderer/assets/score.svg");

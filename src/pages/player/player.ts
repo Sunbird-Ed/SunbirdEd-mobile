@@ -45,15 +45,31 @@ export class PlayerPage {
     let previewElement: HTMLIFrameElement = document.getElementById('preview') as HTMLIFrameElement;
     previewElement.src = 'build/content-player/preview.html?date=' + new Date().toLocaleString();
     previewElement.onload = function () {
+      that.config['context'].hierarchyInfo = that.config['metaData'].hierarchyInfo;
       that.config['metaData'].contentData.basePath = that.config['metaData'].basePath.replace(/\/$/, "");
-      that.config['metaData'].contentData.basepath = that.config['metaData'].basePath.replace(/\/$/, "");
-      that.config['metadata'] = that.config['metaData'].contentData;
+      that.config['metaData'].contentData.basepath = that.config['metaData'].basePath.replace(/\/$/, "");      
+      that.config['metadata'] = that.config['metaData'];
+      // that.config['metadata'].contentData = {};
+      // that.config['metadata'].hierarchyInfo = that.config['metaData'].hierarchyInfo;
+      // that.config['metadata'].rollup = that.config['metaData'].rollup;
+      // that.config['metadata'].isAvailableLocally = that.config['metaData'].isAvailableLocally;
       delete that.config['metaData'];
       console.log("config", that.config);
       setTimeout(() => {
         (previewElement['contentWindow'] as any).initializePreview(that.config);
       }, 200);
     }
+  }
+
+  getConfiguration() {
+    this.config = this.navParams.get('config');
+    var config = {
+      "context": {}, 
+      "config": {}, 
+      "metadata": {}, 
+      "data": {}
+    }
+    return config;
   }
 
   ionViewWillLeave() {

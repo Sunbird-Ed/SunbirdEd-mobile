@@ -16,7 +16,7 @@
             </div>
           </a>
           <div class="ps-nav-body ps-text-right">
-            <p class="ps-chapter-text chapter-section multiline-ellipsis ellipsis-three-line" >{{ previousContent[content.identifier].content.contentData.name.length > 40 ? previousContent[content.identifier].content.contentData.name.substring(0,40)+"..." : previousContent[content.identifier].content.contentData.name}}</p>
+            <p class="ps-chapter-text chapter-section multiline-ellipsis ellipsis-three-line" >{{ previousContent[content.identifier].contentData.name.length > 40 ? previousContent[content.identifier].contentData.name.substring(0,40)+"..." : previousContent[content.identifier].contentData.name}}</p>
           </div>
         </div>
         <div class="ps-score">
@@ -53,7 +53,7 @@
             <img ng-src="{{rightArrowIcon}}" alt="prev" class="ps-arrow">
           </a>
           <div class="ps-nav-body ps-text-left">
-            <p class="ps-chapter-text chapter-section multiline-ellipsis ellipsis-three-line">{{ nextContent[content.identifier].content.contentData.name.length > 40 ? nextContent[content.identifier].content.contentData.name.substring(0,40)+"..." : nextContent[content.identifier].content.contentData.name}}</p>
+            <p class="ps-chapter-text chapter-section multiline-ellipsis ellipsis-three-line">{{ nextContent[content.identifier].contentData.name.length > 40 ? nextContent[content.identifier].contentData.name.substring(0,40)+"..." : nextContent[content.identifier].contentData.name}}</p>
           </div>
         </div>
       </div>

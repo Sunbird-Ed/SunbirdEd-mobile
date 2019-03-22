@@ -27,6 +27,8 @@ export class CanvasPlayerService {
                     return SunbirdSdk.instance.profileService.setActiveSessionForProfile(params[0]).toPromise();
                 case "getContent":
                     return SunbirdSdk.instance.contentService.getContents(params[0]).toPromise();
+                case "getRelevantContent":
+                    return SunbirdSdk.instance.contentService.getRelevantContent(JSON.parse(params[0])).toPromise();
                 case "getRelatedContent":
                     console.log("getRelatedContent to be defined");
                     break;
