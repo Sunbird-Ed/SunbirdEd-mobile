@@ -14,6 +14,7 @@ interface UserProfile {
   tncLatestVersion: string;
   promptTnC: boolean;
   tncLatestVersionUrl: string;
+  userId: string;
 }
 
 @Injectable()
@@ -78,7 +79,22 @@ export class TncUpdateHandlerService {
       }, (e) => {
         reject(e);
       });
-    }));
+    }))
+      .then(() => {
+        const reqObj: UserProfileDetailsRequest = {
+          userId: user.userId,
+          requiredFields: ProfileConstants.REQUIRED_FIELDS,
+          returnRefreshedUserProfileDetails: true
+        };
+        return new Promise<void>(((resolve, reject) => {
+          this.userProfileService.getUserProfileDetails(reqObj,
+            res => {
+              resolve();
+            }, (e) => {
+              reject(e);
+            });
+        }));
+      });
   }
 
   public async dismissTncPage(): Promise<void> {
