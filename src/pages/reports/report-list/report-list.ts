@@ -64,11 +64,10 @@ export class ReportListPage {
 
         const summaryRequest: SummaryRequest = {
             qId: '',
-            uids: [''],
+            uids: this.uids,
             contentId: '',
             hierarchyData: null,
         };
-
         this.summarizerService.getSummary(summaryRequest).toPromise()
             .then((list: LearnerAssessmentSummary[]) => {
                 this.ngZone.run(() => {
