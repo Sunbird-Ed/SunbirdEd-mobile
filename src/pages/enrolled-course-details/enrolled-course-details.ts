@@ -558,6 +558,10 @@ export class EnrolledCourseDetailsPage {
       })
       .catch((error: any) => {
         console.error('error while loading content details', error);
+        if (this.courseCardData.batch) {
+          this.saveContentContext(this.appGlobalService.getUserId(),
+            this.courseCardData.courseId, this.courseCardData.batchId, this.courseCardData.batch.status);
+        }
       });
   }
 
@@ -1017,9 +1021,9 @@ export class EnrolledCourseDetailsPage {
     reqvalues['enrollReq'] = courseBatchesRequest;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.ENROLL_CLICKED,
-        Environment.HOME,
-        PageId.CONTENT_DETAIL, undefined,
-        reqvalues);
+      Environment.HOME,
+      PageId.CONTENT_DETAIL, undefined,
+      reqvalues);
 
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       if (!this.guestUser) {
