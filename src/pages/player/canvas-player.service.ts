@@ -2,6 +2,9 @@ import { Injectable } from "@angular/core";
 import { SunbirdSdk } from 'sunbird-sdk';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as X2JS from 'x2js';
+import { AlertController } from "ionic-angular";
+import { App } from 'ionic-angular';
+
 
 
 declare global {
@@ -12,18 +15,20 @@ declare global {
 @Injectable()
 
 export class CanvasPlayerService {
-    constructor(private _http: HttpClient) { }
+    constructor(private _http: HttpClient, private alertCtrl: AlertController, private appCtrl: App) { }
     handleAction() {
         window.handleAction = (methodName: string, params = []) => {
             switch (methodName) {
                 case "getCurrentUser":
-                    return SunbirdSdk.instance.profileService.getActiveProfileSession().toPromise();
+                    return SunbirdSdk.instance.profileService.getActiveSessionProfile().toPromise();
                 case "getAllUserProfile":
                     return SunbirdSdk.instance.profileService.getAllProfiles(params[0]).toPromise();
                 case "setUser":
                     return SunbirdSdk.instance.profileService.setActiveSessionForProfile(params[0]).toPromise();
                 case "getContent":
                     return SunbirdSdk.instance.contentService.getContents(params[0]).toPromise();
+                case "getRelevantContent":
+                    return SunbirdSdk.instance.contentService.getRelevantContent(JSON.parse(params[0])).toPromise();
                 case "getRelatedContent":
                     console.log("getRelatedContent to be defined");
                     break;
@@ -35,6 +40,7 @@ export class CanvasPlayerService {
                     console.log('languageSearch to be defined');
                     break;
                 case "endGenieCanvas":
+                    this.showConfirm();
                     console.log('endGenieCanvas to be defined');
                     break;
                 case "endContent":
@@ -44,7 +50,7 @@ export class CanvasPlayerService {
                     console.log('launchContent to be defined');
                     break;
                 case "send":
-                    return SunbirdSdk.instance.telemetryService.saveTelemetry('');
+                    return SunbirdSdk.instance.telemetryService.saveTelemetry(params[0]).subscribe();
                 default:
                     console.log("Please use valid method");
             }
@@ -88,5 +94,28 @@ export class CanvasPlayerService {
                 }
             });
         }
+    }
+
+    showConfirm() {
+        const alert = this.alertCtrl.create({
+            title: 'Confirm',
+            message: 'Would you like to leave this content?',
+            buttons: [
+                {
+                    text: 'CANCEL',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Cancel clicked');
+                    }
+                },
+                {
+                    text: 'OK',
+                    handler: () => {
+                        this.appCtrl.getActiveNav().pop();
+                    }
+                }
+            ]
+        });
+        alert.present();
     }
 }

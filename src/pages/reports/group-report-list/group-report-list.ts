@@ -112,7 +112,7 @@ export class GroupReportListPage {
         const users = this.navParams.get('users');
         const summaryRequest: SummaryRequest = {
             qId: '',
-            uids: [''],
+            uids: uids,
             contentId: this.reportSummary.contentId,
             hierarchyData: null
         };

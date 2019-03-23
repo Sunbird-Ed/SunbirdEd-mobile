@@ -1,4 +1,4 @@
-import {Component, Inject, NgZone, ViewChild} from '@angular/core';
+import { Component, Inject, NgZone, ViewChild } from '@angular/core';
 import {
   AlertController,
   Events,
@@ -10,18 +10,18 @@ import {
   Platform,
   PopoverController
 } from 'ionic-angular';
-import {SocialSharing} from '@ionic-native/social-sharing';
+import { SocialSharing } from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
-import {PreferenceKey, XwalkConstants} from '../../app/app.constant';
-import {Map, ShareUrl} from '@app/app';
-import {BookmarkComponent, ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
-import {AppGlobalService, CourseUtilService, UtilityService} from '@app/service';
-import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
-import {Network} from '@ionic-native/network';
-import {UserAndGroupsPage} from '../user-and-groups/user-and-groups';
-import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
-import {CommonUtilService} from '../../service/common-util.service';
-import {DialogPopupComponent} from '../../component/dialog-popup/dialog-popup';
+import { PreferenceKey, XwalkConstants } from '../../app/app.constant';
+import { Map, ShareUrl } from '@app/app';
+import { BookmarkComponent, ContentActionsComponent, ContentRatingAlertComponent } from '@app/component';
+import { AppGlobalService, CourseUtilService, UtilityService } from '@app/service';
+import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
+import { Network } from '@ionic-native/network';
+import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { CommonUtilService } from '../../service/common-util.service';
+import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
 import {
   Content,
   ContentAccess,
@@ -48,10 +48,10 @@ import {
   TelemetryObject,
   ContentExportResponse
 } from 'sunbird-sdk';
-import {CanvasPlayerService} from '../player/canvas-player.service';
-import {PlayerPage} from '../player/player';
-import {File} from '@ionic-native/file';
-import {Subscription} from 'rxjs';
+import { CanvasPlayerService } from '../player/canvas-player.service';
+import { PlayerPage } from '../player/player';
+import { File } from '@ionic-native/file';
+import { Subscription } from 'rxjs';
 import {
   Environment,
   ImpressionType,
@@ -167,8 +167,8 @@ export class ContentDetailsPage {
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     this.handlePageResume();
-     this.checkDeviceAPILevel();
-     this.checkappAvailability();
+    this.checkDeviceAPILevel();
+    this.checkappAvailability();
   }
 
   ionViewDidLoad() {
@@ -266,7 +266,7 @@ export class ContentDetailsPage {
     this.utilityService.getBuildConfigValue('BASE_URL')
       .then(response => {
         this.baseUrl = response;
-       console.log('url', this.baseUrl);
+        console.log('url', this.baseUrl);
       });
     this.launchPlayer = this.navParams.get('launchplayer');
     this.events.subscribe('playConfig', (config) => {
@@ -298,8 +298,8 @@ export class ContentDetailsPage {
           this.userCount += 1;
         }
       }).catch((error) => {
-      console.error('Error occurred= ', error);
-    });
+        console.error('Error occurred= ', error);
+      });
   }
 
   checkCurrentUserType() {
@@ -355,8 +355,8 @@ export class ContentDetailsPage {
         comment: this.ratingComment,
         popupType: popupType
       }, {
-        cssClass: 'content-rating-alert'
-      });
+          cssClass: 'content-rating-alert'
+        });
       popUp.present({
         ev: event
       });
@@ -473,10 +473,7 @@ export class ContentDetailsPage {
       this.content.contentData.attributions ? this.content.contentData.attributions.join(', ') : '';
     }
     if (this.content.contentData.me_totalRatings) {
-      const rating = this.content.contentData.me_totalRatings.split('.');
-      if (rating && rating[0]) {
-        this.content.contentData.me_totalRatings = rating[0];
-      }
+      this.content.contentData.me_totalRatings = parseInt(this.content.contentData.me_totalRatings, 10) + '';
     }
     this.objId = this.content.identifier;
     this.objVer = this.content.contentData.pkgVersion;
@@ -496,7 +493,7 @@ export class ContentDetailsPage {
     }
 
     if (this.content.contentData.me_totalDownloads) {
-      this.content.contentData.me_totalDownloads = this.content.contentData.me_totalDownloads.split('.')[0];
+      this.content.contentData.me_totalDownloads = parseInt(this.content.contentData.me_totalDownloads, 10) + '';
     }
 
     if (this.navParams.get('isResumedCourse')) {
@@ -731,20 +728,18 @@ export class ContentDetailsPage {
           });
         }
 
-        // For streaming url available
-        // if (event.type === ContentEventType.P) {
-        //   console.log('res.data', res.data);
-        //   this.zone.run(() => {
-        //       this.content.contentData.streamingUrl = res.data.streamingUrl;
-        //       if (res.data.identifier === this.identifier) {
-        //         if (res.data.streamingUrl) {
-        //           // this.playContent.contentData.streamingUrl = res.data.streamingUrl;
-        //         } else {
-        //           this.playOnlineSpinner = false;
-        //         }
-        //     }
-        //   });
-        // }
+        if (event.payload && event.type === ContentEventType.STREAMING_URL_AVAILABLE) {
+          this.zone.run(() => {
+            const eventPayload = event.payload;
+              if (eventPayload.contentId === this.identifier) {
+                if (eventPayload.streamingUrl) {
+                  this.playingContent.contentData.streamingUrl = eventPayload.streamingUrl;
+                } else {
+                  this.playOnlineSpinner = false;
+                }
+            }
+          });
+        }
       });
     }) as any;
   }
@@ -787,10 +782,10 @@ export class ContentDetailsPage {
           }
         });
       }).catch((error: any) => {
-      this.zone.run(() => {
-        console.log('Error: download error =>>>>>', error);
+        this.zone.run(() => {
+          console.log('Error: download error =>>>>>', error);
+        });
       });
-    });
   }
 
   /** function add eclipses to the texts**/
@@ -893,7 +888,7 @@ export class ContentDetailsPage {
       });
 
       if (isStreaming) {
-        const extraInfoMap = {hierarchyInfo: []};
+        const extraInfoMap = { hierarchyInfo: [] };
         if (this.cardData && this.cardData.hierarchyInfo) {
           extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
         }
@@ -907,53 +902,56 @@ export class ContentDetailsPage {
           isMarked: true,
           extraInfo: extraInfoMap
         };
-        const request: ContentAccess = {
-          status: ContentAccessStatus.PLAYED,
-          contentId: this.identifier,
-          contentType: this.content.contentType
-        };
         this.contentService.setContentMarker(req).toPromise()
           .then((data) => {
             console.log('setContentMarker', data);
-            this.profileService.addContentAccess(request).subscribe();
           }).catch(() => {
-        });
+          });
       }
       this.downloadAndPlay = false;
       const request: any = {};
       if (isStreaming) {
         request.streaming = isStreaming;
       }
-
+      const contentAccessRequest: ContentAccess = {
+        status: ContentAccessStatus.PLAYED,
+        contentId: this.identifier,
+        contentType: this.content.contentType
+      };
+      this.profileService.addContentAccess(contentAccessRequest).subscribe();
       this.playerService.getPlayerConfig(this.playingContent, request).subscribe((data) => {
-        console.log("responseData", data);
+        // data.metaData.basePath = data.metaData.basePath.replace(/\/$/, '');
         data['data'] = {};
         if (data.metaData.mimeType === 'application/vnd.ekstep.ecml-archive') {
           console.log('externalApplicationStorageDirectory', this.file.externalApplicationStorageDirectory);
 
-          this.file.checkFile(`file://${data.metaData.basePath}`, 'index.ecml').then((isAvailable) => {
-            console.log('isAvailable', isAvailable);
-            this.canvasPlayerService.xmlToJSon(`${data.metaData.basePath}index.ecml`).then((json) => {
-              console.log('response', json);
-              data['data'] = json;
+          if (!isStreaming) {
+            this.file.checkFile(`file://${data.metaData.basePath}`, 'index.ecml').then((isAvailable) => {
+              console.log('isAvailable', isAvailable);
+              this.canvasPlayerService.xmlToJSon(`${data.metaData.basePath}index.ecml`).then((json) => {
+                console.log('response', json);
+                data['data'] = json;
 
-              this.navCtrl.push(PlayerPage, {config: data});
-            }).catch((error) => {
-              console.log('error1', error);
+                this.navCtrl.push(PlayerPage, { config: data });
+              }).catch((error) => {
+                console.log('error1', error);
+              });
+            }).catch((err) => {
+              console.log('err', err);
+              this.canvasPlayerService.readJSON(`${data.metaData.basePath}index.json`).then((json) => {
+                console.log('response', json);
+                data['data'] = json;
+                this.navCtrl.push(PlayerPage, { config: data });
+              }).catch((e) => {
+                console.log('readJSON error', e);
+              });
             });
-          }).catch((err) => {
-            console.log('err', err);
-            this.canvasPlayerService.readJSON(`${data.metaData.basePath}index.json`).then((json) => {
-              console.log('response', json);
-              data['data'] = json;
-              this.navCtrl.push(PlayerPage, {config: data});
-            }).catch((e) => {
-              console.log('readJSON error', e);
-            });
-          });
+          } else {
+            this.navCtrl.push(PlayerPage, { config: data });
+          }
 
         } else {
-          this.navCtrl.push(PlayerPage, {config: data});
+          this.navCtrl.push(PlayerPage, { config: data });
         }
       });
       //  (<any>window).geniecanvas.play(JSON.stringify(this.playingContent), JSON.stringify(request));
@@ -997,8 +995,8 @@ export class ContentDetailsPage {
       pageName: PageId.CONTENT_DETAIL,
       corRelationList: this.corRelationList
     }, {
-      cssClass: 'content-action'
-    });
+        cssClass: 'content-action'
+      });
     popover.present({
       ev: event
     });
@@ -1023,8 +1021,8 @@ export class ContentDetailsPage {
       corRelationList: this.corRelationList,
       position: 'bottom'
     }, {
-      cssClass: 'bookmark-menu'
-    });
+        cssClass: 'bookmark-menu'
+      });
     popover.present({
       ev: event
     });
@@ -1055,9 +1053,9 @@ export class ContentDetailsPage {
           this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.content.contentType);
           this.social.share('', '', '' + response.exportedFilePath, url);
         }).catch(() => {
-        loader.dismiss();
-        this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
-      });
+          loader.dismiss();
+          this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
+        });
     } else {
       loader.dismiss();
       this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.content.contentType);
@@ -1118,8 +1116,8 @@ export class ContentDetailsPage {
       body: this.commonUtilService.translateMessage('ANDROID_NOT_SUPPORTED_DESC'),
       buttonText: this.commonUtilService.translateMessage('INSTALL_CROSSWALK')
     }, {
-      cssClass: 'popover-alert'
-    });
+        cssClass: 'popover-alert'
+      });
     popover.present();
   }
 }

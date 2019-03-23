@@ -134,13 +134,17 @@ export class FormConstant {
 }
 
 export class PreferenceKey {
-    public static readonly SELECTED_LANGUAGE_CODE = 'selected_language_code';
-    public static readonly SELECTED_LANGUAGE = 'selected_language';
-    public static readonly SELECTED_USER_TYPE = 'selected_user_type';
-    public static readonly COURSE_IDENTIFIER = 'course_identifier';
-    public static readonly IS_ONBOARDING_COMPLETED = 'is_onboarding_settings_completed';
-    public static readonly IS_BOOKMARK_VIEWED = 'is_bookmark_viewed';
-    public static readonly CONTENT_CONTEXT = 'content_context';
+    public static readonly SELECTED_LANGUAGE_CODE = 'sunbirdselected_language_code';
+    public static readonly SELECTED_LANGUAGE = 'sunbirdselected_language';
+    public static readonly SELECTED_USER_TYPE = 'sunbirdselected_user_type';
+    public static readonly COURSE_IDENTIFIER = 'sunbirdcourse_identifier';
+    public static readonly IS_ONBOARDING_COMPLETED = 'sunbirdis_onboarding_settings_completed';
+    public static readonly IS_BOOKMARK_VIEWED = 'sunbirdis_bookmark_viewed';
+    public static readonly CONTENT_CONTEXT = 'sunbirdcontent_context';
+    public static readonly GUEST_USER_ID_BEFORE_LOGIN = 'sunbirdGUEST_USER_ID_BEFORE_LOGIN';
+    public static readonly KEY_SUNBIRD_SUPPORT_FILE_PATH = 'sunbirdsunbird_support_file_path';
+    public static readonly KEY_DATA_SYNC_TYPE = 'sunbirdsync_config';
+    public static readonly KEY_DATA_SYNC_TIME = 'sunbirddata_sync_time';
 }
 
 export class GenericAppConfig {

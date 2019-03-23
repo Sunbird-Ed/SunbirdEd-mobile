@@ -1,5 +1,6 @@
 if (!window.genieservice) {
     getCurrentUser = function () {
+        console.log("Inside getCurrentUser");
         return window.parent.handleAction('getCurrentUser');
     }
 
@@ -17,6 +18,10 @@ if (!window.genieservice) {
 
     getRelatedContent = function () {
         return window.parent.handleAction('getRelatedContent');
+    }
+
+    getRelevantContent = function (req) {
+        return window.parent.handleAction('getRelevantContent', [req]);
     }
 
     getContentList = function (filter) {
@@ -43,18 +48,26 @@ if (!window.genieservice) {
         return window.parent.handleAction('launchContent');
     }
 
+    sendTelemetry =  function (data) {
+		return new Promise(function (resolve, reject) {
+			resolve(data)
+		});
+	}
+
     window.genieservice = (function () {
         return {
             getCurrentUser,
             getAllUserProfile,
             setUser,
             getContent,
+            getRelevantContent,
             getRelatedContent,
             getContentList,
             sendFeedback,
             endGenieCanvas,
             endContent,
-            launchContent
+            launchContent,
+            sendTelemetry
         }
     })();
     

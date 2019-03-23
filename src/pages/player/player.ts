@@ -26,8 +26,7 @@ export class PlayerPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     private canvasPlayerService: CanvasPlayerService,
-    private platform: Platform,
-    private alertCtrl: AlertController
+    private platform: Platform
   ) {
     this.canvasPlayerService.handleAction();
     // this.canvasPlayerService.xmlToJSon('../assets/sample.xml');
@@ -35,52 +34,51 @@ export class PlayerPage {
 
   ionViewWillEnter() {
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      this.showConfirm();
+      this.canvasPlayerService.showConfirm();
     }, 11);
   }
 
 
   ionViewDidLoad() {
     let that = this;
+    // this.getConfiguration();
     this.config = this.navParams.get('config');
+    
     let previewElement: HTMLIFrameElement = document.getElementById('preview') as HTMLIFrameElement;
-    previewElement.src = 'build/content-player/preview.html?date=' + new Date().toLocaleString();
+    //previewElement.src = 'build/content-player/preview.html?date=' + new Date().toLocaleString();
+    previewElement.contentWindow.location.reload();
     previewElement.onload = function () {
+      that.config['context'].hierarchyInfo = that.config['metaData'].hierarchyInfo;
       that.config['metaData'].contentData.basePath = that.config['metaData'].basePath.replace(/\/$/, "");
-      that.config['metaData'].contentData.basepath = that.config['metaData'].basePath.replace(/\/$/, "");
-      that.config['metadata'] = that.config['metaData'].contentData;
+      that.config['metaData'].contentData.basepath = that.config['metaData'].basePath.replace(/\/$/, "");      
+      that.config['metadata'] = that.config['metaData'];
+      that.config['uid'] = that.config['context'].actor.id;
+
+      console.log("that.config['context'].actor.id", that.config['context'].actor.id);
       delete that.config['metaData'];
       console.log("config", that.config);
-
-      (previewElement['contentWindow'] as any).initializePreview(that.config);
+      setTimeout(() => {
+        (previewElement['contentWindow'] as any).initializePreview(that.config);
+      }, 200);
     }
+  }
+
+  getConfiguration() {
+    var mobileConfig = this.navParams.get('config');
+    // mobileConfig.config.metaData.basePath = mobileConfig.config.metaData.basePath.replace(/\/$/, "");
+    // build/content-player/preview.htmlmobileConfig.config.metaData.basepath = mobileConfig.config.metaData.basePath;
+
+    var config = {
+      "context": mobileConfig.context,
+      "config": mobileConfig.config, 
+      "metadata": mobileConfig.metaData, 
+      "data": mobileConfig.data
+    }
+    return config;
   }
 
   ionViewWillLeave() {
     this.unregisterBackButton();
   }
 
-  showConfirm() {
-    const alert = this.alertCtrl.create({
-      title: 'Confirm',
-      message: 'Would you like to leave this content?',
-      buttons: [
-        {
-          text: 'CANCEL',
-          role: 'cancel',
-          handler: () => {
-            console.log('Cancel clicked');
-          }
-        },
-        {
-          text: 'OK',
-          handler: () => {
-            console.log('Okay clicked');
-            this.navCtrl.pop();
-          }
-        }
-      ]
-    });
-    alert.present();
-  }
 }
