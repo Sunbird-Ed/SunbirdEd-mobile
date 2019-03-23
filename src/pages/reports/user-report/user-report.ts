@@ -30,7 +30,7 @@ import {
 export class UserReportPage {
   profile: any;
   downloadDirectory: string;
-  reportSummary: ReportSummary;
+  reportSummaryRequest: Partial<ReportSummary>;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -119,19 +119,19 @@ export class UserReportPage {
 
     const that = this;
 
-    this.reportSummary = this.navParams.get('report');
-    this.contentName = this.reportSummary.name;
+    this.reportSummaryRequest = this.navParams.get('report');
+    this.contentName = this.reportSummaryRequest.name;
     this.handle =  this.navParams.get('handle');
     const summaryRequest: SummaryRequest = {
       qId: '',
-      uids: [this.reportSummary.uid],
-      contentId: this.reportSummary.contentId,
+      uids: [this.reportSummaryRequest.uid],
+      contentId: this.reportSummaryRequest.contentId,
       hierarchyData: null,
   };
 
     that.summarizerService.getLearnerAssessmentDetails(summaryRequest).toPromise()
     .then(reportList => {
-      const data = reportList.get(this.reportSummary.uid);
+      const data = reportList.get(this.reportSummaryRequest.uid);
       const rows = data.reportDetailsList.map(row => {
         this.response = data.reportDetailsList;
           return {
@@ -181,8 +181,8 @@ export class UserReportPage {
     const contentstarttime = this.datePipe.transform(new Date(teams[0].timestamp), 'dd-MM-yyyy hh:mm:ss a');
     for (let m = 0; m < anzahlTeams; m++) {
       line += 'Device ID' + ',' + this.deviceId + '\n';
-      line += 'User name (User ID)' + ',' + this.handle + '(' + this.reportSummary.uid + ')' + '\n';
-      line += 'Content name (Content ID)' + ',' + this.reportSummary.name + '(' + this.reportSummary.contentId + ')' + '\n';
+      line += 'User name (User ID)' + ',' + this.handle + '(' + this.reportSummaryRequest.uid + ')' + '\n';
+      line += 'Content name (Content ID)' + ',' + this.reportSummaryRequest.name + '(' + this.reportSummaryRequest.contentId + ')' + '\n';
       line += 'Content started time' + ',' + contentstarttime + '\n';
       line += 'Total Time' + ',' + this.formatTime(this.totalTime) + '\n';
       line += 'Total Score' + ',' + ' ' + this.totalScore + '/' + this.maxTotalScore  + '\n';
