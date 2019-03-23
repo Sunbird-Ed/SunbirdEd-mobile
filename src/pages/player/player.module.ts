@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { PlayerPage } from './player';
 import { CanvasPlayerService } from './canvas-player.service';
+import { ScreenOrientation } from '@ionic-native/screen-orientation';
 
 @NgModule({
   declarations: [
@@ -11,6 +12,6 @@ import { CanvasPlayerService } from './canvas-player.service';
     IonicPageModule.forChild(PlayerPage),
   ],
   entryComponents: [PlayerPage],
-  providers: [CanvasPlayerService]
+  providers: [CanvasPlayerService, ScreenOrientation as any]
 })
 export class PlayerPageModule {}
