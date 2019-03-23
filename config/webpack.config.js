@@ -9,16 +9,7 @@ const customConfig = {
     alias: {
       '@app': path.resolve('src'),
     }
-  },
-  plugins: [
-    new CopyWebpackPlugin([
-      {
-        from: './content-player/',
-        to: './content-player',
-        toType: 'file'
-      }
-    ]),
-  ]
+  }
 };
 
 module.exports = function () {
