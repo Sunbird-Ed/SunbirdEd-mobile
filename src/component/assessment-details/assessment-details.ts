@@ -46,11 +46,12 @@ export class AssessmentDetailsComponent implements OnInit {
         subType = InteractSubtype.USER_CLICKED;
         telemetryObject = new TelemetryObject(event.row.qid ? event.row.qid : '', ObjectType.USER, undefined);
 
-        const reportSummary: ReportSummary = new ReportSummary();
-        reportSummary.name = row.name;
-        reportSummary.uid = row.uid;
-        reportSummary.contentId = row.contentId;
-        this.navCtrl.push(UserReportPage, { 'report': reportSummary });
+        const reportSummaryRequest: Partial<ReportSummary> = {
+          name: row.name,
+          uid: row.uid,
+          contentId: row.contentId
+        };
+        this.navCtrl.push(UserReportPage, { 'report': reportSummaryRequest });
       } else if (row.qid) {
         subType = InteractSubtype.QUESTION_CLICKED;
         telemetryObject = new TelemetryObject(event.row.uid ? event.row.uid : '', ObjectType.QUESTION, undefined);
