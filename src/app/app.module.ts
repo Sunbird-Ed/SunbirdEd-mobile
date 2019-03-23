@@ -162,7 +162,7 @@ export function sdkDriverFactory() {
 ];
 }
 
-export const sunbirdSdkServicesProvidersFactory = sdkDriverFactory;
+export const sunbirdSdkServicesProvidersFactory: () => Provider[] = sdkDriverFactory;
 
 export const sunbirdSdkFactory =
   () => {

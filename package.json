@@ -123,7 +123,7 @@
     "shelljs": "^0.8.1",
     "ts-loader": "^3.5.0",
     "ts-node": "^4.1.0",
-    "typescript": "2.9.2",
+    "typescript": "2.7.2",
     "webpack-merge": "^4.1.4",
     "axios": "^0.18.0",
     "uuid": "^3.3.2",
