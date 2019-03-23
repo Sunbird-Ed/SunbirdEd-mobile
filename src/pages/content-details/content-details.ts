@@ -728,20 +728,18 @@ export class ContentDetailsPage {
           });
         }
 
-        // For streaming url available
-        // if (event.type === ContentEventType.P) {
-        //   console.log('res.data', res.data);
-        //   this.zone.run(() => {
-        //       this.content.contentData.streamingUrl = res.data.streamingUrl;
-        //       if (res.data.identifier === this.identifier) {
-        //         if (res.data.streamingUrl) {
-        //           // this.playContent.contentData.streamingUrl = res.data.streamingUrl;
-        //         } else {
-        //           this.playOnlineSpinner = false;
-        //         }
-        //     }
-        //   });
-        // }
+        if (event.payload && event.type === ContentEventType.STREAMING_URL_AVAILABLE) {
+          this.zone.run(() => {
+            const eventPayload = event.payload;
+              if (eventPayload.contentId === this.identifier) {
+                if (eventPayload.streamingUrl) {
+                  this.playingContent.contentData.streamingUrl = eventPayload.streamingUrl;
+                } else {
+                  this.playOnlineSpinner = false;
+                }
+            }
+          });
+        }
       });
     }) as any;
   }
@@ -904,15 +902,9 @@ export class ContentDetailsPage {
           isMarked: true,
           extraInfo: extraInfoMap
         };
-        const request: ContentAccess = {
-          status: ContentAccessStatus.PLAYED,
-          contentId: this.identifier,
-          contentType: this.content.contentType
-        };
         this.contentService.setContentMarker(req).toPromise()
           .then((data) => {
             console.log('setContentMarker', data);
-            this.profileService.addContentAccess(request).subscribe();
           }).catch(() => {
           });
       }
@@ -921,9 +913,14 @@ export class ContentDetailsPage {
       if (isStreaming) {
         request.streaming = isStreaming;
       }
-
+      const contentAccessRequest: ContentAccess = {
+        status: ContentAccessStatus.PLAYED,
+        contentId: this.identifier,
+        contentType: this.content.contentType
+      };
+      this.profileService.addContentAccess(contentAccessRequest).subscribe();
       this.playerService.getPlayerConfig(this.playingContent, request).subscribe((data) => {
-        console.log("responseData", data);
+        // data.metaData.basePath = data.metaData.basePath.replace(/\/$/, '');
         data['data'] = {};
         if (data.metaData.mimeType === 'application/vnd.ekstep.ecml-archive') {
           console.log('externalApplicationStorageDirectory', this.file.externalApplicationStorageDirectory);
