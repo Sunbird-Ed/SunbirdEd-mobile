@@ -23,12 +23,10 @@ org.ekstep.contentrenderer.baseEndepage.extend({
     },
     gotTohome: function() {
         if (!isbrowserpreview) {
-            // EkstepRendererAPI.hideEndPage();
             stageId = !_.isUndefined(Renderer) ? Renderer.theme._currentStage : " ";
             TelemetryService.interact("TOUCH", "gc_genie", "TOUCH", {
                 stageId: stageId
             });
-            // exitApp();
             genieservice.endGenieCanvas();
         };
     }

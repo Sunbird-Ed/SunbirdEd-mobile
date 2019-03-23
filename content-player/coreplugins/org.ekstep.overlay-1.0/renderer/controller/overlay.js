@@ -428,7 +428,7 @@ app.compileProvider.directive('goodJob', function($rootScope) {
                 TelemetryService.interact("TOUCH", id ? id : "gc_popupclose", "TOUCH", {
                     stageId: ($rootScope.pageId == "endpage" ? "endpage" : $rootScope.stageId)
                 });
-                window.PLAYER_STAGE_START_TIME = Date.now();
+                window.PLAYER_STAGE_START_TIME = Date.now()/1000;
                 if (EkstepRendererAPI.hasEventListener(EkstepRendererEvents['renderer:device:back'])) EkstepRendererAPI.removeEventListener(EkstepRendererEvents['renderer:device:back'], $scope.hidePopup, $scope);
                 $scope.showOverlayGoodJob = false;
                 $scope.showOverlayTryAgain = false;
