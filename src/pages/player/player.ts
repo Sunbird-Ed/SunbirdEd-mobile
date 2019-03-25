@@ -32,12 +32,7 @@ export class PlayerPage {
     this.config = this.navParams.get('config');
 
     let previewElement: HTMLIFrameElement = document.getElementById('preview') as HTMLIFrameElement;
-    this.config['context'].hierarchyInfo = this.config['metaData'].hierarchyInfo;
-    this.config['metaData'].contentData.basePath = this.config['metaData'].basePath.replace(/\/$/, "");
-    this.config['metaData'].contentData.basepath = this.config['metaData'].basePath.replace(/\/$/, "");
-    this.config['metadata'] = this.config['metaData'];
     this.config['uid'] = this.config['context'].actor.id;
-    delete this.config['metaData'];
     previewElement.contentWindow.location.reload();
     previewElement.onload = () => {
 
@@ -50,16 +45,6 @@ export class PlayerPage {
 
   ionViewDidEnter() {
     this.screenOrientation.lock('landscape');
-  }
-  getConfiguration() {
-    var mobileConfig = this.navParams.get('config');
-    var config = {
-      "context": mobileConfig.context,
-      "config": mobileConfig.config,
-      "metadata": mobileConfig.metaData,
-      "data": mobileConfig.data
-    }
-    return config;
   }
 
   ionViewWillLeave() {

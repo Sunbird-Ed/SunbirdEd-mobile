@@ -922,30 +922,24 @@ export class ContentDetailsPage{
       };
       this.profileService.addContentAccess(contentAccessRequest).subscribe();
       this.playerService.getPlayerConfig(this.playingContent, request).subscribe((data) => {
-        // data.metaData.basePath = data.metaData.basePath.replace(/\/$/, '');
         data['data'] = {};
-        if (data.metaData.mimeType === 'application/vnd.ekstep.ecml-archive') {
-          console.log('externalApplicationStorageDirectory', this.file.externalApplicationStorageDirectory);
-
+        if (data.metadata.mimeType === 'application/vnd.ekstep.ecml-archive') {
           if (!isStreaming) {
-            this.file.checkFile(`file://${data.metaData.basePath}`, 'index.ecml').then((isAvailable) => {
-              console.log('isAvailable', isAvailable);
-              this.canvasPlayerService.xmlToJSon(`${data.metaData.basePath}index.ecml`).then((json) => {
-                console.log('response', json);
+            this.file.checkFile(`file://${data.metadata.basePath}/`, 'index.ecml').then((isAvailable) => {
+              this.canvasPlayerService.xmlToJSon(`${data.metadata.basePath}/index.ecml`).then((json) => {
                 data['data'] = json;
 
                 this.navCtrl.push(PlayerPage, { config: data });
               }).catch((error) => {
-                console.log('error1', error);
+                console.error('error1', error);
               });
             }).catch((err) => {
-              console.log('err', err);
-              this.canvasPlayerService.readJSON(`${data.metaData.basePath}index.json`).then((json) => {
-                console.log('response', json);
+              console.error('err', err);
+              this.canvasPlayerService.readJSON(`${data.metadata.basePath}/index.json`).then((json) => {
                 data['data'] = json;
                 this.navCtrl.push(PlayerPage, { config: data });
               }).catch((e) => {
-                console.log('readJSON error', e);
+                console.error('readJSON error', e);
               });
             });
           } else {
@@ -956,7 +950,6 @@ export class ContentDetailsPage{
           this.navCtrl.push(PlayerPage, { config: data });
         }
       });
-      //  (<any>window).geniecanvas.play(JSON.stringify(this.playingContent), JSON.stringify(request));
     }
   }
 
