@@ -1,4 +1,4 @@
-import { Component, Inject, NgZone, ViewChild } from '@angular/core';
+import { Component, Inject, NgZone, ViewChild, OnDestroy } from '@angular/core';
 import {
   AlertController,
   Events,
@@ -68,7 +68,7 @@ declare const cordova;
   selector: 'page-content-details',
   templateUrl: 'content-details.html',
 })
-export class ContentDetailsPage {
+export class ContentDetailsPage{
   apiLevel: number;
   appAvailability: string;
   content: Content;
@@ -211,7 +211,7 @@ export class ContentDetailsPage {
       this.generateTelemetry();
     }
 
-    this.setContentDetails(this.identifier, false);
+    this.setContentDetails(this.identifier, this.isPlayerLaunched);
     this.subscribeGenieEvent();
   }
 
@@ -219,7 +219,6 @@ export class ContentDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillLeave(): void {
-    this.resume.unsubscribe();
     if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
     }
@@ -233,6 +232,7 @@ export class ContentDetailsPage {
     }
     this.popToPreviousPage(true);
     this.backButtonFunc();
+
   }
 
   handleDeviceBackButton() {
@@ -252,14 +252,15 @@ export class ContentDetailsPage {
 
   handlePageResume() {
     // This is to know when the app has come to foreground
-    this.resume = this.platform.resume.subscribe(() => {
-      this.isContentPlayed = true;
-      if (this.isPlayerLaunched) {
-        this.isPlayerLaunched = false;
-        this.setContentDetails(this.identifier, false /* No Automatic Rating for 1.9.0 */);
-      }
-      // this.updateContentProgress();
-    });
+    // this.resume = this.platform.resume.subscribe(() => {
+    //   console.log('Page Resumed');
+    //   this.isContentPlayed = true;
+    //   if (this.isPlayerLaunched) {
+    //     this.isPlayerLaunched = false;
+    //     this.setContentDetails(this.identifier, true /* No Automatic Rating for 1.9.0 */);
+    //   }
+    //   // this.updateContentProgress();
+    // });
   }
 
   subscribePlayEvent() {
@@ -415,6 +416,7 @@ export class ContentDetailsPage {
           }
 
           if (showRating) {
+            this.isPlayerLaunched = false;
             if (this.userRating === 0) {
               this.rateContent('automatic');
             }
@@ -731,12 +733,12 @@ export class ContentDetailsPage {
         if (event.payload && event.type === ContentEventType.STREAMING_URL_AVAILABLE) {
           this.zone.run(() => {
             const eventPayload = event.payload;
-              if (eventPayload.contentId === this.identifier) {
-                if (eventPayload.streamingUrl) {
-                  this.playingContent.contentData.streamingUrl = eventPayload.streamingUrl;
-                } else {
-                  this.playOnlineSpinner = false;
-                }
+            if (eventPayload.contentId === this.identifier) {
+              if (eventPayload.streamingUrl) {
+                this.playingContent.contentData.streamingUrl = eventPayload.streamingUrl;
+              } else {
+                this.playOnlineSpinner = false;
+              }
             }
           });
         }

@@ -29,6 +29,7 @@ import {
   DownloadProgress,
   EventsBusEvent,
   EventsBusService,
+  FetchEnrolledCourseRequest,
   PageAssembleCriteria,
   PageAssembleService,
   PageName,
@@ -313,10 +314,9 @@ export class CoursesPage implements OnInit {
   getEnrolledCourses(refreshEnrolledCourses: boolean = true, returnRefreshedCourses: boolean = false): void {
     this.spinner(true);
 
-    const option = {
+    const option: FetchEnrolledCourseRequest = {
       userId: this.userId,
-      refreshEnrolledCourses: refreshEnrolledCourses,
-      returnRefreshedEnrolledCourses: returnRefreshedCourses
+      returnFreshCourses: returnRefreshedCourses
     };
     this.courseService.getEnrolledCourses(option).toPromise()
       .then((enrolledCourses) => {

@@ -23,6 +23,7 @@ import {
   ProfileService,
   ProfileType,
   SharedPreferences,
+  SunbirdSdk,
   TelemetryAutoSyncUtil,
   TelemetryService,
 } from 'sunbird-sdk';
@@ -32,9 +33,15 @@ import {TabsPage} from '@app/pages/tabs/tabs';
 import {ContainerService} from '@app/service/container.services';
 import {AndroidPermissionsService} from '../service/android-permissions/android-permissions.service';
 import {AndroidPermission, AndroidPermissionsStatus} from "@app/service/android-permissions/android-permission";
+import {SplashcreenTelemetryActionHandlerDelegate} from "@app/service/sunbird-splashscreen/splashcreen-telemetry-action-handler-delegate";
+import {SplashscreenImportActionHandlerDelegate} from "@app/service/sunbird-splashscreen/splashscreen-import-action-handler-delegate";
 
 @Component({
-  templateUrl: 'app.html'
+  templateUrl: 'app.html',
+  providers: [
+    SplashcreenTelemetryActionHandlerDelegate,
+    SplashscreenImportActionHandlerDelegate
+  ]
 })
 export class MyApp {
 
@@ -72,6 +79,8 @@ export class MyApp {
     private popoverCtrl: PopoverController,
     private tncUpdateHandlerService: TncUpdateHandlerService,
     private utilityService: UtilityService,
+    private splashcreenTelemetryActionHandlerDelegate: SplashcreenTelemetryActionHandlerDelegate,
+    private splashscreenImportActionHandlerDelegate: SplashscreenImportActionHandlerDelegate
   ) {
     this.telemetryAutoSyncUtil = new TelemetryAutoSyncUtil(this.telemetryService);
     platform.ready().then(async () => {
@@ -81,21 +90,23 @@ export class MyApp {
       this.autoSyncTelemetry();
       this.subscribeEvents();
 
-      await this.registerDeeplinks();
-      await this.openrapDiscovery();
-      await this.saveDefaultSyncSetting();
-      await this.showAppWalkThroughScreen();
-      await this.checkAppUpdateAvailable();
-      await this.makeEntriesInSupportFolder();
+
+      this.registerDeeplinks();
+      this.startOpenrapDiscovery();
+      this.saveDefaultSyncSetting();
+      this.showAppWalkThroughScreen();
+      this.checkAppUpdateAvailable();
+      this.requestAppPermissions();
+      // await this.makeEntriesInSupportFolder();
+      this.checkForTncUpdate();
+      this.handleSunbirdSplashScreenActions();
+      
       await this.getSelectedLanguage();
-      await this.checkForTncUpdate();
       await this.navigateToAppropriatePage();
 
-      (<any>window).splashscreen.hide();
       window['thisRef'] = this;
       statusBar.styleDefault();
       this.handleBackButton();
-
     });
 
   }
@@ -338,8 +349,8 @@ export class MyApp {
     }
   }
 
-  private async makeEntriesInSupportFolder() {
-    this.permission.checkPermissions(this.permissionList)
+  private async requestAppPermissions() {
+    return this.permission.checkPermissions(this.permissionList)
       .mergeMap((statusMap: { [key: string]: AndroidPermissionsStatus }) => {
         const toRequest: AndroidPermission[] = [];
 
@@ -354,8 +365,10 @@ export class MyApp {
         }
 
         return this.permission.requestPermissions(toRequest);
-      }).do(() => this.makeEntryInSupportFolder())
-      .toPromise();
+      }).toPromise();
+  }
+
+  private async makeEntriesInSupportFolder() {
   }
 
   private async makeEntryInSupportFolder() {
@@ -439,14 +452,29 @@ export class MyApp {
     await this.preferences.putString('show_app_walkthrough_screen', showAppWalkthrough).toPromise();
   }
 
-  // TODO: this method will be used to communicate with the openrap device
-  private async openrapDiscovery() {
+  private async startOpenrapDiscovery(): Promise<undefined> {
     if (this.appGlobalService.OPEN_RAPDISCOVERY_ENABLED) {
-      (<any>window).openrap.startDiscovery(
-        () => {
-        }, () => {
-        }
-      );
+      return Observable.create((observer) => {
+        (<any>window).openrap.startDiscovery(
+          (response: { ip: string, actionType: 'connected' | 'disconnected' }) => {
+            observer.next(response);
+          }, (e) => {
+            observer.error(e);
+          }
+        );
+      }).do((response: { ip?: string, actionType: 'connected' | 'disconnected' }) => {
+        SunbirdSdk.instance.updateContentServiceConfig({
+          host: response.actionType === 'connected' ? response.ip : undefined
+        });
+
+        SunbirdSdk.instance.updatePageServiceConfig({
+          host: response.actionType === 'connected' ? response.ip : undefined
+        });
+
+        SunbirdSdk.instance.updateTelemetryConfig({
+          host: response.actionType === 'connected' ? response.ip : undefined
+        });
+      }).toPromise();
     }
   }
 
@@ -461,6 +489,33 @@ export class MyApp {
       }).catch(err => {
         // console.log('checkNewAppVersion err', err, err instanceof NetworkError);
       });
+  }
+
+  private async handleSunbirdSplashScreenActions(): Promise<undefined> {
+    const stringifiedActions = await new Promise<string>((resolve) => {
+      splashscreen.getActions((actions) => {
+        resolve(actions);
+      });
+    });
+
+    const actions: { type: string, payload: any }[] = JSON.parse(stringifiedActions);
+
+    for (const action of actions) {
+      switch (action.type) {
+        case 'TELEMETRY': {
+          await this.splashcreenTelemetryActionHandlerDelegate.onAction(action.type, action.payload).toPromise();
+          break;
+        }
+        case 'IMPORT': {
+          await this.splashscreenImportActionHandlerDelegate.onAction(action.type, action.payload).toPromise();
+          break;
+        }
+        default:
+          return;
+      }
+    }
+
+    splashscreen.hide();
   }
 
   private autoSyncTelemetry() {
