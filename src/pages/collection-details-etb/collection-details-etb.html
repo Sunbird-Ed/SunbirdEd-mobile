@@ -14,47 +14,6 @@
       [currentCount]="currentCount" [queuedIdentifiers]="queuedIdentifiers"
       [localImage]="localImage" [showDownloadBtn]="showDownloadBtn" [isDepthChild]='isDepthChild'
       [isDownloadStarted]="isDownloadStarted" [defaultAppIcon]="defaultAppIcon"></detail-card>
-
-    <!-- Testing with data from API -->
-    <!-- <section class="MT5 P0">
-      <div class="details-card MB5">
-        <div class="content">
-          <div class="left">
-            <div class="item">
-              <div class="flex">
-                <div>
-                  <div class="title"> {{(contentDetail?.name && contentDetail?.name?.length > 25) ? (contentDetail?.name
-                      |
-                      slice:0:25) + '...' : (contentDetail?.name)}}</div>
-                </div>
-                <div *ngIf="contentDetail?.creator || contentDetail?.owner">
-                  <span class="light-black f12">by</span>
-                  <span class="info f16">{{ contentDetail?.creator || contentDetail?.owner }}</span>
-                </div>
-                <div *ngIf="contentDetail?.gradeLevel || contentDetail?.subject">
-                  <span class="info">{{contentDetail?.gradeLevel}}</span>
-                  <span class="separator-dot"></span>
-                  <span class="info">{{contentDetail?.subject}}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="right W-88">
-            <div class="img-container">
-              <img src="{{ localImage || contentDetail?.appIcon || defaultAppIcon}}">
-            </div>
-            <div *ngIf="contentDetail?.me_totalRatings" class="rating" (click)="rateContent()">
-              <span class="MR5 f14 font-weight-bold">{{ contentDetail?.me_totalRatings }}</span>
-              <span class="yellow-gold">
-                <ion-icon ios="ios-star" md="md-star"></ion-icon>
-              </span>
-            </div>
-          </div>
-        </div>
-        <div class="separator-line"></div>
-      </div>
-    </section> -->
-
     <!-- End of the Parent Card -->
 
     <!-- Import content loader -->
@@ -91,41 +50,6 @@
               </div>
             </ion-col>
           </ion-row>
-        <!-- </ion-grid> -->
-  <!-- Import content loader -->
-  <!-- <div *ngIf="showChildrenLoader">
-    <ion-row style="padding-top: 30px;" padding>
-      <ion-col text-center>
-        <p>{{ 'LOADING_CONTENT' | translate }}...</p>
-      </ion-col>
-    </ion-row>
-  </div> -->
-  <!-- End import content -->
-
-
-
-          <!-- new -->
-          <!-- <ion-grid class="sb-accordian-header" (click)="toggleGroup(i)"> -->
-          <!-- <ion-row (click)="toggleGroup(i)" *ngIf="item?.children">
-            <ion-col col-11>
-              <div class="sb-topic-text"> {{item?.contentData?.name}}</div>
-            </ion-col>
-            <ion-col col-1 *ngIf="!isGroupShown(i)">
-              <div>
-                <ion-icon ios="ios-arrow-dropdown" md="md-arrow-dropdown" class="sb-accordian-arrow"></ion-icon>
-              </div>
-            </ion-col>
-            <ion-col col-1 *ngIf="isGroupShown(i)">
-              <div>
-                <ion-icon ios="ios-arrow-dropup" md="md-arrow-dropup" class="sb-accordian-arrow"></ion-icon>
-              </div>
-            </ion-col>
-          </ion-row> -->
-          <!-- <div *ngIf="!item?.children"> -->
-          <!-- <div class="P10 MT5"
-              *ngIf="item?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && item?.children">
-              {{item?.contentData?.name}}
-            </div> -->
           <ion-row *ngIf="item?.contentData?.mimeType !== 'application/vnd.ekstep.content-collection' && !item?.children"
             (click)="navigateToDetailsPage(item, depth + '.' + (i + 1))">
             <ion-col col-1>

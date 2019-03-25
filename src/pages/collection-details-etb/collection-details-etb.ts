@@ -382,49 +382,6 @@ export class CollectionDetailsEtbPage {
       });
   }
 
-  /**
-   * Function to rate content
-   */
-  rateContent() {
-    if (!this.guestUser) {
-      if (this.contentDetail.isAvailableLocally) {
-        const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
-          content: this.contentDetail,
-          rating: this.userRating,
-          comment: this.ratingComment,
-          pageId: PageId.COLLECTION_DETAIL,
-          sbPopoverHeading: this.commonUtilService.translateMessage('RATE_THE_CONTENT'),
-          actionsButtons: [
-            {
-              btntext: 'Rate',
-              btnClass: 'popover-color'
-            },
-          ],
-        },
-          {
-            cssClass: 'sb-popover info'
-          });
-        popUp.present();
-        popUp.onDidDismiss(data => {
-          if (data && data.message === 'rating.success') {
-            this.userRating = data.rating;
-            this.ratingComment = data.comment;
-          }
-        });
-      } else {
-        this.commonUtilService.showToast('TRY_BEFORE_RATING');
-      }
-    } else {
-      if (this.profileType === ProfileType.TEACHER) {
-        this.commonUtilService.showToast('SIGNIN_TO_USE_FEATURE');
-      }
-    }
-  }
-  /**
- * Get the session to know if the user is logged-in or guest
- *
- */
-
   checkLoggedInOrGuestUser() {
     this.guestUser = !this.appGlobalService.isUserLoggedIn();
   }
