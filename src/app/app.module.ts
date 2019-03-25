@@ -34,76 +34,135 @@ export const translateHttpLoaderFactory = (httpClient: HttpClient) => {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
 };
 
-export const sunbirdSdkServicesProvidersFactory: () => Provider[] = () => {
+export function authService() {
+  return SunbirdSdk.instance.authService;
+}
+export function pageAssembleService() {
+  return SunbirdSdk.instance.pageAssembleService;
+}
+export function dbService() {
+  return SunbirdSdk.instance.dbService;
+}
+export function courseService() {
+  return SunbirdSdk.instance.courseService;
+}
+export function sharedPreferences() {
+  return SunbirdSdk.instance.sharedPreferences;
+}
+export function apiService() {
+  return SunbirdSdk.instance.apiService;
+}
+export function profileService() {
+  return SunbirdSdk.instance.profileService;
+}
+export function groupService() {
+  return SunbirdSdk.instance.groupService;
+}
+export function frameworkService() {
+  return SunbirdSdk.instance.frameworkService;
+}
+export function frameworkUtilService() {
+  return SunbirdSdk.instance.frameworkUtilService;
+}
+export function systemSettingsService() {
+  return SunbirdSdk.instance.systemSettingsService;
+}
+export function telemetryService() {
+  return SunbirdSdk.instance.telemetryService;
+}
+export function contentService() {
+  return SunbirdSdk.instance.contentService;
+}
+export function contentFeedbackService() {
+  return SunbirdSdk.instance.contentFeedbackService;
+}
+export function summarizerService() {
+  return SunbirdSdk.instance.summarizerService;
+}
+export function eventsBusService() {
+  return SunbirdSdk.instance.eventsBusService;
+}
+export function deviceInfo() {
+  return SunbirdSdk.instance.deviceInfo;
+}
+export function playerService() {
+  return SunbirdSdk.instance.playerService;
+}
+export function formService() {
+  return SunbirdSdk.instance.formService;
+}
+export function sdkDriverFactory() {
   return [{
     provide: 'SDK_CONFIG',
-    useFactory: () => SunbirdSdk.instance.authService
+    useFactory: authService
   }, {
     provide: 'AUTH_SERVICE',
-    useFactory: () => SunbirdSdk.instance.authService
+    useFactory: authService
   }, {
     provide: 'DB_SERVICE',
-    useFactory: () => SunbirdSdk.instance.dbService
+    useFactory: dbService
   }, {
     provide: 'COURSE_SERVICE',
-    useFactory: () => SunbirdSdk.instance.courseService
+    useFactory: courseService
   }, {
     provide: 'SHARED_PREFERENCES',
-    useFactory: () => SunbirdSdk.instance.sharedPreferences
+    useFactory: sharedPreferences
   }, {
     provide: 'API_SERVICE',
-    useFactory: () => SunbirdSdk.instance.apiService
+    useFactory: apiService
   }, {
     provide: 'PAGE_ASSEMBLE_SERVICE',
-    useFactory: () => SunbirdSdk.instance.pageAssembleService
+    useFactory: pageAssembleService
   }, {
     provide: 'GROUP_SERVICE',
-    useFactory: () => SunbirdSdk.instance.groupService
+    useFactory: groupService
   }, {
     provide: 'PROFILE_SERVICE',
-    useFactory: () => SunbirdSdk.instance.profileService
+    useFactory: profileService
   }, {
     provide: 'DB_SERVICE',
-    useFactory: () => SunbirdSdk.instance.dbService
+    useFactory: dbService
   }, {
     provide: 'FRAMEWORK_SERVICE',
-    useFactory: () => SunbirdSdk.instance.frameworkService
+    useFactory: frameworkService
   }, {
     provide: 'FRAMEWORK_UTIL_SERVICE',
-    useFactory: () => SunbirdSdk.instance.frameworkUtilService
+    useFactory: frameworkUtilService
   }, {
     provide: 'PAGE_ASSEMBLE_SERVICE',
-    useFactory: () => SunbirdSdk.instance.pageAssembleService
+    useFactory: pageAssembleService
   }, {
     provide: 'FORM_SERVICE',
-    useFactory: () => SunbirdSdk.instance.formService
+    useFactory: formService
   }, {
     provide: 'SYSTEM_SETTINGS_SERVICE',
-    useFactory: () => SunbirdSdk.instance.systemSettingsService
+    useFactory: systemSettingsService
   }, {
     provide: 'TELEMETRY_SERVICE',
-    useFactory: () => SunbirdSdk.instance.telemetryService
+    useFactory: telemetryService
   }, {
     provide: 'CONTENT_SERVICE',
-    useFactory: () => SunbirdSdk.instance.contentService
+    useFactory: contentService
   }, {
     provide: 'CONTENT_FEEDBACK_SERVICE',
-    useFactory: () => SunbirdSdk.instance.contentFeedbackService
+    useFactory: contentFeedbackService
   }, {
     provide: 'SUMMARIZER_SERVICE',
-    useFactory: () => SunbirdSdk.instance.summarizerService
+    useFactory: summarizerService
   }, {
     provide: 'EVENTS_BUS_SERVICE',
-    useFactory: () => SunbirdSdk.instance.eventsBusService
+    useFactory: eventsBusService
   }, {
     provide: 'DEVICE_INFO',
-    useFactory: () => SunbirdSdk.instance.deviceInfo
+    useFactory: deviceInfo
   }, {
     provide: 'PLAYER_SERVICE',
-    useFactory: () => SunbirdSdk.instance.playerService
+    useFactory: playerService
   }
 ];
-};
+}
+
+export const sunbirdSdkServicesProvidersFactory: () => Provider[] = sdkDriverFactory;
 
 export const sunbirdSdkFactory =
   () => {
