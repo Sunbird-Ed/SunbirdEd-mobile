@@ -7,7 +7,8 @@ import {
 import {
   NavController,
   PopoverController,
-  Events
+  Events,
+  MenuController
 } from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
 import { IonicPage } from 'ionic-angular';
@@ -115,6 +116,13 @@ export class CoursesPage implements OnInit {
   callback: QRResultCallback;
   pageFilterCallBack: PageFilterCallback;
 
+  headerConfig = {
+    showHeader : true,
+    showBackButtom: false,
+    showBurgerMenu: true,
+    actionButtons: ['search', 'filter'],
+  };
+
   /**
    * Default method of class CoursesPage
    *
@@ -139,7 +147,8 @@ export class CoursesPage implements OnInit {
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private network: Network
+    private network: Network,
+    public menuCtrl: MenuController
   ) {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
@@ -291,6 +300,7 @@ export class CoursesPage implements OnInit {
         if (data === 'COURSES') {
           if (this.appliedFilter) {
             this.filterIcon = './assets/imgs/ic_action_filter.png';
+            this.headerConfig.actionButtons = ['search', 'filter'];
             this.courseFilter = undefined;
             this.appliedFilter = undefined;
             this.isFilterApplied = false;
@@ -602,9 +612,11 @@ export class CoursesPage implements OnInit {
           if (filterApplied) {
             criteria.mode = 'hard';
             that.filterIcon = './assets/imgs/ic_action_filter_applied.png';
+            that.headerConfig.actionButtons = ['search', 'filter-applied'];
           } else {
             criteria.mode = 'soft';
             that.filterIcon = './assets/imgs/ic_action_filter.png';
+            that.headerConfig.actionButtons = ['search', 'filter'];
           }
 
           that.getPopularAndLatestCourses(false, criteria);
@@ -797,6 +809,19 @@ export class CoursesPage implements OnInit {
         this.showOverlay = false;
       });
     });
+  }
+
+  handleHeaderEvents($event) {
+    switch ($event.name) {
+      case 'search': this.search();
+                    break;
+      case 'filter': this.showFilter();
+                      break;
+    }
+  }
+
+  toggleMenu() {
+    this.menuCtrl.toggle();
   }
 
 }

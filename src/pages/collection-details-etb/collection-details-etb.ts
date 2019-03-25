@@ -66,6 +66,12 @@ export class CollectionDetailsEtbPage {
   facets: any;
   selected: boolean;
   isSelected: boolean;
+  headerConfig = {
+    showHeader : true,
+    showBackButtom: false,
+    showBurgerMenu: false,
+    actionButtons: ['search', 'filter'],
+  };
 
   contentDetail: any;
   childrenData: Array<any>;

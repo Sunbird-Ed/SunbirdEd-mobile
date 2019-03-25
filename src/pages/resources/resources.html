@@ -1,26 +1,5 @@
-<ion-header class="sb-header">
-	<ion-navbar class="sb-header-navbar" #content>
-		<!-- <ion-toolbar class="sb-header-toolbar"> -->
-		<ion-buttons class="sb-hamburger" start>
-			<button class="sb-hamburger-menu sb-hamburger-icon" ion-button icon-only menuToggle>
-				<ion-icon name="menu"></ion-icon>
-			</button>
-		</ion-buttons>
-		<ion-buttons class="sb-header-btn-group" end>
-			<button icon-only ion-button (click)="onProfileClick()">
-				<ion-icon name="person"></ion-icon>
-			</button>
-			<button ion-button icon-only (click)="scanQRCode()">
-				<ion-icon name="qr-scanner"></ion-icon>
-			</button>
-			<button ion-button icon-only (click)="search()">
-				<ion-icon name="search"></ion-icon>
-			</button>
-		</ion-buttons>
-		<!-- </ion-toolbar> -->
-	</ion-navbar>
-</ion-header>
-<ion-menu [content]="content" class="sb-side-menu" persistent="true">
+<application-header [headerConfig]="headerConfig" (headerEvents)="handleHeaderEvents($event);"></application-header>
+<!-- <ion-menu [content]="content" class="sb-side-menu" persistent="true">
 	<ion-header>
 		<ion-toolbar>
 			<ion-title>
@@ -60,7 +39,8 @@
 	<ion-footer class="side-menu-footer">
 		Version V1.12.27
 	</ion-footer>
-</ion-menu>
+</ion-menu> -->
+
 <ion-content  class = "main-container">
 	<div ion-fixed class = "fixed-container">
 		<div class="sb-slider-pills-container">
