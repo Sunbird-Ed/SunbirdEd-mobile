@@ -73,6 +73,7 @@
   "CONTENT_FLAG_FAIL": "Flagging content failed",
   "CONTENT_IS_BEING_ADDED": "Content is being added please check back soon",
   "CONTENT_NOT_ADDED_YET": "Content not available as yet for the selected textbook or collection",
+  "CONTENT_NOT_PLAYABLE_OFFLINE":"Some Content might not be playable Offline",
   "CONTINUE": "Continue",
   "CONTINUE_AS_ROLE": "Continue as '{{%s}}'",
   "CONTRIBUTIONS": "Contribution(s)",
