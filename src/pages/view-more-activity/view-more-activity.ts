@@ -184,6 +184,7 @@ export class ViewMoreActivityPage implements OnInit {
       searchType: SearchType.FILTER
     };
     this.searchQuery.request['searchType'] = SearchType.FILTER;
+    this.searchQuery.request['offset'] = searchCriteria.offset;
     this.contentService.searchContent(searchCriteria, this.searchQuery).toPromise()
       .then((data: ContentSearchResult) => {
         this.ngZone.run(() => {
