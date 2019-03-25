@@ -11,6 +11,7 @@
   <div class="p-8">
     <detail-card (downloadAllContent)="showDownloadConfirmationAlert($event)" (shareEvent)="share()"
       (showOverflowMenuEvent)="showPopOver($event)" [contentDetail]="contentDetail"
+      [currentCount]="currentCount" [queuedIdentifiers]="queuedIdentifiers"
       [localImage]="localImage" [showDownloadBtn]="showDownloadBtn" [isDepthChild]='isDepthChild'
       [isDownloadStarted]="isDownloadStarted" [defaultAppIcon]="defaultAppIcon"></detail-card>
 
@@ -194,4 +195,6 @@
     <button ion-button small (click)="cancelDownload()">{{ 'CANCEL' | translate }}</button>
   </div>
 </ion-backdrop>
-<sb-download-popup *ngIf="showDownload" (cancelDownloadEmit)="cancelDownload($event)" [currentCount]="currentCount" [queuedIdentifiers]="queuedIdentifiers" [downloadSize]="downloadSize"></sb-download-popup>
+<sb-download-popup *ngIf="showDownload" (cancelDownloadEmit)="cancelDownload($event)" [currentCount]="currentCount"
+[queuedIdentifiers]="queuedIdentifiers" [downloadSize]="downloadSize"
+[collectionName]="contentDetail?.name" ></sb-download-popup>
