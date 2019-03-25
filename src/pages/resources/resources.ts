@@ -121,6 +121,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   recentlyViewedResources: Array<any>;
   userId: string;
   showLoader = false;
+  headerConfig = {
+    showHeader : true,
+    showBackButtom: false,
+    showBurgerMenu: true,
+    actionButtons: ['search'],
+  };
+
 
   /**
 	 * Flag to show latest and popular course loader
@@ -962,5 +969,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.navCtrl.push(CollectionDetailsEtbPage, {
       content: item
     });
+  }
+
+
+  handleHeaderEvents($event) {
+    console.log('inside handleHeaderEvents', $event);
+    switch ($event.name) {
+      case 'search': this.search();
+                    break;
+    }
   }
 }

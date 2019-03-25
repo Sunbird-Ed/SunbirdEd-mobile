@@ -48,7 +48,7 @@ h6 {
 
 .tool-icon {
   width: 25px;
-  height: 25px;
+  height: auto;
   margin: 10px;
   float: right;
 }
@@ -147,14 +147,14 @@ h6 {
     }
     .tab-button-icon[ng-reflect-name=qr-scanner],
     .tab-button-icon[aria-label=qr-scanner] {
-      background-image: url(../assets/imgs/ic_scanqr_white.png);
+      background-image: url(../assets/imgs/ic_qr_scanner.png);
       background-size: 25px;
       background-position: center center;
       background-repeat: no-repeat;
     }
     .tab-button-icon[ng-reflect-name=downloads],
     .tab-button-icon[aria-label=downloads] {
-      background-image: url(../assets/imgs/ic_scanqr_white.png);
+      background-image: url(../assets/imgs/ic_qr_scanner.png);
     }
   }
   a[aria-selected=true] {
@@ -184,14 +184,14 @@ h6 {
     }
     .tab-button-icon[ng-reflect-name=qr-scanner],
     .tab-button-icon[aria-label=qr-scanner] {
-      background-image: url(../assets/imgs/ic_scanqr_white.png);
+      background-image: url(../assets/imgs/ic_qr_scanner.png);
       background-size: 25px;
       background-position: center center;
       background-repeat: no-repeat;
     }
     .tab-button-icon[ng-reflect-name=downloads],
     .tab-button-icon[aria-label=downloads] {
-      background-image: url(../assets/imgs/ic_scanqr_white.png);
+      background-image: url(../assets/imgs/ic_qr_scanner.png);
     }
   }
 }
@@ -221,7 +221,7 @@ h6 {
     }
     .tab-button-icon[ng-reflect-name=qr-scanner],
     .tab-button-icon[aria-label=qr-scanner] {
-      background-image: url(../assets/imgs/ic_scanqr_white.png);
+      background-image: url(../assets/imgs/ic_qr_scanner.png);
       background-size: 30px;
       background-position: center center;
       background-repeat: no-repeat;
@@ -273,7 +273,7 @@ h6 {
     }
     .tab-button-icon[ng-reflect-name=qr-scanner],
     .tab-button-icon[aria-label=qr-scanner] {
-      background-image: url(../assets/imgs/ic_scanqr_white.png);
+      background-image: url(../assets/imgs/ic_qr_scanner.png);
       background-size: 30px;
       background-position: center center;
       background-repeat: no-repeat;
@@ -290,7 +290,7 @@ h6 {
 }
 
 .tabs-md[tabsLayout=icon-top] .has-icon .tab-button-text {
-  margin-top: 4px !important;
+  // margin-top: 4px !important;
 };
 
 .tabs-wp {
@@ -317,14 +317,14 @@ h6 {
     }
     .tab-button-icon[ng-reflect-name=qr-scanner],
     .tab-button-icon[aria-label=qr-scanner] {
-      background-image: url(../assets/imgs/ic_scanqr_white.png);
+      background-image: url(../assets/imgs/ic_qr_scanner.png);
       background-size: 30px;
       background-position: center center;
       background-repeat: no-repeat;
     }
     .tab-button-icon[ng-reflect-name=downloads],
     .tab-button-icon[aria-label=downloads] {
-      background-image: url(../assets/imgs/ic_scanqr_white.png);
+      background-image: url(../assets/imgs/ic_qr_scanner.png);
     }
   }
   a[aria-selected=true] {
@@ -354,14 +354,14 @@ h6 {
     }
     .tab-button-icon[ng-reflect-name=qr-scanner],
     .tab-button-icon[aria-label=qr-scanner] {
-      background-image: url(../assets/imgs/ic_scanqr_white.png);
+      background-image: url(../assets/imgs/ic_qr_scanner.png);
       background-size: 30px;
       background-position: center center;
       background-repeat: no-repeat;
     }
     .tab-button-icon[ng-reflect-name=downloads],
     .tab-button-icon[aria-label=downloads] {
-      background-image: url(../assets/imgs/ic_scanqr_white.png);
+      background-image: url(../assets/imgs/ic_qr_scanner.png);
     }
   }
 }
@@ -382,6 +382,10 @@ input::placeholder {
 }
 
 /* Ionic component Overrides */
+.toolbar-md{
+  min-height:50px;
+}
+
 .toolbar-title-md {
   font-weight: 600;
 }
