@@ -20,6 +20,10 @@ import {
 } from 'sunbird-sdk';
 import { ContainerService } from '@app/service/container.services';
 import { TabsPage } from '../tabs/tabs';
+import {FormAndFrameworkUtilService} from '../profile/formandframeworkutil.service';
+import {ProfileConstants} from '../../app';
+
+
 
 @IonicPage()
 @Component({
@@ -76,7 +80,8 @@ export class CategoriesEditPage {
     private events: Events,
     private container: ContainerService,
     @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
-    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService
+    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
   ) {
     this.profile = this.appGlobalService.getCurrentUser();
     if (this.navParams.get('showOnlyMandatoryFields')) {
@@ -376,9 +381,28 @@ export class CategoriesEditPage {
         this.loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_SUCCESS'));
         this.events.publish('loggedInProfile:update', req.framework);
+        // if (this.showOnlyMandatoryFields) {
+        //   initTabs(this.container, LOGIN_TEACHER_TABS);
+        //   this.navCtrl.setRoot(TabsPage);
+        // } else {
+        //   this.navCtrl.pop();
+        // }
         if (this.showOnlyMandatoryFields) {
-          initTabs(this.container, LOGIN_TEACHER_TABS);
-          this.navCtrl.setRoot(TabsPage);
+          const reqObj = {
+            userId: this.profile.uid,
+            requiredFields: ProfileConstants.REQUIRED_FIELDS,
+          };
+          this.profileService.getServerProfilesDetails(reqObj).toPromise()
+            .then(updatedProfile => {
+              this.formAndFrameworkUtilService.updateLoggedInUser(updatedProfile, this.profile)
+                .then((value) => {
+                  initTabs(this.container, LOGIN_TEACHER_TABS);
+                  this.navCtrl.setRoot(TabsPage);
+                });
+            }).catch( e => {
+              initTabs(this.container, LOGIN_TEACHER_TABS);
+              this.navCtrl.setRoot(TabsPage);
+            });
         } else {
           this.navCtrl.pop();
         }
