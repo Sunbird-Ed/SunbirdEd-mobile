@@ -49,7 +49,7 @@
 					<div class="size_txt padding-bottom-5" no-margin>
 						<span class="content-size">{{ content?.contentType }}</span>
 						<!--Size 0 if not -->
-						<span class="content-size">[{{ content?.size | fileSize }}] &lrm;</span>
+						<span class="content-size">[{{ content.contentData?.size | fileSize }}] &lrm;</span>
 					</div>
 					<ion-row>
 						<div class="col-2">
@@ -193,7 +193,7 @@
 <ion-footer *ngIf="content && appGlobalService?.CONTENT_STREAMING_ENABLED">
   <ion-toolbar padding *ngIf="!content.contentData?.streamingUrl">
 		<button ion-button block 
-		*ngIf="commonUtilService?.networkInfo?.isNetworkAvailable && !contentDownloadable[content.identifier] && playOnlineSpinner" 
+		*ngIf="commonUtilService?.networkInfo?.isNetworkAvailable && contentDownloadable[content.identifier] && playOnlineSpinner" 
 		(click)="showSwitchUserAlert(true)" 
 		text-uppercase [disabled]= "!content.contentData?.streamingUrl"
 		[ngStyle]= "{'opacity':!commonUtilService.networkInfo.isNetworkAvailable  || !content.contentData?.streamingUrl ? '0.4': '1' }">{{'PLAY_ONLINE'

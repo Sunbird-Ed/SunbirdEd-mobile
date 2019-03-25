@@ -32,9 +32,15 @@ import {TabsPage} from '@app/pages/tabs/tabs';
 import {ContainerService} from '@app/service/container.services';
 import {AndroidPermissionsService} from '../service/android-permissions/android-permissions.service';
 import {AndroidPermission, AndroidPermissionsStatus} from "@app/service/android-permissions/android-permission";
+import {SplashcreenTelemetryActionHandlerDelegate} from "@app/service/sunbird-splashscreen/splashcreen-telemetry-action-handler-delegate";
+import {SplashscreenImportActionHandlerDelegate} from "@app/service/sunbird-splashscreen/splashscreen-import-action-handler-delegate";
 
 @Component({
-  templateUrl: 'app.html'
+  templateUrl: 'app.html',
+  providers: [
+    SplashcreenTelemetryActionHandlerDelegate,
+    SplashscreenImportActionHandlerDelegate
+  ]
 })
 export class MyApp {
 
@@ -72,6 +78,8 @@ export class MyApp {
     private popoverCtrl: PopoverController,
     private tncUpdateHandlerService: TncUpdateHandlerService,
     private utilityService: UtilityService,
+    private splashcreenTelemetryActionHandlerDelegate: SplashcreenTelemetryActionHandlerDelegate,
+    private splashscreenImportActionHandlerDelegate: SplashscreenImportActionHandlerDelegate
   ) {
     this.telemetryAutoSyncUtil = new TelemetryAutoSyncUtil(this.telemetryService);
     platform.ready().then(async () => {
@@ -81,21 +89,23 @@ export class MyApp {
       this.autoSyncTelemetry();
       this.subscribeEvents();
 
-      await this.registerDeeplinks();
-      //await this.openrapDiscovery();
-      await this.saveDefaultSyncSetting();
-      await this.showAppWalkThroughScreen();
-      await this.checkAppUpdateAvailable();
-      await this.makeEntriesInSupportFolder();
+
+      this.registerDeeplinks();
+      // await this.openrapDiscovery();
+      this.saveDefaultSyncSetting();
+      this.showAppWalkThroughScreen();
+      this.checkAppUpdateAvailable();
+      this.requestAppPermissions();
+      // await this.makeEntriesInSupportFolder();
+      this.checkForTncUpdate();
+      this.handleSunbirdSplashScreenActions();
+      
       await this.getSelectedLanguage();
-      await this.checkForTncUpdate();
       await this.navigateToAppropriatePage();
 
-      (<any>window).splashscreen.hide();
       window['thisRef'] = this;
       statusBar.styleDefault();
       this.handleBackButton();
-
     });
 
   }
@@ -338,8 +348,8 @@ export class MyApp {
     }
   }
 
-  private async makeEntriesInSupportFolder() {
-    this.permission.checkPermissions(this.permissionList)
+  private async requestAppPermissions() {
+    return this.permission.checkPermissions(this.permissionList)
       .mergeMap((statusMap: { [key: string]: AndroidPermissionsStatus }) => {
         const toRequest: AndroidPermission[] = [];
 
@@ -354,8 +364,10 @@ export class MyApp {
         }
 
         return this.permission.requestPermissions(toRequest);
-      }).do(() => this.makeEntryInSupportFolder())
-      .toPromise();
+      }).toPromise();
+  }
+
+  private async makeEntriesInSupportFolder() {
   }
 
   private async makeEntryInSupportFolder() {
@@ -461,6 +473,33 @@ export class MyApp {
       }).catch(err => {
         // console.log('checkNewAppVersion err', err, err instanceof NetworkError);
       });
+  }
+
+  private async handleSunbirdSplashScreenActions(): Promise<undefined> {
+    const stringifiedActions = await new Promise<string>((resolve) => {
+      splashscreen.getActions((actions) => {
+        resolve(actions);
+      });
+    });
+
+    const actions: { type: string, payload: any }[] = JSON.parse(stringifiedActions);
+
+    for (const action of actions) {
+      switch (action.type) {
+        case 'TELEMETRY': {
+          await this.splashcreenTelemetryActionHandlerDelegate.onAction(action.type, action.payload).toPromise();
+          break;
+        }
+        case 'IMPORT': {
+          await this.splashscreenImportActionHandlerDelegate.onAction(action.type, action.payload).toPromise();
+          break;
+        }
+        default:
+          return;
+      }
+    }
+
+    splashscreen.hide();
   }
 
   private autoSyncTelemetry() {

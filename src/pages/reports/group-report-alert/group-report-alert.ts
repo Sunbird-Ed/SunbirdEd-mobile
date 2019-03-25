@@ -46,7 +46,7 @@ export class GroupReportAlert {
       });
       const  summaryRequest:  SummaryRequest = {
         qId: this.assessment['qid'],
-        uids: [''],
+        uids: this.assessment['uids'],
         contentId: this.assessment['contentId'],
         hierarchyData: null
       };

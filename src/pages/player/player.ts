@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Platform, Config } from 'ionic-angular';
-import { customConfig } from './config';
+import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import { CanvasPlayerService } from './canvas-player.service';
-import { AlertController } from 'ionic-angular';
+import { ScreenOrientation } from '@ionic-native/screen-orientation';
 
 
 /**
@@ -26,40 +25,37 @@ export class PlayerPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     private canvasPlayerService: CanvasPlayerService,
-    private platform: Platform
+    private platform: Platform,
+    private screenOrientation: ScreenOrientation  
   ) {
     this.canvasPlayerService.handleAction();
-    // this.canvasPlayerService.xmlToJSon('../assets/sample.xml');
+    this.screenOrientation.lock('landscape');
   }
 
   ionViewWillEnter() {
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.canvasPlayerService.showConfirm();
     }, 11);
-  }
 
 
-  ionViewDidLoad() {
     let that = this;
-    // this.getConfiguration();
     this.config = this.navParams.get('config');
     
     let previewElement: HTMLIFrameElement = document.getElementById('preview') as HTMLIFrameElement;
     //previewElement.src = 'build/content-player/preview.html?date=' + new Date().toLocaleString();
+    that.config['context'].hierarchyInfo = that.config['metaData'].hierarchyInfo;
+    that.config['metaData'].contentData.basePath = that.config['metaData'].basePath.replace(/\/$/, "");
+    that.config['metaData'].contentData.basepath = that.config['metaData'].basePath.replace(/\/$/, "");      
+    that.config['metadata'] = that.config['metaData'];
+    that.config['uid'] = that.config['context'].actor.id;
+    delete that.config['metaData'];
     previewElement.contentWindow.location.reload();
     previewElement.onload = function () {
-      that.config['context'].hierarchyInfo = that.config['metaData'].hierarchyInfo;
-      that.config['metaData'].contentData.basePath = that.config['metaData'].basePath.replace(/\/$/, "");
-      that.config['metaData'].contentData.basepath = that.config['metaData'].basePath.replace(/\/$/, "");      
-      that.config['metadata'] = that.config['metaData'];
-      that.config['uid'] = that.config['context'].actor.id;
-
-      console.log("that.config['context'].actor.id", that.config['context'].actor.id);
-      delete that.config['metaData'];
+      
       console.log("config", that.config);
       setTimeout(() => {
         (previewElement['contentWindow'] as any).initializePreview(that.config);
-      }, 200);
+      }, 100);
     }
   }
 
@@ -78,6 +74,7 @@ export class PlayerPage {
   }
 
   ionViewWillLeave() {
+    this.screenOrientation.unlock();
     this.unregisterBackButton();
   }
 
