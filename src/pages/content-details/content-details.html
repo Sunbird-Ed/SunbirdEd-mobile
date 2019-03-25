@@ -75,11 +75,11 @@
 						<span class="sb-by">{{ 'CONTENT_CREATED_BY' | translate }}</span>
 						<span class="sb-user">{{ content?.owner || content?.creator }}</span>
 					</div>
-					<div class="sb-dt-class-info" *ngIf="content?.gradeLevel || content?.subject">
+					<!-- <div class="sb-dt-class-info" *ngIf="content?.gradeLevel || content?.subject">
 						<span class="sb-dt-label sb-dt-class" *ngIf="content?.gradeLevel">{{content?.gradeLevel}}</span>
 						<span class="sb-separator-dot" *ngIf="content?.gradeLevel && content?.subject"></span>
 						<span class="sb-dt-label sb-dt-subject">{{content?.subject}}</span>
-					</div>
+					</div>  (click)="rateContent('manual')"-->
 				</div>
 			</div>
 
@@ -91,8 +91,8 @@
 					</div>
 				</div>
 				<div class="right" *ngIf="content?.me_totalRatings">
-					<div (click)="rateContent('manual')" class="sb-rating-view">
-						<span class="sb-rating-value">{{ content?.me_totalRatings ? content?.me_totalRatings : 0 }}</span>
+					<div  class="sb-rating-view">
+						<span class="sb-rating-value">{{ content?.me_totalRatings }}</span>
 						<span class="sb-rating-star">
 							<ion-icon ios="ios-star" md="md-star"></ion-icon>
 						</span>
@@ -281,4 +281,4 @@
 		</ion-toolbar>
 	</ion-footer>
 </div>
-<sb-download-popup *ngIf="showDownload" (cancelDownloadEmit)="cancelDownload($event)" [currentCount]="currentCount" [queuedIdentifiers]="queuedIdentifiers" [downloadSize]="downloadSize"></sb-download-popup>
+<sb-download-popup *ngIf="showDownload" (cancelDownloadEmit)="cancelDownload($event)" [currentCount]="currentCount" [queuedIdentifiers]="queuedIdentifiers" [downloadProgress]="downloadProgress" [contentName]="content?.name" ></sb-download-popup>
