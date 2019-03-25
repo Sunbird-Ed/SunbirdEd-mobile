@@ -17,12 +17,19 @@ import {CollectionDetailsPage} from '@app/pages/collection-details/collection-de
 import {ContentDetailsPage} from '@app/pages/content-details/content-details';
 import {ContentType, EventTopics, MimeType, PreferenceKey, ShareUrl} from '@app/app';
 import {CourseBatchesPage} from '@app/pages/course-batches/course-batches';
-import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService, UtilityService} from '@app/service';
+import {
+  AppGlobalService,
+  CommonUtilService,
+  CourseUtilService,
+  TelemetryGeneratorService,
+  UtilityService
+} from '@app/service';
 import {DatePipe} from '@angular/common';
 import {
   Batch,
   ChildContentRequest,
   Content,
+  ContentDetailRequest,
   ContentEventType,
   ContentExportRequest,
   ContentExportResponse,
@@ -32,6 +39,7 @@ import {
   ContentImportResponse,
   ContentImportStatus,
   ContentService,
+  ContentStateResponse,
   ContentUpdate,
   CorrelationData,
   CourseBatchesRequest,
@@ -43,6 +51,7 @@ import {
   EventsBusEvent,
   EventsBusService,
   FetchEnrolledCourseRequest,
+  GetContentStateRequest,
   ProfileService,
   ProfileType,
   ServerProfileDetailsRequest,
@@ -395,9 +404,8 @@ export class EnrolledCourseDetailsPage {
    * @param {string} identifier
    */
   setContentDetails(identifier): void {
-    const option = {
+    const option: ContentDetailRequest = {
       contentId: identifier,
-      refreshContentDetails: true,
       attachFeedback: true,
       attachContentAccess: true
     };
@@ -710,22 +718,25 @@ export class EnrolledCourseDetailsPage {
             return false;
           } else {
             // checking for getContentState result length
-            if (contentStatusData.result.contentList.length) {
-              contentStatusData.result.contentList.every(contentData => {
+            if (contentStatusData.contentList.length) {
+              contentStatusData.contentList.every(contentData => {
                 // checking for each content status
                 if (eachContent.identifier === contentData.contentId) {
                   contentlen = contentlen + 1;
                   // checking for contentId from getContentState and lastReadContentId
                   if (contentData.contentId === this.courseCardData.lastReadContentId) {
                     childContent.lastRead = true;
+                    console.log(childContent.lastRead);
                   }
                   if (contentData.status === 0 || contentData.status === 1) {
-                    // manupulating the status
+                    // manipulating the status
                     childContent.status = false;
+                    console.log('childContentStatus in if part --', childContent.status);
                     return false;
                   } else {
                     // if content played completely
                     childContent.status = true;
+                    console.log('childContentStatus in else part --', childContent.status);
                     return true;
                   }
                 }
@@ -734,6 +745,7 @@ export class EnrolledCourseDetailsPage {
               return true;
             } else {
               childContent.status = false;
+              console.log('if contentStatusData.contentList is not available', childContent.status);
               return false;
             }
           }
@@ -885,6 +897,7 @@ export class EnrolledCourseDetailsPage {
     }
     this.showResumeBtn = !!this.courseCardData.lastReadContentId;
     this.setContentDetails(this.identifier);
+    console.log('CourseCardData lastReadContentId-', this.courseCardData.lastReadContentId);
     // If courseCardData does not have a batch id then it is not a enrolled course
     this.subscribeGenieEvent();
   }
@@ -1175,24 +1188,26 @@ export class EnrolledCourseDetailsPage {
 
   // TODO
   getContentState(returnRefresh: boolean) {
-    // if (this.courseCardData.batchId) {
-    //   const request: GetContentStateRequest = {
-    //     userId: this.appGlobalService.getUserId(),
-    //     courseIds: [this.identifier],
-    //     returnRefreshedContentStates: returnRefresh,
-    //     batchId: this.batchId
-    //   };
-    //   this.acourseService.getContentState(request).then((success: any) => {
-    //     success = JSON.parse(success);
-    //     if (this.childrenData) {
-    //       this.getStatusOfChildContent(this.childrenData, success);
-    //     }
-    //   }).catch((error: any) => {
+    if (this.courseCardData.batchId) {
+      const request: GetContentStateRequest = {
+        userId: this.appGlobalService.getUserId(),
+        courseIds: [this.identifier],
+        returnRefreshedContentStates: returnRefresh,
+        batchId: this.courseCardData.batchId
+      };
+      this.courseService.getContentState(request).toPromise()
+        .then((success: ContentStateResponse) => {
+          console.log('getContentState -- ', success);
+          if (this.childrenData) {
+            console.log('childrenData --', this.childrenData);
+            this.getStatusOfChildContent(this.childrenData, success);
+          }
+        }).catch((error: any) => {
 
-    //   });
-    // } else {
-    //   // to be handled when there won't be any batchId
-    // }
+      });
+    } else {
+      // to be handled when there won't be any batchId
+    }
   }
 
   private removeUnenrolledCourse(unenrolledCourse) {

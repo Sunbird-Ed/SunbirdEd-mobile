@@ -24,6 +24,7 @@ import {UnenrollAlertComponent} from './unenroll-alert/unenroll-alert';
 import {EditContactVerifyPopupComponent} from './edit-contact-verify-popup/edit-contact-verify-popup';
 import {EditContactDetailsPopupComponent} from './edit-contact-details-popup/edit-contact-details-popup';
 import {CollectionChild} from './collection-child/collection-child';
+import {ReportIssuesComponent} from './report-issues/report-issues';
 
 @NgModule({
     declarations: [
@@ -44,7 +45,8 @@ import {CollectionChild} from './collection-child/collection-child';
         EditContactDetailsPopupComponent,
         EditContactVerifyPopupComponent,
         ResourceCard,
-        CollectionChild
+        CollectionChild,
+        ReportIssuesComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -75,6 +77,7 @@ import {CollectionChild} from './collection-child/collection-child';
         EditContactDetailsPopupComponent,
         EditContactVerifyPopupComponent,
         ResourceCard,
+        ReportIssuesComponent,
         CollectionChild
         // ContentActionsComponent
     ],

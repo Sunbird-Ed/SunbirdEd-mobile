@@ -90,6 +90,7 @@ export class MyApp {
       this.autoSyncTelemetry();
       this.subscribeEvents();
 
+
       this.registerDeeplinks();
       this.startOpenrapDiscovery();
       this.saveDefaultSyncSetting();
@@ -99,7 +100,7 @@ export class MyApp {
       // await this.makeEntriesInSupportFolder();
       this.checkForTncUpdate();
       this.handleSunbirdSplashScreenActions();
-
+      
       await this.getSelectedLanguage();
       await this.navigateToAppropriatePage();
 
