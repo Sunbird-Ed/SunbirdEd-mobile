@@ -23,6 +23,7 @@ import {
   ProfileService,
   ProfileType,
   SharedPreferences,
+  SunbirdSdk,
   TelemetryAutoSyncUtil,
   TelemetryService,
 } from 'sunbird-sdk';
@@ -89,8 +90,9 @@ export class MyApp {
       this.autoSyncTelemetry();
       this.subscribeEvents();
 
+
       this.registerDeeplinks();
-      // await this.openrapDiscovery();
+      this.startOpenrapDiscovery();
       this.saveDefaultSyncSetting();
       this.showAppWalkThroughScreen();
       this.checkAppUpdateAvailable();
@@ -98,7 +100,7 @@ export class MyApp {
       // await this.makeEntriesInSupportFolder();
       this.checkForTncUpdate();
       this.handleSunbirdSplashScreenActions();
-
+      
       await this.getSelectedLanguage();
       await this.navigateToAppropriatePage();
 
@@ -450,14 +452,29 @@ export class MyApp {
     await this.preferences.putString('show_app_walkthrough_screen', showAppWalkthrough).toPromise();
   }
 
-  // TODO: this method will be used to communicate with the openrap device
-  private async openrapDiscovery() {
+  private async startOpenrapDiscovery(): Promise<undefined> {
     if (this.appGlobalService.OPEN_RAPDISCOVERY_ENABLED) {
-      (<any>window).openrap.startDiscovery(
-        () => {
-        }, () => {
-        }
-      );
+      return Observable.create((observer) => {
+        (<any>window).openrap.startDiscovery(
+          (response: { ip: string, actionType: 'connected' | 'disconnected' }) => {
+            observer.next(response);
+          }, (e) => {
+            observer.error(e);
+          }
+        );
+      }).do((response: { ip?: string, actionType: 'connected' | 'disconnected' }) => {
+        SunbirdSdk.instance.updateContentServiceConfig({
+          host: response.actionType === 'connected' ? response.ip : undefined
+        });
+
+        SunbirdSdk.instance.updatePageServiceConfig({
+          host: response.actionType === 'connected' ? response.ip : undefined
+        });
+
+        SunbirdSdk.instance.updateTelemetryConfig({
+          host: response.actionType === 'connected' ? response.ip : undefined
+        });
+      }).toPromise();
     }
   }
 

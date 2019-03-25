@@ -11,6 +11,7 @@ SUNBIRD_CORDOVA_COUNTER=0
 
 # Pass build branch as input
 buildBranch="$1"
+npm install
 
 file="./build_config"
 while IFS="=" read -r key value; do
@@ -36,10 +37,12 @@ do
   ionic cordova plugin add $cordova_plugin
 done
 
+
 rm -rf platforms
 
+#Temporary Workaround to generate build as webpack was complaining of Heap Space
+#need to inspect on webpack dependdencies at the earliest
+NODE_OPTIONS=--max-old-space-size=4096 ionic cordova platforms add android@7.0.0
 
-ionic cordova platforms add android@7.0.0
-
-ionic cordova build android --prod --release --buildConfig ./buildConfig/build.json
+NODE_OPTIONS=--max-old-space-size=4096 ionic cordova build android --prod --release --buildConfig ./buildConfig/build.json
 
