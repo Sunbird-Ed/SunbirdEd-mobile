@@ -24,9 +24,10 @@ import {
   ProfileType,
   SharedPreferences
 } from 'sunbird-sdk';
-import {Environment, InteractSubtype, InteractType, PageId,} from '../../service/telemetry-constants';
+import {Environment, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
 import {ContainerService} from '../../service/container.services';
 import {TabsPage} from '@app/pages/tabs/tabs';
+import {ProfileConstants} from '../../app';
 
 @IonicPage()
 @Component({
@@ -144,7 +145,7 @@ export class ProfileSettingsPage {
    * Initializes guest user object
    */
   getGuestUser() {
-    this.profileService.getActiveSessionProfile()
+    this.profileService.getActiveSessionProfile({requiredFields: ProfileConstants.REQUIRED_FIELDS})
       .toPromise()
       .then((response: any) => {
         this.profile = response;

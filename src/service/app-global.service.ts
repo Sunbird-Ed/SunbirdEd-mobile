@@ -18,6 +18,7 @@ import {
   SharedPreferences
 } from 'sunbird-sdk';
 import {UtilityService} from './utility-service';
+import {ProfileConstants} from '../app';
 
 declare const buildconfigreader;
 
@@ -362,7 +363,7 @@ export class AppGlobalService implements OnDestroy {
     }
 
     private getCurrentUserProfile() {
-        this.profile.getActiveSessionProfile().toPromise()
+        this.profile.getActiveSessionProfile({requiredFields: ProfileConstants.REQUIRED_FIELDS}).toPromise()
             .then((response: any) => {
                 this.guestUserProfile = response;
                 if (this.guestUserProfile.syllabus && this.guestUserProfile.syllabus.length > 0) {

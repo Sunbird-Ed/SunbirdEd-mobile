@@ -16,6 +16,7 @@ import {
 } from '../../service/telemetry-constants';
 import { ContainerService } from '@app/service/container.services';
 import { TabsPage } from '../tabs/tabs';
+import {ProfileConstants} from '../../app';
 
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
@@ -150,7 +151,7 @@ export class UserTypeSelectionPage {
   setProfile(profileRequest: Profile) {
     this.profileService.updateProfile(profileRequest).toPromise().then(() => {
       return this.profileService.setActiveSessionForProfile(profileRequest.uid).toPromise().then(() => {
-        return this.profileService.getActiveSessionProfile().toPromise()
+        return this.profileService.getActiveSessionProfile({requiredFields: ProfileConstants.REQUIRED_FIELDS}).toPromise()
           .then((success: any) => {
             const userId = success.uid;
             this.event.publish(AppGlobalService.USER_INFO_UPDATED);

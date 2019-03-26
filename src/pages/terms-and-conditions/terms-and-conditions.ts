@@ -8,6 +8,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {AppVersion} from '@ionic-native/app-version';
 import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
 import {ProfileService, ServerProfile} from 'sunbird-sdk';
+import {ProfileConstants} from '../../app';
 
 @Component({
   selector: 'page-terms-and-conditions',
@@ -36,7 +37,7 @@ export class TermsAndConditionsPage {
   }
 
   public async ionViewDidLoad() {
-    this.userProfileDetails = (await this.profileService.getActiveSessionProfile().toPromise()).serverProfile;
+    this.userProfileDetails = (await this.profileService.getActiveSessionProfile({requiredFields: ProfileConstants.REQUIRED_FIELDS}).toPromise()).serverProfile;
 
     this.tncLatestVersionUrl = this.sanitizer
       .bypassSecurityTrustResourceUrl(this.userProfileDetails.tncLatestVersionUrl);
