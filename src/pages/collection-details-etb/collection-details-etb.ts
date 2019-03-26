@@ -1013,6 +1013,14 @@ export class CollectionDetailsEtbPage {
       popover.onDidDismiss((canDownload: boolean = false) => {
         console.log('downloaddddddd content');
         if (canDownload) {
+          this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+            'download-all-button-clicked',
+            Environment.HOME,
+            PageId.COLLECTION_DETAIL,
+            undefined,
+            undefined,
+            this.objRollup,
+            this.corRelationList);
           this.downloadAllContent();
         }
       });
@@ -1063,6 +1071,15 @@ export class CollectionDetailsEtbPage {
     this.events.unsubscribe('genie.event');
   }
   showPopOver() {
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      'delete-from-device-button-clicked',
+      Environment.HOME,
+      PageId.COLLECTION_DETAIL,
+      undefined,
+      undefined,
+      this.objRollup,
+      this.corRelationList);
+
     const confirm = this.popoverCtrl.create(SbPopoverComponent, {
       content: this.contentDetail,
       isChild: this.isDepthChild,
@@ -1139,7 +1156,6 @@ export class CollectionDetailsEtbPage {
       this.objRollup,
       this.corRelationList);
     const tmp = this.getDeleteRequestBody();
-    console.log('tmpppppppppppp', tmp);
     this.contentService.deleteContent(tmp).then((res: any) => {
       const data = JSON.parse(res);
       if (data.result && data.result.status === 'NOT_FOUND') {

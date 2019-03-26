@@ -77,13 +77,12 @@ export class SbPopoverComponent {
       this.viewCtrl.dismiss();
       this.backButtonFunc();
     }, 20);
-    this.getUserId();
   }
 
   closePopover() {
     this.viewCtrl.dismiss();
   }
-  deletecontent(candelete: boolean = false) {
+  deleteContent(candelete: boolean = false) {
     this.viewCtrl.dismiss(candelete);
   }
    /**
@@ -97,80 +96,5 @@ export class SbPopoverComponent {
       }]
     };
     return apiParams;
-  }
-  deleteContent() {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = this.content.identifier;
-    telemetryObject.type = this.content.contentType;
-    telemetryObject.version = this.content.pkgVersion;
-    this.telemetryGeneratorService.generateInteractTelemetry(
-      InteractType.TOUCH,
-      InteractSubtype.DELETE_CLICKED,
-      Environment.HOME,
-      this.pageName,
-      telemetryObject,
-      undefined,
-      this.objRollup,
-      this.corRelationList);
-
-
-    this.contentService.deleteContent(this.getDeleteRequestBody()).then((res: any) => {
-      const data = JSON.parse(res);
-      if (data.result && data.result.status === 'NOT_FOUND') {
-        this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
-      } else {
-        // Publish saved resources update event
-        this.events.publish('savedResources:update', {
-          update: true
-        });
-        console.log('delete response: ', data);
-        this.showToaster(this.getMessageByConstant('MSG_RESOURCE_DELETED'));
-        this.viewCtrl.dismiss('delete.success');
-      }
-    }).catch((error: any) => {
-      console.log('delete response: ', error);
-      this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
-      this.viewCtrl.dismiss();
-    });
-  }
-
-  showToaster(message) {
-    const toast = this.toastCtrl.create({
-      message: message,
-      duration: 2000,
-      position: 'bottom'
-    });
-    toast.present();
-  }
-
-  getMessageByConstant(constant: string) {
-    let msg = '';
-    this.translate.get(constant).subscribe(
-      (value: any) => {
-        msg = value;
-      }
-    );
-    return msg;
-  }
-
-  getUserId() {
-    this.authService.getSessionData((session: string) => {
-      if (session === null || session === 'null') {
-        this.userId = '';
-      } else {
-        const res = JSON.parse(session);
-        this.userId = res[ProfileConstants.USER_TOKEN] ? res[ProfileConstants.USER_TOKEN] : '';
-        // Needed: this get exeuted if user is on course details page.
-        if (this.pageName === 'course' && this.userId) {
-          // If course is not enrolled then hide flag/report issue menu.
-          // If course has batchId then it means it is enrolled course
-          if (this.content.batchId) {
-            this.showFlagMenu = true;
-          } else {
-            this.showFlagMenu = false;
-          }
-        }
-      }
-    });
   }
 }
