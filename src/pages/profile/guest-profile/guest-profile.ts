@@ -18,6 +18,7 @@ import {
   SharedPreferences
 } from 'sunbird-sdk';
 import {Environment, ImpressionType, PageId} from '../../../service/telemetry-constants';
+import {ProfileConstants} from '../../../app';
 
 @Component({
   selector: 'page-guest-profile',
@@ -107,7 +108,7 @@ export class GuestProfilePage {
       this.loader.present();
     }
 
-    this.profileService.getActiveSessionProfile().toPromise()
+    this.profileService.getActiveSessionProfile({requiredFields: ProfileConstants.REQUIRED_FIELDS}).toPromise()
       .then((res: any) => {
         this.profile = res;
         this.getSyllabusDetails();

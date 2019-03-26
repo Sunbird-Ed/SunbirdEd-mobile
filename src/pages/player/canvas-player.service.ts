@@ -4,6 +4,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as X2JS from 'x2js';
 import { AlertController } from "ionic-angular";
 import { App } from 'ionic-angular';
+import {ProfileConstants} from '../../app';
+
 
 
 
@@ -20,7 +22,7 @@ export class CanvasPlayerService {
         window.handleAction = (methodName: string, params = []) => {
             switch (methodName) {
                 case "getCurrentUser":
-                    return SunbirdSdk.instance.profileService.getActiveSessionProfile().toPromise();
+                    return SunbirdSdk.instance.profileService.getActiveSessionProfile({requiredFields: ProfileConstants.REQUIRED_FIELDS}).toPromise();
                 case "getAllUserProfile":
                     return SunbirdSdk.instance.profileService.getAllProfiles(params[0]).toPromise();
                 case "setUser":

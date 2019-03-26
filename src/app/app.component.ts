@@ -92,7 +92,7 @@ export class MyApp {
 
 
       this.registerDeeplinks();
-      this.startOpenrapDiscovery();
+      // this.startOpenrapDiscovery();
       this.saveDefaultSyncSetting();
       this.showAppWalkThroughScreen();
       this.checkAppUpdateAvailable();
@@ -171,7 +171,9 @@ export class MyApp {
               this.authService.resignSession().subscribe();
               (<any>window).splashscreen.clearPrefs();
             }
-            this.profileService.getActiveSessionProfile().toPromise()
+            this.profileService.getActiveSessionProfile({
+              requiredFields: ProfileConstants.REQUIRED_FIELDS
+            }).toPromise()
               .then((currentUser: any) => {
 
                 if (currentUser.profileType === ProfileType.STUDENT) {
@@ -271,7 +273,7 @@ export class MyApp {
           if (display_cat_page === 'false') {
             await this.nav.setRoot(TabsPage);
           } else {
-            const profile = await this.profileService.getActiveSessionProfile().toPromise();
+            const profile = await this.profileService.getActiveSessionProfile({requiredFields: ProfileConstants.REQUIRED_FIELDS}).toPromise();
             if (
               profile
               && profile.syllabus && profile.syllabus[0]
@@ -296,7 +298,9 @@ export class MyApp {
           }
         });
     } else {
-      this.profileService.getActiveSessionProfile().toPromise()
+      this.profileService.getActiveSessionProfile({
+        requiredFields: ProfileConstants.REQUIRED_FIELDS
+      }).toPromise()
         .then(async (profile: any) => {
           if (profile
             && profile.syllabus && profile.syllabus[0]

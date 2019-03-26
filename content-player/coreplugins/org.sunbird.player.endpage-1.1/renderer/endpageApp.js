@@ -155,11 +155,10 @@ endPage.controller("endPageController", function($scope, $rootScope, $state,$ele
                 org.ekstep.contentrenderer.initializePreview(object)
                 EkstepRendererAPI.dispatchEvent('renderer:player:show');
         } else {
-            if(globalConfig.deeplinkBasePath){
-                var deepLinkURL = globalConfig.deeplinkBasePath + "c/" + contentToPlay.content.identifier + "?hierarchyInfo=" + JSON.stringify($rootScope.content.hierarchyInfo);
-                window.open(deepLinkURL, "_system");
+            if(contentMetadata.identifier) {
+                window['playerActionHandlerDelegate'].onContentNotFound(contentMetadata.identifier, contentMetadata.hierarchyInfo);
             } else {
-                console.warn(window.AppLables.noDeeplinkBasePath);
+                console.warn('Content not Available');
             }
         }
     };
