@@ -902,7 +902,6 @@ export class EnrolledCourseDetailsPage {
     }
     this.showResumeBtn = !!this.courseCardData.lastReadContentId;
     this.setContentDetails(this.identifier);
-    console.log('CourseCardData lastReadContentId-', this.courseCardData.lastReadContentId);
     // If courseCardData does not have a batch id then it is not a enrolled course
     this.subscribeGenieEvent();
   }
