@@ -66,12 +66,7 @@ export class ShareUserAndGroupPage {
 
   getAllGroup() {
     this.zone.run(() => {
-
-      const groupRequest = {
-        uid: ''
-      };
-
-      this.groupService.getAllGroups(groupRequest).subscribe((groups: Group[]) => {
+      this.groupService.getAllGroups().subscribe((groups: Group[]) => {
         if (groups && groups.length) {
           this.groupList = groups;
         }
