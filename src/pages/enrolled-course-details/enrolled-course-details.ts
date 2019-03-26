@@ -70,6 +70,7 @@ import {
   Mode,
   PageId
 } from '../../service/telemetry-constants';
+import {ProfileConstants} from '../../app';
 
 declare const cordova;
 
@@ -549,6 +550,10 @@ export class EnrolledCourseDetailsPage {
       })
       .catch((error: any) => {
         console.error('error while loading content details', error);
+        if (this.courseCardData.batch) {
+          this.saveContentContext(this.appGlobalService.getUserId(),
+            this.courseCardData.courseId, this.courseCardData.batchId, this.courseCardData.batch.status);
+        }
       });
   }
 
@@ -569,7 +574,7 @@ export class EnrolledCourseDetailsPage {
   getBatchCreatorName() {
     const req: ServerProfileDetailsRequest = {
       userId: this.batchDetails.createdBy,
-      requiredFields: []
+      requiredFields: ProfileConstants.REQUIRED_FIELDS
     };
     this.profileService.getServerProfilesDetails(req).toPromise()
       .then((data) => {
@@ -897,7 +902,6 @@ export class EnrolledCourseDetailsPage {
     }
     this.showResumeBtn = !!this.courseCardData.lastReadContentId;
     this.setContentDetails(this.identifier);
-    console.log('CourseCardData lastReadContentId-', this.courseCardData.lastReadContentId);
     // If courseCardData does not have a batch id then it is not a enrolled course
     this.subscribeGenieEvent();
   }
@@ -1005,11 +1009,11 @@ export class EnrolledCourseDetailsPage {
     };
     const reqvalues = new Map();
     reqvalues['enrollReq'] = courseBatchesRequest;
-    // this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-    //   InteractSubtype.ENROLL_CLICKED,
-    //     Environment.HOME,
-    //     PageId.CONTENT_DETAIL, undefined,
-    //     reqvalues);
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.ENROLL_CLICKED,
+        Environment.HOME,
+        PageId.CONTENT_DETAIL, undefined,
+        reqvalues);
 
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       if (!this.guestUser) {

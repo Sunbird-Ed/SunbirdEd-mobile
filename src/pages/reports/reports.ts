@@ -26,6 +26,7 @@ import {
   Environment,
   ImpressionType
 } from '../../service/telemetry-constants';
+import {ProfileConstants} from '../../app';
 
 
 @Component({
@@ -60,7 +61,7 @@ export class ReportsPage {
       };
       that.profileService.getAllProfiles(getAllProfileRequest).toPromise()
         .then((data: Profile[]) => {
-          that.profileService.getActiveSessionProfile().toPromise()
+          that.profileService.getActiveSessionProfile({requiredFields: ProfileConstants.REQUIRED_FIELDS}).toPromise()
           .then((profile: Profile) => {
             if (this.profileDetails) {
               if (this.profileDetails.id === profile.uid) {

@@ -47,6 +47,7 @@ import {
 import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
 import {PlayerPage} from '../player/player';
 import {Subscription} from 'rxjs';
+import {ProfileConstants} from '../../app';
 
 @Component({
   selector: 'page-resources',
@@ -171,7 +172,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   subscribeUtilityEvents() {
-    this.profileService.getActiveSessionProfile().subscribe((profile: Profile) => {
+    this.profileService.getActiveSessionProfile({requiredFields: ProfileConstants.REQUIRED_FIELDS}).subscribe((profile: Profile) => {
       this.profile = profile;
     });
     this.events.subscribe('savedResources:update', (res) => {

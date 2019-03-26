@@ -37,9 +37,9 @@ export class TncUpdateHandlerService {
               return;
             }).catch(() => {
               reject();
-            })
-          })
-      })
+            });
+          });
+      });
     });
   }
 
@@ -52,7 +52,21 @@ export class TncUpdateHandlerService {
         }).catch(() => {
         reject();
       });
-    }));
+    }))
+    .then(() => {
+      const reqObj = {
+        userId: user.userId,
+        requiredFields: ProfileConstants.REQUIRED_FIELDS,
+      };
+      return new Promise<void>(((resolve, reject) => {
+        this.profileService.getServerProfilesDetails(reqObj).toPromise()
+        .then( res => {
+            resolve();
+          }).catch(e => {
+            reject(e);
+          });
+      }));
+    });
   }
 
   private async presentTncPage(navParams: any): Promise<undefined> {

@@ -34,7 +34,9 @@ import {
   ServerProfileDetailsRequest,
   SortOrder,
   TelemetryObject,
-  UpdateServerProfileInfoRequest
+  UpdateServerProfileInfoRequest,
+  CachedItemRequestSourceFrom,
+  CachedItemRequest
 } from 'sunbird-sdk';
 import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
 
@@ -120,6 +122,7 @@ export class ProfilePage {
 
     this.events.subscribe('loggedInProfile:update', (framework) => {
       this.updateLocalProfile(framework);
+      this.refreshProfileData();
     });
 
     this.formAndFrameworkUtilService.getCustodianOrgId().then((orgId: string) => {
@@ -153,7 +156,7 @@ export class ProfilePage {
        refresher.complete();
        this.refresh = true;
     }
-    return this.refreshProfileData()
+    return this.refreshProfileData(refresher)
       .then(() => {
         return new Promise((resolve) => {
           setTimeout(() => {
@@ -185,7 +188,7 @@ export class ProfilePage {
   /**
    * To refresh Profile data on pull to refresh or on click on the profile
    */
-  refreshProfileData() {
+  refreshProfileData(refresher?) {
     const that = this;
     return new Promise((resolve, reject) => {
       that.authService.getSession().toPromise().then((session: OAuthSession) => {
@@ -196,29 +199,32 @@ export class ProfilePage {
           if (that.userId && session.userToken === that.userId) {
             that.isLoggedInUser = true;
           }
-          const request: ServerProfileDetailsRequest = {
+          const serverProfileDetailsRequest: ServerProfileDetailsRequest = {
             userId: that.userId && that.userId !== session.userToken ? that.userId : session.userToken,
             requiredFields: ProfileConstants.REQUIRED_FIELDS
+          };
+          const cachedItemRequest: CachedItemRequest = {
+            from : CachedItemRequestSourceFrom.SERVER,
           };
           if (that.isLoggedInUser) {
             that.isRefreshProfile = !that.isRefreshProfile;
           }
-          that.profileService.getServerProfilesDetails(request).toPromise()
+          that.profileService.getServerProfilesDetails(serverProfileDetailsRequest, cachedItemRequest).toPromise()
             .then((profileData) => {
               that.zone.run(() => {
                 that.resetProfile();
                 that.profile = profileData;
-                that.profileService.getActiveSessionProfile().toPromise()
+                that.profileService.getActiveSessionProfile({requiredFields: ProfileConstants.REQUIRED_FIELDS}).toPromise()
                   .then((activeProfile) => {
                     that.formAndFrameworkUtilService.updateLoggedInUser(profileData, activeProfile)
-                      .then((frameWorkData) => {
-                        if (!frameWorkData['status']) {
-                          that.app.getRootNav().setRoot(CategoriesEditPage, {
-                            showOnlyMandatoryFields: true,
-                            profile: frameWorkData['activeProfileData']
-                          });
-                        }
-                      });
+                    .then((frameWorkData) => {
+                      if (!frameWorkData['status']) {
+                        that.app.getRootNav().setRoot(CategoriesEditPage, {
+                          showOnlyMandatoryFields: true,
+                          profile: frameWorkData['activeProfileData']
+                        });
+                      }
+                    });
                     if (profileData && profileData.avatar) {
                       that.imageUri = profileData.avatar;
                     }
@@ -229,6 +235,11 @@ export class ProfilePage {
                     resolve();
                   });
               });
+            }).catch( err => {
+              if (refresher) {
+                refresher.complete();
+              }
+              reject();
             });
         }
       });
@@ -465,7 +476,7 @@ export class ProfilePage {
 
   updateLocalProfile(framework) {
     this.profile.framework = framework;
-    this.profileService.getActiveSessionProfile()
+    this.profileService.getActiveSessionProfile({requiredFields: ProfileConstants.REQUIRED_FIELDS})
       .toPromise()
       .then((resp: any) => {
         this.formAndFrameworkUtilService.updateLoggedInUser(this.profile, resp)
