@@ -211,14 +211,14 @@ export class ProfilePage {
                 that.profileService.getActiveSessionProfile().toPromise()
                   .then((activeProfile) => {
                     that.formAndFrameworkUtilService.updateLoggedInUser(profileData, activeProfile)
-                      .then((frameWorkData) => {
-                        if (!frameWorkData['status']) {
-                          that.app.getRootNav().setRoot(CategoriesEditPage, {
-                            showOnlyMandatoryFields: true,
-                            profile: frameWorkData['activeProfileData']
-                          });
-                        }
-                      });
+                    .then((frameWorkData) => {
+                      if (!frameWorkData['status']) {
+                        that.app.getRootNav().setRoot(CategoriesEditPage, {
+                          showOnlyMandatoryFields: true,
+                          profile: frameWorkData['activeProfileData']
+                        });
+                      }
+                    });
                     if (profileData && profileData.avatar) {
                       that.imageUri = profileData.avatar;
                     }

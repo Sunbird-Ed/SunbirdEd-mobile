@@ -46,7 +46,7 @@ export class EditContactDetailsPopupComponent {
   initEditForm() {
     if (this.type === ProfileConstants.CONTACT_TYPE_EMAIL) {
       this.personEditForm = this.fb.group({
-        email: ['', Validators.compose([Validators.required, Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')])],
+        email: ['', Validators.compose([Validators.required, Validators.pattern('^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[a-z]{2,4}$')])],
       });
     } else {
       this.personEditForm = this.fb.group({
@@ -90,7 +90,7 @@ export class EditContactDetailsPopupComponent {
         } else if (error.hasOwnProperty(error) === 'INVALID_PHONE_FORMAT') {
           // TODO
         }
-      })
+      });
     } else {
       this.commonUtilService.showToast('INTERNET_CONNECTIVITY_NEEDED');
     }

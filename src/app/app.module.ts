@@ -182,7 +182,6 @@ export const sunbirdSdkFactory =
         apiConfig: {
           debugMode: false,
           host: buildConfigValues['BASE_URL'],
-          baseUrl: buildConfigValues['BASE_URL'] + '/api',
           user_authentication: {
             redirectUrl: buildConfigValues['OAUTH_REDIRECT_URL'],
             authUrl: '/auth/realms/sunbird/protocol/openid-connect',
