@@ -56,6 +56,7 @@ export class AppGlobalService implements OnDestroy {
     guestProfileType: ProfileType;
     isProfileSettingsCompleted: boolean;
     isOnBoardingCompleted = false;
+    _isUserSwitched = false
 
     constructor(
         @Inject('PROFILE_SERVICE') private profile: ProfileService,
@@ -103,6 +104,14 @@ export class AppGlobalService implements OnDestroy {
 
     getSessionData(): any {
         return this.session;
+    }
+
+    get isUserSwitched() {
+        return this._isUserSwitched;
+    }
+
+    set isUserSwitched(isUserSwitched) {        
+        this._isUserSwitched = isUserSwitched;
     }
 
     getNameForCodeInFramework(category, code) {

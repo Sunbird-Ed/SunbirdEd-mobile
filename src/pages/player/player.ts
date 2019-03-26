@@ -1,15 +1,18 @@
+import { AppGlobalService } from '@app/service';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import { CanvasPlayerService } from './canvas-player.service';
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
 import { IonicApp } from 'ionic-angular';
+import { playerActionHandlerDelegate, hierarchyInfo } from './player-action-handler-delegate';
+import { ContentDetailsPage } from '../content-details/content-details';
 
 @IonicPage()
 @Component({
   selector: 'page-player',
   templateUrl: 'player.html',
 })
-export class PlayerPage {
+export class PlayerPage implements playerActionHandlerDelegate {
   unregisterBackButton: any;
   config = {};
   constructor(
@@ -18,7 +21,8 @@ export class PlayerPage {
     private canvasPlayerService: CanvasPlayerService,
     private platform: Platform,
     private screenOrientation: ScreenOrientation,
-    private ionicApp: IonicApp
+    private ionicApp: IonicApp,
+    private appGlobalService: AppGlobalService
   ) {
     this.canvasPlayerService.handleAction();
   }
@@ -38,9 +42,10 @@ export class PlayerPage {
 
       console.log("config", this.config);
       setTimeout(() => {
-        (previewElement['contentWindow'] as any).initializePreview(this.config);
+        previewElement.contentWindow['initializePreview'](this.config);
       }, 1000);
     }
+    previewElement.contentWindow['playerActionHandlerDelegate'] = this;
   }
 
   ionViewDidEnter() {
@@ -52,4 +57,19 @@ export class PlayerPage {
     this.unregisterBackButton();
   }
 
+  onContentNotFound(identifier: string, hierarchyInfo: Array<hierarchyInfo>) {
+    const content = {
+      identifier: identifier,
+      hierarchyInfo: hierarchyInfo
+    };
+    this.navCtrl.push(ContentDetailsPage, {
+      content: content
+    }).then(() => {
+      this.navCtrl.remove(this.navCtrl.length() - 2);
+    });
+  }
+
+  onUserSwitch() {
+    this.appGlobalService.isUserSwitched = true;
+  }
 }
