@@ -49,9 +49,14 @@
   <div class="sb-dt-card-actions">
 
     <div class="sb-btn-tile-group">
-      <button ion-button clear icon-only class="sb-btn-tile" *ngIf="showDownloadBtn && !isDepthChild && !isDownloadStarted" (click)="downloadAllContents()">
+      <button ion-button clear icon-only class="sb-btn-tile" *ngIf="showDownloadBtn && !isDepthChild" [disabled]="isDownloadStarted" (click)="downloadAllContents()">
         <ion-icon ios="ios-cloud-download" md="md-cloud-download" class="sb-dt-card-blue-icon"></ion-icon>
-        <span class="sb-btn-footer-text">{{ 'DOWNLOAD' | translate }}</span>
+        <span *ngIf="!isDownloadStarted" class="sb-btn-footer-text">{{ 'DOWNLOAD' | translate }}</span>
+        <span *ngIf="isDownloadStarted" class="btn-popover-progress-container">
+          <span class="btn-progress-highlight" [ngStyle]="{'width': (currentCount/queuedIdentifiers.length)*100 + '%'}">
+           
+          </span>
+        </span>
       </button>
       <button ion-button clear icon-only class="sb-btn-tile" *ngIf="contentDetail?.isAvailableLocally" (click)="showOverflowMenu()">
         <ion-icon ios="ios-trash" md="md-trash" class="sb-dt-card-danger-icon"></ion-icon>

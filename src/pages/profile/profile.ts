@@ -82,6 +82,12 @@ export class ProfilePage {
     state: {},
     district: {}
   };
+  headerConfig = {
+    showHeader : true,
+    showBackButtom: false,
+    showBurgerMenu: true,
+    actionButtons: [],
+  };
 
   /**
    * Contains paths to icons
@@ -690,6 +696,10 @@ export class ProfilePage {
       loader.dismiss();
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
     });
+  }
+
+  handleHeaderEvents($event) {
+    // Handle any click on headers
   }
 
 }

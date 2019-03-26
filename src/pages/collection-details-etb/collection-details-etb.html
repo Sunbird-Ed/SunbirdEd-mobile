@@ -4,27 +4,14 @@
   See http://ionicframework.com/docs/components/#navigation for more info on
   Ionic pages and navigation.
 -->
-<ion-header>
-  <ion-navbar>
-    <!-- <ion-title>
-      <ion-icon md="md-share" float-right></ion-icon>
-    </ion-title> -->
-    <!-- <ion-buttons end *ngIf="!isDepthChild">
-      <button ion-button icon-only (click)="share()">
-        <ion-icon md="md-share" float-right></ion-icon>
-      </button>
-      <button *ngIf="contentDetail?.isAvailableLocally" ion-button icon-only (click)="showOverflowMenu($event)" style="font-size: 1.8rem;">
-        <ion-icon md="md-more" float-end></ion-icon>
-      </button>
-    </ion-buttons> -->
-  </ion-navbar>
-</ion-header>
+<application-header [headerConfig]="headerConfig"></application-header>
 
 
 <ion-content no-padding>
   <div class="p-8">
     <detail-card (downloadAllContent)="showDownloadConfirmationAlert($event)" (shareEvent)="share()"
       (showOverflowMenuEvent)="showPopOver($event)" [contentDetail]="contentDetail"
+      [currentCount]="currentCount" [queuedIdentifiers]="queuedIdentifiers"
       [localImage]="localImage" [showDownloadBtn]="showDownloadBtn" [isDepthChild]='isDepthChild'
       [isDownloadStarted]="isDownloadStarted" [defaultAppIcon]="defaultAppIcon"></detail-card>
 

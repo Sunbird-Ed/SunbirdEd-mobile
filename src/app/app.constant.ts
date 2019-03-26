@@ -128,6 +128,11 @@ export class MenuOverflow {
     public static readonly MENU_LOGIN = ['USERS_AND_GROUPS', 'REPORTS', 'SETTINGS', 'LOGOUT'];
 }
 
+export class SideMenu {
+    public static readonly MENU_GUEST = ['USERS_AND_GROUPS', 'REPORTS', 'LANGUAGE', 'SETTINGS'];
+    public static readonly MENU_LOGIN = ['USERS_AND_GROUPS', 'REPORTS', 'LANGUAGE', 'SETTINGS', 'LOGOUT'];
+}
+
 export class FormConstant {
     public static readonly DEFAULT_PAGE_COURSE_FILTER_PATH = 'data/form/pageassemble_course_filter.json';
     public static readonly DEFAULT_PAGE_LIBRARY_FILTER_PATH = 'data/form/pageassemble_library_filter.json';

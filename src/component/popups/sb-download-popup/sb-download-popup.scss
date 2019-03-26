@@ -7,6 +7,9 @@ sb-download-popup {
     }.p-0 {
         padding: 0 !important;
     }
-
+    .sb-popover-download.collapsed
+    {
+        z-index: 9;
+    }
 
 }

@@ -13,9 +13,14 @@ import { NavParams } from 'ionic-angular';
 export class TabsPage {
 
   @ViewChild('myTabs') tabRef: Tabs;
-
+  tabIndex = 0;
   tabs = [];
-
+  headerConfig = {
+    showHeader : true,
+    showBackButtom: false,
+    showBurgerMenu: true,
+    actionButtons: ['search', 'filter'],
+  };
   constructor(private container: ContainerService, private navParams: NavParams, private events: Events,
     public toastCtrl: ToastController) {
   }
@@ -42,7 +47,8 @@ export class TabsPage {
 
   }
 
-  public customClick(tab) {
+  public customClick(tab, _index) {
+    // this.tabIndex = _index;
     if (tab.disabled && tab.availableLater) {
       const toast = this.toastCtrl.create({
         message: 'Will be available in later release',
@@ -65,5 +71,14 @@ export class TabsPage {
       });
       toast.present();
     }
+  }
+
+  handleHeaderEvents($event) {
+    // switch ($event.name) {
+    //   case 'search': this.search();
+    //                 break;
+    //   case 'filter': this.showFilter();
+    //                   break;
+    // }
   }
 }

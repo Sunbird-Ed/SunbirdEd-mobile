@@ -233,6 +233,18 @@ export class ContentDetailsPage {
 
     this.setContentDetails(this.identifier, true, false);
     this.subscribeGenieEvent();
+    this.networkSubscription = this.commonUtilService.subject.subscribe((res) => {
+      if  (res) {
+        console.log('Inside Network Sub() Event');
+        this.presentToast();
+      } else {
+        this.presentToastForOffline();
+        if (this.toast) {
+        this.toast.dismiss();
+        this.toast = undefined;
+      }
+      }
+    });
   }
 
   /**
@@ -241,6 +253,7 @@ export class ContentDetailsPage {
   ionViewWillLeave(): void {
     this.events.unsubscribe('genie.event');
     this.resume.unsubscribe();
+    this.networkSubscription.unsubscribe();
   }
 
   handleNavBackButton() {
@@ -298,7 +311,7 @@ export class ContentDetailsPage {
       // icon : 'information',
       position: 'top',
       closeButtonText: '',
-      cssClass: 'toastAfterHeader'
+      cssClass: 'toastHeader'
     });
     toast.present();
   }
@@ -799,6 +812,11 @@ export class ContentDetailsPage {
         if (res.type === 'downloadProgress' && res.data.downloadProgress) {
           this.downloadProgress = res.data.downloadProgress === -1 ? '0' : res.data.downloadProgress;
           console.log('from content details', this.downloadProgress);
+            if (res.data.downloadProgress === 100) {
+              this.showLoading = false;
+              this.showDownload = false;
+              this.content.isAvailableLocally = true;
+            }
         }
 
         // Present Toast when the Device is Offline
@@ -875,11 +893,11 @@ export class ContentDetailsPage {
     //   }
     // });
     const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
-      sbPopoverMainTitle: this.cardData.name + this.cardData.subject,
+      sbPopoverMainTitle: this.content.name + this.content.subject,
       icon: null,
-      metaInfo: this.cardData.contentTypesCount +
-           'items' + '(' + this.fileSizePipe.transform(this.cardData.size, 2) + ')',
-      sbPopoverContent: this.commonUtilService.translateMessage('SOME_CONTENT_MIGHT_NOT_BE_PLAYABLE_OFFLINE'),
+      metaInfo:
+           '1 item ' + '(' + this.fileSizePipe.transform(this.content.size, 2) + ')',
+      // sbPopoverContent: this.commonUtilService.translateMessage('CONTENT_NOT_PLAYABLE_OFFLINE'),
     }, {
         cssClass: 'sb-popover info',
       });
@@ -907,6 +925,21 @@ export class ContentDetailsPage {
         values['network-type'] = this.network.type;
         values['size'] = this.content.size;
         this.importContent([this.identifier], this.isChildContent);
+        this.events.subscribe('genie.event', (data) => {
+          this.zone.run(() => {
+            data = JSON.parse(data);
+            const res = data;
+            if (res.type === 'downloadProgress' && res.data.downloadProgress) {
+              this.downloadProgress = res.data.downloadProgress === -1 ? '0' : res.data.downloadProgress;
+              console.log('from content details', this.downloadProgress);
+                if (res.data.downloadProgress === 100) {
+                 // this.showLoading = false;
+                  this.showDownload = false;
+                  this.content.isAvailableLocally = true;
+                }
+            }
+          });
+        });
         this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
           InteractSubtype.UPDATE_INITIATE ? this.isUpdateAvail : InteractSubtype.DOWNLOAD_INITIATE,
           Environment.HOME,
@@ -1279,7 +1312,18 @@ export class ContentDetailsPage {
       });
     popover.present();
   }
+/* Present Toast */
 
+async presentToast() {
+  const toast = await this.toastController.create({
+    duration: 2000,
+    message: 'You are online now',
+    showCloseButton: false,
+    position: 'top',
+    cssClass: 'toastForOnline'
+  });
+  toast.present();
+}
   /* SUDO
    if firstprperty is there and secondprperty is not there, then return firstprperty value
    else if firstprperty is not there and secondprperty is there, then return secondprperty value

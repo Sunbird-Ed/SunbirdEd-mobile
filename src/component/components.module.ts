@@ -30,6 +30,7 @@ import { EditContactDetailsPopupComponent } from './edit-contact-details-popup/e
 import { ViewAllCardComponent } from './view-all-card/view-all-card';
 import { TextbookCardComponent } from './textbook-card/textbook-card';
 import { CollectionChildComponent } from './collection-child/collection-child';
+import { ApplicationHeaderComponent } from './application-header/application-header';
 import { SbPopoverComponent } from './popups/sb-popover/sb-popover';
 import { SbDownloadPopupComponent } from './popups/sb-download-popup/sb-download-popup';
 
@@ -58,6 +59,7 @@ import { SbDownloadPopupComponent } from './popups/sb-download-popup/sb-download
         SearchCardComponent,
         TextbookCardComponent,
         CollectionChildComponent,
+        ApplicationHeaderComponent,
         SbPopoverComponent,
         SbDownloadPopupComponent
     ],
@@ -96,6 +98,7 @@ import { SbDownloadPopupComponent } from './popups/sb-download-popup/sb-download
         SearchCardComponent,
         TextbookCardComponent,
         CollectionChildComponent,
+        ApplicationHeaderComponent,
         SbPopoverComponent,
         SbDownloadPopupComponent
 
@@ -109,6 +112,7 @@ import { SbDownloadPopupComponent } from './popups/sb-download-popup/sb-download
         UnenrollAlertComponent,
         EditContactDetailsPopupComponent,
         EditContactVerifyPopupComponent,
+        ApplicationHeaderComponent,
         SbPopoverComponent,
         SbDownloadPopupComponent,
     ],
