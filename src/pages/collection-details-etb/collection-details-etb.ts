@@ -13,7 +13,7 @@ import {
   PopoverController,
   ToastController
 } from 'ionic-angular';
-import { FileSizePipe  } from '@app/pipes/file-size/file-size';
+import { FileSizePipe } from '@app/pipes/file-size/file-size';
 import { ViewController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
@@ -215,6 +215,8 @@ export class CollectionDetailsEtbPage {
 
   @ViewChild(Navbar) navBar: Navbar;
   showDownload: boolean;
+  networkSubscription: any;
+  toast: any;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -234,7 +236,8 @@ export class CollectionDetailsEtbPage {
     private courseUtilService: CourseUtilService,
     public viewCtrl: ViewController,
     private toastCtrl: ToastController,
-    private fileSizePipe: FileSizePipe
+    private fileSizePipe: FileSizePipe,
+    public toastController: ToastController
   ) {
 
     this.objRollup = new Rollup();
@@ -298,8 +301,35 @@ export class CollectionDetailsEtbPage {
       this.didViewLoad = true;
       this.setContentDetails(this.identifier, true);
       this.subscribeGenieEvent();
+      this.networkSubscription = this.commonUtilService.subject.subscribe((res) => {
+        if (res) {
+          console.log('Inside Network Sub() Event');
+          // this.presentToast();
+        } else {
+          this.presentToastWithOptions();
+          if (this.toast) {
+            this.toast.dismiss();
+            this.toast = undefined;
+          }
+        }
+      });
     });
   }
+
+  async presentToastWithOptions() {
+    this.toast = await this.toastController.create({
+      message: this.commonUtilService.translateMessage('NO_INTERNET_TITLE'),
+      showCloseButton: true,
+      position: 'top',
+      closeButtonText: '',
+      cssClass: 'toastAfterHeader'
+    });
+    this.toast.present();
+    this.toast.onDidDismiss(() => {
+      this.toast = undefined;
+    });
+  }
+
   // toggle the card
   toggleGroup(group) {
     if (this.isGroupShown(group)) {
@@ -351,49 +381,6 @@ export class CollectionDetailsEtbPage {
         console.error('Error Occurred=> ', error);
       });
   }
-
-  /**
-   * Function to rate content
-   */
-  rateContent() {
-    if (!this.guestUser) {
-      if (this.contentDetail.isAvailableLocally) {
-        const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
-          content: this.contentDetail,
-          rating: this.userRating,
-          comment: this.ratingComment,
-          pageId: PageId.COLLECTION_DETAIL,
-          sbPopoverHeading: this.commonUtilService.translateMessage('RATE_THE_CONTENT'),
-         actionsButtons: [
-          {
-            btntext: 'Rate',
-            btnClass: 'popover-color'
-          },
-        ],
-      },
-      {
-            cssClass: 'sb-popover info'
-          });
-        popUp.present();
-        popUp.onDidDismiss(data => {
-          if (data && data.message === 'rating.success') {
-            this.userRating = data.rating;
-            this.ratingComment = data.comment;
-          }
-        });
-      } else {
-        this.commonUtilService.showToast('TRY_BEFORE_RATING');
-      }
-    } else {
-      if (this.profileType === ProfileType.TEACHER) {
-        this.commonUtilService.showToast('SIGNIN_TO_USE_FEATURE');
-      }
-    }
-  }
-  /**
- * Get the session to know if the user is logged-in or guest
- *
- */
 
   checkLoggedInOrGuestUser() {
     this.guestUser = !this.appGlobalService.isUserLoggedIn();
@@ -1004,7 +991,7 @@ export class CollectionDetailsEtbPage {
 
   showDownloadConfirmationAlert(myEvent) {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-      const popover = this.popoverCtrl.create(ConfirmAlertComponent,  {
+      const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
         sbPopoverHeading: this.commonUtilService.translateMessage('DOWNLOAD'),
         sbPopoverMainTitle: this.contentDetail.name + this.contentDetail.subject,
         actionsButtons: [
@@ -1015,24 +1002,24 @@ export class CollectionDetailsEtbPage {
         ],
         icon: null,
         metaInfo: this.contentDetail.contentTypesCount.TextBookUnit +
-         'items' +  '(' + this.fileSizePipe.transform(this.downloadSize, 2) + ')',
+          'items' + '(' + this.fileSizePipe.transform(this.downloadSize, 2) + ')',
         //  '(' + this.fileSizePipe.transform(this.contentDetail.size, 2) + ')'
       }, {
           cssClass: 'sb-popover info',
         });
-        popover.present({
+      popover.present({
         ev: event
       });
       popover.onDidDismiss((canDownload: boolean = false) => {
         console.log('downloaddddddd content');
-            if (canDownload) {
-           this.downloadAllContent();
+        if (canDownload) {
+          this.downloadAllContent();
         }
       });
     } else {
       this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
     }
-}
+  }
 
   cancelDownload() {
     this.telemetryGeneratorService.generateCancelDownloadTelemetry(this.contentDetail);
@@ -1092,7 +1079,7 @@ export class CollectionDetailsEtbPage {
       ],
       icon: null,
       metaInfo: this.contentDetail.contentTypesCount.TextBookUnit +
-       'items' + '(' + this.fileSizePipe.transform(this.contentDetail.size, 2) + ')',
+        'items' + '(' + this.fileSizePipe.transform(this.contentDetail.size, 2) + ')',
       sbPopoverContent: 'Are you sure you want to delete ?'
     }, {
         cssClass: 'sb-popover danger',
@@ -1107,9 +1094,9 @@ export class CollectionDetailsEtbPage {
     });
   }
 
-    /**
-   * Construct content delete request body
-   */
+  /**
+ * Construct content delete request body
+ */
   getDeleteRequestBody() {
     const apiParams = {
       contentDeleteList: [{
@@ -1151,8 +1138,8 @@ export class CollectionDetailsEtbPage {
       undefined,
       this.objRollup,
       this.corRelationList);
-      const tmp = this.getDeleteRequestBody();
-      console.log('tmpppppppppppp', tmp);
+    const tmp = this.getDeleteRequestBody();
+    console.log('tmpppppppppppp', tmp);
     this.contentService.deleteContent(tmp).then((res: any) => {
       const data = JSON.parse(res);
       if (data.result && data.result.status === 'NOT_FOUND') {
