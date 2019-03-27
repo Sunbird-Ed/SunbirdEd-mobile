@@ -23,3 +23,4 @@ cordova-plugin=https://github.com/Sunbird-Ed/sb-cordova-plugin-customtabs.git --
 sunbird-cordova-plugin=https://github.com/project-sunbird/cordova-plugin-imagechooser.git#release-1.14.0
 sunbird-cordova-plugin=https://github.com/project-sunbird/cordova-plugin-qr-scanner.git#release-1.14.0
 sunbird-cordova-plugin=https://github.com/project-sunbird/cordova-plugin-sunbirdsplash.git#release-1.15.0
+sunbird-cordova-plugin=https://github.com/project-sunbird/cordova-plugin-file-support.git#release-1.15.0
