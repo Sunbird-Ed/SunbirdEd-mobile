@@ -378,7 +378,7 @@ export class MyApp {
   private async makeEntryInSupportFolder() {
     return new Promise((resolve => {
       (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
-        this.preferences.putString(PreferenceKey.KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result)).toPromise().then();
+        this.preferences.putString(PreferenceKey.KEY_SUNBIRD_SUPPORT_FILE_PATH, result).toPromise().then();
         resolve();
       }, () => {
       });
