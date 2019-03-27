@@ -17,7 +17,6 @@ export class TabsPage {
   tabs = [];
   headerConfig = {
     showHeader : true,
-    showBackButtom: false,
     showBurgerMenu: true,
     actionButtons: ['search', 'filter'],
   };

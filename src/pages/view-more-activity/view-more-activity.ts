@@ -33,6 +33,7 @@ import { CourseUtilService } from '../../service/course-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
+import { AppHeaderService } from '@app/service';
 
 @IonicPage()
 @Component({
@@ -153,7 +154,8 @@ export class ViewMoreActivityPage implements OnInit {
     private courseService: CourseService,
     private courseUtilService: CourseUtilService,
     private commonUtilService: CommonUtilService,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private headerServie: AppHeaderService
   ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
@@ -171,6 +173,7 @@ export class ViewMoreActivityPage implements OnInit {
 	 * Ionic default life cycle hook
 	 */
   ionViewWillEnter(): void {
+    this.headerServie.showHeaderWithBackButton();
     this.tabBarElement.style.display = 'none';
     this.searchQuery = this.navParams.get('requestParams');
     this.showDownloadsOnlyToggle = this.navParams.get('showDownloadOnlyToggle');

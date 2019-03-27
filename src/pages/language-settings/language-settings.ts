@@ -21,7 +21,7 @@ import {
 } from 'sunbird';
 
 import { appLanguages, PreferenceKey, Map } from '@app/app';
-import { CommonUtilService, AppGlobalService, TelemetryGeneratorService } from '@app/service';
+import { CommonUtilService, AppGlobalService, TelemetryGeneratorService, AppHeaderService } from '@app/service';
 import { OnboardingPage } from '@app/pages/onboarding/onboarding';
 import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
 
@@ -42,6 +42,7 @@ export class LanguageSettingsPage {
   btnColor = '#55acee';
   unregisterBackButton = undefined;
   mainPage: Boolean = false;
+  headerConfig: any;
 
 
   constructor(
@@ -54,7 +55,8 @@ export class LanguageSettingsPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private platform: Platform,
     private appGlobalService: AppGlobalService,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private headerServie: AppHeaderService
   ) {
     this.mainPage = this.navParams.get('mainPage');
   }
@@ -91,6 +93,11 @@ export class LanguageSettingsPage {
 
   ionViewWillEnter() {
     this.selectedLanguage = {};
+    if (!this.isFromSettings) {
+      this.headerServie.hideHeader();
+    } else {
+      this.headerServie.showHeaderWithBackButton();
+    }
     this.init();
   }
 

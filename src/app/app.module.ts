@@ -24,6 +24,8 @@ import {CommonUtilService} from '../service/common-util.service';
 import {BroadcastComponent} from '../component/broadcast/broadcast';
 import {LogoutHandlerService} from '@app/service/handlers/logout-handler.service';
 import {TncUpdateHandlerService} from '@app/service/handlers/tnc-update-handler.service';
+import { AppHeaderService } from '@app/service/app-header.service';
+import { ComponentsModule } from '../component/components.module';
 
 export const createTranslateLoader = (httpClient: HttpClient) => {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
@@ -40,6 +42,7 @@ export const createTranslateLoader = (httpClient: HttpClient) => {
     HttpClientModule,
     BrowserModule,
     FrameworkModule,
+    ComponentsModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -80,6 +83,7 @@ export const createTranslateLoader = (httpClient: HttpClient) => {
     LogoutHandlerService,
     TncUpdateHandlerService,
     ContainerService,
+    AppHeaderService,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ],
   exports: [

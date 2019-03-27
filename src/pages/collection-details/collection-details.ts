@@ -1,7 +1,8 @@
 import {
   Component,
   NgZone,
-  ViewChild
+  ViewChild,
+  OnInit
 } from '@angular/core';
 import {
   IonicPage,
@@ -43,14 +44,14 @@ import {
   ShareUrl
 } from '@app/app';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
-import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService } from '@app/service';
+import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService, AppHeaderService } from '@app/service';
 
 @IonicPage()
 @Component({
   selector: 'page-collection-details',
   templateUrl: 'collection-details.html',
 })
-export class CollectionDetailsPage {
+export class CollectionDetailsPage implements OnInit{
   contentDetail: any;
   childrenData: Array<any>;
 
@@ -197,7 +198,8 @@ export class CollectionDetailsPage {
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private courseUtilService: CourseUtilService
+    private courseUtilService: CourseUtilService,
+    private headerService: AppHeaderService
   ) {
 
     this.objRollup = new Rollup();
@@ -213,6 +215,15 @@ export class CollectionDetailsPage {
       this.handleBackButton();
     };
     this.registerDeviceBackButton();
+  }
+
+  /**
+   * Angular life cycle hooks
+  */
+  ngOnInit() {
+    this.headerService.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
   }
 
   /**
@@ -239,6 +250,16 @@ export class CollectionDetailsPage {
         this.isDepthChild = true;
       } else {
         this.isDepthChild = false;
+      }
+
+      if (this.isDepthChild) {
+        let actionsButtons = ['share'];
+        if (this.contentDetail.isAvailableLocally) {
+          actionsButtons.push('more');
+        }
+        this.headerService.showHeaderWithBackButton(actionsButtons);
+      } else {
+        this.headerService.showHeaderWithBackButton();
       }
 
       this.identifier = this.cardData.contentId || this.cardData.identifier;
@@ -290,9 +311,68 @@ export class CollectionDetailsPage {
   /**
    * Function to rate content
    */
-  rateContent() {
+  // rateContent() {
+  //   if (!this.guestUser) {
+  //     this.telemetryGeneratorService.generateInteractTelemetry(
+  //       InteractType.TOUCH,
+  //       InteractSubtype.RATING_CLICKED,
+  //       Environment.HOME,
+  //       PageId.COLLECTION_DETAIL,
+  //       undefined,
+  //       undefined,
+  //       this.objRollup,
+  //       this.corRelationList
+  //     );
+  //     if (this.contentDetail.isAvailableLocally) {
+  //       const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
+  //         content: this.contentDetail,
+  //         rating: this.userRating,
+  //         comment: this.ratingComment,
+  //         pageId: PageId.COLLECTION_DETAIL,
+  //       }, {
+  //           cssClass: 'content-rating-alert'
+  //         });
+  //       popUp.present();
+  //       popUp.onDidDismiss(data => {
+  //         if (data && data.message === 'rating.success') {
+  //           this.userRating = data.rating;
+  //           this.ratingComment = data.comment;
+  //         }
+  //       });
+  //     } else {
+  //       this.commonUtilService.showToast('TRY_BEFORE_RATING');
+  //     }
+  //   } else {
+  //     if (this.profileType === ProfileType.TEACHER) {
+  //       this.commonUtilService.showToast('SIGNIN_TO_USE_FEATURE');
+  //     }
+  //   }
+  // }
+
+
+  rateContent(event) {
+    // TODO: check content is played or not
     if (!this.guestUser) {
-      this.telemetryGeneratorService.generateInteractTelemetry(
+      if (this.contentDetail.isAvailableLocally) {
+      const popover = this.popoverCtrl.create(ContentRatingAlertComponent, {
+        content: this.contentDetail,
+        pageId: PageId.CONTENT_DETAIL,
+        rating: this.userRating,
+        comment: this.ratingComment,
+        // popupType: popupType,
+      }, {
+          cssClass: 'sb-popover info',
+        });
+      popover.present({
+        ev: event
+      });
+      popover.onDidDismiss(data => {
+        if (data && data.message === 'rating.success') {
+          this.userRating = data.rating;
+          this.ratingComment = data.comment;
+        }
+      });
+    this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.TOUCH,
         InteractSubtype.RATING_CLICKED,
         Environment.HOME,
@@ -302,22 +382,7 @@ export class CollectionDetailsPage {
         this.objRollup,
         this.corRelationList
       );
-      if (this.contentDetail.isAvailableLocally) {
-        const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
-          content: this.contentDetail,
-          rating: this.userRating,
-          comment: this.ratingComment,
-          pageId: PageId.COLLECTION_DETAIL,
-        }, {
-            cssClass: 'content-rating-alert'
-          });
-        popUp.present();
-        popUp.onDidDismiss(data => {
-          if (data && data.message === 'rating.success') {
-            this.userRating = data.rating;
-            this.ratingComment = data.comment;
-          }
-        });
+
       } else {
         this.commonUtilService.showToast('TRY_BEFORE_RATING');
       }
@@ -327,6 +392,7 @@ export class CollectionDetailsPage {
       }
     }
   }
+
 
   /**
  * Get the session to know if the user is logged-in or guest
@@ -968,6 +1034,13 @@ export class CollectionDetailsPage {
     this.events.unsubscribe('genie.event');
   }
 
-
+  handleHeaderEvents($event) {
+    switch ($event.name) {
+      case 'share': this.share();
+                    break;
+      case 'more': this.showOverflowMenu($event);
+                      break;
+    }
+  }
 
 }

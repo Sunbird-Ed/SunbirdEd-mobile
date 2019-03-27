@@ -1,7 +1,8 @@
 import {
   Component,
   NgZone,
-  ViewChild
+  ViewChild,
+  OnInit
 } from '@angular/core';
 import {
   IonicPage,
@@ -54,7 +55,7 @@ import {
   PreferenceKey
 } from '@app/app';
 import { CourseBatchesPage } from '@app/pages/course-batches/course-batches';
-import { CourseUtilService, AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
+import { CourseUtilService, AppGlobalService, TelemetryGeneratorService, CommonUtilService, AppHeaderService } from '@app/service';
 import { DatePipe } from '@angular/common';
 
 @IonicPage()
@@ -62,7 +63,7 @@ import { DatePipe } from '@angular/common';
   selector: 'page-enrolled-course-details',
   templateUrl: 'enrolled-course-details.html',
 })
-export class EnrolledCourseDetailsPage {
+export class EnrolledCourseDetailsPage implements OnInit {
 
   /**
    * Contains content details
@@ -184,13 +185,23 @@ export class EnrolledCourseDetailsPage {
     private appGlobalService: AppGlobalService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private headerService: AppHeaderService
   ) {
 
     this.appGlobalService.getUserId();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     this.subscribeGenieEvent();
+  }
+
+  /**
+   * Angular life cycle hooks
+  */
+ ngOnInit() {
+    this.headerService.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
   }
 
   subscribeUtilityEvents() {
@@ -312,23 +323,80 @@ export class EnrolledCourseDetailsPage {
    */
   rateContent(event) {
     // TODO: check content is played or not
+    console.log('rateContent');
+    console.log('rateContent');
+    console.log('rateContent');
+    console.log('rateContent');
+    console.log(event);
+    console.log('rateContent');
+    console.log('rateContent');
+    console.log('rateContent');
+    console.log('rateContent');
     if (!this.guestUser) {
       if (this.course.isAvailableLocally) {
-        const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
-          content: this.course,
-          rating: this.userRating,
-          comment: this.ratingComment,
-          pageId: PageId.COURSE_DETAIL
-        }, {
-            cssClass: 'content-rating-alert'
-          });
-        popUp.present();
-        popUp.onDidDismiss(data => {
-          if (data && data.message === 'rating.success') {
-            this.userRating = data.rating;
-            this.ratingComment = data.comment;
-          }
+        // const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
+        //   content: this.course,
+        //   rating: this.userRating,
+        //   comment: this.ratingComment,
+        //   pageId: PageId.COURSE_DETAIL
+        // }, {
+        //     cssClass: 'content-rating-alert'
+        //   });
+        // popUp.present();
+        // popUp.onDidDismiss(data => {
+        //   if (data && data.message === 'rating.success') {
+        //     this.userRating = data.rating;
+        //     this.ratingComment = data.comment;
+        //   }
+        // });
+
+
+
+        // const paramsMap = new Map();
+      // if (this.isContentPlayed || this.course.contentAccess.length) {
+        console.log(this.course);
+        console.log(this.childrenData);
+        console.log(PageId);
+        console.log(this.userRating);
+        console.log(this.ratingComment);
+      const popover = this.popoverCtrl.create(ContentRatingAlertComponent, {
+        content: this.course,
+        pageId: PageId.CONTENT_DETAIL,
+        rating: this.userRating,
+        comment: this.ratingComment,
+        // popupType: popupType,
+      }, {
+          cssClass: 'sb-popover info',
         });
+      popover.present({
+        ev: event
+      });
+      popover.onDidDismiss(data => {
+        if (data && data.message === 'rating.success') {
+          this.userRating = data.rating;
+          this.ratingComment = data.comment;
+        }
+      });
+    // } else {
+    //   paramsMap['IsPlayed'] = 'N';
+    //   this.commonUtilService.showToast('TRY_BEFORE_RATING');
+    // }
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.RATING_CLICKED,
+      Environment.HOME,
+      PageId.CONTENT_DETAIL,
+      undefined,
+      // paramsMap,
+      undefined,
+      // this.objRollup,
+      undefined,
+      this.corRelationList);
+
+
+
+
+
       } else {
         this.commonUtilService.showToast('TRY_BEFORE_RATING');
       }
@@ -341,6 +409,7 @@ export class EnrolledCourseDetailsPage {
 
 
   showOverflowMenu(event) {
+    console.log('Testing which page---- Enrolled-course-details');
     const data = {
       batchStatus: this.batchDetails ? this.batchDetails.status : 2,
       contentStatus: this.courseCardData.status,
@@ -451,6 +520,10 @@ export class EnrolledCourseDetailsPage {
         this.generateStartEvent(this.course.identifier, this.course.contentType, this.course.pkgVersion);
       }
       this.didViewLoad = true;
+
+      if (this.course && this.course.isAvailableLocally) {
+        this.headerService.showHeaderWithBackButton(['share', 'more']);
+      }
 
       if (this.course.status !== 'Live') {
         this.commonUtilService.showToast('COURSE_NOT_AVAILABLE');
@@ -812,6 +885,7 @@ export class EnrolledCourseDetailsPage {
    * @param depth
    */
   navigateToChildrenDetailsPage(content, depth): void {
+    console.log(content.contentType);
     const contentState = {
       batchId: this.courseCardData.batchId ? this.courseCardData.batchId : '',
       courseId: this.identifier
@@ -892,6 +966,7 @@ export class EnrolledCourseDetailsPage {
     });
   }
 
+
   /**
    * Ionic life cycle hook
    */
@@ -908,6 +983,7 @@ export class EnrolledCourseDetailsPage {
     }
     this.showResumeBtn = this.courseCardData.lastReadContentId ? true : false;
     this.setContentDetails(this.identifier);
+    this.headerService.showHeaderWithBackButton(['share', 'more']);
     // If courseCardData does not have a batch id then it is not a enrolled course
     this.subscribeGenieEvent();
   }
@@ -1211,4 +1287,12 @@ export class EnrolledCourseDetailsPage {
     }
   }
 
+  handleHeaderEvents($event) {
+    switch ($event.name) {
+      case 'share': this.share();
+                    break;
+      case 'more': this.showOverflowMenu($event);
+                      break;
+    }
+  }
 }
