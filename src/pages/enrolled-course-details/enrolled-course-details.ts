@@ -57,6 +57,7 @@ import {
 import { CourseBatchesPage } from '@app/pages/course-batches/course-batches';
 import { CourseUtilService, AppGlobalService, TelemetryGeneratorService, CommonUtilService, AppHeaderService } from '@app/service';
 import { DatePipe } from '@angular/common';
+import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 
 @IonicPage()
 @Component({
@@ -597,7 +598,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
                 } else {
                   if (this.batchDetails.status === 2) {
                     this.batchExp = true;
-                    const alert = this.alertCtrl.create({
+                    /*const alert = this.alertCtrl.create({
                       title: this.commonUtilService.translateMessage('BATCH_EXPIRED'),
                       message: this.commonUtilService.translateMessage('BATCH_EXPIRED_DESCRIPTION'),
                       mode: 'wp',
@@ -613,7 +614,28 @@ export class EnrolledCourseDetailsPage implements OnInit {
                         }
                       ]
                     });
-                    alert.present();
+                    alert.present();*/
+                    const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
+                      sbPopoverHeading: this.commonUtilService.translateMessage('BATCH_EXPIRED'),
+                      sbPopoverMainTitle: this.commonUtilService.translateMessage('BATCH_EXPIRED_DESCRIPTION'),
+                      actionsButtons: [
+                        {
+                          btntext: this.commonUtilService.translateMessage('BATCH_EXPIRED_BUTTON'),
+                          btnClass: 'doneButton'
+                        }
+                      ],
+                      icon: null
+                    }, {
+                        cssClass: 'confirm-alert',
+                      });
+                      confirm.present({
+                        ev: event
+                      });
+                      confirm.onDidDismiss((leftBtnClicked: boolean = false) => {
+                        if (leftBtnClicked) {
+                          this.preference.putString(PreferenceKey.COURSE_IDENTIFIER, this.batchDetails.identifier);
+                        } 
+                      });
                   } else if (this.batchDetails.status === 0) {
                     this.isBatchNotStarted = true;
                     this.courseStartDate = this.batchDetails.startDate;
