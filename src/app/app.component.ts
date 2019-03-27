@@ -10,14 +10,17 @@ import {
   ProfileService,
   ProfileType,
   SharedPreferences,
+  OAuthService,
+  Profile,
   // TabsPage,
   TelemetryService,
-  UserProfileService
+  UserProfileService,
+  UserSource
 } from 'sunbird';
 import { ContainerService } from '@app/service/container-service';
 import { TabsPage } from '@app/pages/tabs/tabs';
 import { ProfileSettingsPage } from './../pages/profile-settings/profile-settings';
-import { Component, NgZone, ViewChild } from '@angular/core';
+import { Component, NgZone, ViewChild, OnInit } from '@angular/core';
 import { App, Events, Nav, Platform, PopoverController, ToastController, AlertController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, LOGIN_TEACHER_TABS } from './module.service';
@@ -38,6 +41,12 @@ import { TelemetryGeneratorService } from '../service/telemetry-generator.servic
 import { BroadcastComponent } from '../component/broadcast/broadcast';
 import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
 import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
+import { EventEmitter } from 'events';
+import { AppHeaderService } from '@app/service';
+import { OnboardingPage } from '@app/pages/onboarding/onboarding';
+import { UserAndGroupsPage } from '@app/pages/user-and-groups';
+import { ReportsPage } from '@app/pages/reports';
+import { SettingsPage } from '@app/pages/settings';
 
 
 declare var chcp: any;
@@ -47,18 +56,27 @@ const KEY_SUNBIRD_SUPPORT_FILE_PATH = 'sunbird_support_file_path';
 @Component({
   templateUrl: 'app.html'
 })
-export class MyApp {
+export class MyApp implements OnInit {
   @ViewChild(Nav) nav;
   rootPage: any;
   public counter = 0;
+  headerConfig = {
+    showHeader : true,
+    showBurgerMenu: true,
+    actionButtons: ['search'],
+  };
+  public sideMenuEvent = new EventEmitter;
 
   readonly permissionList = ['android.permission.CAMERA',
     'android.permission.WRITE_EXTERNAL_STORAGE',
     'android.permission.ACCESS_FINE_LOCATION',
     'android.permission.RECORD_AUDIO'];
 
+  profile: any = {};
+
   constructor(
     private platform: Platform,
+    private oauth: OAuthService,
     statusBar: StatusBar,
     private toastCtrl: ToastController,
     private authService: AuthService,
@@ -82,7 +100,8 @@ export class MyApp {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private buildParamService: BuildParamService,
     public popoverCtrl: PopoverController,
-    private tncUpdateHandlerService: TncUpdateHandlerService
+    private tncUpdateHandlerService: TncUpdateHandlerService,
+    private headerServie: AppHeaderService
   ) {
 
     const that = this;
@@ -253,6 +272,15 @@ export class MyApp {
       // }
 
       this.handleBackButton();
+    });
+  }
+
+  /**
+	 * Angular life cycle hooks
+	 */
+  ngOnInit() {
+    this.headerServie.headerConfigEmitted$.subscribe(config => {
+      this.headerConfig = config;
     });
   }
 
@@ -560,5 +588,129 @@ export class MyApp {
         }
       );
     }
+  }
+
+  handleHeaderEvents($event) {
+    if ($event.name === 'back') {
+      // this.handleBackButton();
+      const navObj = this.app.getActiveNavs()[0];
+      const currentPage = navObj.getActive().name;
+
+      if (navObj.canGoBack()) {
+        return navObj.pop();
+      } else {
+        this.commonUtilService.showExitPopUp(this.computePageId(currentPage), Environment.HOME, false);
+      }
+    } else {
+      this.headerServie.sidebarEvent($event);
+    }
+  }
+
+  menuItemAction(menuName) {
+    switch (menuName.menuItem) {
+      case 'USERS_AND_GROUPS':
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.USER_GROUP_CLICKED,
+          Environment.USER,
+          PageId.PROFILE
+        );
+        this.app.getActiveNav().setRoot(UserAndGroupsPage, { profile: this.profile });
+        // this.goToUserAndGroups();
+        break;
+
+      case 'REPORTS':
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.REPORTS_CLICKED,
+          Environment.USER,
+          PageId.PROFILE
+        );
+        this.app.getActiveNav().setRoot(ReportsPage, { profile: this.profile });
+       // this.goToReports();
+        break;
+
+      case 'SETTINGS': {
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.SETTINGS_CLICKED,
+          Environment.USER,
+          PageId.PROFILE,
+          null,
+          undefined,
+          undefined
+        );
+        this.app.getActiveNav().setRoot(SettingsPage);
+        // this.goToLanguageSettings();
+        break;
+      }
+      case 'LOGOUT':
+        if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
+          this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
+        } else {
+          this.generateLogoutInteractTelemetry(InteractType.TOUCH,
+            InteractSubtype.LOGOUT_INITIATE, '');
+          this.oauth.doLogOut();
+          (<any>window).splashscreen.clearPrefs();
+          const profile: Profile = new Profile();
+          this.preferences.getString('GUEST_USER_ID_BEFORE_LOGIN')
+            .then(val => {
+              if (val !== '') {
+                profile.uid = val;
+              } else {
+                this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
+              }
+
+              profile.handle = 'Guest1';
+              profile.profileType = ProfileType.TEACHER;
+              profile.source = UserSource.LOCAL;
+
+              this.profileService.setCurrentProfile(true, profile).then(() => {
+                this.navigateToAptPage();
+                this.events.publish(AppGlobalService.USER_INFO_UPDATED);
+              }).catch(() => {
+                this.navigateToAptPage();
+                this.events.publish(AppGlobalService.USER_INFO_UPDATED);
+              });
+            });
+        }
+
+        break;
+    }
+  }
+
+  generateLogoutInteractTelemetry(interactType, interactSubtype, uid) {
+    const valuesMap = new Map();
+    valuesMap['UID'] = uid;
+    this.telemetryService.interact(
+      generateInteractTelemetry(interactType,
+        interactSubtype,
+        Environment.HOME,
+        PageId.LOGOUT,
+        valuesMap,
+        undefined,
+        undefined
+      )
+    );
+  }
+
+  navigateToAptPage() {
+    if (this.appGlobalService.DISPLAY_ONBOARDING_PAGE) {
+      this.app.getRootNav().setRoot(OnboardingPage);
+    } else {
+      this.preferences.getString(PreferenceKey.SELECTED_USER_TYPE)
+        .then(val => {
+          this.appGlobalService.getGuestUserInfo();
+          if (val === ProfileType.STUDENT) {
+            initTabs(this.container, GUEST_STUDENT_TABS);
+          } else if (val === ProfileType.TEACHER) {
+            initTabs(this.container, GUEST_TEACHER_TABS);
+          }
+        });
+      this.app.getRootNav().setRoot(TabsPage, {
+        loginMode: 'guest'
+      });
+    }
+    this.generateLogoutInteractTelemetry(InteractType.OTHER, InteractSubtype.LOGOUT_SUCCESS, '');
   }
 }

@@ -1,7 +1,8 @@
 import {
   Component,
   NgZone,
-  ViewChild
+  ViewChild,
+  OnInit
 } from '@angular/core';
 import {
   IonicPage,
@@ -43,14 +44,14 @@ import {
   ShareUrl
 } from '@app/app';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
-import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService } from '@app/service';
+import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService, AppHeaderService } from '@app/service';
 
 @IonicPage()
 @Component({
   selector: 'page-collection-details',
   templateUrl: 'collection-details.html',
 })
-export class CollectionDetailsPage {
+export class CollectionDetailsPage implements OnInit{
   contentDetail: any;
   childrenData: Array<any>;
 
@@ -197,7 +198,8 @@ export class CollectionDetailsPage {
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private courseUtilService: CourseUtilService
+    private courseUtilService: CourseUtilService,
+    private headerService: AppHeaderService
   ) {
 
     this.objRollup = new Rollup();
@@ -213,6 +215,15 @@ export class CollectionDetailsPage {
       this.handleBackButton();
     };
     this.registerDeviceBackButton();
+  }
+
+  /**
+   * Angular life cycle hooks
+  */
+  ngOnInit() {
+    this.headerService.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
   }
 
   /**
@@ -239,6 +250,16 @@ export class CollectionDetailsPage {
         this.isDepthChild = true;
       } else {
         this.isDepthChild = false;
+      }
+
+      if (this.isDepthChild) {
+        let actionsButtons = ['share'];
+        if (this.contentDetail.isAvailableLocally) {
+          actionsButtons.push('more');
+        }
+        this.headerService.showHeaderWithBackButton(actionsButtons);
+      } else {
+        this.headerService.showHeaderWithBackButton();
       }
 
       this.identifier = this.cardData.contentId || this.cardData.identifier;
@@ -968,6 +989,13 @@ export class CollectionDetailsPage {
     this.events.unsubscribe('genie.event');
   }
 
-
+  handleHeaderEvents($event) {
+    switch ($event.name) {
+      case 'share': this.share();
+                    break;
+      case 'more': this.showOverflowMenu($event);
+                      break;
+    }
+  }
 
 }

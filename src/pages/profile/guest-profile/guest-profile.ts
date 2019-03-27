@@ -1,5 +1,5 @@
 import { TranslateService } from '@ngx-translate/core';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   NavController,
   PopoverController,
@@ -25,7 +25,8 @@ import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
 import {
   AppGlobalService,
   TelemetryGeneratorService,
-  CommonUtilService
+  CommonUtilService,
+  AppHeaderService
 } from '@app/service';
 import {
   MenuOverflow,
@@ -38,7 +39,7 @@ import {
   templateUrl: 'guest-profile.html',
 })
 
-export class GuestProfilePage {
+export class GuestProfilePage implements OnInit{
 
   imageUri = 'assets/imgs/ic_profile_default.png';
 
@@ -55,6 +56,7 @@ export class GuestProfilePage {
   selectedLanguage: string;
   loader: any;
 
+
   constructor(
     private navCtrl: NavController,
     private popoverCtrl: PopoverController,
@@ -66,7 +68,8 @@ export class GuestProfilePage {
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private framework: FrameworkService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private headerServie: AppHeaderService
   ) {
 
 
@@ -109,6 +112,19 @@ export class GuestProfilePage {
     );
 
     this.appGlobalService.generateConfigInteractEvent(PageId.GUEST_PROFILE);
+  }
+
+  /**
+	 * Angular life cycle hooks
+	 */
+  ngOnInit() {
+    this.headerServie.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
+  }
+
+  ionViewWillEnter() {
+    this.headerServie.showHeaderWithHomeButton();
   }
 
   refreshProfileData(refresher: any = false, showLoader: boolean = true) {
@@ -236,6 +252,10 @@ export class GuestProfilePage {
 
   buttonClick(isNetAvailable?) {
     this.showNetworkWarning();
+  }
+
+  handleHeaderEvents($event) {
+    // Handle any click on headers
   }
 
 }

@@ -1,1 +1,2 @@
-<ion-nav [root]="rootPage"></ion-nav>
+<application-header [headerConfig]="headerConfig" (headerEvents)="handleHeaderEvents($event);" (sideMenuItemEvent)="menuItemAction($event)"></application-header>
+<ion-nav [root]="rootPage" [ngClass]="{'need-header-space':headerConfig?.showHeader, '':!headerConfig?.showHeader}"></ion-nav>
