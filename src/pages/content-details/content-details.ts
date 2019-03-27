@@ -57,7 +57,8 @@ import {
 } from '@app/component';
 import {
   AppGlobalService,
-  CourseUtilService
+  CourseUtilService,
+  AppHeaderService
 } from '@app/service';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { Network } from '@ionic-native/network';
@@ -173,7 +174,8 @@ export class ContentDetailsPage {
     private deviceInfoService: DeviceInfoService,
     private network: Network,
     public  toastController: ToastController,
-    private fileSizePipe: FileSizePipe
+    private fileSizePipe: FileSizePipe,
+    private headerServie: AppHeaderService
   ) {
 
     this.objRollup = new Rollup();
@@ -205,6 +207,7 @@ export class ContentDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
+    this.headerServie.hideHeader();
     this.cardData = this.navParams.get('content');
     this.isChildContent = this.navParams.get('isChildContent');
     this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');

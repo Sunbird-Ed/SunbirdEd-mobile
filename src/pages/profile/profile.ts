@@ -1,4 +1,4 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import {
   NavController,
   LoadingController,
@@ -48,7 +48,7 @@ import { PersonalDetailsEditPage } from '@app/pages/profile/personal-details-edi
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details/enrolled-course-details';
 import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
-import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
+import { AppGlobalService, TelemetryGeneratorService, CommonUtilService, AppHeaderService } from '@app/service';
 import { FormAndFrameworkUtilService } from './formandframeworkutil.service';
 import { EditContactDetailsPopupComponent } from '@app/component/edit-contact-details-popup/edit-contact-details-popup';
 import { EditContactVerifyPopupComponent } from '@app/component';
@@ -61,7 +61,7 @@ import { EditContactVerifyPopupComponent } from '@app/component';
   selector: 'page-profile',
   templateUrl: 'profile.html'
 })
-export class ProfilePage {
+export class ProfilePage implements OnInit {
   /**
    * Contains Profile Object
    */
@@ -81,12 +81,6 @@ export class ProfilePage {
   userLocation = {
     state: {},
     district: {}
-  };
-  headerConfig = {
-    showHeader : true,
-    showBackButtom: false,
-    showBurgerMenu: true,
-    actionButtons: [],
   };
 
   /**
@@ -129,7 +123,8 @@ export class ProfilePage {
     private commonUtilService: CommonUtilService,
     private app: App,
     private contentService: ContentService,
-    public viewCtrl: ViewController
+    public viewCtrl: ViewController,
+    private headerServie: AppHeaderService
   ) {
     this.userId = this.navParams.get('userId') || '';
     this.isRefreshProfile = this.navParams.get('returnRefreshedUserProfileDetails');
@@ -151,6 +146,19 @@ export class ProfilePage {
       this.custodianOrgId = orgId;
     }, err => {
     });
+  }
+
+  /**
+	 * Angular life cycle hooks
+	 */
+  ngOnInit() {
+    this.headerServie.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
+  }
+
+  ionViewWillEnter() {
+    this.headerServie.showHeaderWithHomeButton();
   }
 
   ionViewDidLoad() {

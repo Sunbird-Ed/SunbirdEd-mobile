@@ -1,7 +1,6 @@
-<ion-header>
+<!-- <ion-header>
 	<ion-navbar>
 		<ion-title>
-			<!-- <ion-icon md="md-share" float-right></ion-icon> -->
 		</ion-title>
 		<ion-buttons end *ngIf="!isDepthChild">
 			<button ion-button icon-only (click)="share()">
@@ -13,7 +12,7 @@
 		</ion-buttons>
 	</ion-navbar>
 	<pb-horizontal *ngIf="course?.progress" [progress]="course?.progress" class="course-progress" [ngClass]="{'blurbackground': batchExp}"></pb-horizontal>
-</ion-header>
+</ion-header> -->
 
 <ion-content padding [ngClass]="{'content-with-footer': (((courseCardData && courseCardData?.batchId) && ( showResumeBtn || childrenData && childrenData?.length || downloadIdentifiers && downloadIdentifiers?.length && !isDownloadStarted )) || (courseCardData && !courseCardData?.batchId && course && course?.createdBy !== userId))}">
 	<div class="content-details-holder" *ngIf="course">

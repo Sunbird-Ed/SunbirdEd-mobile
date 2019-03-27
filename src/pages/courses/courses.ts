@@ -54,6 +54,7 @@ import { updateFilterInSearchQuery } from '../../util/filter.util';
 import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { AppHeaderService } from '@app/service';
 
 @IonicPage()
 @Component({
@@ -116,13 +117,6 @@ export class CoursesPage implements OnInit {
   callback: QRResultCallback;
   pageFilterCallBack: PageFilterCallback;
 
-  headerConfig = {
-    showHeader : true,
-    showBackButtom: false,
-    showBurgerMenu: true,
-    actionButtons: ['search', 'filter'],
-  };
-
   /**
    * Default method of class CoursesPage
    *
@@ -148,7 +142,8 @@ export class CoursesPage implements OnInit {
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private network: Network,
-    public menuCtrl: MenuController
+    public menuCtrl: MenuController,
+    private headerServie: AppHeaderService
   ) {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
@@ -173,12 +168,16 @@ export class CoursesPage implements OnInit {
  */
   ngOnInit() {
     this.getCourseTabData();
+    this.headerServie.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
   }
   ionViewDidEnter() {
     this.isVisible = true;
   }
   ionViewWillEnter() {
     this.getEnrolledCourses();
+    this.headerServie.showHeaderWithHomeButton(['search', 'filter']);
 
   }
   ionViewDidLoad() {
@@ -300,7 +299,6 @@ export class CoursesPage implements OnInit {
         if (data === 'COURSES') {
           if (this.appliedFilter) {
             this.filterIcon = './assets/imgs/ic_action_filter.png';
-            this.headerConfig.actionButtons = ['search', 'filter'];
             this.courseFilter = undefined;
             this.appliedFilter = undefined;
             this.isFilterApplied = false;
@@ -612,11 +610,9 @@ export class CoursesPage implements OnInit {
           if (filterApplied) {
             criteria.mode = 'hard';
             that.filterIcon = './assets/imgs/ic_action_filter_applied.png';
-            that.headerConfig.actionButtons = ['search', 'filter-applied'];
           } else {
             criteria.mode = 'soft';
             that.filterIcon = './assets/imgs/ic_action_filter.png';
-            that.headerConfig.actionButtons = ['search', 'filter'];
           }
 
           that.getPopularAndLatestCourses(false, criteria);

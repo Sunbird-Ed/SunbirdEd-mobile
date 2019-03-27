@@ -1,7 +1,8 @@
 import {
   Component,
   NgZone,
-  ViewChild
+  ViewChild,
+  OnInit
 } from '@angular/core';
 import {
   IonicPage,
@@ -54,7 +55,7 @@ import {
   PreferenceKey
 } from '@app/app';
 import { CourseBatchesPage } from '@app/pages/course-batches/course-batches';
-import { CourseUtilService, AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
+import { CourseUtilService, AppGlobalService, TelemetryGeneratorService, CommonUtilService, AppHeaderService } from '@app/service';
 import { DatePipe } from '@angular/common';
 
 @IonicPage()
@@ -62,7 +63,7 @@ import { DatePipe } from '@angular/common';
   selector: 'page-enrolled-course-details',
   templateUrl: 'enrolled-course-details.html',
 })
-export class EnrolledCourseDetailsPage {
+export class EnrolledCourseDetailsPage implements OnInit {
 
   /**
    * Contains content details
@@ -184,13 +185,23 @@ export class EnrolledCourseDetailsPage {
     private appGlobalService: AppGlobalService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private headerService: AppHeaderService
   ) {
 
     this.appGlobalService.getUserId();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     this.subscribeGenieEvent();
+  }
+
+  /**
+   * Angular life cycle hooks
+  */
+ ngOnInit() {
+    this.headerService.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
   }
 
   subscribeUtilityEvents() {
@@ -451,6 +462,10 @@ export class EnrolledCourseDetailsPage {
         this.generateStartEvent(this.course.identifier, this.course.contentType, this.course.pkgVersion);
       }
       this.didViewLoad = true;
+
+      if (this.course && this.course.isAvailableLocally) {
+        this.headerService.showHeaderWithBackButton(['share', 'more']);
+      }
 
       if (this.course.status !== 'Live') {
         this.commonUtilService.showToast('COURSE_NOT_AVAILABLE');
@@ -892,6 +907,7 @@ export class EnrolledCourseDetailsPage {
     });
   }
 
+
   /**
    * Ionic life cycle hook
    */
@@ -908,6 +924,7 @@ export class EnrolledCourseDetailsPage {
     }
     this.showResumeBtn = this.courseCardData.lastReadContentId ? true : false;
     this.setContentDetails(this.identifier);
+    this.headerService.showHeaderWithBackButton(['share', 'more']);
     // If courseCardData does not have a batch id then it is not a enrolled course
     this.subscribeGenieEvent();
   }
@@ -1211,4 +1228,12 @@ export class EnrolledCourseDetailsPage {
     }
   }
 
+  handleHeaderEvents($event) {
+    switch ($event.name) {
+      case 'share': this.share();
+                    break;
+      case 'more': this.showOverflowMenu($event);
+                      break;
+    }
+  }
 }
