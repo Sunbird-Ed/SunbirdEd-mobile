@@ -70,6 +70,7 @@ import { Observable } from 'rxjs';
 import { XwalkConstants } from '../../app/app.constant';
 import { ValueTransformer } from '@angular/compiler/src/util';
 import { SbDownloadPopupComponent } from '@app/component/popups/sb-download-popup/sb-download-popup';
+import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 
 
 @IonicPage()
@@ -997,7 +998,7 @@ export class ContentDetailsPage {
     }
     if (!AppGlobalService.isPlayerLaunched && this.userCount > 1) {
       const profile = this.appGlobalService.getCurrentUser();
-      const alert = this.alertCtrl.create({
+      /*const alert = this.alertCtrl.create({
         title: this.commonUtilService.translateMessage('PLAY_AS'),
         mode: 'wp',
         message: profile.handle,
@@ -1028,9 +1029,42 @@ export class ContentDetailsPage {
             cssClass: 'closeButton',
           }
         ]
-      });
+      });*/
       this.isUsrGrpAlrtOpen = true;
-      alert.present();
+      const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
+        sbPopoverHeading: this.commonUtilService.translateMessage('PLAY_AS'),
+        sbPopoverMainTitle: profile.handle,
+        actionsButtons: [
+          {
+            btntext: this.commonUtilService.translateMessage('YES'),
+            btnClass: 'popover-color'
+          },
+          {
+            btntext: this.commonUtilService.translateMessage('CHANGE_USER'),
+            btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+          }
+        ],
+        icon: null
+      }, {
+          cssClass: 'sb-popover info',
+        });
+        confirm.present({
+          ev: event
+        });
+        confirm.onDidDismiss((leftBtnClicked: boolean = false) => {
+          if (leftBtnClicked) {
+            this.playContent(isStreaming);
+          } else {
+            const playConfig: any = {};
+              playConfig.playContent = true;
+              playConfig.streaming = isStreaming;
+              this.navCtrl.push(UserAndGroupsPage, {
+                playConfig: playConfig
+              });
+          }
+        });
+      
+      //alert.present();
     } else {
       this.playContent(isStreaming);
     }
