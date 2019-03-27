@@ -4,7 +4,7 @@ import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import { CanvasPlayerService } from './canvas-player.service';
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
 import { IonicApp } from 'ionic-angular';
-import { playerActionHandlerDelegate, hierarchyInfo } from './player-action-handler-delegate';
+import { playerActionHandlerDelegate, hierarchyInfo, user } from './player-action-handler-delegate';
 import { ContentDetailsPage } from '../content-details/content-details';
 
 @IonicPage()
@@ -69,7 +69,7 @@ export class PlayerPage implements playerActionHandlerDelegate {
     });
   }
 
-  onUserSwitch() {
+  onUserSwitch(user: user) {
     this.appGlobalService.isUserSwitched = true;
   }
 }
