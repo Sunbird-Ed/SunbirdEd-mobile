@@ -524,11 +524,9 @@ export class ContentDetailsPage {
     this.content = data.result.contentData;
     // console.log('DATA RESULT Content  ==>', this.content);
     this.content.downloadable = data.result.isAvailableLocally;
-<<<<<<< HEAD
     if (data.result.lastUpdatedTime !== '0') {
       this.playOnlineSpinner = false;
     }
-=======
     if (this.content.appIcon) {
       if (this.content.appIcon.includes('http:') || this.content.appIcon.includes('https:')) {
         if (this.commonUtilService.networkInfo.isNetworkAvailable) {
@@ -543,7 +541,6 @@ export class ContentDetailsPage {
     }
 
     this.content.lastUpdatedTime = data.result.lastUpdatedTime;
->>>>>>> upstream/ui-component-integration
     this.content.contentAccess = data.result.contentAccess ? data.result.contentAccess : [];
     this.content.contentMarker = data.result.contentMarker ? data.result.contentMarker : [];
 
@@ -1151,6 +1148,7 @@ export class ContentDetailsPage {
   }
   deleteContent() {
     console.log('contenmtttttttttttttt', this.content);
+    console.log(this.isChildContent);
     // const popover = this.popoverCtrl.create(ContentActionsComponent, {
     //   content: this.content,
     //   isChild: this.isChildContent,

@@ -99,6 +99,7 @@ export class SbPopoverComponent {
     return apiParams;
   }
   deleteContent() {
+    console.log('details');
     const telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = this.content.identifier;
     telemetryObject.type = this.content.contentType;
@@ -116,6 +117,8 @@ export class SbPopoverComponent {
 
     this.contentService.deleteContent(this.getDeleteRequestBody()).then((res: any) => {
       const data = JSON.parse(res);
+      console.log('details');
+      console.log(data);
       if (data.result && data.result.status === 'NOT_FOUND') {
         this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
       } else {

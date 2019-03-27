@@ -312,23 +312,80 @@ export class EnrolledCourseDetailsPage {
    */
   rateContent(event) {
     // TODO: check content is played or not
+    console.log('rateContent');
+    console.log('rateContent');
+    console.log('rateContent');
+    console.log('rateContent');
+    console.log(event);
+    console.log('rateContent');
+    console.log('rateContent');
+    console.log('rateContent');
+    console.log('rateContent');
     if (!this.guestUser) {
       if (this.course.isAvailableLocally) {
-        const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
-          content: this.course,
-          rating: this.userRating,
-          comment: this.ratingComment,
-          pageId: PageId.COURSE_DETAIL
-        }, {
-            cssClass: 'content-rating-alert'
-          });
-        popUp.present();
-        popUp.onDidDismiss(data => {
-          if (data && data.message === 'rating.success') {
-            this.userRating = data.rating;
-            this.ratingComment = data.comment;
-          }
+        // const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
+        //   content: this.course,
+        //   rating: this.userRating,
+        //   comment: this.ratingComment,
+        //   pageId: PageId.COURSE_DETAIL
+        // }, {
+        //     cssClass: 'content-rating-alert'
+        //   });
+        // popUp.present();
+        // popUp.onDidDismiss(data => {
+        //   if (data && data.message === 'rating.success') {
+        //     this.userRating = data.rating;
+        //     this.ratingComment = data.comment;
+        //   }
+        // });
+
+
+
+        // const paramsMap = new Map();
+      // if (this.isContentPlayed || this.course.contentAccess.length) {
+        console.log(this.course);
+        console.log(this.childrenData);
+        console.log(PageId);
+        console.log(this.userRating);
+        console.log(this.ratingComment);
+      const popover = this.popoverCtrl.create(ContentRatingAlertComponent, {
+        content: this.course,
+        pageId: PageId.CONTENT_DETAIL,
+        rating: this.userRating,
+        comment: this.ratingComment,
+        // popupType: popupType,
+      }, {
+          cssClass: 'sb-popover info',
         });
+      popover.present({
+        ev: event
+      });
+      popover.onDidDismiss(data => {
+        if (data && data.message === 'rating.success') {
+          this.userRating = data.rating;
+          this.ratingComment = data.comment;
+        }
+      });
+    // } else {
+    //   paramsMap['IsPlayed'] = 'N';
+    //   this.commonUtilService.showToast('TRY_BEFORE_RATING');
+    // }
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.RATING_CLICKED,
+      Environment.HOME,
+      PageId.CONTENT_DETAIL,
+      undefined,
+      // paramsMap,
+      undefined,
+      // this.objRollup,
+      undefined,
+      this.corRelationList);
+
+
+
+
+
       } else {
         this.commonUtilService.showToast('TRY_BEFORE_RATING');
       }
@@ -341,6 +398,7 @@ export class EnrolledCourseDetailsPage {
 
 
   showOverflowMenu(event) {
+    console.log('Testing which page---- Enrolled-course-details');
     const data = {
       batchStatus: this.batchDetails ? this.batchDetails.status : 2,
       contentStatus: this.courseCardData.status,
@@ -812,6 +870,7 @@ export class EnrolledCourseDetailsPage {
    * @param depth
    */
   navigateToChildrenDetailsPage(content, depth): void {
+    console.log(content.contentType);
     const contentState = {
       batchId: this.courseCardData.batchId ? this.courseCardData.batchId : '',
       courseId: this.identifier
