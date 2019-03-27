@@ -285,11 +285,13 @@ export class SearchPage {
       if (this.isDialCodeSearch && !isRootContent) {
         params.isCreateNavigationStack = true;
 
+        this.navCtrl.push(QrCodeResultPage, params);
         if (this.isSingleContent) {
           this.isSingleContent = false;
-          this.navCtrl.pop();
+          const view = this.navCtrl.getActive();
+          this.navCtrl.removeView(view);
         }
-        this.navCtrl.push(QrCodeResultPage, params);
+
       } else {
         // this.navCtrl.push(CollectionDetailsPage, params);
         this.navCtrl.push(CollectionDetailsEtbPage, params);

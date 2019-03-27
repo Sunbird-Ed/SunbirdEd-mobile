@@ -527,6 +527,9 @@ export class ContentDetailsPage {
     this.content = data.result.contentData;
     // console.log('DATA RESULT Content  ==>', this.content);
     this.content.downloadable = data.result.isAvailableLocally;
+    if (data.result.lastUpdatedTime !== '0') {
+      this.playOnlineSpinner = false;
+    }
     if (this.content.appIcon) {
       if (this.content.appIcon.includes('http:') || this.content.appIcon.includes('https:')) {
         if (this.commonUtilService.networkInfo.isNetworkAvailable) {
@@ -1137,6 +1140,7 @@ export class ContentDetailsPage {
       this.zone.run(() => {
         if (data === 'delete.success') {
           this.content.streamingUrl = this.streamingUrl;
+          this.playOnlineSpinner = false;
           this.content.downloadable = false;
           const playContent = JSON.parse(this.content.playContent);
           playContent.isAvailableLocally = false;
@@ -1147,6 +1151,7 @@ export class ContentDetailsPage {
   }
   deleteContent() {
     console.log('contenmtttttttttttttt', this.content);
+    console.log(this.isChildContent);
     // const popover = this.popoverCtrl.create(ContentActionsComponent, {
     //   content: this.content,
     //   isChild: this.isChildContent,

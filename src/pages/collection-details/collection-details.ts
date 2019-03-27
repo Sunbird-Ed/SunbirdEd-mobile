@@ -311,9 +311,68 @@ export class CollectionDetailsPage implements OnInit{
   /**
    * Function to rate content
    */
-  rateContent() {
+  // rateContent() {
+  //   if (!this.guestUser) {
+  //     this.telemetryGeneratorService.generateInteractTelemetry(
+  //       InteractType.TOUCH,
+  //       InteractSubtype.RATING_CLICKED,
+  //       Environment.HOME,
+  //       PageId.COLLECTION_DETAIL,
+  //       undefined,
+  //       undefined,
+  //       this.objRollup,
+  //       this.corRelationList
+  //     );
+  //     if (this.contentDetail.isAvailableLocally) {
+  //       const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
+  //         content: this.contentDetail,
+  //         rating: this.userRating,
+  //         comment: this.ratingComment,
+  //         pageId: PageId.COLLECTION_DETAIL,
+  //       }, {
+  //           cssClass: 'content-rating-alert'
+  //         });
+  //       popUp.present();
+  //       popUp.onDidDismiss(data => {
+  //         if (data && data.message === 'rating.success') {
+  //           this.userRating = data.rating;
+  //           this.ratingComment = data.comment;
+  //         }
+  //       });
+  //     } else {
+  //       this.commonUtilService.showToast('TRY_BEFORE_RATING');
+  //     }
+  //   } else {
+  //     if (this.profileType === ProfileType.TEACHER) {
+  //       this.commonUtilService.showToast('SIGNIN_TO_USE_FEATURE');
+  //     }
+  //   }
+  // }
+
+
+  rateContent(event) {
+    // TODO: check content is played or not
     if (!this.guestUser) {
-      this.telemetryGeneratorService.generateInteractTelemetry(
+      if (this.contentDetail.isAvailableLocally) {
+      const popover = this.popoverCtrl.create(ContentRatingAlertComponent, {
+        content: this.contentDetail,
+        pageId: PageId.CONTENT_DETAIL,
+        rating: this.userRating,
+        comment: this.ratingComment,
+        // popupType: popupType,
+      }, {
+          cssClass: 'sb-popover info',
+        });
+      popover.present({
+        ev: event
+      });
+      popover.onDidDismiss(data => {
+        if (data && data.message === 'rating.success') {
+          this.userRating = data.rating;
+          this.ratingComment = data.comment;
+        }
+      });
+    this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.TOUCH,
         InteractSubtype.RATING_CLICKED,
         Environment.HOME,
@@ -323,22 +382,7 @@ export class CollectionDetailsPage implements OnInit{
         this.objRollup,
         this.corRelationList
       );
-      if (this.contentDetail.isAvailableLocally) {
-        const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
-          content: this.contentDetail,
-          rating: this.userRating,
-          comment: this.ratingComment,
-          pageId: PageId.COLLECTION_DETAIL,
-        }, {
-            cssClass: 'content-rating-alert'
-          });
-        popUp.present();
-        popUp.onDidDismiss(data => {
-          if (data && data.message === 'rating.success') {
-            this.userRating = data.rating;
-            this.ratingComment = data.comment;
-          }
-        });
+
       } else {
         this.commonUtilService.showToast('TRY_BEFORE_RATING');
       }
@@ -348,6 +392,7 @@ export class CollectionDetailsPage implements OnInit{
       }
     }
   }
+
 
   /**
  * Get the session to know if the user is logged-in or guest
