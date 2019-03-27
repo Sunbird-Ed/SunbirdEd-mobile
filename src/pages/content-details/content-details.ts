@@ -12,8 +12,8 @@ import {
 } from 'ionic-angular';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
-import { PreferenceKey, XwalkConstants } from '../../app/app.constant';
-import { Map, ShareUrl } from '@app/app';
+import { PreferenceKey, XwalkConstants, EventTopics } from '../../app/app.constant';
+import { Map, ShareUrl, GUEST_STUDENT_TABS, initTabs, GUEST_TEACHER_TABS } from '@app/app';
 import { BookmarkComponent, ContentActionsComponent, ContentRatingAlertComponent } from '@app/component';
 import { AppGlobalService, CourseUtilService, UtilityService } from '@app/service';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
@@ -46,7 +46,9 @@ import {
   Rollup,
   SharedPreferences,
   TelemetryObject,
-  ContentExportResponse
+  ContentExportResponse,
+  ProfileType,
+  AuthService
 } from 'sunbird-sdk';
 import { CanvasPlayerService } from '../player/canvas-player.service';
 import { PlayerPage } from '../player/player';
@@ -60,6 +62,9 @@ import {
   Mode,
   PageId,
 } from '../../service/telemetry-constants';
+import { TabsPage } from '../tabs/tabs';
+import { ContainerService } from '@app/service/container.services';
+import { App } from 'ionic-angular';
 
 declare const cordova;
 
@@ -68,7 +73,7 @@ declare const cordova;
   selector: 'page-content-details',
   templateUrl: 'content-details.html',
 })
-export class ContentDetailsPage{
+export class ContentDetailsPage {
   apiLevel: number;
   appAvailability: string;
   content: Content;
@@ -158,7 +163,10 @@ export class ContentDetailsPage{
     private network: Network,
     private canvasPlayerService: CanvasPlayerService,
     private file: File,
-    private utilityService: UtilityService
+    private utilityService: UtilityService,
+    private container: ContainerService,
+    private app: App,
+    @Inject('AUTH_SERVICE') private authService: AuthService
   ) {
 
     this.objRollup = new Rollup();
@@ -182,6 +190,27 @@ export class ContentDetailsPage{
     if (!AppGlobalService.isPlayerLaunched) {
       this.calculateAvailableUserCount();
     }
+
+    this.events.subscribe(EventTopics.PLAYER_CLOSED, (data) => {
+      if (data.selectedUser) {
+        if (!data.selectedUser['profileType']) {
+          this.profileService.getActiveProfileSession().toPromise()
+            .then((profile) => {
+              this.switchUser(profile);
+            });
+        } else {
+          this.switchUser(data.selectedUser);
+        }
+      }
+    });
+  }
+
+  private switchUser(selectedUser) {
+    if (this.appGlobalService.isUserLoggedIn()) {
+      this.authService.resignSession().subscribe();
+      (<any>window).splashscreen.clearPrefs();
+    }
+    this.resetTabs(selectedUser);
   }
 
   /**
@@ -271,6 +300,7 @@ export class ContentDetailsPage{
       });
     this.launchPlayer = this.navParams.get('launchplayer');
     this.events.subscribe('playConfig', (config) => {
+      this.appGlobalService.setSelectedUser(config['selectedUser']);
       this.playContent(config.streaming);
     });
   }
@@ -418,7 +448,9 @@ export class ContentDetailsPage{
           if (showRating) {
             this.isPlayerLaunched = false;
             if (this.userRating === 0) {
-              this.rateContent('automatic');
+              if (!this.appGlobalService.getSelectedUser()) {
+                this.rateContent('automatic');
+              }
             }
           }
         });
@@ -507,6 +539,10 @@ export class ContentDetailsPage{
     if (this.shouldGenerateTelemetry) {
       this.generateDetailsInteractEvent();
       this.shouldGenerateEndTelemetry = false;
+    }
+
+    if (this.isPlayerLaunched) {
+      this.downloadAndPlay = false;
     }
 
     if (this.downloadAndPlay) {
@@ -706,6 +742,7 @@ export class ContentDetailsPage{
         if (event.type === DownloadEventType.PROGRESS) {
           const downloadEvent = event as DownloadProgress;
           this.downloadProgress = downloadEvent.payload.progress === -1 ? '0' : downloadEvent.payload.progress;
+          this.downloadProgress = Math.round(this.downloadProgress);
         }
 
         // Get child content
@@ -1114,6 +1151,22 @@ export class ContentDetailsPage{
         cssClass: 'popover-alert'
       });
     popover.present();
+  }
+
+  private resetTabs(selectedUser) {
+    setTimeout(() => {
+      if (selectedUser.profileType === ProfileType.STUDENT) {
+        initTabs(this.container, GUEST_STUDENT_TABS);
+        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise().then();
+      } else {
+        initTabs(this.container, GUEST_TEACHER_TABS);
+        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();
+      }
+      this.events.publish('refresh:profile');
+      this.events.publish(AppGlobalService.USER_INFO_UPDATED);
+      this.appGlobalService.setSelectedUser(undefined);
+      this.app.getRootNav().setRoot(TabsPage);
+    }, 1000);
   }
 }
 

@@ -35,8 +35,7 @@ import {
   SortOrder,
   TelemetryObject,
   UpdateServerProfileInfoRequest,
-  CachedItemRequestSourceFrom,
-  CachedItemRequest
+  CachedItemRequestSourceFrom
 } from 'sunbird-sdk';
 import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
 
@@ -201,15 +200,14 @@ export class ProfilePage {
           }
           const serverProfileDetailsRequest: ServerProfileDetailsRequest = {
             userId: that.userId && that.userId !== session.userToken ? that.userId : session.userToken,
-            requiredFields: ProfileConstants.REQUIRED_FIELDS
-          };
-          const cachedItemRequest: CachedItemRequest = {
+            requiredFields: ProfileConstants.REQUIRED_FIELDS,
             from : CachedItemRequestSourceFrom.SERVER,
           };
+
           if (that.isLoggedInUser) {
             that.isRefreshProfile = !that.isRefreshProfile;
           }
-          that.profileService.getServerProfilesDetails(serverProfileDetailsRequest, cachedItemRequest).toPromise()
+          that.profileService.getServerProfilesDetails(serverProfileDetailsRequest).toPromise()
             .then((profileData) => {
               that.zone.run(() => {
                 that.resetProfile();

@@ -1,11 +1,13 @@
 import { Injectable } from "@angular/core";
-import { SunbirdSdk } from 'sunbird-sdk';
+import { SunbirdSdk, ProfileType } from 'sunbird-sdk';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as X2JS from 'x2js';
 import { AlertController } from "ionic-angular";
 import { App } from 'ionic-angular';
-import {ProfileConstants} from '../../app';
-
+import { ProfileConstants, EventTopics, initTabs, PreferenceKey } from '../../app';
+import { Events } from 'ionic-angular';
+import { AppGlobalService } from "@app/service";
+import { TabsPage } from "../tabs/tabs";
 
 
 
@@ -17,12 +19,13 @@ declare global {
 @Injectable()
 
 export class CanvasPlayerService {
-    constructor(private _http: HttpClient, private alertCtrl: AlertController, private appCtrl: App) { }
+    constructor(private _http: HttpClient, private alertCtrl: AlertController, private appCtrl: App,
+        private events: Events,private appGlobalService: AppGlobalService) { }
     handleAction() {
         window.handleAction = (methodName: string, params = []) => {
             switch (methodName) {
                 case "getCurrentUser":
-                    return SunbirdSdk.instance.profileService.getActiveSessionProfile({requiredFields: ProfileConstants.REQUIRED_FIELDS}).toPromise();
+                    return SunbirdSdk.instance.profileService.getActiveSessionProfile({ requiredFields: ProfileConstants.REQUIRED_FIELDS }).toPromise();
                 case "getAllUserProfile":
                     return SunbirdSdk.instance.profileService.getAllProfiles(params[0]).toPromise();
                 case "setUser":
@@ -114,10 +117,29 @@ export class CanvasPlayerService {
                     text: 'OK',
                     handler: () => {
                         this.appCtrl.getActiveNav().pop();
+                        this.events.publish(EventTopics.PLAYER_CLOSED, {
+                            selectedUser: this.appGlobalService.getSelectedUser()
+                        });
                     }
                 }
             ]
         });
         alert.present();
     }
+
+    // private switchUser() {
+    //     const selectedUser = this.appGlobalService.getSelectedUser();
+    //     if (selectedUser) {
+    //       if (selectedUser['fromPlayer']) {
+    //         this.groupService.removeActiveGroupSession().subscribe();
+    //         this.profileService.setActiveSessionForProfile(selectedUser.uid).subscribe(() => {
+    //           this.resetTabs(selectedUser);
+    //           this.isUserSwitched = false;
+    //         }, () => {
+    //         });
+    //       } else {
+    //         this.resetTabs(selectedUser);
+    //       }
+    //     }
+    //   }
 }

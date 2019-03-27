@@ -1,20 +1,22 @@
-import { CommonUtilService } from './../../../service/common-util.service';
-import { Component, Inject } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
-import { AboutAppPage } from '../about-app/about-app';
-import { TermsofservicePage } from '../termsofservice/termsofservice';
-import { PrivacypolicyPage } from '../privacypolicy/privacypolicy';
-import { AppVersion } from '@ionic-native/app-version';
-import { SocialSharing } from '@ionic-native/social-sharing';
-import { TelemetryGeneratorService, AppGlobalService, UtilityService } from '@app/service';
+import {CommonUtilService} from './../../../service/common-util.service';
+import {Component, Inject} from '@angular/core';
+import {NavController, NavParams} from 'ionic-angular';
+import {AboutAppPage} from '../about-app/about-app';
+import {TermsofservicePage} from '../termsofservice/termsofservice';
+import {PrivacypolicyPage} from '../privacypolicy/privacypolicy';
+import {AppVersion} from '@ionic-native/app-version';
+import {SocialSharing} from '@ionic-native/social-sharing';
+import {AppGlobalService, TelemetryGeneratorService, UtilityService} from '@app/service';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../../service/telemetry-constants';
 import {
-  ImpressionType,
-  PageId,
-  Environment,
-  InteractType,
-  InteractSubtype
-} from '../../../service/telemetry-constants';
-import {SharedPreferences, DeviceInfo} from 'sunbird-sdk';
+  ContentRequest,
+  ContentService,
+  DeviceInfo,
+  GetAllProfileRequest,
+  ProfileService,
+  SharedPreferences
+} from 'sunbird-sdk';
+import {AudienceFilter, ContentType} from "@app/app";
 
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
 
@@ -29,6 +31,8 @@ export class AboutUsPage {
   fileUrl: string;
 
   constructor(
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
     public navCtrl: NavController,
     public navParams: NavParams,
     @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
@@ -39,7 +43,8 @@ export class AboutUsPage {
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     private utilityService: UtilityService,
     private appGlobalService: AppGlobalService
-  ) { }
+  ) {
+  }
 
   ionViewDidLoad() {
     this.version = 'app version will be shown here';
@@ -56,36 +61,44 @@ export class AboutUsPage {
   }
 
   ionViewDidLeave() {
-    (<any>window).supportfile.removeFile((result) => {
-      console.log('File deleted -' + JSON.parse(result));
+    (<any>window).supportfile.removeFile(() => {
     }, (error) => {
       console.error('error', error);
     });
   }
 
-  shareInformation() {
+  async shareInformation() {
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SUPPORT_CLICKED);
-    (<any>window).supportfile.shareSunbirdConfigurations((result) => {
+    const allUserProfileRequest: GetAllProfileRequest = {
+      local: true,
+      server: true
+    };
+    const contentRequest: ContentRequest = {
+      contentTypes: ContentType.FOR_LIBRARY_TAB,
+      audience: AudienceFilter.GUEST_TEACHER
+    };
+    const getUserCount = await this.profileService.getAllProfiles(allUserProfileRequest).map((profile) => profile.length).toPromise();
+    const getLocalContentCount = await this.contentService.getContents(contentRequest).map((contentCount) => contentCount.length).toPromise();
+    (<any>window).supportfile.shareSunbirdConfigurations(getUserCount, getLocalContentCount, (result) => {
       const loader = this.commonUtilService.getLoader();
       loader.present();
-      this.preferences.putString(KEY_SUNBIRD_CONFIG_FILE_PATH, JSON.parse(result)).toPromise()
-      .then( (res) => {
-        this.preferences.getString(KEY_SUNBIRD_CONFIG_FILE_PATH).toPromise()
-        .then(val => {
-          loader.dismiss();
+      this.preferences.putString(KEY_SUNBIRD_CONFIG_FILE_PATH, result).toPromise()
+        .then((res) => {
+          this.preferences.getString(KEY_SUNBIRD_CONFIG_FILE_PATH).toPromise()
+            .then(val => {
+              loader.dismiss();
+              if (Boolean(val)) {
+                this.fileUrl = 'file://' + val;
 
-          if (Boolean(val)) {
-            this.fileUrl = 'file://' + val;
+                // Share via email
+                this.socialSharing.share('', '', this.fileUrl).then(() => {
+                }).catch(error => {
+                  console.error('Sharing Data is not possible', error);
+                });
+              }
 
-            // Share via email
-            this.socialSharing.share('', '', this.fileUrl).then(() => {
-            }).catch(error => {
-              console.error('Sharing Data is not possible', error);
             });
-          }
-
         });
-      });
     }, (error) => {
       console.error('ERROR - ' + error);
     });

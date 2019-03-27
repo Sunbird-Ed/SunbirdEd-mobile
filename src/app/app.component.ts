@@ -97,10 +97,9 @@ export class MyApp {
       this.showAppWalkThroughScreen();
       this.checkAppUpdateAvailable();
       this.requestAppPermissions();
-      // await this.makeEntriesInSupportFolder();
+      this.makeEntryInSupportFolder();
       this.checkForTncUpdate();
       this.handleSunbirdSplashScreenActions();
-      
       await this.getSelectedLanguage();
       await this.navigateToAppropriatePage();
 
@@ -378,7 +377,7 @@ export class MyApp {
   private async makeEntryInSupportFolder() {
     return new Promise((resolve => {
       (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
-        this.preferences.putString(PreferenceKey.KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result)).toPromise().then();
+        this.preferences.putString(PreferenceKey.KEY_SUNBIRD_SUPPORT_FILE_PATH, result).toPromise().then();
         resolve();
       }, () => {
       });

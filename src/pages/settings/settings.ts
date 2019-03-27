@@ -1,22 +1,24 @@
-import { AppGlobalService, UtilityService } from '@app/service';
-import { CommonUtilService } from './../../service/common-util.service';
-import { Component, Inject } from '@angular/core';
-import { NavController, DateTime } from 'ionic-angular';
-import { DatasyncPage } from './datasync/datasync';
-import { LanguageSettingsPage } from '../language-settings/language-settings';
-import { AboutUsPage } from './about-us/about-us';
-import { SocialSharing } from '@ionic-native/social-sharing';
-import { AppVersion } from '@ionic-native/app-version';
-import { PreferenceKey } from '../../app/app.constant';
+import {AppGlobalService, TelemetryGeneratorService, UtilityService} from '@app/service';
+import {CommonUtilService} from './../../service/common-util.service';
+import {Component, Inject} from '@angular/core';
+import {NavController} from 'ionic-angular';
+import {DatasyncPage} from './datasync/datasync';
+import {LanguageSettingsPage} from '../language-settings/language-settings';
+import {AboutUsPage} from './about-us/about-us';
+import {SocialSharing} from '@ionic-native/social-sharing';
+import {AppVersion} from '@ionic-native/app-version';
+import {AudienceFilter, ContentType, PreferenceKey} from '../../app/app.constant';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId,} from '../../service/telemetry-constants';
 import {
-  ImpressionType,
-  Environment,
-  PageId,
-  InteractType,
-  InteractSubtype,
-} from '../../service/telemetry-constants';
-import { TelemetryGeneratorService } from '@app/service';
-import { SharedPreferences, DeviceInfo, TelemetryImpressionRequest, TelemetryExportResponse } from 'sunbird-sdk';
+  ContentRequest,
+  ContentService,
+  DeviceInfo,
+  GetAllProfileRequest,
+  ProfileService,
+  SharedPreferences,
+  TelemetryImpressionRequest
+} from 'sunbird-sdk';
+
 declare const cordova;
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
 const SUBJECT_NAME = 'support request';
@@ -33,7 +35,10 @@ export class SettingsPage {
   subjectDetails: string;
   shareAppLabel: string;
   appName: any;
+
   constructor(
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private navCtrl: NavController,
     private appVersion: AppVersion,
     private socialSharing: SocialSharing,
@@ -43,7 +48,8 @@ export class SettingsPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private utilityService: UtilityService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
-  ) { }
+  ) {
+  }
 
   ionViewWillEnter() {
     this.appVersion.getAppName()
@@ -100,33 +106,45 @@ export class SettingsPage {
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.ABOUT_APP_CLICKED);
     this.navCtrl.push(AboutUsPage);
   }
-  sendMessage() {
+
+  async sendMessage() {
     this.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.SUPPORT_CLICKED);
 
-      this.deviceId =  this.deviceInfo.getDeviceID();
-
-    (<any>window).supportfile.shareSunbirdConfigurations((result) => {
+    this.deviceId = this.deviceInfo.getDeviceID();
+    const allUserProfileRequest: GetAllProfileRequest = {
+      local: true,
+      server: true
+    };
+    const contentRequest: ContentRequest = {
+      contentTypes: ContentType.FOR_LIBRARY_TAB,
+      audience: AudienceFilter.GUEST_TEACHER
+    };
+    const getUserCount = await this.profileService.getAllProfiles(allUserProfileRequest).map((profile) => profile.length).toPromise();
+    const getLocalContentCount = await this.contentService.getContents(contentRequest).map((contentCount) => contentCount.length).toPromise();
+    (<any>window).supportfile.shareSunbirdConfigurations(getUserCount, getLocalContentCount, (result) => {
+      console.log('in setting - ', result);
       const loader = this.commonUtilService.getLoader();
       loader.present();
-      this.preferences.putString(KEY_SUNBIRD_CONFIG_FILE_PATH, JSON.parse(result)).toPromise()
-      .then( (resp) => {
-        this.preferences.getString(KEY_SUNBIRD_CONFIG_FILE_PATH).toPromise()
-          .then(val => {
-            loader.dismiss();
-            if (Boolean(val)) {
-              this.fileUrl = 'file://' + val;
-              this.subjectDetails = this.appName + ' ' + SUBJECT_NAME + '-' + this.deviceId;
-              this.socialSharing.shareViaEmail('', this.subjectDetails, [this.appGlobalService.SUPPORT_EMAIL], null, null, this.fileUrl)
-                .catch(error => {
-                  console.error(error);
-                });
-            }
-          });
-      });
+      this.preferences.putString(KEY_SUNBIRD_CONFIG_FILE_PATH, result).toPromise()
+        .then((resp) => {
+          this.preferences.getString(KEY_SUNBIRD_CONFIG_FILE_PATH).toPromise()
+            .then(val => {
+              loader.dismiss();
+              if (Boolean(val)) {
+                this.fileUrl = 'file://' + val;
+                this.subjectDetails = this.appName + ' ' + SUBJECT_NAME + '-' + this.deviceId;
+                this.socialSharing.shareViaEmail('', this.subjectDetails, [this.appGlobalService.SUPPORT_EMAIL], null, null, this.fileUrl)
+                  .catch(error => {
+                    console.error(error);
+                  });
+              }
+            });
+        });
     }, (error) => {
       console.error('ERROR - ' + error);
     });
   }
+
   // this.appGlobalService.APP_NAME
   shareApp() {
     const loader = this.commonUtilService.getLoader();
@@ -137,10 +155,11 @@ export class SettingsPage {
 
 
     this.utilityService.exportApk()
-      .then((filepath) => {this.generateInteractTelemetry(InteractType.OTHER, InteractSubtype.SHARE_APP_SUCCESS);
-      loader.dismiss();
-      this.socialSharing.share('', '', 'file://' + filepath, '');
-    }).catch((error) => {
+      .then((filepath) => {
+        this.generateInteractTelemetry(InteractType.OTHER, InteractSubtype.SHARE_APP_SUCCESS);
+        loader.dismiss();
+        this.socialSharing.share('', '', 'file://' + filepath, '');
+      }).catch((error) => {
       loader.dismiss();
       console.log(error);
     });

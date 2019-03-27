@@ -116,6 +116,7 @@ export class EventTopics {
     public static readonly UNENROL_COURSE_SUCCESS = 'UNENROL_COURSE_SUCCESS';
     public static readonly COURSE_STATUS_UPDATED_SUCCESSFULLY = 'COURSE_STATUS_UPDATED_SUCCESSFULLY';
     public static readonly REFRESH_ENROLL_COURSE_LIST = 'REFRESH_ENROLL_COURSE_LIST';
+    public static readonly PLAYER_CLOSED = 'PLAYER_CLOSED';
 }
 
 export class ShareUrl {

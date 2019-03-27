@@ -1,5 +1,5 @@
-import {CommonUtilService} from './../../service/common-util.service';
-import {Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
+import { CommonUtilService } from './../../service/common-util.service';
+import { Component, Inject, NgZone, OnDestroy, ViewChild } from '@angular/core';
 import {
   AlertController,
   Events,
@@ -10,15 +10,15 @@ import {
   Platform,
   PopoverController
 } from 'ionic-angular';
-import {ContentDetailsPage} from '../content-details/content-details';
-import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
-import {ContentType, MimeType} from '../../app/app.constant';
-import {CollectionDetailsPage} from '../collection-details/collection-details';
-import {TranslateService} from '@ngx-translate/core';
-import {AppGlobalService} from '../../service/app-global.service';
-import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import { ContentDetailsPage } from '../content-details/content-details';
+import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
+import { ContentType, MimeType } from '../../app/app.constant';
+import { CollectionDetailsPage } from '../collection-details/collection-details';
+import { TranslateService } from '@ngx-translate/core';
+import { AppGlobalService } from '../../service/app-global.service';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import * as _ from 'lodash';
-import {ProfileSettingsPage} from '../profile-settings/profile-settings';
+import { ProfileSettingsPage } from '../profile-settings/profile-settings';
 import {
   ChildContentRequest,
   Content,
@@ -43,12 +43,15 @@ import {
   Profile,
   ProfileService,
   CorrelationData,
-  MarkerType
+  MarkerType,
+  PlayerService
 } from 'sunbird-sdk';
-import {Subscription} from 'rxjs';
-import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
-import {TabsPage} from '@app/pages/tabs/tabs';
-
+import { Subscription } from 'rxjs';
+import { Environment, ImpressionType, InteractSubtype, InteractType, PageId } from '../../service/telemetry-constants';
+import { TabsPage } from '@app/pages/tabs/tabs';
+import { PlayerPage } from '../player/player';
+import { CanvasPlayerService } from '../player/canvas-player.service';
+import { File } from '@ionic-native/file';
 declare const cordova;
 
 @IonicPage()
@@ -129,7 +132,10 @@ export class QrCodeResultPage implements OnDestroy {
     private commonUtilService: CommonUtilService,
     @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
     @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
-    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
+    @Inject('PLAYER_SERVICE') private playerService: PlayerService,
+    private canvasPlayerService: CanvasPlayerService,
+    private file: File
   ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
@@ -216,7 +222,7 @@ export class QrCodeResultPage implements OnDestroy {
   }
 
   getChildContents() {
-    const request: ChildContentRequest = {contentId: this.identifier, hierarchyInfo: []};
+    const request: ChildContentRequest = { contentId: this.identifier, hierarchyInfo: [] };
     this.contentService.getChildContents(
       request).toPromise()
       .then((data: Content) => {
@@ -270,7 +276,7 @@ export class QrCodeResultPage implements OnDestroy {
    * Play content
    */
   playContent(content: Content) {
-    const extraInfoMap = {hierarchyInfo: []};
+    const extraInfoMap = { hierarchyInfo: [] };
     if (this.cardData && this.cardData.hierarchyInfo) {
       extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
     }
@@ -285,11 +291,11 @@ export class QrCodeResultPage implements OnDestroy {
     this.contentService.setContentMarker(req).toPromise()
       .then(() => {
       }).catch(() => {
-    });
+      });
     const request: any = {};
     request.streaming = true;
     AppGlobalService.isPlayerLaunched = true;
-    (<any>window).geniecanvas.play(content, JSON.stringify(request));
+    this.openPlayer(content, request);
   }
 
   playOnline(content) {
@@ -551,7 +557,7 @@ export class QrCodeResultPage implements OnDestroy {
                     this.setCurrentProfile(0, data);
                   }
                 }).catch(() => {
-              });
+                });
 
               return;
             }
@@ -667,11 +673,11 @@ export class QrCodeResultPage implements OnDestroy {
           this.navCtrl.pop();
         });
       }).catch(() => {
-      this.zone.run(() => {
-        this.showLoading = false;
-        this.navCtrl.pop();
+        this.zone.run(() => {
+          this.showLoading = false;
+          this.navCtrl.pop();
+        });
       });
-    });
   }
 
   skipSteps() {
@@ -744,5 +750,37 @@ export class QrCodeResultPage implements OnDestroy {
     }
 
     return false;
+  }
+
+  private openPlayer(playingContent, request) {
+    this.playerService.getPlayerConfig(playingContent, request).subscribe((data) => {
+      data['data'] = {};
+      if (data.metadata.mimeType === 'application/vnd.ekstep.ecml-archive') {
+        if (!request.streaming) {
+          this.file.checkFile(`file://${data.metadata.basePath}/`, 'index.ecml').then((isAvailable) => {
+            this.canvasPlayerService.xmlToJSon(`${data.metadata.basePath}/index.ecml`).then((json) => {
+              data['data'] = json;
+
+              this.navCtrl.push(PlayerPage, { config: data });
+            }).catch((error) => {
+              console.error('error1', error);
+            });
+          }).catch((err) => {
+            console.error('err', err);
+            this.canvasPlayerService.readJSON(`${data.metadata.basePath}/index.json`).then((json) => {
+              data['data'] = json;
+              this.navCtrl.push(PlayerPage, { config: data });
+            }).catch((e) => {
+              console.error('readJSON error', e);
+            });
+          });
+        } else {
+          this.navCtrl.push(PlayerPage, { config: data });
+        }
+
+      } else {
+        this.navCtrl.push(PlayerPage, { config: data });
+      }
+    });
   }
 }
