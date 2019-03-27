@@ -69,7 +69,7 @@ export class PlayerPage implements playerActionHandlerDelegate {
     });
   }
 
-  onUserSwitch(user: user) {
-    this.appGlobalService.isUserSwitched = true;
+  onUserSwitch(selectedUser) {
+    this.appGlobalService.setSelectedUser(selectedUser);
   }
 }

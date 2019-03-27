@@ -97,10 +97,9 @@ export class MyApp {
       this.showAppWalkThroughScreen();
       this.checkAppUpdateAvailable();
       this.requestAppPermissions();
-      // await this.makeEntriesInSupportFolder();
+      this.makeEntryInSupportFolder();
       this.checkForTncUpdate();
       this.handleSunbirdSplashScreenActions();
-      
       await this.getSelectedLanguage();
       await this.navigateToAppropriatePage();
 
