@@ -632,14 +632,15 @@ export class ProfilePage {
     const loader = this.getLoader();
     const req: UpdateServerProfileInfoRequest = {
       userId: this.profile.userId,
-      phone: phone
+      phone: phone,
+      phoneVerified: true
     };
     this.profileService.updateServerProfile(req).toPromise()
       .then(() => {
         loader.dismiss();
         this.doRefresh();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('PHONE_UPDATE_SUCCESS'));
-      }).catch(() => {
+      }).catch((e) => {
       loader.dismiss();
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
     });
@@ -649,15 +650,15 @@ export class ProfilePage {
     const loader = this.getLoader();
     const req: UpdateServerProfileInfoRequest = {
       userId: this.profile.userId,
-      emailId: email,
-      // emailVerified: true
+      email: email,
+      emailVerified: true
     };
     this.profileService.updateServerProfile(req).toPromise()
       .then(() => {
         loader.dismiss();
         this.doRefresh();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('EMAIL_UPDATE_SUCCESS'));
-      }).catch(() => {
+      }).catch((e) => {
       loader.dismiss();
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('SOMETHING_WENT_WRONG'));
     });
