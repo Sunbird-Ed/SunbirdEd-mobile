@@ -85,9 +85,9 @@ export class EditContactDetailsPopupComponent {
         }
       }, (error) => {
         loader.dismiss();
-        if (error.hasOwnProperty(error) === 'USER_NOT_FOUND') {
+        if (error.response.body.params.err === 'USER_NOT_FOUND') {
           this.generateOTP();
-        } else if (error.hasOwnProperty(error) === 'INVALID_PHONE_FORMAT') {
+        } else if (error.response.body.params.err === 'INVALID_PHONE_FORMAT') {
           // TODO
         }
       });
