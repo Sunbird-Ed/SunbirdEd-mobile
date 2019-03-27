@@ -92,7 +92,7 @@ export class MyApp {
 
 
       this.registerDeeplinks();
-      this.startOpenrapDiscovery();
+      // this.startOpenrapDiscovery();
       this.saveDefaultSyncSetting();
       this.showAppWalkThroughScreen();
       this.checkAppUpdateAvailable();

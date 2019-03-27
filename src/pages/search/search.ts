@@ -23,7 +23,8 @@ import {
   ProfileType,
   SearchType,
   SharedPreferences,
-  TelemetryObject
+  TelemetryObject,
+  CachedItemRequestSourceFrom
 } from 'sunbird-sdk';
 import {FilterPage} from './filters/filter';
 import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
@@ -511,11 +512,12 @@ export class SearchPage implements  OnDestroy {
     const pageAssembleCriteria: PageAssembleCriteria = {
       name: PageName.DIAL_CODE,
       filters: pagetAssemblefilter,
-      source: 'app'
+      source: 'app',
+      from: CachedItemRequestSourceFrom.SERVER
     };
     // pageAssembleCriteria.hardRefresh = true;
 
-    this.pageService.getPageAssemble(pageAssembleCriteria).toPromise()
+    this.pageService.getPageAssemble(pageAssembleCriteria, ).toPromise()
       .then((res: any) => {
         this.zone.run(() => {
           const sections = res.sections;

@@ -130,7 +130,7 @@ export class GuestEditProfilePage {
       });
 
     } else {
-      this.profile = this.navParams.get('profile') || {};
+      this.profile = (JSON.parse(JSON.stringify(this.navParams.get('profile')))) || {};
       this.guestEditForm = this.fb.group({
         name: [this.profile.handle || ''],
         profileType: [this.profile.profileType || 'STUDENT'],
