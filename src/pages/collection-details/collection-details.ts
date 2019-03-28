@@ -51,7 +51,7 @@ import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseU
   selector: 'page-collection-details',
   templateUrl: 'collection-details.html',
 })
-export class CollectionDetailsPage implements OnInit{
+export class CollectionDetailsPage implements OnInit {
   contentDetail: any;
   childrenData: Array<any>;
 

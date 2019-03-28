@@ -30,7 +30,7 @@ import {
   initTabs, LOGIN_TEACHER_TABS
 } from '../../app/module.service';
 import { generateInteractTelemetry } from '../../app/telemetryutil';
-import { ProfileConstants } from '../../app/app.constant';
+import { ProfileConstants, PreferenceKey } from '../../app/app.constant';
 import { FormAndFrameworkUtilService } from '../../pages/profile/formandframeworkutil.service';
 import { ContainerService } from '../../service/container-service';
 
@@ -198,6 +198,8 @@ export class SignInCardComponent {
         request,
         res => {
           const r = JSON.parse(res);
+          this.sharedPreferences.putString(PreferenceKey.APP_LOGO, r.logo);
+          this.sharedPreferences.putString(PreferenceKey.APP_NAME, title);
           (<any>window).splashscreen.setContent(title, r.logo);
           resolve();
         },
