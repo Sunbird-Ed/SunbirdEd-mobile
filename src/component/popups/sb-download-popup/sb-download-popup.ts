@@ -47,6 +47,9 @@ export class SbDownloadPopupComponent implements OnChanges {
   @Input() collectionName: any;
   @Input() downloadProgress: any;
   @Input() contentName: any;
+  @Input() isUpdateAvail: any;
+  @Input() showDownload: any;
+  @Input() contentAvailableLocally: any;
   constructor(private events: Events,
     private zone: NgZone,
     private telemetryGeneratorService: TelemetryGeneratorService,
@@ -56,10 +59,6 @@ export class SbDownloadPopupComponent implements OnChanges {
     private fileUtil: FileUtil,
     private navParams: NavParams,
     private viewCtrl: ViewController) {
-      console.log('this.downloadProgress', this.downloadProgress);
-      if (this.downloadProgress === 100 && this.contentName) {
-        this.viewCtrl.dismiss();
-      }
   }
 
   togglePopover() {
@@ -72,7 +71,11 @@ export class SbDownloadPopupComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     // only run when property "data" changed
     console.log('contentName', this.contentName);
-    console.log('contentName', this.collectionName);
+    console.log('CollectionName', this.collectionName);
+    console.log('IsUpdateAvail', this.isUpdateAvail);
+    console.log('Download Progress', this.downloadProgress);
+    console.log('showDownload', this.showDownload);
+    console.log('contentAvailableLocally', this.contentAvailableLocally);
     if (changes['queuedIdentifiers']) {
       this.queuedIdentifiers = this.queuedIdentifiers;
       console.log('this.queuedIdentifiers', this.queuedIdentifiers);
@@ -88,8 +91,18 @@ export class SbDownloadPopupComponent implements OnChanges {
     if (changes['downloadProgress']) {
       this.downloadProgress = this.downloadProgress;
       console.log('this.downloadProgress', this.downloadProgress);
-      if (this.downloadProgress === 100 && this.contentName) {
-        this.viewCtrl.dismiss();
+      if (this.downloadProgress === 100 && this.contentName && this.contentAvailableLocally) {
+        console.log('DownloadProgress Dissmiss()');
+        // this.viewCtrl.dismiss();
+        this.showDownload = false;
+      } else if (this.contentName && this.downloadProgress && this.contentAvailableLocally) {
+        console.log('AvailableLocally Dismisss()');
+        // this.viewCtrl.dismiss();
+        this.showDownload = false;
+      } else if (this.contentName && this.contentAvailableLocally) {
+        console.log('AvailableLocally Dismisss()');
+        this.showDownload = false;
+       // this.viewCtrl.dismiss();
       }
     }
     if (changes['contentName']) {
