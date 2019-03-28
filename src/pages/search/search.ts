@@ -55,6 +55,7 @@ import { CommonUtilService } from '../../service/common-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { QrCodeResultPage } from '../qr-code-result/qr-code-result';
 import { TranslateService } from '@ngx-translate/core';
+import { AppHeaderService } from '@app/service';
 @IonicPage()
 @Component({
   selector: 'page-search',
@@ -138,7 +139,8 @@ export class SearchPage {
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private preference: SharedPreferences,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private headerService: AppHeaderService
   ) {
 
     this.checkUserSession();
@@ -153,6 +155,7 @@ export class SearchPage {
   }
 
   ionViewWillEnter() {
+    this.headerService.hideHeader();
     this.handleDeviceBackButton();
     const telemetryObject: TelemetryObject = new TelemetryObject();
   }
@@ -282,11 +285,13 @@ export class SearchPage {
       if (this.isDialCodeSearch && !isRootContent) {
         params.isCreateNavigationStack = true;
 
+        this.navCtrl.push(QrCodeResultPage, params);
         if (this.isSingleContent) {
           this.isSingleContent = false;
-          this.navCtrl.pop();
+          const view = this.navCtrl.getActive();
+          this.navCtrl.removeView(view);
         }
-        this.navCtrl.push(QrCodeResultPage, params);
+
       } else {
         // this.navCtrl.push(CollectionDetailsPage, params);
         this.navCtrl.push(CollectionDetailsEtbPage, params);

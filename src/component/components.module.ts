@@ -33,6 +33,7 @@ import { CollectionChildComponent } from './collection-child/collection-child';
 import { ApplicationHeaderComponent } from './application-header/application-header';
 import { SbPopoverComponent } from './popups/sb-popover/sb-popover';
 import { SbDownloadPopupComponent } from './popups/sb-download-popup/sb-download-popup';
+import { SbGenericPopoverComponent } from './popups/sb-generic-popup/sb-generic-popover';
 
 @NgModule({
     declarations: [
@@ -61,7 +62,8 @@ import { SbDownloadPopupComponent } from './popups/sb-download-popup/sb-download
         CollectionChildComponent,
         ApplicationHeaderComponent,
         SbPopoverComponent,
-        SbDownloadPopupComponent
+        SbDownloadPopupComponent,
+        SbGenericPopoverComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -100,7 +102,8 @@ import { SbDownloadPopupComponent } from './popups/sb-download-popup/sb-download
         CollectionChildComponent,
         ApplicationHeaderComponent,
         SbPopoverComponent,
-        SbDownloadPopupComponent
+        SbDownloadPopupComponent,
+        SbGenericPopoverComponent
 
     ],
     entryComponents: [
@@ -115,6 +118,7 @@ import { SbDownloadPopupComponent } from './popups/sb-download-popup/sb-download
         ApplicationHeaderComponent,
         SbPopoverComponent,
         SbDownloadPopupComponent,
+        SbGenericPopoverComponent
     ],
     providers: [
         FormAndFrameworkUtilService

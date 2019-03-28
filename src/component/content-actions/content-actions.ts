@@ -19,6 +19,8 @@ import { CommonUtilService } from '../../service/common-util.service';
 import { ReportIssuesComponent } from '../report-issues/report-issues';
 import { ProfileConstants } from '../../app/app.constant';
 import { UnenrollAlertComponent } from '../unenroll-alert/unenroll-alert';
+import { SbPopoverComponent } from '../popups/sb-popover/sb-popover';
+import { FileSizePipe } from '@app/pipes/file-size/file-size';
 
 @Component({
   selector: 'content-actions',
@@ -50,7 +52,8 @@ export class ContentActionsComponent {
     private translate: TranslateService,
     private platform: Platform,
     private commonUtilService: CommonUtilService,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private fileSizePipe: FileSizePipe
   ) {
     this.content = this.navParams.get('content');
     this.data = this.navParams.get('data');
@@ -111,30 +114,71 @@ export class ContentActionsComponent {
   close(i) {
     switch (i) {
       case 0: {
-        const confirm = this.alertctrl.create({
-          title: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE'),
-          message: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE_MSG'),
-          mode: 'wp',
-          cssClass: 'confirm-alert',
-          buttons: [
+        // const confirm = this.alertctrl.create({
+        //   title: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE'),
+        //   message: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE_MSG'),
+        //   mode: 'wp',
+        //   cssClass: 'confirm-alert',
+        //   buttons: [
+        //     {
+        //       text: this.commonUtilService.translateMessage('CANCEL'),
+        //       role: 'cancel',
+        //       cssClass: 'alert-btn-cancel',
+        //       handler: () => {
+        //         this.viewCtrl.dismiss();
+        //       }
+        //     },
+        //     {
+        //       text: this.commonUtilService.translateMessage('REMOVE'),
+        //       cssClass: 'alert-btn-delete',
+        //       handler: () => {
+        //         this.deleteContent();
+        //       },
+        //     }
+        //   ]
+        // });
+        // confirm.present();
+
+        console.log('this.content');
+        console.log('this.content');
+        console.log(this.content);
+        console.log(this.data);
+        console.log(this.corRelationList);
+        console.log(this.batchDetails);
+        console.log(this.objRollup);
+        console.log(this.isChild);
+        const confirm = this.popoverCtrl.create(SbPopoverComponent, {
+          content: this.content,
+          // isChild: this.isDepthChild,
+          objRollup: this.objRollup,
+          // pageName: PageId.COLLECTION_DETAIL,
+          corRelationList: this.corRelationList,
+          sbPopoverHeading: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE'),
+          // sbPopoverMainTitle: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE_MSG'),
+          sbPopoverMainTitle: this.content.name,
+          actionsButtons: [
             {
-              text: this.commonUtilService.translateMessage('CANCEL'),
-              role: 'cancel',
-              cssClass: 'alert-btn-cancel',
-              handler: () => {
-                this.viewCtrl.dismiss();
-              }
+              btntext: this.commonUtilService.translateMessage('REMOVE'),
+              btnClass: 'popover-color'
             },
-            {
-              text: this.commonUtilService.translateMessage('REMOVE'),
-              cssClass: 'alert-btn-delete',
-              handler: () => {
-                this.deleteContent();
-              },
-            }
-          ]
+          ],
+          icon: null,
+          metaInfo:
+          // this.contentDetail.contentTypesCount.TextBookUnit + 'items' +
+          // this.batchDetails.courseAdditionalInfo.leafNodesCount + 'items' +
+             '(' + this.fileSizePipe.transform(this.content.size, 2) + ')',
+          sbPopoverContent: 'Are you sure you want to delete ?'
+        }, {
+            cssClass: 'sb-popover danger',
+          });
+        confirm.present({
+          ev: event
         });
-        confirm.present();
+        confirm.onDidDismiss((canDelete: boolean = false) => {
+          if (canDelete) {
+            // this.deleteContent();
+          }
+        });
         break;
       }
       case 1: {

@@ -56,6 +56,7 @@ import { TelemetryGeneratorService } from '../../service/telemetry-generator.ser
 import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { ContainerService } from '../../service/container-service';
+import { AppHeaderService } from '@app/service';
 
 @IonicPage()
 @Component({
@@ -123,7 +124,8 @@ export class ProfileSettingsPage {
     private ionicApp: IonicApp,
     private app: App,
     private framework: FrameworkService,
-    private telemetryService: TelemetryGeneratorService
+    private telemetryService: TelemetryGeneratorService,
+    private headerServie: AppHeaderService
 
   ) {
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
@@ -145,6 +147,11 @@ export class ProfileSettingsPage {
 
   ionViewWillEnter() {
     this.hideBackButton = Boolean(this.navParams.get('hideBackButton'));
+    if (!this.hideBackButton) {
+      this.headerServie.hideHeader();
+    } else {
+      this.headerServie.showHeaderWithBackButton();
+    }
     if (this.navParams.get('isCreateNavigationStack')) {
       this.navCtrl.insertPages(0, [{ page: 'LanguageSettingsPage' }, { page: 'UserTypeSelectionPage' }]);
     }

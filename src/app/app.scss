@@ -634,3 +634,9 @@ padding-top: 12px !important;
   margin: 0px 8px;
   font-size: 12px;
 }
+
+.need-header-space {
+  ion-content{
+    margin-top: 58px;
+  }
+}

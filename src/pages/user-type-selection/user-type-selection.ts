@@ -28,7 +28,7 @@ import {
 } from 'sunbird';
 import { TabsPage } from '@app/pages/tabs/tabs';
 import { Map, initTabs, GUEST_TEACHER_TABS, GUEST_STUDENT_TABS, PreferenceKey } from '@app/app';
-import { AppGlobalService, TelemetryGeneratorService, CommonUtilService } from '@app/service';
+import { AppGlobalService, TelemetryGeneratorService, CommonUtilService, AppHeaderService } from '@app/service';
 import { SunbirdQRScanner } from '@app/pages/qrscanner';
 import { ProfileSettingsPage } from '@app/pages/profile-settings/profile-settings';
 import { LanguageSettingsPage } from '@app/pages/language-settings/language-settings';
@@ -73,7 +73,8 @@ export class UserTypeSelectionPage {
     private commonUtilService: CommonUtilService,
     private appGlobalService: AppGlobalService,
     private scannerService: SunbirdQRScanner,
-    private platform: Platform
+    private platform: Platform,
+    private headerServie: AppHeaderService
   ) { }
 
   ionViewDidLoad() {
@@ -94,6 +95,7 @@ export class UserTypeSelectionPage {
   }
 
   ionViewWillEnter() {
+    this.headerServie.showHeaderWithBackButton();
     this.profile = this.appGlobalService.getCurrentUser();
     this.isChangeRoleRequest = Boolean(this.navParams.get('isChangeRoleRequest'));
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {

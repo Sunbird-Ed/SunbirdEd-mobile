@@ -1,7 +1,8 @@
 import {
   Component,
   NgZone,
-  ViewChild
+  ViewChild,
+  OnInit
 } from '@angular/core';
 import {
   IonicPage,
@@ -46,7 +47,7 @@ import {
   ShareUrl
 } from '@app/app';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
-import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService } from '@app/service';
+import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService, AppHeaderService } from '@app/service';
 import { SbDownloadPopupComponent } from '@app/component/popups/sb-download-popup/sb-download-popup';
 
 /**
@@ -61,16 +62,15 @@ import { SbDownloadPopupComponent } from '@app/component/popups/sb-download-popu
   selector: 'page-collection-details-etb',
   templateUrl: 'collection-details-etb.html',
 })
-export class CollectionDetailsEtbPage {
+export class CollectionDetailsEtbPage implements OnInit {
 
   facets: any;
   selected: boolean;
   isSelected: boolean;
   headerConfig = {
     showHeader : true,
-    showBackButtom: false,
     showBurgerMenu: false,
-    actionButtons: ['search', 'filter'],
+    actionButtons: []
   };
 
   contentDetail: any;
@@ -210,6 +210,7 @@ export class CollectionDetailsEtbPage {
   batchDetails: any;
   pageName: any;
 
+
   // Local Image
   localImage = '';
 
@@ -237,6 +238,7 @@ export class CollectionDetailsEtbPage {
     public viewCtrl: ViewController,
     private toastCtrl: ToastController,
     private fileSizePipe: FileSizePipe,
+    private headerServie: AppHeaderService,
     public toastController: ToastController
   ) {
 
@@ -249,6 +251,15 @@ export class CollectionDetailsEtbPage {
     this.data = this.navParams.get('data');
     this.batchDetails = this.navParams.get('batchDetails');
     this.pageName = this.navParams.get('pageName');
+  }
+
+  /**
+	 * Angular life cycle hooks
+	 */
+  ngOnInit() {
+    this.headerServie.headerEventEmitted$.subscribe(eventName => {
+      // this.handleHeaderEvents(eventName);
+    });
   }
 
   ionViewDidLoad() {
@@ -265,6 +276,10 @@ export class CollectionDetailsEtbPage {
    */
   ionViewWillEnter(): void {
     this.zone.run(() => {
+      this.headerConfig = this.headerServie.getDefaultPageConfig();
+      this.headerConfig.actionButtons = [];
+      this.headerConfig.showBurgerMenu = false;
+      this.headerServie.updatePageConfig(this.headerConfig);
       this.resetVariables();
       this.cardData = this.navParams.get('content');
       console.log('this.cardData', this.cardData);

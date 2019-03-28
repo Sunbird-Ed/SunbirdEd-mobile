@@ -20,6 +20,7 @@ import {
 } from '@app/app';
 import { Select } from 'ionic-angular';
 import { constants } from 'os';
+import { AppHeaderService } from '@app/service';
 @Component({
   selector: 'personal-details-edit',
   templateUrl: 'personal-details-edit.profile.html',
@@ -61,7 +62,8 @@ export class PersonalDetailsEditPage {
     private userProfileService: UserProfileService,
     private events: Events,
     private container: ContainerService,
-    private framework: FrameworkService
+    private framework: FrameworkService,
+    private headerService: AppHeaderService
   ) {
     // this.profile = this.appGlobalService.getCurrentUser();
     this.profile = this.navParams.get('profile');
@@ -72,6 +74,7 @@ export class PersonalDetailsEditPage {
    * Ionic life cycle event - Fires every time page visits
    */
   ionViewWillEnter() {
+    this.headerService.showHeaderWithBackButton();
     this.profile = this.navParams.get('profile');
     this.getStates();
   }

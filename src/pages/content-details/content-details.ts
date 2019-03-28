@@ -57,7 +57,8 @@ import {
 } from '@app/component';
 import {
   AppGlobalService,
-  CourseUtilService
+  CourseUtilService,
+  AppHeaderService
 } from '@app/service';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { Network } from '@ionic-native/network';
@@ -69,6 +70,7 @@ import { Observable } from 'rxjs';
 import { XwalkConstants } from '../../app/app.constant';
 import { ValueTransformer } from '@angular/compiler/src/util';
 import { SbDownloadPopupComponent } from '@app/component/popups/sb-download-popup/sb-download-popup';
+import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 
 
 @IonicPage()
@@ -173,7 +175,8 @@ export class ContentDetailsPage {
     private deviceInfoService: DeviceInfoService,
     private network: Network,
     public  toastController: ToastController,
-    private fileSizePipe: FileSizePipe
+    private fileSizePipe: FileSizePipe,
+    private headerServie: AppHeaderService
   ) {
 
     this.objRollup = new Rollup();
@@ -205,6 +208,7 @@ export class ContentDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
+    this.headerServie.hideHeader();
     this.cardData = this.navParams.get('content');
     this.isChildContent = this.navParams.get('isChildContent');
     this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');
@@ -524,6 +528,9 @@ export class ContentDetailsPage {
     this.content = data.result.contentData;
     // console.log('DATA RESULT Content  ==>', this.content);
     this.content.downloadable = data.result.isAvailableLocally;
+    if (data.result.lastUpdatedTime !== '0') {
+      this.playOnlineSpinner = false;
+    }
     if (this.content.appIcon) {
       if (this.content.appIcon.includes('http:') || this.content.appIcon.includes('https:')) {
         if (this.commonUtilService.networkInfo.isNetworkAvailable) {
@@ -991,7 +998,7 @@ export class ContentDetailsPage {
     }
     if (!AppGlobalService.isPlayerLaunched && this.userCount > 1) {
       const profile = this.appGlobalService.getCurrentUser();
-      const alert = this.alertCtrl.create({
+      /*const alert = this.alertCtrl.create({
         title: this.commonUtilService.translateMessage('PLAY_AS'),
         mode: 'wp',
         message: profile.handle,
@@ -1022,9 +1029,42 @@ export class ContentDetailsPage {
             cssClass: 'closeButton',
           }
         ]
-      });
+      });*/
       this.isUsrGrpAlrtOpen = true;
-      alert.present();
+      const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
+        sbPopoverHeading: this.commonUtilService.translateMessage('PLAY_AS'),
+        sbPopoverMainTitle: profile.handle,
+        actionsButtons: [
+          {
+            btntext: this.commonUtilService.translateMessage('YES'),
+            btnClass: 'popover-color'
+          },
+          {
+            btntext: this.commonUtilService.translateMessage('CHANGE_USER'),
+            btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+          }
+        ],
+        icon: null
+      }, {
+          cssClass: 'sb-popover info',
+        });
+        confirm.present({
+          ev: event
+        });
+        confirm.onDidDismiss((leftBtnClicked: boolean = false) => {
+          if (leftBtnClicked) {
+            this.playContent(isStreaming);
+          } else {
+            const playConfig: any = {};
+              playConfig.playContent = true;
+              playConfig.streaming = isStreaming;
+              this.navCtrl.push(UserAndGroupsPage, {
+                playConfig: playConfig
+              });
+          }
+        });
+      
+      //alert.present();
     } else {
       this.playContent(isStreaming);
     }
@@ -1134,6 +1174,7 @@ export class ContentDetailsPage {
       this.zone.run(() => {
         if (data === 'delete.success') {
           this.content.streamingUrl = this.streamingUrl;
+          this.playOnlineSpinner = false;
           this.content.downloadable = false;
           const playContent = JSON.parse(this.content.playContent);
           playContent.isAvailableLocally = false;
@@ -1144,6 +1185,7 @@ export class ContentDetailsPage {
   }
   deleteContent() {
     console.log('contenmtttttttttttttt', this.content);
+    console.log(this.isChildContent);
     // const popover = this.popoverCtrl.create(ContentActionsComponent, {
     //   content: this.content,
     //   isChild: this.isChildContent,

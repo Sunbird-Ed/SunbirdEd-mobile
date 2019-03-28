@@ -25,7 +25,8 @@ import {
 import {
   NavController,
   Events,
-  ToastController
+  ToastController,
+  MenuController
 } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
@@ -67,6 +68,7 @@ import { SettingsPage } from '../settings';
 import { ProfilePage } from '../profile/profile';
 import { GuestProfilePage } from '../profile';
 import { Page } from 'ionic-angular/umd/navigation/nav-util';
+import { AppHeaderService } from '@app/service';
 
 @Component({
   selector: 'page-resources',
@@ -121,13 +123,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   recentlyViewedResources: Array<any>;
   userId: string;
   showLoader = false;
-  headerConfig = {
-    showHeader : true,
-    showBackButtom: false,
-    showBurgerMenu: true,
-    actionButtons: ['search'],
-  };
-
 
   /**
 	 * Flag to show latest and popular course loader
@@ -175,7 +170,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     private frameworkService: FrameworkService,
     private translate: TranslateService,
     private network: Network,
-    public toastController: ToastController
+    public toastController: ToastController,
+    public menuCtrl: MenuController,
+    private headerServie: AppHeaderService
   ) {
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
       .then(val => {
@@ -245,6 +242,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 	 */
   ngOnInit() {
     this.getCurrentUser();
+    this.headerServie.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
   }
 
   async presentToastWithOptions() {
@@ -721,6 +721,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewWillEnter() {
+    this.headerServie.showHeaderWithHomeButton(['search']);
+
     this.getCategoryData();
 
     this.getCurrentUser();
@@ -978,5 +980,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       case 'search': this.search();
                     break;
     }
+  }
+
+  toggleMenu() {
+    this.menuCtrl.toggle();
   }
 }
