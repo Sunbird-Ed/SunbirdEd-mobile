@@ -1,34 +1,27 @@
-import { mockRes } from '../search/search.spec.data';
+import {mockRes} from '../search/search.spec.data';
 import {
-    contentServiceMock,
-    pageAssembleServiceMock,
-    navParamsMock, navCtrlMock,
-    zoneMock, fileUtilMock,
-    eventsMock, appGlobalServiceMock,
-    platformMock, formAndFrameworkUtilServiceMock,
-    commonUtilServiceMock,
-    telemetryGeneratorServiceMock,
-    sharedPreferencesMock,
-    translateServiceMock
+  appGlobalServiceMock,
+  commonUtilServiceMock,
+  contentServiceMock,
+  eventsMock,
+  fileUtilMock,
+  formAndFrameworkUtilServiceMock,
+  navCtrlMock,
+  navParamsMock,
+  pageAssembleServiceMock,
+  platformMock,
+  sharedPreferencesMock,
+  telemetryGeneratorServiceMock,
+  translateServiceMock,
+  zoneMock
 } from '../../__tests__/mocks';
-import { SearchPage } from './search';
-import { ProfileType, PageId } from 'sunbird';
-import { FilterPage } from './filters/filter';
-import {
-    AudienceFilter,
-    ContentType,
-    MimeType
-} from '../../app/app.constant';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
-import { CollectionDetailsPage } from '../collection-details/collection-details';
-import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
-import { ContentDetailsPage } from '../content-details/content-details';
-import { doesNotThrow } from 'assert';
-import { empty } from 'rxjs/observable/empty';
-import { NetworkMock } from 'ionic-mocks';
-import { promise } from 'selenium-webdriver';
-import { DomRendererFactory2 } from '@angular/platform-browser/src/dom/dom_renderer';
-import { Navbar } from 'ionic-angular';
+import {SearchPage} from './search';
+import {ProfileType} from 'sunbird';
+import {FilterPage} from './filters/filter';
+import {AudienceFilter, ContentType, MimeType} from '../../app/app.constant';
+import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
+import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
+import {ContentDetailsPage} from '../content-details/content-details';
 
 describe.only('SearchPage', () => {
     let searchPage: SearchPage;
@@ -423,7 +416,7 @@ describe.only('SearchPage', () => {
         searchPage.getImportContentRequestBody(identifiers, true);
         // assert
     });
-    it('should update the download progress when download progress event comes subscribeGenieEvent() ', () => {
+  it('should update the download progress when download progress event comes subscribeSdkEvent() ', () => {
         // arrange
         // act
         searchPage.subscribeGenieEvent();
@@ -432,7 +425,7 @@ describe.only('SearchPage', () => {
         // assert
         expect(searchPage.loadingDisplayText).toBe('Loading content');
     });
-    it('should update the download progress when download progress event comes and its 100 subscribeGenieEvent() ', () => {
+  it('should update the download progress when download progress event comes and its 100 subscribeSdkEvent() ', () => {
         // arrange
         // (eventsMock.subscribe as any).mockReturnValue(Promise.resolve(JSON.stringify(mockRes.downloadProgressEventSample2)));
         // act
@@ -455,7 +448,7 @@ describe.only('SearchPage', () => {
         // assert
         expect(searchPage.loadingDisplayText).toBe('Loading content ');
     });
-    it('should  invoke showContentDetails subscribeGenieEvent() ', (done) => {
+  it('should  invoke showContentDetails subscribeSdkEvent() ', (done) => {
 
         spyOn(searchPage, 'showContentDetails').and.stub();
 
@@ -548,7 +541,7 @@ describe.only('SearchPage', () => {
         const data = mockRes.contentDetailsResponse;
         data.result.isAvailableLocally = false;
         (contentServiceMock.getContentDetail as any).mockResolvedValue(JSON.stringify(data));
-        spyOn(searchPage, 'subscribeGenieEvent').and.stub();
+      spyOn(searchPage, 'subscribeSdkEvent').and.stub();
         spyOn(searchPage, 'downloadParentContent').and.stub();
         // act
         searchPage.checkParent({ identifier: 'SAMPLE_ID' }, { identifier: 'SAMPLE_ID' });

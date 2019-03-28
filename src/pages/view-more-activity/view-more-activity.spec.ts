@@ -107,25 +107,25 @@
 //         expect(component.tabBarElement.style.display).toBe('none');
 //     });
 
-//     it('#subscribeGenieEvent should update the download progress when download progress event comes', () => {
+//     it('#subscribeSdkEvent should update the download progress when download progress event comes', () => {
 //         const events = TestBed.get(Events);
 //         spyOn(events, 'subscribe').and.callFake(({ }, success) => {
 //             return success(mockRes.downloadProgressEventSample1);
 //         });
-//         component.subscribeGenieEvent();
+//         component.subscribeSdkEvent();
 //         expect(component.downloadPercentage).toBe(10);
 //     });
 
-//     it('#subscribeGenieEvent should update the progress to 0 if API gives response -1', () => {
+//     it('#subscribeSdkEvent should update the progress to 0 if API gives response -1', () => {
 //         const events = TestBed.get(Events);
 //         spyOn(events, 'subscribe').and.callFake(({ }, success) => {
 //             return success(mockRes.downloadProgressEventSample2);
 //         });
-//         component.subscribeGenieEvent();
+//         component.subscribeSdkEvent();
 //         expect(component.downloadPercentage).toBe(0);
 //     });
 
-//     it('#subscribeGenieEvent should  mark download as complete and navigate to content details page', () => {
+//     it('#subscribeSdkEvent should  mark download as complete and navigate to content details page', () => {
 //         const events = TestBed.get(Events);
 //         const navController = TestBed.get(NavController);
 //         spyOn(navController, 'push');
@@ -134,7 +134,7 @@
 //         });
 
 //         component.downloadPercentage = 100;
-//         component.subscribeGenieEvent();
+//         component.subscribeSdkEvent();
 //         expect(component.showOverlay).toBe(false);
 //         expect(navController.push).toHaveBeenCalledWith(ContentDetailsPage, {
 //             content: { identifier: 'SAMPLE_LAST_READ_ID' },
@@ -223,14 +223,14 @@
 //         const contentService = TestBed.get(ContentService);
 //         const navController = TestBed.get(NavController);
 //         spyOn(navController, 'push');
-//         spyOn(component, 'subscribeGenieEvent');
+//         spyOn(component, 'subscribeSdkEvent');
 //         spyOn(component, 'importContent').and.callFake(() => { });
 //         spyOn(contentService, 'getContentDetail').and.callFake(({ }, success) => {
 //             const data = JSON.stringify((mockRes.locallyNotAvailableContentDetailsResponse));
 //             return success(data);
 //         });
 //         component.getContentDetails(component.resumeContentData);
-//         expect(component.subscribeGenieEvent).toHaveBeenCalled();
+//         expect(component.subscribeSdkEvent).toHaveBeenCalled();
 //         expect(component.importContent).toHaveBeenCalledWith(['SAMPLE_ID'], false);
 //     });
 
@@ -239,13 +239,13 @@
 //         const contentService = TestBed.get(ContentService);
 //         const navController = TestBed.get(NavController);
 //         spyOn(navController, 'push');
-//         spyOn(component, 'subscribeGenieEvent');
+//         spyOn(component, 'subscribeSdkEvent');
 //         spyOn(component, 'importContent').and.callFake(() => { });
 //         spyOn(contentService, 'getContentDetail').and.callFake(({ }, success, error) => {
 //             return error();
 //         });
 //         component.getContentDetails(component.resumeContentData);
-//         expect(component.subscribeGenieEvent).not.toHaveBeenCalled();
+//         expect(component.subscribeSdkEvent).not.toHaveBeenCalled();
 //         expect(component.importContent).not.toHaveBeenCalledWith(['SAMPLE_ID'], false);
 //     });
 

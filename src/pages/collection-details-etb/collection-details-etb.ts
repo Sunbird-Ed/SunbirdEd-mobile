@@ -7,7 +7,13 @@ import {ContentDetailsPage} from '@app/pages/content-details/content-details';
 import {ConfirmAlertComponent, ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
 import {ContentType, MimeType, ShareUrl} from '@app/app';
 import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
-import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService, UtilityService} from '@app/service';
+import {
+  AppGlobalService,
+  CommonUtilService,
+  CourseUtilService,
+  TelemetryGeneratorService,
+  UtilityService
+} from '@app/service';
 import {
   Content,
   ContentDetailRequest,
@@ -267,7 +273,7 @@ export class CollectionDetailsEtbPage {
 
       this.didViewLoad = true;
       this.setContentDetails(this.identifier);
-      this.subscribeGenieEvent();
+      this.subscribeSdkEvent();
     });
   }
 
@@ -735,9 +741,9 @@ export class CollectionDetailsEtbPage {
   }
 
   /**
-   * Subscribe genie event to get content download progress
+   * Subscribe Sunbird-SDK event to get content download progress
    */
-  subscribeGenieEvent() {
+  subscribeSdkEvent() {
     this.eventSubscription = this.eventBusService.events().subscribe((event: EventsBusEvent) => {
       this.zone.run(() => {
         if (event.type === DownloadEventType.PROGRESS) {
@@ -746,6 +752,7 @@ export class CollectionDetailsEtbPage {
           if (downloadEvent.payload.identifier === this.contentDetail.identifier) {
             this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
             if (this.downloadProgress === 100) {
+              this.showLoading = false;
               this.contentDetail.isAvailableLocally = true;
             }
           }
@@ -753,7 +760,6 @@ export class CollectionDetailsEtbPage {
 
         // Get child content
         if (event.type === ContentEventType.IMPORT_COMPLETED) {
-          this.showLoading = false;
           const contentImportedEvent = event as ContentImportCompleted;
 
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {

@@ -136,7 +136,7 @@
 				<ion-row style="padding-top: 30px;" padding>
 					<ion-col text-center>
             <p
-              *ngIf="downloadProgress !== 100">{{ 'FETCHING_CONTENTS' | translate: {'%s': downloadProgress ? (downloadProgress | number: '1.0-0') : 0} }}</p>
+              *ngIf="downloadProgress !== 100">{{ 'FETCHING_CONTENTS' | translate: {'%s': downloadProgress ? downloadProgress : 0} }}</p>
 						<p *ngIf="downloadProgress === 100">{{ 'LOADING_CONTENT' | translate }}</p>
 						<ion-spinner padding></ion-spinner>
 					</ion-col>
@@ -200,7 +200,7 @@
 
 <ion-backdrop class="loading-backdrop" *ngIf="showLoading && !isDownloadStarted" text-center>
 	<div class="backdrop-container">
-    <ion-label>{{ 'LOADING_CONTENTS' | translate: {'%s': downloadProgress ? (downloadProgress | number: '1.0-0') : 0} }}</ion-label>
+    <ion-label>{{ 'LOADING_CONTENTS' | translate: {'%s': downloadProgress ? downloadProgress : 0} }}</ion-label>
 		<pb-horizontal [progress]="downloadProgress" isOnBoardCard="false"></pb-horizontal>
 	</div>
 

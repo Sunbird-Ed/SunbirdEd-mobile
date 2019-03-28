@@ -1,6 +1,7 @@
 import {Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
 import {Events, IonicPage, Navbar, NavController, NavParams, Platform} from 'ionic-angular';
 import {
+  CachedItemRequestSourceFrom,
   Content,
   ContentDetailRequest,
   ContentEventType,
@@ -23,8 +24,7 @@ import {
   ProfileType,
   SearchType,
   SharedPreferences,
-  TelemetryObject,
-  CachedItemRequestSourceFrom
+  TelemetryObject
 } from 'sunbird-sdk';
 import {FilterPage} from './filters/filter';
 import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
@@ -818,7 +818,7 @@ export class SearchPage implements  OnDestroy {
   }
 
   /**
-   * Subscribe genie event to get content download progress
+   * Subscribe Sunbird-SDK event to get content download progress
    */
   subscribeSdkEvent() {
     this.eventSubscription = this.eventsBusService.events().subscribe((event: EventsBusEvent) => {
