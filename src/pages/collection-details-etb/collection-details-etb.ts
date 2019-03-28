@@ -1119,7 +1119,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     confirm.present({
       ev: event
     });
-    confirm.onDidDismiss((canDelete: boolean = false) => {
+    confirm.onDidDismiss((canDelete: any) => {
       if (canDelete) {
         this.deleteContent();
       }

@@ -174,7 +174,7 @@ export class ContentActionsComponent {
         confirm.present({
           ev: event
         });
-        confirm.onDidDismiss((canDelete: boolean = false) => {
+        confirm.onDidDismiss((canDelete: any) => {
           if (canDelete) {
             // this.deleteContent();
           }
