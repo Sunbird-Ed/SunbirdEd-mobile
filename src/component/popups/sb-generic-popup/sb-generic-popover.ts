@@ -44,13 +44,13 @@ export class SbGenericPopoverComponent {
     this.sbPopoverMainTitle = this.navParams.get('sbPopoverMainTitle');
 
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
-      this.viewCtrl.dismiss();
+      this.viewCtrl.dismiss(null);
       this.backButtonFunc();
     }, 20);
   }
 
   closePopover() {
-    this.viewCtrl.dismiss();
+    this.viewCtrl.dismiss(null);
   }
   deletecontent(btnIndex: number = 0) {
     if(btnIndex == 0) {
