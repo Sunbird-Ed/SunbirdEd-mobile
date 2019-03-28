@@ -806,6 +806,7 @@ export class ContentDetailsPage {
         data = JSON.parse(data);
         if (data.result && data.result[0].status === 'NOT_FOUND') {
           this.showDownload = false;
+          this.isDownloadStarted = false;
           this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
         }
       })
@@ -889,6 +890,7 @@ export class ContentDetailsPage {
     console.log('hhfhh', this.cardData);
     console.log('djncjevej', this.content);
     console.log('isUpdateAvail', this.isUpdateAvail);
+    console.log('UDPATEAVAILABLE-----', this.content.downloadable && this.isUpdateAvail);
     // const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
     //   sbPopoverHeading: this.commonUtilService.translateMessage('DOWNLOAD'),
     //   sbPopoverMainTitle: this.cardData.name + this.cardData.subject,
@@ -918,7 +920,7 @@ export class ContentDetailsPage {
       metaInfo:
            '1 item ' + '(' + this.fileSizePipe.transform(this.content.size, 2) + ')',
       // sbPopoverContent: this.commonUtilService.translateMessage('CONTENT_NOT_PLAYABLE_OFFLINE'),
-      isUpdateAvail: this.isUpdateAvail
+      isUpdateAvail: this.content.downloadable && this.isUpdateAvail,
     }, {
         cssClass: 'sb-popover info',
       });

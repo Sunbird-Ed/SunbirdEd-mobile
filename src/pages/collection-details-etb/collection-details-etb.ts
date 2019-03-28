@@ -1084,6 +1084,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     // this.downloadProgress = '';
     this.downloadProgress = 0;
     this.events.unsubscribe('genie.event');
+    this.networkSubscription.unsubscribe();
   }
   showPopOver() {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,

@@ -13,6 +13,7 @@ export class ConfirmAlertComponent {
   icon: any;
   metaInfo: any;
   isUpdateAvail: any;
+  contentSize: any;
   backButtonFunc = undefined;
   constructor(public viewCtrl: ViewController, public platform: Platform, public navParams: NavParams) {
     this.actionsButtons = this.navParams.get('actionsButtons');
@@ -22,6 +23,7 @@ export class ConfirmAlertComponent {
     this.sbPopoverHeading = this.navParams.get('sbPopoverHeading');
     this.sbPopoverMainTitle = this.navParams.get('sbPopoverMainTitle');
     this.isUpdateAvail = this.navParams.get('isUpdateAvail');
+    this.contentSize = this.navParams.get('contentSize');
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.viewCtrl.dismiss();
       this.backButtonFunc();
