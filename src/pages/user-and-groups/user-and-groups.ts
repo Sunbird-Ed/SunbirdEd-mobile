@@ -57,6 +57,7 @@ import { Content } from 'ionic-angular';
 import { PreferenceKey } from '../../app/app.constant';
 import { CreateGroupPage } from './create-group/create-group';
 import { ContainerService } from '../../service/container-service';
+import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 
 @IonicPage()
 @Component({
@@ -435,7 +436,7 @@ export class UserAndGroupsPage {
       valuesMap
     );
 
-    const alert = this.alertCtrl.create({
+    /*const alert = this.alertCtrl.create({
       title: this.translateMessage('SWITCH_ACCOUNT_CONFIRMATION'),
       mode: 'wp',
       message: this.translateMessage('SIGNED_OUT_ACCOUNT_MESSAGE'),
@@ -457,10 +458,34 @@ export class UserAndGroupsPage {
           }
         }
       ]
+    });*/
+    const confirm = this.popOverCtrl.create(SbGenericPopoverComponent, {
+      sbPopoverHeading: this.commonUtilService.translateMessage('SWITCH_ACCOUNT_CONFIRMATION'),
+      sbPopoverMainTitle: this.commonUtilService.translateMessage('USER_DELETE_CONFIRM_SECOND_MESSAGE'),
+      actionsButtons: [
+        {
+          btntext: this.commonUtilService.translateMessage('CANCEL'),
+          btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+        },{
+          btntext: this.commonUtilService.translateMessage('YES'),
+          btnClass: 'popover-color'
+        }
+      ],
+      icon: null
+    }, {
+      cssClass: 'sb-popover',
+    });
+    confirm.onDidDismiss((leftBtnClicked: boolean = false) => {
+      if (!leftBtnClicked) {
+        this.logOut(selectedUser, false);
+      } 
     });
 
     if (this.appGlobalService.isUserLoggedIn()) {
-      alert.present();
+      confirm.present({
+        ev: event
+      });
+      
     } else {
       this.setAsCurrentUser(selectedUser, false);
     }
@@ -542,7 +567,7 @@ export class UserAndGroupsPage {
 
   /** Delete alert box */
   deleteGroupConfirmBox(index) {
-    const alert = this.alertCtrl.create({
+    /*const alert = this.alertCtrl.create({
       title: this.translateMessage('GROUP_DELETE_CONFIRM', this.groupList[index].name),
       mode: 'wp',
       message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
@@ -565,7 +590,32 @@ export class UserAndGroupsPage {
         }
       ]
     });
-    alert.present();
+    alert.present();*/
+    const confirm = this.popOverCtrl.create(SbGenericPopoverComponent, {
+      sbPopoverHeading: this.translateMessage('GROUP_DELETE_CONFIRM', this.groupList[index].name),
+      sbPopoverMainTitle: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
+      actionsButtons: [
+        {
+          btntext: this.commonUtilService.translateMessage('CANCEL'),
+          btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+        },{
+          btntext: this.commonUtilService.translateMessage('YES'),
+          btnClass: 'popover-color'
+        }
+      ],
+      icon: null
+    }, {
+      cssClass: 'sb-popover',
+    });
+    confirm.present({
+      ev: event
+    });
+    confirm.onDidDismiss((leftBtnClicked: boolean = false) => {
+      if (!leftBtnClicked) {
+        this.deleteGroup(index);
+      } 
+    });
+
   }
   /**Navigates to play content details page nd launch the player */
   play() {
@@ -605,7 +655,7 @@ export class UserAndGroupsPage {
   /** Delete alert box */
   deleteUserConfirmBox(index) {
     // let self = this;
-    const alert = this.alertCtrl.create({
+    /*const alert = this.alertCtrl.create({
       title: this.translateMessage('USER_DELETE_CONFIRM', this.userList[index].handle),
       mode: 'wp',
       message: this.translateMessage('USER_DELETE_CONFIRM_MESSAGE'),
@@ -628,7 +678,31 @@ export class UserAndGroupsPage {
         }
       ]
     });
-    alert.present();
+    alert.present();*/
+    const confirm = this.popOverCtrl.create(SbGenericPopoverComponent, {
+      sbPopoverHeading: this.translateMessage('USER_DELETE_CONFIRM', this.userList[index].handle),
+      sbPopoverMainTitle: this.translateMessage('USER_DELETE_CONFIRM_MESSAGE'),
+      actionsButtons: [
+        {
+          btntext: this.commonUtilService.translateMessage('CANCEL'),
+          btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+        },{
+          btntext: this.commonUtilService.translateMessage('YES'),
+          btnClass: 'popover-color'
+        }
+      ],
+      icon: null
+    }, {
+      cssClass: 'sb-popover',
+    });
+    confirm.present({
+      ev: event
+    });
+    confirm.onDidDismiss((leftBtnClicked: boolean = false) => {
+      if (!leftBtnClicked) {
+        this.deleteUser(index);
+      } 
+    });
   }
 
   deleteUser(index: number) {
