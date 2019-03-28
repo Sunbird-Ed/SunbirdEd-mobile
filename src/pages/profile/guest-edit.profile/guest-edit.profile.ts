@@ -237,7 +237,7 @@ export class GuestEditProfilePage {
       confirm.present({
         ev: event
       });
-      confirm.onDidDismiss((leftBtnClicked: boolean = false) => {
+      confirm.onDidDismiss((leftBtnClicked: any) => {
         if(leftBtnClicked == null) {
           return;
         }
