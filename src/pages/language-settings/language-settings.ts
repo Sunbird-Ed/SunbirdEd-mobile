@@ -95,6 +95,8 @@ export class LanguageSettingsPage {
     this.selectedLanguage = {};
     if (!this.isFromSettings) {
       this.headerServie.hideHeader();
+    } else if (this.mainPage) {
+      this.headerServie.showHeaderWithBackButton();
     } else {
       this.headerServie.showHeaderWithBackButton();
     }

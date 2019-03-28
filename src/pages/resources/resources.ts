@@ -311,20 +311,20 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.loadRecentlyViewedContent();
   }
 
-  goToUserAndGroups() {
-    this.navCtrl.push(UserAndGroupsPage);
-  }
-  goToReports() {
-    this.navCtrl.push(ReportsPage);
-  }
-  goToLanguageSettings() {
-    this.navCtrl.push(LanguageSettingsPage, {
-      mainPage: true
-    });
-  }
-  goToSettings() {
-    this.navCtrl.push(SettingsPage);
-  }
+  // goToUserAndGroups() {
+  //   this.navCtrl.push(UserAndGroupsPage);
+  // }
+  // goToReports() {
+  //   this.navCtrl.push(ReportsPage);
+  // }
+  // goToLanguageSettings() {
+  //   this.navCtrl.push(LanguageSettingsPage, {
+  //     mainPage: true
+  //   });
+  // }
+  // goToSettings() {
+  //   this.navCtrl.push(SettingsPage);
+  // }
 
   navigateToViewMoreContentsPage(section: string) {
     const values = new Map();

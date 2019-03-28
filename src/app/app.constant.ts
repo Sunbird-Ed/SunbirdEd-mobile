@@ -146,6 +146,8 @@ export class PreferenceKey {
     public static readonly IS_ONBOARDING_COMPLETED = 'is_onboarding_settings_completed';
     public static readonly IS_BOOKMARK_VIEWED = 'is_bookmark_viewed';
     public static readonly CONTENT_CONTEXT = 'content_context';
+    public static readonly APP_LOGO = 'app_logo';
+    public static readonly APP_NAME = 'app_name';
 }
 
 export class GenericAppConfig {

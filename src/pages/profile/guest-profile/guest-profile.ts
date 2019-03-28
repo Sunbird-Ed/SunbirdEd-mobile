@@ -39,7 +39,7 @@ import {
   templateUrl: 'guest-profile.html',
 })
 
-export class GuestProfilePage implements OnInit{
+export class GuestProfilePage implements OnInit {
 
   imageUri = 'assets/imgs/ic_profile_default.png';
 
