@@ -464,13 +464,13 @@ export class UserAndGroupsPage {
         latestCreatedProfile: true
       };
       this.profileService.getAllProfiles(req)
-        .map((profiles) => profiles.filter((profile) => !!profile.handle))
+        .map((profiles) => (profiles.sort((p1, p2) => p2.createdAt - p1.createdAt))[0])
         .toPromise().then((lastCreatedProfile: any) => {
-          this.lastCreatedProfileData = lastCreatedProfile;
-          resolve(lastCreatedProfile);
-        }).catch(() => {
-          reject(null);
-        });
+        this.lastCreatedProfileData = lastCreatedProfile;
+        resolve(lastCreatedProfile);
+      }).catch(() => {
+        reject(null);
+      });
     });
   }
 
