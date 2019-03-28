@@ -7,6 +7,7 @@ import {
   NavParams,
   Events,
   LoadingController,
+  PopoverController,
   IonicApp,
   Platform
 } from 'ionic-angular';
@@ -48,6 +49,7 @@ import {
   FrameworkCategory
 } from '../../../app/app.constant';
 import { ContainerService } from '../../../service/container-service';
+import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 @Component({
   selector: 'page-guest-edit.profile',
   templateUrl: 'guest-edit.profile.html'
@@ -117,7 +119,8 @@ export class GuestEditProfilePage {
     private preferences: SharedPreferences,
     private commonUtilService: CommonUtilService,
     private alertCtrl: AlertController,
-    private framework: FrameworkService
+    private framework: FrameworkService,
+    private popoverCtrl:PopoverController
   ) {
     this.isNewUser = Boolean(this.navParams.get('isNewUser'));
     this.isCurrentUser = Boolean(this.navParams.get('isCurrentUser'));
@@ -183,7 +186,7 @@ export class GuestEditProfilePage {
   // shows auto fill alert on load
   showAutoFillAlert() {
     this.isEditData = true;
-    const alert = this.alertCtrl.create({
+    /*const alert = this.alertCtrl.create({
       title: this.commonUtilService.translateMessage('PREVIOUS_USER_SETTINGS'),
       mode: 'wp',
       cssClass: 'confirm-alert',
@@ -214,7 +217,42 @@ export class GuestEditProfilePage {
         }
       ]
     });
-    alert.present();
+    alert.present();*/
+    const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
+      sbPopoverHeading: this.commonUtilService.translateMessage('ALERT'),
+      sbPopoverMainTitle: this.commonUtilService.translateMessage('PREVIOUS_USER_SETTINGS'),
+      actionsButtons: [
+        {
+          btntext: this.commonUtilService.translateMessage('CANCEL'),
+          btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+        },{
+          btntext: this.commonUtilService.translateMessage('OKAY'),
+          btnClass: 'popover-color'
+        }
+      ],
+      icon: null
+    }, {
+      cssClass: 'sb-popover',
+    });
+      confirm.present({
+        ev: event
+      });
+      confirm.onDidDismiss((leftBtnClicked: any) => {
+        if(leftBtnClicked == null) {
+          return;
+        }
+        if (leftBtnClicked) {
+          this.guestEditForm.patchValue({
+            name: undefined,
+            syllabus: undefined,
+            boards: [[]],
+            medium: [[]],
+            grades: [[]],
+            subjects: [[]]
+          });
+          this.guestEditForm.controls['profileType'].setValue('STUDENT');
+        } 
+      });
   }
 
   onProfileTypeChange() {

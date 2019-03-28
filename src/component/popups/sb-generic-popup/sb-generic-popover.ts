@@ -1,38 +1,56 @@
 import { Component } from '@angular/core';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
-import { Platform, NavParams } from 'ionic-angular';
+import {
+  NavParams,
+  Platform
+} from 'ionic-angular';
+
+
+/**
+ * Generated class for the PopupsComponent component.
+ *
+ * See https://angular.io/api/core/Component for more info on Angular
+ * Components.
+ */
 @Component({
-  selector: 'confirm-alert',
-  templateUrl: 'confirm-alert.html'
+  selector: 'sb-generic-popover',
+  templateUrl: 'sb-generic-popover.html'
 })
-export class ConfirmAlertComponent {
+export class SbGenericPopoverComponent {
+
   sbPopoverHeading: any;
   sbPopoverMainTitle: any;
   sbPopoverContent: any;
   actionsButtons: any;
   icon: any;
   metaInfo: any;
-  isUpdateAvail: any;
   backButtonFunc = undefined;
-  constructor(public viewCtrl: ViewController, public platform: Platform, public navParams: NavParams) {
+
+
+  constructor(public viewCtrl: ViewController, public navParams: NavParams,
+    private platform: Platform) {
+
     this.actionsButtons = this.navParams.get('actionsButtons');
     this.icon = this.navParams.get('icon');
     this.metaInfo = this.navParams.get('metaInfo');
     this.sbPopoverContent = this.navParams.get('sbPopoverContent');
     this.sbPopoverHeading = this.navParams.get('sbPopoverHeading');
     this.sbPopoverMainTitle = this.navParams.get('sbPopoverMainTitle');
-    this.isUpdateAvail = this.navParams.get('isUpdateAvail');
+
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
-      this.viewCtrl.dismiss();
+      this.viewCtrl.dismiss(null);
       this.backButtonFunc();
-    }, 10);
+    }, 20);
   }
 
-  selectOption(canDownload: boolean = false) {
-    this.viewCtrl.dismiss(canDownload);
-  }
   closePopover() {
-    this.viewCtrl.dismiss();
+    this.viewCtrl.dismiss(null);
   }
-
+  deletecontent(btnIndex: number = 0) {
+    if(btnIndex == 0) {
+      this.viewCtrl.dismiss(true);
+    } else {
+      this.viewCtrl.dismiss(false);
+    }
+  }
 }

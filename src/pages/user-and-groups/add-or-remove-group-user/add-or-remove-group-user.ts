@@ -6,7 +6,8 @@ import {
   IonicPage,
   NavController,
   NavParams,
-  AlertController
+  AlertController,
+  PopoverController
 } from 'ionic-angular';
 import {
   Profile,
@@ -26,6 +27,7 @@ import { LoadingController } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../../service/common-util.service';
+import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 
 @IonicPage()
 @Component({
@@ -56,6 +58,7 @@ export class AddOrRemoveGroupUserPage {
     private loadingCtrl: LoadingController,
     private commonUtilService: CommonUtilService,
     private alertCtrl: AlertController,
+    private popoverCtrl:PopoverController,
     private telemetryGeneratorService: TelemetryGeneratorService
   ) {
     this.addUsers = Boolean(this.navParams.get('isAddUsers'));
@@ -223,7 +226,7 @@ export class AddOrRemoveGroupUserPage {
   }
 
   deleteUsersFromGroupConfirmBox(length) {
-    const alert = this.alertCtrl.create({
+    /*const alert = this.alertCtrl.create({
       title: this.commonUtilService.translateMessage('REMOVE_MULTIPLE_USERS_FROM_GROUP', length),
       mode: 'wp',
       message: this.commonUtilService.translateMessage('USER_DELETE_CONFIRM_SECOND_MESSAGE'),
@@ -246,7 +249,34 @@ export class AddOrRemoveGroupUserPage {
         }
       ]
     });
-    alert.present();
+    alert.present();*/
+    const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
+      sbPopoverHeading: this.commonUtilService.translateMessage('REMOVE_MULTIPLE_USERS_FROM_GROUP', length),
+      sbPopoverMainTitle: this.commonUtilService.translateMessage('USER_DELETE_CONFIRM_SECOND_MESSAGE'),
+      actionsButtons: [
+        {
+          btntext: this.commonUtilService.translateMessage('CANCEL'),
+          btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+        },{
+          btntext: this.commonUtilService.translateMessage('YES'),
+          btnClass: 'popover-color'
+        }
+      ],
+      icon: null
+    }, {
+      cssClass: 'sb-popover',
+    });
+      confirm.present({
+        ev: event
+      });
+      confirm.onDidDismiss((leftBtnClicked: any) => {
+        if(leftBtnClicked == null) {
+          return;
+        }
+        if (!leftBtnClicked) {
+          this.deleteUsersFromGroup();
+        } 
+      });
   }
 
   deleteUsersFromGroup() {

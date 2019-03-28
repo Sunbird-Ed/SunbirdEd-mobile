@@ -1028,6 +1028,14 @@ export class CollectionDetailsEtbPage implements OnInit {
       popover.onDidDismiss((canDownload: boolean = false) => {
         console.log('downloaddddddd content');
         if (canDownload) {
+          this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+            'download-all-button-clicked',
+            Environment.HOME,
+            PageId.COLLECTION_DETAIL,
+            undefined,
+            undefined,
+            this.objRollup,
+            this.corRelationList);
           this.downloadAllContent();
         }
       });
@@ -1078,6 +1086,15 @@ export class CollectionDetailsEtbPage implements OnInit {
     this.events.unsubscribe('genie.event');
   }
   showPopOver() {
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      'delete-from-device-button-clicked',
+      Environment.HOME,
+      PageId.COLLECTION_DETAIL,
+      undefined,
+      undefined,
+      this.objRollup,
+      this.corRelationList);
+
     const confirm = this.popoverCtrl.create(SbPopoverComponent, {
       content: this.contentDetail,
       isChild: this.isDepthChild,
@@ -1102,7 +1119,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     confirm.present({
       ev: event
     });
-    confirm.onDidDismiss((canDelete: boolean = false) => {
+    confirm.onDidDismiss((canDelete: any) => {
       if (canDelete) {
         this.deleteContent();
       }
