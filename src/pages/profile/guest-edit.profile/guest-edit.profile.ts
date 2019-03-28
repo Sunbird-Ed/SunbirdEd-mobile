@@ -238,6 +238,9 @@ export class GuestEditProfilePage {
         ev: event
       });
       confirm.onDidDismiss((leftBtnClicked: boolean = false) => {
+        if(leftBtnClicked == null) {
+          return;
+        }
         if (leftBtnClicked) {
           this.guestEditForm.patchValue({
             name: undefined,

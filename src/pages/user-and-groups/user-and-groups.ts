@@ -476,6 +476,9 @@ export class UserAndGroupsPage {
       cssClass: 'sb-popover',
     });
     confirm.onDidDismiss((leftBtnClicked: boolean = false) => {
+      if(leftBtnClicked == null) {
+        return;
+      }
       if (!leftBtnClicked) {
         this.logOut(selectedUser, false);
       } 
@@ -611,6 +614,9 @@ export class UserAndGroupsPage {
       ev: event
     });
     confirm.onDidDismiss((leftBtnClicked: boolean = false) => {
+      if(leftBtnClicked == null) {
+        return;
+      }
       if (!leftBtnClicked) {
         this.deleteGroup(index);
       } 
@@ -699,6 +705,9 @@ export class UserAndGroupsPage {
       ev: event
     });
     confirm.onDidDismiss((leftBtnClicked: boolean = false) => {
+      if(leftBtnClicked == null) {
+        return;
+      }
       if (!leftBtnClicked) {
         this.deleteUser(index);
       } 
