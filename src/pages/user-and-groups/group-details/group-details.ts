@@ -235,11 +235,12 @@ export class GroupDetailsPage {
     }, {
         cssClass: 'sb-popover info',
       });
-    confirm.onDidDismiss((leftBtnClicked: boolean = false) => {
+    confirm.onDidDismiss((leftBtnClicked: any) => {
+      if (leftBtnClicked == null) {
+        return;
+      }
       if (!leftBtnClicked) {
         this.logOut(selectedUser, false);
-      } else {
-        console.log('Cancel clicked' + selectedUser);
       }
     });
 
@@ -432,11 +433,12 @@ export class GroupDetailsPage {
       confirm.present({
         ev: event
       });
-      confirm.onDidDismiss((leftBtnClicked: boolean = false) => {
+      confirm.onDidDismiss((leftBtnClicked: any) => {
+        if (leftBtnClicked == null) {
+          return;
+        }
         if (!leftBtnClicked) {
           this.deleteGroup();
-        } else {
-          console.log('Cancel clicked');
         }
       });
   }
@@ -512,11 +514,12 @@ export class GroupDetailsPage {
       confirm.present({
         ev: event
       });
-      confirm.onDidDismiss((leftBtnClicked: boolean = false) => {
+      confirm.onDidDismiss((leftBtnClicked: any) => {
+        if (leftBtnClicked == null) {
+          return;
+        }
         if (!leftBtnClicked) {
           this.deleteUsersinGroup(index);
-        } else {
-          console.log('Cancel clicked');
         }
       });
   }
