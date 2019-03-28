@@ -257,7 +257,13 @@ export class ContentDetailsPage {
   ionViewWillLeave(): void {
     this.events.unsubscribe('genie.event');
     this.resume.unsubscribe();
-    this.networkSubscription.unsubscribe();
+    if (this.networkSubscription) {
+      this.networkSubscription.unsubscribe();
+      if (this.toast) {
+        this.toast.dismiss();
+        this.toast = undefined;
+      }
+    }
   }
 
   handleNavBackButton() {
@@ -319,7 +325,17 @@ export class ContentDetailsPage {
     });
     toast.present();
   }
-
+// You are Online Toast
+  async presentToast() {
+    const toast = await this.toastController.create({
+      duration: 2000,
+      message: 'You are online now',
+      showCloseButton: false,
+      position: 'top',
+      cssClass: 'toastForOnline'
+    });
+    toast.present();
+  }
   /**
    * Get the session to know if the user is logged-in or guest
    *
@@ -487,6 +503,7 @@ export class ContentDetailsPage {
       .then((data: any) => {
         this.zone.run(() => {
           data = JSON.parse(data);
+          console.log('CONTENT_DATA', data);
           if (data && data.result) {
             this.extractApiResponse(data);
             if (!showRating) {
@@ -788,6 +805,7 @@ export class ContentDetailsPage {
       .then((data: any) => {
         data = JSON.parse(data);
         if (data.result && data.result[0].status === 'NOT_FOUND') {
+          this.showDownload = false;
           this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
         }
       })
@@ -870,6 +888,7 @@ export class ContentDetailsPage {
   openConfirmPopUp() {
     console.log('hhfhh', this.cardData);
     console.log('djncjevej', this.content);
+    console.log('isUpdateAvail', this.isUpdateAvail);
     // const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
     //   sbPopoverHeading: this.commonUtilService.translateMessage('DOWNLOAD'),
     //   sbPopoverMainTitle: this.cardData.name + this.cardData.subject,
@@ -899,6 +918,7 @@ export class ContentDetailsPage {
       metaInfo:
            '1 item ' + '(' + this.fileSizePipe.transform(this.content.size, 2) + ')',
       // sbPopoverContent: this.commonUtilService.translateMessage('CONTENT_NOT_PLAYABLE_OFFLINE'),
+      isUpdateAvail: this.isUpdateAvail
     }, {
         cssClass: 'sb-popover info',
       });
@@ -930,6 +950,8 @@ export class ContentDetailsPage {
           this.zone.run(() => {
             data = JSON.parse(data);
             const res = data;
+            console.log('downloadProgress--------type', res.type);
+            console.log('downloadProgressooooooooo', res.data.downloadProgress);
             if (res.type === 'downloadProgress' && res.data.downloadProgress) {
               this.downloadProgress = res.data.downloadProgress === -1 ? '0' : res.data.downloadProgress;
               console.log('from content details', this.downloadProgress);
@@ -1063,8 +1085,8 @@ export class ContentDetailsPage {
               });
           }
         });
-      
-      //alert.present();
+
+      // alert.present();
     } else {
       this.playContent(isStreaming);
     }
@@ -1349,16 +1371,7 @@ export class ContentDetailsPage {
   }
 /* Present Toast */
 
-async presentToast() {
-  const toast = await this.toastController.create({
-    duration: 2000,
-    message: 'You are online now',
-    showCloseButton: false,
-    position: 'top',
-    cssClass: 'toastForOnline'
-  });
-  toast.present();
-}
+
   /* SUDO
    if firstprperty is there and secondprperty is not there, then return firstprperty value
    else if firstprperty is not there and secondprperty is there, then return secondprperty value

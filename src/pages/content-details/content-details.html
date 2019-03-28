@@ -1,8 +1,9 @@
 
 <!-- New content details -->
-<ion-content *ngIf="new && content">
+<ion-content *ngIf="new && content && appGlobalService?.CONTENT_STREAMING_ENABLED">
 	<div class="sb-play-container sb-player-container" *ngIf="commonUtilService.networkInfo.isNetworkAvailable">
-		<div *ngIf="content?.downloadable">
+		<div *ngIf= "streamingUrl">
+		<div>
 			<img class="sb-player-container" src='{{content?.appIcon}}'>
 			<div class="sb-overlay-container">
 				<div class="sb-circle" (click)="handleNavBackButton()">
@@ -15,6 +16,8 @@
 				</div>
 			</div>
 		</div>
+		</div>
+		<div *ngIf="!streamingUrl">
 		<div *ngIf="!content?.downloadable">
 			<div class="sb-circle" (click)="handleNavBackButton()">
 				<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
@@ -26,6 +29,20 @@
 				<div class="sb-common-footer-text">{{'PLEASE_DOWNLOAD_TO_PLAY' | translate}}</div>
 			</div>
 		</div>
+		<div *ngIf="content?.downloadable">
+				<img class="sb-player-container" src='{{content?.appIcon}}'>
+				<div class="sb-overlay-container">
+					<div class="sb-circle" (click)="handleNavBackButton()">
+						<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
+					</div>
+					<div class="sb-common-player-group sb-play-title-group">
+						<button ion-button clear icon-only class="sb-common-title" (click)="showSwitchUserAlert(false)">
+							<ion-icon ios="ios-play" md="md-play" class="sb-common-white-icon"></ion-icon>
+						</button>
+					</div>
+				</div>
+		</div>
+	</div>
 	</div>
 	<div *ngIf="!commonUtilService.networkInfo.isNetworkAvailable">
 		<div class="sb-play-container sb-player-container" *ngIf="content?.downloadable">
@@ -75,11 +92,6 @@
 						<span class="sb-by">{{ 'CONTENT_CREATED_BY' | translate }}</span>
 						<span class="sb-user">{{ content?.owner || content?.creator }}</span>
 					</div>
-					<!-- <div class="sb-dt-class-info" *ngIf="content?.gradeLevel || content?.subject">
-						<span class="sb-dt-label sb-dt-class" *ngIf="content?.gradeLevel">{{content?.gradeLevel}}</span>
-						<span class="sb-separator-dot" *ngIf="content?.gradeLevel && content?.subject"></span>
-						<span class="sb-dt-label sb-dt-subject">{{content?.subject}}</span>
-					</div>  (click)="rateContent('manual')"-->
 				</div>
 			</div>
 
@@ -140,7 +152,7 @@
 						<ion-icon ios="ios-star-outline" md="md-star-outline" class="sb-dt-card-blue-icon"></ion-icon>
 						<span class="sb-btn-footer-text">{{'RATE' | translate}}</span>
 					</button>
-					<button ion-button clear icon-only class="sb-btn-tile" (click)="downloadContent()" *ngIf="content?.downloadable && this.isUpdateAvail">
+					<button ion-button clear icon-only class="sb-btn-tile" *ngIf="content?.downloadable && this.isUpdateAvail" (click)="openConfirmPopUp()">
 						<ion-icon ios="ios-refresh" md="md-refresh" class="sb-dt-card-blue-icon"></ion-icon>
 						<span class="sb-btn-footer-text">{{'UPDATE' | translate}}</span>
 					</button>
@@ -281,4 +293,4 @@
 		</ion-toolbar>
 	</ion-footer>
 </div>
-<sb-download-popup *ngIf="showDownload" (cancelDownloadEmit)="cancelDownload($event)" [currentCount]="currentCount" [queuedIdentifiers]="queuedIdentifiers" [downloadProgress]="downloadProgress" [contentName]="content?.name" ></sb-download-popup>
+<sb-download-popup *ngIf="showDownload" (cancelDownloadEmit)="cancelDownload($event)" [currentCount]="currentCount" [queuedIdentifiers]="queuedIdentifiers" [downloadProgress]="downloadProgress" [contentName]="content?.name" [isUpdateAvail]="isUpdateAvail" [showDownload]="showDownload" [contentAvailableLocally]="content?.downloadable" ></sb-download-popup>
