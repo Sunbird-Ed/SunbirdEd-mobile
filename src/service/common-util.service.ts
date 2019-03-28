@@ -303,7 +303,16 @@ export class CommonUtilService implements OnDestroy {
               }, {
                 cssClass: 'sb-popover',
               });
-              confirm.onDidDismiss((leftBtnClicked: boolean = false) => {
+              confirm.onDidDismiss((leftBtnClicked: any) => {
+                  if(leftBtnClicked == null) {
+                    this.telemetryGeneratorService.generateInteractTelemetry(
+                        InteractType.TOUCH,
+                        InteractSubtype.NO_CLICKED,
+                        environment,
+                        pageId
+                    );
+                    return;
+                  }
                 if (!leftBtnClicked) {
                     this.telemetryGeneratorService.generateInteractTelemetry(
                         InteractType.TOUCH,

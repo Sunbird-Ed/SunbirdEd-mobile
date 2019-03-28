@@ -1073,7 +1073,10 @@ export class ContentDetailsPage {
         confirm.present({
           ev: event
         });
-        confirm.onDidDismiss((leftBtnClicked: boolean = false) => {
+        confirm.onDidDismiss((leftBtnClicked: any) => {
+          if(leftBtnClicked == null) {
+            return;
+          }
           if (leftBtnClicked) {
             this.playContent(isStreaming);
           } else {

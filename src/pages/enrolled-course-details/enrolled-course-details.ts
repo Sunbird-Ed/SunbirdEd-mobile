@@ -632,6 +632,9 @@ export class EnrolledCourseDetailsPage implements OnInit {
                         ev: event
                       });
                       confirm.onDidDismiss((leftBtnClicked: boolean = false) => {
+                        if(leftBtnClicked == null) {
+                          return;
+                        }
                         if (leftBtnClicked) {
                           this.preference.putString(PreferenceKey.COURSE_IDENTIFIER, this.batchDetails.identifier);
                         } 
