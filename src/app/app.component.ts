@@ -106,6 +106,10 @@ export class MyApp {
       window['thisRef'] = this;
       statusBar.styleDefault();
       this.handleBackButton();
+
+      this.platform.resume.subscribe(() => {
+        this.handleSunbirdSplashScreenActions();
+      });
     });
 
   }
@@ -518,11 +522,12 @@ export class MyApp {
       }
     }
 
+    splashscreen.markImportDone();
     splashscreen.hide();
   }
 
   private autoSyncTelemetry() {
-    this.telemetryAutoSyncUtil.start(5 * 1000)
+    this.telemetryAutoSyncUtil.start(30 * 1000)
       .mergeMap(() => {
         return Observable.combineLatest(
           this.platform.pause.pipe(tap(() => this.telemetryAutoSyncUtil.pause())),
