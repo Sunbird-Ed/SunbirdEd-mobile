@@ -35,6 +35,7 @@ export class TabsPage {
         tabIndex = index;
       }
     });
+    this.events.publish('update_header', { index: tabIndex });
     //Raise an Event
     setTimeout(() => {
       this.tabRef.select(tabIndex);
