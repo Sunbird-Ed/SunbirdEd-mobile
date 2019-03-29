@@ -18,6 +18,7 @@ import {
   InteractSubtype
 } from 'sunbird';
 import { generateImpressionTelemetry, generateInteractTelemetry } from '../../../app/telemetryutil';
+import { AppHeaderService } from '@app/service';
 
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
 
@@ -40,12 +41,13 @@ export class AboutUsPage {
     private preference: SharedPreferences,
     private socialSharing: SocialSharing,
     private telemetryService: TelemetryService,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private headerService: AppHeaderService
   ) { }
 
   ionViewDidLoad() {
     this.version = 'app version will be shown here';
-
+    this.headerService.showHeaderWithBackButton();
     this.deviceInfoService.getDeviceID()
       .then((res: any) => {
         this.deviceId = res;

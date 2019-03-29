@@ -274,10 +274,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.events.subscribe('onboarding-card:completed', (param) => {
       this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
     });
+    this.events.subscribe('update_header',(data) => {
+      this.headerServie.showHeaderWithHomeButton(['search']);
+    });
   }
 
   ionViewWillLeave(): void {
     this.events.unsubscribe('genie.event');
+    this.events.unsubscribe('update_header');
     if (this.networkSubscription) {
       this.networkSubscription.unsubscribe();
       if (this.toast) {
