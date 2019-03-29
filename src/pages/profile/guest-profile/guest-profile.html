@@ -1,4 +1,4 @@
-<ion-content>
+<ion-content overflow-scroll="true" class="main-container avoid-bottom-tabs-space">
   <ion-refresher (ionRefresh)="refreshProfileData($event)"></ion-refresher>
   <div *ngIf="showWarning" class="offline-message">
     <span>{{'NEED_INTERNET_TO_CHANGE' | translate}} </span>

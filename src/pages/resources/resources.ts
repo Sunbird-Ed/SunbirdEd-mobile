@@ -274,7 +274,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.events.subscribe('onboarding-card:completed', (param) => {
       this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
     });
-    this.events.subscribe('update_header',(data) => {
+    this.events.subscribe('update_header', (data) => {
       this.headerServie.showHeaderWithHomeButton(['search']);
     });
   }
