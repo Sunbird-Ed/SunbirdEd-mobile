@@ -18,6 +18,7 @@ import { DataSyncType } from './datasynctype.enum';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { generateImpressionTelemetry, generateInteractTelemetry } from '../../../app/telemetryutil';
+import { AppHeaderService } from '@app/service';
 
 const KEY_DATA_SYNC_TYPE = 'sync_config';
 const KEY_DATA_SYNC_TIME = 'data_sync_time';
@@ -46,7 +47,8 @@ export class DatasyncPage {
     private translate: TranslateService,
     private shareUtil: ShareUtil,
     private social: SocialSharing,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private headerService: AppHeaderService
   ) { }
 
   init() {
@@ -73,6 +75,7 @@ export class DatasyncPage {
 
   ionViewDidLoad() {
     this.init();
+    this.headerService.showHeaderWithBackButton();
     const impression = new Impression();
     impression.type = ImpressionType.VIEW;
     impression.pageId = PageId.SETTINGS_DATASYNC;

@@ -1,14 +1,3 @@
-<ion-header>
-  <ion-navbar>
-    <ion-title>{{ 'PROFILE_LW' | translate }}</ion-title>
-    <ion-buttons end>
-      <button ion-button icon-only (click)="showOverflowMenu($event)">
-        <ion-icon name="more" float-end></ion-icon>
-      </button>
-    </ion-buttons>
-  </ion-navbar>
-</ion-header>
-
 <ion-content>
   <ion-refresher (ionRefresh)="refreshProfileData($event)"></ion-refresher>
   <div *ngIf="showWarning" class="offline-message">
