@@ -166,6 +166,8 @@ export class GenericAppConfig {
     public static readonly DISPLAY_ONBOARDING_CATEGORY_PAGE = 'DISPLAY_ONBOARDING_CATEGORY_PAGE';
     public static readonly OPEN_RAPDISCOVERY_ENABLED = 'OPEN_RAPDISCOVERY_ENABLED';
     public static readonly SUPPORT_EMAIL = 'SUPPORT_EMAIL';
+    public static readonly VERSION_NAME = 'VERSION_NAME';
+    public static readonly VERSION_CODE = 'VERSION_CODE';
 }
 
 export const appLanguages = [

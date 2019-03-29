@@ -448,6 +448,7 @@
   "VERIFY_EMAIL_OTP_TITLE": "Verify Email ID",
   "VERIFY_PHONE_OTP_DESCRIPTION": "You will receive an SMS with the OTP for mobile number verification",
   "VERIFY_PHONE_OTP_TITLE": "Verify Mobile Number",
+  "VERSION": "Version",
   "VIEW": "View",
   "VIEW_ALL": "View all",
   "VIEW_ALL_COMMUNITIES": "View all joined communities ",

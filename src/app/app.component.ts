@@ -626,7 +626,7 @@ export class MyApp implements OnInit {
           Environment.USER,
           PageId.PROFILE
         );
-        //this.nav.push(UserAndGroupsPage, { profile: this.profile });
+        // this.nav.push(UserAndGroupsPage, { profile: this.profile });
          if (this.app.getRootNavs().length > 0) {
            this.app.getRootNavs()[0].push(UserAndGroupsPage, { profile: this.profile });
         }
@@ -640,7 +640,6 @@ export class MyApp implements OnInit {
           Environment.USER,
           PageId.PROFILE
         );
-       
         if (this.app.getRootNavs().length > 0) {
           this.app.getRootNavs()[0].push(ReportsPage, { profile: this.profile });
         }
@@ -657,7 +656,6 @@ export class MyApp implements OnInit {
           undefined,
           undefined
         );
-        
         if (this.app.getRootNavs().length > 0) {
           this.app.getRootNavs()[0].push(SettingsPage);
         }
@@ -675,7 +673,9 @@ export class MyApp implements OnInit {
           undefined
         );
         if (this.app.getRootNavs().length > 0) {
-          this.app.getRootNavs()[0].push(LanguageSettingsPage);
+          this.app.getRootNavs()[0].push(LanguageSettingsPage,{
+            isFromSettings: true
+          });
         }
         // this.goToLanguageSettings();
         break;

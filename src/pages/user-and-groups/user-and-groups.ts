@@ -143,7 +143,10 @@ export class UserAndGroupsPage {
       this.getAllGroup();
       this.getCurrentGroup();
       // this.getLastCreatedProfile();
-      this.headerService.showHeaderWithBackButton(['share']);
+      let header = this.headerService.getDefaultPageConfig();
+      header.showHeader = false;
+      this.headerService.updatePageConfig(header);
+      // this.headerService.showHeaderWithBackButton(['share']);
 
       this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
         this.dismissPopup();

@@ -1,8 +1,8 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { Events, App, MenuController } from 'ionic-angular';
 import { CommonUtilService, AppGlobalService } from '@app/service';
-import { SharedPreferences } from 'sunbird';
-import { PreferenceKey } from '../../app/app.constant';
+import { SharedPreferences, BuildParamService } from 'sunbird';
+import { PreferenceKey, GenericAppConfig } from '../../app/app.constant';
 import { AppVersion } from '@ionic-native/app-version';
 
 @Component({
@@ -18,37 +18,63 @@ export class ApplicationHeaderComponent implements OnInit {
   appLogo: string;
   appName: string;
   isLoggedIn = false;
+  versionName: string;
+  versionCode: string;
 
   constructor(public menuCtrl: MenuController,
     private commonUtilService: CommonUtilService,
     private preference: SharedPreferences,
     private events: Events,
     private appGlobalService: AppGlobalService,
-    private appVersion: AppVersion) {
-    this.chosenLanguageString = this.commonUtilService.translateMessage('CURRENT_LANGUAGE');
-    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE)
-      .then(value => {
-        this.selectedLanguage = value;
-      });
+    private appVersion: AppVersion,
+    private buildParamService: BuildParamService) {
+    this.setLanguageValue();
     this.events.subscribe('onAfterLanguageChange:update', (res) => {
       if (res && res.selectedLanguage) {
-        this.selectedLanguage = res.selectedLanguage;
+       // this.selectedLanguage = res.selectedLanguage;
+        this.setLanguageValue();
       }
     });
   }
 
   ngOnInit() {
     this.setAppLogo();
+    this.setAppVersion();
     this.events.subscribe('user-profile-changed', (res) => {
+      console.log('Events --------------- user-profile-changed--------');
      this.setAppLogo();
     });
-    this.events.subscribe(' app-global:profile-obj-changed', (res) => {
+    this.events.subscribe('app-global:profile-obj-changed', (res) => {
+      console.log('Events --------------- app-global:profile-obj-changed-------');
       this.setAppLogo();
      });
   }
+  setAppVersion(): any {
+    this.buildParamService.getBuildConfigParam(GenericAppConfig.VERSION_NAME )
+            .then(vName => {
+              this.versionName = vName;
+                this.buildParamService.getBuildConfigParam(GenericAppConfig.VERSION_CODE )
+                .then(vCode => {
+                  this.versionCode = vCode;
+                })
+                .catch(error => {
+                  console.log('Error in getting app version code');
+                });
+            })
+            .catch(error => {
+              console.log('Error in getting app version name');
+            });
+  }
+
+  setLanguageValue() {
+    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE)
+      .then(value => {
+        this.selectedLanguage = value;
+      });
+  }
 
   setAppLogo() {
-    if (this.appGlobalService.isUserLoggedIn()) {
+    if (!this.appGlobalService.isUserLoggedIn()) {
       console.log('this.appGlobalService.isGuestUser ----------', this.appGlobalService.isGuestUser);
       this.isLoggedIn = false;
       this.appLogo = './assets/imgs/ic_launcher.png';
