@@ -65,11 +65,16 @@ export class SbDownloadPopupComponent implements OnChanges {
   }
   cancelDownload() {
     this.cancelDownloadEmit.emit();
+    this.showDownload = false;
     console.log('cald');
   }
   ngOnChanges(changes: SimpleChanges) {
     // only run when property "data" changed
+    console.log('SHOWDOWNLOAD-->', this.showDownload);
+    console.log('UpdateAvailable', this.isUpdateAvail);
+    console.log('COntentAvailaleLocally' , this.contentAvailableLocally);
    this.popupUpdate = this.isUpdateAvail && this.contentAvailableLocally;
+   console.log('UpdateAVailable && Content Local', this.popupUpdate);
    this.constContentSize = this.fileSizePipe.transform(this.contentSize, 2);
     if (changes['queuedIdentifiers']) {
       this.queuedIdentifiers = this.queuedIdentifiers;
@@ -89,7 +94,7 @@ export class SbDownloadPopupComponent implements OnChanges {
       if (this.downloadProgress === 100 && this.contentName && this.contentAvailableLocally) {
         console.log('DownloadProgress Dissmiss()');
         this.showDownload = false;
-      } else if (this.contentName && this.downloadProgress && this.contentAvailableLocally) {
+       } else if (this.contentName && this.downloadProgress && this.contentAvailableLocally) {
         console.log('AvailableLocally Dismisss()');
         this.showDownload = false;
       } else if (this.contentName && this.contentAvailableLocally) {
