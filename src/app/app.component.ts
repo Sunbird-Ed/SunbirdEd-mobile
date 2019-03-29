@@ -340,8 +340,13 @@ export class MyApp implements OnInit {
   handleBackButton() {
     this.platform.registerBackButtonAction(() => {
 
-      const navObj = this.app.getActiveNavs()[0];
-      const currentPage = navObj.getActive().name;
+      let navObj = this.app.getRootNavs()[0];
+      let currentPage = navObj.getActive().name;
+      if(currentPage == "TabsPage") {
+        navObj = this.app.getActiveNavs()[0];
+        currentPage = navObj.getActive().name;
+      }
+      console.log(currentPage);
 
       if (navObj.canGoBack()) {
         return navObj.pop();
@@ -595,9 +600,13 @@ export class MyApp implements OnInit {
   handleHeaderEvents($event) {
     if ($event.name === 'back') {
       // this.handleBackButton();
-      const navObj = this.app.getActiveNavs()[0];
-      const currentPage = navObj.getActive().name;
-
+      let navObj = this.app.getRootNavs()[0];
+      let currentPage = navObj.getActive().name;
+      if(currentPage == "TabsPage") {
+        navObj = this.app.getActiveNavs()[0];
+        currentPage = navObj.getActive().name;
+      }
+      console.log(currentPage);
       if (navObj.canGoBack()) {
         return navObj.pop();
       } else {
@@ -617,10 +626,10 @@ export class MyApp implements OnInit {
           Environment.USER,
           PageId.PROFILE
         );
-        this.nav.push(UserAndGroupsPage, { profile: this.profile });
-        // if (this.app.getRootNavs().length > 0) {
-        //   this.app.getRootNavs()[0].setRoot(UserAndGroupsPage, { profile: this.profile });
-        // }
+        //this.nav.push(UserAndGroupsPage, { profile: this.profile });
+         if (this.app.getRootNavs().length > 0) {
+           this.app.getRootNavs()[0].push(UserAndGroupsPage, { profile: this.profile });
+        }
         // this.goToUserAndGroups();
         break;
 
@@ -631,10 +640,10 @@ export class MyApp implements OnInit {
           Environment.USER,
           PageId.PROFILE
         );
-        this.nav.push(ReportsPage, { profile: this.profile })
-        // if (this.app.getRootNavs().length > 0) {
-        //   this.app.getRootNavs()[0].setRoot(ReportsPage, { profile: this.profile });
-        // }
+       
+        if (this.app.getRootNavs().length > 0) {
+          this.app.getRootNavs()[0].push(ReportsPage, { profile: this.profile });
+        }
        // this.goToReports();
         break;
 
@@ -648,10 +657,10 @@ export class MyApp implements OnInit {
           undefined,
           undefined
         );
-        this.nav.push(SettingsPage);
-        // if (this.app.getRootNavs().length > 0) {
-        //   this.app.getRootNavs()[0].setRoot(SettingsPage);
-        // }
+        
+        if (this.app.getRootNavs().length > 0) {
+          this.app.getRootNavs()[0].push(SettingsPage);
+        }
         // this.goToLanguageSettings();
         break;
       }
@@ -665,10 +674,9 @@ export class MyApp implements OnInit {
           undefined,
           undefined
         );
-        this.nav.push(LanguageSettingsPage);
-        // if (this.app.getRootNavs().length > 0) {
-        //   this.app.getRootNavs()[0].setRoot(LanguageSettingsPage);
-        // }
+        if (this.app.getRootNavs().length > 0) {
+          this.app.getRootNavs()[0].push(LanguageSettingsPage);
+        }
         // this.goToLanguageSettings();
         break;
       }

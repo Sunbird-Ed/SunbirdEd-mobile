@@ -22,6 +22,8 @@ import {
   ObjectType
 } from 'sunbird';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { AppHeaderService } from '@app/service/app-header.service';
+
 
 @Component({
   selector: 'reports-page',
@@ -41,7 +43,8 @@ export class ReportsPage {
     private ngZone: NgZone,
     private loading: LoadingController,
     private navParams: NavParams,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private headerService: AppHeaderService
   ) {
     this.profileDetails = this.navParams.get('profile');
   }
@@ -98,6 +101,7 @@ export class ReportsPage {
   }
 
   ionViewDidLoad() {
+    this.headerService.showHeaderWithBackButton();
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW,
       '',

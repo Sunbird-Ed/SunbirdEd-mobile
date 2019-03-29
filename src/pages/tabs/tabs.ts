@@ -3,6 +3,7 @@ import { Component, ViewChild, ComponentFactoryResolver } from '@angular/core';
 import { ContainerService } from '../../service/container-service';
 import { Tabs, Tab, Events, ToastController } from 'ionic-angular';
 import { NavParams } from 'ionic-angular';
+
 // import { ResourcesPage } from '../resources/resources';
 // import {ResourcesPageModule} from '@app/pages/resources/resources.module';
 
@@ -34,7 +35,7 @@ export class TabsPage {
         tabIndex = index;
       }
     });
-
+    //Raise an Event
     setTimeout(() => {
       this.tabRef.select(tabIndex);
     }, 300);

@@ -1,4 +1,4 @@
-import { AppGlobalService } from '@app/service';
+import { AppGlobalService, AppHeaderService } from '@app/service';
 import { CommonUtilService } from './../../service/common-util.service';
 import { Component } from '@angular/core';
 import { NavController, DateTime } from 'ionic-angular';
@@ -48,10 +48,12 @@ export class SettingsPage {
     private telemetryService: TelemetryService,
     private shareUtil: ShareUtil,
     private commonUtilService: CommonUtilService,
-    private appGlobalService: AppGlobalService
+    private appGlobalService: AppGlobalService,
+    private headerService: AppHeaderService
   ) { }
 
   ionViewWillEnter() {
+    this.headerService.showHeaderWithBackButton();
     this.appVersion.getAppName()
       .then((appName) => {
         this.appName = appName;

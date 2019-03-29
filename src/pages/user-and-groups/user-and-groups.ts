@@ -58,6 +58,7 @@ import { PreferenceKey } from '../../app/app.constant';
 import { CreateGroupPage } from './create-group/create-group';
 import { ContainerService } from '../../service/container-service';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
+import { AppHeaderService } from '@app/service';
 
 @IonicPage()
 @Component({
@@ -109,7 +110,8 @@ export class UserAndGroupsPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private authService: AuthService,
     private loadingCtrl: LoadingController,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private headerService: AppHeaderService
   ) {
 
     /* Check userList length and show message or list accordingly */
@@ -141,6 +143,7 @@ export class UserAndGroupsPage {
       this.getAllGroup();
       this.getCurrentGroup();
       // this.getLastCreatedProfile();
+      this.headerService.showHeaderWithBackButton(['share']);
 
       this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
         this.dismissPopup();
