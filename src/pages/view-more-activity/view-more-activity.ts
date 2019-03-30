@@ -348,7 +348,7 @@ export class ViewMoreActivityPage implements OnInit {
             resumedCourseCardData: this.resumeContentData
           });
         } else {
-          this.subscribeGenieEvent();
+          this.subscribeSdkEvent();
           this.showOverlay = true;
           this.importContent([identifier], false);
         }
@@ -391,7 +391,7 @@ export class ViewMoreActivityPage implements OnInit {
       });
   }
 
-  subscribeGenieEvent() {
+  subscribeSdkEvent() {
     this.eventSubscription = this.eventBusService.events().subscribe((event: EventsBusEvent) => {
       this.ngZone.run(() => {
         if (event.type === DownloadEventType.PROGRESS) {

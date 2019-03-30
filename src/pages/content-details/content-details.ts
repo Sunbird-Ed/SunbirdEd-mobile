@@ -1,6 +1,7 @@
-import { Component, Inject, NgZone, ViewChild, OnDestroy } from '@angular/core';
+import {Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {
   AlertController,
+  App,
   Events,
   IonicApp,
   IonicPage,
@@ -10,25 +11,27 @@ import {
   Platform,
   PopoverController
 } from 'ionic-angular';
-import { SocialSharing } from '@ionic-native/social-sharing';
+import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
-import { PreferenceKey, XwalkConstants, EventTopics } from '../../app/app.constant';
-import { Map, ShareUrl, GUEST_STUDENT_TABS, initTabs, GUEST_TEACHER_TABS } from '@app/app';
-import { BookmarkComponent, ContentActionsComponent, ContentRatingAlertComponent } from '@app/component';
-import { AppGlobalService, CourseUtilService, UtilityService } from '@app/service';
-import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
-import { Network } from '@ionic-native/network';
-import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
+import {EventTopics, PreferenceKey, XwalkConstants} from '../../app/app.constant';
+import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, Map, ShareUrl} from '@app/app';
+import {BookmarkComponent, ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
+import {AppGlobalService, CourseUtilService, UtilityService} from '@app/service';
+import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
+import {Network} from '@ionic-native/network';
+import {UserAndGroupsPage} from '../user-and-groups/user-and-groups';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {CommonUtilService} from '../../service/common-util.service';
+import {DialogPopupComponent} from '../../component/dialog-popup/dialog-popup';
 import {
+  AuthService,
   Content,
   ContentAccess,
   ContentAccessStatus,
   ContentDetailRequest,
   ContentEventType,
   ContentExportRequest,
+  ContentExportResponse,
   ContentImport,
   ContentImportRequest,
   ContentImportResponse,
@@ -43,17 +46,15 @@ import {
   MarkerType,
   PlayerService,
   ProfileService,
+  ProfileType,
   Rollup,
   SharedPreferences,
-  TelemetryObject,
-  ContentExportResponse,
-  ProfileType,
-  AuthService
+  TelemetryObject
 } from 'sunbird-sdk';
-import { CanvasPlayerService } from '../player/canvas-player.service';
-import { PlayerPage } from '../player/player';
-import { File } from '@ionic-native/file';
-import { Subscription } from 'rxjs';
+import {CanvasPlayerService} from '../player/canvas-player.service';
+import {PlayerPage} from '../player/player';
+import {File} from '@ionic-native/file';
+import {Subscription} from 'rxjs';
 import {
   Environment,
   ImpressionType,
@@ -62,9 +63,8 @@ import {
   Mode,
   PageId,
 } from '../../service/telemetry-constants';
-import { TabsPage } from '../tabs/tabs';
-import { ContainerService } from '@app/service/container.services';
-import { App } from 'ionic-angular';
+import {TabsPage} from '../tabs/tabs';
+import {ContainerService} from '@app/service/container.services';
 
 declare const cordova;
 
@@ -241,7 +241,7 @@ export class ContentDetailsPage {
     }
 
     this.setContentDetails(this.identifier, this.isPlayerLaunched);
-    this.subscribeGenieEvent();
+    this.subscribeSdkEvent();
   }
 
   /**
@@ -734,9 +734,9 @@ export class ContentDetailsPage {
 
 
   /**
-   * Subscribe genie event to get content download progress
+   * Subscribe Sunbird-SDK event to get content download progress
    */
-  subscribeGenieEvent() {
+  subscribeSdkEvent() {
     this.eventSubscription = this.eventBusService.events().subscribe((event: EventsBusEvent) => {
       this.zone.run(() => {
         if (event.type === DownloadEventType.PROGRESS) {

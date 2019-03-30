@@ -7,7 +7,13 @@ import {ContentDetailsPage} from '@app/pages/content-details/content-details';
 import {ConfirmAlertComponent, ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
 import {ContentType, MimeType, ShareUrl} from '@app/app';
 import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
-import {AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService, UtilityService} from '@app/service';
+import {
+  AppGlobalService,
+  CommonUtilService,
+  CourseUtilService,
+  TelemetryGeneratorService,
+  UtilityService
+} from '@app/service';
 import {
   ChildContentRequest,
   Content,
@@ -252,7 +258,7 @@ export class CollectionDetailsPage {
 
       this.didViewLoad = true;
       this.setContentDetails(this.identifier);
-      this.subscribeGenieEvent();
+      this.subscribeSdkEvent();
     });
   }
 
@@ -686,9 +692,9 @@ export class CollectionDetailsPage {
   }
 
   /**
-   * Subscribe genie event to get content download progress
+   * Subscribe Sunbird-SDK event to get content download progress
    */
-  subscribeGenieEvent() {
+  subscribeSdkEvent() {
     this.eventSubscription = this.eventsBusService.events().subscribe((event: EventsBusEvent) => {
       this.zone.run(() => {
         if (event.type === DownloadEventType.PROGRESS) {
@@ -696,13 +702,13 @@ export class CollectionDetailsPage {
           if (downloadEvent.payload.identifier === this.contentDetail.identifier) {
             this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
             if (this.downloadProgress === 100) {
+              this.showLoading = false;
               this.contentDetail.isAvailableLocally = true;
             }
           }
         }
         // Get child content
         if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
-          this.showLoading = false;
           const contentImportEvent = event as ContentImportCompleted;
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {
             if (_.includes(this.queuedIdentifiers, contentImportEvent.payload.contentId)) {

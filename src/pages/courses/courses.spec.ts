@@ -1,7 +1,7 @@
-import { CoursesPage } from './courses';
-import { Environment, ImpressionType, PageAssembleCriteria, PageAssembleFilter, PageId, ProfileType } from 'sunbird';
-import { mockRes as CourseBatchesMock } from '@app/pages/course-batches/course-batches.spec.data';
-import { mockRes as CourseMock } from '../courses/courses.spec.data';
+import {CoursesPage} from './courses';
+import {Environment, ImpressionType, PageAssembleCriteria, PageAssembleFilter, PageId, ProfileType} from 'sunbird';
+import {mockRes as CourseBatchesMock} from '@app/pages/course-batches/course-batches.spec.data';
+import {mockRes as CourseMock} from '../courses/courses.spec.data';
 import {
   appGlobalServiceMock,
   appVersionMock,
@@ -19,10 +19,10 @@ import {
   telemetryGeneratorServiceMock,
   zoneMock
 } from '@app/__tests__/mocks';
-import { ContentType } from '@app/app';
-import { SearchPage } from '@app/pages/search';
-import { ViewMoreActivityPage } from '@app/pages/view-more-activity';
-import { networkMock } from '../../__tests__/mocks';
+import {ContentType} from '@app/app';
+import {SearchPage} from '@app/pages/search';
+import {ViewMoreActivityPage} from '@app/pages/view-more-activity';
+import {networkMock} from '../../__tests__/mocks';
 
 describe('CoursesPage', () => {
   let coursesPage: CoursesPage;
@@ -527,7 +527,7 @@ describe('CoursesPage', () => {
       // arrange
       contentServiceMock.getContentDetail.mockResolvedValue(CourseMock.sampleContentDetailsResponseNonLocal);
       spyOn(coursesPage, 'importContent').and.stub();
-      spyOn(coursesPage, 'subscribeGenieEvent').and.stub();
+      spyOn(coursesPage, 'subscribeSdkEvent').and.stub();
 
       // act
       coursesPage.getContentDetails(sampleContent);
@@ -536,7 +536,7 @@ describe('CoursesPage', () => {
       setTimeout(() => {
         expect(coursesPage.showOverlay).toBe(true);
         expect(coursesPage.importContent).toHaveBeenCalledWith(['do_sample'], false);
-        expect(coursesPage.subscribeGenieEvent).toHaveBeenCalled();
+        expect(coursesPage.subscribeSdkEvent).toHaveBeenCalled();
         done();
       }, 0);
     });
@@ -594,10 +594,10 @@ describe('CoursesPage', () => {
   });
 
 
-  describe('should handle scenarios for subscribeGenieEvent()', () => {
+  describe('should handle scenarios for subscribeSdkEvent()', () => {
     it('should update the download progress on download progress', () => {
       // act
-      coursesPage.subscribeGenieEvent();
+      coursesPage.subscribeSdkEvent();
       eventsMock.subscribe.mock.calls[0][1].call(coursesPage, CourseMock.downloadProgressEventSample1);
       zoneMock.run.mock.calls[0][0].call(coursesPage);
 
@@ -608,7 +608,7 @@ describe('CoursesPage', () => {
 
     it('should update the download progress to 0 if from event its coming as -1', () => {
       // act
-      coursesPage.subscribeGenieEvent();
+      coursesPage.subscribeSdkEvent();
       eventsMock.subscribe.mock.calls[0][1].call(coursesPage, CourseMock.downloadProgressEventSample2);
       zoneMock.run.mock.calls[0][0].call(coursesPage);
 
@@ -628,7 +628,7 @@ describe('CoursesPage', () => {
       coursesPage.downloadPercentage = 100;
 
       // act
-      coursesPage.subscribeGenieEvent();
+      coursesPage.subscribeSdkEvent();
       eventsMock.subscribe.mock.calls[0][1].call(coursesPage, CourseMock.importCompleteEvent);
       zoneMock.run.mock.calls[0][0].call(coursesPage);
 
