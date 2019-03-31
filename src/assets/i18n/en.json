@@ -254,6 +254,7 @@
   "NO_GROUP_MESSAGE": "Groups help to organize the user better. You can also use groups to monitor better progress overall",
   "NO_INTERNET": "No internet access",
   "NO_INTERNET_TITLE": "You are offline",
+  "INTERNET_AVAILABLE":"You are online now",
   "NO_PREVIEW": "Preview unavailable",
   "NO_RATING": "Not yet rated",
   "NO_USERS": "No users",

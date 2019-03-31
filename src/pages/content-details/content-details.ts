@@ -153,6 +153,7 @@ export class ContentDetailsPage {
   showDownload: boolean;
   contentPath: Array<any> [];
   FileSizePipe: any;
+  toast: any;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -244,14 +245,13 @@ export class ContentDetailsPage {
     this.subscribeGenieEvent();
     this.networkSubscription = this.commonUtilService.subject.subscribe((res) => {
       if  (res) {
-        console.log('Inside Network Sub() Event');
         this.presentToast();
+        if (this.toast) {
+          this.toast.dismiss();
+          this.toast = undefined;
+        }
       } else {
         this.presentToastForOffline();
-        if (this.toast) {
-        this.toast.dismiss();
-        this.toast = undefined;
-      }
       }
     });
   }
@@ -319,22 +319,24 @@ export class ContentDetailsPage {
     });
   }
   // You are Offline Toast
-  presentToastForOffline() {
-    const toast = this.toastController.create({
-      message: 'You are offline',
+  async presentToastForOffline() {
+    this.toast = await this.toastController.create({
+      message: this.commonUtilService.translateMessage('NO_INTERNET_TITLE'),
       showCloseButton: true,
-      // icon : 'information',
       position: 'top',
       closeButtonText: '',
       cssClass: 'toastHeader'
     });
-    toast.present();
+    this.toast.present();
+    this.toast.onDidDismiss(() => {
+      this.toast = undefined;
+    });
   }
 // You are Online Toast
   async presentToast() {
     const toast = await this.toastController.create({
       duration: 2000,
-      message: 'You are online now',
+      message: this.commonUtilService.translateMessage('INTERNET_AVAILABLE'),
       showCloseButton: false,
       position: 'top',
       cssClass: 'toastForOnline'
