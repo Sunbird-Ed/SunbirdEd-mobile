@@ -240,7 +240,6 @@ export class ContentDetailsPage {
     this.subscribeGenieEvent();
     this.networkSubscription = this.commonUtilService.subject.subscribe((res) => {
       if  (res) {
-        console.log('Inside Network Sub() Event');
         this.presentToast();
         if (this.toast) {
           this.toast.dismiss();
