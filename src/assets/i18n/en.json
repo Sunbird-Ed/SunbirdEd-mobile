@@ -453,5 +453,8 @@
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
   "COURSE_WILL_BE_AVAILABLE": "Course will be available from  {{%s}}",
   "ERROR_WHILE_LOGIN": "Error While Login",
-  "EMPTY_LIBRARY_TEXTBOOK_FILTER":"No books found for {{%s}}"
+  "EMPTY_LIBRARY_TEXTBOOK_FILTER":"No books found for {{%s}}",
+  "CONTENT_IMPORTED": "Successfully imported",
+  "CONTENT_ALREADY_EXIST": "The file is already imported. Please select a new file",
+  "CONTENT_IMPORTED_FAILED": "Import Failed"
 }

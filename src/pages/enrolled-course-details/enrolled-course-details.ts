@@ -1,14 +1,5 @@
 import {Component, Inject, NgZone, ViewChild} from '@angular/core';
-import {
-  AlertController,
-  Events,
-  IonicPage,
-  Navbar,
-  NavController,
-  NavParams,
-  Platform,
-  PopoverController
-} from 'ionic-angular';
+import { AlertController, Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController} from 'ionic-angular';
 import * as _ from 'lodash';
 import {SocialSharing} from '@ionic-native/social-sharing';
 
@@ -972,7 +963,8 @@ export class EnrolledCourseDetailsPage {
         // For content update available
         const hierarchyInfo = this.courseCardData.hierarchyInfo ? this.courseCardData.hierarchyInfo : null;
         const contentUpdateEvent = event as ContentUpdate;
-        if (contentUpdateEvent.payload && contentUpdateEvent.type === ContentEventType.UPDATE && hierarchyInfo === null) {
+        if (contentUpdateEvent.payload && contentUpdateEvent.payload.contentId === this.identifier
+          && contentUpdateEvent.type === ContentEventType.UPDATE && hierarchyInfo === null) {
           this.zone.run(() => {
             this.showLoading = true;
             this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.course, false);

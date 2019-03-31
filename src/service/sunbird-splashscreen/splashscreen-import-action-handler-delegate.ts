@@ -70,19 +70,19 @@ export class SplashscreenImportActionHandlerDelegate implements SplashscreenActi
       correlationData: []
     }).toPromise().then((response: ContentImportResponse[]) => {
       if (!response.length) {
-        this.commonUtilService.showToast('import_content: completed');
+        this.commonUtilService.showToast('CONTENT_IMPORTED');
         return;
       }
 
       response.forEach((response: ContentImportResponse) => {
         switch (response.status) {
           case ContentImportStatus.ALREADY_EXIST:
-            this.commonUtilService.showToast('import_content: already exists');
+            this.commonUtilService.showToast('CONTENT_ALREADY_EXIST');
             break;
         }
       });
     }).catch(() => {
-      this.commonUtilService.showToast('import_content: failed');
+      this.commonUtilService.showToast('CONTENT_IMPORTED_FAILED');
     })
   }
 }
