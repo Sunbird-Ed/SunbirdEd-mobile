@@ -85,16 +85,4 @@ export class SbPopoverComponent {
   deleteContent(candelete: boolean = false) {
     this.viewCtrl.dismiss(candelete);
   }
-   /**
-   * Construct content delete request body
-   */
-  getDeleteRequestBody() {
-    const apiParams = {
-      contentDeleteList: [{
-        contentId: this.contentId,
-        isChildContent: this.isChild
-      }]
-    };
-    return apiParams;
-  }
 }

@@ -54,7 +54,6 @@
         <span *ngIf="!isDownloadStarted" class="sb-btn-footer-text">{{ 'DOWNLOAD' | translate }}</span>
         <span *ngIf="isDownloadStarted" class="btn-popover-progress-container">
           <span class="btn-progress-highlight" [ngStyle]="{'width': (currentCount/queuedIdentifiers.length)*100 + '%'}">
-           
           </span>
         </span>
       </button>

@@ -13,7 +13,8 @@ import {
   Platform,
   IonicApp,
   AlertController,
-  ToastController
+  ToastController,
+  ViewController
 } from 'ionic-angular';
 import { FileSizePipe } from '@app/pipes/file-size/file-size';
 import { SocialSharing } from '@ionic-native/social-sharing';
@@ -71,6 +72,7 @@ import { XwalkConstants } from '../../app/app.constant';
 import { ValueTransformer } from '@angular/compiler/src/util';
 import { SbDownloadPopupComponent } from '@app/component/popups/sb-download-popup/sb-download-popup';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
+import { TranslateService } from '@ngx-translate/core';
 
 
 @IonicPage()
@@ -176,7 +178,10 @@ export class ContentDetailsPage {
     private network: Network,
     public  toastController: ToastController,
     private fileSizePipe: FileSizePipe,
-    private headerServie: AppHeaderService
+    private headerServie: AppHeaderService,
+    private translate: TranslateService,
+    private toastCtrl: ToastController,
+    private viewCtrl: ViewController
   ) {
 
     this.objRollup = new Rollup();
@@ -806,6 +811,7 @@ export class ContentDetailsPage {
         data = JSON.parse(data);
         if (data.result && data.result[0].status === 'NOT_FOUND') {
           this.showDownload = false;
+          this.isDownloadStarted = false;
           this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
         }
       })
@@ -889,6 +895,7 @@ export class ContentDetailsPage {
     console.log('hhfhh', this.cardData);
     console.log('djncjevej', this.content);
     console.log('isUpdateAvail', this.isUpdateAvail);
+    console.log('UDPATEAVAILABLE-----', this.content.downloadable && this.isUpdateAvail);
     // const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
     //   sbPopoverHeading: this.commonUtilService.translateMessage('DOWNLOAD'),
     //   sbPopoverMainTitle: this.cardData.name + this.cardData.subject,
@@ -918,7 +925,7 @@ export class ContentDetailsPage {
       metaInfo:
            '1 item ' + '(' + this.fileSizePipe.transform(this.content.size, 2) + ')',
       // sbPopoverContent: this.commonUtilService.translateMessage('CONTENT_NOT_PLAYABLE_OFFLINE'),
-      isUpdateAvail: this.isUpdateAvail
+      isUpdateAvail: this.content.downloadable && this.isUpdateAvail,
     }, {
         cssClass: 'sb-popover info',
       });
@@ -1074,7 +1081,7 @@ export class ContentDetailsPage {
           ev: event
         });
         confirm.onDidDismiss((leftBtnClicked: any) => {
-          if(leftBtnClicked == null) {
+          if (leftBtnClicked == null) {
             return;
           }
           if (leftBtnClicked) {
@@ -1208,33 +1215,17 @@ export class ContentDetailsPage {
       });
     });
   }
-  deleteContent() {
+  showDeletePopup() {
     console.log('contenmtttttttttttttt', this.content);
     console.log(this.isChildContent);
-    // const popover = this.popoverCtrl.create(ContentActionsComponent, {
-    //   content: this.content,
-    //   isChild: this.isChildContent,
-    //   objRollup: this.objRollup,
-    //   pageName: PageId.CONTENT_DETAIL,
-    //   corRelationList: this.corRelationList
-    // }, {
-    //     cssClass: 'content-action'
-    //   });
-    // popover.present({
-    //   ev: event
-    // });
-    // popover.onDidDismiss(data => {
-    //   this.zone.run(() => {
-    //     if (data === 'delete.success') {
-    //       this.content.streamingUrl = this.streamingUrl;
-    //       this.content.downloadable = false;
-    //       const playContent = JSON.parse(this.content.playContent);
-    //       playContent.isAvailableLocally = false;
-    //       this.content.playContent = JSON.stringify(playContent);
-    //     }
-    //   });
-    // });
-
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.KEBAB_MENU_CLICKED,
+      Environment.HOME,
+      PageId.CONTENT_DETAIL,
+      undefined,
+      undefined,
+      this.objRollup,
+      this.corRelationList);
     const confirm = this.popoverCtrl.create(SbPopoverComponent, {
       content: this.content,
       isChild: this.isChildContent,
@@ -1258,16 +1249,76 @@ export class ContentDetailsPage {
     confirm.present({
       ev: event
     });
-    confirm.onDidDismiss(data => {
-      this.zone.run(() => {
-        if (data === 'delete.success') {
-          this.content.streamingUrl = this.streamingUrl;
-          this.content.downloadable = false;
-          const playContent = JSON.parse(this.content.playContent);
-          playContent.isAvailableLocally = false;
-          this.content.playContent = JSON.stringify(playContent);
-        }
-      });
+    confirm.onDidDismiss((canDelete: any) => {
+      if (canDelete) {
+        this.deleteContent();
+      }
+    });
+  }
+   /**
+ * Construct content delete request body
+ */
+getDeleteRequestBody() {
+  const apiParams = {
+    contentDeleteList: [{
+      contentId: (this.content && this.content.identifier) ? this.content.identifier : '',
+      isChildContent: this.isChild
+    }]
+  };
+  return apiParams;
+}
+showToaster(message) {
+  const toast = this.toastCtrl.create({
+    message: message,
+    duration: 2000,
+    position: 'bottom'
+  });
+  toast.present();
+}
+
+getMessageByConstant(constant: string) {
+  let msg = '';
+  this.translate.get(constant).subscribe(
+    (value: any) => {
+      msg = value;
+    }
+  );
+  return msg;
+}
+  deleteContent() {
+    const telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = this.content.identifier;
+    telemetryObject.type = this.content.contentType;
+    telemetryObject.version = this.content.pkgVersion;
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.DELETE_CLICKED,
+      Environment.HOME,
+      this.pageName,
+      telemetryObject,
+      undefined,
+      this.objRollup,
+      this.corRelationList);
+    const tmp = this.getDeleteRequestBody();
+    this.contentService.deleteContent(tmp).then((res: any) => {
+      const data = JSON.parse(res);
+      if (data.result && data.result.status === 'NOT_FOUND') {
+        this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
+      } else {
+        // Publish saved resources update event
+        this.events.publish('savedResources:update', {
+          update: true
+        });
+        console.log('delete response: ', data);
+        this.importContent([this.identifier], this.isChildContent);
+        this.content.downloadable = false;
+        this.showToaster(this.getMessageByConstant('MSG_RESOURCE_DELETED'));
+        // this.viewCtrl.dismiss();
+      }
+    }).catch((error: any) => {
+      console.log('delete response: ', error);
+      this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
+     // this.viewCtrl.dismiss();
     });
   }
   showBookmarkMenu(event?) {

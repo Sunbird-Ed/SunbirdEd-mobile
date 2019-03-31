@@ -13,7 +13,7 @@ import {
   ContentService,
   FileUtil
 } from 'sunbird';
-import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, CourseUtilService } from '@app/service';
+import { TelemetryGeneratorService } from '@app/service';
 import {
   IonicPage,
   NavController,
@@ -25,6 +25,7 @@ import {
   ToastController,
   ViewController
 } from 'ionic-angular';
+import { FileSizePipe } from '@app/pipes/file-size/file-size';
 /**
  * Generated class for the SbDownloadPopupComponent component.
  *
@@ -50,15 +51,13 @@ export class SbDownloadPopupComponent implements OnChanges {
   @Input() isUpdateAvail: any;
   @Input() showDownload: any;
   @Input() contentAvailableLocally: any;
+  @Input() contentSize: any;
+  private popupUpdate: any;
+  private constContentSize: any;
   constructor(private events: Events,
     private zone: NgZone,
-    private telemetryGeneratorService: TelemetryGeneratorService,
-    private commonUtilService: CommonUtilService,
-    private contentService: ContentService,
-    private navCtrl: NavController,
-    private fileUtil: FileUtil,
-    private navParams: NavParams,
-    private viewCtrl: ViewController) {
+    private viewCtrl: ViewController,
+    private fileSizePipe: FileSizePipe) {
   }
 
   togglePopover() {
@@ -66,16 +65,17 @@ export class SbDownloadPopupComponent implements OnChanges {
   }
   cancelDownload() {
     this.cancelDownloadEmit.emit();
+    this.showDownload = false;
     console.log('cald');
   }
   ngOnChanges(changes: SimpleChanges) {
     // only run when property "data" changed
-    console.log('contentName', this.contentName);
-    console.log('CollectionName', this.collectionName);
-    console.log('IsUpdateAvail', this.isUpdateAvail);
-    console.log('Download Progress', this.downloadProgress);
-    console.log('showDownload', this.showDownload);
-    console.log('contentAvailableLocally', this.contentAvailableLocally);
+    console.log('SHOWDOWNLOAD-->', this.showDownload);
+    console.log('UpdateAvailable', this.isUpdateAvail);
+    console.log('COntentAvailaleLocally' , this.contentAvailableLocally);
+   this.popupUpdate = this.isUpdateAvail && this.contentAvailableLocally;
+   console.log('UpdateAVailable && Content Local', this.popupUpdate);
+   this.constContentSize = this.fileSizePipe.transform(this.contentSize, 2);
     if (changes['queuedIdentifiers']) {
       this.queuedIdentifiers = this.queuedIdentifiers;
       console.log('this.queuedIdentifiers', this.queuedIdentifiers);
@@ -93,16 +93,13 @@ export class SbDownloadPopupComponent implements OnChanges {
       console.log('this.downloadProgress', this.downloadProgress);
       if (this.downloadProgress === 100 && this.contentName && this.contentAvailableLocally) {
         console.log('DownloadProgress Dissmiss()');
-        // this.viewCtrl.dismiss();
         this.showDownload = false;
-      } else if (this.contentName && this.downloadProgress && this.contentAvailableLocally) {
+       } else if (this.contentName && this.downloadProgress && this.contentAvailableLocally) {
         console.log('AvailableLocally Dismisss()');
-        // this.viewCtrl.dismiss();
         this.showDownload = false;
       } else if (this.contentName && this.contentAvailableLocally) {
         console.log('AvailableLocally Dismisss()');
         this.showDownload = false;
-       // this.viewCtrl.dismiss();
       }
     }
     if (changes['contentName']) {

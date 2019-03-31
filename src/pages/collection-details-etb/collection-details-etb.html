@@ -113,4 +113,4 @@
 </ion-backdrop>
 <sb-download-popup *ngIf="showDownload" (cancelDownloadEmit)="cancelDownload($event)" [currentCount]="currentCount"
 [queuedIdentifiers]="queuedIdentifiers" [downloadSize]="downloadSize"
-[collectionName]="contentDetail?.name" ></sb-download-popup>
+[collectionName]="contentDetail?.name" [showDownload]="showDownload"></sb-download-popup>
