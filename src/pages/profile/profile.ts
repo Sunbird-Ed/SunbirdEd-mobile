@@ -1,4 +1,4 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit, AfterViewInit } from '@angular/core';
 import {
   NavController,
   LoadingController,
@@ -61,7 +61,7 @@ import { EditContactVerifyPopupComponent } from '@app/component';
   selector: 'page-profile',
   templateUrl: 'profile.html'
 })
-export class ProfilePage implements OnInit {
+export class ProfilePage implements OnInit, AfterViewInit {
   /**
    * Contains Profile Object
    */
@@ -161,6 +161,12 @@ export class ProfilePage implements OnInit {
     this.headerServie.showHeaderWithHomeButton();
   }
 
+  ngAfterViewInit() {
+    this.events.subscribe('update_header', (data) => {
+      this.headerServie.showHeaderWithHomeButton(['search']);
+    });
+  }
+
   ionViewDidLoad() {
     this.doRefresh();
     this.events.subscribe('profilePicture:update', (res) => {
@@ -175,6 +181,10 @@ export class ProfilePage implements OnInit {
       undefined,
       undefined
     ));
+  }
+
+  ionViewWillLeave(): void {
+      this.events.unsubscribe('update_header');
   }
 
   public doRefresh(refresher?) {

@@ -1,5 +1,5 @@
 import { TranslateService } from '@ngx-translate/core';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import {
   NavController,
   PopoverController,
@@ -39,7 +39,7 @@ import {
   templateUrl: 'guest-profile.html',
 })
 
-export class GuestProfilePage implements OnInit {
+export class GuestProfilePage implements OnInit, AfterViewInit {
 
   imageUri = 'assets/imgs/ic_profile_default.png';
 
@@ -125,6 +125,16 @@ export class GuestProfilePage implements OnInit {
 
   ionViewWillEnter() {
     this.headerServie.showHeaderWithHomeButton();
+  }
+
+  ngAfterViewInit() {
+    this.events.subscribe('update_header', (data) => {
+      this.headerServie.showHeaderWithHomeButton(['search']);
+    });
+  }
+
+  ionViewWillLeave(): void {
+    this.events.unsubscribe('update_header');
   }
 
   refreshProfileData(refresher: any = false, showLoader: boolean = true) {
