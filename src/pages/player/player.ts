@@ -44,10 +44,10 @@ export class PlayerPage implements playerActionHandlerDelegate {
 
       console.log("config", this.config);
       setTimeout(() => {
+        previewElement.contentWindow['playerActionHandlerDelegate'] = this;
         previewElement.contentWindow['initializePreview'](this.config);
       }, 1000);
     }
-    previewElement.contentWindow['playerActionHandlerDelegate'] = this;
   }
 
   ionViewDidEnter() {
