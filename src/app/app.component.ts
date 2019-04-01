@@ -32,9 +32,9 @@ import {Environment, InteractSubtype, InteractType, PageId} from '../service/tel
 import {TabsPage} from '@app/pages/tabs/tabs';
 import {ContainerService} from '@app/service/container.services';
 import {AndroidPermissionsService} from '../service/android-permissions/android-permissions.service';
-import {AndroidPermission, AndroidPermissionsStatus} from "@app/service/android-permissions/android-permission";
-import {SplashcreenTelemetryActionHandlerDelegate} from "@app/service/sunbird-splashscreen/splashcreen-telemetry-action-handler-delegate";
-import {SplashscreenImportActionHandlerDelegate} from "@app/service/sunbird-splashscreen/splashscreen-import-action-handler-delegate";
+import {AndroidPermission, AndroidPermissionsStatus} from '@app/service/android-permissions/android-permission';
+import {SplashcreenTelemetryActionHandlerDelegate} from '@app/service/sunbird-splashscreen/splashcreen-telemetry-action-handler-delegate';
+import {SplashscreenImportActionHandlerDelegate} from '@app/service/sunbird-splashscreen/splashscreen-import-action-handler-delegate';
 
 @Component({
   templateUrl: 'app.html',
@@ -80,13 +80,13 @@ export class MyApp {
     private tncUpdateHandlerService: TncUpdateHandlerService,
     private utilityService: UtilityService,
     private splashcreenTelemetryActionHandlerDelegate: SplashcreenTelemetryActionHandlerDelegate,
-    private splashscreenImportActionHandlerDelegate: SplashscreenImportActionHandlerDelegate
+    private splashscreenImportActionHandlerDelegate: SplashscreenImportActionHandlerDelegate,
   ) {
     this.telemetryAutoSyncUtil = new TelemetryAutoSyncUtil(this.telemetryService);
     platform.ready().then(async () => {
       this.imageLoaderConfig.enableDebugMode();
       this.imageLoaderConfig.setMaximumCacheSize(100 * 1024 * 1024);
-
+      this.telemetryGeneratorService.genererateAppStartTelemetry(await utilityService.getDeviceSpec());
       this.autoSyncTelemetry();
       this.subscribeEvents();
 
@@ -102,10 +102,18 @@ export class MyApp {
       this.handleSunbirdSplashScreenActions();
       await this.getSelectedLanguage();
       await this.navigateToAppropriatePage();
-
+      this.preferences.putString(PreferenceKey.CONTENT_CONTEXT, '').subscribe();
       window['thisRef'] = this;
       statusBar.styleDefault();
       this.handleBackButton();
+
+      this.platform.resume.subscribe(() => {
+        telemetryGeneratorService.generateInterruptTelemetry('resume', '');
+        this.handleSunbirdSplashScreenActions();
+      });
+      this.platform.pause.subscribe(() => {
+        telemetryGeneratorService.generateInterruptTelemetry('background', '');
+      });
     });
 
   }
@@ -496,8 +504,8 @@ export class MyApp {
 
   private async handleSunbirdSplashScreenActions(): Promise<undefined> {
     const stringifiedActions = await new Promise<string>((resolve) => {
-      splashscreen.getActions((actions) => {
-        resolve(actions);
+      splashscreen.getActions((actionsTobeDone) => {
+        resolve(actionsTobeDone);
       });
     });
 
@@ -518,11 +526,12 @@ export class MyApp {
       }
     }
 
+    splashscreen.markImportDone();
     splashscreen.hide();
   }
 
   private autoSyncTelemetry() {
-    this.telemetryAutoSyncUtil.start(5 * 1000)
+    this.telemetryAutoSyncUtil.start(30 * 1000)
       .mergeMap(() => {
         return Observable.combineLatest(
           this.platform.pause.pipe(tap(() => this.telemetryAutoSyncUtil.pause())),

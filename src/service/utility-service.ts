@@ -1,4 +1,5 @@
 import {Inject, Injectable, OnDestroy} from '@angular/core';
+import { DeviceSpecification } from 'sunbird-sdk';
 
 declare const buildconfigreader;
 
@@ -100,6 +101,22 @@ exportApk(): Promise<string> {
         try {
             buildconfigreader.exportApk((entry: string) => {
                 resolve(entry);
+            }, err => {
+                console.error(err);
+                reject(err);
+            });
+        } catch (xc) {
+            console.error(xc);
+            reject(xc);
+        }
+    });
+}
+
+getDeviceSpec(): Promise<DeviceSpecification> {
+    return new Promise<DeviceSpecification>((resolve, reject) => {
+        try {
+            buildconfigreader.getDeviceSpec((deviceSpec: DeviceSpecification) => {
+                resolve(deviceSpec);
             }, err => {
                 console.error(err);
                 reject(err);
