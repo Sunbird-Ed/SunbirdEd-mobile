@@ -7,7 +7,7 @@
               <button ion-button clear class="sb-modal-close"
                 (click)="togglePopover(); this.showPopover = !this.showPopover">Hide</button>
             </ion-title>
-        <ion-title class="sb-popover-title" *ngIf="contentName && !popupUpdate">{{ 'DOWNLOADING_2' | translate }}
+        <ion-title class="sb-popover-title" *ngIf="contentName && !popupUpdate && showDownload">{{ 'DOWNLOADING_2' | translate }}
           <button ion-button clear class="sb-modal-close"
             (click)="togglePopover(); this.showPopover = !this.showPopover">Hide</button>
         </ion-title>
@@ -60,7 +60,7 @@
 </div>
 
 <!-- Update Popup -->
-<div class="sb-popover sb-popover-download" *ngIf="!this.showPopover && this.isUpdateAvail && contentName">
+<div class="sb-popover sb-popover-download" *ngIf="!this.showPopover && this.isUpdateAvail && contentName && this.popupUpdate">
     <div class="backdrop"></div>
     <div class="popover-content">
       <ion-header class="sb-popover-header">
