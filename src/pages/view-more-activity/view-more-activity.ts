@@ -187,8 +187,8 @@ export class ViewMoreActivityPage implements OnInit {
     }
   }
 
-  subscribeUtilityEvents() {
-    this.events.subscribe('savedResources:update', async(res) => {
+  async subscribeUtilityEvents() {
+    await this.events.subscribe('savedResources:update', async(res) => {
       if (res && res.update) {
         if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_SAVED) {
           this.getLocalContents(false, this.downloadsOnlyToggle);
