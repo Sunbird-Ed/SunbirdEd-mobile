@@ -29,6 +29,7 @@ export class PlayerPage implements playerActionHandlerDelegate {
   }
 
   ionViewWillEnter() {
+    this.statusBar.hide();
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       if (!this.ionicApp._overlayPortal.getActive())
         this.canvasPlayerService.showConfirm();
