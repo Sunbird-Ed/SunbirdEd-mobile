@@ -59,8 +59,8 @@ export class EditContactVerifyPopupComponent {
         .then(() => {
           this.viewCtrl.dismiss(true, this.key);
         })
-        .catch(err => {
-          if (err.error === 'ERROR_INVALID_OTP') {
+        .catch(error => {
+          if (error.response.body.params.err === 'ERROR_INVALID_OTP') {
             this.invalidOtp = true;
           }
         });
