@@ -6,7 +6,7 @@ import { ScreenOrientation } from '@ionic-native/screen-orientation';
 import { IonicApp } from 'ionic-angular';
 import { playerActionHandlerDelegate, hierarchyInfo, user } from './player-action-handler-delegate';
 import { ContentDetailsPage } from '../content-details/content-details';
-
+import { StatusBar } from '@ionic-native/status-bar';
 @IonicPage()
 @Component({
   selector: 'page-player',
@@ -22,7 +22,8 @@ export class PlayerPage implements playerActionHandlerDelegate {
     private platform: Platform,
     private screenOrientation: ScreenOrientation,
     private ionicApp: IonicApp,
-    private appGlobalService: AppGlobalService
+    private appGlobalService: AppGlobalService,
+    private statusBar: StatusBar
   ) {
     this.canvasPlayerService.handleAction();
   }
@@ -53,6 +54,7 @@ export class PlayerPage implements playerActionHandlerDelegate {
   }
 
   ionViewWillLeave() {
+    this.statusBar.show();
     this.screenOrientation.unlock();
     this.unregisterBackButton();
   }

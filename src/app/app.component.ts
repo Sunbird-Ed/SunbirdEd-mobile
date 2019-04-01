@@ -104,7 +104,7 @@ export class MyApp {
       await this.navigateToAppropriatePage();
       this.preferences.putString(PreferenceKey.CONTENT_CONTEXT, '').subscribe();
       window['thisRef'] = this;
-      statusBar.styleDefault();
+      this.statusBar.styleBlackTranslucent();
       this.handleBackButton();
 
       this.platform.resume.subscribe(() => {
