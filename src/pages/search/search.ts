@@ -302,6 +302,10 @@ export class SearchPage implements  OnDestroy {
   }
 
   showFilter() {
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.FILTER_BUTTON_CLICKED,
+      Environment.HOME,
+      this.source, undefined);
     this.formAndFrameworkUtilService.getLibraryFilterConfig().then((data) => {
       const filterCriteriaData = this.responseData.filterCriteria;
       filterCriteriaData.facetFilters.forEach(element => {
