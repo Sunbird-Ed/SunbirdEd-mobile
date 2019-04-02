@@ -123,6 +123,9 @@ export class GuestProfilePage implements OnInit, AfterViewInit {
   }
 
   ionViewWillEnter() {
+    this.events.subscribe('update_header', (data) => {
+      this.headerServie.showHeaderWithHomeButton(['search']);
+    });
     this.headerObservable =this.headerServie.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
@@ -130,9 +133,7 @@ export class GuestProfilePage implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.events.subscribe('update_header', (data) => {
-      this.headerServie.showHeaderWithHomeButton(['search']);
-    });
+    
   }
 
   ionViewWillLeave(): void {
