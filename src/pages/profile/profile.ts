@@ -103,6 +103,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   };
 
   layoutPopular = ContentCard.LAYOUT_POPULAR;
+  headerObservable: any;
 
   constructor(
     private navCtrl: NavController,
@@ -152,12 +153,12 @@ export class ProfilePage implements OnInit, AfterViewInit {
 	 * Angular life cycle hooks
 	 */
   ngOnInit() {
-    this.headerServie.headerEventEmitted$.subscribe(eventName => {
-      this.handleHeaderEvents(eventName);
-    });
   }
 
   ionViewWillEnter() {
+    this.headerObservable =this.headerServie.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
     this.headerServie.showHeaderWithHomeButton();
   }
 
@@ -184,6 +185,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   ionViewWillLeave(): void {
+    this.headerObservable.unsubscribe();
       this.events.unsubscribe('update_header');
   }
 
