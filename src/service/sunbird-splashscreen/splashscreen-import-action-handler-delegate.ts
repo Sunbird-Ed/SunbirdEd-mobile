@@ -46,15 +46,23 @@ export class SplashscreenImportActionHandlerDelegate implements SplashscreenActi
       case 'epar': {
         return this.profileService.importProfile({
           sourceFilePath: filePath
-        }).do(() => {
-          this.commonUtilService.showToast('import_profile: completed');
+        }).do(({imported, failed}) => {
+          if (failed) {
+            this.commonUtilService.showToast('CONTENT_IMPORTED_FAILED');
+          } else if (imported) {
+            this.commonUtilService.showToast('CONTENT_IMPORTED');
+          }
         }).mapTo(undefined) as any;
       }
       case 'gsa': {
         return this.telemetryService.importTelemetry({
           sourceFilePath: filePath
-        }).do(() => {
-          this.commonUtilService.showToast('import_telemetry: completed');
+        }).do((imported) => {
+          if (!imported) {
+            this.commonUtilService.showToast('CONTENT_IMPORTED_FAILED');
+          } else {
+            this.commonUtilService.showToast('CONTENT_IMPORTED');
+          }
         }).mapTo(undefined) as any;
       }
       default:
