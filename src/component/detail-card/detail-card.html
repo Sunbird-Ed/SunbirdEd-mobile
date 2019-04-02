@@ -5,9 +5,9 @@
     <div class="left">
 
       <div class="sb-dt-title"> {{contentDetail?.name}}</div>
-      <div class="sb-dt-source" *ngIf="contentDetail?.creator || contentDetail?.owner">
+      <div class="sb-dt-source" *ngIf="contentDetail?.owner || contentDetail?.creator">
         <span class="sb-by">{{ 'CONTENT_CREATED_BY' | translate }}</span>
-        <span class="sb-user">{{ contentDetail?.creator || contentDetail?.owner }}</span>
+        <span class="sb-user">{{ contentDetail?.owner || contentDetail?.creator  }}</span>
       </div>
       <div class="sb-dt-class-info" *ngIf="contentDetail?.gradeLevel || contentDetail?.subject">
         <span class="sb-dt-label sb-dt-class">{{contentDetail?.gradeLevel}}</span>
@@ -54,7 +54,6 @@
         <span *ngIf="!isDownloadStarted" class="sb-btn-footer-text">{{ 'DOWNLOAD' | translate }}</span>
         <span *ngIf="isDownloadStarted" class="btn-popover-progress-container">
           <span class="btn-progress-highlight" [ngStyle]="{'width': (currentCount/queuedIdentifiers.length)*100 + '%'}">
-           
           </span>
         </span>
       </button>

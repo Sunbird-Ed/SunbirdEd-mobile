@@ -318,14 +318,12 @@ export class CollectionDetailsEtbPage implements OnInit {
       this.subscribeGenieEvent();
       this.networkSubscription = this.commonUtilService.subject.subscribe((res) => {
         if (res) {
-          console.log('Inside Network Sub() Event');
-          // this.presentToast();
-        } else {
-          this.presentToastWithOptions();
           if (this.toast) {
             this.toast.dismiss();
             this.toast = undefined;
           }
+        } else {
+          this.presentToastWithOptions();
         }
       });
     });
@@ -1084,6 +1082,13 @@ export class CollectionDetailsEtbPage implements OnInit {
     // this.downloadProgress = '';
     this.downloadProgress = 0;
     this.events.unsubscribe('genie.event');
+    if (this.networkSubscription) {
+      this.networkSubscription.unsubscribe();
+      if (this.toast) {
+        this.toast.dismiss();
+        this.toast = undefined;
+      }
+    }
   }
   showPopOver() {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
@@ -1119,7 +1124,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     confirm.present({
       ev: event
     });
-    confirm.onDidDismiss((canDelete: boolean = false) => {
+    confirm.onDidDismiss((canDelete: any) => {
       if (canDelete) {
         this.deleteContent();
       }

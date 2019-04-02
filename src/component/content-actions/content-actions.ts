@@ -21,6 +21,7 @@ import { ProfileConstants } from '../../app/app.constant';
 import { UnenrollAlertComponent } from '../unenroll-alert/unenroll-alert';
 import { SbPopoverComponent } from '../popups/sb-popover/sb-popover';
 import { FileSizePipe } from '@app/pipes/file-size/file-size';
+import { SbGenericPopoverComponent } from '../popups/sb-generic-popup/sb-generic-popover';
 
 @Component({
   selector: 'content-actions',
@@ -174,7 +175,7 @@ export class ContentActionsComponent {
         confirm.present({
           ev: event
         });
-        confirm.onDidDismiss((canDelete: boolean = false) => {
+        confirm.onDidDismiss((canDelete: any) => {
           if (canDelete) {
             // this.deleteContent();
           }
@@ -192,16 +193,51 @@ export class ContentActionsComponent {
   /*
    * shows alert to confirm unenroll send back user selection */
   unenroll() {
-    const popover = this.popoverCtrl.create(UnenrollAlertComponent, {}, {
-      cssClass: 'confirm-alert-box'
-    });
-    popover.present();
-    popover.onDidDismiss((unenroll: boolean = false) => {
-      this.viewCtrl.dismiss({
-        caller: 'unenroll',
-        unenroll: unenroll
+    // const popover = this.popoverCtrl.create(UnenrollAlertComponent, {}, {
+    //   cssClass: 'confirm-alert-box'
+    // });
+    // popover.present();
+    // popover.onDidDismiss((unenroll: boolean = false) => {
+    //   this.viewCtrl.dismiss({
+    //     caller: 'unenroll',
+    //     unenroll: unenroll
+    //   });
+    // });
+
+    const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
+      sbPopoverHeading: this.commonUtilService.translateMessage('UNENROLL_FROM_COURSE'),
+      sbPopoverMainTitle: this.commonUtilService.translateMessage('UNENROLL_CONFIRMATION_MESSAGE'),
+      actionsButtons: [
+        {
+          btntext: this.commonUtilService.translateMessage('CANCEL'),
+          btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+        },
+        {
+          btntext: this.commonUtilService.translateMessage('CONFIRM'),
+          btnClass: 'popover-color'
+        }
+      ],
+      icon: null
+    }, {
+        cssClass: 'sb-popover info',
       });
-    });
+      confirm.present({
+        ev: event
+      });
+      confirm.onDidDismiss((leftBtnClicked: any) => {
+        let unenroll: any = false;
+        if ( leftBtnClicked == null ) {
+          unenroll = false;
+        } else if ( leftBtnClicked ) {
+          unenroll = false;
+        } else {
+          unenroll = true;
+        }
+        this.viewCtrl.dismiss({
+          caller: 'unenroll',
+          unenroll: unenroll
+        });
+      });
   }
 
   deleteContent() {

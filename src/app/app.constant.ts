@@ -146,6 +146,8 @@ export class PreferenceKey {
     public static readonly IS_ONBOARDING_COMPLETED = 'is_onboarding_settings_completed';
     public static readonly IS_BOOKMARK_VIEWED = 'is_bookmark_viewed';
     public static readonly CONTENT_CONTEXT = 'content_context';
+    public static readonly APP_LOGO = 'app_logo';
+    public static readonly APP_NAME = 'app_name';
 }
 
 export class GenericAppConfig {
@@ -164,6 +166,8 @@ export class GenericAppConfig {
     public static readonly DISPLAY_ONBOARDING_CATEGORY_PAGE = 'DISPLAY_ONBOARDING_CATEGORY_PAGE';
     public static readonly OPEN_RAPDISCOVERY_ENABLED = 'OPEN_RAPDISCOVERY_ENABLED';
     public static readonly SUPPORT_EMAIL = 'SUPPORT_EMAIL';
+    public static readonly VERSION_NAME = 'VERSION_NAME';
+    public static readonly VERSION_CODE = 'VERSION_CODE';
 }
 
 export const appLanguages = [

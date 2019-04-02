@@ -21,7 +21,7 @@
   </div>
 </ion-header> -->
 
-<ion-content overflow-scroll="true" style="background: #efeff4;" class = "main-container">
+<ion-content overflow-scroll="true" style="background: #efeff4;" class = "main-container avoid-bottom-tabs-space">
   <ion-refresher (ionRefresh)="getCourseTabData($event)"></ion-refresher>
 
   <div *ngIf="!guestUser && enrolledCourses && enrolledCourses.length" class="course-page-color" [ngClass]="{'height-130': showLoader}">

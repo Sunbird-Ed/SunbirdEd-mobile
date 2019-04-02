@@ -274,10 +274,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.events.subscribe('onboarding-card:completed', (param) => {
       this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
     });
+    this.events.subscribe('update_header', (data) => {
+      this.headerServie.showHeaderWithHomeButton(['search']);
+    });
   }
 
   ionViewWillLeave(): void {
     this.events.unsubscribe('genie.event');
+    this.events.unsubscribe('update_header');
     if (this.networkSubscription) {
       this.networkSubscription.unsubscribe();
       if (this.toast) {
@@ -311,20 +315,20 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.loadRecentlyViewedContent();
   }
 
-  goToUserAndGroups() {
-    this.navCtrl.push(UserAndGroupsPage);
-  }
-  goToReports() {
-    this.navCtrl.push(ReportsPage);
-  }
-  goToLanguageSettings() {
-    this.navCtrl.push(LanguageSettingsPage, {
-      mainPage: true
-    });
-  }
-  goToSettings() {
-    this.navCtrl.push(SettingsPage);
-  }
+  // goToUserAndGroups() {
+  //   this.navCtrl.push(UserAndGroupsPage);
+  // }
+  // goToReports() {
+  //   this.navCtrl.push(ReportsPage);
+  // }
+  // goToLanguageSettings() {
+  //   this.navCtrl.push(LanguageSettingsPage, {
+  //     mainPage: true
+  //   });
+  // }
+  // goToSettings() {
+  //   this.navCtrl.push(SettingsPage);
+  // }
 
   navigateToViewMoreContentsPage(section: string) {
     const values = new Map();

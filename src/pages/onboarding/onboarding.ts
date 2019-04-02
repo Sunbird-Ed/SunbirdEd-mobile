@@ -27,7 +27,7 @@ import {
   ImpressionType,
   SharedPreferences,
   UserSource,
-  Profile
+  Profile,
 } from 'sunbird';
 import { TabsPage } from '@app/pages/tabs/tabs';
 
@@ -74,7 +74,8 @@ export class OnboardingPage {
     private events: Events,
     private appGlobalService: AppGlobalService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+    private sharedPreferences: SharedPreferences,
   ) {
 
     this.slides = [
@@ -173,6 +174,8 @@ export class OnboardingPage {
         request,
         res => {
           const r = JSON.parse(res);
+          this.sharedPreferences.putString(PreferenceKey.APP_LOGO, r.logo);
+          this.sharedPreferences.putString(PreferenceKey.APP_NAME, that.orgName);
           (<any>window).splashscreen.setContent(that.orgName, r.logo);
           resolve();
         },

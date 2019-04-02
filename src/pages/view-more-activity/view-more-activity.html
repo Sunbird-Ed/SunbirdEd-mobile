@@ -1,6 +1,6 @@
 <!-- <ion-header>
   <ion-navbar>
-    <ion-title>
+    <ion-title *ngIf="!localContentsCard">
       <span>{{ headerTitle | translate }}</span>
     </ion-title>
   </ion-navbar>
@@ -15,7 +15,7 @@
       </ion-item>
     </ion-list>
   </div> -->
-  <div class="sb-view-all-container">
+  <div class="sb-view-all-container" *ngIf="localContentsCard">
 
     <div class="sb-view-all-items">
       <div class="sb-view-all-title">
@@ -31,8 +31,8 @@
 
   <div *ngIf="searchList && searchList.length">
     <ng-container *ngIf="!localContentsCard">
-      <!-- <view-more-card *ngFor="let item of searchList" [content]="item" [type]="pageType" [cardDisabled]="showDisabled(item)"></view-more-card> -->
-      <view-all-card *ngFor="let item of searchList" [content]="item" [type]="pageType" [sectionName]="searchSection"></view-all-card>
+      <view-more-card *ngFor="let item of searchList" [content]="item" [type]="pageType" [cardDisabled]="showDisabled(item)"></view-more-card>
+      <!-- <view-all-card *ngFor="let item of searchList" [content]="item" [type]="pageType" [sectionName]="searchSection"></view-all-card> -->
     </ng-container>
 
     <ng-container *ngIf="localContentsCard">

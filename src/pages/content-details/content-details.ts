@@ -13,7 +13,8 @@ import {
   Platform,
   IonicApp,
   AlertController,
-  ToastController
+  ToastController,
+  ViewController
 } from 'ionic-angular';
 import { FileSizePipe } from '@app/pipes/file-size/file-size';
 import { SocialSharing } from '@ionic-native/social-sharing';
@@ -70,6 +71,8 @@ import { Observable } from 'rxjs';
 import { XwalkConstants } from '../../app/app.constant';
 import { ValueTransformer } from '@angular/compiler/src/util';
 import { SbDownloadPopupComponent } from '@app/component/popups/sb-download-popup/sb-download-popup';
+import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
+import { TranslateService } from '@ngx-translate/core';
 
 
 @IonicPage()
@@ -150,6 +153,7 @@ export class ContentDetailsPage {
   showDownload: boolean;
   contentPath: Array<any> [];
   FileSizePipe: any;
+  toast: any;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -175,7 +179,10 @@ export class ContentDetailsPage {
     private network: Network,
     public  toastController: ToastController,
     private fileSizePipe: FileSizePipe,
-    private headerServie: AppHeaderService
+    private headerServie: AppHeaderService,
+    private translate: TranslateService,
+    private toastCtrl: ToastController,
+    private viewCtrl: ViewController
   ) {
 
     this.objRollup = new Rollup();
@@ -238,14 +245,13 @@ export class ContentDetailsPage {
     this.subscribeGenieEvent();
     this.networkSubscription = this.commonUtilService.subject.subscribe((res) => {
       if  (res) {
-        console.log('Inside Network Sub() Event');
         this.presentToast();
+        if (this.toast) {
+          this.toast.dismiss();
+          this.toast = undefined;
+        }
       } else {
         this.presentToastForOffline();
-        if (this.toast) {
-        this.toast.dismiss();
-        this.toast = undefined;
-      }
       }
     });
   }
@@ -256,7 +262,13 @@ export class ContentDetailsPage {
   ionViewWillLeave(): void {
     this.events.unsubscribe('genie.event');
     this.resume.unsubscribe();
-    this.networkSubscription.unsubscribe();
+    if (this.networkSubscription) {
+      this.networkSubscription.unsubscribe();
+      if (this.toast) {
+        this.toast.dismiss();
+        this.toast = undefined;
+      }
+    }
   }
 
   handleNavBackButton() {
@@ -307,18 +319,30 @@ export class ContentDetailsPage {
     });
   }
   // You are Offline Toast
-  presentToastForOffline() {
-    const toast = this.toastController.create({
-      message: 'You are offline',
+  async presentToastForOffline() {
+    this.toast = await this.toastController.create({
+      message: this.commonUtilService.translateMessage('NO_INTERNET_TITLE'),
       showCloseButton: true,
-      // icon : 'information',
       position: 'top',
       closeButtonText: '',
       cssClass: 'toastHeader'
     });
+    this.toast.present();
+    this.toast.onDidDismiss(() => {
+      this.toast = undefined;
+    });
+  }
+// You are Online Toast
+  async presentToast() {
+    const toast = await this.toastController.create({
+      duration: 2000,
+      message: this.commonUtilService.translateMessage('INTERNET_AVAILABLE'),
+      showCloseButton: false,
+      position: 'top',
+      cssClass: 'toastForOnline'
+    });
     toast.present();
   }
-
   /**
    * Get the session to know if the user is logged-in or guest
    *
@@ -486,6 +510,7 @@ export class ContentDetailsPage {
       .then((data: any) => {
         this.zone.run(() => {
           data = JSON.parse(data);
+          console.log('CONTENT_DATA', data);
           if (data && data.result) {
             this.extractApiResponse(data);
             if (!showRating) {
@@ -787,6 +812,8 @@ export class ContentDetailsPage {
       .then((data: any) => {
         data = JSON.parse(data);
         if (data.result && data.result[0].status === 'NOT_FOUND') {
+          this.showDownload = false;
+          this.isDownloadStarted = false;
           this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
         }
       })
@@ -869,6 +896,8 @@ export class ContentDetailsPage {
   openConfirmPopUp() {
     console.log('hhfhh', this.cardData);
     console.log('djncjevej', this.content);
+    console.log('isUpdateAvail', this.isUpdateAvail);
+    console.log('UDPATEAVAILABLE-----', this.content.downloadable && this.isUpdateAvail);
     // const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
     //   sbPopoverHeading: this.commonUtilService.translateMessage('DOWNLOAD'),
     //   sbPopoverMainTitle: this.cardData.name + this.cardData.subject,
@@ -898,6 +927,7 @@ export class ContentDetailsPage {
       metaInfo:
            '1 item ' + '(' + this.fileSizePipe.transform(this.content.size, 2) + ')',
       // sbPopoverContent: this.commonUtilService.translateMessage('CONTENT_NOT_PLAYABLE_OFFLINE'),
+      isUpdateAvail: this.content.downloadable && this.isUpdateAvail,
     }, {
         cssClass: 'sb-popover info',
       });
@@ -929,6 +959,8 @@ export class ContentDetailsPage {
           this.zone.run(() => {
             data = JSON.parse(data);
             const res = data;
+            console.log('downloadProgress--------type', res.type);
+            console.log('downloadProgressooooooooo', res.data.downloadProgress);
             if (res.type === 'downloadProgress' && res.data.downloadProgress) {
               this.downloadProgress = res.data.downloadProgress === -1 ? '0' : res.data.downloadProgress;
               console.log('from content details', this.downloadProgress);
@@ -997,7 +1029,7 @@ export class ContentDetailsPage {
     }
     if (!AppGlobalService.isPlayerLaunched && this.userCount > 1) {
       const profile = this.appGlobalService.getCurrentUser();
-      const alert = this.alertCtrl.create({
+      /*const alert = this.alertCtrl.create({
         title: this.commonUtilService.translateMessage('PLAY_AS'),
         mode: 'wp',
         message: profile.handle,
@@ -1028,9 +1060,45 @@ export class ContentDetailsPage {
             cssClass: 'closeButton',
           }
         ]
-      });
+      });*/
       this.isUsrGrpAlrtOpen = true;
-      alert.present();
+      const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
+        sbPopoverHeading: this.commonUtilService.translateMessage('PLAY_AS'),
+        sbPopoverMainTitle: profile.handle,
+        actionsButtons: [
+          {
+            btntext: this.commonUtilService.translateMessage('YES'),
+            btnClass: 'popover-color'
+          },
+          {
+            btntext: this.commonUtilService.translateMessage('CHANGE_USER'),
+            btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+          }
+        ],
+        icon: null
+      }, {
+          cssClass: 'sb-popover info',
+        });
+        confirm.present({
+          ev: event
+        });
+        confirm.onDidDismiss((leftBtnClicked: any) => {
+          if (leftBtnClicked == null) {
+            return;
+          }
+          if (leftBtnClicked) {
+            this.playContent(isStreaming);
+          } else {
+            const playConfig: any = {};
+              playConfig.playContent = true;
+              playConfig.streaming = isStreaming;
+              this.navCtrl.push(UserAndGroupsPage, {
+                playConfig: playConfig
+              });
+          }
+        });
+
+      // alert.present();
     } else {
       this.playContent(isStreaming);
     }
@@ -1149,33 +1217,17 @@ export class ContentDetailsPage {
       });
     });
   }
-  deleteContent() {
+  showDeletePopup() {
     console.log('contenmtttttttttttttt', this.content);
     console.log(this.isChildContent);
-    // const popover = this.popoverCtrl.create(ContentActionsComponent, {
-    //   content: this.content,
-    //   isChild: this.isChildContent,
-    //   objRollup: this.objRollup,
-    //   pageName: PageId.CONTENT_DETAIL,
-    //   corRelationList: this.corRelationList
-    // }, {
-    //     cssClass: 'content-action'
-    //   });
-    // popover.present({
-    //   ev: event
-    // });
-    // popover.onDidDismiss(data => {
-    //   this.zone.run(() => {
-    //     if (data === 'delete.success') {
-    //       this.content.streamingUrl = this.streamingUrl;
-    //       this.content.downloadable = false;
-    //       const playContent = JSON.parse(this.content.playContent);
-    //       playContent.isAvailableLocally = false;
-    //       this.content.playContent = JSON.stringify(playContent);
-    //     }
-    //   });
-    // });
-
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.KEBAB_MENU_CLICKED,
+      Environment.HOME,
+      PageId.CONTENT_DETAIL,
+      undefined,
+      undefined,
+      this.objRollup,
+      this.corRelationList);
     const confirm = this.popoverCtrl.create(SbPopoverComponent, {
       content: this.content,
       isChild: this.isChildContent,
@@ -1199,16 +1251,76 @@ export class ContentDetailsPage {
     confirm.present({
       ev: event
     });
-    confirm.onDidDismiss(data => {
-      this.zone.run(() => {
-        if (data === 'delete.success') {
-          this.content.streamingUrl = this.streamingUrl;
-          this.content.downloadable = false;
-          const playContent = JSON.parse(this.content.playContent);
-          playContent.isAvailableLocally = false;
-          this.content.playContent = JSON.stringify(playContent);
-        }
-      });
+    confirm.onDidDismiss((canDelete: any) => {
+      if (canDelete) {
+        this.deleteContent();
+      }
+    });
+  }
+   /**
+ * Construct content delete request body
+ */
+getDeleteRequestBody() {
+  const apiParams = {
+    contentDeleteList: [{
+      contentId: (this.content && this.content.identifier) ? this.content.identifier : '',
+      isChildContent: this.isChild
+    }]
+  };
+  return apiParams;
+}
+showToaster(message) {
+  const toast = this.toastCtrl.create({
+    message: message,
+    duration: 2000,
+    position: 'bottom'
+  });
+  toast.present();
+}
+
+getMessageByConstant(constant: string) {
+  let msg = '';
+  this.translate.get(constant).subscribe(
+    (value: any) => {
+      msg = value;
+    }
+  );
+  return msg;
+}
+  deleteContent() {
+    const telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = this.content.identifier;
+    telemetryObject.type = this.content.contentType;
+    telemetryObject.version = this.content.pkgVersion;
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.DELETE_CLICKED,
+      Environment.HOME,
+      this.pageName,
+      telemetryObject,
+      undefined,
+      this.objRollup,
+      this.corRelationList);
+    const tmp = this.getDeleteRequestBody();
+    this.contentService.deleteContent(tmp).then((res: any) => {
+      const data = JSON.parse(res);
+      if (data.result && data.result.status === 'NOT_FOUND') {
+        this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
+      } else {
+        // Publish saved resources update event
+        this.events.publish('savedResources:update', {
+          update: true
+        });
+        console.log('delete response: ', data);
+        this.importContent([this.identifier], this.isChildContent);
+        this.content.downloadable = false;
+        this.showToaster(this.getMessageByConstant('MSG_RESOURCE_DELETED'));
+        // this.viewCtrl.dismiss();
+      }
+    }).catch((error: any) => {
+      console.log('delete response: ', error);
+      this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
+     // this.viewCtrl.dismiss();
     });
   }
   showBookmarkMenu(event?) {
@@ -1315,16 +1427,7 @@ export class ContentDetailsPage {
   }
 /* Present Toast */
 
-async presentToast() {
-  const toast = await this.toastController.create({
-    duration: 2000,
-    message: 'You are online now',
-    showCloseButton: false,
-    position: 'top',
-    cssClass: 'toastForOnline'
-  });
-  toast.present();
-}
+
   /* SUDO
    if firstprperty is there and secondprperty is not there, then return firstprperty value
    else if firstprperty is not there and secondprperty is there, then return secondprperty value

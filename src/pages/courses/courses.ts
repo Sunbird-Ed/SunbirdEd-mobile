@@ -2,7 +2,8 @@ import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity
 import {
   Component,
   NgZone,
-  OnInit
+  OnInit,
+  AfterViewInit
 } from '@angular/core';
 import {
   NavController,
@@ -61,7 +62,7 @@ import { AppHeaderService } from '@app/service';
   selector: 'page-courses',
   templateUrl: 'courses.html'
 })
-export class CoursesPage implements OnInit {
+export class CoursesPage implements OnInit, AfterViewInit {
 
   /**
    * Contains enrolled course
@@ -172,6 +173,12 @@ export class CoursesPage implements OnInit {
       this.handleHeaderEvents(eventName);
     });
   }
+  ngAfterViewInit() {
+    this.events.subscribe('update_header', (data) => {
+      this.headerServie.showHeaderWithHomeButton(['search', 'filter']);
+    });
+  }
+
   ionViewDidEnter() {
     this.isVisible = true;
   }
@@ -236,6 +243,7 @@ export class CoursesPage implements OnInit {
     this.tabBarElement.style.display = 'flex';
     this.ngZone.run(() => {
       this.events.unsubscribe('genie.event');
+      this.events.unsubscribe('update_header');
       this.isVisible = false;
       this.showOverlay = false;
       this.downloadPercentage = 0;

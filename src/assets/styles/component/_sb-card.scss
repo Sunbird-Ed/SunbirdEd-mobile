@@ -236,7 +236,7 @@
 }
 
 .sb-textbook-container {
-  margin-top: ($base-block-space * 2);
+  margin-top: ($base-block-space * 3);
   @include padding(($base-block-space * 1));
   width: 100%;
   &:last-child{
@@ -246,7 +246,7 @@
   .sb-textbook-items {
       .sb-textbook-title-container{
           height: ($base-block-space * 3);
-          @include margin(null, null, ($base-block-space * 2), null);
+          @include margin(null, null, $base-block-space, null);
 
           .textbook-icon {
               height: 17px;	

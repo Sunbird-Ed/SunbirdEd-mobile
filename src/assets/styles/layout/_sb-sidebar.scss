@@ -29,8 +29,9 @@ div
 .img-container{
     height:($base-block-space * 4);
     width: ($base-block-space * 4);
-    background-color: $gray-0;
+    // background-color: $gray-0;
     vertical-align: bottom;
+    @include margin(0, $base-block-space, 0, 0);
 }
 .toolbar {
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.12);

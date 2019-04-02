@@ -47,6 +47,7 @@ import { OnboardingPage } from '@app/pages/onboarding/onboarding';
 import { UserAndGroupsPage } from '@app/pages/user-and-groups';
 import { ReportsPage } from '@app/pages/reports';
 import { SettingsPage } from '@app/pages/settings';
+import { ResourcesPage } from '@app/pages/resources/resources';
 
 
 declare var chcp: any;
@@ -73,6 +74,7 @@ export class MyApp implements OnInit {
     'android.permission.RECORD_AUDIO'];
 
   profile: any = {};
+
 
   constructor(
     private platform: Platform,
@@ -338,8 +340,13 @@ export class MyApp implements OnInit {
   handleBackButton() {
     this.platform.registerBackButtonAction(() => {
 
-      const navObj = this.app.getActiveNavs()[0];
-      const currentPage = navObj.getActive().name;
+      let navObj = this.app.getRootNavs()[0];
+      let currentPage = navObj.getActive().name;
+      if(currentPage == "TabsPage") {
+        navObj = this.app.getActiveNavs()[0];
+        currentPage = navObj.getActive().name;
+      }
+      console.log(currentPage);
 
       if (navObj.canGoBack()) {
         return navObj.pop();
@@ -593,9 +600,13 @@ export class MyApp implements OnInit {
   handleHeaderEvents($event) {
     if ($event.name === 'back') {
       // this.handleBackButton();
-      const navObj = this.app.getActiveNavs()[0];
-      const currentPage = navObj.getActive().name;
-
+      let navObj = this.app.getRootNavs()[0];
+      let currentPage = navObj.getActive().name;
+      if(currentPage == "TabsPage") {
+        navObj = this.app.getActiveNavs()[0];
+        currentPage = navObj.getActive().name;
+      }
+      console.log(currentPage);
       if (navObj.canGoBack()) {
         return navObj.pop();
       } else {
@@ -615,7 +626,10 @@ export class MyApp implements OnInit {
           Environment.USER,
           PageId.PROFILE
         );
-        this.app.getActiveNav().setRoot(UserAndGroupsPage, { profile: this.profile });
+        // this.nav.push(UserAndGroupsPage, { profile: this.profile });
+         if (this.app.getRootNavs().length > 0) {
+           this.app.getRootNavs()[0].push(UserAndGroupsPage, { profile: this.profile });
+        }
         // this.goToUserAndGroups();
         break;
 
@@ -626,7 +640,9 @@ export class MyApp implements OnInit {
           Environment.USER,
           PageId.PROFILE
         );
-        this.app.getActiveNav().setRoot(ReportsPage, { profile: this.profile });
+        if (this.app.getRootNavs().length > 0) {
+          this.app.getRootNavs()[0].push(ReportsPage, { profile: this.profile });
+        }
        // this.goToReports();
         break;
 
@@ -640,7 +656,27 @@ export class MyApp implements OnInit {
           undefined,
           undefined
         );
-        this.app.getActiveNav().setRoot(SettingsPage);
+        if (this.app.getRootNavs().length > 0) {
+          this.app.getRootNavs()[0].push(SettingsPage);
+        }
+        // this.goToLanguageSettings();
+        break;
+      }
+      case 'LANGUAGE': {
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.LANGUAGE_CLICKED,
+          Environment.USER,
+          PageId.PROFILE,
+          null,
+          undefined,
+          undefined
+        );
+        if (this.app.getRootNavs().length > 0) {
+          this.app.getRootNavs()[0].push(LanguageSettingsPage,{
+            isFromSettings: true
+          });
+        }
         // this.goToLanguageSettings();
         break;
       }
@@ -678,6 +714,7 @@ export class MyApp implements OnInit {
         break;
     }
   }
+
 
   generateLogoutInteractTelemetry(interactType, interactSubtype, uid) {
     const valuesMap = new Map();
