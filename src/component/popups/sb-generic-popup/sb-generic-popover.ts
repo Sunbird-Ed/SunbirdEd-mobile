@@ -47,7 +47,7 @@ export class SbGenericPopoverComponent {
     this.viewCtrl.dismiss(null);
   }
   deletecontent(btnIndex: number = 0) {
-    if(btnIndex == 0) {
+    if (btnIndex === 0) {
       this.viewCtrl.dismiss(true);
     } else {
       this.viewCtrl.dismiss(false);
