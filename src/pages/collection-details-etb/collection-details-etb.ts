@@ -275,6 +275,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     this.zone.run(() => {
       this.headerConfig = this.headerServie.getDefaultPageConfig();
       this.headerConfig.actionButtons = [];
+      this.headerConfig.showHeader = false;
       this.headerConfig.showBurgerMenu = false;
       this.headerServie.updatePageConfig(this.headerConfig);
       this.resetVariables();
@@ -485,6 +486,7 @@ export class CollectionDetailsEtbPage implements OnInit {
 
     if (Boolean(data.result.isAvailableLocally)) {
       this.showLoading = false;
+      this.refreshHeader();
       if (data.result.isUpdateAvailable && !this.isUpdateAvailable) {
         this.isUpdateAvailable = true;
         this.showLoading = true;
@@ -603,6 +605,7 @@ export class CollectionDetailsEtbPage implements OnInit {
                 this.showDownloadBtn = true;
                 this.isDownloadStarted = false;
                 this.showLoading = false;
+                this.refreshHeader();
               }
             }
             if (this.faultyIdentifiers.length > 0) {
@@ -619,6 +622,7 @@ export class CollectionDetailsEtbPage implements OnInit {
             }
           } else if (data.result && data.result[0].status === 'NOT_FOUND') {
             this.showLoading = false;
+            this.refreshHeader();
             this.showChildrenLoader = false;
             this.childrenData.length = 0;
           }
@@ -631,6 +635,7 @@ export class CollectionDetailsEtbPage implements OnInit {
           this.showDownloadBtn = true;
           this.isDownloadStarted = false;
           this.showLoading = false;
+          this.refreshHeader();
           if (Boolean(this.isUpdateAvailable)) {
             //  this.showChildrenLoader = true;
             this.setChildContents();
@@ -795,6 +800,7 @@ export class CollectionDetailsEtbPage implements OnInit {
 
           if (this.downloadProgress === 100) {
             this.showLoading = false;
+            this.refreshHeader();
             this.contentDetail.isAvailableLocally = true;
           }
         }
@@ -808,6 +814,7 @@ export class CollectionDetailsEtbPage implements OnInit {
             }
             if (this.queuedIdentifiers.length === this.currentCount) {
               this.showLoading = false;
+              this.refreshHeader();
               this.isDownloadStarted = false;
               this.showDownloadBtn = false;
               this.isDownloadCompleted = true;
@@ -1191,5 +1198,13 @@ export class CollectionDetailsEtbPage implements OnInit {
       this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
       this.viewCtrl.dismiss();
     });
+  }
+
+  refreshHeader() {
+    this.headerConfig = this.headerServie.getDefaultPageConfig();
+    this.headerConfig.actionButtons = [];
+    this.headerConfig.showBurgerMenu = false;
+    this.headerConfig.showHeader = true;
+    this.headerServie.updatePageConfig(this.headerConfig);
   }
 }
