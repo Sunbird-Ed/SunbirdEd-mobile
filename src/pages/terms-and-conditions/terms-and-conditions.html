@@ -1,5 +1,5 @@
 <ion-content padding-horizontal padding-top>
-  <iframe height="100%" width="100%" (load)="onIFrameLoad()"
+  <iframe (load)="onIFrameLoad()" *ngIf="tncLatestVersionUrl" height="100%" width="100%"
           [src]="tncLatestVersionUrl"
           frameborder="0"></iframe>
 </ion-content>
