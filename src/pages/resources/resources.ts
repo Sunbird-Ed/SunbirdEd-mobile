@@ -156,6 +156,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   refresh: boolean;
   toast: any;
   networkSubscription: Subscription;
+  headerObservable: any;
   constructor(
     public navCtrl: NavController,
     private ngZone: NgZone,
@@ -242,9 +243,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 	 */
   ngOnInit() {
     this.getCurrentUser();
-    this.headerServie.headerEventEmitted$.subscribe(eventName => {
-      this.handleHeaderEvents(eventName);
-    });
   }
 
   async presentToastWithOptions() {
@@ -282,6 +280,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   ionViewWillLeave(): void {
     this.events.unsubscribe('genie.event');
     this.events.unsubscribe('update_header');
+    this.headerObservable.unsubscribe();
     if (this.networkSubscription) {
       this.networkSubscription.unsubscribe();
       if (this.toast) {
@@ -691,6 +690,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewDidEnter() {
+    this.headerObservable =this.headerServie.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
     this.preference.getString('show_app_walkthrough_screen')
       .then(value => {
         if (value === 'true') {

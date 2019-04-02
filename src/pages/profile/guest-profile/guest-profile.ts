@@ -55,6 +55,7 @@ export class GuestProfilePage implements OnInit, AfterViewInit {
   syllabus = '';
   selectedLanguage: string;
   loader: any;
+  headerObservable: any;
 
 
   constructor(
@@ -118,12 +119,13 @@ export class GuestProfilePage implements OnInit, AfterViewInit {
 	 * Angular life cycle hooks
 	 */
   ngOnInit() {
-    this.headerServie.headerEventEmitted$.subscribe(eventName => {
-      this.handleHeaderEvents(eventName);
-    });
+    
   }
 
   ionViewWillEnter() {
+    this.headerObservable =this.headerServie.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
     this.headerServie.showHeaderWithHomeButton();
   }
 
@@ -134,6 +136,7 @@ export class GuestProfilePage implements OnInit, AfterViewInit {
   }
 
   ionViewWillLeave(): void {
+    this.headerObservable.unsubscribe();
     this.events.unsubscribe('update_header');
   }
 

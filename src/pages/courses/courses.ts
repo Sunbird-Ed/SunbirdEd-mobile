@@ -117,6 +117,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
   isFilterApplied = false;
   callback: QRResultCallback;
   pageFilterCallBack: PageFilterCallback;
+  headerObservable: any;
 
   /**
    * Default method of class CoursesPage
@@ -169,9 +170,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
  */
   ngOnInit() {
     this.getCourseTabData();
-    this.headerServie.headerEventEmitted$.subscribe(eventName => {
-      this.handleHeaderEvents(eventName);
-    });
+    
   }
   ngAfterViewInit() {
     this.events.subscribe('update_header', (data) => {
@@ -183,6 +182,9 @@ export class CoursesPage implements OnInit, AfterViewInit {
     this.isVisible = true;
   }
   ionViewWillEnter() {
+    this.headerObservable =this.headerServie.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
     this.getEnrolledCourses();
     this.headerServie.showHeaderWithHomeButton(['search', 'filter']);
 
@@ -234,6 +236,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
   }
 
   ionViewCanLeave() {
+    this.headerObservable.unsubscribe();
     this.ngZone.run(() => {
       this.events.unsubscribe('genie.event');
     });
