@@ -28,7 +28,7 @@ import {
   TelemetryService,
 } from 'sunbird-sdk';
 import {tap} from 'rxjs/operators';
-import {Environment, InteractSubtype, InteractType, PageId} from '../service/telemetry-constants';
+import {Environment, InteractSubtype, InteractType, PageId, ImpressionType} from '../service/telemetry-constants';
 import {TabsPage} from '@app/pages/tabs/tabs';
 import {ContainerService} from '@app/service/container.services';
 import {AndroidPermissionsService} from '../service/android-permissions/android-permissions.service';
@@ -162,6 +162,8 @@ export class MyApp implements AfterViewInit {
     this.events.subscribe('tab.change', (data) => {
       this.zone.run(() => {
         this.generateInteractEvent(data);
+        // Added below code to generate Impression Before Interact for Library,Courses,Profile
+        this.generateImpressionEvent(data);
       });
     });
 
@@ -444,7 +446,14 @@ export class MyApp implements AfterViewInit {
       undefined
     );
   }
-
+ private generateImpressionEvent(pageid: string) {
+  pageid = pageid.toLowerCase();
+   const env = pageid.localeCompare(PageId.PROFILE) ? Environment.HOME : Environment.USER;
+  this.telemetryGeneratorService.generateImpressionTelemetry(
+    ImpressionType.VIEW, '',
+    pageid,
+    env);
+ }
   private navigateToContentDetails(content) {
     if (content.contentData.contentType === ContentType.COURSE) {
       this.nav.push(EnrolledCourseDetailsPage, {
