@@ -24,7 +24,8 @@ import {
   ProfileType,
   SearchType,
   SharedPreferences,
-  TelemetryObject
+  TelemetryObject,
+  NetworkError
 } from 'sunbird-sdk';
 import {FilterPage} from './filters/filter';
 import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
@@ -302,6 +303,10 @@ export class SearchPage implements  OnDestroy {
   }
 
   showFilter() {
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.FILTER_BUTTON_CLICKED,
+      Environment.HOME,
+      this.source, undefined);
     this.formAndFrameworkUtilService.getLibraryFilterConfig().then((data) => {
       const filterCriteriaData = this.responseData.filterCriteria;
       filterCriteriaData.facetFilters.forEach(element => {
@@ -774,7 +779,10 @@ export class SearchPage implements  OnDestroy {
             this.showContentDetails(child);
           });
         }
-      }, () => {
+      }).catch ((err) => {
+        if (err instanceof NetworkError) {
+          this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
+        }
       });
   }
 
@@ -813,7 +821,12 @@ export class SearchPage implements  OnDestroy {
           }
         });
       })
-      .catch(() => {
+      .catch((err) => {
+        if (err instanceof NetworkError) {
+          this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
+          this.showLoading = false;
+          this.isDownloadStarted = false;
+        }
       });
   }
 

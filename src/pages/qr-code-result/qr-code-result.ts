@@ -44,7 +44,8 @@ import {
   ProfileService,
   CorrelationData,
   MarkerType,
-  PlayerService
+  PlayerService,
+  NetworkError
 } from 'sunbird-sdk';
 import { Subscription } from 'rxjs';
 import { Environment, ImpressionType, InteractSubtype, InteractType, PageId } from '../../service/telemetry-constants';
@@ -565,7 +566,10 @@ export class QrCodeResultPage implements OnDestroy {
           this.telemetryGeneratorService.generateProfilePopulatedTelemetry(PageId.DIAL_CODE_SCAN_RESULT,
             data.framework, Boolean(isProfileUpdated) ? 'auto' : 'na');
         })
-        .catch(() => {
+        .catch((err) => {
+          if (err instanceof NetworkError) {
+            this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
+          }
         });
     }
   }
@@ -634,8 +638,7 @@ export class QrCodeResultPage implements OnDestroy {
         this.zone.run(() => {
           this.isDownloadStarted = false;
           this.showLoading = false;
-          const errorRes = error;
-          if (errorRes && (errorRes.error === 'NETWORK_ERROR' || errorRes.error === 'CONNECTION_ERROR')) {
+           if (error instanceof NetworkError) {
             this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
           } else {
             this.commonUtilService.showToast('UNABLE_TO_FETCH_CONTENT');

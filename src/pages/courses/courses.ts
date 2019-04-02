@@ -177,11 +177,6 @@ export class CoursesPage implements OnInit {
   }
 
   ionViewDidLoad() {
-    this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.VIEW, '',
-      PageId.COURSES,
-      Environment.HOME
-    );
 
     this.appGlobalService.generateConfigInteractEvent(PageId.COURSES, this.isOnBoardingCardCompleted);
     this.preferences.getString('show_app_walkthrough_screen').toPromise()
