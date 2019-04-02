@@ -287,7 +287,7 @@ export class ContentDetailsPage {
         false, this.cardData.identifier, this.corRelationList);
       this.didViewLoad = false;
       this.dismissPopup();
-      this.popToPreviousPage();
+      this.popToPreviousPage(true);
       this.generateEndEvent(this.objId, this.objType, this.objVer);
       if (this.shouldGenerateEndTelemetry) {
         this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
@@ -1027,81 +1027,93 @@ export class ContentDetailsPage {
         this.objRollup,
         this.corRelationList);
     }
-    if (!AppGlobalService.isPlayerLaunched && this.userCount > 1) {
-      const profile = this.appGlobalService.getCurrentUser();
-      /*const alert = this.alertCtrl.create({
-        title: this.commonUtilService.translateMessage('PLAY_AS'),
-        mode: 'wp',
-        message: profile.handle,
-        cssClass: 'confirm-alert',
-        buttons: [
-          {
-            text: this.commonUtilService.translateMessage('YES'),
-            cssClass: 'alert-btn-delete',
-            handler: () => {
-              this.playContent(isStreaming);
-            }
-          },
-          {
-            text: this.addElipsesInLongText('CHANGE_USER'),
-            cssClass: 'alert-btn-cancel',
-            handler: () => {
-              const playConfig: any = {};
-              playConfig.playContent = true;
-              playConfig.streaming = isStreaming;
-              this.navCtrl.push(UserAndGroupsPage, {
-                playConfig: playConfig
-              });
-            }
-          },
-          {
-            text: 'x',
-            role: 'cancel',
-            cssClass: 'closeButton',
-          }
-        ]
-      });*/
-      this.isUsrGrpAlrtOpen = true;
-      const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
-        sbPopoverHeading: this.commonUtilService.translateMessage('PLAY_AS'),
-        sbPopoverMainTitle: profile.handle,
+    if (!AppGlobalService.isPlayerLaunched && this.userCount > 1 && this.network.type !== '2g') {
+      this.openPlayAsPopup(isStreaming);
+      // alert.present();
+      } else if (this.network.type === '2g' && !this.content.downloadable) {
+      const popover = this.popoverCtrl.create(SbGenericPopoverComponent, {
+        sbPopoverHeading: this.commonUtilService.translateMessage('LOW_BANDWIDTH'),
+        sbPopoverMainTitle: this.commonUtilService.translateMessage('LOW_BANDWIDTH_DETECTED'),
         actionsButtons: [
           {
-            btntext: this.commonUtilService.translateMessage('YES'),
+            btntext: this.commonUtilService.translateMessage('PLAY_ONLINE'),
             btnClass: 'popover-color'
           },
           {
-            btntext: this.commonUtilService.translateMessage('CHANGE_USER'),
-            btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+            btntext: this.commonUtilService.translateMessage('DOWNLOAD'),
+            btnClass: 'sb-btn sb-btn-normal sb-btn-info'
           }
         ],
-        icon: null
+        icon: {
+          md: 'md-sad',
+          ios: 'ios-sad',
+          className: ''
+        },
+        metaInfo: '',
+        sbPopoverContent: this.commonUtilService.translateMessage('CONSIDER_DOWNLOAD')
       }, {
-          cssClass: 'sb-popover info',
+          cssClass: 'sb-popover warning',
         });
-        confirm.present({
+        popover.present({
           ev: event
         });
-        confirm.onDidDismiss((leftBtnClicked: any) => {
+        popover.onDidDismiss((leftBtnClicked: any) => {
           if (leftBtnClicked == null) {
             return;
           }
           if (leftBtnClicked) {
-            this.playContent(isStreaming);
+            if (!AppGlobalService.isPlayerLaunched && this.userCount > 1) {
+             this.openPlayAsPopup(isStreaming);
+            } else {
+              this.playContent(isStreaming);
+            }
           } else {
-            const playConfig: any = {};
-              playConfig.playContent = true;
-              playConfig.streaming = isStreaming;
-              this.navCtrl.push(UserAndGroupsPage, {
-                playConfig: playConfig
-              });
+            this.downloadContent();
           }
         });
-
-      // alert.present();
     } else {
       this.playContent(isStreaming);
     }
+  }
+
+  openPlayAsPopup(isStreaming) {
+    const profile = this.appGlobalService.getCurrentUser();
+    this.isUsrGrpAlrtOpen = true;
+    const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
+      sbPopoverHeading: this.commonUtilService.translateMessage('PLAY_AS'),
+      sbPopoverMainTitle: profile.handle,
+      actionsButtons: [
+        {
+          btntext: this.commonUtilService.translateMessage('YES'),
+          btnClass: 'popover-color'
+        },
+        {
+          btntext: this.commonUtilService.translateMessage('CHANGE_USER'),
+          btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+        }
+      ],
+      icon: null
+    }, {
+        cssClass: 'sb-popover info',
+      });
+      confirm.present({
+        ev: event
+      });
+      confirm.onDidDismiss((leftBtnClicked: any) => {
+        if (leftBtnClicked == null) {
+          return;
+        }
+        if (leftBtnClicked) {
+          this.playContent(isStreaming);
+        } else {
+          const playConfig: any = {};
+            playConfig.playContent = true;
+            playConfig.streaming = isStreaming;
+            this.navCtrl.push(UserAndGroupsPage, {
+              playConfig: playConfig
+            });
+        }
+      });
 
   }
 
