@@ -13,6 +13,7 @@ import {
 } from "sunbird-sdk";
 import {Inject, Injectable} from "@angular/core";
 import {CommonUtilService} from "@app/service";
+import {Events} from "ionic-angular";
 
 @Injectable()
 export class SplashscreenImportActionHandlerDelegate implements SplashscreenActionHandlerDelegate {
@@ -20,6 +21,7 @@ export class SplashscreenImportActionHandlerDelegate implements SplashscreenActi
               @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
               @Inject('PROFILE_SERVICE') private profileService: ProfileService,
               @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
+              private events: Events,
               private commonUtilService: CommonUtilService,) {
   }
 
@@ -62,6 +64,12 @@ export class SplashscreenImportActionHandlerDelegate implements SplashscreenActi
             this.commonUtilService.showToast('CONTENT_IMPORTED_FAILED');
           } else {
             this.commonUtilService.showToast('CONTENT_IMPORTED');
+          }
+        }).do((imported) => {
+          if (imported) {
+            this.events.publish('savedResources:update', {
+              update: true
+            });
           }
         }).mapTo(undefined) as any;
       }
