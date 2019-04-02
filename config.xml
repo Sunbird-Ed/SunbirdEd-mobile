@@ -120,4 +120,5 @@
     <plugin name="cordova-plugin-screen-orientation" spec="^3.0.1" />
     <plugin name="cordova-plugin-android-downloadmanager" spec="https://github.com/swayangjit/cordova-plugin-android-downloadmanager.git" />
     <engine name="android" spec="7.1.4" />
+    <plugin name="cordova-plugin-statusbar" spec="^2.4.2" />
 </widget>

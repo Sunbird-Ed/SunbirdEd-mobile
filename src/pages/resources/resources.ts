@@ -640,10 +640,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     if (!this.pageLoadedSuccess) {
       this.getPopularContent();
     }
-    this.subscribeGenieEvents();
+    this.subscribeSdkEvent();
   }
 
-  subscribeGenieEvents() {
+  subscribeSdkEvent() {
     this.eventSubscription = this.eventsBusService.events().subscribe((event: EventsBusEvent) => {
       if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
         this.setSavedContent();

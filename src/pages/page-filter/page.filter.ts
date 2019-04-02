@@ -22,7 +22,7 @@ import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from
   templateUrl: './page.filter.html'
 })
 export class PageFilter {
-  pagetAssemblefilter: PageAssembleFilter;
+  pagetAssemblefilter: PageAssembleFilter = {};
 
   callback: PageFilterCallback;
 

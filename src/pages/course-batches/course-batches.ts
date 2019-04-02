@@ -92,6 +92,7 @@ export class CourseBatchesPage implements OnInit {
       courseId: item.courseId,
       userId: this.userId,
       contentId: item.courseId,
+      batchStatus: item.status
     };
     this.courseService.enrollCourse(enrollCourseRequest).toPromise()
       .then((data: boolean) => {
@@ -105,9 +106,10 @@ export class CourseBatchesPage implements OnInit {
         });
       }, (error) => {
         this.zone.run(() => {
-          if (error && error.error === 'CONNECTION_ERROR') {
+          if (error && error.code === 'NETWORK_ERROR') {
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NO_INTERNET_MESSAGE'));
-          } else if (error && error.error === 'USER_ALREADY_ENROLLED_COURSE') {
+          } else if (error && error.response
+            && error.response.body && error.response.body.params && error.response.body.params.err === 'USER_ALREADY_ENROLLED_COURSE') {
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('ALREADY_ENROLLED_COURSE'));
           }
         });

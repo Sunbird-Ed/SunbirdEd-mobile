@@ -115,13 +115,13 @@ export class CoursesPage implements OnInit {
    * @param events
    * @param eventBusService
    * @param contentService
-   * @param preference
    * @param appGlobalService
    * @param courseUtilService
    * @param formAndFrameworkUtilService
    * @param commonUtilService
    * @param telemetryGeneratorService
    * @param network
+   * @param preferences
    */
   constructor(
     private appVersion: AppVersion,
@@ -663,7 +663,7 @@ export class CoursesPage implements OnInit {
           this.showOverlay = false;
           this.navigateToContentDetailsPage(content);
         } else {
-          this.subscribeGenieEvent();
+          this.subscribeSdkEvent();
           this.showOverlay = true;
           this.importContent([identifier], false);
         }
@@ -754,7 +754,7 @@ export class CoursesPage implements OnInit {
     this.showOverlay = false;
   }
 
-  subscribeGenieEvent() {
+  subscribeSdkEvent() {
     this.eventSubscription = this.eventBusService.events().subscribe((event: EventsBusEvent) => {
       this.ngZone.run(() => {
         if (event.type === DownloadEventType.PROGRESS) {

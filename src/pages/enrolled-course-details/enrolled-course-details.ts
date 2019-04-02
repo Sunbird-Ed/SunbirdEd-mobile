@@ -1,14 +1,5 @@
 import {Component, Inject, NgZone, ViewChild} from '@angular/core';
-import {
-  AlertController,
-  Events,
-  IonicPage,
-  Navbar,
-  NavController,
-  NavParams,
-  Platform,
-  PopoverController
-} from 'ionic-angular';
+import { AlertController, Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController} from 'ionic-angular';
 import * as _ from 'lodash';
 import {SocialSharing} from '@ionic-native/social-sharing';
 
@@ -209,7 +200,7 @@ export class EnrolledCourseDetailsPage {
     this.appGlobalService.getUserId();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
-    this.subscribeGenieEvent();
+    this.subscribeSdkEvent();
   }
 
   subscribeUtilityEvents() {
@@ -902,8 +893,9 @@ export class EnrolledCourseDetailsPage {
     }
     this.showResumeBtn = !!this.courseCardData.lastReadContentId;
     this.setContentDetails(this.identifier);
+    console.log('lastContentRead shown in ionViewWillEnter - ', this.courseCardData.lastReadContentId);
     // If courseCardData does not have a batch id then it is not a enrolled course
-    this.subscribeGenieEvent();
+    this.subscribeSdkEvent();
   }
 
   isCourseEnrolled(identifier: string) {
@@ -928,9 +920,9 @@ export class EnrolledCourseDetailsPage {
   }
 
   /**
-   * Subscribe genie event to get content download progress
+   * Subscribe Sunbird-SDK event to get content download progress
    */
-  subscribeGenieEvent() {
+  subscribeSdkEvent() {
     this.eventSubscription = this.eventsBusService.events()
       .subscribe((event: EventsBusEvent) => {
       this.zone.run(() => {
@@ -942,6 +934,7 @@ export class EnrolledCourseDetailsPage {
           }
           if (this.downloadProgress === 100) {
             this.getBatchDetails();
+            this.showLoading = false;
           }
         }
 
@@ -970,7 +963,8 @@ export class EnrolledCourseDetailsPage {
         // For content update available
         const hierarchyInfo = this.courseCardData.hierarchyInfo ? this.courseCardData.hierarchyInfo : null;
         const contentUpdateEvent = event as ContentUpdate;
-        if (contentUpdateEvent.payload && contentUpdateEvent.type === ContentEventType.UPDATE && hierarchyInfo === null) {
+        if (contentUpdateEvent.payload && contentUpdateEvent.payload.contentId === this.identifier
+          && contentUpdateEvent.type === ContentEventType.UPDATE && hierarchyInfo === null) {
           this.zone.run(() => {
             this.showLoading = true;
             this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.course, false);
@@ -1190,7 +1184,6 @@ export class EnrolledCourseDetailsPage {
     this.courseUtilService.showCredits(this.course, PageId.CONTENT_DETAIL, undefined, this.corRelationList);
   }
 
-  // TODO
   getContentState(returnRefresh: boolean) {
     if (this.courseCardData.batchId) {
       const request: GetContentStateRequest = {

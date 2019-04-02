@@ -1,15 +1,15 @@
-import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs} from './../../app/module.service';
-import {CommonUtilService} from './../../service/common-util.service';
-import {Injectable} from '@angular/core';
-import {TranslateService} from '@ngx-translate/core';
-import {App, Platform, Popover, PopoverController} from 'ionic-angular';
-import {QRAlertCallBack, QRScannerAlert} from './qrscanner_alert';
-import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
-import {QRScannerResultHandler} from './qrscanresulthandler.service';
-import {ProfileSettingsPage} from '../profile-settings/profile-settings';
-import {AppGlobalService} from '../../service/app-global.service';
-import {Subscription} from 'rxjs';
-import {Profile, ProfileType, TelemetryObject} from 'sunbird-sdk';
+import { GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs } from './../../app/module.service';
+import { CommonUtilService } from './../../service/common-util.service';
+import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { App, Platform, Popover, PopoverController } from 'ionic-angular';
+import { QRAlertCallBack, QRScannerAlert } from './qrscanner_alert';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { QRScannerResultHandler } from './qrscanresulthandler.service';
+import { ProfileSettingsPage } from '../profile-settings/profile-settings';
+import { AppGlobalService } from '../../service/app-global.service';
+import { Subscription, Observable } from 'rxjs';
+import { Profile, ProfileType, TelemetryObject } from 'sunbird-sdk';
 import {
   Environment,
   ImpressionSubtype,
@@ -21,6 +21,8 @@ import {
 } from '../../service/telemetry-constants';
 import { ContainerService } from '@app/service/container.services';
 import { TabsPage } from '../tabs/tabs';
+import { AndroidPermissionsService } from '@app/service/android-permissions/android-permissions.service';
+import { AndroidPermissionsStatus, AndroidPermission } from '@app/service/android-permissions/android-permission';
 
 @Injectable()
 export class SunbirdQRScanner {
@@ -34,7 +36,7 @@ export class SunbirdQRScanner {
     'TRY_AGAIN',
   ];
   private mQRScannerText;
-  readonly permissionList = ['android.permission.CAMERA'];
+  readonly permissionList = [AndroidPermission.CAMERA];
   backButtonFunc = undefined;
   private pauseSubscription?: Subscription;
   source: string;
@@ -50,6 +52,7 @@ export class SunbirdQRScanner {
     private commonUtil: CommonUtilService,
     private appGlobalService: AppGlobalService,
     private container: ContainerService,
+    private permission: AndroidPermissionsService,
   ) {
     const that = this;
     this.translate.get(this.QR_SCANNER_TEXT).subscribe((data) => {
@@ -80,46 +83,28 @@ export class SunbirdQRScanner {
     this.generateImpressionTelemetry(source);
     this.generateStartEvent(source);
 
-    // TODO
-    // this.permission.hasPermission(this.permissionList).then((response: any) => {
-    //   const result = JSON.parse(response);
-    //   if (result.status) {
-    //     const permissionResult = result.result;
-    //     const askPermission = [];
-    //     this.permissionList.forEach(element => {
-    //       if (!permissionResult[element]) {
-    //         askPermission.push(element);
-    //       }
-    //     });
+    this.permission.checkPermissions(this.permissionList)
+      .mergeMap((statusMap: { [key: string]: AndroidPermissionsStatus }) => {
+        const toRequest: AndroidPermission[] = [];
 
-    //     if (askPermission.length > 0) {
-    //       this.permission.requestPermission(askPermission).then((res: any) => {
-    //         const requestResult = JSON.parse(res);
-    //         if (requestResult.status) {
-    //           let permissionGranted = true;
-    //           const permissionRequestResult = requestResult.result;
-    //           askPermission.forEach(element => {
-    //             if (!permissionRequestResult[element]) {
-    //               permissionGranted = false;
-    //             }
-    //           });
+        for (const permission in statusMap) {
+          if (!statusMap[permission].hasPermission) {
+            toRequest.push(permission as AndroidPermission);
+          }
+        }
 
-    //           if (permissionGranted) {
-    //             this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source);
-    //           } else {
-    //             this.commonUtil.showToast('PERMISSION_DENIED');
-    //           }
-    //         }
-    //       }).catch((error) => {
+        if (!toRequest.length) {
+          return Observable.of({hasPermission: true});
+        }
 
-    //       });
-    //     } else {
-    //       this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source);
-    //     }
-    //   }
-    // }).catch(() => {
-    // });
-    this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source);
+        return this.permission.requestPermissions(toRequest);
+      }).toPromise().then((status: AndroidPermissionsStatus) => {
+        if (status && status.hasPermission) {
+          this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source);
+        } else {
+          this.commonUtil.showToast('PERMISSION_DENIED');
+        }
+      });
   }
 
   public stopScanner() {
