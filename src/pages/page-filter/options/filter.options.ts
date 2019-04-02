@@ -11,7 +11,7 @@ import { PageAssembleFilter } from 'sunbird-sdk';
   templateUrl: './filter.options.html'
 })
 export class PageFilterOptions {
-  pagetAssemblefilter: PageAssembleFilter;
+  pagetAssemblefilter: PageAssembleFilter = {};
   facets: any;
   backButtonFunc = undefined;
   selected: boolean;

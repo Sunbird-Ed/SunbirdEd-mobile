@@ -12,6 +12,7 @@ cordova-plugin=cordova-plugin-file-transfer
 cordova-plugin=cordova-plugin-inappbrowser
 cordova-plugin=cordova-plugin-console
 cordova-plugin=cordova-plugin-network-information
+cordova-plugin=cordova-plugin-statusbar
 cordova-plugin=https://github.com/adriano-di-giovanni/cordova-plugin-shared-preferences.git
 cordova-plugin=cordova-plugin-advanced-http
 cordova-plugin=cordova-plugin-android-permissions
