@@ -595,7 +595,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewDidLoad() {
-    this.generateImpressionEvent();
     this.appGlobalService.generateConfigInteractEvent(PageId.LIBRARY, this.isOnBoardingCardCompleted);
   }
 
@@ -673,12 +672,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   }
 
-  generateImpressionEvent() {
-    this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.VIEW, '',
-      PageId.LIBRARY,
-      Environment.HOME);
-  }
 
   scanQRCode() {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,

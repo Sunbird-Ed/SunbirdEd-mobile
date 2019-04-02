@@ -137,13 +137,6 @@ export class ProfilePage {
         this.imageUri = res.url;
       }
     });
-    this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.VIEW, '',
-      PageId.PROFILE,
-      Environment.USER, '', '', '',
-      undefined,
-      undefined
-    );
   }
 
   doRefresh(refresher?) {
