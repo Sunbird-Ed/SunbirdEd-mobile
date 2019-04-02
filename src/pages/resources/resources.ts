@@ -273,9 +273,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.events.subscribe('onboarding-card:completed', (param) => {
       this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
     });
-    this.events.subscribe('update_header', (data) => {
-      this.headerServie.showHeaderWithHomeButton(['search']);
-    });
   }
 
   ionViewWillLeave(): void {
@@ -725,6 +722,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewWillEnter() {
+    this.events.subscribe('update_header', (data) => {
+      this.headerServie.showHeaderWithHomeButton(['search']);
+    });
     this.headerObservable =this.headerServie.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });

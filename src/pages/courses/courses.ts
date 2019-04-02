@@ -173,15 +173,16 @@ export class CoursesPage implements OnInit, AfterViewInit {
     
   }
   ngAfterViewInit() {
-    this.events.subscribe('update_header', (data) => {
-      this.headerServie.showHeaderWithHomeButton(['search', 'filter']);
-    });
+    
   }
 
   ionViewDidEnter() {
     this.isVisible = true;
   }
   ionViewWillEnter() {
+    this.events.subscribe('update_header', (data) => {
+      this.headerServie.showHeaderWithHomeButton(['search', 'filter']);
+    });
     this.headerObservable =this.headerServie.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
