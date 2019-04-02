@@ -110,8 +110,7 @@ export class CourseBatchesPage implements OnInit {
       userId: this.userId,
       courseId: item.courseId,
       contentId: item.courseId,
-      batchId: item.id,
-      batchStatus: 1
+      batchId: item.id
     };
     this.courseService.enrollCourse(enrollCourseRequest)
       .then((data: any) => {
