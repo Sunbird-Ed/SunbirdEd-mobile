@@ -166,6 +166,11 @@ export class CollectionDetailsPage implements OnInit {
    * Rating comment
    */
   ratingComment = '';
+  headerConfig = {
+    showHeader : true,
+    showBurgerMenu: false,
+    actionButtons: []
+  };
 
   /**
    * Telemetry roll up object
@@ -231,6 +236,11 @@ export class CollectionDetailsPage implements OnInit {
    */
   ionViewWillEnter(): void {
     this.zone.run(() => {
+      this.headerConfig = this.headerService.getDefaultPageConfig();
+      this.headerConfig.actionButtons = [];
+      this.headerConfig.showHeader = false;
+      this.headerConfig.showBurgerMenu = false;
+      this.headerService.updatePageConfig(this.headerConfig);
       this.resetVariables();
       this.cardData = this.navParams.get('content');
       this.corRelationList = this.navParams.get('corRelation');
@@ -479,6 +489,7 @@ export class CollectionDetailsPage implements OnInit {
 
     if (Boolean(data.result.isAvailableLocally)) {
       this.showLoading = false;
+      this.refreshHeader();
       if (data.result.isUpdateAvailable && !this.isUpdateAvailable) {
         this.isUpdateAvailable = true;
         this.showLoading = true;
@@ -774,6 +785,7 @@ export class CollectionDetailsPage implements OnInit {
 
           if (this.downloadProgress === 100) {
             this.showLoading = false;
+            this.refreshHeader();
             this.contentDetail.isAvailableLocally = true;
           }
         }
@@ -1041,6 +1053,14 @@ export class CollectionDetailsPage implements OnInit {
       case 'more': this.showOverflowMenu($event);
                       break;
     }
+  }
+
+  refreshHeader() {
+    this.headerConfig = this.headerService.getDefaultPageConfig();
+    this.headerConfig.actionButtons = [];
+    this.headerConfig.showBurgerMenu = false;
+    this.headerConfig.showHeader = true;
+    this.headerServie.updatePageConfig(this.headerConfig);
   }
 
 }
