@@ -242,6 +242,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 	 * Angular life cycle hooks
 	 */
   ngOnInit() {
+   
     this.getCurrentUser();
   }
 
@@ -690,9 +691,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewDidEnter() {
-    this.headerObservable =this.headerServie.headerEventEmitted$.subscribe(eventName => {
-      this.handleHeaderEvents(eventName);
-    });
     this.preference.getString('show_app_walkthrough_screen')
       .then(value => {
         if (value === 'true') {
@@ -727,6 +725,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewWillEnter() {
+    this.headerObservable =this.headerServie.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
     this.headerServie.showHeaderWithHomeButton(['search']);
 
     this.getCategoryData();

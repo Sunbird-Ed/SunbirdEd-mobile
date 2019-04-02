@@ -222,16 +222,18 @@ export class CollectionDetailsPage implements OnInit {
    * Angular life cycle hooks
   */
   ngOnInit() {
+    
   }
 
   /**
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
+    this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
     this.zone.run(() => {
-      this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
-        this.handleHeaderEvents(eventName);
-      });
+      
       this.resetVariables();
       this.cardData = this.navParams.get('content');
       this.corRelationList = this.navParams.get('corRelation');

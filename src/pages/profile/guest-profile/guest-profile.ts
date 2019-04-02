@@ -119,7 +119,7 @@ export class GuestProfilePage implements OnInit, AfterViewInit {
 	 * Angular life cycle hooks
 	 */
   ngOnInit() {
-    
+
   }
 
   ionViewWillEnter() {

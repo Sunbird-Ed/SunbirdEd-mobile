@@ -153,7 +153,6 @@ export class ProfilePage implements OnInit, AfterViewInit {
 	 * Angular life cycle hooks
 	 */
   ngOnInit() {
-    
   }
 
   ionViewWillEnter() {

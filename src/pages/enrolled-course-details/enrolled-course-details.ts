@@ -202,7 +202,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
    * Angular life cycle hooks
   */
  ngOnInit() {
-    
+ 
   }
 
   subscribeUtilityEvents() {
