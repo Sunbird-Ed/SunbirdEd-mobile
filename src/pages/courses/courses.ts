@@ -575,7 +575,12 @@ export class CoursesPage implements OnInit, AfterViewInit {
   }
 
   search() {
-    this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_COURSE_TAB, source: PageId.COURSES });
+    this.navCtrl.push(SearchPage, {
+      contentType: ContentType.FOR_COURSE_TAB,
+      source: PageId.COURSES,
+      enrolledCourses: this.enrolledCourses,
+      guestUser: this.guestUser
+    });
   }
 
   showFilter() {
@@ -718,7 +723,9 @@ export class CoursesPage implements OnInit, AfterViewInit {
       params = {
         headerTitle: headerTitle,
         pageName: ViewMore.PAGE_COURSE_POPULAR,
-        requestParams: searchQuery
+        requestParams: searchQuery,
+        enrolledCourses: this.enrolledCourses,
+        guestUser: this.guestUser
       };
     }
     const values = new Map();

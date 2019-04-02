@@ -1,6 +1,6 @@
 <ion-card [ngClass]="{'grid-disabled': cardDisabled}">
   <ion-grid no-padding>
-    <ion-row class="top-container" no-padding (click)="navigateToDetailPage(course, layoutName);">
+    <ion-row class="top-container" no-padding (click)="checkRetiredOpenBatch(course, layoutName);">
       <ion-col col-12>
         <pb-horizontal *ngIf="course?.cProgress" [progress]="course?.cProgress" class="course-progress" [ngClass]="{'blurbackground': batchExp}"></pb-horizontal>
         <div class="img-container">
