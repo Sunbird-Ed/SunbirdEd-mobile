@@ -608,6 +608,7 @@ export class CollectionDetailsEtbPage implements OnInit {
                 this.showDownloadBtn = true;
                 this.isDownloadStarted = false;
                 this.showLoading = false;
+                this.refreshHeader();
               }
             }
             if (this.faultyIdentifiers.length > 0) {
@@ -624,6 +625,7 @@ export class CollectionDetailsEtbPage implements OnInit {
             }
           } else if (data.result && data.result[0].status === 'NOT_FOUND') {
             this.showLoading = false;
+            this.refreshHeader();
             this.showChildrenLoader = false;
             this.childrenData.length = 0;
           }
@@ -636,6 +638,7 @@ export class CollectionDetailsEtbPage implements OnInit {
           this.showDownloadBtn = true;
           this.isDownloadStarted = false;
           this.showLoading = false;
+          this.refreshHeader();
           if (Boolean(this.isUpdateAvailable)) {
             //  this.showChildrenLoader = true;
             this.setChildContents();
@@ -814,6 +817,7 @@ export class CollectionDetailsEtbPage implements OnInit {
             }
             if (this.queuedIdentifiers.length === this.currentCount) {
               this.showLoading = false;
+              this.refreshHeader();
               this.isDownloadStarted = false;
               this.showDownloadBtn = false;
               this.isDownloadCompleted = true;
