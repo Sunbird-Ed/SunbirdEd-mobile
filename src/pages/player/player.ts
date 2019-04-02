@@ -39,7 +39,11 @@ export class PlayerPage implements playerActionHandlerDelegate {
 
     let previewElement: HTMLIFrameElement = document.getElementById('preview') as HTMLIFrameElement;
     this.config['uid'] = this.config['context'].actor.id;
-    previewElement.contentWindow.location.reload();
+    // This is to reload a iframe as reload method not working on cross-origin.
+    const src = previewElement.src;
+    previewElement.src = '';
+    previewElement.src = src;
+
     previewElement.onload = () => {
 
       console.log("config", this.config);

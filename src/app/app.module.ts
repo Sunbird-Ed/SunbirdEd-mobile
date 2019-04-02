@@ -257,7 +257,7 @@ export const sunbirdSdkFactory =
             webLink: '',
             text: '',
             icon: '',
-            bgImage: ''
+            bgImage: 'assets/icons/splacebackground_1.png'
           },
           overlay: {
             enableUserSwitcher: false,
