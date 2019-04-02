@@ -257,9 +257,6 @@ export class CollectionDetailsEtbPage implements OnInit {
 	 * Angular life cycle hooks
 	 */
   ngOnInit() {
-    this.headerServie.headerEventEmitted$.subscribe(eventName => {
-      // this.handleHeaderEvents(eventName);
-    });
   }
 
   ionViewDidLoad() {

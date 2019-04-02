@@ -182,6 +182,7 @@ export class CollectionDetailsPage implements OnInit {
   isChildClickable = false;
 
   @ViewChild(Navbar) navBar: Navbar;
+  headerObservable: any;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -221,16 +222,18 @@ export class CollectionDetailsPage implements OnInit {
    * Angular life cycle hooks
   */
   ngOnInit() {
-    this.headerService.headerEventEmitted$.subscribe(eventName => {
-      this.handleHeaderEvents(eventName);
-    });
+    
   }
 
   /**
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
+    this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
     this.zone.run(() => {
+      
       this.resetVariables();
       this.cardData = this.navParams.get('content');
       this.corRelationList = this.navParams.get('corRelation');
@@ -1030,6 +1033,7 @@ export class CollectionDetailsPage implements OnInit {
    */
   ionViewWillLeave(): void {
     // this.downloadProgress = '';
+    this.headerObservable.unsubscribe();
     this.downloadProgress = 0;
     this.events.unsubscribe('genie.event');
   }
