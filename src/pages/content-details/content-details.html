@@ -5,12 +5,12 @@
 		<div *ngIf="streamingUrl">
 		<div>
 			<img class="sb-player-container" src='{{content?.appIcon}}'>
-			<div class="sb-overlay-container">
-				<div class="sb-circle" (click)="handleNavBackButton()">
+			<div class="sb-overlay-container" (click)="showSwitchUserAlert(false)">
+				<div class="sb-circle" (click)="handleNavBackButton();$event.stopPropagation()">
 					<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
 				</div>
 				<div class="sb-common-player-group sb-play-title-group">
-					<button ion-button clear icon-only class="sb-common-title" (click)="showSwitchUserAlert(false)">
+					<button ion-button clear icon-only class="sb-common-title">
 						<ion-icon ios="ios-play" md="md-play" class="sb-common-white-icon"></ion-icon>
 					</button>
 				</div>
@@ -31,12 +31,12 @@
 		</div>
 		<div *ngIf="content?.downloadable">
 				<img class="sb-player-container" src='{{content?.appIcon}}'>
-				<div class="sb-overlay-container">
-					<div class="sb-circle" (click)="handleNavBackButton()">
+				<div class="sb-overlay-container" (click)="showSwitchUserAlert(false)">
+					<div class="sb-circle" (click)="handleNavBackButton();$event.stopPropagation()">
 						<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
 					</div>
 					<div class="sb-common-player-group sb-play-title-group">
-						<button ion-button clear icon-only class="sb-common-title" (click)="showSwitchUserAlert(false)">
+						<button ion-button clear icon-only class="sb-common-title">
 							<ion-icon ios="ios-play" md="md-play" class="sb-common-white-icon"></ion-icon>
 						</button>
 					</div>
@@ -47,12 +47,12 @@
 	<div *ngIf="!commonUtilService.networkInfo.isNetworkAvailable">
 		<div class="sb-play-container sb-player-container" *ngIf="content?.downloadable">
 			<img class="sb-player-container" src='{{content?.appIcon}}'>
-			<div class="sb-overlay-container">
-				<div class="sb-circle" (click)="handleNavBackButton()">
+			<div class="sb-overlay-container" (click)="showSwitchUserAlert(false)">
+				<div class="sb-circle" (click)="handleNavBackButton();$event.stopPropagation()">
 					<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
 				</div>
 				<div class="sb-common-player-group sb-play-title-group">
-					<button ion-button clear icon-only class="sb-common-title" (click)="showSwitchUserAlert(false)">
+					<button ion-button clear icon-only class="sb-common-title">
 						<ion-icon ios="ios-play" md="md-play" class="sb-common-white-icon"></ion-icon>
 					</button>
 				</div>

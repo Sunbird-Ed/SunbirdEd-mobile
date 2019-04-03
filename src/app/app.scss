@@ -383,7 +383,7 @@ input::placeholder {
 
 /* Ionic component Overrides */
 .toolbar-md{
-  min-height:50px;
+ // min-height:50px;
 }
 
 .toolbar-title-md {
@@ -643,4 +643,10 @@ padding-top: 12px !important;
 
 ion-content.avoid-bottom-tabs-space .scroll-content{
   padding-bottom: 88px !important;
+}
+
+ion-navbar {
+  .bar-button-md, .toolbar-md-white .bar-button-default-md{
+    color: $primary-color !important;
+  }
 }

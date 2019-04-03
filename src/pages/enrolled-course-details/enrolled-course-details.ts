@@ -14,6 +14,7 @@ import {
   Navbar,
   AlertController
 } from 'ionic-angular';
+import { Observable } from 'rxjs/Observable';
 import * as _ from 'lodash';
 import { SocialSharing } from '@ionic-native/social-sharing';
 
@@ -166,6 +167,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
   isBatchNotStarted = false;
 
   @ViewChild(Navbar) navBar: Navbar;
+  headerObservable: any;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -200,9 +202,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
    * Angular life cycle hooks
   */
  ngOnInit() {
-    this.headerService.headerEventEmitted$.subscribe(eventName => {
-      this.handleHeaderEvents(eventName);
-    });
+ 
   }
 
   subscribeUtilityEvents() {
@@ -996,6 +996,9 @@ export class EnrolledCourseDetailsPage implements OnInit {
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
+    this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
     this.downloadSize = 0;
     this.courseCardData = this.navParams.get('content');
     this.corRelationList = this.navParams.get('corRelation');
@@ -1103,6 +1106,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
   ionViewWillLeave(): void {
     this.isNavigatingWithinCourse = true;
     this.events.unsubscribe('genie.event');
+    this.headerObservable.unsubscribe();
     // TODO: this.events.unsubscribe(EventTopics.UNENROL_COURSE_SUCCESS);
   }
 

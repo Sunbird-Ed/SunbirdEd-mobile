@@ -166,6 +166,11 @@ export class CollectionDetailsPage implements OnInit {
    * Rating comment
    */
   ratingComment = '';
+  headerConfig = {
+    showHeader : true,
+    showBurgerMenu: false,
+    actionButtons: []
+  };
 
   /**
    * Telemetry roll up object
@@ -182,6 +187,7 @@ export class CollectionDetailsPage implements OnInit {
   isChildClickable = false;
 
   @ViewChild(Navbar) navBar: Navbar;
+  headerObservable: any;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -221,16 +227,22 @@ export class CollectionDetailsPage implements OnInit {
    * Angular life cycle hooks
   */
   ngOnInit() {
-    this.headerService.headerEventEmitted$.subscribe(eventName => {
-      this.handleHeaderEvents(eventName);
-    });
+    
   }
 
   /**
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
+    this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
     this.zone.run(() => {
+      this.headerConfig = this.headerService.getDefaultPageConfig();
+      this.headerConfig.actionButtons = [];
+      this.headerConfig.showHeader = false;
+      this.headerConfig.showBurgerMenu = false;
+      this.headerService.updatePageConfig(this.headerConfig);
       this.resetVariables();
       this.cardData = this.navParams.get('content');
       this.corRelationList = this.navParams.get('corRelation');
@@ -479,6 +491,7 @@ export class CollectionDetailsPage implements OnInit {
 
     if (Boolean(data.result.isAvailableLocally)) {
       this.showLoading = false;
+      this.refreshHeader();
       if (data.result.isUpdateAvailable && !this.isUpdateAvailable) {
         this.isUpdateAvailable = true;
         this.showLoading = true;
@@ -597,6 +610,7 @@ export class CollectionDetailsPage implements OnInit {
                 this.showDownloadBtn = true;
                 this.isDownloadStarted = false;
                 this.showLoading = false;
+                this.refreshHeader();
               }
             }
             if (this.faultyIdentifiers.length > 0) {
@@ -613,6 +627,7 @@ export class CollectionDetailsPage implements OnInit {
             }
           } else if (data.result && data.result[0].status === 'NOT_FOUND') {
             this.showLoading = false;
+            this.refreshHeader();
             this.showChildrenLoader = false;
             this.childrenData.length = 0;
           }
@@ -625,6 +640,7 @@ export class CollectionDetailsPage implements OnInit {
           this.showDownloadBtn = true;
           this.isDownloadStarted = false;
           this.showLoading = false;
+          this.refreshHeader();
           if (Boolean(this.isUpdateAvailable)) {
             this.setChildContents();
           } else {
@@ -774,6 +790,7 @@ export class CollectionDetailsPage implements OnInit {
 
           if (this.downloadProgress === 100) {
             this.showLoading = false;
+            this.refreshHeader();
             this.contentDetail.isAvailableLocally = true;
           }
         }
@@ -787,6 +804,7 @@ export class CollectionDetailsPage implements OnInit {
             }
             if (this.queuedIdentifiers.length === this.currentCount) {
               this.showLoading = false;
+              this.refreshHeader();
               this.isDownloadStarted = false;
               this.showDownloadBtn = false;
               this.isDownloadCompleted = true;
@@ -798,14 +816,17 @@ export class CollectionDetailsPage implements OnInit {
             // this condition is for when the child content update is available and we have downloaded parent content
             // but we have to refresh only the child content.
             this.showLoading = false;
+            this.refreshHeader();
             this.setContentDetails(this.identifier, false);
           } else {
             if (this.isUpdateAvailable && res.data.identifier === this.contentDetail.identifier) {
               this.showLoading = false;
+              this.refreshHeader();
               this.setContentDetails(this.identifier, false);
             } else {
               if (res.data.identifier === this.contentDetail.identifier) {
                 this.showLoading = false;
+                this.refreshHeader();
                 this.updateSavedResources();
                 this.setChildContents();
                 this.contentDetail.isAvailableLocally = true;
@@ -1030,6 +1051,7 @@ export class CollectionDetailsPage implements OnInit {
    */
   ionViewWillLeave(): void {
     // this.downloadProgress = '';
+    this.headerObservable.unsubscribe();
     this.downloadProgress = 0;
     this.events.unsubscribe('genie.event');
   }
@@ -1041,6 +1063,14 @@ export class CollectionDetailsPage implements OnInit {
       case 'more': this.showOverflowMenu($event);
                       break;
     }
+  }
+
+  refreshHeader() {
+    this.headerConfig = this.headerService.getDefaultPageConfig();
+    this.headerConfig.actionButtons = [];
+    this.headerConfig.showBurgerMenu = false;
+    this.headerConfig.showHeader = true;
+    this.headerService.updatePageConfig(this.headerConfig);
   }
 
 }

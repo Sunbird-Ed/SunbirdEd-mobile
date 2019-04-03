@@ -156,6 +156,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   refresh: boolean;
   toast: any;
   networkSubscription: Subscription;
+  headerObservable: any;
   constructor(
     public navCtrl: NavController,
     private ngZone: NgZone,
@@ -241,10 +242,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 	 * Angular life cycle hooks
 	 */
   ngOnInit() {
+   
     this.getCurrentUser();
-    this.headerServie.headerEventEmitted$.subscribe(eventName => {
-      this.handleHeaderEvents(eventName);
-    });
   }
 
   async presentToastWithOptions() {
@@ -274,14 +273,12 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.events.subscribe('onboarding-card:completed', (param) => {
       this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
     });
-    this.events.subscribe('update_header', (data) => {
-      this.headerServie.showHeaderWithHomeButton(['search']);
-    });
   }
 
   ionViewWillLeave(): void {
     this.events.unsubscribe('genie.event');
     this.events.unsubscribe('update_header');
+    this.headerObservable.unsubscribe();
     if (this.networkSubscription) {
       this.networkSubscription.unsubscribe();
       if (this.toast) {
@@ -725,6 +722,12 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewWillEnter() {
+    this.events.subscribe('update_header', (data) => {
+      this.headerServie.showHeaderWithHomeButton(['search']);
+    });
+    this.headerObservable =this.headerServie.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
     this.headerServie.showHeaderWithHomeButton(['search']);
 
     this.getCategoryData();

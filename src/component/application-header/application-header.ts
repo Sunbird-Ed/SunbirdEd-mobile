@@ -31,7 +31,6 @@ export class ApplicationHeaderComponent implements OnInit {
     this.setLanguageValue();
     this.events.subscribe('onAfterLanguageChange:update', (res) => {
       if (res && res.selectedLanguage) {
-       // this.selectedLanguage = res.selectedLanguage;
         this.setLanguageValue();
       }
     });
@@ -41,11 +40,9 @@ export class ApplicationHeaderComponent implements OnInit {
     this.setAppLogo();
     this.setAppVersion();
     this.events.subscribe('user-profile-changed', (res) => {
-      console.log('Events --------------- user-profile-changed--------');
      this.setAppLogo();
     });
     this.events.subscribe('app-global:profile-obj-changed', (res) => {
-      console.log('Events --------------- app-global:profile-obj-changed-------');
       this.setAppLogo();
      });
   }
@@ -75,15 +72,12 @@ export class ApplicationHeaderComponent implements OnInit {
 
   setAppLogo() {
     if (!this.appGlobalService.isUserLoggedIn()) {
-      console.log('this.appGlobalService.isGuestUser ----------', this.appGlobalService.isGuestUser);
       this.isLoggedIn = false;
       this.appLogo = './assets/imgs/ic_launcher.png';
       this.appVersion.getAppName().then((appName: any) => {
-        console.log('App name ----------', appName);
         this.appName = appName;
       });
     } else {
-      console.log('this.appGlobalService.isGuestUser ELSE ----------', this.appGlobalService.isGuestUser);
       this.isLoggedIn = true;
       this.preference.getString('app_logo').then(value => {
         this.appLogo = value;
@@ -103,6 +97,7 @@ export class ApplicationHeaderComponent implements OnInit {
   }
 
   emitSideMenuItemEvent($event, menuItem) {
+    this.toggleMenu();
     this.sideMenuItemEvent.emit({ menuItem });
   }
 
