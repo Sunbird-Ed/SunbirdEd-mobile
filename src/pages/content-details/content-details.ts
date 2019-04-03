@@ -449,44 +449,6 @@ export class ContentDetailsPage {
   }
 
 
-  //     const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
-  //       content: this.content,
-  //       pageId: PageId.CONTENT_DETAIL,
-  //       rating: this.userRating,
-  //       comment: this.ratingComment,
-  //       popupType: popupType,
-  //       actionsButtons: [
-  //         {
-  //           btntext: 'Rate',
-  //           btnClass: 'popover-color'
-  //         },
-  //       ],
-  //     }, {
-  //         cssClass: 'sb-popover info'
-  //       });
-  //     popUp.present({
-  //       ev: event
-  //     });
-  //     popUp.onDidDismiss(data => {
-  //       if (data && data.message === 'rating.success') {
-  //         this.userRating = data.rating;
-  //         this.ratingComment = data.comment;
-  //       }
-  //     });
-  //   } else {
-  //     paramsMap['IsPlayed'] = 'N';
-  //     this.commonUtilService.showToast('TRY_BEFORE_RATING');
-  //   }
-  //   this.telemetryGeneratorService.generateInteractTelemetry(
-  //     InteractType.TOUCH,
-  //     InteractSubtype.RATING_CLICKED,
-  //     Environment.HOME,
-  //     PageId.CONTENT_DETAIL,
-  //     undefined,
-  //     paramsMap,
-  //     this.objRollup,
-  //     this.corRelationList);
-  // }
 
   /**
    * To set content details in local variable
@@ -820,6 +782,7 @@ export class ContentDetailsPage {
       .catch((error) => {
         console.log('error while loading content details', error);
         if (this.isDownloadStarted) {
+          this.showDownload = false;
           this.content.downloadable = false;
           this.isDownloadStarted = false;
         }
@@ -846,10 +809,6 @@ export class ContentDetailsPage {
             }
         }
 
-        // Present Toast when the Device is Offline
-        // if (!this.commonUtilService.networkInfo.isNetworkAvailable && !this.content.isAvailableLocally) {
-        // this.presentToastForOffline();
-        // }
 
         // Get child content
         if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
@@ -898,29 +857,6 @@ export class ContentDetailsPage {
     console.log('djncjevej', this.content);
     console.log('isUpdateAvail', this.isUpdateAvail);
     console.log('UDPATEAVAILABLE-----', this.content.downloadable && this.isUpdateAvail);
-    // const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
-    //   sbPopoverHeading: this.commonUtilService.translateMessage('DOWNLOAD'),
-    //   sbPopoverMainTitle: this.cardData.name + this.cardData.subject,
-    //   actionsButtons: [
-    //     {
-    //       btntext: this.commonUtilService.translateMessage('DOWNLOAD'),
-    //       btnClass: 'popover-color'
-    //     },
-    //   ],
-    //   icon: null,
-    //   metaInfo: this.cardData.contentType +
-    //     'items' + '(' + this.fileSizePipe.transform(this.cardData.size, 2) + ')',
-    // }, {
-    //     cssClass: 'sb-popover info',
-    //   });
-    // popover.present({
-    //   ev: event
-    // });
-    // popover.onDidDismiss((canDownload: boolean = false) => {
-    //   if (canDownload) {
-    //     this.downloadContent();
-    //   }
-    // });
     const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
       sbPopoverMainTitle: this.content.name + this.content.subject,
       icon: null,
@@ -989,6 +925,7 @@ export class ContentDetailsPage {
       this.zone.run(() => {
         this.telemetryGeneratorService.generateContentCancelClickedTelemetry(this.content, this.downloadProgress);
         this.isDownloadStarted = false;
+        this.showDownload = false;
         this.downloadProgress = '';
         if (!this.isUpdateAvail) {
           this.content.downloadable = false;
