@@ -55,12 +55,13 @@ export class PlayerPage implements playerActionHandlerDelegate {
   }
 
   ionViewDidEnter() {
-    this.screenOrientation.lock('landscape');
+    this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.LANDSCAPE);
   }
 
   ionViewWillLeave() {
     this.statusBar.show();
     this.screenOrientation.unlock();
+    this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
     this.unregisterBackButton();
   }
 
