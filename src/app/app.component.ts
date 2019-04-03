@@ -1,6 +1,6 @@
 import {Observable} from 'rxjs';
 import {ProfileSettingsPage} from './../pages/profile-settings/profile-settings';
-import {Component, Inject, NgZone, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {App, Events, Nav, Platform, PopoverController, ToastController} from 'ionic-angular';
 import {StatusBar} from '@ionic-native/status-bar';
 import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, LOGIN_TEACHER_TABS} from './module.service';
@@ -28,7 +28,7 @@ import {
   TelemetryService,
 } from 'sunbird-sdk';
 import {tap} from 'rxjs/operators';
-import {Environment, InteractSubtype, InteractType, PageId} from '../service/telemetry-constants';
+import {Environment, InteractSubtype, InteractType, PageId, ImpressionType} from '../service/telemetry-constants';
 import {TabsPage} from '@app/pages/tabs/tabs';
 import {ContainerService} from '@app/service/container.services';
 import {AndroidPermissionsService} from '../service/android-permissions/android-permissions.service';
@@ -43,7 +43,7 @@ import {SplashscreenImportActionHandlerDelegate} from '@app/service/sunbird-spla
     SplashscreenImportActionHandlerDelegate
   ]
 })
-export class MyApp {
+export class MyApp implements AfterViewInit {
 
   @ViewChild(Nav) nav;
   rootPage: any;
@@ -99,24 +99,27 @@ export class MyApp {
       this.requestAppPermissions();
       this.makeEntryInSupportFolder();
       this.checkForTncUpdate();
-      this.handleSunbirdSplashScreenActions();
       await this.getSelectedLanguage();
       await this.navigateToAppropriatePage();
       this.preferences.putString(PreferenceKey.CONTENT_CONTEXT, '').subscribe();
       window['thisRef'] = this;
       this.statusBar.styleBlackTranslucent();
       this.handleBackButton();
-
-      this.platform.resume.subscribe(() => {
-        telemetryGeneratorService.generateInterruptTelemetry('resume', '');
-        this.handleSunbirdSplashScreenActions();
-      });
-      this.platform.pause.subscribe(() => {
-        telemetryGeneratorService.generateInterruptTelemetry('background', '');
-      });
     });
 
   }
+
+  ngAfterViewInit(): void {
+    this.platform.resume.subscribe(() => {
+      this.telemetryGeneratorService.generateInterruptTelemetry('resume', '');
+      this.handleSunbirdSplashScreenActions();
+    });
+
+    this.platform.pause.subscribe(() => {
+      this.telemetryGeneratorService.generateInterruptTelemetry('background', '');
+    });
+  }
+
 
   handleBackButton() {
     this.platform.registerBackButtonAction(() => {
@@ -159,6 +162,8 @@ export class MyApp {
     this.events.subscribe('tab.change', (data) => {
       this.zone.run(() => {
         this.generateInteractEvent(data);
+        // Added below code to generate Impression Before Interact for Library,Courses,Profile
+        this.generateImpressionEvent(data);
       });
     });
 
@@ -261,7 +266,7 @@ export class MyApp {
             return;
           }
 
-          switch (profileType.toUpperCase()) {
+          switch (profileType) {
             case ProfileType.TEACHER: {
               await this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise();
               initTabs(this.containerService, GUEST_TEACHER_TABS);
@@ -441,7 +446,14 @@ export class MyApp {
       undefined
     );
   }
-
+ private generateImpressionEvent(pageid: string) {
+  pageid = pageid.toLowerCase();
+   const env = pageid.localeCompare(PageId.PROFILE) ? Environment.HOME : Environment.USER;
+  this.telemetryGeneratorService.generateImpressionTelemetry(
+    ImpressionType.VIEW, '',
+    pageid,
+    env);
+ }
   private navigateToContentDetails(content) {
     if (content.contentData.contentType === ContentType.COURSE) {
       this.nav.push(EnrolledCourseDetailsPage, {

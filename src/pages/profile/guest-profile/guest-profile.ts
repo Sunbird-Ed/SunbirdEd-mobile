@@ -92,14 +92,10 @@ export class GuestProfilePage {
   }
 
   ionViewDidLoad() {
-    this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.VIEW, '',
-      PageId.GUEST_PROFILE,
-      Environment.HOME
-    );
 
     this.appGlobalService.generateConfigInteractEvent(PageId.GUEST_PROFILE);
   }
+
 
   refreshProfileData(refresher: any = false, showLoader: boolean = true) {
     this.loader = this.commonUtilService.getLoader();

@@ -87,7 +87,7 @@ export class PersonalDetailsEditPage {
     this.profileEditForm = this.fb.group({
       states: userState || [],
       districts: userDistrict || [],
-      name: [profilename.trim(), Validators.pattern('^[a-zA-Z ]*$')],
+      name: [profilename.trim(), Validators.required],
     });
     this.enableSubmitButton();
   }
