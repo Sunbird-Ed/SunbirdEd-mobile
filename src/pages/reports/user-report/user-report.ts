@@ -10,7 +10,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { AppVersion } from '@ionic-native/app-version';
 import { AppGlobalService } from '../../../service/app-global.service';
 import { DatePipe } from '@angular/common';
-import { CommonUtilService } from '@app/service';
+import { CommonUtilService, AppHeaderService } from '@app/service';
 
 @IonicPage()
 @Component({
@@ -35,7 +35,8 @@ export class UserReportPage {
     private appVersion: AppVersion,
     private deviceInfoService: DeviceInfoService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private commonUtilService: CommonUtilService) {
+    private commonUtilService: CommonUtilService,
+    private headerService: AppHeaderService) {
 
     this.downloadDirectory = this.file.dataDirectory;
     this.deviceInfoService.getDownloadDirectoryPath()
@@ -85,6 +86,9 @@ export class UserReportPage {
   }
 
   ionViewDidLoad() {
+    let header = this.headerService.getDefaultPageConfig();
+      header.showHeader = false;
+      this.headerService.updatePageConfig(header);
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
       PageId.REPORTS_USER_ASSESMENT_DETAILS,
