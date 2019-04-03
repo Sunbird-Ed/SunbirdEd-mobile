@@ -1,5 +1,14 @@
 import {Component, Inject, NgZone, ViewChild} from '@angular/core';
-import { AlertController, Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController} from 'ionic-angular';
+import {
+  AlertController,
+  Events,
+  IonicPage,
+  Navbar,
+  NavController,
+  NavParams,
+  Platform,
+  PopoverController
+} from 'ionic-angular';
 import * as _ from 'lodash';
 import {SocialSharing} from '@ionic-native/social-sharing';
 
@@ -135,6 +144,7 @@ export class EnrolledCourseDetailsPage {
 
   isNavigatingWithinCourse = false;
 
+  contentStatusData: ContentStateResponse;
 
   /**
    * To hold start date of a course
@@ -150,7 +160,7 @@ export class EnrolledCourseDetailsPage {
   faultyIdentifiers: Array<any> = [];
   isDownloadStarted = false;
   isDownloadCompleted = false;
-  batchDetails: any;
+  batchDetails: Batch;
   batchExp: Boolean = false;
   userId = '';
   userRating = 0;
@@ -702,11 +712,13 @@ export class EnrolledCourseDetailsPage {
   /**
    * Function to get status of child contents
    */
-  getStatusOfChildContent(childrenData, contentStatusData) {
+  getStatusOfChildContent(childrenData) {
+    const contentStatusData = this.contentStatusData;
+    const lastReadContent = this.courseCardData.lastReadContentId;
     this.zone.run(() => {
       childrenData.forEach(childContent => {
         // Inside First level
-        let contentlen = 0;
+        let contentLength = 0;
         childContent.children.every(eachContent => {
           // Inside resource level
           if (childContent.hasOwnProperty('status') && !childContent.status) {
@@ -718,9 +730,9 @@ export class EnrolledCourseDetailsPage {
               contentStatusData.contentList.every(contentData => {
                 // checking for each content status
                 if (eachContent.identifier === contentData.contentId) {
-                  contentlen = contentlen + 1;
+                  contentLength = contentLength + 1;
                   // checking for contentId from getContentState and lastReadContentId
-                  if (contentData.contentId === this.courseCardData.lastReadContentId) {
+                  if (contentData.contentId === lastReadContent) {
                     childContent.lastRead = true;
                     console.log(childContent.lastRead);
                   }
@@ -747,10 +759,12 @@ export class EnrolledCourseDetailsPage {
           }
         });
 
-        if (childContent.children.length === contentlen) {
+        if (childContent.children.length === contentLength) {
+          console.log('whether childrenData Length is equal in if part');
           return true;
         } else {
           childContent.status = false;
+          console.log('whether children data is not equal in else part');
           return true;
         }
       });
@@ -925,54 +939,55 @@ export class EnrolledCourseDetailsPage {
   subscribeSdkEvent() {
     this.eventSubscription = this.eventsBusService.events()
       .subscribe((event: EventsBusEvent) => {
-      this.zone.run(() => {
-        // Show download percentage
-        if (event.type === DownloadEventType.PROGRESS) {
-          const downloadEvent = event as DownloadProgress;
-          if (downloadEvent.payload.progress) {
-            this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
+        this.zone.run(() => {
+          // Show download percentage
+          if (event.type === DownloadEventType.PROGRESS) {
+            const downloadEvent = event as DownloadProgress;
+            if (downloadEvent.payload.identifier === this.identifier) {
+              this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
+              if (this.downloadProgress === 100) {
+                this.getBatchDetails();
+                this.showLoading = false;
+              }
+            }
           }
-          if (this.downloadProgress === 100) {
-            this.getBatchDetails();
+
+          // Get child content
+          if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
             this.showLoading = false;
-          }
-        }
+            const contentImportCompleted = event as ContentImportCompleted;
+            if (this.queuedIdentifiers.length && this.isDownloadStarted) {
+              if (_.includes(this.queuedIdentifiers, contentImportCompleted.payload.contentId)) {
+                this.currentCount++;
+                console.log('count-', this.currentCount);
+              }
 
-        // Get child content
-        if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
-          this.showLoading = false;
-          const contentImportCompleted = event as ContentImportCompleted;
-          if (this.queuedIdentifiers.length && this.isDownloadStarted) {
-            if (_.includes(this.queuedIdentifiers, contentImportCompleted.payload.contentId)) {
-              this.currentCount++;
+              if (this.queuedIdentifiers.length === this.currentCount) {
+                this.isDownloadStarted = false;
+                this.currentCount = 0;
+                this.isDownloadCompleted = true;
+                this.downloadIdentifiers.length = 0;
+                this.queuedIdentifiers.length = 0;
+              }
+            } else {
+              this.course.isAvailableLocally = true;
+              this.setChildContents();
             }
-
-            if (this.queuedIdentifiers.length === this.currentCount) {
-              this.isDownloadStarted = false;
-              this.currentCount = 0;
-              this.isDownloadCompleted = true;
-              this.downloadIdentifiers.length = 0;
-              this.queuedIdentifiers.length = 0;
-            }
-          } else {
-            this.course.isAvailableLocally = true;
-            this.setChildContents();
           }
-        }
 
-        // For content update available
-        const hierarchyInfo = this.courseCardData.hierarchyInfo ? this.courseCardData.hierarchyInfo : null;
-        const contentUpdateEvent = event as ContentUpdate;
-        if (contentUpdateEvent.payload && contentUpdateEvent.payload.contentId === this.identifier
-          && contentUpdateEvent.type === ContentEventType.UPDATE && hierarchyInfo === null) {
-          this.zone.run(() => {
-            this.showLoading = true;
-            this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.course, false);
-            this.importContent([this.identifier], false);
-          });
-        }
+          // For content update available
+          const hierarchyInfo = this.courseCardData.hierarchyInfo ? this.courseCardData.hierarchyInfo : null;
+          const contentUpdateEvent = event as ContentUpdate;
+          if (contentUpdateEvent.payload && contentUpdateEvent.payload.contentId === this.identifier
+            && contentUpdateEvent.type === ContentEventType.UPDATE && hierarchyInfo === null) {
+            this.zone.run(() => {
+              this.showLoading = true;
+              this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.course, false);
+              this.importContent([this.identifier], false);
+            });
+          }
 
-      });
+        });
       }) as any;
   }
 
@@ -1014,7 +1029,6 @@ export class EnrolledCourseDetailsPage {
         loader.present();
         this.courseService.getCourseBatches(courseBatchesRequest).toPromise()
           .then((data: Batch[]) => {
-            // data = JSON.parse(data);
             this.zone.run(() => {
               this.batches = data;
               if (this.batches.length) {
@@ -1194,10 +1208,9 @@ export class EnrolledCourseDetailsPage {
       };
       this.courseService.getContentState(request).toPromise()
         .then((success: ContentStateResponse) => {
-          console.log('getContentState -- ', success);
+          this.contentStatusData = success;
           if (this.childrenData) {
-            console.log('childrenData --', this.childrenData);
-            this.getStatusOfChildContent(this.childrenData, success);
+            this.getStatusOfChildContent(this.childrenData);
           }
         }).catch((error: any) => {
 
