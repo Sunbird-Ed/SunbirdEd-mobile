@@ -8,7 +8,7 @@ import { Component } from '@angular/core';
 import { NavController, NavParams, Events, PopoverController } from 'ionic-angular';
 import { ContentType, MimeType, ContentCard } from '../../app/app.constant';
 import { CourseUtilService } from '../../service/course-util.service';
-import { CourseBatchesRequest, CourseEnrollmentType, CourseBatchStatus, CourseService, Environment, PageId } from 'sunbird';
+import { CourseBatchesRequest, CourseEnrollmentType, CourseBatchStatus, CourseService, Environment, PageId, InteractType } from 'sunbird';
 import { CommonUtilService, TelemetryGeneratorService } from '@app/service';
 import { EnrollmentDetailsPage } from '@app/pages/enrolled-course-details/enrollment-details/enrollment-details';
 import * as _ from 'lodash';
