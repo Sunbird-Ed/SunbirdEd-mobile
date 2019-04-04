@@ -13,7 +13,7 @@
 </ion-header> -->
 
 
-<ion-content overflow-scroll="true" (click)="hideMessage()" class="main-container avoid-bottom-tabs-space">
+<ion-content overflow-scroll="true" (click)="toggleTooltips($event)" class="main-container avoid-bottom-tabs-space">
     <!-- Pull to Refresh -->
     <div class="spinner-div" *ngIf="refresh">
         <ion-spinner icon="spiral" class="refreshspinner"></ion-spinner>
@@ -26,7 +26,7 @@
     <div padding-horizontal text-center>
         <ion-spinner *ngIf="isUploading"></ion-spinner>
         <p style="position: relative;"><span class="profile-name">{{ profile?.firstName }} {{ profile?.lastName }}</span>
-            <span *ngIf="profile?.firstName" class="isymbol" item-right text-left (click)="showStateRecord(1)">
+            <span *ngIf="profile?.firstName" class="isymbol" item-right text-left (click)="toggleTooltips($event, 'name')">
                 <ion-icon name="ios-information-circle-outline" [ngClass]="{'icon-selected-color' : informationProfileName === true}" class="info-icon"></ion-icon>
                 <span class="asPerStateRecord" *ngIf="informationProfileName">{{'STATE_RECORDS' | translate}}</span>
             </span>
@@ -52,7 +52,7 @@
     <div class="school-recent" *ngIf="profile?.organisations?.length > 0 ">
         <p class="bolder MB5" style="position: relative;">{{profile?.organisations[0].orgName}}
             <span *ngIf="profile?.firstName" class="isymbol" item-right text-left
-                (click)="showStateRecord(2)">
+                (click)="toggleTooltips($event, 'org')">
                 <ion-icon name="ios-information-circle-outline" [ngClass]="{'icon-selected-color' : informationOrgName === true}" class="info-icon"></ion-icon>
                 <span class="asPerStateRecord" *ngIf="informationOrgName">{{'STATE_RECORDS'
                     | translate}}</span>

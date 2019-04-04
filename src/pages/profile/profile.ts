@@ -189,7 +189,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   ionViewWillLeave(): void {
     this.headerObservable.unsubscribe();
-      this.events.unsubscribe('update_header');
+    this.events.unsubscribe('update_header');
   }
 
   public doRefresh(refresher?) {
@@ -724,34 +724,17 @@ export class ProfilePage implements OnInit, AfterViewInit {
   handleHeaderEvents($event) {
     // Handle any click on headers
   }
-   hideMessage() {
-     if (!this.checked) {
-      if (this.informationProfileName === true) {
-        this.showStateRecord(1);
-     } else if (this.informationOrgName === true) {
-      this.showStateRecord(2);
-     }
-     }
-     this.checked = false;
-   }
-  showStateRecord(value) {
-    if (value === 1) {
-      if (this.informationProfileName === false) {
-        this.informationProfileName = true;
-        this.informationOrgName = false;
-        this.checked = true;
-      } else {
-        this.informationProfileName = false;
-      }
-    } else if (value === 2) {
-      if (this.informationOrgName === false) {
-        this.informationOrgName = true;
-        this.informationProfileName = false;
-        this.checked = true;
-      } else {
-        this.informationOrgName = false;
-      }
+
+  toggleTooltips(event, field) {
+    if (field === 'name') {
+      this.informationProfileName = this.informationProfileName ? false : true;
+    } else if (field === 'org') {
+      this.informationOrgName = this.informationOrgName ? false : true;
+    } else {
+      this.informationProfileName = false;
+      this.informationOrgName = false;
     }
+    event.stopPropagation();
   }
 
 }
