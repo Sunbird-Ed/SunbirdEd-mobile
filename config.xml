@@ -26,6 +26,10 @@
             <meta-data android:name="io.fabric.ApiKey" android:value="${fabricKey}" />
             <meta-data android:name="io.fabric.ApiSecret" android:value="${fabricSecret}" />
         </config-file>
+        <config-file parent="/*" target="AndroidManifest.xml">
+            <uses-permission android:name="android.permission.RECORD_AUDIO" />
+            <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+        </config-file>
         <preference name="android-manifest/@xmlns:tools" value="http://schemas.android.com/tools" />
         <preference name="android-manifest/application/@tools:replace" value="android:allowBackup" />
         <preference name="android-manifest/application/@android:allowBackup" value="false" />
