@@ -278,6 +278,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   ionViewWillLeave(): void {
     this.events.unsubscribe('genie.event');
     this.events.unsubscribe('update_header');
+    this.events.unsubscribe('onboarding-card:completed');
     this.headerObservable.unsubscribe();
     if (this.networkSubscription) {
       this.networkSubscription.unsubscribe();
