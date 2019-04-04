@@ -29,6 +29,7 @@ export class PlayerPage implements playerActionHandlerDelegate {
   }
 
   ionViewWillEnter() {
+    this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.LANDSCAPE);
     this.statusBar.hide();
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       if (!this.ionicApp._overlayPortal.getActive())
@@ -52,10 +53,6 @@ export class PlayerPage implements playerActionHandlerDelegate {
         previewElement.contentWindow['initializePreview'](this.config);
       }, 1000);
     }
-  }
-
-  ionViewDidEnter() {
-    this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.LANDSCAPE);
   }
 
   ionViewWillLeave() {
