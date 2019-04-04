@@ -19,7 +19,7 @@ import {
     PageId
 } from 'sunbird';
 import { Map } from '../app/telemetryutil';
-import { MimeType } from '../../app/app.constant';
+import { MimeType } from '../app/app.constant';
 
 
 @Injectable()
