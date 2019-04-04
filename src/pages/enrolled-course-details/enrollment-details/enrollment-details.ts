@@ -57,7 +57,7 @@ export class EnrollmentDetailsPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
     private courseService: CourseService
-    ) {
+  ) {
     this.ongoingBatches = this.navParams.get('ongoingBatches');
     this.upcommingBatches = this.navParams.get('upcommingBatches');
     this.retiredBatched = this.navParams.get('retiredBatched');
@@ -110,9 +110,9 @@ export class EnrollmentDetailsPage {
     reqvalues['enrollReq'] = courseBatchesRequest;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.ENROLL_CLICKED,
-        Environment.HOME,
-        PageId.CONTENT_DETAIL, undefined,
-        reqvalues);
+      Environment.HOME,
+      PageId.CONTENT_DETAIL, undefined,
+      reqvalues);
     const enrollCourseRequest: EnrollCourseRequest = {
       userId: this.userId,
       courseId: content.courseId,
@@ -172,7 +172,7 @@ export class EnrollmentDetailsPage {
     if (layoutName === this.layoutInProgress) {
       telemetryObject.type = ContentType.COURSE;
     } else {
-      telemetryObject.type = this.isResource(content.contentType) ? ContentType.RESOURCE : content.contentType;
+      telemetryObject.type = this.telemetryGeneratorService.isCollection(content.mimeType) ? content.contentType : ContentType.RESOURCE;
     }
 
 
@@ -195,7 +195,7 @@ export class EnrollmentDetailsPage {
       });
     } else if (content.mimeType === MimeType.COLLECTION) {
       // this.navCtrl.push(CollectionDetailsPage, {
-        this.navCtrl.push(CollectionDetailsEtbPage, {
+      this.navCtrl.push(CollectionDetailsEtbPage, {
         content: content
       });
     } else {
@@ -203,11 +203,6 @@ export class EnrollmentDetailsPage {
         content: content
       });
     }
-  }
-
-  isResource(contentType) {
-    return contentType === ContentType.STORY ||
-      contentType === ContentType.WORKSHEET;
   }
 
 }

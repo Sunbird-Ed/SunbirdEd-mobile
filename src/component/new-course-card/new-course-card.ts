@@ -1,9 +1,14 @@
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import { NavController } from 'ionic-angular/navigation/nav-controller';
-import { CommonUtilService } from '@app/service';
+import { CommonUtilService, TelemetryGeneratorService } from '@app/service';
 import { Component, Input, OnInit } from '@angular/core';
-import {MimeType} from '../../app/app.constant';
+import { MimeType, ContentType } from '../../app/app.constant';
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
+import {
+  InteractType,
+  InteractSubtype,
+  TelemetryObject
+} from 'sunbird';
 
 /**
  * Generated class for the NewCourseCardComponent component.
@@ -48,7 +53,8 @@ export class NewCourseCardComponent implements OnInit {
 
   constructor(
     public commonUtilService: CommonUtilService,
-    public navCtrl: NavController
+    public navCtrl: NavController,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
 
@@ -60,9 +66,29 @@ export class NewCourseCardComponent implements OnInit {
 
   navigateToDetailPage(course) {
 
+    const identifier = course.contentData.contentId || course.contentData.identifier;
+
+    const telemetryObject: TelemetryObject = new TelemetryObject();
+    telemetryObject.id = identifier;
+
+    telemetryObject.type = this.telemetryGeneratorService.isCollection(course.contentData.mimeType) ?
+      course.contentData.contentType : ContentType.RESOURCE;
+
+
+    const values = new Map();
+    values['sectionName'] = this.sectionName;
+    values['positionClicked'] = this.index;
+
     if (!course.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable) {
       return false;
     }
+
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.CONTENT_CLICKED,
+      this.env,
+      this.pageName ? this.pageName : this.layoutName,
+      telemetryObject,
+      values);
     if (course.mimeType === MimeType.COLLECTION) {
       this.navCtrl.push(CollectionDetailsEtbPage, {
         content: course

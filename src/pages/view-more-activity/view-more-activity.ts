@@ -195,13 +195,13 @@ export class ViewMoreActivityPage implements OnInit {
   }
 
   async subscribeUtilityEvents() {
-    await this.events.subscribe('savedResources:update', async(res) => {
+    await this.events.subscribe('savedResources:update', async (res) => {
       if (res && res.update) {
         if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_SAVED) {
           this.getLocalContents(false, this.downloadsOnlyToggle);
         } else if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED) {
-           await this.getLocalContents(true, this.downloadsOnlyToggle);
-           this.getLocalContents();
+          await this.getLocalContents(true, this.downloadsOnlyToggle);
+          this.getLocalContents();
         }
       }
     });
@@ -328,7 +328,7 @@ export class ViewMoreActivityPage implements OnInit {
       default:
         this.search();
     }
-    console.log('search List =>' , this.searchList);
+    console.log('search List =>', this.searchList);
   }
 
   /**
@@ -362,7 +362,7 @@ export class ViewMoreActivityPage implements OnInit {
   /**
 	 * Get local content
 	 */
-   async getLocalContents(recentlyViewed?: boolean, downloaded?: boolean) {
+  async getLocalContents(recentlyViewed?: boolean, downloaded?: boolean) {
     const loader = this.commonUtilService.getLoader();
     loader.present();
 
@@ -387,11 +387,11 @@ export class ViewMoreActivityPage implements OnInit {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
           if (value.contentData.appIcon) {
             if (value.contentData.appIcon.includes('http:') || value.contentData.appIcon.includes('https:')) {
-                if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-                        value.contentData.appIcon = value.contentData.appIcon;
-                  } else {
-                        value.contentData.appIcon = this.defaultImg;
-                  }
+              if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+                value.contentData.appIcon = value.contentData.appIcon;
+              } else {
+                value.contentData.appIcon = this.defaultImg;
+              }
             } else if (value.basePath) {
               value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
             }
@@ -405,20 +405,20 @@ export class ViewMoreActivityPage implements OnInit {
           }
           //
           if ((this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED) && !recentlyViewed) {
-           this.savedResources = contentData;
-              for (let i = 0 ; i < this.searchList.length; i++) {
-                  const index = this.savedResources.findIndex( (el) => {
-                  return el.identifier === this.searchList[i].identifier;
+            this.savedResources = contentData;
+            for (let i = 0; i < this.searchList.length; i++) {
+              const index = this.savedResources.findIndex((el) => {
+                return el.identifier === this.searchList[i].identifier;
               });
 
               if (index !== -1) {
                 this.savedResources.splice(index, 1);
               }
+            }
+            //  this.recentlyViewed.push(...this.savedResources);
+            this.searchList.push(...this.savedResources);
           }
-          //  this.recentlyViewed.push(...this.savedResources);
-           this.searchList.push(...this.savedResources);
-          }
-          console.log('content data is =>' , contentData);
+          console.log('content data is =>', contentData);
           loader.dismiss();
           this.loadMoreBtn = false;
         });
@@ -551,7 +551,7 @@ export class ViewMoreActivityPage implements OnInit {
     const identifier = content.contentId || content.identifier;
     const telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = identifier;
-    telemetryObject.type = this.isResource(content.contentType) ? ContentType.RESOURCE : content.contentType;
+    telemetryObject.type = this.telemetryGeneratorService.isCollection(content.mimeType) ? content.contentType : ContentType.RESOURCE;
 
 
     const values = new Map();
@@ -575,8 +575,4 @@ export class ViewMoreActivityPage implements OnInit {
     }
   }
 
-  isResource(contentType) {
-    return contentType === ContentType.STORY ||
-      contentType === ContentType.WORKSHEET;
-  }
 }

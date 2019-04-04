@@ -19,6 +19,8 @@ import {
     PageId
 } from 'sunbird';
 import { Map } from '../app/telemetryutil';
+import { MimeType } from '../../app/app.constant';
+
 
 @Injectable()
 export class TelemetryGeneratorService {
@@ -243,15 +245,15 @@ export class TelemetryGeneratorService {
    * @param {object} objRollup object roll up
    * @param corRelationList corelationList
    */
-  readLessOrReadMore(param, objRollup, corRelationList, telemetryObject) {
-    this.generateInteractTelemetry(InteractType.TOUCH,
-        param === 'READ_MORE' ? InteractSubtype.READ_MORE_CLICKED : InteractSubtype.READ_LESS_CLICKED,
-        Environment.HOME,
-        PageId.COLLECTION_DETAIL,
-        undefined,
-        telemetryObject,
-        objRollup,
-        corRelationList);
+    readLessOrReadMore(param, objRollup, corRelationList, telemetryObject) {
+        this.generateInteractTelemetry(InteractType.TOUCH,
+            param === 'READ_MORE' ? InteractSubtype.READ_MORE_CLICKED : InteractSubtype.READ_LESS_CLICKED,
+            Environment.HOME,
+            PageId.COLLECTION_DETAIL,
+            undefined,
+            telemetryObject,
+            objRollup,
+            corRelationList);
     }
 
     generateProfilePopulatedTelemetry(pageId, frameworkId, mode) {
@@ -299,26 +301,29 @@ export class TelemetryGeneratorService {
 
     transform(size: any, roundOf: number = 2) {
         if (size || size === 0) {
-          if (isNaN(size)) {
-            size = 0;
-          }
-          size /= 1024;
-          if (size < 1024) {
-            return size.toFixed(roundOf) + ' KB';
-          }
-          size /= 1024;
-          if (size < 1024) {
-            return size.toFixed(roundOf) + ' MB';
-          }
-          size /= 1024;
-          if (size < 1024) {
-            return size.toFixed(roundOf) + ' GB';
-          }
-          size /= 1024;
-          return size.toFixed(roundOf) + ' TB';
+            if (isNaN(size)) {
+                size = 0;
+            }
+            size /= 1024;
+            if (size < 1024) {
+                return size.toFixed(roundOf) + ' KB';
+            }
+            size /= 1024;
+            if (size < 1024) {
+                return size.toFixed(roundOf) + ' MB';
+            }
+            size /= 1024;
+            if (size < 1024) {
+                return size.toFixed(roundOf) + ' GB';
+            }
+            size /= 1024;
+            return size.toFixed(roundOf) + ' TB';
         } else {
-          return '0 KB';
+            return '0 KB';
         }
-      }
+    }
+    isCollection(mimeType) {
+        return mimeType === MimeType.COLLECTION;
+    }
 
 }

@@ -169,6 +169,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+
   }
 
   ionViewDidLoad() {
@@ -484,11 +485,6 @@ export class ProfilePage implements OnInit, AfterViewInit {
       });
   }
 
-  isResource(contentType) {
-    return contentType === ContentType.STORY ||
-      contentType === ContentType.WORKSHEET;
-  }
-
   /**
    * Navigate to the course/content details page
    *
@@ -502,7 +498,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
     if (layoutName === ContentCard.LAYOUT_INPROGRESS) {
       telemetryObject.type = ContentType.COURSE;
     } else {
-      telemetryObject.type = this.isResource(content.contentType) ? ContentType.RESOURCE : content.contentType;
+      telemetryObject.type = this.telemetryGeneratorService.isCollection(content.mimeType) ? content.contentType : ContentType.RESOURCE;
     }
 
 
