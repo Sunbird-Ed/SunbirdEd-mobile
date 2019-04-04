@@ -72,6 +72,9 @@ export class ProfilePage implements OnInit, AfterViewInit {
   userId = '';
   isLoggedInUser = false;
   isRefreshProfile = false;
+  informationProfileName = false;
+  informationOrgName = false;
+  checked = false;
   loggedInUserId = '';
   refresh: boolean;
   profileName: string;
@@ -159,14 +162,13 @@ export class ProfilePage implements OnInit, AfterViewInit {
     this.events.subscribe('update_header', (data) => {
       this.headerServie.showHeaderWithHomeButton(['search']);
     });
-    this.headerObservable =this.headerServie.headerEventEmitted$.subscribe(eventName => {
+    this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
     this.headerServie.showHeaderWithHomeButton();
   }
 
   ngAfterViewInit() {
-    
   }
 
   ionViewDidLoad() {
@@ -194,10 +196,10 @@ export class ProfilePage implements OnInit, AfterViewInit {
     const loader = this.getLoader();
     this.isRefreshProfile = true;
     if (!refresher) {
-    loader.present();
+      loader.present();
     } else {
-       refresher.complete();
-       this.refresh = true;
+      refresher.complete();
+      this.refresh = true;
     }
     return this.refreshProfileData()
       .then(() => {
@@ -597,8 +599,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   editMobileNumber(event) {
     const newTitle = this.profile.phone ?
-                     this.commonUtilService.translateMessage('EDIT_PHONE_POPUP_TITLE') :
-                     this.commonUtilService.translateMessage('ENTER_PHONE_POPUP_TITLE');
+      this.commonUtilService.translateMessage('EDIT_PHONE_POPUP_TITLE') :
+      this.commonUtilService.translateMessage('ENTER_PHONE_POPUP_TITLE');
     const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
       phone: this.profile.phone,
       title: newTitle,
@@ -620,8 +622,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   editEmail(event) {
     const newTitle = this.profile.email ?
-                     this.commonUtilService.translateMessage('EDIT_EMAIL_POPUP_TITLE') :
-                     this.commonUtilService.translateMessage('EMAIL_PLACEHOLDER');
+      this.commonUtilService.translateMessage('EDIT_EMAIL_POPUP_TITLE') :
+      this.commonUtilService.translateMessage('EMAIL_PLACEHOLDER');
     const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
       email: this.profile.email,
       title: newTitle,
@@ -722,5 +724,35 @@ export class ProfilePage implements OnInit, AfterViewInit {
   handleHeaderEvents($event) {
     // Handle any click on headers
   }
+   hideMessage() {
+     if (!this.checked) {
+      if (this.informationProfileName === true) {
+        this.showStateRecord(1);
+     } else if (this.informationOrgName === true) {
+      this.showStateRecord(2);
+     }
+     }
+     this.checked = false;
+   }
+  showStateRecord(value) {
+    if (value === 1) {
+      if (this.informationProfileName === false) {
+        this.informationProfileName = true;
+        this.informationOrgName = false;
+        this.checked = true;
+      } else {
+        this.informationProfileName = false;
+      }
+    } else if (value === 2) {
+      if (this.informationOrgName === false) {
+        this.informationOrgName = true;
+        this.informationProfileName = false;
+        this.checked = true;
+      } else {
+        this.informationOrgName = false;
+      }
+    }
+  }
 
 }
+
