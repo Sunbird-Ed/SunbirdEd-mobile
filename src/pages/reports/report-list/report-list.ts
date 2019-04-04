@@ -6,6 +6,7 @@ import { ReportService, ReportSummary, ContentService, SummarizerContentFilterCr
 import { UserReportPage } from '../user-report/user-report';
 import { ContentType } from '../../../app/app.constant';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
+import { AppHeaderService } from '@app/service/app-header.service';
 
 @Component({
     selector: 'group-list-page',
@@ -27,11 +28,16 @@ export class ReportListPage {
         public reportService: ReportService,
         public ngZone: NgZone,
         private contentService: ContentService,
-        private telemetryGeneratorService: TelemetryGeneratorService) {
+        private telemetryGeneratorService: TelemetryGeneratorService,
+        private headerService: AppHeaderService) {
 
     }
 
     ionViewDidLoad() {
+        let header = this.headerService.getDefaultPageConfig();
+      header.showHeader = false;
+      header.showBurgerMenu = false;
+      this.headerService.updatePageConfig(header);
         this.telemetryGeneratorService.generateImpressionTelemetry(
             ImpressionType.VIEW, '',
             PageId.REPORTS_ASSESMENT_CONTENT_LIST,

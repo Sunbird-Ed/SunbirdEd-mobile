@@ -21,6 +21,7 @@ import {
 } from 'sunbird';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
+import { AppHeaderService } from '@app/service';
 @Component({
   selector: 'page-share-user-and-groups',
   templateUrl: 'share-user-and-groups.html',
@@ -45,12 +46,16 @@ export class ShareUserAndGroupPage {
     private fileUtil: FileUtil,
     private socialShare: SocialSharing,
     private loadingCtrl: LoadingController,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private headerService: AppHeaderService
   ) {
 
   }
 
   ionViewWillEnter() {
+    let header = this.headerService.getDefaultPageConfig();
+    header.showHeader = false;
+    this.headerService.updatePageConfig(header);
     this.getAllProfile();
     this.getAllGroup();
   }

@@ -72,6 +72,9 @@ export class ProfilePage implements OnInit, AfterViewInit {
   userId = '';
   isLoggedInUser = false;
   isRefreshProfile = false;
+  informationProfileName = false;
+  informationOrgName = false;
+  checked = false;
   loggedInUserId = '';
   refresh: boolean;
   profileName: string;
@@ -157,16 +160,15 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   ionViewWillEnter() {
     this.events.subscribe('update_header', (data) => {
-      this.headerServie.showHeaderWithHomeButton(['search']);
+      this.headerServie.showHeaderWithHomeButton();
     });
-    this.headerObservable =this.headerServie.headerEventEmitted$.subscribe(eventName => {
+    this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
     this.headerServie.showHeaderWithHomeButton();
   }
 
   ngAfterViewInit() {
-    
   }
 
   ionViewDidLoad() {
@@ -187,17 +189,17 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   ionViewWillLeave(): void {
     this.headerObservable.unsubscribe();
-      this.events.unsubscribe('update_header');
+    this.events.unsubscribe('update_header');
   }
 
   public doRefresh(refresher?) {
     const loader = this.getLoader();
     this.isRefreshProfile = true;
     if (!refresher) {
-    loader.present();
+      loader.present();
     } else {
-       refresher.complete();
-       this.refresh = true;
+      refresher.complete();
+      this.refresh = true;
     }
     return this.refreshProfileData()
       .then(() => {
@@ -597,8 +599,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   editMobileNumber(event) {
     const newTitle = this.profile.phone ?
-                     this.commonUtilService.translateMessage('EDIT_PHONE_POPUP_TITLE') :
-                     this.commonUtilService.translateMessage('ENTER_PHONE_POPUP_TITLE');
+      this.commonUtilService.translateMessage('EDIT_PHONE_POPUP_TITLE') :
+      this.commonUtilService.translateMessage('ENTER_PHONE_POPUP_TITLE');
     const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
       phone: this.profile.phone,
       title: newTitle,
@@ -620,8 +622,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   editEmail(event) {
     const newTitle = this.profile.email ?
-                     this.commonUtilService.translateMessage('EDIT_EMAIL_POPUP_TITLE') :
-                     this.commonUtilService.translateMessage('EMAIL_PLACEHOLDER');
+      this.commonUtilService.translateMessage('EDIT_EMAIL_POPUP_TITLE') :
+      this.commonUtilService.translateMessage('EMAIL_PLACEHOLDER');
     const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
       email: this.profile.email,
       title: newTitle,
@@ -723,4 +725,17 @@ export class ProfilePage implements OnInit, AfterViewInit {
     // Handle any click on headers
   }
 
+  toggleTooltips(event, field) {
+    if (field === 'name') {
+      this.informationProfileName = this.informationProfileName ? false : true;
+    } else if (field === 'org') {
+      this.informationOrgName = this.informationOrgName ? false : true;
+    } else {
+      this.informationProfileName = false;
+      this.informationOrgName = false;
+    }
+    event.stopPropagation();
+  }
+
 }
+
