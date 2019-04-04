@@ -29,6 +29,7 @@ import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edi
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../../service/common-util.service';
 import { FrameworkCategory } from '@app/app';
+import { AppHeaderService } from '@app/service';
 
 @IonicPage()
 @Component({
@@ -65,7 +66,8 @@ export class CreateGroupPage {
     private commonUtilService: CommonUtilService,
     private groupService: GroupService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private framework: FrameworkService
+    private framework: FrameworkService,
+    private headerService: AppHeaderService
   ) {
     this.group = this.navParams.get('groupInfo') || {};
     this.groupEditForm = this.fb.group({
@@ -76,6 +78,11 @@ export class CreateGroupPage {
 
     this.isEditGroup = this.group.hasOwnProperty('gid') ? true : false;
     this.getSyllabusDetails();
+  }
+  ionViewWillEnter() {
+    let header = this.headerService.getDefaultPageConfig();
+    header.showHeader = false;
+    this.headerService.updatePageConfig(header);
   }
 
   ionViewDidLoad() {

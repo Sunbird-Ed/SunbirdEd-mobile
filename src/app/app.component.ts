@@ -673,7 +673,7 @@ export class MyApp implements OnInit {
           undefined
         );
         if (this.app.getRootNavs().length > 0) {
-          this.app.getRootNavs()[0].push(LanguageSettingsPage,{
+          this.app.getRootNavs()[0].push(LanguageSettingsPage, {
             isFromSettings: true
           });
         }

@@ -36,7 +36,7 @@ export class TabsPage {
       }
     });
     this.events.publish('update_header', { index: tabIndex });
-    //Raise an Event
+    // Raise an Event
     setTimeout(() => {
       this.tabRef.select(tabIndex);
     }, 300);
@@ -44,11 +44,11 @@ export class TabsPage {
 
   public ionChange(tab: Tab) {
     console.log('TabTitle', tab.tabTitle);
-    this.tabs.forEach((tabTo,index) => {
-      if(tabTo.isSelected == true) {
+    this.tabs.forEach((tabTo, index) => {
+      if (tabTo.isSelected === true) {
         tabTo.isSelected = false;
       }
-      if(index == tab.index) {
+      if (index === tab.index) {
         tabTo.isSelected = true;
       }
     });

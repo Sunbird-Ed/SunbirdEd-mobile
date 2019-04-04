@@ -146,7 +146,6 @@ export class UserAndGroupsPage {
       let header = this.headerService.getDefaultPageConfig();
       header.showHeader = false;
       this.headerService.updatePageConfig(header);
-      // this.headerService.showHeaderWithBackButton(['share']);
 
       this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
         this.dismissPopup();
@@ -365,18 +364,18 @@ export class UserAndGroupsPage {
         Environment.USER,
         PageId.USERS_GROUPS
       );
-      this.zone.run(() => {
+      // this.zone.run(() => {
         this.navCtrl.push(GuestEditProfilePage, {
           isNewUser: true,
           lastCreatedProfile: this.lastCreatedProfileData
         });
-      });
+      // });
     }).catch((error) => {
-      this.zone.run(() => {
+      // this.zone.run(() => {
         this.navCtrl.push(GuestEditProfilePage, {
           isNewUser: true
         });
-      });
+      // });
       console.error('error occoured' + error);
     });
   }
@@ -821,5 +820,11 @@ getLoader(): any {
     spinner: 'crescent'
   });
 }
+
+  ionViewWillLeave(): void {
+    if (this.unregisterBackButton) {
+      this.unregisterBackButton();
+    }
+  }
 }
 

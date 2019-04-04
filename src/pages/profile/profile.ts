@@ -72,6 +72,9 @@ export class ProfilePage implements OnInit, AfterViewInit {
   userId = '';
   isLoggedInUser = false;
   isRefreshProfile = false;
+  informationProfileName = false;
+  informationOrgName = false;
+  checked = false;
   loggedInUserId = '';
   refresh: boolean;
   profileName: string;
@@ -157,7 +160,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   ionViewWillEnter() {
     this.events.subscribe('update_header', (data) => {
-      this.headerServie.showHeaderWithHomeButton(['search']);
+      this.headerServie.showHeaderWithHomeButton();
     });
     this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
@@ -718,4 +721,17 @@ export class ProfilePage implements OnInit, AfterViewInit {
     // Handle any click on headers
   }
 
+  toggleTooltips(event, field) {
+    if (field === 'name') {
+      this.informationProfileName = this.informationProfileName ? false : true;
+    } else if (field === 'org') {
+      this.informationOrgName = this.informationOrgName ? false : true;
+    } else {
+      this.informationProfileName = false;
+      this.informationOrgName = false;
+    }
+    event.stopPropagation();
+  }
+
 }
+

@@ -56,6 +56,7 @@ import { TelemetryGeneratorService } from '../../../service/telemetry-generator.
 import { Map } from '../../../app/telemetryutil';
 import { PreferenceKey } from '../../../app/app.constant';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
+import { AppHeaderService } from '@app/service';
 @IonicPage()
 @Component({
   selector: 'page-group-member',
@@ -94,7 +95,8 @@ export class GroupDetailsPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private authService: AuthService,
     private appGlobalService: AppGlobalService,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private headerService: AppHeaderService
   ) {
     this.group = this.navParams.get('groupInfo');
     this.currentUserId = this.navParams.get('currentUserId');
@@ -109,6 +111,9 @@ export class GroupDetailsPage {
   }
 
   ionViewWillEnter() {
+    let header = this.headerService.getDefaultPageConfig();
+    header.showHeader = false;
+    this.headerService.updatePageConfig(header);
     this.getAllProfile();
   }
   resizeContent() {

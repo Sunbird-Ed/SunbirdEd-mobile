@@ -757,6 +757,7 @@ export class CollectionDetailsPage implements OnInit {
   resetVariables() {
     this.isDownloadStarted = false;
     this.showLoading = false;
+    this.refreshHeader();
     this.downloadProgress = 0;
     this.cardData = '';
     this.childrenData = [];
