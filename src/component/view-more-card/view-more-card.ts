@@ -158,7 +158,9 @@ export class ViewMoreCardComponent implements OnInit {
 
   navigateToDetailsPage(content: any, layoutName) {
     this.zone.run(() => {
-      this.loader.dismiss();
+      if (this.loader) {
+        this.loader.dismiss();
+      }
       if (layoutName === 'enrolledCourse' || content.contentType === ContentType.COURSE) {
         this.navCtrl.push(EnrolledCourseDetailsPage, {
           content: content
