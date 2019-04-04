@@ -2,7 +2,7 @@ import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import { NavController } from 'ionic-angular/navigation/nav-controller';
 import { CommonUtilService, TelemetryGeneratorService } from '@app/service';
 import { Component, Input, OnInit } from '@angular/core';
-import {MimeType, ContentType} from '../../app/app.constant';
+import { MimeType, ContentType } from '../../app/app.constant';
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
 import {
   InteractType,
@@ -70,7 +70,9 @@ export class NewCourseCardComponent implements OnInit {
 
     const telemetryObject: TelemetryObject = new TelemetryObject();
     telemetryObject.id = identifier;
-    telemetryObject.type = this.isResource(course.contentData.contentType) ? ContentType.RESOURCE : course.contentData.contentType;
+
+    telemetryObject.type = this.telemetryGeneratorService.isCollection(course.contentData.mimeType) ?
+      course.contentData.contentType : ContentType.RESOURCE;
 
 
     const values = new Map();
@@ -96,11 +98,6 @@ export class NewCourseCardComponent implements OnInit {
         content: course.contentData
       });
     }
-  }
-
-  isResource(contentType) {
-    return contentType === ContentType.STORY ||
-      contentType === ContentType.WORKSHEET;
   }
 
 }

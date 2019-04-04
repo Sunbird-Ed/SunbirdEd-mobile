@@ -92,7 +92,7 @@ export class ResourceCard implements OnInit {
     if (layoutName === this.layoutInProgress) {
       telemetryObject.type = ContentType.COURSE;
     } else {
-      telemetryObject.type = this.isResource(content.contentType) ? ContentType.RESOURCE : content.contentType;
+      telemetryObject.type = this.telemetryGeneratorService.isCollection(content.mimeType) ? content.contentType : ContentType.RESOURCE;
     }
 
 
@@ -120,11 +120,6 @@ export class ResourceCard implements OnInit {
         content: content
       });
     }
-  }
-
-  isResource(contentType) {
-    return contentType === ContentType.STORY ||
-      contentType === ContentType.WORKSHEET;
   }
 
   resumeCourse(content: any) {

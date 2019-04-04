@@ -159,14 +159,14 @@ export class ProfilePage implements OnInit, AfterViewInit {
     this.events.subscribe('update_header', (data) => {
       this.headerServie.showHeaderWithHomeButton(['search']);
     });
-    this.headerObservable =this.headerServie.headerEventEmitted$.subscribe(eventName => {
+    this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
     this.headerServie.showHeaderWithHomeButton();
   }
 
   ngAfterViewInit() {
-    
+
   }
 
   ionViewDidLoad() {
@@ -187,17 +187,17 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   ionViewWillLeave(): void {
     this.headerObservable.unsubscribe();
-      this.events.unsubscribe('update_header');
+    this.events.unsubscribe('update_header');
   }
 
   public doRefresh(refresher?) {
     const loader = this.getLoader();
     this.isRefreshProfile = true;
     if (!refresher) {
-    loader.present();
+      loader.present();
     } else {
-       refresher.complete();
-       this.refresh = true;
+      refresher.complete();
+      this.refresh = true;
     }
     return this.refreshProfileData()
       .then(() => {
@@ -482,11 +482,6 @@ export class ProfilePage implements OnInit, AfterViewInit {
       });
   }
 
-  isResource(contentType) {
-    return contentType === ContentType.STORY ||
-      contentType === ContentType.WORKSHEET;
-  }
-
   /**
    * Navigate to the course/content details page
    *
@@ -500,7 +495,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
     if (layoutName === ContentCard.LAYOUT_INPROGRESS) {
       telemetryObject.type = ContentType.COURSE;
     } else {
-      telemetryObject.type = this.isResource(content.contentType) ? ContentType.RESOURCE : content.contentType;
+      telemetryObject.type = this.telemetryGeneratorService.isCollection(content.mimeType) ? content.contentType : ContentType.RESOURCE;
     }
 
 
@@ -597,8 +592,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   editMobileNumber(event) {
     const newTitle = this.profile.phone ?
-                     this.commonUtilService.translateMessage('EDIT_PHONE_POPUP_TITLE') :
-                     this.commonUtilService.translateMessage('ENTER_PHONE_POPUP_TITLE');
+      this.commonUtilService.translateMessage('EDIT_PHONE_POPUP_TITLE') :
+      this.commonUtilService.translateMessage('ENTER_PHONE_POPUP_TITLE');
     const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
       phone: this.profile.phone,
       title: newTitle,
@@ -620,8 +615,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   editEmail(event) {
     const newTitle = this.profile.email ?
-                     this.commonUtilService.translateMessage('EDIT_EMAIL_POPUP_TITLE') :
-                     this.commonUtilService.translateMessage('EMAIL_PLACEHOLDER');
+      this.commonUtilService.translateMessage('EDIT_EMAIL_POPUP_TITLE') :
+      this.commonUtilService.translateMessage('EMAIL_PLACEHOLDER');
     const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
       email: this.profile.email,
       title: newTitle,
