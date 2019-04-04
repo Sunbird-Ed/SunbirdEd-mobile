@@ -763,6 +763,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   resetVariables() {
     this.isDownloadStarted = false;
     this.showLoading = false;
+    this.refreshHeader();
     this.downloadProgress = 0;
     this.cardData = '';
     this.childrenData = [];
@@ -832,10 +833,12 @@ export class CollectionDetailsEtbPage implements OnInit {
           } else {
             if (this.isUpdateAvailable && res.data.identifier === this.contentDetail.identifier) {
               this.showLoading = false;
+              this.refreshHeader();
               this.setContentDetails(this.identifier, false);
             } else {
               if (res.data.identifier === this.contentDetail.identifier) {
                 this.showLoading = false;
+                this.refreshHeader();
                 this.updateSavedResources();
                 this.setChildContents();
                 this.contentDetail.isAvailableLocally = true;
@@ -1051,11 +1054,13 @@ export class CollectionDetailsEtbPage implements OnInit {
     this.contentService.cancelDownload(this.identifier).then(() => {
       this.zone.run(() => {
         this.showLoading = false;
+        this.refreshHeader();
         this.navCtrl.pop();
       });
     }).catch(() => {
       this.zone.run(() => {
         this.showLoading = false;
+        this.refreshHeader();
         this.navCtrl.pop();
       });
     });
@@ -1093,6 +1098,10 @@ export class CollectionDetailsEtbPage implements OnInit {
         this.toast = undefined;
       }
     }
+    if (this.backButtonFunc) {
+      this.backButtonFunc();
+    }
+
   }
   showPopOver() {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,

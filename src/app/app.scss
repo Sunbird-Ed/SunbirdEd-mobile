@@ -651,3 +651,9 @@ ion-navbar {
     color: $primary-color !important;
   }
 }
+
+ion-toolbar {
+  &.toolbar-md .toolbar-title-md {
+    color: $primary-color !important;
+  }
+}
