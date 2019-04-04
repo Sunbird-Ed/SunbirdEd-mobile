@@ -92,11 +92,11 @@
 			</div>
 
 			<div class="read-more" *ngIf="course && course.description && course.description.length > 100 || course?.gradeLevel || course?.subject" (click)="showMoreFlag = !showMoreFlag">
-				<div *ngIf="showMoreFlag" class="padding-top-10">
+				<div *ngIf="showMoreFlag" class="padding-top-10" (click)="readLessorReadMore('read-less-clicked')">
 					{{ 'READ_LESS' | translate }}
 					<ion-icon name="ios-arrow-up"></ion-icon>
 				</div>
-				<div *ngIf="!showMoreFlag">
+				<div *ngIf="!showMoreFlag" (click)="readLessorReadMore('read-more-clicked')">
 					{{ 'READ_MORE' | translate }}
 					<ion-icon name="ios-arrow-down"></ion-icon>
 				</div>
