@@ -8,8 +8,8 @@ import { Component } from '@angular/core';
 import { NavController, NavParams, Events, PopoverController } from 'ionic-angular';
 import { ContentType, MimeType, ContentCard } from '../../app/app.constant';
 import { CourseUtilService } from '../../service/course-util.service';
-import { CourseBatchesRequest, CourseEnrollmentType, CourseBatchStatus, CourseService } from 'sunbird';
-import { CommonUtilService } from '@app/service';
+import { CourseBatchesRequest, CourseEnrollmentType, CourseBatchStatus, CourseService, Environment, PageId } from 'sunbird';
+import { CommonUtilService, TelemetryGeneratorService } from '@app/service';
 import { EnrollmentDetailsPage } from '@app/pages/enrolled-course-details/enrollment-details/enrollment-details';
 import * as _ from 'lodash';
 
@@ -72,7 +72,8 @@ export class ViewMoreCardComponent implements OnInit {
     public events: Events,
     private commonUtilService: CommonUtilService,
     private courseService: CourseService,
-    private popoverCtrl: PopoverController
+    private popoverCtrl: PopoverController,
+    private telemetryGeneratorService: TelemetryGeneratorService
     ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
@@ -82,14 +83,17 @@ export class ViewMoreCardComponent implements OnInit {
     this.loader.present();
     let anyOpenBatch: Boolean = false;
     this.enrolledCourses = this.enrolledCourses || [];
-    const retiredBatches = this.enrolledCourses.filter((element) =>  {
-      if (element.contentId === content.identifier && element.batch.status === 1 && element.cProgress !== 100) {
-        anyOpenBatch = true;
-      }
-      if (element.contentId === content.identifier && element.batch.status === 2 && element.cProgress !== 100) {
-        return element;
-      }
-    });
+    let retiredBatches: Array<any> = [];
+    if (layoutName !== ContentCard.LAYOUT_INPROGRESS) {
+      retiredBatches = this.enrolledCourses.filter((element) =>  {
+        if (element.contentId === content.identifier && element.batch.status === 1 && element.cProgress !== 100) {
+          anyOpenBatch = true;
+        }
+        if (element.contentId === content.identifier && element.batch.status === 2 && element.cProgress !== 100) {
+          return element;
+        }
+      });
+    }
     if (anyOpenBatch || !retiredBatches.length) {
       // open the batch directly
       this.navigateToDetailsPage(content, layoutName);
@@ -99,7 +103,6 @@ export class ViewMoreCardComponent implements OnInit {
   }
 
   navigateToBatchListPopup(content: any, layoutName?: string, retiredBatched?: any): void {
-    const upcommingBatches = [];
     const courseBatchesRequest: CourseBatchesRequest = {
       courseId: layoutName === ContentCard.LAYOUT_INPROGRESS ? content.contentId : content.identifier,
       enrollmentType: CourseEnrollmentType.OPEN,
@@ -107,11 +110,6 @@ export class ViewMoreCardComponent implements OnInit {
     };
     const reqvalues = new Map();
     reqvalues['enrollReq'] = courseBatchesRequest;
-    // this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-    //   InteractSubtype.ENROLL_CLICKED,
-    //     Environment.HOME,
-    //     PageId.CONTENT_DETAIL, undefined,
-    //     reqvalues);
 
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       if (!this.guestUser) {
@@ -122,9 +120,11 @@ export class ViewMoreCardComponent implements OnInit {
             this.zone.run(() => {
               this.batches = data.result.content;
               if (this.batches.length) {
-                _.forEach(this.batches, (batch, key) => {
-                    upcommingBatches.push(batch);
-                });
+                this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+                  'showing-enrolled-ongoing-batch-popup',
+                  Environment.HOME,
+                  PageId.CONTENT_DETAIL, undefined,
+                  reqvalues);
                 this.loader.dismiss();
                 const popover = this.popoverCtrl.create(EnrollmentDetailsPage,
                   {

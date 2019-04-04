@@ -486,25 +486,22 @@ export class SearchPage {
     return assembleFilter;
   }
 
-  /// ++++++++++++
   checkRetiredOpenBatch(content: any, layoutName?: string): void {
     this.loader = this.commonUtilService.getLoader();
     this.loader.present();
+    let retiredBatches: Array<any> = [];
     let anyOpenBatch: Boolean = false;
     this.enrolledCourses = this.enrolledCourses || [];
-    const retiredBatches = this.enrolledCourses.filter((element) =>  {
-      console.log('element.contentId', element.contentId);
-      console.log('element.batch', element.batch);
-      console.log('element.cProgress', element.cProgress);
-      if (element.contentId === content.identifier && element.batch.status === 1 && element.cProgress !== 100) {
-        anyOpenBatch = true;
-        console.log('anyOpenBatch', anyOpenBatch);
-      }
-      if (element.contentId === content.identifier && element.batch.status === 2 && element.cProgress !== 100) {
-        console.log('anyOpenBatch', anyOpenBatch);
-        return element;
-      }
-    });
+    if (layoutName !== ContentCard.LAYOUT_INPROGRESS) {
+      retiredBatches = this.enrolledCourses.filter((element) =>  {
+        if (element.contentId === content.identifier && element.batch.status === 1 && element.cProgress !== 100) {
+          anyOpenBatch = true;
+        }
+        if (element.contentId === content.identifier && element.batch.status === 2 && element.cProgress !== 100) {
+          return element;
+        }
+      });
+    }
     if (anyOpenBatch || !retiredBatches.length) {
       // open the batch directly
       this.showContentDetails(content, true);
@@ -514,8 +511,6 @@ export class SearchPage {
   }
 
   navigateToBatchListPopup(content: any, layoutName?: string, retiredBatched?: any): void {
-    const upcommingBatches = [];
-    // const loader = this.commonUtilService.getLoader();
     const courseBatchesRequest: CourseBatchesRequest = {
       courseId: layoutName === ContentCard.LAYOUT_INPROGRESS ? content.contentId : content.identifier,
       enrollmentType: CourseEnrollmentType.OPEN,
@@ -523,25 +518,20 @@ export class SearchPage {
     };
     const reqvalues = new Map();
     reqvalues['enrollReq'] = courseBatchesRequest;
-    // this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-    //   InteractSubtype.ENROLL_CLICKED,
-    //     Environment.HOME,
-    //     PageId.CONTENT_DETAIL, undefined,
-    //     reqvalues);
 
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       if (!this.guestUser) {
-        // loader.present();
         this.courseService.getCourseBatches(courseBatchesRequest)
           .then((data: any) => {
             data = JSON.parse(data);
             this.zone.run(() => {
               this.batches = data.result.content;
               if (this.batches.length) {
-                _.forEach(this.batches, (batch, key) => {
-                    upcommingBatches.push(batch);
-                });
-                // loader.dismiss();
+                this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+                  'showing-enrolled-ongoing-batch-popup',
+                  Environment.HOME,
+                  PageId.CONTENT_DETAIL, undefined,
+                  reqvalues);
                 const popover = this.popoverCtrl.create(EnrollmentDetailsPage,
                   {
                     upcommingBatches: this.batches,
@@ -554,7 +544,6 @@ export class SearchPage {
               } else {
                 this.loader.dismiss();
                 this.showContentDetails(content, true);
-                // this.commonUtilService.showToast('NO_BATCHES_AVAILABLE');
               }
             });
           })
@@ -568,7 +557,6 @@ export class SearchPage {
       this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
     }
   }
-  /// ++++++++++++
 
   init() {
     this.dialCode = this.navParams.get('dialCode');

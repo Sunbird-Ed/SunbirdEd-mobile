@@ -11,7 +11,9 @@ import {
   InteractSubtype,
   Environment,
   PageId,
-  CourseBatchesRequest
+  CourseBatchesRequest,
+  CourseEnrollmentType,
+  CourseBatchStatus
 } from 'sunbird';
 import { PreferenceKey, ProfileConstants, EventTopics, ContentType, MimeType, ContentCard } from '@app/app/app.constant';
 import { CommonUtilService, TelemetryGeneratorService } from '@app/service';
@@ -99,18 +101,18 @@ export class EnrollmentDetailsPage {
   }
 
   enrollIntoBatch(content: any): void {
-    // const courseBatchesRequest: CourseBatchesRequest = {
-    //   courseId: layoutName === ContentCard.LAYOUT_INPROGRESS ? content.contentId : content.identifier,
-    //   enrollmentType: CourseEnrollmentType.OPEN,
-    //   status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
-    // };
-    // const reqvalues = new Map();
-    // reqvalues['enrollReq'] = courseBatchesRequest;
-    // this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-    //   InteractSubtype.ENROLL_CLICKED,
-    //     Environment.HOME,
-    //     PageId.CONTENT_DETAIL, undefined,
-    //     reqvalues);
+    const courseBatchesRequest: CourseBatchesRequest = {
+      courseId: content.contentId ? content.contentId : content.identifier,
+      enrollmentType: CourseEnrollmentType.OPEN,
+      status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
+    };
+    const reqvalues = new Map();
+    reqvalues['enrollReq'] = courseBatchesRequest;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.ENROLL_CLICKED,
+        Environment.HOME,
+        PageId.CONTENT_DETAIL, undefined,
+        reqvalues);
     const enrollCourseRequest: EnrollCourseRequest = {
       userId: this.userId,
       courseId: content.courseId,
@@ -183,8 +185,10 @@ export class EnrollmentDetailsPage {
       this.env,
       this.pageName ? this.pageName : this.layoutName,
       telemetryObject,
-      values);
-    if (layoutName === this.layoutInProgress || content.contentType === ContentType.COURSE) {
+      values
+    );
+
+    if (content.contentType === ContentType.COURSE) {
       content.contentId = !content.contentId ? content.courseId : content.contentId;
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content

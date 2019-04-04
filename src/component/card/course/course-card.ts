@@ -19,7 +19,15 @@ import { TelemetryGeneratorService } from '../../../service/telemetry-generator.
 import {
   InteractType,
   InteractSubtype,
-  TelemetryObject, SharedPreferences, CourseBatchesRequest, CourseEnrollmentType, CourseBatchStatus, CourseService } from 'sunbird';
+  TelemetryObject,
+  SharedPreferences,
+  CourseBatchesRequest,
+  CourseEnrollmentType,
+  CourseBatchStatus,
+  CourseService,
+  Environment,
+  PageId
+} from 'sunbird';
 import { EnrollmentDetailsPage } from '@app/pages/enrolled-course-details/enrollment-details/enrollment-details';
 import { CommonUtilService } from '@app/service';
 import * as _ from 'lodash';
@@ -100,9 +108,9 @@ export class CourseCard implements OnInit {
     this.loader = this.commonUtilService.getLoader();
     this.loader.present();
     let anyOpenBatch: Boolean = false;
-    let retiredBatches: Array<any>;
+    let retiredBatches: Array<any> = [];
     this.enrolledCourses = this.enrolledCourses || [];
-    if (layoutName === ContentCard.LAYOUT_INPROGRESS) {
+    if (layoutName !== ContentCard.LAYOUT_INPROGRESS) {
       retiredBatches = this.enrolledCourses.filter((element) =>  {
         if (element.contentId === content.identifier && element.batch.status === 1 && element.cProgress !== 100) {
           anyOpenBatch = true;
@@ -121,7 +129,6 @@ export class CourseCard implements OnInit {
   }
 
   navigateToBatchListPopup(content: any, layoutName?: string, retiredBatched?: any): void {
-    const upcommingBatches = [];
     const courseBatchesRequest: CourseBatchesRequest = {
       courseId: layoutName === ContentCard.LAYOUT_INPROGRESS ? content.contentId : content.identifier,
       enrollmentType: CourseEnrollmentType.OPEN,
@@ -137,16 +144,17 @@ export class CourseCard implements OnInit {
 
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       if (!this.guestUser) {
-        // loader.present();
         this.courseService.getCourseBatches(courseBatchesRequest)
           .then((data: any) => {
             data = JSON.parse(data);
             this.zone.run(() => {
               this.batches = data.result.content;
               if (this.batches.length) {
-                _.forEach(this.batches, (batch, key) => {
-                    upcommingBatches.push(batch);
-                });
+                this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+                  'showing-enrolled-ongoing-batch-popup',
+                  Environment.HOME,
+                  PageId.CONTENT_DETAIL, undefined,
+                  reqvalues);
                 this.loader.dismiss();
                 const popover = this.popoverCtrl.create(EnrollmentDetailsPage,
                   {
@@ -156,14 +164,9 @@ export class CourseCard implements OnInit {
                   { cssClass: 'enrollement-popover' }
                 );
                 popover.present();
-                // this.navCtrl.push(EnrollmentDetailsPage, {
-                //   ongoingBatches: ongoingBatches,
-                //   upcommingBatches: upcommingBatches
-                // });
               } else {
                 this.loader.dismiss();
                 this.navigateToDetailPage(content, layoutName);
-                // this.commonUtilService.showToast('NO_BATCHES_AVAILABLE');
               }
             });
           })
