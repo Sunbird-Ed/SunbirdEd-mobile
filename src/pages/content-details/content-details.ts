@@ -203,7 +203,7 @@ export class ContentDetailsPage {
     //     true, this.cardData.identifier, this.corRelationList);
     //   this.handleNavBackButton();
     // };
-    this.handleDeviceBackButton();
+    // this.handleDeviceBackButton();
 
     if (!AppGlobalService.isPlayerLaunched) {
       this.calculateAvailableUserCount();

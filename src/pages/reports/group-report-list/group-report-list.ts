@@ -13,6 +13,7 @@ import { UserReportPage } from '../user-report/user-report';
 import { File } from '@ionic-native/file';
 import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 import { DatePipe } from '@angular/common';
+import { AppHeaderService } from '@app/service';
 
 
 @Component({
@@ -75,7 +76,8 @@ export class GroupReportListPage {
         private datePipe: DatePipe,
         private deviceInfoService: DeviceInfoService,
         private navCtrl: NavController,
-        private commonUtilService: CommonUtilService) {
+        private commonUtilService: CommonUtilService,
+        private headerService: AppHeaderService) {
         this.downloadDirectory = this.file.dataDirectory;
         this.deviceInfoService.getDownloadDirectoryPath()
             .then((response: any) => {
@@ -88,6 +90,10 @@ export class GroupReportListPage {
         this.fetchAssessment(this.reportType, false);
     }
     ionViewDidLoad() {
+        let header = this.headerService.getDefaultPageConfig();
+        header.showHeader = false;
+        header.showBurgerMenu = false;
+        this.headerService.updatePageConfig(header);
         this.deviceInfoService.getDeviceID()
             .then((res: any) => {
                 this.deviceId = res;

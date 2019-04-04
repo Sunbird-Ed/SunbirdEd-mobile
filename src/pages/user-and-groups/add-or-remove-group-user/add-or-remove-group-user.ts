@@ -28,6 +28,7 @@ import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edi
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../../service/common-util.service';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
+import { AppHeaderService } from '@app/service';
 
 @IonicPage()
 @Component({
@@ -59,7 +60,8 @@ export class AddOrRemoveGroupUserPage {
     private commonUtilService: CommonUtilService,
     private alertCtrl: AlertController,
     private popoverCtrl:PopoverController,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private headerService: AppHeaderService
   ) {
     this.addUsers = Boolean(this.navParams.get('isAddUsers'));
     this.groupInfo = this.navParams.get('groupInfo');
@@ -68,6 +70,9 @@ export class AddOrRemoveGroupUserPage {
   }
 
   ionViewWillEnter() {
+    let header = this.headerService.getDefaultPageConfig();
+    header.showHeader = false;
+    this.headerService.updatePageConfig(header);
     this.getAllProfile();
   }
 

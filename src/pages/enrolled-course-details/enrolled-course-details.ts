@@ -323,16 +323,6 @@ export class EnrolledCourseDetailsPage implements OnInit {
    * Function to rate content
    */
   rateContent(event) {
-    // TODO: check content is played or not
-    console.log('rateContent');
-    console.log('rateContent');
-    console.log('rateContent');
-    console.log('rateContent');
-    console.log(event);
-    console.log('rateContent');
-    console.log('rateContent');
-    console.log('rateContent');
-    console.log('rateContent');
     if (!this.guestUser) {
       if (this.course.isAvailableLocally) {
         // const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
@@ -355,11 +345,6 @@ export class EnrolledCourseDetailsPage implements OnInit {
 
         // const paramsMap = new Map();
       // if (this.isContentPlayed || this.course.contentAccess.length) {
-        console.log(this.course);
-        console.log(this.childrenData);
-        console.log(PageId);
-        console.log(this.userRating);
-        console.log(this.ratingComment);
       const popover = this.popoverCtrl.create(ContentRatingAlertComponent, {
         content: this.course,
         pageId: PageId.CONTENT_DETAIL,
@@ -393,11 +378,6 @@ export class EnrolledCourseDetailsPage implements OnInit {
       // this.objRollup,
       undefined,
       this.corRelationList);
-
-
-
-
-
       } else {
         this.commonUtilService.showToast('TRY_BEFORE_RATING');
       }
@@ -410,7 +390,6 @@ export class EnrolledCourseDetailsPage implements OnInit {
 
 
   showOverflowMenu(event) {
-    console.log('Testing which page---- Enrolled-course-details');
     const data = {
       batchStatus: this.batchDetails ? this.batchDetails.status : 2,
       contentStatus: this.courseCardData.status,
@@ -1103,6 +1082,9 @@ export class EnrolledCourseDetailsPage implements OnInit {
     this.isNavigatingWithinCourse = true;
     this.events.unsubscribe('genie.event');
     this.headerObservable.unsubscribe();
+    if (this.backButtonFunc) {
+      this.backButtonFunc();
+    }
     // TODO: this.events.unsubscribe(EventTopics.UNENROL_COURSE_SUCCESS);
   }
 

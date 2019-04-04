@@ -101,7 +101,9 @@ export class ReportsPage {
   }
 
   ionViewDidLoad() {
-    this.headerService.showHeaderWithBackButton();
+    let header = this.headerService.getDefaultPageConfig();
+    header.showHeader = false;
+    this.headerService.updatePageConfig(header);
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW,
       '',

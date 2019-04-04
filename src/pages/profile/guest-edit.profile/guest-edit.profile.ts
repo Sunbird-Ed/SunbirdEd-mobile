@@ -50,6 +50,7 @@ import {
 } from '../../../app/app.constant';
 import { ContainerService } from '../../../service/container-service';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
+import { AppHeaderService } from '@app/service';
 @Component({
   selector: 'page-guest-edit.profile',
   templateUrl: 'guest-edit.profile.html'
@@ -120,7 +121,8 @@ export class GuestEditProfilePage {
     private commonUtilService: CommonUtilService,
     private alertCtrl: AlertController,
     private framework: FrameworkService,
-    private popoverCtrl:PopoverController
+    private popoverCtrl: PopoverController,
+    private headerService: AppHeaderService
   ) {
     this.isNewUser = Boolean(this.navParams.get('isNewUser'));
     this.isCurrentUser = Boolean(this.navParams.get('isCurrentUser'));
@@ -174,10 +176,13 @@ export class GuestEditProfilePage {
   }
 
   ionViewWillEnter() {
+    let header = this.headerService.getDefaultPageConfig();
+    header.showHeader = false;
+    this.headerService.updatePageConfig(header);
     this.getSyllabusDetails();
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.dismissPopup();
-    }, 11);
+    }, 10);
   }
 
   ionViewWillLeave() {
@@ -225,7 +230,7 @@ export class GuestEditProfilePage {
         {
           btntext: this.commonUtilService.translateMessage('CANCEL'),
           btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
-        },{
+        }, {
           btntext: this.commonUtilService.translateMessage('OKAY'),
           btnClass: 'popover-color'
         }
@@ -238,7 +243,7 @@ export class GuestEditProfilePage {
         ev: event
       });
       confirm.onDidDismiss((leftBtnClicked: any) => {
-        if(leftBtnClicked == null) {
+        if (leftBtnClicked == null) {
           return;
         }
         if (leftBtnClicked) {
@@ -251,7 +256,7 @@ export class GuestEditProfilePage {
             subjects: [[]]
           });
           this.guestEditForm.controls['profileType'].setValue('STUDENT');
-        } 
+        }
       });
   }
 
