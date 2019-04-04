@@ -9,7 +9,8 @@ import {
   NavController,
   Events,
   Navbar,
-  Platform
+  Platform,
+  PopoverController
 } from 'ionic-angular';
 import {
   ContentService,
@@ -30,7 +31,11 @@ import {
   PageAssembleCriteria,
   PageAssembleFilter,
   PageAssembleService,
-  SharedPreferences
+  SharedPreferences,
+  CourseBatchesRequest,
+  CourseEnrollmentType,
+  CourseBatchStatus,
+  CourseService
 } from 'sunbird';
 import { TabsPage } from '@app/pages/tabs/tabs';
 import { GenieResponse } from '../settings/datasync/genieresponse';
@@ -46,7 +51,8 @@ import {
   Search,
   AudienceFilter,
   PageName,
-  PreferenceKey
+  PreferenceKey,
+  ContentCard
 } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { AppGlobalService } from '../../service/app-global.service';
@@ -56,6 +62,7 @@ import { TelemetryGeneratorService } from '../../service/telemetry-generator.ser
 import { QrCodeResultPage } from '../qr-code-result/qr-code-result';
 import { TranslateService } from '@ngx-translate/core';
 import { AppHeaderService } from '@app/service';
+import { EnrollmentDetailsPage } from '../enrolled-course-details/enrollment-details/enrollment-details';
 @IonicPage()
 @Component({
   selector: 'page-search',
@@ -124,6 +131,10 @@ export class SearchPage {
   layoutName = 'search';
 
   @ViewChild(Navbar) navBar: Navbar;
+  enrolledCourses: any;
+  guestUser: any;
+  batches: any;
+  loader: any;
   constructor(
     private contentService: ContentService,
     private pageService: PageAssembleService,
@@ -140,7 +151,9 @@ export class SearchPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private preference: SharedPreferences,
     private translate: TranslateService,
-    private headerService: AppHeaderService
+    private headerService: AppHeaderService,
+    private courseService: CourseService,
+    private popoverCtrl: PopoverController
   ) {
 
     this.checkUserSession();
@@ -248,7 +261,7 @@ export class SearchPage {
       this.childContent = content;
       this.checkParent(collection, content);
     } else {
-      this.showContentDetails(content, true);
+      this.checkRetiredOpenBatch(content);
     }
   }
 
@@ -274,7 +287,7 @@ export class SearchPage {
         onboarding: this.appGlobalService.isOnBoardingCompleted
       };
     }
-
+    this.loader.dismiss();
     if (this.isDialCodeSearch && !this.appGlobalService.isOnBoardingCompleted && (this.parentContent || content)) {
       this.appGlobalService.setOnBoardingCompleted();
     }
@@ -473,11 +486,85 @@ export class SearchPage {
     return assembleFilter;
   }
 
+  checkRetiredOpenBatch(content: any, layoutName?: string): void {
+    this.loader = this.commonUtilService.getLoader();
+    this.loader.present();
+    let retiredBatches: Array<any> = [];
+    let anyOpenBatch: Boolean = false;
+    this.enrolledCourses = this.enrolledCourses || [];
+    if (layoutName !== ContentCard.LAYOUT_INPROGRESS) {
+      retiredBatches = this.enrolledCourses.filter((element) =>  {
+        if (element.contentId === content.identifier && element.batch.status === 1 && element.cProgress !== 100) {
+          anyOpenBatch = true;
+        }
+        if (element.contentId === content.identifier && element.batch.status === 2 && element.cProgress !== 100) {
+          return element;
+        }
+      });
+    }
+    if (anyOpenBatch || !retiredBatches.length) {
+      // open the batch directly
+      this.showContentDetails(content, true);
+    } else if (retiredBatches.length) {
+      this.navigateToBatchListPopup(content, layoutName, retiredBatches);
+    }
+  }
+
+  navigateToBatchListPopup(content: any, layoutName?: string, retiredBatched?: any): void {
+    const courseBatchesRequest: CourseBatchesRequest = {
+      courseId: layoutName === ContentCard.LAYOUT_INPROGRESS ? content.contentId : content.identifier,
+      enrollmentType: CourseEnrollmentType.OPEN,
+      status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
+    };
+    const reqvalues = new Map();
+    reqvalues['enrollReq'] = courseBatchesRequest;
+
+    if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+      if (!this.guestUser) {
+        this.courseService.getCourseBatches(courseBatchesRequest)
+          .then((data: any) => {
+            data = JSON.parse(data);
+            this.zone.run(() => {
+              this.batches = data.result.content;
+              if (this.batches.length) {
+                this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+                  'showing-enrolled-ongoing-batch-popup',
+                  Environment.HOME,
+                  PageId.CONTENT_DETAIL, undefined,
+                  reqvalues);
+                const popover = this.popoverCtrl.create(EnrollmentDetailsPage,
+                  {
+                    upcommingBatches: this.batches,
+                    retiredBatched: retiredBatched
+                  },
+                  { cssClass: 'enrollement-popover' }
+                );
+                this.loader.dismiss();
+                popover.present();
+              } else {
+                this.loader.dismiss();
+                this.showContentDetails(content, true);
+              }
+            });
+          })
+          .catch((error: any) => {
+            console.log('error while fetching course batches ==>', error);
+          });
+      } else {
+        // this.navCtrl.push(CourseBatchesPage);
+      }
+    } else {
+      this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
+    }
+  }
+
   init() {
     this.dialCode = this.navParams.get('dialCode');
     this.contentType = this.navParams.get('contentType');
     this.corRelationList = this.navParams.get('corRelation');
     this.source = this.navParams.get('source');
+    this.enrolledCourses = this.navParams.get('enrolledCourses');
+    this.guestUser = this.navParams.get('guestUser');
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.generateImpressionEvent();
     const values = new Map();

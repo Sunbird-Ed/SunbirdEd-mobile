@@ -1,11 +1,13 @@
 import {
   Component,
   Input,
-  OnInit
+  OnInit,
+  NgZone
 } from '@angular/core';
 import {
   NavController,
-  Events
+  Events,
+  PopoverController
 } from 'ionic-angular';
 import { EnrolledCourseDetailsPage } from '../../../pages/enrolled-course-details/enrolled-course-details';
 import { CollectionDetailsPage } from '../../../pages/collection-details/collection-details';
@@ -14,7 +16,21 @@ import { ContentDetailsPage } from '../../../pages/content-details/content-detai
 import { ContentType, MimeType, ContentCard, PreferenceKey } from '../../../app/app.constant';
 import { CourseUtilService } from '../../../service/course-util.service';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import { InteractType, InteractSubtype, TelemetryObject, SharedPreferences } from 'sunbird';
+import {
+  InteractType,
+  InteractSubtype,
+  TelemetryObject,
+  SharedPreferences,
+  CourseBatchesRequest,
+  CourseEnrollmentType,
+  CourseBatchStatus,
+  CourseService,
+  Environment,
+  PageId
+} from 'sunbird';
+import { EnrollmentDetailsPage } from '@app/pages/enrolled-course-details/enrollment-details/enrollment-details';
+import { CommonUtilService } from '@app/service';
+import * as _ from 'lodash';
 
 /**
  * The course card component
@@ -52,6 +68,10 @@ export class CourseCard implements OnInit {
    */
   @Input() cardDisabled = false;
 
+  @Input() guestUser: any;
+
+  @Input() enrolledCourses: any;
+
   /**
    * Contains default image path.
    *
@@ -63,6 +83,8 @@ export class CourseCard implements OnInit {
   layoutPopular = ContentCard.LAYOUT_POPULAR;
   layoutSavedContent = ContentCard.LAYOUT_SAVED_CONTENT;
   batchExp: Boolean = false;
+  batches: any;
+  loader: any;
 
   /**
    * Default method of class CourseCard
@@ -73,8 +95,90 @@ export class CourseCard implements OnInit {
     private courseUtilService: CourseUtilService,
     private events: Events,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private preference: SharedPreferences) {
+    private preference: SharedPreferences,
+    private popoverCtrl: PopoverController,
+    private commonUtilService: CommonUtilService,
+    private courseService: CourseService,
+    private zone: NgZone
+    ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
+  }
+
+  checkRetiredOpenBatch(content: any, layoutName?: string): void {
+    this.loader = this.commonUtilService.getLoader();
+    this.loader.present();
+    let anyOpenBatch: Boolean = false;
+    let retiredBatches: Array<any> = [];
+    this.enrolledCourses = this.enrolledCourses || [];
+    if (layoutName !== ContentCard.LAYOUT_INPROGRESS) {
+      retiredBatches = this.enrolledCourses.filter((element) =>  {
+        if (element.contentId === content.identifier && element.batch.status === 1 && element.cProgress !== 100) {
+          anyOpenBatch = true;
+        }
+        if (element.contentId === content.identifier && element.batch.status === 2 && element.cProgress !== 100) {
+          return element;
+        }
+      });
+    }
+    if (anyOpenBatch || !retiredBatches.length) {
+      // open the batch directly
+      this.navigateToDetailPage(content, layoutName);
+    } else if (retiredBatches.length) {
+      this.navigateToBatchListPopup(content, layoutName, retiredBatches);
+    }
+  }
+
+  navigateToBatchListPopup(content: any, layoutName?: string, retiredBatched?: any): void {
+    const courseBatchesRequest: CourseBatchesRequest = {
+      courseId: layoutName === ContentCard.LAYOUT_INPROGRESS ? content.contentId : content.identifier,
+      enrollmentType: CourseEnrollmentType.OPEN,
+      status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
+    };
+    const reqvalues = new Map();
+    reqvalues['enrollReq'] = courseBatchesRequest;
+    // this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+    //   InteractSubtype.ENROLL_CLICKED,
+    //     Environment.HOME,
+    //     PageId.CONTENT_DETAIL, undefined,
+    //     reqvalues);
+
+    if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+      if (!this.guestUser) {
+        this.courseService.getCourseBatches(courseBatchesRequest)
+          .then((data: any) => {
+            data = JSON.parse(data);
+            this.zone.run(() => {
+              this.batches = data.result.content;
+              if (this.batches.length) {
+                this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+                  'showing-enrolled-ongoing-batch-popup',
+                  Environment.HOME,
+                  PageId.CONTENT_DETAIL, undefined,
+                  reqvalues);
+                this.loader.dismiss();
+                const popover = this.popoverCtrl.create(EnrollmentDetailsPage,
+                  {
+                    upcommingBatches: this.batches,
+                    retiredBatched: retiredBatched
+                  },
+                  { cssClass: 'enrollement-popover' }
+                );
+                popover.present();
+              } else {
+                this.loader.dismiss();
+                this.navigateToDetailPage(content, layoutName);
+              }
+            });
+          })
+          .catch((error: any) => {
+            console.log('error while fetching course batches ==>', error);
+          });
+      } else {
+        // this.navCtrl.push(CourseBatchesPage);
+      }
+    } else {
+      this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
+    }
   }
 
   /**
@@ -104,6 +208,7 @@ export class CourseCard implements OnInit {
       this.pageName ? this.pageName : this.layoutName,
       telemetryObject,
       values);
+    this.loader.dismiss();
     if (layoutName === this.layoutInProgress || content.contentType === ContentType.COURSE) {
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content

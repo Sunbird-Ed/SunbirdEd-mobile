@@ -127,6 +127,10 @@ export class ViewMoreActivityPage implements OnInit {
   // adding for ETBV2 integration, to show saved resources after recentlyViewed
   savedResources: Array<any>;
 
+  enrolledCourses: any;
+
+  guestUser: any;
+
   @Input() course: any;
 
   /**
@@ -145,6 +149,7 @@ export class ViewMoreActivityPage implements OnInit {
   @Input() sectionName: string;
 
   @Input() env: string;
+
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -176,6 +181,8 @@ export class ViewMoreActivityPage implements OnInit {
     this.headerServie.showHeaderWithBackButton();
     this.tabBarElement.style.display = 'none';
     this.searchQuery = this.navParams.get('requestParams');
+    this.enrolledCourses = this.navParams.get('enrolledCourses');
+    this.guestUser = this.navParams.get('guestUser');
     this.showDownloadsOnlyToggle = this.navParams.get('showDownloadOnlyToggle');
     this.uid = this.navParams.get('uid');
     this.audience = this.navParams.get('audience');

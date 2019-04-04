@@ -473,5 +473,7 @@
   "EMPTY_LIBRARY_TEXTBOOK_FILTER":"No books found for {{%s}}",
   "SHOW_RECENT":"Showing {{%s}} items",
   "SHOW_RESULTS":"Showing results of \"{{%s}}\"",
+  "VIEW_RETIRED_BATCHES": "Retired Batches",
+  "VIEW_ALL_BATCHES": "Please select a batch to proceed",
   "STATE_RECORDS":"As per state records"
 }

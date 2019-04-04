@@ -142,6 +142,17 @@
     
 }
 
+.enrollement-popover {
+    background: rgba(0, 0, 0, 0.51);
+    .popover-content {
+        left: 0px !important;
+        right: 0px;
+        bottom: 0px;
+        top: auto !important;
+        width: auto !important;
+    }
+}
+
 .sb-popover.danger{
     .sb-popover-header {
         background-color: $danger-color;  
