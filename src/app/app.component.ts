@@ -51,8 +51,7 @@ export class MyApp implements AfterViewInit {
   readonly permissionList = [
     AndroidPermission.WRITE_EXTERNAL_STORAGE,
     AndroidPermission.RECORD_AUDIO,
-    AndroidPermission.CAMERA,
-    AndroidPermission.ACCESS_FINE_LOCATION];
+    AndroidPermission.CAMERA];
   private telemetryAutoSyncUtil: TelemetryAutoSyncUtil;
 
   constructor(
