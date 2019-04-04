@@ -16,7 +16,9 @@ import {
   Profile,
   ProfileService,
   CategoryTerm,
-  UpdateServerProfileInfoRequest
+  UpdateServerProfileInfoRequest,
+  ServerProfileDetailsRequest,
+  CachedItemRequestSourceFrom
 } from 'sunbird-sdk';
 import { ContainerService } from '@app/service/container.services';
 import { TabsPage } from '../tabs/tabs';
@@ -388,9 +390,10 @@ export class CategoriesEditPage {
         //   this.navCtrl.pop();
         // }
         if (this.showOnlyMandatoryFields) {
-          const reqObj = {
+          const reqObj: ServerProfileDetailsRequest = {
             userId: this.profile.uid,
             requiredFields: ProfileConstants.REQUIRED_FIELDS,
+            from : CachedItemRequestSourceFrom.SERVER
           };
           this.profileService.getServerProfilesDetails(reqObj).toPromise()
             .then(updatedProfile => {
