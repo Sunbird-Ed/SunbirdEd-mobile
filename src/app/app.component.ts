@@ -100,6 +100,7 @@ export class MyApp implements AfterViewInit {
       this.checkForTncUpdate();
       await this.getSelectedLanguage();
       await this.navigateToAppropriatePage();
+      this.handleSunbirdSplashScreenActions();
       this.preferences.putString(PreferenceKey.CONTENT_CONTEXT, '').subscribe();
       window['thisRef'] = this;
       this.statusBar.styleBlackTranslucent();
