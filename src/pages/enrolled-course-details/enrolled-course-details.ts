@@ -210,7 +210,6 @@ export class EnrolledCourseDetailsPage {
     this.appGlobalService.getUserId();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
-    this.subscribeSdkEvent();
   }
 
   subscribeUtilityEvents() {
@@ -943,7 +942,7 @@ export class EnrolledCourseDetailsPage {
           // Show download percentage
           if (event.type === DownloadEventType.PROGRESS) {
             const downloadEvent = event as DownloadProgress;
-            if (downloadEvent.payload.identifier === this.identifier) {
+            if (downloadEvent.payload.identifier === this.course.identifier) {
               this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
               if (this.downloadProgress === 100) {
                 this.getBatchDetails();
@@ -978,7 +977,7 @@ export class EnrolledCourseDetailsPage {
           // For content update available
           const hierarchyInfo = this.courseCardData.hierarchyInfo ? this.courseCardData.hierarchyInfo : null;
           const contentUpdateEvent = event as ContentUpdate;
-          if (contentUpdateEvent.payload && contentUpdateEvent.payload.contentId === this.identifier
+          if (contentUpdateEvent.payload && contentUpdateEvent.payload.contentId === this.course.identifier
             && contentUpdateEvent.type === ContentEventType.UPDATE && hierarchyInfo === null) {
             this.zone.run(() => {
               this.showLoading = true;

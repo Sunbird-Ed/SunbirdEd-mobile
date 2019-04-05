@@ -1,5 +1,5 @@
-import { CommonUtilService } from './../../service/common-util.service';
-import { Component, Inject, NgZone, OnDestroy, ViewChild } from '@angular/core';
+import {CommonUtilService} from './../../service/common-util.service';
+import {Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
 import {
   AlertController,
   Events,
@@ -10,15 +10,15 @@ import {
   Platform,
   PopoverController
 } from 'ionic-angular';
-import { ContentDetailsPage } from '../content-details/content-details';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
-import { ContentType, MimeType } from '../../app/app.constant';
-import { CollectionDetailsPage } from '../collection-details/collection-details';
-import { TranslateService } from '@ngx-translate/core';
-import { AppGlobalService } from '../../service/app-global.service';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import {ContentDetailsPage} from '../content-details/content-details';
+import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
+import {ContentType, MimeType} from '../../app/app.constant';
+import {CollectionDetailsPage} from '../collection-details/collection-details';
+import {TranslateService} from '@ngx-translate/core';
+import {AppGlobalService} from '../../service/app-global.service';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
 import * as _ from 'lodash';
-import { ProfileSettingsPage } from '../profile-settings/profile-settings';
+import {ProfileSettingsPage} from '../profile-settings/profile-settings';
 import {
   ChildContentRequest,
   Content,
@@ -29,6 +29,7 @@ import {
   ContentImportResponse,
   ContentMarkerRequest,
   ContentService,
+  CorrelationData,
   DownloadEventType,
   DownloadProgress,
   EventsBusEvent,
@@ -40,19 +41,19 @@ import {
   FrameworkUtilService,
   GetAllProfileRequest,
   GetSuggestedFrameworksRequest,
-  Profile,
-  ProfileService,
-  CorrelationData,
   MarkerType,
+  NetworkError,
   PlayerService,
-  NetworkError
+  Profile,
+  ProfileService
 } from 'sunbird-sdk';
-import { Subscription } from 'rxjs';
-import { Environment, ImpressionType, InteractSubtype, InteractType, PageId } from '../../service/telemetry-constants';
-import { TabsPage } from '@app/pages/tabs/tabs';
-import { PlayerPage } from '../player/player';
-import { CanvasPlayerService } from '../player/canvas-player.service';
-import { File } from '@ionic-native/file';
+import {Subscription} from 'rxjs';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
+import {TabsPage} from '@app/pages/tabs/tabs';
+import {PlayerPage} from '../player/player';
+import {CanvasPlayerService} from '../player/canvas-player.service';
+import {File} from '@ionic-native/file';
+
 declare const cordova;
 
 @IonicPage()
@@ -602,7 +603,7 @@ export class QrCodeResultPage implements OnDestroy {
         }
         // For content update available
         // if (res.data && res.type === 'contentUpdateAvailable' && res.data.identifier === this.identifier) {
-        if (event.payload && event.type === ContentEventType.UPDATE && event.payload.contentId === this.identifier) {
+        if (event.payload && event.type === ContentEventType.UPDATE && event.payload.contentId === this.content.identifier) {
           this.zone.run(() => {
             if (this.parentContent) {
               const parentIdentifier = this.parentContent.contentId || this.parentContent.identifier;

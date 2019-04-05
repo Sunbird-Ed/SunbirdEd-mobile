@@ -53,6 +53,12 @@ export class TermsAndConditionsPage {
     await this.createAndPresentLoadingSpinner();
   }
 
+  public ionViewWillLeave() {
+    if (this.unregisterBackButtonAction) {
+      this.unregisterBackButtonAction();
+    }
+  }
+
   public onIFrameLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
