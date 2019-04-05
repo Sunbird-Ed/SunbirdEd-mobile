@@ -32,7 +32,7 @@ org.ekstep.contentrenderer.baseLauncher.extend({
         var data = _.clone(content);
         this.heartBeatData.stageId = content.mimeType === 'video/x-youtube' ? 'youtubestage' : 'videostage';
         var globalConfigObj = EkstepRendererAPI.getGlobalConfig();
-        if (!isbrowserpreview) {
+        if (window.cordova || !isbrowserpreview) {
             var regex = new RegExp("^(http|https)://", "i");
             if(!regex.test(globalConfigObj.basepath)){
                 var prefix_url = globalConfigObj.basepath || '';
@@ -82,7 +82,7 @@ org.ekstep.contentrenderer.baseLauncher.extend({
                 'severity': 'error'
             });
             instance.throwError({message: instance.messages.noInternetConnection});
-            if (!isbrowserpreview) exitApp();
+            if (typeof cordova !== "undefined") exitApp();
             return false;
         }
         var source = document.createElement("source");

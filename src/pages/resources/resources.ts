@@ -1,6 +1,6 @@
 import {Search} from './../../app/app.constant';
 import {AfterViewInit, Component, Inject, NgZone, OnInit, ViewChild} from '@angular/core';
-import {Events, NavController, Scroll} from 'ionic-angular';
+import {Events, NavController, Scroll, Tabs} from 'ionic-angular';
 import * as _ from 'lodash';
 import {ViewMoreActivityPage} from '../view-more-activity/view-more-activity';
 import {SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
@@ -151,6 +151,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     private commonUtilService: CommonUtilService,
     private translate: TranslateService,
     private network: Network,
+    private tabs: Tabs,
     @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
@@ -517,7 +518,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.searchApiLoader = false;
           // this.noInternetConnection = false;
           this.generateExtraInfoTelemetry(newSections.length);
-          this.checkEmptySearchResult(isAfterLanguageChange);
+          // this.checkEmptySearchResult(isAfterLanguageChange);
+          if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable) {
+            if (this.tabs.getSelected().tabTitle === 'LIBRARY‌') {
+              this.commonUtilService.showToast(
+                this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
+                `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
+              }
+          }
         });
       })
       .catch(error => {
@@ -783,7 +791,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     if (flags.length && _.includes(flags, true)) {
     } else {
       if (!isAfterLanguageChange) {
-        this.commonUtilService.showToast('NO_CONTENTS_FOUND');
+        if (this.tabs.getSelected().tabTitle === 'LIBRARY‌') {
+          this.commonUtilService.showToast('NO_CONTENTS_FOUND');
+        }
       }
     }
   }

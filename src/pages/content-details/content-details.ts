@@ -1,17 +1,28 @@
-import { Component, Inject, NgZone, ViewChild } from '@angular/core';
-import { AlertController, App, Events, IonicApp, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController } from 'ionic-angular';
-import { SocialSharing } from '@ionic-native/social-sharing';
+import {Component, Inject, NgZone, ViewChild} from '@angular/core';
+import {
+  AlertController,
+  App,
+  Events,
+  IonicApp,
+  IonicPage,
+  Navbar,
+  NavController,
+  NavParams,
+  Platform,
+  PopoverController
+} from 'ionic-angular';
+import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
-import { EventTopics, PreferenceKey, XwalkConstants } from '../../app/app.constant';
-import { GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, Map, ShareUrl } from '@app/app';
-import { BookmarkComponent, ContentActionsComponent, ContentRatingAlertComponent } from '@app/component';
-import { AppGlobalService, CourseUtilService, UtilityService } from '@app/service';
-import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
-import { Network } from '@ionic-native/network';
-import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
+import {EventTopics, PreferenceKey, XwalkConstants} from '../../app/app.constant';
+import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, Map, ShareUrl} from '@app/app';
+import {BookmarkComponent, ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
+import {AppGlobalService, CourseUtilService, UtilityService} from '@app/service';
+import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
+import {Network} from '@ionic-native/network';
+import {UserAndGroupsPage} from '../user-and-groups/user-and-groups';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {CommonUtilService} from '../../service/common-util.service';
+import {DialogPopupComponent} from '../../component/dialog-popup/dialog-popup';
 import {
   AuthService,
   Content,
@@ -40,10 +51,10 @@ import {
   SharedPreferences,
   TelemetryObject
 } from 'sunbird-sdk';
-import { CanvasPlayerService } from '../player/canvas-player.service';
-import { PlayerPage } from '../player/player';
-import { File } from '@ionic-native/file';
-import { Subscription } from 'rxjs';
+import {CanvasPlayerService} from '../player/canvas-player.service';
+import {PlayerPage} from '../player/player';
+import {File} from '@ionic-native/file';
+import {Subscription} from 'rxjs';
 import {
   Environment,
   ImpressionType,
@@ -52,8 +63,8 @@ import {
   Mode,
   PageId,
 } from '../../service/telemetry-constants';
-import { TabsPage } from '../tabs/tabs';
-import { ContainerService } from '@app/service/container.services';
+import {TabsPage} from '../tabs/tabs';
+import {ContainerService} from '@app/service/container.services';
 
 declare const cordova;
 
@@ -733,8 +744,10 @@ export class ContentDetailsPage {
       this.zone.run(() => {
         if (event.type === DownloadEventType.PROGRESS) {
           const downloadEvent = event as DownloadProgress;
-          this.downloadProgress = downloadEvent.payload.progress === -1 ? '0' : downloadEvent.payload.progress;
-          this.downloadProgress = Math.round(this.downloadProgress);
+          if (downloadEvent.payload.identifier === this.content.identifier) {
+            this.downloadProgress = downloadEvent.payload.progress === -1 ? '0' : downloadEvent.payload.progress;
+            this.downloadProgress = Math.round(this.downloadProgress);
+          }
         }
 
         // Get child content
@@ -762,7 +775,7 @@ export class ContentDetailsPage {
         if (event.payload && event.type === ContentEventType.STREAMING_URL_AVAILABLE) {
           this.zone.run(() => {
             const eventPayload = event.payload;
-            if (eventPayload.contentId === this.identifier) {
+            if (eventPayload.contentId === this.content.identifier) {
               if (eventPayload.streamingUrl) {
                 this.playingContent.contentData.streamingUrl = eventPayload.streamingUrl;
               } else {
