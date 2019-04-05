@@ -122,7 +122,7 @@
           spec="https://github.com/adriano-di-giovanni/cordova-plugin-shared-preferences.git"/>
   <plugin name="sb-cordova-plugin-db" spec="https://github.com/swayangjit/sb-cordova-plugin-db.git"/>
   <plugin name="cordova-plugin-android-permissions" spec="^1.0.0"/>
-  <plugin name="com.jjdltc.cordova.plugin.zip" spec="../jjdltc-cordova-plugin-zip"/>
+  <plugin name="com.jjdltc.cordova.plugin.zip" spec="https://github.com/swayangjit/jjdltc-cordova-plugin-zip.git"/>
   <plugin name="cordova-plugin-buildconfig-reader"
           spec="https://github.com/swayangjit/cordova-plugin-buildconfig-reader.git"/>
   <plugin name="cordova-plugin-advanced-http" spec="^2.0.6"/>
