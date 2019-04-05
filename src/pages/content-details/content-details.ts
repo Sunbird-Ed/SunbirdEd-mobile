@@ -744,7 +744,7 @@ export class ContentDetailsPage {
       this.zone.run(() => {
         if (event.type === DownloadEventType.PROGRESS) {
           const downloadEvent = event as DownloadProgress;
-          if (downloadEvent.payload.identifier === this.identifier) {
+          if (downloadEvent.payload.identifier === this.content.identifier) {
             this.downloadProgress = downloadEvent.payload.progress === -1 ? '0' : downloadEvent.payload.progress;
             this.downloadProgress = Math.round(this.downloadProgress);
           }
@@ -775,7 +775,7 @@ export class ContentDetailsPage {
         if (event.payload && event.type === ContentEventType.STREAMING_URL_AVAILABLE) {
           this.zone.run(() => {
             const eventPayload = event.payload;
-            if (eventPayload.contentId === this.identifier) {
+            if (eventPayload.contentId === this.content.identifier) {
               if (eventPayload.streamingUrl) {
                 this.playingContent.contentData.streamingUrl = eventPayload.streamingUrl;
               } else {
