@@ -18,7 +18,8 @@
 	</div>
 </ion-header>
 
-<ion-content style="background: #EBEBEB;">
+<ion-content style="background: #EBEBEB;"
+						 (ionScrollEnd)="logScrollEnd($event)">
 	
 	<div ion-fixed style="width: 100%;">
 		<div class="horizontal-scroll  PLR15px bg-white">

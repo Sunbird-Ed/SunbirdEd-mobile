@@ -1,6 +1,6 @@
 import {Search} from './../../app/app.constant';
-import {AfterViewInit, Component, Inject, NgZone, OnInit} from '@angular/core';
-import {Events, NavController} from 'ionic-angular';
+import {AfterViewInit, Component, Inject, NgZone, OnInit, ViewChild} from '@angular/core';
+import {Events, NavController, Scroll} from 'ionic-angular';
 import * as _ from 'lodash';
 import {ViewMoreActivityPage} from '../view-more-activity/view-more-activity';
 import {SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
@@ -91,7 +91,7 @@ import {ProfileConstants} from '../../app';
   ]
 })
 export class ResourcesPage implements OnInit, AfterViewInit {
-
+  @ViewChild(Scroll) scroll: Scroll;
   pageLoadedSuccess = false;
   storyAndWorksheets: Array<any>;
   selectedValue: Array<string> = [];
@@ -137,7 +137,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   refresh: boolean;
   private eventSubscription: Subscription;
-
+  scrollEventRemover: any;
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
@@ -170,7 +170,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.generateNetworkType();
 
   }
-
   subscribeUtilityEvents() {
     this.profileService.getActiveSessionProfile({requiredFields: ProfileConstants.REQUIRED_FIELDS}).subscribe((profile: Profile) => {
       this.profile = profile;
@@ -246,6 +245,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   ionViewWillLeave() {
     if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
+    }
+    if ( this.scrollEventRemover) {
+      this.scrollEventRemover();
     }
   }
 
@@ -599,6 +601,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewDidEnter() {
+    this.scrollEventRemover = this.scroll.addScrollEventListener((event) => {
+      this.onScroll(event);
+    });
     this.preferences.getString('show_app_walkthrough_screen').toPromise()
       .then(value => {
         if (value === 'true') {
@@ -857,4 +862,26 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   launchContent() {
     this.navCtrl.push(PlayerPage);
   }
+
+
+logScrollEnd(event) {
+  // Added Telemetry on reaching Vertical Scroll End
+  if (event.scrollElement.scrollHeight <= event.scrollElement.scrollTop + event.scrollElement.offsetHeight ) {
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.SCROLL,
+      InteractSubtype.BOOK_LIST_END_REACHED,
+      Environment.HOME,
+      this.source, undefined,
+      );
+  }
+}
+onScroll(event) {
+  // Added Telemetry on reaching Horizontal Scroll End
+  if (event.target.scrollWidth <= event.target.scrollLeft + event.target.offsetWidth) {
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.SCROLL,
+      InteractSubtype.RECENTLY_VIEWED_END_REACHED,
+      Environment.HOME,
+      this.source, undefined,
+      );
+  }
+}
 }
