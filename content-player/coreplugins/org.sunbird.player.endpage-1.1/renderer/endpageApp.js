@@ -45,7 +45,7 @@ endPage.controller("endPageController", function($scope, $rootScope, $state,$ele
     };
    
     $scope.replayContent = function() {
-        if(!isbrowserpreview && ($rootScope.users.length > 1)) {
+        if(window.cordova && ($rootScope.users.length > 1)) {
             EkstepRendererAPI.dispatchEvent("event:openUserSwitchingModal", {'logGEEvent': $scope.pluginInstance._isAvailable});
         }else {
             $scope.replayCallback();
