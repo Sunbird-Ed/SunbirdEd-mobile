@@ -245,7 +245,7 @@ export class TelemetryGeneratorService {
    */
     readLessOrReadMore(param, objRollup, corRelationList, telemetryObject) {
         this.generateInteractTelemetry(InteractType.TOUCH,
-            param === 'READ_MORE' ? InteractSubtype.READ_MORE_CLICKED : InteractSubtype.READ_LESS_CLICKED,
+            param = 'READ_MORE' === param ? InteractSubtype.READ_MORE_CLICKED : InteractSubtype.READ_LESS_CLICKED,
             Environment.HOME,
             PageId.COLLECTION_DETAIL,
             undefined,
