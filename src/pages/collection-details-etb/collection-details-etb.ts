@@ -973,6 +973,9 @@ export class CollectionDetailsEtbPage {
       popover.onDidDismiss((canDownload: boolean = false) => {
         if (canDownload) {
           this.downloadAllContent();
+        } else {
+          // Cancel Clicked Telemetry
+          this.telemetryGeneratorService.generateCancelDownloadTelemetry(this.contentDetail);
         }
       });
     } else {

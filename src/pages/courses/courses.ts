@@ -1,6 +1,6 @@
 import {ViewMoreActivityPage} from './../view-more-activity/view-more-activity';
 import {Component, Inject, NgZone, OnInit} from '@angular/core';
-import {Events, IonicPage, NavController, PopoverController} from 'ionic-angular';
+import {Events, IonicPage, NavController, PopoverController, Tabs} from 'ionic-angular';
 import {AppVersion} from '@ionic-native/app-version';
 import {QRResultCallback, SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
 import {SearchPage} from '../search/search';
@@ -138,6 +138,7 @@ export class CoursesPage implements OnInit {
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private network: Network,
+    private tabs: Tabs,
     @Inject('EVENTS_BUS_SERVICE') private eventBusService: EventsBusService,
     @Inject('PAGE_ASSEMBLE_SERVICE') private pageService: PageAssembleService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences
@@ -637,7 +638,9 @@ export class CoursesPage implements OnInit {
     if (flags.length && _.includes(flags, true)) {
     } else {
       if (!isAfterLanguageChange) {
-        this.commonUtilService.showToast('NO_CONTENTS_FOUND', this.isVisible);
+        if (this.tabs.getSelected().tabTitle === 'COURSES‌') {
+          this.commonUtilService.showToast('NO_CONTENTS_FOUND', this.isVisible);
+        }
       }
     }
   }
