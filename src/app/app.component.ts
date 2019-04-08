@@ -28,7 +28,7 @@ import {
   TelemetryService,
 } from 'sunbird-sdk';
 import {tap} from 'rxjs/operators';
-import {Environment, InteractSubtype, InteractType, PageId, ImpressionType} from '../service/telemetry-constants';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../service/telemetry-constants';
 import {TabsPage} from '@app/pages/tabs/tabs';
 import {ContainerService} from '@app/service/container.services';
 import {AndroidPermissionsService} from '../service/android-permissions/android-permissions.service';
@@ -100,6 +100,7 @@ export class MyApp implements AfterViewInit {
       this.checkForTncUpdate();
       await this.getSelectedLanguage();
       await this.navigateToAppropriatePage();
+      this.handleSunbirdSplashScreenActions();
       this.preferences.putString(PreferenceKey.CONTENT_CONTEXT, '').subscribe();
       window['thisRef'] = this;
       this.statusBar.styleBlackTranslucent();
@@ -383,8 +384,6 @@ export class MyApp implements AfterViewInit {
       }).toPromise();
   }
 
-  private async makeEntriesInSupportFolder() {
-  }
 
   private async makeEntryInSupportFolder() {
     return new Promise((resolve => {
