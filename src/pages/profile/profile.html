@@ -27,7 +27,7 @@
         <ion-spinner *ngIf="isUploading"></ion-spinner>
         <p style="position: relative;"><span class="profile-name">{{ profile?.firstName }} {{ profile?.lastName }}</span>
             <span *ngIf="profile?.firstName" class="isymbol" item-right text-left (click)="toggleTooltips($event, 'name')">
-                <ion-icon name="ios-information-circle-outline" [ngClass]="{'icon-selected-color' : informationProfileName === true}" class="info-icon"></ion-icon>
+                <ion-icon name="information-circle" [ngClass]="{'icon-selected-color' : informationProfileName === true}" class="info-icon"></ion-icon>
                 <span class="asPerStateRecord" *ngIf="informationProfileName">{{'STATE_RECORDS' | translate}}</span>
             </span>
         </p>
@@ -53,7 +53,7 @@
         <p class="bolder MB5" style="position: relative;">{{profile?.organisations[0].orgName}}
             <span *ngIf="profile?.firstName" class="isymbol" item-right text-left
                 (click)="toggleTooltips($event, 'org')">
-                <ion-icon name="ios-information-circle-outline" [ngClass]="{'icon-selected-color' : informationOrgName === true}" class="info-icon"></ion-icon>
+                <ion-icon name="information-circle" [ngClass]="{'icon-selected-color' : informationOrgName === true}" class="info-icon"></ion-icon>
                 <span class="asPerStateRecord" *ngIf="informationOrgName">{{'STATE_RECORDS'
                     | translate}}</span>
             </span>

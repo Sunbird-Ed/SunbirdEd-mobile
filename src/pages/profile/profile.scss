@@ -498,28 +498,34 @@ page-profile {
 }
 
 .asPerStateRecord{
+    color: white;
     font-size: 10px;
-    display: inline-flex;
-    margin-left: -5px;
-    font-weight: bold;
+    white-space:pre;
+    display:inline-block;
+    font-weight:bold;
+    background-color: black;
+    padding: 6px;
+    position: absolute;
+    right: 13px;
+    
 }
 .isymbol{
     position: absolute;
-    top: -14px;
+    top: -20px;
      line-height: 12px;
-     left: -webkit-calc(50% + 50px);
-    left: calc(50% + 50px);
+     
 }
 .info-icon{
     vertical-align: sub;
-    margin-right: 5px;
-    font-size: 18px !important;
-    color: #a4a4a4
+    margin-right: 13px;
+    font-size: 1.8em !important;
+    color: #a4a4a4;
+
 }
 .info-icon-text{
     font-size: 10px;
     text-align: center;
 }
 .icon-selected-color{
-    color: $primary-color;
+    color: black;
 }
