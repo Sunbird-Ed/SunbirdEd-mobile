@@ -1,7 +1,11 @@
-import { Component, ViewChild } from '@angular/core';
-import { Tabs, Tab, Events } from 'ionic-angular';
+
+import { Component, ViewChild, ComponentFactoryResolver } from '@angular/core';
+import { ContainerService } from '../../service/container.services';
+import { Tabs, Tab, Events, ToastController } from 'ionic-angular';
 import { NavParams } from 'ionic-angular';
-import { ContainerService } from '@app/service/container.services';
+
+// import { ResourcesPage } from '../resources/resources';
+// import {ResourcesPageModule} from '@app/pages/resources/resources.module';
 
 @Component({
   selector: 'page-tabs',
@@ -10,10 +14,15 @@ import { ContainerService } from '@app/service/container.services';
 export class TabsPage {
 
   @ViewChild('myTabs') tabRef: Tabs;
-
+  tabIndex = 0;
   tabs = [];
-
-  constructor(private container: ContainerService, private navParams: NavParams,private events : Events) {
+  headerConfig = {
+    showHeader : true,
+    showBurgerMenu: true,
+    actionButtons: ['search', 'filter'],
+  };
+  constructor(private container: ContainerService, private navParams: NavParams, private events: Events,
+    public toastCtrl: ToastController) {
   }
 
   ionViewWillEnter() {
@@ -26,14 +35,59 @@ export class TabsPage {
         tabIndex = index;
       }
     });
-
+    this.events.publish('update_header', { index: tabIndex });
+    // Raise an Event
     setTimeout(() => {
       this.tabRef.select(tabIndex);
     }, 300);
-
   }
 
   public ionChange(tab: Tab) {
+    console.log('TabTitle', tab.tabTitle);
+    this.tabs.forEach((tabTo, index) => {
+      if (tabTo.isSelected === true) {
+        tabTo.isSelected = false;
+      }
+      if (index === tab.index) {
+        tabTo.isSelected = true;
+      }
+    });
     this.events.publish('tab.change', tab.tabTitle);
+
+  }
+
+  public customClick(tab, _index) {
+    // this.tabIndex = _index;
+    if (tab.disabled && tab.availableLater) {
+      const toast = this.toastCtrl.create({
+        message: 'Will be available in later release',
+        duration: 3000,
+        position: 'middle',
+        cssClass: 'sb-toast available-later',
+        dismissOnPageChange: true,
+        showCloseButton: false
+      });
+      toast.present();
+    }
+    if (tab.disabled && !tab.availableLater) {
+      const toast = this.toastCtrl.create({
+        message: 'Available for teachers only',
+        duration: 3000,
+        position: 'middle',
+        cssClass: 'sb-toast available-later',
+        dismissOnPageChange: true,
+        showCloseButton: false
+      });
+      toast.present();
+    }
+  }
+
+  handleHeaderEvents($event) {
+    // switch ($event.name) {
+    //   case 'search': this.search();
+    //                 break;
+    //   case 'filter': this.showFilter();
+    //                   break;
+    // }
   }
 }

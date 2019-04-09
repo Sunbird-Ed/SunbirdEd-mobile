@@ -32,11 +32,30 @@ describe.only('SearchPage', () => {
         appGlobalServiceMock.isUserLoggedIn.mockResolvedValue(true);
         sharedPreferencesMock.getString.mockResolvedValue('SAMPLE');
 
-        searchPage = new SearchPage(contentServiceMock as any, pageAssembleServiceMock as any, navParamsMock as any,
-            navCtrlMock as any, zoneMock as any, eventsMock as any, fileUtilMock as any, eventsMock as any,
-            appGlobalServiceMock as any, platformMock as any, formAndFrameworkUtilServiceMock as any,
-            commonUtilServiceMock as any, telemetryGeneratorServiceMock as any,
-            sharedPreferencesMock as any, translateServiceMock as any);
+        searchPage = new SearchPage(
+            contentServiceMock as any,
+            pageAssembleServiceMock as any,
+            navParamsMock as any,
+            navCtrlMock as any,
+            zoneMock as any,
+            eventsMock as any,
+            fileUtilMock as any,
+            eventsMock as any,
+            appGlobalServiceMock as any,
+            platformMock as any,
+            formAndFrameworkUtilServiceMock as any,
+            commonUtilServiceMock as any,
+            telemetryGeneratorServiceMock as any,
+            sharedPreferencesMock as any,
+            translateServiceMock as any,
+            appHeaderSrvMock as any,
+            courseServiceMock as any,
+            popoverCtrlMock as any
+        );
+        searchPage.loader = {
+            present: jest.fn(),
+            dismiss: jest.fn()
+        };
 
         jest.resetAllMocks();
     });
@@ -119,11 +138,11 @@ describe.only('SearchPage', () => {
         // arrange
         contentServiceMock.getContentDetail.mockResolvedValue('SAMPLE_COLLECTION_ID');
         spyOn(searchPage, 'generateInteractEvent').and.stub();
-        spyOn(searchPage, 'showContentDetails').and.returnValue(jest.fn());
+        spyOn(searchPage, 'checkRetiredOpenBatch').and.stub();
         // act
         searchPage.openContent(undefined, { identifier: 'SAMPLE_ID' }, 0);
         // assert
-        expect(searchPage.showContentDetails).toHaveBeenCalled();
+        expect(searchPage.checkRetiredOpenBatch).toHaveBeenCalled();
     });
     it('should show filter page showFilter()', (done) => {
         // arrange
@@ -595,5 +614,74 @@ describe.only('SearchPage', () => {
         searchPage.ionViewDidLoad();
         // assert
     });
+
+    it('#checkRetiredOpenBatch should call navigateToDetailPage()', () => {
+        const loader = {
+            present: jest.fn(),
+            dismiss: jest.fn()
+        };
+        commonUtilServiceMock.getLoader.mockReturnValue(loader);
+        spyOn(searchPage, 'showContentDetails').and.stub();
+        searchPage.checkRetiredOpenBatch({}, 'InProgress');
+        expect(searchPage.showContentDetails).toBeCalledWith({}, true);
+    });
+
+    it('#checkRetiredOpenBatch should call navigateToBatchListPopup()', () => {
+        const loader = {
+            present: jest.fn(),
+            dismiss: jest.fn()
+        };
+        commonUtilServiceMock.getLoader.mockReturnValue(loader);
+        searchPage.enrolledCourses = mockRes.enrolledCourses;
+        spyOn(searchPage, 'navigateToBatchListPopup').and.stub();
+        searchPage.checkRetiredOpenBatch(mockRes.contentMock1);
+        expect(searchPage.navigateToBatchListPopup).toBeCalledWith(mockRes.contentMock1, undefined, [mockRes.enrolledCourses[1]]);
+    });
+
+    it('#navigateToBatchListPopup should call should present the popup calling present()', (done) => {
+        commonUtilServiceMock.networkInfo = {
+            isNetworkAvailable: true
+        };
+        const popup = {
+            present: jest.fn(),
+            dismiss: jest.fn()
+        };
+        searchPage.guestUser = false;
+        popoverCtrlMock.create.mockReturnValue(popup);
+        courseServiceMock.getCourseBatches.mockResolvedValue(JSON.stringify(mockRes.openUpcomingBatchesResponse));
+
+        setTimeout(() => {
+            zoneMock.run.mock.calls[0][0].call();
+            expect(searchPage.batches.length).toBe(1);
+            expect(searchPage.loader.dismiss).toHaveBeenCalled();
+            expect(popup.present).toHaveBeenCalled();
+            done();
+        }, 0);
+        searchPage.navigateToBatchListPopup(mockRes.contentMock1);
+    });
+
+    it('#navigateToBatchListPopup should call navigateToDetailPage()', (done) => {
+        commonUtilServiceMock.networkInfo = {
+            isNetworkAvailable: true
+        };
+        const popup = {
+            present: jest.fn(),
+            dismiss: jest.fn()
+        };
+        searchPage.guestUser = false;
+        popoverCtrlMock.create.mockReturnValue(popup);
+        courseServiceMock.getCourseBatches.mockResolvedValue(JSON.stringify(mockRes.noOpenUpcomingBatchesResponse));
+        spyOn(searchPage, 'showContentDetails').and.stub();
+
+        setTimeout(() => {
+            zoneMock.run.mock.calls[0][0].call();
+            expect(searchPage.batches.length).toBe(0);
+            expect(searchPage.showContentDetails).toHaveBeenCalledWith(mockRes.contentMock1, true);
+            expect(searchPage.loader.dismiss).toHaveBeenCalled();
+            done();
+        }, 0);
+        searchPage.navigateToBatchListPopup(mockRes.contentMock1, null);
+    });
+
 });
 

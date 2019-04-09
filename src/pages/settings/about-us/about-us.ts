@@ -1,13 +1,13 @@
-import {CommonUtilService} from './../../../service/common-util.service';
-import {Component, Inject} from '@angular/core';
-import {NavController, NavParams} from 'ionic-angular';
-import {AboutAppPage} from '../about-app/about-app';
-import {TermsofservicePage} from '../termsofservice/termsofservice';
-import {PrivacypolicyPage} from '../privacypolicy/privacypolicy';
-import {AppVersion} from '@ionic-native/app-version';
-import {SocialSharing} from '@ionic-native/social-sharing';
-import {AppGlobalService, TelemetryGeneratorService, UtilityService} from '@app/service';
-import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../../service/telemetry-constants';
+import { CommonUtilService } from './../../../service/common-util.service';
+import { Component, Inject } from '@angular/core';
+import { NavController, NavParams } from 'ionic-angular';
+import { AboutAppPage } from '../about-app/about-app';
+import { TermsofservicePage } from '../termsofservice/termsofservice';
+import { PrivacypolicyPage } from '../privacypolicy/privacypolicy';
+import { AppVersion } from '@ionic-native/app-version';
+import { SocialSharing } from '@ionic-native/social-sharing';
+import { AppGlobalService, TelemetryGeneratorService, UtilityService, AppHeaderService } from '@app/service';
+import { Environment, ImpressionType, InteractSubtype, InteractType, PageId } from '../../../service/telemetry-constants';
 import {
   ContentRequest,
   ContentService,
@@ -16,7 +16,7 @@ import {
   ProfileService,
   SharedPreferences
 } from 'sunbird-sdk';
-import {AudienceFilter, ContentType} from "@app/app";
+import { AudienceFilter, ContentType } from '@app/app';
 
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
 
@@ -42,7 +42,8 @@ export class AboutUsPage {
     private commonUtilService: CommonUtilService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     private utilityService: UtilityService,
-    private appGlobalService: AppGlobalService
+    private appGlobalService: AppGlobalService,
+    private headerService: AppHeaderService
   ) {
   }
 
@@ -78,7 +79,9 @@ export class AboutUsPage {
       audience: AudienceFilter.GUEST_TEACHER
     };
     const getUserCount = await this.profileService.getAllProfiles(allUserProfileRequest).map((profile) => profile.length).toPromise();
-    const getLocalContentCount = await this.contentService.getContents(contentRequest).map((contentCount) => contentCount.length).toPromise();
+    const getLocalContentCount = await this.contentService.getContents(contentRequest)
+    .map((contentCount) => contentCount.length).toPromise();
+
     (<any>window).supportfile.shareSunbirdConfigurations(getUserCount, getLocalContentCount, (result) => {
       const loader = this.commonUtilService.getLoader();
       loader.present();

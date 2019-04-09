@@ -1,4 +1,4 @@
-import {Component, Inject, NgZone, ViewChild} from '@angular/core';
+import {Component, Inject, NgZone, ViewChild, OnInit} from '@angular/core';
 import {Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController} from 'ionic-angular';
 import {TranslateService} from '@ngx-translate/core';
 import {SocialSharing} from '@ionic-native/social-sharing';
@@ -12,7 +12,8 @@ import {
   CommonUtilService,
   CourseUtilService,
   TelemetryGeneratorService,
-  UtilityService
+  UtilityService,
+  AppHeaderService
 } from '@app/service';
 import {
   ChildContentRequest,
@@ -170,6 +171,11 @@ export class CollectionDetailsPage {
    * Rating comment
    */
   ratingComment = '';
+  headerConfig = {
+    showHeader : true,
+    showBurgerMenu: false,
+    actionButtons: []
+  };
 
   /**
    * Telemetry roll up object
@@ -187,6 +193,7 @@ export class CollectionDetailsPage {
   @ViewChild(Navbar) navBar: Navbar;
   private eventSubscription: Subscription;
 
+  headerObservable: any;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -202,7 +209,8 @@ export class CollectionDetailsPage {
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private courseUtilService: CourseUtilService,
-    private utilityService: UtilityService
+    private utilityService: UtilityService,
+    private headerService: AppHeaderService
   ) {
 
     this.objRollup = new Rollup();
@@ -224,7 +232,15 @@ export class CollectionDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
+    this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
     this.zone.run(() => {
+      this.headerConfig = this.headerService.getDefaultPageConfig();
+      this.headerConfig.actionButtons = [];
+      this.headerConfig.showHeader = false;
+      this.headerConfig.showBurgerMenu = false;
+      this.headerService.updatePageConfig(this.headerConfig);
       this.resetVariables();
       this.cardData = this.navParams.get('content');
       this.corRelationList = this.navParams.get('corRelation');
@@ -244,6 +260,16 @@ export class CollectionDetailsPage {
         this.isDepthChild = true;
       } else {
         this.isDepthChild = false;
+      }
+
+      if (this.isDepthChild) {
+        const actionsButtons = ['share'];
+        if (this.contentDetail.isAvailableLocally) {
+          actionsButtons.push('more');
+        }
+        this.headerService.showHeaderWithBackButton(actionsButtons);
+      } else {
+        this.headerService.showHeaderWithBackButton();
       }
 
       this.identifier = this.cardData.contentId || this.cardData.identifier;
@@ -295,9 +321,68 @@ export class CollectionDetailsPage {
   /**
    * Function to rate content
    */
-  rateContent() {
+  // rateContent() {
+  //   if (!this.guestUser) {
+  //     this.telemetryGeneratorService.generateInteractTelemetry(
+  //       InteractType.TOUCH,
+  //       InteractSubtype.RATING_CLICKED,
+  //       Environment.HOME,
+  //       PageId.COLLECTION_DETAIL,
+  //       undefined,
+  //       undefined,
+  //       this.objRollup,
+  //       this.corRelationList
+  //     );
+  //     if (this.contentDetail.isAvailableLocally) {
+  //       const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
+  //         content: this.contentDetail,
+  //         rating: this.userRating,
+  //         comment: this.ratingComment,
+  //         pageId: PageId.COLLECTION_DETAIL,
+  //       }, {
+  //           cssClass: 'content-rating-alert'
+  //         });
+  //       popUp.present();
+  //       popUp.onDidDismiss(data => {
+  //         if (data && data.message === 'rating.success') {
+  //           this.userRating = data.rating;
+  //           this.ratingComment = data.comment;
+  //         }
+  //       });
+  //     } else {
+  //       this.commonUtilService.showToast('TRY_BEFORE_RATING');
+  //     }
+  //   } else {
+  //     if (this.profileType === ProfileType.TEACHER) {
+  //       this.commonUtilService.showToast('SIGNIN_TO_USE_FEATURE');
+  //     }
+  //   }
+  // }
+
+
+  rateContent(event) {
+    // TODO: check content is played or not
     if (!this.guestUser) {
-      this.telemetryGeneratorService.generateInteractTelemetry(
+      if (this.contentDetail.isAvailableLocally) {
+      const popover = this.popoverCtrl.create(ContentRatingAlertComponent, {
+        content: this.contentDetail,
+        pageId: PageId.CONTENT_DETAIL,
+        rating: this.userRating,
+        comment: this.ratingComment,
+        // popupType: popupType,
+      }, {
+          cssClass: 'sb-popover info',
+        });
+      popover.present({
+        ev: event
+      });
+      popover.onDidDismiss(data => {
+        if (data && data.message === 'rating.success') {
+          this.userRating = data.rating;
+          this.ratingComment = data.comment;
+        }
+      });
+    this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.TOUCH,
         InteractSubtype.RATING_CLICKED,
         Environment.HOME,
@@ -307,22 +392,6 @@ export class CollectionDetailsPage {
         this.objRollup,
         this.corRelationList
       );
-      if (this.contentDetail.isAvailableLocally) {
-        const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
-          content: this.contentDetail,
-          rating: this.userRating,
-          comment: this.ratingComment,
-          pageId: PageId.COLLECTION_DETAIL,
-        }, {
-          cssClass: 'content-rating-alert'
-        });
-        popUp.present();
-        popUp.onDidDismiss(data => {
-          if (data && data.message === 'rating.success') {
-            this.userRating = data.rating;
-            this.ratingComment = data.comment;
-          }
-        });
       } else {
         this.commonUtilService.showToast('TRY_BEFORE_RATING');
       }
@@ -332,6 +401,7 @@ export class CollectionDetailsPage {
       }
     }
   }
+
 
   /**
    * Get the session to know if the user is logged-in or guest
@@ -534,6 +604,7 @@ export class CollectionDetailsPage {
                 this.showDownloadBtn = true;
                 this.isDownloadStarted = false;
                 this.showLoading = false;
+                this.refreshHeader();
               }
             }
             if (this.faultyIdentifiers.length > 0) {
@@ -550,6 +621,7 @@ export class CollectionDetailsPage {
             }
           } else if (data && data[0].status === ContentImportStatus.NOT_FOUND) {
             this.showLoading = false;
+            this.refreshHeader();
             this.showChildrenLoader = false;
             this.childrenData.length = 0;
           }
@@ -562,6 +634,7 @@ export class CollectionDetailsPage {
           this.showDownloadBtn = true;
           this.isDownloadStarted = false;
           this.showLoading = false;
+          this.refreshHeader();
           if (Boolean(this.isUpdateAvailable)) {
             this.setChildContents();
           } else {
@@ -676,6 +749,7 @@ export class CollectionDetailsPage {
   resetVariables() {
     this.isDownloadStarted = false;
     this.showLoading = false;
+    this.refreshHeader();
     this.downloadProgress = 0;
     this.cardData = '';
     this.childrenData = [];
@@ -703,6 +777,7 @@ export class CollectionDetailsPage {
             this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
             if (this.downloadProgress === 100) {
               this.showLoading = false;
+              this.refreshHeader();
               this.contentDetail.isAvailableLocally = true;
             }
           }
@@ -717,6 +792,7 @@ export class CollectionDetailsPage {
             }
             if (this.queuedIdentifiers.length === this.currentCount) {
               this.showLoading = false;
+              this.refreshHeader();
               this.isDownloadStarted = false;
               this.showDownloadBtn = false;
               this.isDownloadCompleted = true;
@@ -728,14 +804,17 @@ export class CollectionDetailsPage {
             // this condition is for when the child content update is available and we have downloaded parent content
             // but we have to refresh only the child content.
             this.showLoading = false;
+            this.refreshHeader();
             this.setContentDetails(this.identifier);
           } else {
             if (this.isUpdateAvailable && contentImportEvent.payload.contentId === this.contentDetail.identifier) {
               this.showLoading = false;
+              this.refreshHeader();
               this.setContentDetails(this.identifier);
             } else {
               if (contentImportEvent.payload.contentId === this.contentDetail.identifier) {
                 this.showLoading = false;
+                this.refreshHeader();
                 this.updateSavedResources();
                 this.setChildContents();
                 this.contentDetail.isAvailableLocally = true;
@@ -966,9 +1045,29 @@ export class CollectionDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillLeave(): void {
+    // this.downloadProgress = '';
+    this.headerObservable.unsubscribe();
     this.downloadProgress = 0;
     if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
     }
   }
+
+  handleHeaderEvents($event) {
+    switch ($event.name) {
+      case 'share': this.share();
+                    break;
+      case 'more': this.showOverflowMenu($event);
+                      break;
+    }
+  }
+
+  refreshHeader() {
+    this.headerConfig = this.headerService.getDefaultPageConfig();
+    this.headerConfig.actionButtons = [];
+    this.headerConfig.showBurgerMenu = false;
+    this.headerConfig.showHeader = true;
+    this.headerService.updatePageConfig(this.headerConfig);
+  }
+
 }

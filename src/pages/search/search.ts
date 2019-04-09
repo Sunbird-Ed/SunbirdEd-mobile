@@ -1,5 +1,5 @@
 import {Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
-import {Events, IonicPage, Navbar, NavController, NavParams, Platform} from 'ionic-angular';
+import {Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController} from 'ionic-angular';
 import {
   CachedItemRequestSourceFrom,
   Content,
@@ -25,14 +25,18 @@ import {
   SearchType,
   SharedPreferences,
   TelemetryObject,
-  NetworkError
+  NetworkError,
+  CourseService,
+  CourseBatchesRequest,
+  CourseEnrollmentType,
+  CourseBatchStatus
 } from 'sunbird-sdk';
 import {FilterPage} from './filters/filter';
 import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
 import {ContentDetailsPage} from '../content-details/content-details';
 import {Map} from '../../app/telemetryutil';
 import * as _ from 'lodash';
-import {AudienceFilter, ContentType, MimeType, Search} from '../../app/app.constant';
+import {AudienceFilter, ContentType, MimeType, Search, ContentCard} from '../../app/app.constant';
 import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
 import {AppGlobalService} from '../../service/app-global.service';
 import {FormAndFrameworkUtilService} from '../profile/formandframeworkutil.service';
@@ -51,6 +55,8 @@ import {
   PageId
 } from '../../service/telemetry-constants';
 import {TabsPage} from '@app/pages/tabs/tabs';
+import { AppHeaderService } from '@app/service';
+import { EnrollmentDetailsPage } from '../enrolled-course-details/enrollment-details/enrollment-details';
 
 declare const cordova;
 
@@ -119,7 +125,11 @@ export class SearchPage implements  OnDestroy {
   selectedLanguageCode = '';
   @ViewChild(Navbar) navBar: Navbar;
   private corRelationList: Array<CorrelationData>;
-
+  layoutName = 'search';
+  enrolledCourses: any;
+  guestUser: any;
+  batches: any;
+  loader: any;
   constructor(
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private navParams: NavParams,
@@ -135,7 +145,10 @@ export class SearchPage implements  OnDestroy {
     private translate: TranslateService,
     @Inject('PAGE_ASSEMBLE_SERVICE') private pageService: PageAssembleService,
     @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
-    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    private headerService: AppHeaderService,
+    @Inject('COURSE_SERVICE') private courseService: CourseService,
+    private popoverCtrl: PopoverController
   ) {
 
     this.checkUserSession();
@@ -150,6 +163,7 @@ export class SearchPage implements  OnDestroy {
   }
 
   ionViewWillEnter() {
+    this.headerService.hideHeader();
     this.handleDeviceBackButton();
     // const telemetryObject = new TelemetryObject();
   }
@@ -249,7 +263,7 @@ export class SearchPage implements  OnDestroy {
       this.childContent = content;
       this.checkParent(collection, content);
     } else {
-      this.showContentDetails(content, true);
+      this.checkRetiredOpenBatch(content);
     }
   }
 
@@ -275,7 +289,7 @@ export class SearchPage implements  OnDestroy {
         onboarding: this.appGlobalService.isOnBoardingCompleted
       };
     }
-
+    this.loader.dismiss();
     if (this.isDialCodeSearch && !this.appGlobalService.isOnBoardingCompleted && (this.parentContent || content)) {
       this.appGlobalService.setOnBoardingCompleted();
     }
@@ -474,11 +488,88 @@ export class SearchPage implements  OnDestroy {
     return assembleFilter;
   }
 
+  checkRetiredOpenBatch(content: any, layoutName?: string): void {
+    this.loader = this.commonUtilService.getLoader();
+    this.loader.present();
+    let retiredBatches: Array<any> = [];
+    let anyOpenBatch: Boolean = false;
+    this.enrolledCourses = this.enrolledCourses || [];
+    if (layoutName !== ContentCard.LAYOUT_INPROGRESS) {
+      retiredBatches = this.enrolledCourses.filter((element) =>  {
+        if (element.contentId === content.identifier && element.batch.status === 1 && element.cProgress !== 100) {
+          anyOpenBatch = true;
+        }
+        if (element.contentId === content.identifier && element.batch.status === 2 && element.cProgress !== 100) {
+          return element;
+        }
+      });
+    }
+    if (anyOpenBatch || !retiredBatches.length) {
+      // open the batch directly
+      this.showContentDetails(content, true);
+    } else if (retiredBatches.length) {
+      this.navigateToBatchListPopup(content, layoutName, retiredBatches);
+    }
+  }
+
+  // TODO: SDK changes by Swayangjit
+  navigateToBatchListPopup(content: any, layoutName?: string, retiredBatched?: any): void {
+    const courseBatchesRequest: CourseBatchesRequest = {
+      filters: {
+        courseId: layoutName === ContentCard.LAYOUT_INPROGRESS ? content.contentId : content.identifier,
+      enrollmentType: CourseEnrollmentType.OPEN,
+      status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
+      }
+    };
+    const reqvalues = new Map();
+    reqvalues['enrollReq'] = courseBatchesRequest;
+
+    if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+      if (!this.guestUser) {
+        this.courseService.getCourseBatches(courseBatchesRequest).toPromise()
+          .then((data: any) => {
+            data = JSON.parse(data);
+            this.zone.run(() => {
+              this.batches = data.result.content;
+              if (this.batches.length) {
+                this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+                  'showing-enrolled-ongoing-batch-popup',
+                  Environment.HOME,
+                  PageId.CONTENT_DETAIL, undefined,
+                  reqvalues);
+                const popover = this.popoverCtrl.create(EnrollmentDetailsPage,
+                  {
+                    upcommingBatches: this.batches,
+                    retiredBatched: retiredBatched
+                  },
+                  { cssClass: 'enrollement-popover' }
+                );
+                this.loader.dismiss();
+                popover.present();
+              } else {
+                this.loader.dismiss();
+                this.showContentDetails(content, true);
+              }
+            });
+          })
+          .catch((error: any) => {
+            console.log('error while fetching course batches ==>', error);
+          });
+      } else {
+        // this.navCtrl.push(CourseBatchesPage);
+      }
+    } else {
+      this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
+    }
+  }
+
   init() {
     this.dialCode = this.navParams.get('dialCode');
     this.contentType = this.navParams.get('contentType');
     this.corRelationList = this.navParams.get('corRelation');
     this.source = this.navParams.get('source');
+    this.enrolledCourses = this.navParams.get('enrolledCourses');
+    this.guestUser = this.navParams.get('guestUser');
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.generateImpressionEvent();
     const values = new Map();
@@ -915,8 +1006,7 @@ export class SearchPage implements  OnDestroy {
         this.audienceFilter = AudienceFilter.GUEST_TEACHER;
       }
 
-      // TODO : revisit for refactoring
-      this.profile = undefined;
+      this.profile = this.appGlobalService.getCurrentUser();
     } else {
       this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
       this.profile = undefined;

@@ -8,6 +8,7 @@ import {TranslateService} from '@ngx-translate/core';
 
 import {Location} from '@app/app';
 import {LocationSearchCriteria, ProfileService} from 'sunbird-sdk';
+import { AppHeaderService } from '@app/service';
 
 @Component({
   selector: 'personal-details-edit',
@@ -49,6 +50,7 @@ export class PersonalDetailsEditPage {
     private translate: TranslateService,
     private appGlobalService: AppGlobalService,
     private events: Events,
+    private headerService: AppHeaderService
   ) {
     // this.profile = this.appGlobalService.getCurrentUser();
     this.profile = this.navParams.get('profile');
@@ -59,6 +61,7 @@ export class PersonalDetailsEditPage {
    * Ionic life cycle event - Fires every time page visits
    */
   ionViewWillEnter() {
+    this.headerService.showHeaderWithBackButton();
     this.profile = this.navParams.get('profile');
     this.getStates();
   }

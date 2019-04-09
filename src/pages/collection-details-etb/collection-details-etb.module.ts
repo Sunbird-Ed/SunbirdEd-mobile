@@ -7,6 +7,7 @@ import { Ionic2RatingModule } from 'ionic2-rating';
 import { ComponentsModule } from '../../component/components.module';
 import { DirectivesModule } from '../../directives/directives.module';
 import { PipesModule } from '../../pipes/pipes.module';
+import { FileSizePipe } from '@app/pipes/file-size/file-size';
 
 @NgModule({
   declarations: [

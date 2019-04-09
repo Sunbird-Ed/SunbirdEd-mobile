@@ -31,14 +31,31 @@ const COURSE_TAB = {
     root: CoursesPage,
     icon: 'courses',
     label: 'COURSES_BNAV',
-    index: 1,
+    index: 2,
+    tabsHideOnSubPages: true
+};
+
+const COURSE_TAB_DISABLED = {
+    root: '',
+    icon: 'courses',
+    label: 'COURSES_BNAV',
+    index: 2,
+    tabsHideOnSubPages: true,
+    disabled: true
+};
+
+const SCANNER_TAB = {
+    root: '',
+    icon: 'qr-scanner',
+   // label: 'LIBRARY_BNAV',
+    index: 3,
     tabsHideOnSubPages: true
 };
 const LIBRARY_TAB = {
     root: ResourcesPage,
     icon: 'resources',
     label: 'LIBRARY_BNAV',
-    index: 2,
+    index: 1,
     tabsHideOnSubPages: true,
     isSelected: true
 };
@@ -46,14 +63,14 @@ const GUEST_PROFILE_TAB = {
     root: GuestProfilePage,
     icon: 'profile',
     label: 'PROFILE_BNAV',
-    index: 3,
+    index: 5,
     tabsHideOnSubPages: true
 };
 const GUEST_PROFILE_SWITCH_TAB = {
     root: GuestProfilePage,
     icon: 'profile',
     label: 'PROFILE_BNAV',
-    index: 3,
+    index: 5,
     tabsHideOnSubPages: true,
     isSelected: true
 };
@@ -61,38 +78,68 @@ const PROFILE_TAB = {
     root: ProfilePage,
     icon: 'profile',
     label: 'PROFILE_BNAV',
-    index: 3,
+    index: 5,
     tabsHideOnSubPages: true
+};
+
+const DOWNLOADS_TAB = {
+    root: '',
+    icon: 'downloads',
+    label: 'DOWNLOAD_BNAV',
+    index: 4,
+    tabsHideOnSubPages: true
+};
+
+const DOWNLOADS_TAB_DISABLED = {
+    root: '',
+    icon: 'downloads',
+    label: 'DOWNLOAD_BNAV',
+    index: 4,
+    tabsHideOnSubPages: true,
+    disabled: true,
+    availableLater: true    // This flag holds value for indicating that this tab will be available in the later releases
 };
 
 export const GUEST_TEACHER_TABS = [
     // HOME_TAB,
-    COURSE_TAB,
     LIBRARY_TAB,
+    COURSE_TAB,
+    SCANNER_TAB,
+    DOWNLOADS_TAB_DISABLED,
     GUEST_PROFILE_TAB
 ];
 
 export const LOGIN_TEACHER_TABS = [
     // HOME_TAB,
-    COURSE_TAB,
     LIBRARY_TAB,
+    COURSE_TAB,
+    SCANNER_TAB,
+    DOWNLOADS_TAB_DISABLED,
     PROFILE_TAB
 ];
 
 export const GUEST_STUDENT_TABS = [
     LIBRARY_TAB,
+    COURSE_TAB_DISABLED,
+    SCANNER_TAB,
+    DOWNLOADS_TAB_DISABLED,
     GUEST_PROFILE_TAB
 ];
 
 export const GUEST_TEACHER_SWITCH_TABS = [
     // HOME_TAB,
-    COURSE_TAB,
     LIBRARY_TAB,
+    COURSE_TAB,
+    SCANNER_TAB,
+    DOWNLOADS_TAB_DISABLED,
     GUEST_PROFILE_SWITCH_TAB
 ];
 
 export const GUEST_STUDENT_SWITCH_TABS = [
     LIBRARY_TAB,
+    COURSE_TAB_DISABLED,
+    SCANNER_TAB,
+    DOWNLOADS_TAB_DISABLED,
     GUEST_PROFILE_SWITCH_TAB
 ];
 

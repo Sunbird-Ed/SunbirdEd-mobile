@@ -1,10 +1,10 @@
 import {TranslateService} from '@ngx-translate/core';
-import {Component, Inject} from '@angular/core';
+import {Component, Inject, OnInit, AfterViewInit} from '@angular/core';
 import {Events, NavController, PopoverController} from 'ionic-angular';
 import * as _ from 'lodash';
 import {GuestEditProfilePage, OverflowMenuComponent} from '@app/pages/profile';
 import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
-import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
+import {AppGlobalService, CommonUtilService, TelemetryGeneratorService, AppHeaderService} from '@app/service';
 import {MenuOverflow, PreferenceKey} from '@app/app';
 import {
   Framework,
@@ -25,7 +25,7 @@ import {ProfileConstants} from '../../../app';
   templateUrl: 'guest-profile.html',
 })
 
-export class GuestProfilePage {
+export class GuestProfilePage implements OnInit, AfterViewInit {
 
   imageUri = 'assets/imgs/ic_profile_default.png';
 
@@ -41,8 +41,10 @@ export class GuestProfilePage {
   syllabus = '';
   selectedLanguage: string;
   loader: any;
+  headerObservable: any;
 
-  isUpgradePopoverShown: boolean = false;
+
+  isUpgradePopoverShown = false;
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
@@ -55,7 +57,8 @@ export class GuestProfilePage {
     private translate: TranslateService,
     @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
     @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
-    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    private headerServie: AppHeaderService
   ) {
 
 
@@ -96,6 +99,31 @@ export class GuestProfilePage {
     this.appGlobalService.generateConfigInteractEvent(PageId.GUEST_PROFILE);
   }
 
+  /**
+	 * Angular life cycle hooks
+	 */
+  ngOnInit() {
+
+  }
+
+  ionViewWillEnter() {
+    this.events.subscribe('update_header', (data) => {
+      this.headerServie.showHeaderWithHomeButton();
+    });
+    this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
+    this.headerServie.showHeaderWithHomeButton();
+  }
+
+  ngAfterViewInit() {
+
+  }
+
+  ionViewWillLeave(): void {
+    this.headerObservable.unsubscribe();
+    this.events.unsubscribe('update_header');
+  }
 
   refreshProfileData(refresher: any = false, showLoader: boolean = true) {
     this.loader = this.commonUtilService.getLoader();
@@ -226,6 +254,10 @@ export class GuestProfilePage {
 
   buttonClick(isNetAvailable?) {
     this.showNetworkWarning();
+  }
+
+  handleHeaderEvents($event) {
+    // Handle any click on headers
   }
 
 }

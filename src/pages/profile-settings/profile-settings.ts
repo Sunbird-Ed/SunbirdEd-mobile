@@ -28,6 +28,7 @@ import {Environment, InteractSubtype, InteractType, PageId} from '../../service/
 import {ContainerService} from '../../service/container.services';
 import {TabsPage} from '@app/pages/tabs/tabs';
 import {ProfileConstants} from '../../app';
+import { AppHeaderService } from '@app/service';
 
 @IonicPage()
 @Component({
@@ -96,6 +97,7 @@ export class ProfileSettingsPage {
     @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
     @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    private headerServie: AppHeaderService
   ) {
     this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
       .then(val => {
@@ -116,6 +118,11 @@ export class ProfileSettingsPage {
 
   ionViewWillEnter() {
     this.hideBackButton = Boolean(this.navParams.get('hideBackButton'));
+    if (!this.hideBackButton) {
+      this.headerServie.hideHeader();
+    } else {
+      this.headerServie.showHeaderWithBackButton();
+    }
     if (this.navParams.get('isCreateNavigationStack')) {
       this.navCtrl.insertPages(0, [{page: 'LanguageSettingsPage'}, {page: 'UserTypeSelectionPage'}]);
     }

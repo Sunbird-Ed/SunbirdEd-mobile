@@ -1,18 +1,19 @@
-import {Component, Inject, NgZone, ViewChild} from '@angular/core';
-import {Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController} from 'ionic-angular';
-import {TranslateService} from '@ngx-translate/core';
-import {SocialSharing} from '@ionic-native/social-sharing';
+import { Component, Inject, NgZone, ViewChild, OnInit } from '@angular/core';
+import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController } from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
+import { SocialSharing } from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
-import {ContentDetailsPage} from '@app/pages/content-details/content-details';
-import {ConfirmAlertComponent, ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
-import {ContentType, MimeType, ShareUrl} from '@app/app';
-import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
+import { ContentDetailsPage } from '@app/pages/content-details/content-details';
+import { ConfirmAlertComponent, ContentActionsComponent, ContentRatingAlertComponent, SbPopoverComponent } from '@app/component';
+import { ContentType, MimeType, ShareUrl } from '@app/app';
+import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import {
   AppGlobalService,
   CommonUtilService,
   CourseUtilService,
   TelemetryGeneratorService,
-  UtilityService
+  UtilityService,
+  AppHeaderService
 } from '@app/service';
 import {
   Content,
@@ -37,7 +38,7 @@ import {
   TelemetryErrorCode,
   TelemetryObject
 } from 'sunbird-sdk';
-import {Subscription} from 'rxjs';
+import { Subscription } from 'rxjs';
 import {
   Environment,
   ErrorType,
@@ -47,6 +48,8 @@ import {
   Mode,
   PageId
 } from '../../service/telemetry-constants';
+import { ViewController } from 'ionic-angular';
+import { FileSizePipe } from '@app/pipes/file-size/file-size';
 
 /**
  * Generated class for the CollectionDetailsEtbPage page.
@@ -61,11 +64,16 @@ declare const cordova;
   selector: 'page-collection-details-etb',
   templateUrl: 'collection-details-etb.html',
 })
-export class CollectionDetailsEtbPage {
+export class CollectionDetailsEtbPage implements OnInit {
 
   facets: any;
   selected: boolean;
   isSelected: boolean;
+  headerConfig = {
+    showHeader: true,
+    showBurgerMenu: false,
+    actionButtons: []
+  };
 
   contentDetail?: Content;
   childrenData: Array<any>;
@@ -197,11 +205,23 @@ export class CollectionDetailsEtbPage {
   public source = '';
   isChildClickable = false;
   shownGroup = null;
+  content: any;
+  data: any;
+  isChild = false;
+  contentId: string;
+  batchDetails: any;
+  pageName: any;
+
+
   // Local Image
   localImage = '';
   @ViewChild(Navbar) navBar: Navbar;
   private eventSubscription: Subscription;
 
+  showDownload: boolean;
+  networkSubscription: any;
+  toast: any;
+  contentTypesCount: any;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -217,13 +237,27 @@ export class CollectionDetailsEtbPage {
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private courseUtilService: CourseUtilService,
-    private utilityService: UtilityService
+    private utilityService: UtilityService,
+    public viewCtrl: ViewController,
+    private toastController: ToastController,
+    private fileSizePipe: FileSizePipe,
+    private headerServie: AppHeaderService,
   ) {
     this.objRollup = new Rollup();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     this.getBaseURL();
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
+    this.content = this.navParams.get('content');
+    this.data = this.navParams.get('data');
+    this.batchDetails = this.navParams.get('batchDetails');
+    this.pageName = this.navParams.get('pageName');
+  }
+
+  /**
+	 * Angular life cycle hooks
+	 */
+  ngOnInit() {
   }
 
   ionViewDidLoad() {
@@ -240,8 +274,14 @@ export class CollectionDetailsEtbPage {
    */
   ionViewWillEnter() {
     this.zone.run(() => {
+      this.headerConfig = this.headerServie.getDefaultPageConfig();
+      this.headerConfig.actionButtons = [];
+      this.headerConfig.showHeader = false;
+      this.headerConfig.showBurgerMenu = false;
+      this.headerServie.updatePageConfig(this.headerConfig);
       this.resetVariables();
       this.cardData = this.navParams.get('content');
+      console.log('this.cardData', this.cardData);
       this.corRelationList = this.navParams.get('corRelation');
       const depth = this.navParams.get('depth');
       this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
@@ -274,6 +314,30 @@ export class CollectionDetailsEtbPage {
       this.didViewLoad = true;
       this.setContentDetails(this.identifier);
       this.subscribeSdkEvent();
+      this.networkSubscription = this.commonUtilService.subject.subscribe((res) => {
+        if (res) {
+          if (this.toast) {
+            this.toast.dismiss();
+            this.toast = undefined;
+          }
+        } else {
+          this.presentToastWithOptions();
+        }
+      });
+    });
+  }
+
+  async presentToastWithOptions() {
+    this.toast = await this.toastController.create({
+      message: this.commonUtilService.translateMessage('NO_INTERNET_TITLE'),
+      showCloseButton: true,
+      position: 'top',
+      closeButtonText: '',
+      cssClass: 'toastAfterHeader'
+    });
+    this.toast.present();
+    this.toast.onDidDismiss(() => {
+      this.toast = undefined;
     });
   }
 
@@ -343,8 +407,8 @@ export class CollectionDetailsEtbPage {
           comment: this.ratingComment,
           pageId: PageId.COLLECTION_DETAIL,
         }, {
-          cssClass: 'content-rating-alert'
-        });
+            cssClass: 'content-rating-alert'
+          });
         popUp.present();
         popUp.onDidDismiss(data => {
           if (data && data.message === 'rating.success') {
@@ -455,6 +519,7 @@ export class CollectionDetailsEtbPage {
 
     if (Boolean(data.isAvailableLocally)) {
       this.showLoading = false;
+      this.refreshHeader();
       if (data.isUpdateAvailable && !this.isUpdateAvailable) {
         this.isUpdateAvailable = true;
         this.showLoading = true;
@@ -479,10 +544,12 @@ export class CollectionDetailsEtbPage {
   setCollectionStructure() {
     this.showChildrenLoader = true;
     if (this.contentDetail.contentData.contentTypesCount) {
-      this.contentDetail.contentData.contentTypesCount = JSON.parse(this.contentDetail.contentData.contentTypesCount);
+      this.contentTypesCount = JSON.parse(this.contentDetail.contentData.contentTypesCount);
+      // this.contentDetail.contentData.contentTypesCount = JSON.parse(this.contentDetail.contentData.contentTypesCount);
     } else if (this.cardData.contentTypesCount) {
       if (!_.isObject(this.cardData.contentTypesCount)) {
-        this.contentDetail.contentData.contentTypesCount = JSON.parse(this.cardData.contentTypesCount);
+        this.contentTypesCount = JSON.parse(this.cardData.contentTypesCount);
+        // this.contentDetail.contentData.contentTypesCount = JSON.parse(this.cardData.contentTypesCount);
       }
     } /*else {
       this.contentDetail.contentTypesCount;
@@ -571,6 +638,7 @@ export class CollectionDetailsEtbPage {
                 this.showDownloadBtn = true;
                 this.isDownloadStarted = false;
                 this.showLoading = false;
+                this.refreshHeader();
               }
             }
             if (this.faultyIdentifiers.length > 0) {
@@ -587,6 +655,7 @@ export class CollectionDetailsEtbPage {
             }
           } else if (data && data[0].status === ContentImportStatus.NOT_FOUND) {
             this.showLoading = false;
+            this.refreshHeader();
             this.showChildrenLoader = false;
             this.childrenData.length = 0;
           }
@@ -599,6 +668,7 @@ export class CollectionDetailsEtbPage {
           this.showDownloadBtn = true;
           this.isDownloadStarted = false;
           this.showLoading = false;
+          this.refreshHeader();
           if (Boolean(this.isUpdateAvailable)) {
             //  this.showChildrenLoader = true;
             this.setChildContents();
@@ -621,7 +691,7 @@ export class CollectionDetailsEtbPage {
   setChildContents() {
     this.showChildrenLoader = true;
     const hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
-    const option = {contentId: this.identifier, hierarchyInfo: hierarchyInfo}; // TODO: remove level
+    const option = { contentId: this.identifier, hierarchyInfo: hierarchyInfo }; // TODO: remove level
     this.contentService.getChildContents(option).toPromise()
       .then((data: Content) => {
         this.zone.run(() => {
@@ -726,10 +796,12 @@ export class CollectionDetailsEtbPage {
   resetVariables() {
     this.isDownloadStarted = false;
     this.showLoading = false;
+    this.refreshHeader();
     this.downloadProgress = 0;
     this.cardData = '';
     this.childrenData = [];
     this.contentDetail = undefined;
+    this.showDownload = false;
     this.showDownloadBtn = false;
     this.downloadIdentifiers = [];
     this.queuedIdentifiers = [];
@@ -753,6 +825,7 @@ export class CollectionDetailsEtbPage {
             this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
             if (this.downloadProgress === 100) {
               this.showLoading = false;
+              this.refreshHeader();
               this.contentDetail.isAvailableLocally = true;
             }
           }
@@ -769,9 +842,11 @@ export class CollectionDetailsEtbPage {
             }
             if (this.queuedIdentifiers.length === this.currentCount) {
               this.showLoading = false;
+              this.refreshHeader();
               this.isDownloadStarted = false;
               this.showDownloadBtn = false;
               this.isDownloadCompleted = true;
+              this.showDownload = false;
               this.contentDetail.isAvailableLocally = true;
               this.downloadPercentage = 0;
               this.updateSavedResources();
@@ -785,10 +860,12 @@ export class CollectionDetailsEtbPage {
           } else {
             if (this.isUpdateAvailable && contentImportedEvent.payload.contentId === this.contentDetail.identifier) {
               this.showLoading = false;
+              this.refreshHeader();
               this.setContentDetails(this.identifier);
             } else {
               if (contentImportedEvent.payload.contentId === this.contentDetail.identifier) {
                 this.showLoading = false;
+                this.refreshHeader();
                 this.updateSavedResources();
                 this.setChildContents();
                 this.contentDetail.isAvailableLocally = true;
@@ -839,9 +916,9 @@ export class CollectionDetailsEtbPage {
           this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.contentDetail.contentType);
           this.social.share('', '', '' + contntExportResponse.exportedFilePath, url);
         }).catch(() => {
-        loader.dismiss();
-        this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
-      });
+          loader.dismiss();
+          this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
+        });
     } else {
       loader.dismiss();
       this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.contentDetail.contentType);
@@ -857,8 +934,10 @@ export class CollectionDetailsEtbPage {
     this.showLoading = true;
     this.isDownloadStarted = true;
     this.downloadPercentage = 0;
+    this.showDownload = true;
     this.importContent(this.downloadIdentifiers, true, true);
   }
+
 
   /**
    * To get readable file size
@@ -890,8 +969,8 @@ export class CollectionDetailsEtbPage {
       pageName: PageId.COLLECTION_DETAIL,
       corRelationList: this.corRelationList
     }, {
-      cssClass: 'content-action'
-    });
+        cssClass: 'content-action'
+      });
     popover.present({
       ev: event
     });
@@ -964,14 +1043,42 @@ export class CollectionDetailsEtbPage {
 
   showDownloadConfirmationAlert(myEvent) {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-      const popover = this.popoverCtrl.create(ConfirmAlertComponent, {}, {
-        cssClass: 'confirm-alert-box'
-      });
+      let contentTypeCount;
+      if (this.contentDetail.contentData.contentTypesCount) {
+         contentTypeCount = this.contentTypesCount.TextBookUnit;
+      } else {
+        contentTypeCount = '';
+      }
+
+      const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
+        sbPopoverHeading: this.commonUtilService.translateMessage('DOWNLOAD'),
+        sbPopoverMainTitle: this.contentDetail.contentData.name + this.contentDetail.contentData.subject,
+        actionsButtons: [
+          {
+            btntext: this.commonUtilService.translateMessage('DOWNLOAD'),
+            btnClass: 'popover-color'
+          },
+        ],
+        icon: null,
+        metaInfo: contentTypeCount +
+          'items' + '(' + this.fileSizePipe.transform(this.downloadSize, 2) + ')',
+        //  '(' + this.fileSizePipe.transform(this.contentDetail.size, 2) + ')'
+      }, {
+          cssClass: 'sb-popover info',
+        });
       popover.present({
-        ev: myEvent
+        ev: event
       });
       popover.onDidDismiss((canDownload: boolean = false) => {
         if (canDownload) {
+          this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+            'download-all-button-clicked',
+            Environment.HOME,
+            PageId.COLLECTION_DETAIL,
+            undefined,
+            undefined,
+            this.objRollup,
+            this.corRelationList);
           this.downloadAllContent();
         } else {
           // Cancel Clicked Telemetry
@@ -989,14 +1096,16 @@ export class CollectionDetailsEtbPage {
       .then(() => {
         this.zone.run(() => {
           this.showLoading = false;
+          this.refreshHeader();
           this.navCtrl.pop();
         });
       }).catch(() => {
-      this.zone.run(() => {
-        this.showLoading = false;
-        this.navCtrl.pop();
+        this.zone.run(() => {
+          this.showLoading = false;
+          this.refreshHeader();
+          this.navCtrl.pop();
+        });
       });
-    });
   }
 
   /**
@@ -1025,5 +1134,117 @@ export class CollectionDetailsEtbPage {
     if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
     }
+    if (this.networkSubscription) {
+      this.networkSubscription.unsubscribe();
+      if (this.toast) {
+        this.toast.dismiss();
+        this.toast = undefined;
+      }
+    }
+    if (this.backButtonFunc) {
+      this.backButtonFunc();
+    }
+
+  }
+  showPopOver() {
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      'delete-from-device-button-clicked',
+      Environment.HOME,
+      PageId.COLLECTION_DETAIL,
+      undefined,
+      undefined,
+      this.objRollup,
+      this.corRelationList);
+      let contentTypeCount;
+      if (this.contentDetail.contentData.contentTypesCount) {
+        contentTypeCount = this.contentTypesCount.TextBookUnit;
+      } else {
+        contentTypeCount = '';
+      }
+    const confirm = this.popoverCtrl.create(SbPopoverComponent, {
+      content: this.contentDetail,
+      isChild: this.isDepthChild,
+      objRollup: this.objRollup,
+      pageName: PageId.COLLECTION_DETAIL,
+      corRelationList: this.corRelationList,
+      sbPopoverHeading: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE'),
+      sbPopoverMainTitle: this.contentDetail.contentData.name + this.contentDetail.contentData.subject,
+      actionsButtons: [
+        {
+          btntext: this.commonUtilService.translateMessage('REMOVE'),
+          btnClass: 'popover-color'
+        },
+      ],
+      icon: null,
+      metaInfo: contentTypeCount +
+        'items' + '(' + this.fileSizePipe.transform(this.contentDetail.contentData.size, 2) + ')',
+      sbPopoverContent: 'Are you sure you want to delete ?'
+    }, {
+        cssClass: 'sb-popover danger',
+      });
+    confirm.present({
+      ev: event
+    });
+    confirm.onDidDismiss((canDelete: any) => {
+      if (canDelete) {
+        this.deleteContent();
+      }
+    });
+  }
+
+  /**
+ * Construct content delete request body
+ */
+  getDeleteRequestBody() {
+    const apiParams = {
+      contentDeleteList: [{
+        contentId: (this.contentDetail && this.contentDetail.identifier) ? this.contentDetail.identifier : '',
+        isChildContent: this.isChild
+      }]
+    };
+    return apiParams;
+  }
+
+  deleteContent() {
+    const telemetryObject: TelemetryObject = new TelemetryObject(
+    this.contentDetail.identifier,
+    this.contentDetail.contentType,
+    this.contentDetail.contentData.pkgVersion);
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.DELETE_CLICKED,
+      Environment.HOME,
+      this.pageName,
+      telemetryObject,
+      undefined,
+      this.objRollup,
+      this.corRelationList);
+    const tmp = this.getDeleteRequestBody();
+    this.contentService.deleteContent(tmp).toPromise().then((res: any) => {
+      const data = JSON.parse(res);
+      if (data.result && data.result.status === 'NOT_FOUND') {
+        this.commonUtilService.showToast('CONTENT_DELETE_FAILED');
+      } else {
+        // Publish saved resources update event
+        this.events.publish('savedResources:update', {
+          update: true
+        });
+        console.log('delete response: ', data);
+        this.commonUtilService.showToast('MSG_RESOURCE_DELETED');
+        this.viewCtrl.dismiss('delete.success');
+      }
+    }).catch((error: any) => {
+      console.log('delete response: ', error);
+      this.commonUtilService.showToast('CONTENT_DELETE_FAILED');
+      this.viewCtrl.dismiss();
+    });
+  }
+
+  refreshHeader() {
+    this.headerConfig = this.headerServie.getDefaultPageConfig();
+    this.headerConfig.actionButtons = [];
+    this.headerConfig.showBurgerMenu = false;
+    this.headerConfig.showHeader = true;
+    this.headerServie.updatePageConfig(this.headerConfig);
   }
 }

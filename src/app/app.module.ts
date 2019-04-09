@@ -17,7 +17,8 @@ import {
   CommonUtilService,
   CourseUtilService,
   TelemetryGeneratorService,
-  UtilityService
+  UtilityService,
+  AppHeaderService
 } from '@app/service';
 import {UpgradePopover} from '@app/pages/upgrade';
 import {QRScannerResultHandler} from '../../src/pages/qrscanner';
@@ -28,7 +29,9 @@ import {SunbirdSdk} from 'sunbird-sdk';
 import {UniqueDeviceID} from '@ionic-native/unique-device-id';
 import {Device} from '@ionic-native/device';
 import {TabsPage} from '@app/pages/tabs/tabs';
-import {AndroidPermissionsService} from "@app/service/android-permissions/android-permissions.service";
+import {AndroidPermissionsService} from '@app/service/android-permissions/android-permissions.service';
+import { ComponentsModule } from '@app/component/components.module';
+import { ContainerService } from '@app/service/container.services';
 
 export const translateHttpLoaderFactory = (httpClient: HttpClient) => {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
@@ -278,6 +281,7 @@ export const sunbirdSdkFactory =
   imports: [
     HttpClientModule,
     BrowserModule,
+    ComponentsModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -317,8 +321,10 @@ export const sunbirdSdkFactory =
     CommonUtilService,
     LogoutHandlerService,
     TncUpdateHandlerService,
+    ContainerService,
     UniqueDeviceID,
     UtilityService,
+    AppHeaderService,
     Device,
     AndroidPermissionsService,
     ...sunbirdSdkServicesProvidersFactory(),

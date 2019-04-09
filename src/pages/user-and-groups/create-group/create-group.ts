@@ -1,7 +1,7 @@
 import {Component, Inject} from '@angular/core';
 import {IonicPage, NavController, NavParams} from 'ionic-angular';
 import {TranslateService} from '@ngx-translate/core';
-import {FormBuilder, FormGroup, Validators,} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
   Environment,
   ImpressionType,
@@ -26,6 +26,7 @@ import {GroupMembersPage} from './../group-members/group-members';
 import {GuestEditProfilePage} from '../../profile/guest-edit.profile/guest-edit.profile';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
 import {CommonUtilService} from '../../../service/common-util.service';
+import { AppHeaderService } from '@app/service';
 
 @IonicPage()
 @Component({
@@ -62,7 +63,8 @@ export class CreateGroupPage {
     @Inject('GROUP_SERVICE') private groupService: GroupService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
-    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService
+    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
+    private headerService: AppHeaderService
   ) {
     this.group = this.navParams.get('groupInfo') || {};
     this.groupEditForm = this.fb.group({
@@ -73,6 +75,11 @@ export class CreateGroupPage {
 
     this.isEditGroup = this.group.hasOwnProperty('gid') ? true : false;
     this.getSyllabusDetails();
+  }
+  ionViewWillEnter() {
+    const header = this.headerService.getDefaultPageConfig();
+    header.showHeader = false;
+    this.headerService.updatePageConfig(header);
   }
 
   ionViewDidLoad() {

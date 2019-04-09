@@ -129,6 +129,11 @@ export class MenuOverflow {
     public static readonly MENU_LOGIN = ['USERS_AND_GROUPS', 'REPORTS', 'SETTINGS', 'LOGOUT'];
 }
 
+export class SideMenu {
+    public static readonly MENU_GUEST = ['USERS_AND_GROUPS', 'REPORTS', 'LANGUAGE', 'SETTINGS'];
+    public static readonly MENU_LOGIN = ['USERS_AND_GROUPS', 'REPORTS', 'LANGUAGE', 'SETTINGS', 'LOGOUT'];
+}
+
 export class FormConstant {
     public static readonly DEFAULT_PAGE_COURSE_FILTER_PATH = 'data/form/pageassemble_course_filter.json';
     public static readonly DEFAULT_PAGE_LIBRARY_FILTER_PATH = 'data/form/pageassemble_library_filter.json';
@@ -146,6 +151,8 @@ export class PreferenceKey {
     public static readonly KEY_SUNBIRD_SUPPORT_FILE_PATH = 'sunbirdsunbird_support_file_path';
     public static readonly KEY_DATA_SYNC_TYPE = 'sunbirdsync_config';
     public static readonly KEY_DATA_SYNC_TIME = 'sunbirddata_sync_time';
+    public static readonly APP_LOGO = 'app_logo';
+    public static readonly APP_NAME = 'app_name';
 }
 
 export class GenericAppConfig {
@@ -164,6 +171,8 @@ export class GenericAppConfig {
     public static readonly DISPLAY_ONBOARDING_CATEGORY_PAGE = 'DISPLAY_ONBOARDING_CATEGORY_PAGE';
     public static readonly OPEN_RAPDISCOVERY_ENABLED = 'OPEN_RAPDISCOVERY_ENABLED';
     public static readonly SUPPORT_EMAIL = 'SUPPORT_EMAIL';
+    public static readonly VERSION_NAME = 'VERSION_NAME';
+    public static readonly VERSION_CODE = 'VERSION_CODE';
 }
 
 export const appLanguages = [

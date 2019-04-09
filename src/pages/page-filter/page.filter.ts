@@ -248,6 +248,12 @@ export class PageFilter {
         console.log(error, 'index', index);
       });
   }
+
+  ionViewWillLeave(): void {
+    if (this.backButtonFunc) {
+      this.backButtonFunc();
+    }
+  }
 }
 
 

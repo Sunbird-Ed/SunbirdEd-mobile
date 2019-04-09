@@ -13,7 +13,7 @@ import {
 import { DataSyncType } from './datasynctype.enum';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { TelemetryGeneratorService } from '@app/service';
+import { TelemetryGeneratorService, AppHeaderService } from '@app/service';
 import { PreferenceKey } from '@app/app';
 import {
   PageId,
@@ -49,6 +49,7 @@ export class DatasyncPage {
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    private headerService: AppHeaderService
   ) { }
 
   init() {

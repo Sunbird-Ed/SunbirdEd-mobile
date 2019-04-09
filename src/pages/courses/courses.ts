@@ -1,6 +1,6 @@
 import {ViewMoreActivityPage} from './../view-more-activity/view-more-activity';
-import {Component, Inject, NgZone, OnInit} from '@angular/core';
-import {Events, IonicPage, NavController, PopoverController} from 'ionic-angular';
+import {Component, Inject, NgZone, OnInit, AfterViewInit} from '@angular/core';
+import {Events, IonicPage, NavController, PopoverController, MenuController} from 'ionic-angular';
 import {AppVersion} from '@ionic-native/app-version';
 import {QRResultCallback, SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
 import {SearchPage} from '../search/search';
@@ -38,13 +38,14 @@ import {
 } from 'sunbird-sdk';
 import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
 import {Subscription} from 'rxjs';
+import { AppHeaderService } from '@app/service';
 
 @IonicPage()
 @Component({
   selector: 'page-courses',
   templateUrl: 'courses.html'
 })
-export class CoursesPage implements OnInit {
+export class CoursesPage implements OnInit, AfterViewInit {
 
   /**
    * Contains enrolled course
@@ -101,6 +102,7 @@ export class CoursesPage implements OnInit {
   isUpgradePopoverShown = false;
   private mode = 'soft';
   private eventSubscription: Subscription;
+  headerObservable: any;
 
   /**
    * Default method of class CoursesPage
@@ -140,7 +142,9 @@ export class CoursesPage implements OnInit {
     private network: Network,
     @Inject('EVENTS_BUS_SERVICE') private eventBusService: EventsBusService,
     @Inject('PAGE_ASSEMBLE_SERVICE') private pageService: PageAssembleService,
-    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    public menuCtrl: MenuController,
+    private headerServie: AppHeaderService
   ) {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
     this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
@@ -166,13 +170,23 @@ export class CoursesPage implements OnInit {
   ngOnInit() {
     this.getCourseTabData();
   }
+  ngAfterViewInit() {
+
+  }
 
   ionViewDidEnter() {
     this.isVisible = true;
   }
 
   ionViewWillEnter() {
+    this.events.subscribe('update_header', (data) => {
+      this.headerServie.showHeaderWithHomeButton(['search', 'filter']);
+    });
+    this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
     this.getEnrolledCourses();
+    this.headerServie.showHeaderWithHomeButton(['search', 'filter']);
 
   }
 
@@ -218,6 +232,8 @@ export class CoursesPage implements OnInit {
   }
 
   ionViewWillLeave() {
+    this.headerObservable.unsubscribe();
+    this.events.unsubscribe('update_header');
     this.tabBarElement.style.display = 'flex';
     this.ngZone.run(() => {
       if (this.eventSubscription) {
@@ -548,7 +564,12 @@ export class CoursesPage implements OnInit {
   }
 
   search() {
-    this.navCtrl.push(SearchPage, {contentType: ContentType.FOR_COURSE_TAB, source: PageId.COURSES});
+    this.navCtrl.push(SearchPage, {
+      contentType: ContentType.FOR_COURSE_TAB,
+      source: PageId.COURSES,
+      enrolledCourses: this.enrolledCourses,
+      guestUser: this.guestUser
+    });
   }
 
   showFilter() {
@@ -690,7 +711,9 @@ export class CoursesPage implements OnInit {
       params = {
         headerTitle: headerTitle,
         pageName: ViewMore.PAGE_COURSE_POPULAR,
-        requestParams: searchQuery
+        requestParams: searchQuery,
+        enrolledCourses: this.enrolledCourses,
+        guestUser: this.guestUser
       };
     }
     const values = new Map();
@@ -783,4 +806,18 @@ export class CoursesPage implements OnInit {
       });
     });
   }
+
+  handleHeaderEvents($event) {
+    switch ($event.name) {
+      case 'search': this.search();
+                    break;
+      case 'filter': this.showFilter();
+                      break;
+    }
+  }
+
+  toggleMenu() {
+    this.menuCtrl.toggle();
+  }
+
 }

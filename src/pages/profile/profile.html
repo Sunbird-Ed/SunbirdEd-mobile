@@ -1,5 +1,5 @@
 <!-- Header Bar -->
-<ion-header>
+<!-- <ion-header>
     <ion-navbar>
         <ion-title>
             {{ 'PROFILE_LW' | translate }}
@@ -10,13 +10,14 @@
             </button>
         </ion-buttons>
     </ion-navbar>
-</ion-header>
+</ion-header> -->
 
-<ion-content padding-vertical>
+
+<ion-content overflow-scroll="true" (click)="toggleTooltips($event)" class="main-container avoid-bottom-tabs-space">
     <!-- Pull to Refresh -->
-    <div class = "spinner-div" *ngIf="refresh">
-            <ion-spinner icon="spiral" class = "refreshspinner"></ion-spinner>
-        </div>
+    <div class="spinner-div" *ngIf="refresh">
+        <ion-spinner icon="spiral" class="refreshspinner"></ion-spinner>
+    </div>
     <ion-refresher (ionRefresh)="doRefresh($event)"></ion-refresher>
     <div padding-horizontal text-center class="MT15" *ngIf="profile?.firstName">
         <profile-avatar [username]="profile?.firstName"></profile-avatar>
@@ -24,7 +25,12 @@
 
     <div padding-horizontal text-center>
         <ion-spinner *ngIf="isUploading"></ion-spinner>
-        <p class="profile-name">{{ profile?.firstName }} {{ profile?.lastName }}</p>
+        <p style="position: relative;"><span class="profile-name">{{ profile?.firstName }} {{ profile?.lastName }}</span>
+            <span *ngIf="profile?.firstName" class="isymbol" item-right text-left (click)="toggleTooltips($event, 'name')">
+                <ion-icon name="ios-information-circle-outline" [ngClass]="{'icon-selected-color' : informationProfileName === true}" class="info-icon"></ion-icon>
+                <span class="asPerStateRecord" *ngIf="informationProfileName">{{'STATE_RECORDS' | translate}}</span>
+            </span>
+        </p>
         <p class="MT0 MB30"><span>{{'USER_ID' | translate}}:</span><span>{{profile?.userName}}</span></p>
     </div>
 
@@ -43,9 +49,15 @@
             </button>
         </div>
     </div>
-
     <div class="school-recent" *ngIf="profile?.organisations?.length > 0 ">
-        <p class="bolder MB5">{{profile?.organisations[0].orgName}}</p>
+        <p class="bolder MB5" style="position: relative;">{{profile?.organisations[0].orgName}}
+            <span *ngIf="profile?.firstName" class="isymbol" item-right text-left
+                (click)="toggleTooltips($event, 'org')">
+                <ion-icon name="ios-information-circle-outline" [ngClass]="{'icon-selected-color' : informationOrgName === true}" class="info-icon"></ion-icon>
+                <span class="asPerStateRecord" *ngIf="informationOrgName">{{'STATE_RECORDS'
+                    | translate}}</span>
+            </span>
+        </p>
         <div *ngIf="orgDetails && orgDetails?.block?.name">Block: {{orgDetails?.block?.name}}</div>
         <div *ngIf="orgDetails">
             <span *ngIf="orgDetails && orgDetails?.district?.name">District: {{orgDetails?.district?.name}}</span>
@@ -53,23 +65,25 @@
             <span *ngIf="orgDetails?.state?.name">{{orgDetails?.state?.name}}</span>
         </div>
     </div>
-   <div class="location text-center" *ngIf="isCustodianOrgId">
+    <div class="location text-center" *ngIf="isCustodianOrgId">
         <div>
             <span class="bolder">{{'STATE' | translate}}: </span>
             <span *ngIf="userLocation?.state && userLocation?.state?.name && userLocation?.state?.name?.length">{{userLocation.state.name}}</span>
-            <span *ngIf="!(userLocation?.state && userLocation?.state?.name && userLocation?.state?.name?.length)"class="lighter">{{'ADD_STATE' | translate}}</span>
+            <span *ngIf="!(userLocation?.state && userLocation?.state?.name && userLocation?.state?.name?.length)"
+                class="lighter">{{'ADD_STATE' | translate}}</span>
         </div>
         <div>
             <span class="bolder">{{'DISTRICT' | translate}}: </span>
             <span *ngIf="userLocation?.district && userLocation?.district?.name && userLocation?.district?.name?.length">{{userLocation.district.name}}</span>
-            <span *ngIf="!(userLocation?.district && userLocation?.district?.name && userLocation?.district?.name?.length)" class="lighter">{{'ADD_DISTRICT' | translate}}</span>
+            <span *ngIf="!(userLocation?.district && userLocation?.district?.name && userLocation?.district?.name?.length)"
+                class="lighter">{{'ADD_DISTRICT' | translate}}</span>
         </div>
         <div class="container MT10 MB10">
             <button ion-button round (click)="navigateToEditPersonalDetails()" class="short-btn custom-round">
                 {{'EDIT' | translate }}
             </button>
         </div>
-   </div>
+    </div>
 
     <div class="contacts" *ngIf="profile?.phone || profile?.email ">
         <div *ngIf="profile?.phone">
@@ -133,8 +147,8 @@
     <div class="badges" padding-horizontal text-center *ngIf="profile?.badgeAssertions?.length > 0">
         <p class="bolder f16">{{'MY_BADGES' | translate }} ({{profile?.badgeAssertions?.length}})&lrm;</p>
         <ion-avatar item-center="" *ngFor="let batch of profile.badgeAssertions | slice : startLimit:badgesLimit;">
-             <img height="80px" width="auto" src="{{batch.badgeClassImage}}">
-           <!--  <img-loader  spinner="true"  width="auto" margin="auto" height="80px" src="{{batch.badgeClassImage}}" fallback="./assets/imgs/ic_launcher.png"
+            <img height="80px" width="auto" src="{{batch.badgeClassImage}}">
+            <!--  <img-loader  spinner="true"  width="auto" margin="auto" height="80px" src="{{batch.badgeClassImage}}" fallback="./assets/imgs/ic_launcher.png"
           fallbackAsPlaceholder="false" style="margin-left : 37%;"></img-loader> -->
         </ion-avatar>
         <div class="" text-center>

@@ -27,6 +27,7 @@ import {
   ImpressionType
 } from '../../service/telemetry-constants';
 import {ProfileConstants} from '../../app';
+import { AppHeaderService } from '@app/service';
 
 
 @Component({
@@ -47,7 +48,8 @@ export class ReportsPage {
     private ngZone: NgZone,
     private loading: LoadingController,
     private navParams: NavParams,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private headerService: AppHeaderService
   ) {
     this.profileDetails = this.navParams.get('profile');
   }
@@ -100,6 +102,9 @@ export class ReportsPage {
   }
 
   ionViewDidLoad() {
+    const header = this.headerService.getDefaultPageConfig();
+    header.showHeader = false;
+    this.headerService.updatePageConfig(header);
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW,
       '',

@@ -1,4 +1,4 @@
-import {Component, Inject, NgZone, ViewChild} from '@angular/core';
+import {Component, Inject, NgZone, ViewChild, OnInit} from '@angular/core';
 import {
   AlertController,
   Events,
@@ -9,6 +9,7 @@ import {
   Platform,
   PopoverController
 } from 'ionic-angular';
+import { Observable } from 'rxjs/Observable';
 import * as _ from 'lodash';
 import {SocialSharing} from '@ionic-native/social-sharing';
 
@@ -22,7 +23,8 @@ import {
   CommonUtilService,
   CourseUtilService,
   TelemetryGeneratorService,
-  UtilityService
+  UtilityService,
+  AppHeaderService
 } from '@app/service';
 import {DatePipe} from '@angular/common';
 import {
@@ -71,6 +73,7 @@ import {
   PageId
 } from '../../service/telemetry-constants';
 import {ProfileConstants} from '../../app';
+import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 
 declare const cordova;
 
@@ -80,7 +83,7 @@ declare const cordova;
   selector: 'page-enrolled-course-details',
   templateUrl: 'enrolled-course-details.html',
 })
-export class EnrolledCourseDetailsPage {
+export class EnrolledCourseDetailsPage implements OnInit {
 
   /**
    * Contains content details
@@ -184,6 +187,7 @@ export class EnrolledCourseDetailsPage {
   @ViewChild(Navbar) navBar: Navbar;
   private eventSubscription: Subscription;
   private corRelationList: Array<CorrelationData>;
+  headerObservable: any;
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
@@ -205,12 +209,20 @@ export class EnrolledCourseDetailsPage {
     private datePipe: DatePipe,
      private utilityService: UtilityService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    private headerService: AppHeaderService
   ) {
 
     this.appGlobalService.getUserId();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     this.subscribeSdkEvent();
+  }
+
+  /**
+   * Angular life cycle hooks
+  */
+ ngOnInit() {
+
   }
 
   subscribeUtilityEvents() {
@@ -312,24 +324,61 @@ export class EnrolledCourseDetailsPage {
    * Function to rate content
    */
   rateContent(event) {
-    // TODO: check content is played or not
     if (!this.guestUser) {
       if (this.course.isAvailableLocally) {
-        const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
-          content: this.course,
-          rating: this.userRating,
-          comment: this.ratingComment,
-          pageId: PageId.COURSE_DETAIL
-        }, {
-          cssClass: 'content-rating-alert'
+        // const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
+        //   content: this.course,
+        //   rating: this.userRating,
+        //   comment: this.ratingComment,
+        //   pageId: PageId.COURSE_DETAIL
+        // }, {
+        //     cssClass: 'content-rating-alert'
+        //   });
+        // popUp.present();
+        // popUp.onDidDismiss(data => {
+        //   if (data && data.message === 'rating.success') {
+        //     this.userRating = data.rating;
+        //     this.ratingComment = data.comment;
+        //   }
+        // });
+
+
+
+        // const paramsMap = new Map();
+      // if (this.isContentPlayed || this.course.contentAccess.length) {
+      const popover = this.popoverCtrl.create(ContentRatingAlertComponent, {
+        content: this.course,
+        pageId: PageId.CONTENT_DETAIL,
+        rating: this.userRating,
+        comment: this.ratingComment,
+        // popupType: popupType,
+      }, {
+          cssClass: 'sb-popover info',
         });
-        popUp.present();
-        popUp.onDidDismiss(data => {
-          if (data && data.message === 'rating.success') {
-            this.userRating = data.rating;
-            this.ratingComment = data.comment;
-          }
-        });
+      popover.present({
+        ev: event
+      });
+      popover.onDidDismiss(data => {
+        if (data && data.message === 'rating.success') {
+          this.userRating = data.rating;
+          this.ratingComment = data.comment;
+        }
+      });
+    // } else {
+    //   paramsMap['IsPlayed'] = 'N';
+    //   this.commonUtilService.showToast('TRY_BEFORE_RATING');
+    // }
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.RATING_CLICKED,
+      Environment.HOME,
+      PageId.CONTENT_DETAIL,
+      undefined,
+      // paramsMap,
+      undefined,
+      // this.objRollup,
+      undefined,
+      this.corRelationList);
       } else {
         this.commonUtilService.showToast('TRY_BEFORE_RATING');
       }
@@ -446,6 +495,10 @@ export class EnrolledCourseDetailsPage {
       }
       this.didViewLoad = true;
 
+      if (this.course && this.course.isAvailableLocally) {
+        this.headerService.showHeaderWithBackButton(['share', 'more']);
+      }
+
       if (this.course.status !== 'Live') {
         this.commonUtilService.showToast('COURSE_NOT_AVAILABLE');
         this.navCtrl.pop();
@@ -517,7 +570,7 @@ export class EnrolledCourseDetailsPage {
                 } else {
                   if (this.batchDetails.status === 2) {
                     this.batchExp = true;
-                    const alert = this.alertCtrl.create({
+                    /*const alert = this.alertCtrl.create({
                       title: this.commonUtilService.translateMessage('BATCH_EXPIRED'),
                       message: this.commonUtilService.translateMessage('BATCH_EXPIRED_DESCRIPTION'),
                       mode: 'wp',
@@ -533,7 +586,31 @@ export class EnrolledCourseDetailsPage {
                         }
                       ]
                     });
-                    alert.present();
+                    alert.present();*/
+                    const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
+                      sbPopoverHeading: this.commonUtilService.translateMessage('BATCH_EXPIRED'),
+                      sbPopoverMainTitle: this.commonUtilService.translateMessage('BATCH_EXPIRED_DESCRIPTION'),
+                      actionsButtons: [
+                        {
+                          btntext: this.commonUtilService.translateMessage('BATCH_EXPIRED_BUTTON'),
+                          btnClass: 'doneButton'
+                        }
+                      ],
+                      icon: null
+                    }, {
+                        cssClass: 'confirm-alert',
+                      });
+                      confirm.present({
+                        ev: event
+                      });
+                      confirm.onDidDismiss((leftBtnClicked: any) => {
+                        if (leftBtnClicked == null) {
+                          return;
+                        }
+                        if (leftBtnClicked) {
+                          this.preferences.putString(PreferenceKey.COURSE_IDENTIFIER, this.batchDetails.identifier).toPromise().then();
+                        }
+                      });
                   } else if (this.batchDetails.status === 0) {
                     this.isBatchNotStarted = true;
                     this.courseStartDate = this.batchDetails.startDate;
@@ -810,6 +887,7 @@ export class EnrolledCourseDetailsPage {
    * @param depth
    */
   navigateToChildrenDetailsPage(content, depth): void {
+    console.log(content.contentType);
     const contentState = {
       batchId: this.courseCardData.batchId ? this.courseCardData.batchId : '',
       courseId: this.identifier
@@ -891,10 +969,14 @@ export class EnrolledCourseDetailsPage {
     });
   }
 
+
   /**
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
+    this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
     this.downloadSize = 0;
     this.courseCardData = this.navParams.get('content');
     this.corRelationList = this.navParams.get('corRelation');
@@ -907,7 +989,7 @@ export class EnrolledCourseDetailsPage {
     }
     this.showResumeBtn = !!this.courseCardData.lastReadContentId;
     this.setContentDetails(this.identifier);
-    console.log('lastContentRead shown in ionViewWillEnter - ', this.courseCardData.lastReadContentId);
+    this.headerService.showHeaderWithBackButton(['share', 'more']);
     // If courseCardData does not have a batch id then it is not a enrolled course
     this.subscribeSdkEvent();
   }
@@ -919,8 +1001,12 @@ export class EnrolledCourseDetailsPage {
     if (enrolledCourses && enrolledCourses.length > 0) {
       for (const course of enrolledCourses) {
         if (course.courseId === identifier) {
-          this.isAlreadyEnrolled = true;
-          this.courseCardData = course;
+          if (this.courseCardData.batch && course.batch === this.courseCardData.batch) {
+            this.isAlreadyEnrolled = true;
+            this.courseCardData = course;
+          } else if (!this.courseCardData.batch) {
+            this.courseCardData = course;
+          }
         }
       }
     }
@@ -998,6 +1084,10 @@ export class EnrolledCourseDetailsPage {
     this.isNavigatingWithinCourse = true;
     if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
+    }
+    this.headerObservable.unsubscribe();
+    if (this.backButtonFunc) {
+      this.backButtonFunc();
     }
     // TODO: this.events.unsubscribe(EventTopics.UNENROL_COURSE_SUCCESS);
   }
@@ -1250,4 +1340,12 @@ export class EnrolledCourseDetailsPage {
       );
   }
 
+  handleHeaderEvents($event) {
+    switch ($event.name) {
+      case 'share': this.share();
+                    break;
+      case 'more': this.showOverflowMenu($event);
+                      break;
+    }
+  }
 }

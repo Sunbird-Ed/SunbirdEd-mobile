@@ -6,7 +6,8 @@ import {
   LoadingController,
   NavController,
   NavParams,
-  Platform
+  Platform,
+  PopoverController
 } from 'ionic-angular';
 import {TranslateService} from '@ngx-translate/core';
 import {Component, Inject} from '@angular/core';
@@ -42,6 +43,8 @@ import {
 } from '../../../service/telemetry-constants';
 import { ContainerService } from '../../../service/container.services';
 import { TabsPage } from '@app/pages/tabs/tabs';
+import { AppHeaderService } from '@app/service';
+import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 @Component({
   selector: 'page-guest-edit.profile',
   templateUrl: 'guest-edit.profile.html'
@@ -112,6 +115,8 @@ export class GuestEditProfilePage {
     @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
     @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    private popoverCtrl: PopoverController,
+    private headerService: AppHeaderService
   ) {
     this.isNewUser = Boolean(this.navParams.get('isNewUser'));
     this.isCurrentUser = Boolean(this.navParams.get('isCurrentUser'));
@@ -165,10 +170,13 @@ export class GuestEditProfilePage {
   }
 
   ionViewWillEnter() {
+    const header = this.headerService.getDefaultPageConfig();
+    header.showHeader = false;
+    this.headerService.updatePageConfig(header);
     this.getSyllabusDetails();
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.dismissPopup();
-    }, 11);
+    }, 10);
   }
 
   ionViewWillLeave() {
@@ -177,7 +185,7 @@ export class GuestEditProfilePage {
   // shows auto fill alert on load
   showAutoFillAlert() {
     this.isEditData = true;
-    const alert = this.alertCtrl.create({
+    /*const alert = this.alertCtrl.create({
       title: this.commonUtilService.translateMessage('PREVIOUS_USER_SETTINGS'),
       mode: 'wp',
       cssClass: 'confirm-alert',
@@ -208,7 +216,42 @@ export class GuestEditProfilePage {
         }
       ]
     });
-    alert.present();
+    alert.present();*/
+    const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
+      sbPopoverHeading: this.commonUtilService.translateMessage('ALERT'),
+      sbPopoverMainTitle: this.commonUtilService.translateMessage('PREVIOUS_USER_SETTINGS'),
+      actionsButtons: [
+        {
+          btntext: this.commonUtilService.translateMessage('CANCEL'),
+          btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+        }, {
+          btntext: this.commonUtilService.translateMessage('OKAY'),
+          btnClass: 'popover-color'
+        }
+      ],
+      icon: null
+    }, {
+      cssClass: 'sb-popover',
+    });
+      confirm.present({
+        ev: event
+      });
+      confirm.onDidDismiss((leftBtnClicked: any) => {
+        if (leftBtnClicked == null) {
+          return;
+        }
+        if (leftBtnClicked) {
+          this.guestEditForm.patchValue({
+            name: undefined,
+            syllabus: undefined,
+            boards: [[]],
+            medium: [[]],
+            grades: [[]],
+            subjects: [[]]
+          });
+          this.guestEditForm.controls['profileType'].setValue('STUDENT');
+        }
+      });
   }
 
   onProfileTypeChange() {

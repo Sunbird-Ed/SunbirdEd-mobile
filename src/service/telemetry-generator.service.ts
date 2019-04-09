@@ -15,6 +15,7 @@ import {
 } from 'sunbird-sdk';
 import { Map } from '../app/telemetryutil';
 import { Environment, ImpressionType, InteractSubtype, InteractType, Mode, PageId } from '../service/telemetry-constants';
+import { MimeType } from '../app/app.constant';
 
 @Injectable()
 export class TelemetryGeneratorService {
@@ -316,6 +317,10 @@ export class TelemetryGeneratorService {
         } else {
             return '0 KB';
         }
+    }
+
+    isCollection(mimeType) {
+        return mimeType === MimeType.COLLECTION;
     }
 
 }
