@@ -43,6 +43,7 @@ export enum PageId {
     COLLECTION_DETAIL = 'collection-detail',
     ENROLLED_COURSE_DETAIL = 'enrolled-course-detail',
     CONTENT_DETAIL = 'content-detail',
+    COURSE_BATCHES = 'course-batches',
     SHARE_CONTENT = 'share-content',
     FLAG_CONTENT = 'flag-content',
     CONTENT_RATING = 'content-rating',

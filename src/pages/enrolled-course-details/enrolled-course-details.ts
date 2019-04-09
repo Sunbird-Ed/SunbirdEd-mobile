@@ -1235,17 +1235,16 @@ export class EnrolledCourseDetailsPage {
     this.events.publish(EventTopics.REFRESH_ENROLL_COURSE_LIST, {});
   }
 
-  readLessorReadMore(param: string, course: any) {
-    const values = new Map();
-    values['id'] = this.objId;
-    values['type'] = this.objType;
-    values['version'] = this.objVer;
+  readLessorReadMore(param: string, objRollup, corRelationList) {
+    const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       param,
       Environment.HOME,
       PageId.ENROLLED_COURSE_DETAIL,
       undefined,
-      values
+      telemetryObject,
+      objRollup,
+      corRelationList
       );
   }
 
