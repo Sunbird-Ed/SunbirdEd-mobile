@@ -390,3 +390,13 @@ table {
 .buttonHide {
   visibility: hidden;
 }
+.ps-score-divider {
+  border-bottom: 2px solid #C8C8C8;
+  margin-left: 3vw;
+  margin-right: 3vw;
+}
+
+.ps-score-data-padding-top {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
