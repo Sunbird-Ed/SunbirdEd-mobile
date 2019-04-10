@@ -407,7 +407,6 @@ export class EnrolledCourseDetailsPage {
   setContentDetails(identifier): void {
     const option: ContentDetailRequest = {
       contentId: identifier,
-      emitUpdateIfAny: true,
       attachFeedback: true,
       attachContentAccess: true
     };
@@ -907,6 +906,7 @@ export class EnrolledCourseDetailsPage {
     }
     this.showResumeBtn = !!this.courseCardData.lastReadContentId;
     this.setContentDetails(this.identifier);
+    console.log('lastContentRead shown in ionViewWillEnter - ', this.courseCardData.lastReadContentId);
     // If courseCardData does not have a batch id then it is not a enrolled course
     this.subscribeSdkEvent();
   }
@@ -942,11 +942,13 @@ export class EnrolledCourseDetailsPage {
           // Show download percentage
           if (event.type === DownloadEventType.PROGRESS) {
             const downloadEvent = event as DownloadProgress;
+            if (downloadEvent.payload.identifier === this.course.identifier) {
               this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
               if (this.downloadProgress === 100) {
                 this.getBatchDetails();
                 this.showLoading = false;
               }
+            }
           }
 
           // Get child content
@@ -956,6 +958,7 @@ export class EnrolledCourseDetailsPage {
             if (this.queuedIdentifiers.length && this.isDownloadStarted) {
               if (_.includes(this.queuedIdentifiers, contentImportCompleted.payload.contentId)) {
                 this.currentCount++;
+                console.log('count-', this.currentCount);
               }
 
               if (this.queuedIdentifiers.length === this.currentCount) {
@@ -974,7 +977,7 @@ export class EnrolledCourseDetailsPage {
           // For content update available
           const hierarchyInfo = this.courseCardData.hierarchyInfo ? this.courseCardData.hierarchyInfo : null;
           const contentUpdateEvent = event as ContentUpdate;
-          if (contentUpdateEvent.payload && contentUpdateEvent.payload.contentId === this.identifier
+          if (contentUpdateEvent.payload && contentUpdateEvent.payload.contentId === this.course.identifier
             && contentUpdateEvent.type === ContentEventType.UPDATE && hierarchyInfo === null) {
             this.zone.run(() => {
               this.showLoading = true;

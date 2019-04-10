@@ -240,7 +240,7 @@ export class ContentDetailsPage {
       this.generateTelemetry();
     }
 
-    this.setContentDetails(this.identifier, true, this.isPlayerLaunched);
+    this.setContentDetails(this.identifier, this.isPlayerLaunched);
     this.subscribeSdkEvent();
   }
 
@@ -412,7 +412,14 @@ export class ContentDetailsPage {
       this.corRelationList);
   }
 
-  setContentDetails(identifier, refreshContentDetails: boolean, showRating: boolean) {
+  /**
+   * To set content details in local variable
+   * @param {string} identifier identifier of content / course
+   * @param refreshContentDetails
+   * @param showRating
+   */
+
+  setContentDetails(identifier, showRating: boolean) {
     let loader;
     if (!showRating) {
       loader = this.commonUtilService.getLoader();
@@ -421,7 +428,6 @@ export class ContentDetailsPage {
     const req: ContentDetailRequest = {
       contentId: identifier,
       attachFeedback: true,
-      emitUpdateIfAny: refreshContentDetails,
       attachContentAccess: true
     };
 
@@ -750,7 +756,7 @@ export class ContentDetailsPage {
             this.isDownloadStarted = false;
             this.cancelDownloading = false;
             this.contentDownloadable[this.content.identifier] = true;
-            this.setContentDetails(this.identifier, false, false);
+            this.setContentDetails(this.identifier, false);
             this.downloadProgress = '';
             this.events.publish('savedResources:update', {
               update: true

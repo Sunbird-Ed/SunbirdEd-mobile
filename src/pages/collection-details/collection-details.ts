@@ -257,7 +257,7 @@ export class CollectionDetailsPage {
       }
 
       this.didViewLoad = true;
-      this.setContentDetails(this.identifier, true);
+      this.setContentDetails(this.identifier);
       this.subscribeSdkEvent();
     });
   }
@@ -359,14 +359,13 @@ export class CollectionDetailsPage {
    * To set content details in local variable
    * @param {string} identifier identifier of content / course
    */
-  setContentDetails(identifier, refreshContentDetails: boolean) {
+  setContentDetails(identifier) {
     const loader = this.commonUtilService.getLoader();
     loader.present();
     const option: ContentDetailRequest = {
       contentId: identifier,
       attachFeedback: true,
-      attachContentAccess: true,
-      emitUpdateIfAny: refreshContentDetails
+      attachContentAccess: true
     };
     this.contentService.getContentDetails(option).toPromise()
       .then((data: Content) => {
@@ -729,11 +728,11 @@ export class CollectionDetailsPage {
             // this condition is for when the child content update is available and we have downloaded parent content
             // but we have to refresh only the child content.
             this.showLoading = false;
-            this.setContentDetails(this.identifier, false);
+            this.setContentDetails(this.identifier);
           } else {
             if (this.isUpdateAvailable && contentImportEvent.payload.contentId === this.contentDetail.identifier) {
               this.showLoading = false;
-              this.setContentDetails(this.identifier, false);
+              this.setContentDetails(this.identifier);
             } else {
               if (contentImportEvent.payload.contentId === this.contentDetail.identifier) {
                 this.showLoading = false;
@@ -757,7 +756,7 @@ export class CollectionDetailsPage {
               this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.contentDetail, false);
               this.importContent([parentIdentifier], false);
             } else {
-              this.setContentDetails(this.identifier, false);
+              this.setContentDetails(this.identifier);
             }
           });
         }
