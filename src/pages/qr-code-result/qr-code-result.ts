@@ -311,11 +311,13 @@ export class QrCodeResultPage implements OnDestroy {
   navigateToDetailsPage(content) {
     if (content && content.contentData && content.contentData.contentType === ContentType.COURSE) {
       this.navCtrl.push(EnrolledCourseDetailsPage, {
-        content: content
+        content: content,
+        corRelation: this.corRelationList
       });
     } else if (content && content.mimeType === MimeType.COLLECTION) {
       this.navCtrl.push(CollectionDetailsPage, {
-        content: content
+        content: content,
+        corRelation: this.corRelationList
       });
     } else {
       this.telemetryGeneratorService.generateInteractTelemetry(

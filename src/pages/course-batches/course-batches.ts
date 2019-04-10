@@ -1,8 +1,10 @@
+import { TelemetryGeneratorService } from './../../service/telemetry-generator.service';
 import {Component, Inject, NgZone, OnInit} from '@angular/core';
 import {AuthService, Batch, CourseService, EnrollCourseRequest, OAuthSession} from 'sunbird-sdk';
 import {Events, IonicPage, NavController, NavParams} from 'ionic-angular';
 import {EventTopics} from '../../app/app.constant';
 import {CommonUtilService} from '../../service/common-util.service';
+import { InteractType, InteractSubtype, Environment, PageId } from '@app/service/telemetry-constants';
 
 /**
  * Generated class for the CourseBatchesPage page.
@@ -73,7 +75,8 @@ export class CourseBatchesPage implements OnInit {
     private navParams: NavParams,
     private zone: NgZone,
     private commonUtilService: CommonUtilService,
-    private events: Events
+    private events: Events,
+    private telemetryGeneratorService: TelemetryGeneratorService
   ) {
   }
 
@@ -94,6 +97,15 @@ export class CourseBatchesPage implements OnInit {
       contentId: item.courseId,
       batchStatus: item.status
     };
+
+    const reqvalues = new Map();
+    reqvalues['enrollReq'] = enrollCourseRequest;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.ENROLL_CLICKED,
+        Environment.HOME,
+        PageId.COURSE_BATCHES, undefined,
+        reqvalues);
+
     this.courseService.enrollCourse(enrollCourseRequest).toPromise()
       .then((data: boolean) => {
         this.zone.run(() => {

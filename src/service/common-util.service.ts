@@ -9,7 +9,9 @@ import {
     PopoverController,
     Platform,
     Alert,
-    AlertController
+    AlertController,
+    App,
+    NavControllerBase
 } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
@@ -22,7 +24,7 @@ import { appLanguages } from './../app/app.constant';
 import { QRScannerAlert } from './../pages/qrscanner/qrscanner_alert';
 
 import { TelemetryGeneratorService } from '../service/telemetry-generator.service';
-import { InteractType, InteractSubtype } from '../service/telemetry-constants';
+import { InteractType, InteractSubtype, PageId, Environment } from '../service/telemetry-constants';
 export interface NetworkInfo {
     isNetworkAvailable: boolean;
 }
@@ -45,7 +47,8 @@ export class CommonUtilService implements OnDestroy {
         private platform: Platform,
         private alertCtrl: AlertController,
         private telemetryGeneratorService: TelemetryGeneratorService,
-        @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences
+        @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+        private app: App
     ) {
         this.listenForEvents();
     }
@@ -180,7 +183,52 @@ export class CommonUtilService implements OnDestroy {
             popOver.present();
         }, 300);
     }
+    computePageId(pageName: string): string {
+        let pageId = '';
+        switch (pageName) {
+          case 'ResourcesPage': {
+            pageId = PageId.LIBRARY;
+            break;
+          }
+          case 'CoursesPage': {
+            pageId = PageId.COURSES;
+            break;
+          }
+          case 'ProfilePage': {
+            pageId = PageId.PROFILE;
+            break;
+          }
+          case 'GuestProfilePage': {
+            pageId = PageId.GUEST_PROFILE;
+            break;
+          }
+          case 'CollectionDetailsEtbPage': {
+            pageId = PageId.COLLECTION_DETAIL;
+            break;
+          }
+          case 'ContentDetailsPage': {
+            pageId = PageId.CONTENT_DETAIL;
+            break;
+          }
+          case 'QrCodeResultPage': {
+            pageId = PageId.DIAL_CODE_SCAN_RESULT;
+            break;
+          }
+          case 'CollectionDetailsPage': {
+            pageId = PageId.COLLECTION_DETAIL;
+            break;
+          }
+        }
+        return pageId;
+      }
 
+    getPageName() {
+        const navObj: NavControllerBase = this.app.getActiveNavs()[0];
+        let currentPage: string = navObj.getActive().name;
+          currentPage = this.computePageId(currentPage);
+
+          return(currentPage);
+    }
     /**
      * Its check for the network availability
      * @returns {boolean} status of the network
@@ -199,13 +247,23 @@ export class CommonUtilService implements OnDestroy {
         }
 
         this.connectSubscription = this.network.onDisconnect().subscribe(() => {
+            this.addNetworkTelemetry(InteractSubtype.INTERNET_DISCONNECTED, this.getPageName());
             updateNetworkAvailabilityStatus(false);
         });
         this.disconnectSubscription = this.network.onConnect().subscribe(() => {
+            this.addNetworkTelemetry(InteractSubtype.INTERNET_CONNECTED, this.getPageName());
             updateNetworkAvailabilityStatus(true);
         });
 
         return this.networkInfo.isNetworkAvailable;
+    }
+
+    addNetworkTelemetry(subtype: string , pageId: string) {
+        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+            subtype,
+            Environment.HOME,
+            pageId, undefined
+            );
     }
 
     ngOnDestroy() {

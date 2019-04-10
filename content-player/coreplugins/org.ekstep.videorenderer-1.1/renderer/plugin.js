@@ -90,7 +90,7 @@ org.ekstep.contentrenderer.baseLauncher.extend({
         source.type = data.mimeType;
         video.appendChild(source);
 
-        if (data.streamingUrl || !isbrowserpreview){
+        if (data.streamingUrl || window.cordova){
             var videoPlayer = videojs('videoElement', {
                 "controls": true, "autoplay": true, "preload": "auto"
             });
@@ -153,6 +153,11 @@ org.ekstep.contentrenderer.baseLauncher.extend({
         });
     },
     play: function(stageid, time) {
+        if (time == 0){
+            EkstepRendererAPI.getTelemetryService().navigate(stageid, stageid, {
+                "duration": (Date.now()/1000) - window.PLAYER_STAGE_START_TIME
+            });
+        }
         var instance = this;
         instance.heartBeatEvent(true);
         instance.progressTimer(true);

@@ -22,13 +22,15 @@
         <div class="ps-score">
           <div class="ps-score-content">
             <ul class="ps-score-list">
-              <li ng-if="score" class="ps-score-list__item">
+              <li ng-if="userScore >= 0 && totalScore" class="ps-score-list__item">
                 <div class="ps-score-item">
                   <img ng-src="{{scoreIcon}}" class="ps-score-icon">
                   <div class="ps-score-detail">
-                    <h2 class="ps-score-heading">SCORE</h2>
-                    <p class="ps-score-data endpage-score">{{score}}</p>
-                  </div>
+                    <h2 class="ps-score-heading">SCORE</h2>                    
+                    <div class="ps-score-data endpage-score ps-score-data-padding-top">{{userScore}}</div>
+                    <div class="ui divider ps-score-divider"></div>
+                    <div class="ps-score-data endpage-score ps-score-data-padding-top">{{totalScore}}</div>
+                    </div>
                 </div>
               </li>
               <li class="ps-vertical-line"><div class="vertical-line"></div></li>
