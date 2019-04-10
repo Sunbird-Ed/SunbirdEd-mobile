@@ -44,16 +44,19 @@ export class TabsPage {
 
   public ionChange(tab: Tab) {
     console.log('TabTitle', tab.tabTitle);
-    this.tabs.forEach((tabTo, index) => {
-      if (tabTo.isSelected === true) {
-        tabTo.isSelected = false;
-      }
-      if (index === tab.index) {
-        tabTo.isSelected = true;
-      }
-    });
-    this.events.publish('tab.change', tab.tabTitle);
+    // if active tab is other than scanner tab i.e, = tab 2
+    if (tab.index !== 2) {
+      this.tabs.forEach((tabTo, index) => {
 
+        if (tabTo.isSelected === true) {
+          tabTo.isSelected = false;
+        }
+        if (index === tab.index) {
+          tabTo.isSelected = true;
+        }
+      });
+    }
+    this.events.publish('tab.change', tab.tabTitle);
   }
 
   public customClick(tab, _index) {
