@@ -247,9 +247,10 @@ export const sunbirdSdkFactory =
         telemetryConfig: {
           deviceRegisterApiPath: '',
           telemetryApiPath: '/api/data/v1',
-          deviceRegisterHost: 'https://api.diksha.gov.in/',
-          telemetrySyncBandwidth: 200,
-          telemetrySyncThreshold: 300
+          deviceRegisterHost: buildConfigValues['DEVICE_REGISTER_BASE_URL'],
+          telemetrySyncBandwidth: 2,
+          telemetrySyncThreshold: 2,
+          telemetryLogMinAllowedOffset: 86400000
         },
         sharedPreferencesConfig: {
           debugMode: false
