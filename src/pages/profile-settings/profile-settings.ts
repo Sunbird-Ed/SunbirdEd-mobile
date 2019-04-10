@@ -1,10 +1,9 @@
 import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs} from './../../app/module.service';
-import {App, IonicApp, NavParams, Select} from 'ionic-angular/index';
 import {AppGlobalService} from '../../service/app-global.service';
 import {Component, Inject, ViewChild} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {Events, IonicPage, LoadingController, NavController, Platform} from 'ionic-angular';
+import {Events, IonicPage, LoadingController, NavController, Platform, App, IonicApp, NavParams, Select} from 'ionic-angular';
 import {PreferenceKey} from '../../app/app.constant';
 import * as _ from 'lodash';
 import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';

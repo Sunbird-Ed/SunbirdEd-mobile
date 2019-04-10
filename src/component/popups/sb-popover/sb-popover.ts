@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { ContentActionsComponent } from '@app/component';
-import { ViewController } from 'ionic-angular/navigation/view-controller';
 import {
   NavParams,
+  ViewController,
   ToastController,
+  Events,
   Platform
 } from 'ionic-angular';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { TranslateService } from '@ngx-translate/core';
-import { Events } from 'ionic-angular/index';
 import { ProfileConstants } from '../../../app/app.constant';
 import { Rollup, CorrelationData, ContentService, AuthService } from 'sunbird-sdk';
 

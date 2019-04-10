@@ -1,6 +1,5 @@
 import {Component, Inject} from '@angular/core';
-import {NavParams} from 'ionic-angular/navigation/nav-params';
-import {LoadingController, Platform, ViewController} from 'ionic-angular';
+import {LoadingController, Platform, ViewController, NavParams} from 'ionic-angular';
 import {GenerateOtpRequest, IsProfileAlreadyInUseRequest, ProfileService} from 'sunbird-sdk';
 import {ProfileConstants} from '@app/app';
 import {CommonUtilService} from '@app/service';
