@@ -104,11 +104,10 @@
   <div class="collpase">
     <ion-header class="sb-popover-header">
       <ion-toolbar class="sb-popover-toolbar">
-        <ion-title class="sb-popover-title"> {{ 'DOWNLOADING_2' | translate }}
-          <span class="meta-info">
+        <ion-title padding-left padding-right class="sb-popover-title"> {{ 'DOWNLOADING_2' | translate }}
+          <span class="meta-info">{{ currentCount }} / {{ queuedIdentifiers?.length }}</span>
           <button ion-button clear class="sb-modal-close"
             (click)="togglePopover(); this.showPopover = !this.showPopover">Show</button>
-            </span>
         </ion-title>
       </ion-toolbar>
       <div class="popover-progress-container">
@@ -122,7 +121,7 @@
     <div class="collpase">
       <ion-header class="sb-popover-header">
         <ion-toolbar class="sb-popover-toolbar">
-          <ion-title class="sb-popover-title"> {{ 'DOWNLOADING_2' | translate }}
+          <ion-title  padding-left padding-right class="sb-popover-title"> {{ 'DOWNLOADING_2' | translate }}
             <span class="meta-info">{{this.constContentSize}} </span>
             <button ion-button clear class="sb-modal-close"
               (click)="togglePopover(); this.showPopover = !this.showPopover">Show</button>
@@ -140,7 +139,7 @@
       <div class="collpase">
         <ion-header class="sb-popover-header">
           <ion-toolbar class="sb-popover-toolbar">
-            <ion-title class="sb-popover-title"> {{ 'UPDATING' | translate }}
+            <ion-title padding-left padding-right class="sb-popover-title"> {{ 'UPDATING' | translate }}
               <span class="meta-info">{{this.constContentSize}}</span>
               <button ion-button clear class="sb-modal-close"
                 (click)="togglePopover(); this.showPopover = !this.showPopover">Show</button>

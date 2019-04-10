@@ -51,9 +51,9 @@
                 color: $white-color;
             }
             .sb-popover-title .toolbar-title{
-                font-size: ($font-size-base + 2);	
+                font-size: ($font-size-base);	
                 font-weight: bold;	
-                line-height: 19px;	
+               //@extend line-height: 19px;	
                 text-align: center;
                 color: $white-color;
                 @include padding(0);
@@ -62,7 +62,7 @@
         }
         .sb-modal-close {
             position: absolute;
-            right: -10px;
+            right: 0px;
             width: 40px;
             height: 40px;
             display: flex;
@@ -99,6 +99,7 @@
                         font-size: ($font-size-base - 2);	
                         line-height: 20px;
                         text-align: center;
+                        @include padding(($base-block-space * 2),0,0,0);
                     }
                 }
 
@@ -106,7 +107,9 @@
                     color: $gray-200;
                     font-size: ($font-size-base - 2);
                     line-height: 20px;
+                    font-weight: bold;
                     text-align: center;
+                    @include padding(($base-block-space * 1),0,0,0);
                 }
 
             }
