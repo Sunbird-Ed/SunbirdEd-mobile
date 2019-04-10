@@ -52,8 +52,6 @@ export class SbPopoverComponent {
     this.sbPopoverContent = this.navParams.get('sbPopoverContent');
     this.sbPopoverHeading = this.navParams.get('sbPopoverHeading');
     this.sbPopoverMainTitle = this.navParams.get('sbPopoverMainTitle');
-    console.log('this.actionsButtons', this.actionsButtons);
-    console.log('this.sbPopoverMainTitle', this.sbPopoverMainTitle);
 
     this.content = this.navParams.get('content');
     this.data = this.navParams.get('data');
