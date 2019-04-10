@@ -251,8 +251,6 @@ export class ContentDetailsPage {
     this.downloadAndPlay = this.navParams.get('downloadAndPlay');
     this.playOnlineSpinner = true;
     this.contentPath = this.navParams.get('paths');
-    console.log('BreadCrumbs', this.contentPath);
-   console.log('NAVPARAMS FROM COLLECTION ', this.navParams.get('paths'));
 
     if (this.isResumedCourse && !this.isPlayerLaunched) {
       if (this.isUsrGrpAlrtOpen) {
@@ -884,6 +882,7 @@ export class ContentDetailsPage {
    * confirming popUp content
    */
   openConfirmPopUp() {
+    if (this.commonUtilService.networkInfo.isNetworkAvailable) {
     const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
       sbPopoverMainTitle: this.content.contentData.name + this.content.contentData.subject,
       icon: null,
@@ -902,6 +901,9 @@ export class ContentDetailsPage {
         this.downloadContent();
       }
     });
+  } else {
+    this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
+  }
 
 
   }
@@ -1318,16 +1320,13 @@ getMessageByConstant(constant: string) {
         this.events.publish('savedResources:update', {
           update: true
         });
-        console.log('delete response: ', data);
         this.importContent([this.identifier], this.isChildContent);
         this.contentDownloadable[this.content.identifier] = false;
         this.showToaster(this.getMessageByConstant('MSG_RESOURCE_DELETED'));
-        // this.viewCtrl.dismiss();
       }
     }).catch((error: any) => {
       console.log('delete response: ', error);
       this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
-     // this.viewCtrl.dismiss();
     });
   }
   showBookmarkMenu(event?) {

@@ -94,13 +94,13 @@
     color:$primary-color;
     font-size:$font-size-base;
     @include padding(0,($base-block-space * 1));
-    line-height: 20px;
+    line-height: 30px;
    }
     .sb-accordian-arrow
     {
         color : $primary-color;
         font-size: (($font-size-base * 2) + 2);
-        line-height: 20px;
+        line-height: 30px;
     }
     .sb-play-selected
     {

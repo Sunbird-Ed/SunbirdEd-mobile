@@ -47,7 +47,7 @@ page-view-more-activity {
         position: relative;
         display: flex;
         align-items: center;
-        @include padding(0, ($base-block-space * 1));
+        @include padding(0, ($base-block-space * 2));
         .sb-view-all-title{
             color: $white-color;
             .page-heading{

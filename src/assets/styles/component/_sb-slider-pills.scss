@@ -6,7 +6,7 @@
     .sb-pills-container {
         display: inline-flex;
         align-items: center;
-        @include padding(($base-block-space * 2) ($base-block-space * 1));
+        @include padding(($base-block-space * 1) ($base-block-space * 1));
         .pill {
         background-color: $bg-white;
         white-space: nowrap; 
@@ -15,7 +15,7 @@
         min-height: ($base-block-space * 4);
         @include margin(null,($base-block-space * 1),null,null);
         @include padding(($base-block-space * 0.5) ($base-block-space * 1));
-        border-radius: 2px;
+        border-radius: 5px;
         text: {
             transform: capitalize;
             decoration: none;

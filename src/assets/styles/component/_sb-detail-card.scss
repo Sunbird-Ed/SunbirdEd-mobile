@@ -120,7 +120,7 @@
             @include margin(0,0,($base-block-space * .5),0);
           }   
           .sb-btn-footer-text {
-            color : $gray-300;
+            color : $gray;
             font-weight: 100;
             font-size: ($font-size-base - 2);
             text-align: center;

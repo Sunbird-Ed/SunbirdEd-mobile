@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ViewController } from 'ionic-angular/navigation/view-controller';
+import { ViewController } from 'ionic-angular';
 import {
   NavParams,
   Platform
