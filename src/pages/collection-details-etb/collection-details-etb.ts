@@ -1060,8 +1060,8 @@ export class CollectionDetailsEtbPage implements OnInit {
           },
         ],
         icon: null,
-        metaInfo: contentTypeCount +
-          'items' + '(' + this.fileSizePipe.transform(this.downloadSize, 2) + ')',
+        metaInfo: this.contentDetail.contentTypesCount.TextBookUnit +
+          ' items' + '(' + this.fileSizePipe.transform(this.downloadSize, 2) + ')',
         //  '(' + this.fileSizePipe.transform(this.contentDetail.size, 2) + ')'
       }, {
           cssClass: 'sb-popover info',
@@ -1167,8 +1167,8 @@ export class CollectionDetailsEtbPage implements OnInit {
       objRollup: this.objRollup,
       pageName: PageId.COLLECTION_DETAIL,
       corRelationList: this.corRelationList,
-      sbPopoverHeading: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE'),
-      sbPopoverMainTitle: this.contentDetail.contentData.name + this.contentDetail.contentData.subject,
+      sbPopoverHeading: this.commonUtilService.translateMessage('DELETE'),
+      sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_DELETE'),
       actionsButtons: [
         {
           btntext: this.commonUtilService.translateMessage('REMOVE'),
@@ -1176,9 +1176,9 @@ export class CollectionDetailsEtbPage implements OnInit {
         },
       ],
       icon: null,
-      metaInfo: contentTypeCount +
-        'items' + '(' + this.fileSizePipe.transform(this.contentDetail.contentData.size, 2) + ')',
-      sbPopoverContent: 'Are you sure you want to delete ?'
+      sbPopoverContent: this.contentDetail.contentTypesCount.TextBookUnit +
+        'items' + '(' + this.fileSizePipe.transform(this.contentDetail.size, 2) + ')',
+      metaInfo:  this.contentDetail.name + this.contentDetail.subject
     }, {
         cssClass: 'sb-popover danger',
       });
