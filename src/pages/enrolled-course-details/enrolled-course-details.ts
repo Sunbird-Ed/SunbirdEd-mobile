@@ -215,7 +215,6 @@ export class EnrolledCourseDetailsPage implements OnInit {
     this.appGlobalService.getUserId();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
-    this.subscribeSdkEvent();
   }
 
   /**
@@ -1029,7 +1028,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
           // Show download percentage
           if (event.type === DownloadEventType.PROGRESS) {
             const downloadEvent = event as DownloadProgress;
-            if (downloadEvent.payload.identifier === this.identifier) {
+            if (downloadEvent.payload.identifier === this.course.identifier) {
               this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
               if (this.downloadProgress === 100) {
                 this.getBatchDetails();
@@ -1064,7 +1063,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
           // For content update available
           const hierarchyInfo = this.courseCardData.hierarchyInfo ? this.courseCardData.hierarchyInfo : null;
           const contentUpdateEvent = event as ContentUpdate;
-          if (contentUpdateEvent.payload && contentUpdateEvent.payload.contentId === this.identifier
+          if (contentUpdateEvent.payload && contentUpdateEvent.payload.contentId === this.course.identifier
             && contentUpdateEvent.type === ContentEventType.UPDATE && hierarchyInfo === null) {
             this.zone.run(() => {
               this.showLoading = true;
@@ -1326,17 +1325,16 @@ export class EnrolledCourseDetailsPage implements OnInit {
     this.events.publish(EventTopics.REFRESH_ENROLL_COURSE_LIST, {});
   }
 
-  readLessorReadMore(param: string, course: any) {
-    const values = new Map();
-    values['id'] = this.objId;
-    values['type'] = this.objType;
-    values['version'] = this.objVer;
+  readLessorReadMore(param: string, objRollup, corRelationList) {
+    const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       param,
       Environment.HOME,
       PageId.ENROLLED_COURSE_DETAIL,
       undefined,
-      values
+      telemetryObject,
+      objRollup,
+      corRelationList
       );
   }
 

@@ -43,6 +43,7 @@ export enum PageId {
     COLLECTION_DETAIL = 'collection-detail',
     ENROLLED_COURSE_DETAIL = 'enrolled-course-detail',
     CONTENT_DETAIL = 'content-detail',
+    COURSE_BATCHES = 'course-batches',
     SHARE_CONTENT = 'share-content',
     FLAG_CONTENT = 'flag-content',
     CONTENT_RATING = 'content-rating',
@@ -118,10 +119,13 @@ export enum ImpressionSubtype {
 }
 export enum InteractType {
     TOUCH = 'TOUCH',
-    OTHER = 'OTHER'
+    OTHER = 'OTHER',
+    SCROLL = 'SCROLL'
 }
 
 export enum InteractSubtype {
+    INTERNET_CONNECTED = 'internet-connected',
+    INTERNET_DISCONNECTED = 'internet-disconnected',
     LOGIN_INITIATE = 'login-initiate',
     LOGIN_SUCCESS = 'login-success',
     SIGNUP_INITIATE = 'signup-initiate',
@@ -136,6 +140,8 @@ export enum InteractSubtype {
     SEARCH_BUTTON_CLICKED = 'search-button-clicked',
     FILTER_BUTTON_CLICKED = 'filter-button-clicked',
     VIEWALL_CLICKED = 'view-all-clicked',
+    BOOK_LIST_END_REACHED = 'book-list-end-reached',
+    RECENTLY_VIEWED_END_REACHED = 'recently-viewed-end-reached',
     SHARE_COURSE_INITIATED = 'share-course-initiated',
     SHARE_LIBRARY_INITIATED = 'share-library-initiated',
     SHARE_COURSE_SUCCESS = 'share-course-success',

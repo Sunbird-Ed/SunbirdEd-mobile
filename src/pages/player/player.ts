@@ -46,9 +46,10 @@ export class PlayerPage implements playerActionHandlerDelegate {
     previewElement.src = src;
 
     previewElement.onload = () => {
-
       console.log("config", this.config);
       setTimeout(() => {
+        previewElement.contentWindow['cordova'] = window['cordova'];
+        previewElement.contentWindow['Media'] = window['Media'];
         previewElement.contentWindow['playerActionHandlerDelegate'] = this;
         previewElement.contentWindow['initializePreview'](this.config);
       }, 1000);

@@ -62,8 +62,7 @@ export class MyApp implements OnInit, AfterViewInit {
   readonly permissionList = [
     AndroidPermission.WRITE_EXTERNAL_STORAGE,
     AndroidPermission.RECORD_AUDIO,
-    AndroidPermission.CAMERA,
-    AndroidPermission.ACCESS_FINE_LOCATION];
+    AndroidPermission.CAMERA];
   private telemetryAutoSyncUtil: TelemetryAutoSyncUtil;
 
   profile: any = {};
@@ -116,6 +115,7 @@ export class MyApp implements OnInit, AfterViewInit {
       this.checkForTncUpdate();
       await this.getSelectedLanguage();
       await this.navigateToAppropriatePage();
+      this.handleSunbirdSplashScreenActions();
       this.preferences.putString(PreferenceKey.CONTENT_CONTEXT, '').subscribe();
       window['thisRef'] = this;
       this.statusBar.styleBlackTranslucent();
@@ -415,8 +415,6 @@ export class MyApp implements OnInit, AfterViewInit {
       }).toPromise();
   }
 
-  private async makeEntriesInSupportFolder() {
-  }
 
   private async makeEntryInSupportFolder() {
     return new Promise((resolve => {
