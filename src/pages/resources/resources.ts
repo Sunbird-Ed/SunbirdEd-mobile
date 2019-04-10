@@ -1,6 +1,6 @@
 import {Search} from './../../app/app.constant';
-import {AfterViewInit, Component, Inject, NgZone, OnInit} from '@angular/core';
-import {Events, NavController, ToastController, MenuController} from 'ionic-angular';
+import {AfterViewInit, Component, Inject, NgZone, OnInit, ViewChild} from '@angular/core';
+import {Events, NavController, ToastController, MenuController, Scroll, Tabs} from 'ionic-angular';
 import * as _ from 'lodash';
 import {ViewMoreActivityPage} from '../view-more-activity/view-more-activity';
 import {SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
@@ -289,7 +289,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.scrollEventRemover();
     }
 }
-s
+
   /**
    * It will fetch the guest user profile details
    */

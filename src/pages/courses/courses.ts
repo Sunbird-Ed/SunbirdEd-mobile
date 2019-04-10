@@ -1,6 +1,6 @@
 import {ViewMoreActivityPage} from './../view-more-activity/view-more-activity';
 import {Component, Inject, NgZone, OnInit, AfterViewInit} from '@angular/core';
-import {Events, IonicPage, NavController, PopoverController, MenuController} from 'ionic-angular';
+import {Events, IonicPage, NavController, PopoverController, MenuController, Tabs} from 'ionic-angular';
 import {AppVersion} from '@ionic-native/app-version';
 import {QRResultCallback, SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
 import {SearchPage} from '../search/search';
