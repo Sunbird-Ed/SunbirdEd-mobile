@@ -240,7 +240,7 @@ export class ContentDetailsPage {
       this.generateTelemetry();
     }
 
-    this.setContentDetails(this.identifier, this.isPlayerLaunched);
+    this.setContentDetails(this.identifier, true, this.isPlayerLaunched);
     this.subscribeSdkEvent();
   }
 
@@ -329,8 +329,8 @@ export class ContentDetailsPage {
           this.userCount += 1;
         }
       }).catch((error) => {
-        console.error('Error occurred= ', error);
-      });
+      console.error('Error occurred= ', error);
+    });
   }
 
   checkCurrentUserType() {
@@ -386,8 +386,8 @@ export class ContentDetailsPage {
         comment: this.ratingComment,
         popupType: popupType
       }, {
-          cssClass: 'content-rating-alert'
-        });
+        cssClass: 'content-rating-alert'
+      });
       popUp.present({
         ev: event
       });
@@ -412,14 +412,7 @@ export class ContentDetailsPage {
       this.corRelationList);
   }
 
-  /**
-   * To set content details in local variable
-   * @param {string} identifier identifier of content / course
-   * @param refreshContentDetails
-   * @param showRating
-   */
-
-  setContentDetails(identifier, showRating: boolean) {
+  setContentDetails(identifier, refreshContentDetails: boolean, showRating: boolean) {
     let loader;
     if (!showRating) {
       loader = this.commonUtilService.getLoader();
@@ -428,6 +421,7 @@ export class ContentDetailsPage {
     const req: ContentDetailRequest = {
       contentId: identifier,
       attachFeedback: true,
+      emitUpdateIfAny: refreshContentDetails,
       attachContentAccess: true
     };
 
@@ -756,7 +750,7 @@ export class ContentDetailsPage {
             this.isDownloadStarted = false;
             this.cancelDownloading = false;
             this.contentDownloadable[this.content.identifier] = true;
-            this.setContentDetails(this.identifier, false);
+            this.setContentDetails(this.identifier, false, false);
             this.downloadProgress = '';
             this.events.publish('savedResources:update', {
               update: true
@@ -826,10 +820,10 @@ export class ContentDetailsPage {
           }
         });
       }).catch((error: any) => {
-        this.zone.run(() => {
-          console.log('Error: download error =>>>>>', error);
-        });
+      this.zone.run(() => {
+        console.log('Error: download error =>>>>>', error);
       });
+    });
   }
 
   /** function add eclipses to the texts**/
@@ -932,7 +926,7 @@ export class ContentDetailsPage {
       });
 
       if (isStreaming) {
-        const extraInfoMap = { hierarchyInfo: [] };
+        const extraInfoMap = {hierarchyInfo: []};
         if (this.cardData && this.cardData.hierarchyInfo) {
           extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
         }
@@ -950,7 +944,7 @@ export class ContentDetailsPage {
           .then((data) => {
             console.log('setContentMarker', data);
           }).catch(() => {
-          });
+        });
       }
       this.downloadAndPlay = false;
       const request: any = {};
@@ -971,7 +965,7 @@ export class ContentDetailsPage {
               this.canvasPlayerService.xmlToJSon(`${data.metadata.basePath}/index.ecml`).then((json) => {
                 data['data'] = json;
 
-                this.navCtrl.push(PlayerPage, { config: data });
+                this.navCtrl.push(PlayerPage, {config: data});
               }).catch((error) => {
                 console.error('error1', error);
               });
@@ -979,17 +973,17 @@ export class ContentDetailsPage {
               console.error('err', err);
               this.canvasPlayerService.readJSON(`${data.metadata.basePath}/index.json`).then((json) => {
                 data['data'] = json;
-                this.navCtrl.push(PlayerPage, { config: data });
+                this.navCtrl.push(PlayerPage, {config: data});
               }).catch((e) => {
                 console.error('readJSON error', e);
               });
             });
           } else {
-            this.navCtrl.push(PlayerPage, { config: data });
+            this.navCtrl.push(PlayerPage, {config: data});
           }
 
         } else {
-          this.navCtrl.push(PlayerPage, { config: data });
+          this.navCtrl.push(PlayerPage, {config: data});
         }
       });
     }
@@ -1012,8 +1006,8 @@ export class ContentDetailsPage {
         this.apiLevel = res;
         console.log('device api level', this.apiLevel);
       }).catch((error: any) => {
-        console.error('Error ', error);
-      });
+      console.error('Error ', error);
+    });
   }
 
   showOverflowMenu(event) {
@@ -1032,8 +1026,8 @@ export class ContentDetailsPage {
       pageName: PageId.CONTENT_DETAIL,
       corRelationList: this.corRelationList
     }, {
-        cssClass: 'content-action'
-      });
+      cssClass: 'content-action'
+    });
     popover.present({
       ev: event
     });
@@ -1058,8 +1052,8 @@ export class ContentDetailsPage {
       corRelationList: this.corRelationList,
       position: 'bottom'
     }, {
-        cssClass: 'bookmark-menu'
-      });
+      cssClass: 'bookmark-menu'
+    });
     popover.present({
       ev: event
     });
@@ -1090,9 +1084,9 @@ export class ContentDetailsPage {
           this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.content.contentType);
           this.social.share('', '', '' + response.exportedFilePath, url);
         }).catch(() => {
-          loader.dismiss();
-          this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
-        });
+        loader.dismiss();
+        this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
+      });
     } else {
       loader.dismiss();
       this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.content.contentType);
@@ -1161,8 +1155,8 @@ export class ContentDetailsPage {
       body: this.commonUtilService.translateMessage('ANDROID_NOT_SUPPORTED_DESC'),
       buttonText: this.commonUtilService.translateMessage('INSTALL_CROSSWALK')
     }, {
-        cssClass: 'popover-alert'
-      });
+      cssClass: 'popover-alert'
+    });
     popover.present();
   }
 

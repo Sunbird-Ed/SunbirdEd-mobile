@@ -272,7 +272,7 @@ export class CollectionDetailsEtbPage {
       }
 
       this.didViewLoad = true;
-      this.setContentDetails(this.identifier);
+      this.setContentDetails(this.identifier, true);
       this.subscribeSdkEvent();
     });
   }
@@ -382,16 +382,13 @@ export class CollectionDetailsEtbPage {
     }
   }
 
-  /**
-   * To set content details in local variable
-   * @param {string} identifier identifier of content / course
-   */
-  setContentDetails(identifier) {
+  setContentDetails(identifier, refreshContentDetails: boolean) {
     const loader = this.commonUtilService.getLoader();
     loader.present();
     const option: ContentDetailRequest = {
       contentId: identifier,
       attachFeedback: true,
+      emitUpdateIfAny: refreshContentDetails,
       attachContentAccess: true,
     };
     this.contentService.getContentDetails(option).toPromise()
@@ -781,11 +778,11 @@ export class CollectionDetailsEtbPage {
             // this condition is for when the child content update is available and we have downloaded parent content
             // but we have to refresh only the child content.
             this.showLoading = false;
-            this.setContentDetails(this.identifier);
+            this.setContentDetails(this.identifier, false);
           } else {
             if (this.isUpdateAvailable && contentImportedEvent.payload.contentId === this.contentDetail.identifier) {
               this.showLoading = false;
-              this.setContentDetails(this.identifier);
+              this.setContentDetails(this.identifier, false);
             } else {
               if (contentImportedEvent.payload.contentId === this.contentDetail.identifier) {
                 this.showLoading = false;
@@ -809,7 +806,7 @@ export class CollectionDetailsEtbPage {
               this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.contentDetail, false);
               this.importContent([parentIdentifier], false);
             } else {
-              this.setContentDetails(this.identifier);
+              this.setContentDetails(this.identifier, false);
             }
           });
         }

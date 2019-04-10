@@ -163,7 +163,7 @@ export class QrCodeResultPage implements OnDestroy {
       this.isParentContentAvailable = false;
       this.identifier = this.content.identifier;
     }
-    this.setContentDetails(this.identifier);
+    this.setContentDetails(this.identifier, true);
     this.getChildContents();
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.handleBackButton(InteractSubtype.DEVICE_BACK_CLICKED);
@@ -386,10 +386,11 @@ export class QrCodeResultPage implements OnDestroy {
    * To set content details in local variable
    * @param {string} identifier identifier of content / course
    */
-  setContentDetails(identifier) {
+  setContentDetails(identifier, refreshContentDetails: boolean) {
     const option: ContentDetailRequest = {
       contentId: identifier,
       attachFeedback: true,
+      emitUpdateIfAny: refreshContentDetails,
       attachContentAccess: true
     };
     this.contentService.getContentDetails(option).toPromise()
@@ -605,7 +606,7 @@ export class QrCodeResultPage implements OnDestroy {
         }
         // For content update available
         // if (res.data && res.type === 'contentUpdateAvailable' && res.data.identifier === this.identifier) {
-        if (event.payload && event.type === ContentEventType.UPDATE && event.payload.contentId === this.content.identifier) {
+        if (event.payload && event.type === ContentEventType.UPDATE && event.payload.contentId === this.identifier) {
           this.zone.run(() => {
             if (this.parentContent) {
               const parentIdentifier = this.parentContent.contentId || this.parentContent.identifier;
