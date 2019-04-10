@@ -105,6 +105,7 @@ export class SignInCardComponent {
       this.authService.setSession(new OAuthSessionProvider(this.sdkConfig.apiConfig, this.apiService))
         .toPromise()
         .then(() => {
+          loader.present();
           initTabs(that.container, LOGIN_TEACHER_TABS);
           return that.refreshProfileData();
         })

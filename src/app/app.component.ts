@@ -295,7 +295,7 @@ export class MyApp implements OnInit, AfterViewInit {
             return;
           }
 
-          switch (profileType) {
+          switch (profileType.toLocaleLowerCase()) {
             case ProfileType.TEACHER: {
               await this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise();
               initTabs(this.containerService, GUEST_TEACHER_TABS);
