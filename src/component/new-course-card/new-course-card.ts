@@ -1,5 +1,5 @@
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
-import { NavController } from 'ionic-angular/navigation/nav-controller';
+import { NavController } from 'ionic-angular';
 import { CommonUtilService, TelemetryGeneratorService } from '@app/service';
 import { Component, Input, OnInit } from '@angular/core';
 import { MimeType, ContentType } from '../../app/app.constant';

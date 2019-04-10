@@ -1,7 +1,6 @@
 import {TelemetryGeneratorService} from './../../service/telemetry-generator.service';
 import {TranslateService} from '@ngx-translate/core';
-import {NavParams} from 'ionic-angular/navigation/nav-params';
-import {AlertController, Events, PopoverController} from 'ionic-angular/index';
+import {AlertController, Events, PopoverController,NavParams} from 'ionic-angular';
 import {Platform, ToastController, ViewController} from 'ionic-angular';
 import {Component, Inject} from '@angular/core';
 import {

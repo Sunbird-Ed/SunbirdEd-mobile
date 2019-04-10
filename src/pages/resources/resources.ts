@@ -51,7 +51,6 @@ import {ProfileConstants} from '../../app';
 import { AppHeaderService } from '@app/service';
 import { GuestProfilePage } from '../profile';
 import { ProfilePage } from '../profile/profile';
-import { Page } from 'ionic-angular/umd/navigation/nav-util';
 
 @Component({
   selector: 'page-resources',
@@ -810,7 +809,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.navCtrl.push(SearchPage, {contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY});
   }
   onProfileClick() {
-    const currentProfile: Page = (this.appGlobalService.isGuestUser) ? GuestProfilePage : ProfilePage;
+    const currentProfile = (this.appGlobalService.isGuestUser) ? GuestProfilePage : ProfilePage;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       'profile-button-clicked',
       Environment.HOME,
