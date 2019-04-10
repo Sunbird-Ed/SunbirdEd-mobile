@@ -71,6 +71,7 @@ import {
   PageId
 } from '../../service/telemetry-constants';
 import {ProfileConstants} from '../../app';
+import {BatchConstants} from "@app/app";
 
 declare const cordova;
 
@@ -1013,7 +1014,8 @@ export class EnrolledCourseDetailsPage {
         courseId: this.identifier,
         status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS],
         enrollmentType: CourseEnrollmentType.OPEN
-      }
+      },
+      fields:BatchConstants.REQUIRED_FIELDS
     };
     const reqvalues = new Map();
     reqvalues['enrollReq'] = courseBatchesRequest;
@@ -1028,6 +1030,7 @@ export class EnrolledCourseDetailsPage {
         loader.present();
         this.courseService.getCourseBatches(courseBatchesRequest).toPromise()
           .then((data: Batch[]) => {
+            console.log('response data - ', data);
             this.zone.run(() => {
               this.batches = data;
               if (this.batches.length) {
