@@ -982,9 +982,10 @@ export class ContentDetailsPage {
       return false;
     } else {
       const values = new Map();
+      const subtype: string = isStreaming ? InteractSubtype.PLAY_ONLINE : InteractSubtype.PLAY_FROM_DEVICE;
       values['network-type'] = this.network.type;
       this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-        InteractSubtype.PLAY_ONLINE,
+        subtype,
         Environment.HOME,
         PageId.CONTENT_DETAIL,
         undefined,

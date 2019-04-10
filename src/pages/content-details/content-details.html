@@ -2,9 +2,24 @@
 <ion-content *ngIf="new && content && appGlobalService?.CONTENT_STREAMING_ENABLED">
 	<div class="sb-play-container sb-player-container" *ngIf="commonUtilService.networkInfo.isNetworkAvailable">
 		<div *ngIf="streamingUrl">
-			<div>
+			<div *ngIf="contentDownloadable[content?.identifier]">
 				<img class="sb-player-container" src='{{content?.contentData.appIcon}}'>
 				<div class="sb-overlay-container" (click)="showSwitchUserAlert(false)">
+					<div class="sb-back-transparent" (click)="handleNavBackButton();$event.stopPropagation()">
+						<div class="sb-circle">
+							<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
+						</div>
+					</div>
+					<div class="sb-common-player-group sb-play-title-group">
+						<button ion-button clear icon-only class="sb-common-title">
+							<ion-icon ios="ios-play" md="md-play" class="sb-common-white-icon"></ion-icon>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div *ngIf="!contentDownloadable[content?.identifier]">
+				<img class="sb-player-container" src='{{content?.contentData.appIcon}}'>
+				<div class="sb-overlay-container" (click)="showSwitchUserAlert(true)">
 					<div class="sb-back-transparent" (click)="handleNavBackButton();$event.stopPropagation()">
 						<div class="sb-circle">
 							<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
