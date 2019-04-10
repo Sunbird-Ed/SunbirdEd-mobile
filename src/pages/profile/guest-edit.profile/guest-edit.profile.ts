@@ -123,7 +123,7 @@ export class GuestEditProfilePage {
       this.isEditData = false;
       this.guestEditForm = this.fb.group({
         name: [''],
-        profileType: [this.profile.profileType || 'student'],
+        profileType: [this.profile.profileType || ProfileType.STUDENT],
         syllabus: [this.profile.syllabus && this.profile.syllabus[0] || []],
         boards: [this.profile.board || []],
         medium: [this.profile.medium || []],
@@ -135,7 +135,7 @@ export class GuestEditProfilePage {
       this.profile = (JSON.parse(JSON.stringify(this.navParams.get('profile')))) || {};
       this.guestEditForm = this.fb.group({
         name: [this.profile.handle || ''],
-        profileType: [this.profile.profileType || 'student'],
+        profileType: [this.profile.profileType || ProfileType.STUDENT],
         syllabus: [this.profile.syllabus && this.profile.syllabus[0] || []],
         boards: [this.profile.board || []],
         medium: [this.profile.medium || []],
@@ -197,7 +197,7 @@ export class GuestEditProfilePage {
               grades: [[]],
               subjects: [[]]
             });
-            this.guestEditForm.controls['profileType'].setValue('student');
+            this.guestEditForm.controls['profileType'].setValue(ProfileType.STUDENT);
 
           }
         },
