@@ -605,7 +605,7 @@ export class QrCodeResultPage implements OnDestroy {
         }
         // For content update available
         // if (res.data && res.type === 'contentUpdateAvailable' && res.data.identifier === this.identifier) {
-        if (event.payload && event.type === ContentEventType.UPDATE && event.payload.contentId === this.content.identifier) {
+        if (event.payload && event.type === ContentEventType.UPDATE && event.payload.contentId === this.identifier) {
           this.zone.run(() => {
             if (this.parentContent) {
               const parentIdentifier = this.parentContent.contentId || this.parentContent.identifier;
