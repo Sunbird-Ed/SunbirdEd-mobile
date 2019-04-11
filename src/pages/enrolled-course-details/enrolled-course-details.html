@@ -61,7 +61,7 @@
 				</div>
 				<div *ngIf="course?.subject" margin-top>
 					<div class="content-meta-title" text-uppercase>{{ 'SUBJECT' | translate }}</div>
-					<span class="text-gray-color">{{course?.subject}}</span>
+					<span class="text-gray-color">{{course?.subject | csa }}</span>
 				</div>
 
 				<div *ngIf="course?.board" margin-top>
@@ -71,7 +71,7 @@
 
 				<div *ngIf="course?.medium" margin-top>
 					<div class="content-meta-title" text-uppercase>{{ 'MEDIUM' | translate }}</div>
-					<span class="text-gray-color">{{course?.medium}}</span>
+					<span class="text-gray-color">{{course?.medium | csa }}</span>
 				</div>
 				<!-- Batch details - only for enrolled courses -->
 				<div *ngIf="batchDetails?.name" margin-top>
