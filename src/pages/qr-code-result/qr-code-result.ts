@@ -404,16 +404,16 @@ export class QrCodeResultPage implements OnDestroy {
       this.profile.grade = [];
       this.profile.gradeValue = {};
     }
-      _.each(grades, (grade) => {
-        if (grade && this.profile.grade.indexOf(grade) === -1) {
-          if (this.profile.grade && this.profile.grade.length) {
-            this.profile.grade.push(grade);
-          } else {
-            this.profile.grade = [grade];
-          }
+    _.each(grades, (grade) => {
+      if (grade && this.profile.grade.indexOf(grade) === -1) {
+        if (this.profile.grade && this.profile.grade.length) {
+          this.profile.grade.push(grade);
+        } else {
+          this.profile.grade = [grade];
         }
-      });
-    }
+      }
+    });
+  }
 
   setMedium(reset, mediums) {
     if (reset) {
@@ -520,7 +520,6 @@ export class QrCodeResultPage implements OnDestroy {
                   //                  this.subjectList = _.find(this.categories, (category) => category.code === 'subject').terms;
                   if (data.board) {
                     data.board = this.findCode(this.boardList, data, 'board');
-                    // data.board = 'statetamilnadu';
                   }
                   if (data.medium) {
                     if (typeof data.medium === 'string') {
