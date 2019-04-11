@@ -15,6 +15,7 @@ import {CategoriesEditPage} from '@app/pages/categories-edit/categories-edit';
 import {PersonalDetailsEditPage} from '@app/pages/profile/personal-details-edit.profile/personal-details-edit.profile';
 import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details/enrolled-course-details';
 import {CollectionDetailsPage} from '@app/pages/collection-details/collection-details';
+import {CollectionDetailsEtbPage} from '@app/pages/collection-details-etb/collection-details-etb';
 import {ContentDetailsPage} from '@app/pages/content-details/content-details';
 import {AppGlobalService, CommonUtilService, TelemetryGeneratorService, AppHeaderService} from '@app/service';
 import {FormAndFrameworkUtilService} from './formandframeworkutil.service';
@@ -485,7 +486,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
         content: content
       });
     } else if (content.mimeType === MimeType.COLLECTION) {
-      this.navCtrl.push(CollectionDetailsPage, {
+      // this.navCtrl.push(CollectionDetailsPage, {
+        this.navCtrl.push(CollectionDetailsEtbPage, {
         content: content
       });
     } else {

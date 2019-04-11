@@ -11,16 +11,16 @@
           <ion-icon ios="{{icon?.ios}}" md="{{icon?.md}}"></ion-icon>
         </div>
 
-        <div class="sb-popover-content-details">
+        <div class="sb-popover-content-details" *ngIf="sbPopoverMainTitle || metaInfo || sbPopoverContent">
           <div class="main-title">
             {{sbPopoverMainTitle}}
-            <div class="meta-info">
+           <div class="meta-info">
               {{metaInfo}}
             </div>
           </div>
-          <div class="sb-popover-content">
-            {{sbPopoverContent}}
-          </div>
+            <div class="sb-popover-content" *ngIf="sbPopoverContent">
+              {{sbPopoverContent}}
+            </div>
         </div>
     </div>
 </ion-content>

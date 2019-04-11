@@ -14,8 +14,9 @@
         font-family: "Noto Sans";	
         line-height: 22px;
         overflow: auto;
+        font-weight: bold;
         @include margin(0,0,($base-block-space * 1),0);
-        @include padding(0,($base-block-space * 1),0,($base-block-space * 1));
+        @include padding(0,($base-block-space * 1),0,($base-block-space * 3));
         button{   
         }
       }

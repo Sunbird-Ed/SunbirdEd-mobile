@@ -8,6 +8,7 @@ import {
   Profile,
   ProfileService,
   ProfilesToGroupRequest,
+  ProfileType,
   TelemetryObject,
 } from 'sunbird-sdk';
 import {GuestEditProfilePage} from '../../profile/guest-edit.profile/guest-edit.profile';
@@ -23,7 +24,7 @@ import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popu
   templateUrl: 'add-or-remove-group-user.html',
 })
 export class AddOrRemoveGroupUserPage {
-
+  ProfileType = ProfileType;
   addUsers = true;
   userSelectionMap: Map<string, boolean> = new Map();
   memberSelectionMap: Map<string, boolean> = new Map();
