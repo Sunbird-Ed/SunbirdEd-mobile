@@ -415,6 +415,22 @@ export class QrCodeResultPage implements OnDestroy {
     });
   }
 
+  setMedium(reset, mediums) {
+    if (reset) {
+      this.profile.medium = [];
+    } else {
+      _.each(mediums, (medium) => {
+        if (medium && this.profile.medium.indexOf(medium) === -1) {
+          if (this.profile.medium && this.profile.medium.length) {
+            this.profile.medium.push(medium);
+          } else {
+            this.profile.medium = [medium];
+          }
+        }
+      });
+    }
+  }
+
   /**
    * @param categoryList
    * @param data
@@ -445,20 +461,20 @@ export class QrCodeResultPage implements OnDestroy {
       case 0:
         this.profile.syllabus = [data.framework];
         this.profile.board = [data.board];
-        this.profile.medium = [data.medium];
+        this.setMedium(true, data.medium);
         // this.profile.subject = [data.subject];
         this.profile.subject = [];
         this.setGrade(true, data.gradeLevel);
         break;
       case 1:
         this.profile.board = [data.board];
-        this.profile.medium = [data.medium];
+        this.setMedium(true, data.medium);
         // this.profile.subject = [data.subject];
         this.profile.subject = [];
         this.setGrade(true, data.gradeLevel);
         break;
       case 2:
-        this.profile.medium.push(data.medium);
+        this.setMedium(false, data.medium);
         break;
       case 3:
         this.setGrade(false, data.gradeLevel);
@@ -477,8 +493,7 @@ export class QrCodeResultPage implements OnDestroy {
    * @param {object} profile
    */
   checkProfileData(data, profile) {
-    console.log('dial data', data);
-    console.log('local profile', profile);
+
     if (data && data.framework) {
 
       const getSuggestedFrameworksRequest: GetSuggestedFrameworksRequest = {
@@ -498,7 +513,6 @@ export class QrCodeResultPage implements OnDestroy {
               };
               this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
                 .then((framework: Framework) => {
-                  console.log('framework', framework);
                   this.categories = framework.categories;
                   this.boardList = _.find(this.categories, (category) => category.code === 'board').terms;
                   this.mediumList = _.find(this.categories, (category) => category.code === 'medium').terms;
@@ -508,7 +522,13 @@ export class QrCodeResultPage implements OnDestroy {
                     data.board = this.findCode(this.boardList, data, 'board');
                   }
                   if (data.medium) {
-                    data.medium = this.findCode(this.mediumList, data, 'medium');
+                    if (typeof data.medium === 'string') {
+                      data.medium = [this.findCode(this.mediumList, data, 'medium')];
+                    } else {
+                      data.medium = _.map(data.medium, (dataMedium) => {
+                        return _.find(this.mediumList, (medium) => medium.name === dataMedium).code;
+                      });
+                    }
                   }
                   /*                   if (data.subject) {
                                       data.subject = this.findCode(this.subjectList, data, 'subject');
@@ -523,9 +543,15 @@ export class QrCodeResultPage implements OnDestroy {
                       if (profile.board && !(profile.board.length > 1) && data.board === profile.board[0]) {
                         if (data.medium) {
                           let existingMedium = false;
-                          existingMedium = _.find(profile.medium, (medium) => {
-                            return medium === data.medium;
-                          });
+                            for (let i = 0; i < data.medium.length; i++) {
+                              const mediumExists = _.find(profile.medium, (medium) => {
+                                return medium === data.medium[i];
+                              });
+                              if (!mediumExists) {
+                                break;
+                              }
+                              existingMedium = true;
+                            }
                           if (!existingMedium) {
                             this.setCurrentProfile(2, data);
                           }
@@ -560,7 +586,10 @@ export class QrCodeResultPage implements OnDestroy {
                   } else {
                     this.setCurrentProfile(0, data);
                   }
-                }).catch(() => {
+                }).catch((err) => {
+                  if (err instanceof NetworkError) {
+                    this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
+                  }
                 });
 
               return;

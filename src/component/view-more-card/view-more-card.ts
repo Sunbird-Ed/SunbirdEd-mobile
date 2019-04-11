@@ -1,3 +1,4 @@
+import { BatchConstants } from '@app/app/app.constant';
 import { CollectionDetailsEtbPage } from './../../pages/collection-details-etb/collection-details-etb';
 import { ContentDetailsPage } from './../../pages/content-details/content-details';
 import { EnrolledCourseDetailsPage } from './../../pages/enrolled-course-details/enrolled-course-details';
@@ -109,7 +110,8 @@ export class ViewMoreCardComponent implements OnInit {
         courseId: layoutName === ContentCard.LAYOUT_INPROGRESS ? content.contentId : content.identifier,
         enrollmentType: CourseEnrollmentType.OPEN,
         status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
-      }
+      },
+      fields: BatchConstants.REQUIRED_FIELDS
     };
     const reqvalues = new Map();
     reqvalues['enrollReq'] = courseBatchesRequest;

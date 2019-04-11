@@ -12,7 +12,7 @@
       <div class="sb-dt-class-info" *ngIf="contentDetail?.contentData?.gradeLevel || contentDetail?.contentData?.subject">
         <span class="sb-dt-label sb-dt-class">{{contentDetail?.contentData?.gradeLevel}}</span>
         <span class="sb-separator-dot"></span>
-        <span class="sb-dt-label sb-dt-subject">{{contentDetail?.contentData?.subject}}</span>
+        <span class="sb-dt-label sb-dt-subject">{{contentDetail?.contentData?.subject | csa}}</span>
       </div>
     </div>
 
