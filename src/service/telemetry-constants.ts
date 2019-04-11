@@ -225,6 +225,7 @@ export enum InteractSubtype {
     READ_MORE_CLICKED = 'read-more-clicked',
     READ_LESS_CLICKED = 'read-less-clicked',
     DOWNLOAD_PLAY_CLICKED = 'download-play-clicked',
+    DOWNLOAD_REPORT_CLICKED = 'download-report-clicked',
     PLAY_CLICKED = 'play-clicked',
     EXTRA_INFO = 'extra-info',
     PROFILE_ATTRIBUTE_POPULATION = 'profile-attribute-population',

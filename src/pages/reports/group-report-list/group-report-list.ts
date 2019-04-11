@@ -332,6 +332,12 @@ export class GroupReportListPage {
         return csv;
     }
     importcsv() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        InteractSubtype.DOWNLOAD_REPORT_CLICKED,
+        Environment.USER,
+        PageId.REPORTS_GROUP_ASSESMENT_DETAILS, undefined,
+        );
         this.exptime = new Date().getTime();
         const csv: any = this.convertToCSV();
         const combinefilename = this.deviceId + '_' + this.groupinfo.gid + '_' + this.reportSummary.contentId + '_' + this.exptime + '.csv';
