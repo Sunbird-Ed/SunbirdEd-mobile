@@ -1,6 +1,14 @@
 import {Component, Inject, NgZone} from '@angular/core';
 import {IonicPage, LoadingController, NavController, NavParams} from 'ionic-angular';
-import {GetAllProfileRequest, Group, GroupService, Profile, ProfileService, ProfilesToGroupRequest} from 'sunbird-sdk';
+import {
+  GetAllProfileRequest,
+  Group,
+  GroupService,
+  Profile,
+  ProfileService,
+  ProfilesToGroupRequest,
+  ProfileType
+} from 'sunbird-sdk';
 import {GuestEditProfilePage} from '../../profile/guest-edit.profile/guest-edit.profile';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
 import {CommonUtilService} from '../../../service/common-util.service';
@@ -20,7 +28,7 @@ import { AppHeaderService } from '@app/service';
   templateUrl: 'group-members.html',
 })
 export class GroupMembersPage {
-
+  ProfileType = ProfileType;
   group: Group;
   userList: Array<Profile> = [];
   userSelectionMap: Map<string, boolean> = new Map();

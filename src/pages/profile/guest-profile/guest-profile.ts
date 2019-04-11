@@ -17,7 +17,7 @@ import {
   ProfileType,
   SharedPreferences
 } from 'sunbird-sdk';
-import {Environment, ImpressionType, PageId} from '../../../service/telemetry-constants';
+import {PageId} from '../../../service/telemetry-constants';
 import {ProfileConstants} from '../../../app';
 
 @Component({
@@ -28,7 +28,7 @@ import {ProfileConstants} from '../../../app';
 export class GuestProfilePage implements OnInit, AfterViewInit {
 
   imageUri = 'assets/imgs/ic_profile_default.png';
-
+  ProfileType = ProfileType;
   showSignInCard = false;
   isNetworkAvailable: boolean;
   showWarning = false;
