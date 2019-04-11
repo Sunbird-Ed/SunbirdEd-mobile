@@ -1,3 +1,4 @@
+import { BatchConstants } from './../../app/app.constant';
 import {Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
 import {Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, Loading} from 'ionic-angular';
 import {
@@ -520,9 +521,10 @@ export class SearchPage implements  OnDestroy {
     const courseBatchesRequest: CourseBatchesRequest = {
       filters: {
         courseId: layoutName === ContentCard.LAYOUT_INPROGRESS ? content.contentId : content.identifier,
-      enrollmentType: CourseEnrollmentType.OPEN,
-      status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
-      }
+        enrollmentType: CourseEnrollmentType.OPEN,
+        status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
+      },
+      fields: BatchConstants.REQUIRED_FIELDS
     };
     const reqvalues = new Map();
     reqvalues['enrollReq'] = courseBatchesRequest;
