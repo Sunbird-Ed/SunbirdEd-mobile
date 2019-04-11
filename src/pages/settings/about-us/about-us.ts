@@ -29,6 +29,11 @@ export class AboutUsPage {
   deviceId: string;
   version: string;
   fileUrl: string;
+  headerConfig = {
+    showHeader: false,
+    showBurgerMenu: false,
+    actionButtons: []
+  };
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
@@ -45,6 +50,14 @@ export class AboutUsPage {
     private appGlobalService: AppGlobalService,
     private headerService: AppHeaderService
   ) {
+  }
+
+  ionViewWillEnter() {
+    this.headerConfig = this.headerService.getDefaultPageConfig();
+    this.headerConfig.actionButtons = [];
+    this.headerConfig.showHeader = false;
+    this.headerConfig.showBurgerMenu = false;
+    this.headerService.updatePageConfig(this.headerConfig);
   }
 
   ionViewDidLoad() {

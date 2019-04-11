@@ -52,7 +52,8 @@ import {
   ProfileType,
   Rollup,
   SharedPreferences,
-  TelemetryObject
+  TelemetryObject,
+  ContentDeleteStatus
 } from 'sunbird-sdk';
 import {CanvasPlayerService} from '../player/canvas-player.service';
 import {PlayerPage} from '../player/player';
@@ -1312,8 +1313,7 @@ getMessageByConstant(constant: string) {
       this.corRelationList);
     const tmp = this.getDeleteRequestBody();
     this.contentService.deleteContent(tmp).toPromise().then((res: any) => {
-      const data = JSON.parse(res);
-      if (data.result && data.result.status === 'NOT_FOUND') {
+      if (res && res.status === ContentDeleteStatus.NOT_FOUND) {
         this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
       } else {
         // Publish saved resources update event

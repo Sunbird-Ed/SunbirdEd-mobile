@@ -36,7 +36,8 @@ import {
   ProfileType,
   Rollup,
   TelemetryErrorCode,
-  TelemetryObject
+  TelemetryObject,
+  ContentDeleteStatus
 } from 'sunbird-sdk';
 import { Subscription } from 'rxjs';
 import {
@@ -261,11 +262,11 @@ export class CollectionDetailsEtbPage implements OnInit {
   }
 
   ionViewDidLoad() {
-    this.navBar.backButtonClick = () => {
-      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
-        true, this.cardData.identifier, this.corRelationList);
-      this.handleBackButton();
-    };
+    // this.navBar.backButtonClick = () => {
+    //   this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
+    //     true, this.cardData.identifier, this.corRelationList);
+    //   this.handleBackButton();
+    // };
     this.registerDeviceBackButton();
   }
 
@@ -1220,15 +1221,13 @@ export class CollectionDetailsEtbPage implements OnInit {
       this.corRelationList);
     const tmp = this.getDeleteRequestBody();
     this.contentService.deleteContent(tmp).toPromise().then((res: any) => {
-      const data = JSON.parse(res);
-      if (data.result && data.result.status === 'NOT_FOUND') {
+      if (res && res.status === ContentDeleteStatus.NOT_FOUND) {
         this.commonUtilService.showToast('CONTENT_DELETE_FAILED');
       } else {
         // Publish saved resources update event
         this.events.publish('savedResources:update', {
           update: true
         });
-        console.log('delete response: ', data);
         this.commonUtilService.showToast('MSG_RESOURCE_DELETED');
         this.viewCtrl.dismiss('delete.success');
       }
