@@ -219,7 +219,6 @@ export class EnrolledCourseDetailsPage {
         this.baseUrl = response;
       })
       .catch((error) => {
-        console.error('Error occurred', error);
       });
 
     this.events.subscribe(EventTopics.ENROL_COURSE_SUCCESS, (res) => {
@@ -302,7 +301,6 @@ export class EnrolledCourseDetailsPage {
           this.profileType = userType;
         })
         .catch((error) => {
-          console.log('Error Occurred', error);
           this.profileType = '';
         });
     }
@@ -418,7 +416,6 @@ export class EnrolledCourseDetailsPage {
         });
       })
       .catch((error: any) => {
-        console.error(error);
         if (JSON.parse(error).error === 'CONNECTION_ERROR') {
           this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
         } else {
@@ -543,14 +540,12 @@ export class EnrolledCourseDetailsPage {
                 }
               })
               .catch((error) => {
-                console.error('ERROR - ' + error);
               });
             this.getBatchCreatorName();
           }
         });
       })
       .catch((error: any) => {
-        console.error('error while loading content details', error);
         if (this.courseCardData.batch) {
           this.saveContentContext(this.appGlobalService.getUserId(),
             this.courseCardData.courseId, this.courseCardData.batchId, this.courseCardData.batch.status);
@@ -734,17 +729,14 @@ export class EnrolledCourseDetailsPage {
                   // checking for contentId from getContentState and lastReadContentId
                   if (contentData.contentId === lastReadContent) {
                     childContent.lastRead = true;
-                    console.log(childContent.lastRead);
                   }
                   if (contentData.status === 0 || contentData.status === 1) {
                     // manipulating the status
                     childContent.status = false;
-                    console.log('childContentStatus in if part --', childContent.status);
                     return false;
                   } else {
                     // if content played completely
                     childContent.status = true;
-                    console.log('childContentStatus in else part --', childContent.status);
                     return true;
                   }
                 }
@@ -753,18 +745,15 @@ export class EnrolledCourseDetailsPage {
               return true;
             } else {
               childContent.status = false;
-              console.log('if contentStatusData.contentList is not available', childContent.status);
               return false;
             }
           }
         });
 
         if (childContent.children.length === contentLength) {
-          console.log('whether childrenData Length is equal in if part');
           return true;
         } else {
           childContent.status = false;
-          console.log('whether children data is not equal in else part');
           return true;
         }
       });
@@ -907,7 +896,6 @@ export class EnrolledCourseDetailsPage {
     }
     this.showResumeBtn = !!this.courseCardData.lastReadContentId;
     this.setContentDetails(this.identifier);
-    console.log('lastContentRead shown in ionViewWillEnter - ', this.courseCardData.lastReadContentId);
     // If courseCardData does not have a batch id then it is not a enrolled course
     this.subscribeSdkEvent();
   }
@@ -915,7 +903,6 @@ export class EnrolledCourseDetailsPage {
   isCourseEnrolled(identifier: string) {
     // get all the enrolled courses
     const enrolledCourses = this.appGlobalService.getEnrolledCourseList();
-    console.log('enrolled course is', enrolledCourses);
     if (enrolledCourses && enrolledCourses.length > 0) {
       for (const course of enrolledCourses) {
         if (course.courseId === identifier) {
@@ -959,7 +946,6 @@ export class EnrolledCourseDetailsPage {
             if (this.queuedIdentifiers.length && this.isDownloadStarted) {
               if (_.includes(this.queuedIdentifiers, contentImportCompleted.payload.contentId)) {
                 this.currentCount++;
-                console.log('count-', this.currentCount);
               }
 
               if (this.queuedIdentifiers.length === this.currentCount) {
@@ -1009,7 +995,6 @@ export class EnrolledCourseDetailsPage {
     const ongoingBatches = [];
     const upcommingBatches = [];
     const loader = this.commonUtilService.getLoader();
-    console.time('API_START');
     const courseBatchesRequest: CourseBatchesRequest = {
       filters: {
         courseId: this.identifier,
@@ -1031,7 +1016,6 @@ export class EnrolledCourseDetailsPage {
         loader.present();
         this.courseService.getCourseBatches(courseBatchesRequest).toPromise()
           .then((data: Batch[]) => {
-            console.log('response data - ', data);
             this.zone.run(() => {
               this.batches = data;
               if (this.batches.length) {
@@ -1047,7 +1031,6 @@ export class EnrolledCourseDetailsPage {
                   ongoingBatches: ongoingBatches,
                   upcommingBatches: upcommingBatches
                 });
-                console.timeEnd('API_START');
               } else {
                 loader.dismiss();
                 this.commonUtilService.showToast('NO_BATCHES_AVAILABLE');
@@ -1055,7 +1038,6 @@ export class EnrolledCourseDetailsPage {
             });
           })
           .catch((error: any) => {
-            console.log('error while fetching course batches ==>', error);
           });
       } else {
         this.navCtrl.push(CourseBatchesPage);
