@@ -1,31 +1,18 @@
+import {Component, Inject, NgZone} from '@angular/core';
+import {LoadingController, NavController, NavParams} from 'ionic-angular';
+import {ReportListPage} from './report-list/report-list';
 import {
-  Component,
-  NgZone,
-  Inject
-} from '@angular/core';
-import {
-  NavController,
-  LoadingController,
-  NavParams
-} from 'ionic-angular';
-import { ReportListPage } from './report-list/report-list';
-import {
-  GroupService,
-  TelemetryObject,
-  ObjectType,
-  ProfileService,
   GetAllProfileRequest,
+  Group,
+  GroupService,
+  ObjectType,
   Profile,
-  Group
+  ProfileService,
+  ProfileType,
+  TelemetryObject
 } from 'sunbird-sdk';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import {
-  InteractSubtype,
-  InteractType,
-  PageId,
-  Environment,
-  ImpressionType
-} from '../../service/telemetry-constants';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
 import {ProfileConstants} from '../../app';
 import { AppHeaderService } from '@app/service';
 
@@ -35,6 +22,7 @@ import { AppHeaderService } from '@app/service';
   templateUrl: 'reports.html'
 })
 export class ReportsPage {
+  ProfileType = ProfileType;
   report = 'users';
   otherUsers;
   currentUser: {};
