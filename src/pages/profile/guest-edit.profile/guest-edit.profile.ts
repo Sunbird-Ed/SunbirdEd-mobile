@@ -13,18 +13,18 @@ import {Component, Inject} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import * as _ from 'lodash';
 import {
-  FrameworkService,
-  FrameworkUtilService,
-  GetSuggestedFrameworksRequest,
-  GetFrameworkCategoryTermsRequest,
-  FrameworkDetailsRequest,
+  CategoryTerm,
   Framework,
   FrameworkCategoryCodesGroup,
+  FrameworkDetailsRequest,
+  FrameworkService,
+  FrameworkUtilService,
+  GetFrameworkCategoryTermsRequest,
+  GetSuggestedFrameworksRequest,
   Profile,
   ProfileService,
-  ProfileType,
   ProfileSource,
-  CategoryTerm,
+  ProfileType,
   SharedPreferences
 } from 'sunbird-sdk';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
@@ -40,13 +40,15 @@ import {
   ObjectType,
   PageId,
 } from '../../../service/telemetry-constants';
-import { ContainerService } from '../../../service/container.services';
-import { TabsPage } from '@app/pages/tabs/tabs';
+import {ContainerService} from '../../../service/container.services';
+import {TabsPage} from '@app/pages/tabs/tabs';
+
 @Component({
   selector: 'page-guest-edit.profile',
   templateUrl: 'guest-edit.profile.html'
 })
 export class GuestEditProfilePage {
+  ProfileType = ProfileType;
   guestEditForm: FormGroup;
   profile: any = {};
   categories: Array<any> = [];
@@ -121,7 +123,7 @@ export class GuestEditProfilePage {
       this.isEditData = false;
       this.guestEditForm = this.fb.group({
         name: [''],
-        profileType: [this.profile.profileType || 'STUDENT'],
+        profileType: [this.profile.profileType || ProfileType.STUDENT],
         syllabus: [this.profile.syllabus && this.profile.syllabus[0] || []],
         boards: [this.profile.board || []],
         medium: [this.profile.medium || []],
@@ -133,7 +135,7 @@ export class GuestEditProfilePage {
       this.profile = (JSON.parse(JSON.stringify(this.navParams.get('profile')))) || {};
       this.guestEditForm = this.fb.group({
         name: [this.profile.handle || ''],
-        profileType: [this.profile.profileType || 'STUDENT'],
+        profileType: [this.profile.profileType || ProfileType.STUDENT],
         syllabus: [this.profile.syllabus && this.profile.syllabus[0] || []],
         boards: [this.profile.board || []],
         medium: [this.profile.medium || []],
@@ -195,7 +197,7 @@ export class GuestEditProfilePage {
               grades: [[]],
               subjects: [[]]
             });
-            this.guestEditForm.controls['profileType'].setValue('STUDENT');
+            this.guestEditForm.controls['profileType'].setValue(ProfileType.STUDENT);
 
           }
         },
