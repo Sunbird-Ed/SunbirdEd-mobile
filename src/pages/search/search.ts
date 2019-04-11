@@ -1,5 +1,5 @@
 import {Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
-import {Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController} from 'ionic-angular';
+import {Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, Loading} from 'ionic-angular';
 import {
   CachedItemRequestSourceFrom,
   Content,
@@ -129,7 +129,7 @@ export class SearchPage implements  OnDestroy {
   enrolledCourses: any;
   guestUser: any;
   batches: any;
-  loader: any;
+  loader?: Loading;
   constructor(
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private navParams: NavParams,
@@ -289,7 +289,9 @@ export class SearchPage implements  OnDestroy {
         onboarding: this.appGlobalService.isOnBoardingCompleted
       };
     }
-    this.loader.dismiss();
+    if (this.loader) {
+      this.loader.dismiss();
+    }
     if (this.isDialCodeSearch && !this.appGlobalService.isOnBoardingCompleted && (this.parentContent || content)) {
       this.appGlobalService.setOnBoardingCompleted();
     }
@@ -491,6 +493,7 @@ export class SearchPage implements  OnDestroy {
   checkRetiredOpenBatch(content: any, layoutName?: string): void {
     this.loader = this.commonUtilService.getLoader();
     this.loader.present();
+    this.loader.onDidDismiss(() => {this.loader = undefined; });
     let retiredBatches: Array<any> = [];
     let anyOpenBatch: Boolean = false;
     this.enrolledCourses = this.enrolledCourses || [];

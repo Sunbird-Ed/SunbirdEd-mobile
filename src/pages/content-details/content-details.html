@@ -196,7 +196,7 @@
 				</div>
 				<div class="sb-info" *ngIf="content?.contentData?.medium">
 					<div class="sb-content-title">{{'MEDIUM' | translate}}</div>
-					<div class="sb-content-title-data">{{content?.contentData?.medium}}</div>
+					<div class="sb-content-title-data">{{content?.contentData?.medium | csa}}</div>
 				</div>
 				<div class="sb-info" *ngIf="content?.contentData?.gradeLevel && content?.contentData?.gradeLevel?.length">
 					<div class="sb-content-title">{{'CLASS' | translate}}</div>
@@ -204,7 +204,7 @@
 				</div>
 				<div class="sb-info" *ngIf="content?.contentData?.subject">
 					<div class="sb-content-title">{{'SUBJECT' | translate}}</div>
-					<div class="sb-content-title-data">{{content?.contentData?.subject}}</div>
+					<div class="sb-content-title-data">{{content?.contentData?.subject | csa}}</div>
 				</div>
 				<div class="sb-info" *ngIf="content?.contentData?.license">
 					<div class="sb-content-title">{{'LICENSE' | translate}}</div>
