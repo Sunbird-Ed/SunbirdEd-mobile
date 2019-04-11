@@ -160,6 +160,7 @@ export class UserReportPage {
           that.assessmentData = data;
           that.assessmentData['showPopup'] = true;
           that.assessmentData['popupCallback'] = ReportAlert;
+          that.assessmentData['totalQuestionsScore'] = that.reportSummaryRequest.totalQuestionsScore;
           this.totalScore = data.totalScore;
           this.maxTotalScore = data.maxTotalScore;
           this.totalTime = data.totalTime;

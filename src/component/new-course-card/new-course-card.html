@@ -7,7 +7,7 @@
     </div>
     <div class="sb-card-details">
       <div class="title">{{course?.contentData?.name}}</div>
-      <div class="grade_ellipsis"><span class="info class">{{course?.contentData?.subject}}</span><span  *ngIf="course?.contentData?.gradeLevel && course?.contentData?.subject" class="separator-dot"></span><span class="info subject">{{course?.contentData?.gradeLevel}}</span></div>
+      <div class="grade_ellipsis"><span class="info class">{{course?.contentData?.subject | csa}}</span><span  *ngIf="course?.contentData?.gradeLevel && course?.contentData?.subject" class="separator-dot"></span><span class="info subject">{{course?.contentData?.gradeLevel}}</span></div>
     </div>
 </div>
   <!-- <div class="sb-card offline full">

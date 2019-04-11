@@ -694,8 +694,10 @@ export class ProfilePage implements OnInit, AfterViewInit {
   toggleTooltips(event, field) {
     if (field === 'name') {
       this.informationProfileName = this.informationProfileName ? false : true;
+      this.informationOrgName = false;
     } else if (field === 'org') {
       this.informationOrgName = this.informationOrgName ? false : true;
+      this.informationProfileName = false;
     } else {
       this.informationProfileName = false;
       this.informationOrgName = false;
