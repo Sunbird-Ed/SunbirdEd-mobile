@@ -1,15 +1,9 @@
 import { Injectable } from "@angular/core";
-import { SunbirdSdk, ProfileType } from 'sunbird-sdk';
+import { SunbirdSdk } from 'sunbird-sdk';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as X2JS from 'x2js';
-import { AlertController } from "ionic-angular";
-import { App } from 'ionic-angular';
-import { ProfileConstants, EventTopics, initTabs, PreferenceKey } from '../../app';
+import { ProfileConstants } from '../../app';
 import { Events } from 'ionic-angular';
-import { AppGlobalService } from "@app/service";
-import { TabsPage } from "../tabs/tabs";
-
-
 
 declare global {
     interface Window {
@@ -19,8 +13,10 @@ declare global {
 @Injectable()
 
 export class CanvasPlayerService {
-    constructor(private _http: HttpClient, private alertCtrl: AlertController, private appCtrl: App,
-        private events: Events,private appGlobalService: AppGlobalService) { }
+    constructor(private _http: HttpClient, private events: Events) { }
+    /**
+     * This is the globally available method used by player to communicate with mobile
+     */
     handleAction() {
         window.handleAction = (methodName: string, params = []) => {
             switch (methodName) {
@@ -45,8 +41,10 @@ export class CanvasPlayerService {
                     console.log('languageSearch to be defined');
                     break;
                 case "endGenieCanvas":
-                    this.showConfirm();
-                    console.log('endGenieCanvas to be defined');
+                    this.events.publish('endGenieCanvas', { showConfirmBox: false });
+                    break;
+                case "showExitConfirmPopup":
+                    this.events.publish('endGenieCanvas', { showConfirmBox: true });
                     break;
                 case "endContent":
                     console.log('endContent to be defined');
@@ -62,8 +60,11 @@ export class CanvasPlayerService {
         }
     }
 
-    xmlToJSon(path: string) {
-        console.log("Path", path);
+    /**
+     * This will convert xml to JSON
+     * @param {string} path Path to the xml file
+     */
+    xmlToJSon(path: string): Promise<any> {
         if (path.length) {
             const _headers = new HttpHeaders();
             const headers = _headers.set('Content-Type', 'text/xml');
@@ -83,8 +84,12 @@ export class CanvasPlayerService {
         }
     }
 
-    readJSON(path) {
-        console.log("Path", path);
+    /**
+     * This will read JSON file
+     * @param {string} path Path to the JSON file
+     * @returns {Promise} Returns JSON object
+     */
+    readJSON(path: string): Promise<any> {
         if (path.length) {
             const _headers = new HttpHeaders();
             const headers = _headers.set('Content-Type', 'text/javascript');
@@ -94,37 +99,11 @@ export class CanvasPlayerService {
                         resolve(data);
                     });
                 } catch (error) {
-                    console.log("In error", error);
-                    reject('Unable to convert');
+                    console.log("", error);
+                    reject('Unable to read JSON');
                 }
             });
         }
-    }
-
-    showConfirm() {
-        const alert = this.alertCtrl.create({
-            title: 'Confirm',
-            message: 'Would you like to leave this content?',
-            buttons: [
-                {
-                    text: 'CANCEL',
-                    role: 'cancel',
-                    handler: () => {
-                        console.log('Cancel clicked');
-                    }
-                },
-                {
-                    text: 'OK',
-                    handler: () => {
-                        this.appCtrl.getActiveNav().pop();
-                        this.events.publish(EventTopics.PLAYER_CLOSED, {
-                            selectedUser: this.appGlobalService.getSelectedUser()
-                        });
-                    }
-                }
-            ]
-        });
-        alert.present();
     }
 
     // private switchUser() {
