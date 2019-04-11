@@ -87,7 +87,23 @@ export class FlagContent {
         'OPTION_OTHER'
     ];
 }
-
+export class BatchConstants {
+  public static readonly REQUIRED_FIELDS = [
+    'endDate',
+    'description',
+    'name',
+    'enrollmentType',
+    'hashTagId',
+    'startDate',
+    'status',
+    'createdBy',
+    'creatorFirstName',
+    'creatorLastName',
+    'identifier',
+    'id'
+  ];
+  // createdFor ,courseAdditionalInfo, participant, updatedDate, createdDate, courseCreator, mentors
+}
 export class ProfileConstants {
     public static readonly USER_TOKEN = 'userToken';
     public static readonly REQUIRED_FIELDS = [
