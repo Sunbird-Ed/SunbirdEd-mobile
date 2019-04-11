@@ -7,7 +7,6 @@ import { IonicApp } from 'ionic-angular';
 import { playerActionHandlerDelegate, hierarchyInfo, user } from './player-action-handler-delegate';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { StatusBar } from '@ionic-native/status-bar';
-import '../../assets/scripts/test.js';
 import { Events } from 'ionic-angular';
 import { EventTopics } from '@app/app';
 @IonicPage()
