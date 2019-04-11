@@ -1045,7 +1045,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       let contentTypeCount;
       if (this.contentDetail.contentData.contentTypesCount) {
-         contentTypeCount = this.contentTypesCount.TextBookUnit;
+        contentTypeCount = this.contentTypesCount.TextBookUnit;
       } else {
         contentTypeCount = '';
       }
@@ -1060,9 +1060,8 @@ export class CollectionDetailsEtbPage implements OnInit {
           },
         ],
         icon: null,
-        metaInfo: this.contentDetail.contentTypesCount.TextBookUnit +
-          ' items' + '(' + this.fileSizePipe.transform(this.downloadSize, 2) + ')',
-        //  '(' + this.fileSizePipe.transform(this.contentDetail.size, 2) + ')'
+        metaInfo: contentTypeCount +
+          'items' + '(' + this.fileSizePipe.transform(this.contentDetail.contentData.size, 2) + ')',
       }, {
           cssClass: 'sb-popover info',
         });
@@ -1155,12 +1154,12 @@ export class CollectionDetailsEtbPage implements OnInit {
       undefined,
       this.objRollup,
       this.corRelationList);
-      let contentTypeCount;
-      if (this.contentDetail.contentData.contentTypesCount) {
-        contentTypeCount = this.contentTypesCount.TextBookUnit;
-      } else {
-        contentTypeCount = '';
-      }
+    let contentTypeCount;
+    if (this.contentDetail.contentData.contentTypesCount) {
+      contentTypeCount = this.contentTypesCount.TextBookUnit;
+    } else {
+      contentTypeCount = '';
+    }
     const confirm = this.popoverCtrl.create(SbPopoverComponent, {
       content: this.contentDetail,
       isChild: this.isDepthChild,
@@ -1176,16 +1175,16 @@ export class CollectionDetailsEtbPage implements OnInit {
         },
       ],
       icon: null,
-      sbPopoverContent: this.contentDetail.contentTypesCount.TextBookUnit +
-        'items' + '(' + this.fileSizePipe.transform(this.contentDetail.size, 2) + ')',
-      metaInfo:  this.contentDetail.name + this.contentDetail.subject
+      sbPopoverContent: contentTypeCount +
+        'items' + '(' + this.fileSizePipe.transform(this.contentDetail.contentData.size, 2) + ')',
+      metaInfo: this.contentDetail.contentData.name + this.contentDetail.contentData.subject
     }, {
         cssClass: 'sb-popover danger',
       });
     confirm.present({
       ev: event
     });
-    confirm.onDidDismiss((canDelete: any) => {
+       confirm.onDidDismiss((canDelete: any) => {
       if (canDelete) {
         this.deleteContent();
       }
@@ -1207,9 +1206,9 @@ export class CollectionDetailsEtbPage implements OnInit {
 
   deleteContent() {
     const telemetryObject: TelemetryObject = new TelemetryObject(
-    this.contentDetail.identifier,
-    this.contentDetail.contentType,
-    this.contentDetail.contentData.pkgVersion);
+      this.contentDetail.identifier,
+      this.contentDetail.contentType,
+      this.contentDetail.contentData.pkgVersion);
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.DELETE_CLICKED,

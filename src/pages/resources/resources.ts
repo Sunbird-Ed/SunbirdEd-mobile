@@ -698,9 +698,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewDidEnter() {
-    this.scrollEventRemover = this.scroll.addScrollEventListener((event) => {
-      this.onScroll(event);
-    });
+    // this.scrollEventRemover = this.scroll.addScrollEventListener((event) => {
+    //   this.onScroll(event);
+    // });
     this.preferences.getString('show_app_walkthrough_screen').toPromise()
       .then(value => {
         if (value === 'true') {
