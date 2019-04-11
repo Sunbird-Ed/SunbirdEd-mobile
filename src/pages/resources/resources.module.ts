@@ -1,9 +1,10 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { ResourcesPage } from './resources';
 import { TranslateModule } from '@ngx-translate/core';
 import { ComponentsModule } from '../../component/components.module';
 import { PlayerPageModule } from '../player/player.module';
+import { DirectivesModule } from '@app/directives/directives.module';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,8 @@ import { PlayerPageModule } from '../player/player.module';
     IonicPageModule.forChild(ResourcesPage),
     TranslateModule.forChild(),
     ComponentsModule,
-    PlayerPageModule
+    PlayerPageModule,
+    DirectivesModule
   ],
   exports: [
     ResourcesPage

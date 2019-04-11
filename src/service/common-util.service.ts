@@ -15,7 +15,7 @@ import {
 } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
-import { SharedPreferences} from 'sunbird-sdk';
+import { SharedPreferences } from 'sunbird-sdk';
 import { Network } from '@ionic-native/network';
 
 import { PreferenceKey } from '../app/app.constant';
@@ -163,6 +163,10 @@ export class CommonUtilService implements OnDestroy {
      * @param {string} source Page from alert got called
      */
     showContentComingSoonAlert(source) {
+        if (source !== 'user-type-selection') {
+            this.afterOnBoardQRErrorAlert('ERROR_CONTENT_NOT_FOUND', 'CONTENT_IS_BEING_ADDED');
+            return;
+        }
         let popOver: Popover;
         const self = this;
         const callback: QRAlertCallBack = {
@@ -190,49 +194,74 @@ export class CommonUtilService implements OnDestroy {
     computePageId(pageName: string): string {
         let pageId = '';
         switch (pageName) {
-          case 'ResourcesPage': {
-            pageId = PageId.LIBRARY;
-            break;
-          }
-          case 'CoursesPage': {
-            pageId = PageId.COURSES;
-            break;
-          }
-          case 'ProfilePage': {
-            pageId = PageId.PROFILE;
-            break;
-          }
-          case 'GuestProfilePage': {
-            pageId = PageId.GUEST_PROFILE;
-            break;
-          }
-          case 'CollectionDetailsEtbPage': {
-            pageId = PageId.COLLECTION_DETAIL;
-            break;
-          }
-          case 'ContentDetailsPage': {
-            pageId = PageId.CONTENT_DETAIL;
-            break;
-          }
-          case 'QrCodeResultPage': {
-            pageId = PageId.DIAL_CODE_SCAN_RESULT;
-            break;
-          }
-          case 'CollectionDetailsPage': {
-            pageId = PageId.COLLECTION_DETAIL;
-            break;
-          }
+            case 'ResourcesPage': {
+                pageId = PageId.LIBRARY;
+                break;
+            }
+            case 'CoursesPage': {
+                pageId = PageId.COURSES;
+                break;
+            }
+            case 'ProfilePage': {
+                pageId = PageId.PROFILE;
+                break;
+            }
+            case 'GuestProfilePage': {
+                pageId = PageId.GUEST_PROFILE;
+                break;
+            }
+            case 'CollectionDetailsEtbPage': {
+                pageId = PageId.COLLECTION_DETAIL;
+                break;
+            }
+            case 'ContentDetailsPage': {
+                pageId = PageId.CONTENT_DETAIL;
+                break;
+            }
+            case 'QrCodeResultPage': {
+                pageId = PageId.DIAL_CODE_SCAN_RESULT;
+                break;
+            }
+            case 'CollectionDetailsPage': {
+                pageId = PageId.COLLECTION_DETAIL;
+                break;
+            }
         }
         return pageId;
-      }
+    }
 
     getPageName() {
         const navObj: NavControllerBase = this.app.getActiveNavs()[0];
         let currentPage: string = navObj.getActive().name;
-          currentPage = this.computePageId(currentPage);
+        currentPage = this.computePageId(currentPage);
 
-          return(currentPage);
+        return (currentPage);
     }
+    /**
+     * Show popup with Close.
+     * @param {string} heading Alert heading
+     * @param {string} message Alert message
+     */
+    afterOnBoardQRErrorAlert(heading, message) {
+
+        const qrAlert = this.popOverCtrl.create(SbGenericPopoverComponent, {
+            sbPopoverHeading: this.translateMessage(heading),
+            sbPopoverMainTitle: this.translateMessage(message),
+            actionsButtons: [
+                {
+                    btntext: this.translateMessage('OKAY'),
+                    btnClass: 'sb-btn sb-btn-sm  sb-btn-tertiary'
+                }
+            ],
+            icon: null
+        }, {
+                cssClass: 'sb-popover warning',
+            });
+        qrAlert.present({
+            ev: event
+        });
+    }
+
     /**
      * Its check for the network availability
      * @returns {boolean} status of the network
@@ -266,12 +295,12 @@ export class CommonUtilService implements OnDestroy {
         return this.networkInfo.isNetworkAvailable;
     }
 
-    addNetworkTelemetry(subtype: string , pageId: string) {
+    addNetworkTelemetry(subtype: string, pageId: string) {
         this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
             subtype,
             Environment.HOME,
             pageId, undefined
-            );
+        );
     }
 
     ngOnDestroy() {
@@ -352,20 +381,20 @@ export class CommonUtilService implements OnDestroy {
                 sbPopoverHeading: this.translateMessage('BACK_TO_EXIT'),
                 sbPopoverMainTitle: '',
                 actionsButtons: [
-                  {
-                    btntext: this.translateMessage('NO'),
-                    btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
-                  }, {
-                    btntext: this.translateMessage('YES'),
-                    btnClass: 'popover-color'
-                  }
+                    {
+                        btntext: this.translateMessage('NO'),
+                        btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+                    }, {
+                        btntext: this.translateMessage('YES'),
+                        btnClass: 'popover-color'
+                    }
                 ],
                 icon: null
-              }, {
-                cssClass: 'sb-popover',
-              });
-              confirm.onDidDismiss((leftBtnClicked: any) => {
-                  if (leftBtnClicked == null) {
+            }, {
+                    cssClass: 'sb-popover',
+                });
+            confirm.onDidDismiss((leftBtnClicked: any) => {
+                if (leftBtnClicked == null) {
                     this.telemetryGeneratorService.generateInteractTelemetry(
                         InteractType.TOUCH,
                         InteractSubtype.NO_CLICKED,
@@ -373,7 +402,7 @@ export class CommonUtilService implements OnDestroy {
                         pageId
                     );
                     return;
-                  }
+                }
                 if (!leftBtnClicked) {
                     this.telemetryGeneratorService.generateInteractTelemetry(
                         InteractType.TOUCH,
@@ -391,10 +420,10 @@ export class CommonUtilService implements OnDestroy {
                         pageId
                     );
                 }
-              });
-                confirm.present({
-                  ev: event
-                });
+            });
+            confirm.present({
+                ev: event
+            });
             this.telemetryGeneratorService.generateBackClickedTelemetry(pageId, environment, isNavBack);
             return;
         } else {

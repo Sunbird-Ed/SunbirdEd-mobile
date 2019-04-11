@@ -35,6 +35,7 @@ import { SbPopoverComponent } from './popups/sb-popover/sb-popover';
 import { SbDownloadPopupComponent } from './popups/sb-download-popup/sb-download-popup';
 import { SbGenericPopoverComponent } from './popups/sb-generic-popup/sb-generic-popover';
 import { SideMenuComponent } from './side-menu/side-menu';
+import { DirectivesModule } from '@app/directives/directives.module';
 
 @NgModule({
     declarations: [
@@ -77,7 +78,8 @@ import { SideMenuComponent } from './side-menu/side-menu';
         BrowserAnimationsModule,
         NgxDatatableModule,
         IonicModule,
-        IonicPageModule.forChild(ResourceCard)
+        IonicPageModule.forChild(ResourceCard),
+        DirectivesModule
     ],
     exports: [
         CourseCard,
