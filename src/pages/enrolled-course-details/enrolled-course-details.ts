@@ -943,7 +943,7 @@ export class EnrolledCourseDetailsPage {
           // Show download percentage
           if (event.type === DownloadEventType.PROGRESS) {
             const downloadEvent = event as DownloadProgress;
-            if (downloadEvent.payload.identifier === this.course.identifier) {
+            if (downloadEvent.payload.identifier === this.identifier) {
               this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
               if (this.downloadProgress === 100) {
                 this.getBatchDetails();
@@ -978,7 +978,7 @@ export class EnrolledCourseDetailsPage {
           // For content update available
           const hierarchyInfo = this.courseCardData.hierarchyInfo ? this.courseCardData.hierarchyInfo : null;
           const contentUpdateEvent = event as ContentUpdate;
-          if (contentUpdateEvent.payload && contentUpdateEvent.payload.contentId === this.course.identifier
+          if (contentUpdateEvent.payload && contentUpdateEvent.payload.contentId === this.identifier
             && contentUpdateEvent.type === ContentEventType.UPDATE && hierarchyInfo === null) {
             this.zone.run(() => {
               this.showLoading = true;
@@ -1009,6 +1009,7 @@ export class EnrolledCourseDetailsPage {
     const ongoingBatches = [];
     const upcommingBatches = [];
     const loader = this.commonUtilService.getLoader();
+    console.time('API_START');
     const courseBatchesRequest: CourseBatchesRequest = {
       filters: {
         courseId: this.identifier,
@@ -1046,6 +1047,7 @@ export class EnrolledCourseDetailsPage {
                   ongoingBatches: ongoingBatches,
                   upcommingBatches: upcommingBatches
                 });
+                console.timeEnd('API_START');
               } else {
                 loader.dismiss();
                 this.commonUtilService.showToast('NO_BATCHES_AVAILABLE');
