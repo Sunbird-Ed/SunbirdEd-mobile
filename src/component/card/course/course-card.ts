@@ -1,3 +1,4 @@
+import { BatchConstants } from './../../../app/app.constant';
 import {Component, Inject, Input, OnInit, NgZone} from '@angular/core';
 import {Events, NavController, PopoverController} from 'ionic-angular';
 import {EnrolledCourseDetailsPage} from '../../../pages/enrolled-course-details/enrolled-course-details';
@@ -117,7 +118,8 @@ export class CourseCard implements OnInit {
         courseId: layoutName === ContentCard.LAYOUT_INPROGRESS ? content.contentId : content.identifier,
         enrollmentType: CourseEnrollmentType.OPEN,
         status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
-      }
+      },
+      fields: BatchConstants.REQUIRED_FIELDS
     };
     const reqvalues = new Map();
     reqvalues['enrollReq'] = courseBatchesRequest;

@@ -313,7 +313,7 @@ export class CollectionDetailsEtbPage implements OnInit {
       }
 
       this.didViewLoad = true;
-      this.setContentDetails(this.identifier);
+      this.setContentDetails(this.identifier, true);
       this.subscribeSdkEvent();
       this.networkSubscription = this.commonUtilService.subject.subscribe((res) => {
         if (res) {
@@ -451,13 +451,14 @@ export class CollectionDetailsEtbPage implements OnInit {
    * To set content details in local variable
    * @param {string} identifier identifier of content / course
    */
-  setContentDetails(identifier) {
+  setContentDetails(identifier, refreshContentDetails: boolean) {
     const loader = this.commonUtilService.getLoader();
     loader.present();
     const option: ContentDetailRequest = {
       contentId: identifier,
       attachFeedback: true,
       attachContentAccess: true,
+      emitUpdateIfAny: refreshContentDetails
     };
     this.contentService.getContentDetails(option).toPromise()
       .then((data: Content) => {
@@ -588,7 +589,7 @@ export class CollectionDetailsEtbPage implements OnInit {
    * @param {boolean} isChild
    */
   getImportContentRequestBody(identifiers: Array<string>, isChild: boolean): Array<ContentImport> {
-    const requestParams = [];
+    const requestParams: ContentImport[] = [];
     _.forEach(identifiers, (value) => {
       requestParams.push({
         isChildContent: isChild,
@@ -857,12 +858,12 @@ export class CollectionDetailsEtbPage implements OnInit {
             // this condition is for when the child content update is available and we have downloaded parent content
             // but we have to refresh only the child content.
             this.showLoading = false;
-            this.setContentDetails(this.identifier);
+            this.setContentDetails(this.identifier, false);
           } else {
             if (this.isUpdateAvailable && contentImportedEvent.payload.contentId === this.contentDetail.identifier) {
               this.showLoading = false;
               this.refreshHeader();
-              this.setContentDetails(this.identifier);
+              this.setContentDetails(this.identifier, false);
             } else {
               if (contentImportedEvent.payload.contentId === this.contentDetail.identifier) {
                 this.showLoading = false;
@@ -887,7 +888,7 @@ export class CollectionDetailsEtbPage implements OnInit {
               this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.contentDetail, false);
               this.importContent([parentIdentifier], false);
             } else {
-              this.setContentDetails(this.identifier);
+              this.setContentDetails(this.identifier, false);
             }
           });
         }
