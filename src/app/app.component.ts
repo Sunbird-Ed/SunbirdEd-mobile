@@ -40,6 +40,7 @@ import { SettingsPage } from '@app/pages/settings';
 import { ReportsPage } from '@app/pages/reports';
 import { UserAndGroupsPage } from '@app/pages/user-and-groups';
 import { LogoutHandlerService } from '@app/service/handlers/logout-handler.service';
+import { Network } from '@ionic-native/network';
 
 @Component({
   templateUrl: 'app.html',
@@ -94,13 +95,15 @@ export class MyApp implements OnInit, AfterViewInit {
     private splashcreenTelemetryActionHandlerDelegate: SplashcreenTelemetryActionHandlerDelegate,
     private splashscreenImportActionHandlerDelegate: SplashscreenImportActionHandlerDelegate,
     private headerServie: AppHeaderService,
-    private logoutHandlerService: LogoutHandlerService
+    private logoutHandlerService: LogoutHandlerService,
+    private network: Network
   ) {
     this.telemetryAutoSyncUtil = new TelemetryAutoSyncUtil(this.telemetryService);
     platform.ready().then(async () => {
       this.imageLoaderConfig.enableDebugMode();
       this.imageLoaderConfig.setMaximumCacheSize(100 * 1024 * 1024);
       this.telemetryGeneratorService.genererateAppStartTelemetry(await utilityService.getDeviceSpec());
+      this.generateNetworkTelemetry();
       this.autoSyncTelemetry();
       this.subscribeEvents();
 
@@ -163,6 +166,12 @@ export class MyApp implements OnInit, AfterViewInit {
     });
   }
 
+  generateNetworkTelemetry() {
+    const value = new Map();
+    value['network-type'] = this.network.type;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+      InteractSubtype.NETWORK_STATUS, Environment.HOME, PageId.SPLASH_SCREEN, undefined, value) ;
+  }
   computePageId(pageName: string): string {
     let pageId = '';
     switch (pageName) {

@@ -124,6 +124,7 @@ export enum InteractType {
 }
 
 export enum InteractSubtype {
+    NETWORK_STATUS = 'networkStatus',
     INTERNET_CONNECTED = 'internet-connected',
     INTERNET_DISCONNECTED = 'internet-disconnected',
     LOGIN_INITIATE = 'login-initiate',
