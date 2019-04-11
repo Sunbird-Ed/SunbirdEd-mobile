@@ -49,7 +49,8 @@ export class AssessmentDetailsComponent implements OnInit {
         const reportSummaryRequest: Partial<ReportSummary> = {
           name: row.name,
           uid: row.uid,
-          contentId: row.contentId
+          contentId: row.contentId,
+          totalQuestionsScore: this.assessmentData.questionsScore
         };
         this.navCtrl.push(UserReportPage, { 'report': reportSummaryRequest });
       } else if (row.qid) {
