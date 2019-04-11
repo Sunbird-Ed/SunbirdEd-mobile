@@ -30,7 +30,7 @@
                 {{ profile?.lastName }}</span>
             <span *ngIf="profile?.firstName" class="isymbol" item-right text-left
                 (click)="toggleTooltips($event, 'name')">
-                <ion-icon name="information-circle"
+                <ion-icon name="ios-information-circle-outline"
                     [ngClass]="{'icon-selected-color' : informationProfileName === true}" class="info-icon"></ion-icon>
                 <span class="asPerStateRecord" *ngIf="informationProfileName">{{'STATE_RECORDS' | translate}}</span>
             </span>
@@ -61,14 +61,9 @@
         <p class="bolder MB5" style="position: relative;">{{profile?.organisations[0].orgName}}
             <span *ngIf="profile?.firstName" class="isymbol" item-right text-left
                 (click)="toggleTooltips($event, 'org')">
-                <<<<<<< HEAD <ion-icon name="ios-information-circle-outline"
-                    [ngClass]="{'icon-selected-color' : informationOrgName === true}" class="info-icon">
-                    </ion-icon>
-                    =======
-                    <ion-icon name="information-circle"
-                        [ngClass]="{'icon-selected-color' : informationOrgName === true}" class="info-icon"></ion-icon>
-                    >>>>>>> 9c93b7ae5acb118b1194a2384a17aeff8edc39bb
-                    <span class="asPerStateRecord" *ngIf="informationOrgName">{{'STATE_RECORDS'
+                <ion-icon name="ios-information-circle-outline"
+                    [ngClass]="{'icon-selected-color' : informationOrgName === true}" class="info-icon"></ion-icon>
+                <span class="asPerStateRecord" *ngIf="informationOrgName">{{'STATE_RECORDS'
                     | translate}}</span>
             </span>
         </p>
