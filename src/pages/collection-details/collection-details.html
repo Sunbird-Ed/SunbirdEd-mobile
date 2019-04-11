@@ -1,8 +1,6 @@
-<!-- Generated template for the CourseDetailComponent component -->
-<ion-header>
+<!-- <ion-header>
 	<ion-navbar>
 		<ion-title>
-			<!-- <ion-icon md="md-share" float-right></ion-icon> -->
 		</ion-title>
 		<ion-buttons end *ngIf="!isDepthChild">
 			<button ion-button icon-only (click)="share()">
@@ -13,7 +11,7 @@
 			</button>
 		</ion-buttons>
 	</ion-navbar>
-</ion-header>
+</ion-header> -->
 <!-- Page body -->
 <ion-content padding [ngClass]="{'content-with-footer': (showDownloadBtn && !isDepthChild)}">
 	<div class="content-details-holder" *ngIf="contentDetail">
@@ -79,7 +77,7 @@
 				</div>
         <div *ngIf="contentDetail?.contentData.subject" margin-top>
 					<div class="content-meta-title" text-uppercase>{{ 'SUBJECT' | translate }}</div>
-          <span class="text-gray-color">{{contentDetail?.contentData.subject}}</span>
+          <span class="text-gray-color">{{contentDetail?.contentData.subject | csa}}</span>
 				</div>
         <div *ngIf="contentDetail?.contentData.board" margin-top>
 					<div class="content-meta-title" text-uppercase>{{ 'BOARD' | translate }}</div>
@@ -87,7 +85,7 @@
 				</div>
 				<div *ngIf="contentDetail?.medium" margin-top>
 					<div class="content-meta-title">{{ 'MEDIUM' | translate }}</div>
-          <span class="text-gray-color">{{contentDetail?.contentData.medium}}</span>
+          <span class="text-gray-color">{{contentDetail?.contentData.medium | csa}}</span>
 				</div>
 			</div>
 

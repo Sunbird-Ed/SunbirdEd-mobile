@@ -12,6 +12,7 @@ import {
   ObjectType,
   PageId
 } from '../../../service/telemetry-constants';
+import { AppHeaderService } from '@app/service';
 
 @Component({
     selector: 'group-list-page',
@@ -33,11 +34,16 @@ export class ReportListPage {
         private loading: LoadingController,
         @Inject('SUMMARIZER_SERVICE') public summarizerService: SummarizerService,
         public ngZone: NgZone,
-        private telemetryGeneratorService: TelemetryGeneratorService) {
+        private telemetryGeneratorService: TelemetryGeneratorService,
+        private headerService: AppHeaderService) {
 
     }
 
     ionViewDidLoad() {
+        const header = this.headerService.getDefaultPageConfig();
+      header.showHeader = false;
+      header.showBurgerMenu = false;
+      this.headerService.updatePageConfig(header);
         this.telemetryGeneratorService.generateImpressionTelemetry(
             ImpressionType.VIEW, '',
             PageId.REPORTS_ASSESMENT_CONTENT_LIST,

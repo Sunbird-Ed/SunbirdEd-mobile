@@ -1,7 +1,6 @@
-<ion-header>
+<!-- <ion-header>
 	<ion-navbar>
 		<ion-title>
-			<!-- <ion-icon md="md-share" float-right></ion-icon> -->
 		</ion-title>
 		<ion-buttons end *ngIf="!isDepthChild">
 			<button ion-button icon-only (click)="share()">
@@ -13,7 +12,7 @@
 		</ion-buttons>
 	</ion-navbar>
 	<pb-horizontal *ngIf="course?.progress" [progress]="course?.progress" class="course-progress" [ngClass]="{'blurbackground': batchExp}"></pb-horizontal>
-</ion-header>
+</ion-header> -->
 
 <ion-content padding [ngClass]="{'content-with-footer': (((courseCardData && courseCardData?.batchId) && ( showResumeBtn || childrenData && childrenData?.length || downloadIdentifiers && downloadIdentifiers?.length && !isDownloadStarted )) || (courseCardData && !courseCardData?.batchId && course && course?.createdBy !== userId))}">
 	<div class="content-details-holder" *ngIf="course">
@@ -62,7 +61,7 @@
 				</div>
 				<div *ngIf="course?.subject" margin-top>
 					<div class="content-meta-title" text-uppercase>{{ 'SUBJECT' | translate }}</div>
-					<span class="text-gray-color">{{course?.subject}}</span>
+					<span class="text-gray-color">{{course?.subject | csa }}</span>
 				</div>
 
 				<div *ngIf="course?.board" margin-top>
@@ -72,7 +71,7 @@
 
 				<div *ngIf="course?.medium" margin-top>
 					<div class="content-meta-title" text-uppercase>{{ 'MEDIUM' | translate }}</div>
-					<span class="text-gray-color">{{course?.medium}}</span>
+					<span class="text-gray-color">{{course?.medium | csa }}</span>
 				</div>
 				<!-- Batch details - only for enrolled courses -->
 				<div *ngIf="batchDetails?.name" margin-top>

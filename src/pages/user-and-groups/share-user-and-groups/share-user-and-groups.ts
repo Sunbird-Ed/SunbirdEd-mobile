@@ -12,7 +12,13 @@ import {
 } from 'sunbird-sdk';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
-import {Environment, InteractSubtype, InteractType, PageId} from '../../../service/telemetry-constants';
+import {
+    InteractType,
+    InteractSubtype,
+    Environment,
+    PageId
+} from '../../../service/telemetry-constants';
+import { AppHeaderService } from '@app/service';
 
 declare const cordova;
 @Component({
@@ -38,12 +44,16 @@ export class ShareUserAndGroupPage {
     private zone: NgZone,
     private socialShare: SocialSharing,
     private loadingCtrl: LoadingController,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private headerService: AppHeaderService
   ) {
 
   }
 
   ionViewWillEnter() {
+    const header = this.headerService.getDefaultPageConfig();
+    header.showHeader = false;
+    this.headerService.updatePageConfig(header);
     this.getAllProfile();
     this.getAllGroup();
   }

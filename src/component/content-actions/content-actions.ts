@@ -1,7 +1,6 @@
 import {TelemetryGeneratorService} from './../../service/telemetry-generator.service';
 import {TranslateService} from '@ngx-translate/core';
-import {NavParams} from 'ionic-angular/navigation/nav-params';
-import {AlertController, Events, PopoverController} from 'ionic-angular/index';
+import {AlertController, Events, PopoverController,NavParams} from 'ionic-angular';
 import {Platform, ToastController, ViewController} from 'ionic-angular';
 import {Component, Inject} from '@angular/core';
 import {
@@ -15,8 +14,10 @@ import {
   TelemetryObject
 } from 'sunbird-sdk';
 import {CommonUtilService} from '../../service/common-util.service';
-import {UnenrollAlertComponent} from '../unenroll-alert/unenroll-alert';
 import {Environment, InteractSubtype, InteractType} from '../../service/telemetry-constants';
+import { SbPopoverComponent } from '../popups/sb-popover/sb-popover';
+import { FileSizePipe } from '@app/pipes/file-size/file-size';
+import { SbGenericPopoverComponent } from '../popups/sb-generic-popup/sb-generic-popover';
 
 @Component({
   selector: 'content-actions',
@@ -48,7 +49,8 @@ export class ContentActionsComponent {
     private translate: TranslateService,
     private platform: Platform,
     private commonUtilService: CommonUtilService,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private fileSizePipe: FileSizePipe
   ) {
     this.content = this.navParams.get('content');
     this.data = this.navParams.get('data');
@@ -103,30 +105,38 @@ export class ContentActionsComponent {
   close(i) {
     switch (i) {
       case 0: {
-        const confirm = this.alertctrl.create({
-          title: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE'),
-          message: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE_MSG'),
-          mode: 'wp',
-          cssClass: 'confirm-alert',
-          buttons: [
+        const confirm = this.popoverCtrl.create(SbPopoverComponent, {
+          content: this.content,
+          // isChild: this.isDepthChild,
+          objRollup: this.objRollup,
+          // pageName: PageId.COLLECTION_DETAIL,
+          corRelationList: this.corRelationList,
+          sbPopoverHeading: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE'),
+          // sbPopoverMainTitle: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE_MSG'),
+          sbPopoverMainTitle: this.content.name,
+          actionsButtons: [
             {
-              text: this.commonUtilService.translateMessage('CANCEL'),
-              role: 'cancel',
-              cssClass: 'alert-btn-cancel',
-              handler: () => {
-                this.viewCtrl.dismiss();
-              }
+              btntext: this.commonUtilService.translateMessage('REMOVE'),
+              btnClass: 'popover-color'
             },
-            {
-              text: this.commonUtilService.translateMessage('REMOVE'),
-              cssClass: 'alert-btn-delete',
-              handler: () => {
-                this.deleteContent();
-              },
-            }
-          ]
+          ],
+          icon: null,
+          metaInfo:
+          // this.contentDetail.contentTypesCount.TextBookUnit + 'items' +
+          // this.batchDetails.courseAdditionalInfo.leafNodesCount + 'items' +
+             '(' + this.fileSizePipe.transform(this.content.size, 2) + ')',
+          sbPopoverContent: 'Are you sure you want to delete ?'
+        }, {
+            cssClass: 'sb-popover danger',
+          });
+        confirm.present({
+          ev: event
         });
-        confirm.present();
+        confirm.onDidDismiss((canDelete: any) => {
+          if (canDelete) {
+            // this.deleteContent();
+          }
+        });
         break;
       }
       case 1: {
@@ -140,16 +150,40 @@ export class ContentActionsComponent {
   /*
    * shows alert to confirm unenroll send back user selection */
   unenroll() {
-    const popover = this.popoverCtrl.create(UnenrollAlertComponent, {}, {
-      cssClass: 'confirm-alert-box'
-    });
-    popover.present();
-    popover.onDidDismiss((unenroll: boolean = false) => {
-      this.viewCtrl.dismiss({
-        caller: 'unenroll',
-        unenroll: unenroll
+    const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
+      sbPopoverHeading: this.commonUtilService.translateMessage('UNENROLL_FROM_COURSE'),
+      sbPopoverMainTitle: this.commonUtilService.translateMessage('UNENROLL_CONFIRMATION_MESSAGE'),
+      actionsButtons: [
+        {
+          btntext: this.commonUtilService.translateMessage('CANCEL'),
+          btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+        },
+        {
+          btntext: this.commonUtilService.translateMessage('CONFIRM'),
+          btnClass: 'popover-color'
+        }
+      ],
+      icon: null
+    }, {
+        cssClass: 'sb-popover info',
       });
-    });
+      confirm.present({
+        ev: event
+      });
+      confirm.onDidDismiss((leftBtnClicked: any) => {
+        let unenroll: any = false;
+        if ( leftBtnClicked == null ) {
+          unenroll = false;
+        } else if ( leftBtnClicked ) {
+          unenroll = false;
+        } else {
+          unenroll = true;
+        }
+        this.viewCtrl.dismiss({
+          caller: 'unenroll',
+          unenroll: unenroll
+        });
+      });
   }
 
   deleteContent() {
@@ -186,15 +220,6 @@ export class ContentActionsComponent {
     });
   }
 
-  /*
-  reportIssue() {
-    const popUp = this.popoverCtrl.create(ReportIssuesComponent, {
-      content: this.content
-    }, {
-        cssClass: 'report-issue-box'
-      });
-    popUp.present();
-  } */
 
   showToaster(message) {
     const toast = this.toastCtrl.create({

@@ -81,6 +81,11 @@ export class ResourceCard implements OnInit {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
 
+  isResource(contentType) {
+    return contentType === ContentType.STORY ||
+      contentType === ContentType.WORKSHEET;
+  }
+
   /**
    * Navigate to the course/content details page
    *
@@ -122,11 +127,6 @@ export class ResourceCard implements OnInit {
         content: content
       });
     }
-  }
-
-  isResource(contentType) {
-    return contentType === ContentType.STORY ||
-      contentType === ContentType.WORKSHEET;
   }
 
   resumeCourse(content: any) {

@@ -25,6 +25,9 @@ import { QRScannerAlert } from './../pages/qrscanner/qrscanner_alert';
 
 import { TelemetryGeneratorService } from '../service/telemetry-generator.service';
 import { InteractType, InteractSubtype, PageId, Environment } from '../service/telemetry-constants';
+import { Subject } from 'rxjs';
+import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
+
 export interface NetworkInfo {
     isNetworkAvailable: boolean;
 }
@@ -33,6 +36,7 @@ export class CommonUtilService implements OnDestroy {
     networkInfo: NetworkInfo = {
         isNetworkAvailable: false
     };
+    subject = new Subject<boolean>();
     connectSubscription: any;
     disconnectSubscription: any;
     private alert?: Alert;
@@ -247,11 +251,15 @@ export class CommonUtilService implements OnDestroy {
         }
 
         this.connectSubscription = this.network.onDisconnect().subscribe(() => {
+            this.subject.next(false);
+
             this.addNetworkTelemetry(InteractSubtype.INTERNET_DISCONNECTED, this.getPageName());
             updateNetworkAvailabilityStatus(false);
         });
         this.disconnectSubscription = this.network.onConnect().subscribe(() => {
+
             this.addNetworkTelemetry(InteractSubtype.INTERNET_CONNECTED, this.getPageName());
+            this.subject.next(true);
             updateNetworkAvailabilityStatus(true);
         });
 
@@ -302,7 +310,7 @@ export class CommonUtilService implements OnDestroy {
     */
     showExitPopUp(pageId: string, environment: string, isNavBack: boolean) {
         if (!this.alert) {
-            this.alert = this.alertCtrl.create({
+            /*this.alert = this.alertCtrl.create({
                 title: this.translateMessage('BACK_TO_EXIT'),
                 mode: 'wp',
                 cssClass: 'confirm-alert',
@@ -339,7 +347,54 @@ export class CommonUtilService implements OnDestroy {
                     }
                 ]
             });
-            this.alert.present();
+            this.alert.present();*/
+            const confirm = this.popOverCtrl.create(SbGenericPopoverComponent, {
+                sbPopoverHeading: this.translateMessage('BACK_TO_EXIT'),
+                sbPopoverMainTitle: '',
+                actionsButtons: [
+                  {
+                    btntext: this.translateMessage('NO'),
+                    btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+                  }, {
+                    btntext: this.translateMessage('YES'),
+                    btnClass: 'popover-color'
+                  }
+                ],
+                icon: null
+              }, {
+                cssClass: 'sb-popover',
+              });
+              confirm.onDidDismiss((leftBtnClicked: any) => {
+                  if (leftBtnClicked == null) {
+                    this.telemetryGeneratorService.generateInteractTelemetry(
+                        InteractType.TOUCH,
+                        InteractSubtype.NO_CLICKED,
+                        environment,
+                        pageId
+                    );
+                    return;
+                  }
+                if (!leftBtnClicked) {
+                    this.telemetryGeneratorService.generateInteractTelemetry(
+                        InteractType.TOUCH,
+                        InteractSubtype.YES_CLICKED,
+                        environment,
+                        pageId
+                    );
+                    this.platform.exitApp();
+                    this.telemetryGeneratorService.generateEndTelemetry('app', '', '', environment);
+                } else {
+                    this.telemetryGeneratorService.generateInteractTelemetry(
+                        InteractType.TOUCH,
+                        InteractSubtype.NO_CLICKED,
+                        environment,
+                        pageId
+                    );
+                }
+              });
+                confirm.present({
+                  ev: event
+                });
             this.telemetryGeneratorService.generateBackClickedTelemetry(pageId, environment, isNavBack);
             return;
         } else {

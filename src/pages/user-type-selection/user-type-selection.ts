@@ -2,7 +2,7 @@ import {Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {Events, IonicPage, Navbar, NavController, NavParams, Platform} from 'ionic-angular';
 import {TranslateService} from '@ngx-translate/core';
 import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, Map, PreferenceKey} from '@app/app';
-import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
+import {AppGlobalService, CommonUtilService, TelemetryGeneratorService, AppHeaderService} from '@app/service';
 import {SunbirdQRScanner} from '@app/pages/qrscanner';
 import {ProfileSettingsPage} from '@app/pages/profile-settings/profile-settings';
 import {LanguageSettingsPage} from '@app/pages/language-settings/language-settings';
@@ -57,7 +57,8 @@ export class UserTypeSelectionPage {
     private appGlobalService: AppGlobalService,
     private scannerService: SunbirdQRScanner,
     private platform: Platform,
-    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    private headerServie: AppHeaderService
   ) { }
 
   ionViewDidLoad() {
@@ -78,6 +79,7 @@ export class UserTypeSelectionPage {
   }
 
   ionViewWillEnter() {
+    this.headerServie.showHeaderWithBackButton();
     this.profile = this.appGlobalService.getCurrentUser();
     this.isChangeRoleRequest = Boolean(this.navParams.get('isChangeRoleRequest'));
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {

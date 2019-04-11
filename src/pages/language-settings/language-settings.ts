@@ -3,10 +3,11 @@ import {Events, IonicPage, NavController, NavParams, Platform} from 'ionic-angul
 import {TranslateService} from '@ngx-translate/core';
 import {SharedPreferences} from 'sunbird-sdk';
 import {appLanguages, Map, PreferenceKey} from '@app/app';
-import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
+import {AppGlobalService, CommonUtilService, TelemetryGeneratorService, AppHeaderService} from '@app/service';
 import {OnboardingPage} from '@app/pages/onboarding/onboarding';
 import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
 import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
+import { ResourcesPage } from '../resources/resources';
 
 
 @IonicPage()
@@ -25,6 +26,8 @@ export class LanguageSettingsPage {
   selectedLanguage: any = {};
   btnColor = '#55acee';
   unregisterBackButton = undefined;
+  mainPage: Boolean = false;
+  headerConfig: any;
 
 
   constructor(
@@ -38,7 +41,10 @@ export class LanguageSettingsPage {
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
-  ) { }
+    private headerServie: AppHeaderService
+  ) {
+    this.mainPage = this.navParams.get('mainPage');
+   }
 
   ionViewDidLoad() {
     this.isFromSettings = this.navParams.get('isFromSettings');
@@ -72,6 +78,13 @@ export class LanguageSettingsPage {
 
   ionViewWillEnter() {
     this.selectedLanguage = {};
+    if (!this.isFromSettings) {
+      this.headerServie.hideHeader();
+    } else if (this.mainPage) {
+      this.headerServie.showHeaderWithBackButton();
+    } else {
+      this.headerServie.showHeaderWithBackButton();
+    }
     this.init();
   }
 
@@ -108,6 +121,9 @@ export class LanguageSettingsPage {
         });
     });
 
+  }
+  goToResources() {
+     this.navCtrl.setRoot(ResourcesPage);
   }
 
   /*   getDeviceLanguage() {

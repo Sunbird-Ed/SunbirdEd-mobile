@@ -10,10 +10,12 @@ import { PipesModule } from '../../pipes/pipes.module';
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { ComponentsModule } from '../../component/components.module';
+import { FileSizePipe } from '@app/pipes/file-size/file-size';
 
 @NgModule({
   declarations: [
-    ContentDetailsPage, ContentActionsComponent
+    ContentDetailsPage,
+    ContentActionsComponent
   ],
   entryComponents: [
     ContentActionsComponent
@@ -29,7 +31,8 @@ import { ComponentsModule } from '../../component/components.module';
     PlayerPageModule
   ],
   providers: [
-    SocialSharing
+    SocialSharing,
+    FileSizePipe
   ],
   exports: [
     ContentDetailsPage

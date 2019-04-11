@@ -29,7 +29,7 @@ import {
   ServerProfileDetailsRequest,
   SharedPreferences
 } from 'sunbird-sdk';
-import {CategoriesEditPage} from "@app/pages/categories-edit/categories-edit";
+import {CategoriesEditPage} from '@app/pages/categories-edit/categories-edit';
 import {
   Environment,
   ImpressionType,
@@ -158,8 +158,10 @@ export class OnboardingPage {
     const that = this;
     return new Promise((resolve, reject) => {
       this.profileService.getTenantInfo().toPromise()
-        .then((success) => {
-          (<any>window).splashscreen.setContent(that.orgName, success.logo);
+      .then((res) => {
+          this.preferences.putString(PreferenceKey.APP_LOGO, res.logo).toPromise().then();
+          this.preferences.putString(PreferenceKey.APP_NAME, that.orgName).toPromise().then();
+          (<any>window).splashscreen.setContent(that.orgName, res.logo);
           resolve();
         }).catch(() => {
         resolve(); // ignore

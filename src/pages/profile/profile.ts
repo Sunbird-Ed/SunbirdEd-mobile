@@ -1,4 +1,4 @@
-import {Component, Inject, NgZone} from '@angular/core';
+import { Component, NgZone, OnInit, AfterViewInit, Inject} from '@angular/core';
 import {
   App,
   Events,
@@ -15,8 +15,9 @@ import {CategoriesEditPage} from '@app/pages/categories-edit/categories-edit';
 import {PersonalDetailsEditPage} from '@app/pages/profile/personal-details-edit.profile/personal-details-edit.profile';
 import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details/enrolled-course-details';
 import {CollectionDetailsPage} from '@app/pages/collection-details/collection-details';
+import {CollectionDetailsEtbPage} from '@app/pages/collection-details-etb/collection-details-etb';
 import {ContentDetailsPage} from '@app/pages/content-details/content-details';
-import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
+import {AppGlobalService, CommonUtilService, TelemetryGeneratorService, AppHeaderService} from '@app/service';
 import {FormAndFrameworkUtilService} from './formandframeworkutil.service';
 import {EditContactDetailsPopupComponent} from '@app/component/edit-contact-details-popup/edit-contact-details-popup';
 import {EditContactVerifyPopupComponent} from '@app/component';
@@ -46,7 +47,7 @@ import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from
   selector: 'page-profile',
   templateUrl: 'profile.html'
 })
-export class ProfilePage {
+export class ProfilePage implements OnInit, AfterViewInit {
   /**
    * Contains Profile Object
    */
@@ -57,6 +58,9 @@ export class ProfilePage {
   userId = '';
   isLoggedInUser = false;
   isRefreshProfile = false;
+  informationProfileName = false;
+  informationOrgName = false;
+  checked = false;
   loggedInUserId = '';
   refresh: boolean;
   profileName: string;
@@ -89,6 +93,7 @@ export class ProfilePage {
   };
 
   layoutPopular = ContentCard.LAYOUT_POPULAR;
+  headerObservable: any;
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
@@ -106,7 +111,8 @@ export class ProfilePage {
     private commonUtilService: CommonUtilService,
     private app: App,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
-    public viewCtrl: ViewController
+    public viewCtrl: ViewController,
+    private headerServie: AppHeaderService
   ) {
     this.userId = this.navParams.get('userId') || '';
     this.isRefreshProfile = this.navParams.get('returnRefreshedUserProfileDetails');
@@ -130,6 +136,26 @@ export class ProfilePage {
     });
   }
 
+  /**
+	 * Angular life cycle hooks
+	 */
+  ngOnInit() {
+  }
+
+  ionViewWillEnter() {
+    this.events.subscribe('update_header', (data) => {
+      this.headerServie.showHeaderWithHomeButton();
+    });
+    this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
+    this.headerServie.showHeaderWithHomeButton();
+  }
+
+  ngAfterViewInit() {
+
+  }
+
   ionViewDidLoad() {
     this.doRefresh();
     this.events.subscribe('profilePicture:update', (res) => {
@@ -139,14 +165,19 @@ export class ProfilePage {
     });
   }
 
-  doRefresh(refresher?) {
+  ionViewWillLeave(): void {
+    this.headerObservable.unsubscribe();
+    this.events.unsubscribe('update_header');
+  }
+
+  public doRefresh(refresher?) {
     const loader = this.getLoader();
     this.isRefreshProfile = true;
     if (!refresher) {
-    loader.present();
+      loader.present();
     } else {
-       refresher.complete();
-       this.refresh = true;
+      refresher.complete();
+      this.refresh = true;
     }
     return this.refreshProfileData(refresher)
       .then(() => {
@@ -455,7 +486,8 @@ export class ProfilePage {
         content: content
       });
     } else if (content.mimeType === MimeType.COLLECTION) {
-      this.navCtrl.push(CollectionDetailsPage, {
+      // this.navCtrl.push(CollectionDetailsPage, {
+        this.navCtrl.push(CollectionDetailsEtbPage, {
         content: content
       });
     } else {
@@ -534,8 +566,8 @@ export class ProfilePage {
 
   editMobileNumber(event) {
     const newTitle = this.profile.phone ?
-                     this.commonUtilService.translateMessage('EDIT_PHONE_POPUP_TITLE') :
-                     this.commonUtilService.translateMessage('ENTER_PHONE_POPUP_TITLE');
+      this.commonUtilService.translateMessage('EDIT_PHONE_POPUP_TITLE') :
+      this.commonUtilService.translateMessage('ENTER_PHONE_POPUP_TITLE');
     const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
       phone: this.profile.phone,
       title: newTitle,
@@ -557,8 +589,8 @@ export class ProfilePage {
 
   editEmail(event) {
     const newTitle = this.profile.email ?
-                     this.commonUtilService.translateMessage('EDIT_EMAIL_POPUP_TITLE') :
-                     this.commonUtilService.translateMessage('EMAIL_PLACEHOLDER');
+      this.commonUtilService.translateMessage('EDIT_EMAIL_POPUP_TITLE') :
+      this.commonUtilService.translateMessage('EMAIL_PLACEHOLDER');
     const popover = this.popoverCtrl.create(EditContactDetailsPopupComponent, {
       email: this.profile.email,
       title: newTitle,
@@ -655,4 +687,23 @@ export class ProfilePage {
     });
   }
 
+  handleHeaderEvents($event) {
+    // Handle any click on headers
+  }
+
+  toggleTooltips(event, field) {
+    if (field === 'name') {
+      this.informationProfileName = this.informationProfileName ? false : true;
+      this.informationOrgName = false;
+    } else if (field === 'org') {
+      this.informationOrgName = this.informationOrgName ? false : true;
+      this.informationProfileName = false;
+    } else {
+      this.informationProfileName = false;
+      this.informationOrgName = false;
+    }
+    event.stopPropagation();
+  }
+
 }
+

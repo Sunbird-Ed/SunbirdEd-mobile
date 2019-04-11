@@ -1,5 +1,5 @@
 import {Component, Inject, NgZone} from '@angular/core';
-import {AlertController, IonicPage, LoadingController, NavController, NavParams} from 'ionic-angular';
+import {AlertController, IonicPage, LoadingController, NavController, NavParams, PopoverController} from 'ionic-angular';
 import {
   GetAllProfileRequest,
   Group,
@@ -14,7 +14,9 @@ import {
 import {GuestEditProfilePage} from '../../profile/guest-edit.profile/guest-edit.profile';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
 import {CommonUtilService} from '../../../service/common-util.service';
-import {Environment, InteractSubtype, InteractType, PageId,} from '../../../service/telemetry-constants';
+import {Environment, InteractSubtype, InteractType, PageId} from '../../../service/telemetry-constants';
+import { AppHeaderService } from '@app/service';
+import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 
 @IonicPage()
 @Component({
@@ -45,7 +47,9 @@ export class AddOrRemoveGroupUserPage {
     private loadingCtrl: LoadingController,
     private commonUtilService: CommonUtilService,
     private alertCtrl: AlertController,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private popoverCtrl: PopoverController,
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private headerService: AppHeaderService
   ) {
     this.addUsers = Boolean(this.navParams.get('isAddUsers'));
     this.groupInfo = this.navParams.get('groupInfo');
@@ -53,6 +57,9 @@ export class AddOrRemoveGroupUserPage {
   }
 
   ionViewWillEnter() {
+    const header = this.headerService.getDefaultPageConfig();
+    header.showHeader = false;
+    this.headerService.updatePageConfig(header);
     this.getAllProfile();
   }
 
@@ -209,7 +216,7 @@ export class AddOrRemoveGroupUserPage {
   }
 
   deleteUsersFromGroupConfirmBox(length) {
-    const alert = this.alertCtrl.create({
+    /*const alert = this.alertCtrl.create({
       title: this.commonUtilService.translateMessage('REMOVE_MULTIPLE_USERS_FROM_GROUP', length),
       mode: 'wp',
       message: this.commonUtilService.translateMessage('USER_DELETE_CONFIRM_SECOND_MESSAGE'),
@@ -232,7 +239,34 @@ export class AddOrRemoveGroupUserPage {
         }
       ]
     });
-    alert.present();
+    alert.present();*/
+    const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
+      sbPopoverHeading: this.commonUtilService.translateMessage('REMOVE_MULTIPLE_USERS_FROM_GROUP', length),
+      sbPopoverMainTitle: this.commonUtilService.translateMessage('USER_DELETE_CONFIRM_SECOND_MESSAGE'),
+      actionsButtons: [
+        {
+          btntext: this.commonUtilService.translateMessage('CANCEL'),
+          btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+        }, {
+          btntext: this.commonUtilService.translateMessage('YES'),
+          btnClass: 'popover-color'
+        }
+      ],
+      icon: null
+    }, {
+      cssClass: 'sb-popover',
+    });
+      confirm.present({
+        ev: event
+      });
+      confirm.onDidDismiss((leftBtnClicked: any) => {
+        if (leftBtnClicked == null) {
+          return;
+        }
+        if (!leftBtnClicked) {
+          this.deleteUsersFromGroup();
+        }
+      });
   }
 
   deleteUsersFromGroup() {

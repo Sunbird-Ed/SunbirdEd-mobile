@@ -1,25 +1,40 @@
-<ion-content>
-  <!-- <h5 class="font-weight-700 padding-left-custom">{{'DOWNLOAD_ALL' | translate}}
-    <button class="close-button" ion-button icon-only float-end outline (click)="selectOption(false)"><ion-icon class="icon-size" name="close"></ion-icon></button>
-  </h5> -->
-  <ion-grid>
-    <ion-row>
-      <ion-col col-10 no-padding>
-        <h5 class="font-weight-700 padding-left-5">{{'DOWNLOAD_ALL' | translate }}</h5>
-      </ion-col>
-      <ion-col col-2 no-padding class="margin-top-5">
-        <button class="close-button" ion-button icon-only float-end outline (click)="selectOption(false)">
-          <ion-icon class="icon-size" name="close"></ion-icon>
-        </button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-  <ion-row>
-    <ion-col padding>
-      <button (click)="selectOption(false)" ion-button block outline>{{ 'CANCEL' | translate }}</button>
-    </ion-col>
-    <ion-col padding>
-      <button (click)="selectOption(true)" ion-button block>{{ 'CONFIRM' | translate }}</button>
-    </ion-col>
-  </ion-row>
+
+<ion-header class="sb-popover-header">
+  <ion-toolbar class="sb-popover-toolbar">
+    <ion-title class="sb-popover-title" *ngIf="!isUpdateAvail">{{'DOWNLOAD' | translate}}
+      <ion-icon name="close" class="sb-modal-close" (click)="closePopover()" ></ion-icon>
+    </ion-title>
+    <ion-title class="sb-popover-title" *ngIf="isUpdateAvail">{{'UPDATE' | translate}}
+        <ion-icon name="close" class="sb-modal-close" (click)="closePopover()" ></ion-icon>
+      </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content no-padding class="sb-popover-container">
+  <!-- <div class="px-16 pt-16"> -->
+    <div class="sb-popover-items">
+    <div class="icon-container" *ngIf="icon?.md">
+      <ion-icon ios="{{icon?.ios}}" md="{{icon?.md}}"></ion-icon>
+    </div>
+    <div class="sb-popover-content-details sb-accordian-grey-text">
+        <div class="main-title" *ngIf="!isUpdateAvail">{{'DOWNLOAD_CONFIRMATION_TEXT' | translate}}</div>
+        <div class="main-title" *ngIf="isUpdateAvail">{{'UPDATE_CONFIRMATION_TEXT' | translate}}</div>
+      <div class="main-title">
+        <div class="meta-info">
+            {{sbPopoverMainTitle}}
+        </div>
+      </div>
+      <div class="sb-popover-content">
+          {{metaInfo}}
+      </div>
+    </div>
+    </div>
+  <!-- </div> -->
 </ion-content>
+
+<ion-footer>
+  <div class="sb-popover-footer">
+    <button ion-button class="sb-popover-action-btn popover-color " (click)='selectOption(true)' *ngIf="isUpdateAvail">{{ 'UPDATE' | translate}}</button>
+    <button ion-button class="sb-popover-action-btn popover-color" (click)='selectOption(true)' *ngIf="!isUpdateAvail">{{ 'DOWNLOAD' | translate}}</button>
+  </div>
+</ion-footer>

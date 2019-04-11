@@ -1,14 +1,14 @@
-import {AppGlobalService, TelemetryGeneratorService, UtilityService} from '@app/service';
-import {CommonUtilService} from './../../service/common-util.service';
-import {Component, Inject} from '@angular/core';
-import {NavController} from 'ionic-angular';
-import {DatasyncPage} from './datasync/datasync';
-import {LanguageSettingsPage} from '../language-settings/language-settings';
-import {AboutUsPage} from './about-us/about-us';
-import {SocialSharing} from '@ionic-native/social-sharing';
-import {AppVersion} from '@ionic-native/app-version';
-import {AudienceFilter, ContentType, PreferenceKey} from '../../app/app.constant';
-import {Environment, ImpressionType, InteractSubtype, InteractType, PageId,} from '../../service/telemetry-constants';
+import { AppGlobalService, TelemetryGeneratorService, UtilityService, AppHeaderService } from '@app/service';
+import { CommonUtilService } from './../../service/common-util.service';
+import { Component, Inject } from '@angular/core';
+import { NavController } from 'ionic-angular';
+import { DatasyncPage } from './datasync/datasync';
+import { LanguageSettingsPage } from '../language-settings/language-settings';
+import { AboutUsPage } from './about-us/about-us';
+import { SocialSharing } from '@ionic-native/social-sharing';
+import { AppVersion } from '@ionic-native/app-version';
+import { AudienceFilter, ContentType, PreferenceKey } from '../../app/app.constant';
+import { Environment, ImpressionType, InteractSubtype, InteractType, PageId, } from '../../service/telemetry-constants';
 import {
   ContentRequest,
   ContentService,
@@ -48,10 +48,12 @@ export class SettingsPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private utilityService: UtilityService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    private headerService: AppHeaderService
   ) {
   }
 
   ionViewWillEnter() {
+    this.headerService.showHeaderWithBackButton();
     this.appVersion.getAppName()
       .then((appName) => {
         this.appName = appName;
@@ -160,9 +162,9 @@ export class SettingsPage {
         loader.dismiss();
         this.socialSharing.share('', '', 'file://' + filepath, '');
       }).catch((error) => {
-      loader.dismiss();
-      console.log(error);
-    });
+        loader.dismiss();
+        console.log(error);
+      });
   }
 
   generateInteractTelemetry(interactionType, interactSubtype) {

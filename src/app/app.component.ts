@@ -1,22 +1,22 @@
-import {Observable} from 'rxjs';
-import {ProfileSettingsPage} from './../pages/profile-settings/profile-settings';
-import {AfterViewInit, Component, Inject, NgZone, ViewChild} from '@angular/core';
-import {App, Events, Nav, Platform, PopoverController, ToastController} from 'ionic-angular';
-import {StatusBar} from '@ionic-native/status-bar';
-import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, LOGIN_TEACHER_TABS} from './module.service';
-import {LanguageSettingsPage} from '../pages/language-settings/language-settings';
-import {ImageLoaderConfig} from 'ionic-image-loader';
-import {TranslateService} from '@ngx-translate/core';
-import {SearchPage} from '@app/pages/search';
-import {CollectionDetailsPage} from '../pages/collection-details/collection-details';
-import {ContentDetailsPage} from '../pages/content-details/content-details';
-import {ContentType, EventTopics, GenericAppConfig, MimeType, PreferenceKey, ProfileConstants} from './app.constant';
-import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
-import {FormAndFrameworkUtilService} from '@app/pages/profile';
-import {AppGlobalService, CommonUtilService, TelemetryGeneratorService, UtilityService} from '@app/service';
-import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
-import {CategoriesEditPage} from '@app/pages/categories-edit/categories-edit';
-import {TncUpdateHandlerService} from '@app/service/handlers/tnc-update-handler.service';
+import { Observable } from 'rxjs';
+import { ProfileSettingsPage } from './../pages/profile-settings/profile-settings';
+import { AfterViewInit, Component, Inject, NgZone, ViewChild, OnInit, EventEmitter } from '@angular/core';
+import { App, Events, Nav, Platform, PopoverController, ToastController } from 'ionic-angular';
+import { StatusBar } from '@ionic-native/status-bar';
+import { GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, LOGIN_TEACHER_TABS } from './module.service';
+import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
+import { ImageLoaderConfig } from 'ionic-image-loader';
+import { TranslateService } from '@ngx-translate/core';
+import { SearchPage } from '@app/pages/search';
+import { CollectionDetailsPage } from '../pages/collection-details/collection-details';
+import { ContentDetailsPage } from '../pages/content-details/content-details';
+import { ContentType, EventTopics, GenericAppConfig, MimeType, PreferenceKey, ProfileConstants } from './app.constant';
+import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
+import { FormAndFrameworkUtilService } from '@app/pages/profile';
+import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, UtilityService, AppHeaderService } from '@app/service';
+import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
+import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
+import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
 import {
   AuthService,
   OAuthSession,
@@ -27,14 +27,19 @@ import {
   TelemetryAutoSyncUtil,
   TelemetryService,
 } from 'sunbird-sdk';
-import {tap} from 'rxjs/operators';
-import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../service/telemetry-constants';
-import {TabsPage} from '@app/pages/tabs/tabs';
-import {ContainerService} from '@app/service/container.services';
-import {AndroidPermissionsService} from '../service/android-permissions/android-permissions.service';
-import {AndroidPermission, AndroidPermissionsStatus} from '@app/service/android-permissions/android-permission';
-import {SplashcreenTelemetryActionHandlerDelegate} from '@app/service/sunbird-splashscreen/splashcreen-telemetry-action-handler-delegate';
-import {SplashscreenImportActionHandlerDelegate} from '@app/service/sunbird-splashscreen/splashscreen-import-action-handler-delegate';
+import { tap } from 'rxjs/operators';
+import { Environment, InteractSubtype, InteractType, PageId, ImpressionType } from '../service/telemetry-constants';
+import { TabsPage } from '@app/pages/tabs/tabs';
+import { ContainerService } from '@app/service/container.services';
+import { AndroidPermissionsService } from '../service/android-permissions/android-permissions.service';
+import { AndroidPermission, AndroidPermissionsStatus } from '@app/service/android-permissions/android-permission';
+import { SplashcreenTelemetryActionHandlerDelegate } from '@app/service/sunbird-splashscreen/splashcreen-telemetry-action-handler-delegate';
+import { SplashscreenImportActionHandlerDelegate } from '@app/service/sunbird-splashscreen/splashscreen-import-action-handler-delegate';
+import { OnboardingPage } from '@app/pages/onboarding/onboarding';
+import { SettingsPage } from '@app/pages/settings';
+import { ReportsPage } from '@app/pages/reports';
+import { UserAndGroupsPage } from '@app/pages/user-and-groups';
+import { LogoutHandlerService } from '@app/service/handlers/logout-handler.service';
 
 @Component({
   templateUrl: 'app.html',
@@ -43,16 +48,25 @@ import {SplashscreenImportActionHandlerDelegate} from '@app/service/sunbird-spla
     SplashscreenImportActionHandlerDelegate
   ]
 })
-export class MyApp implements AfterViewInit {
-
+export class MyApp implements OnInit, AfterViewInit {
   @ViewChild(Nav) nav;
   rootPage: any;
   public counter = 0;
+  headerConfig = {
+    showHeader: true,
+    showBurgerMenu: true,
+    actionButtons: ['search'],
+  };
+  public sideMenuEvent = new EventEmitter;
+
   readonly permissionList = [
     AndroidPermission.WRITE_EXTERNAL_STORAGE,
     AndroidPermission.RECORD_AUDIO,
     AndroidPermission.CAMERA];
   private telemetryAutoSyncUtil: TelemetryAutoSyncUtil;
+
+  profile: any = {};
+
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
@@ -71,7 +85,6 @@ export class MyApp implements AfterViewInit {
     private zone: NgZone,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private event: Events,
-    private container: ContainerService,
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
@@ -80,6 +93,8 @@ export class MyApp implements AfterViewInit {
     private utilityService: UtilityService,
     private splashcreenTelemetryActionHandlerDelegate: SplashcreenTelemetryActionHandlerDelegate,
     private splashscreenImportActionHandlerDelegate: SplashscreenImportActionHandlerDelegate,
+    private headerServie: AppHeaderService,
+    private logoutHandlerService: LogoutHandlerService
   ) {
     this.telemetryAutoSyncUtil = new TelemetryAutoSyncUtil(this.telemetryService);
     platform.ready().then(async () => {
@@ -106,7 +121,15 @@ export class MyApp implements AfterViewInit {
       this.statusBar.styleBlackTranslucent();
       this.handleBackButton();
     });
+  }
 
+  /**
+	 * Angular life cycle hooks
+	 */
+  ngOnInit() {
+    this.headerServie.headerConfigEmitted$.subscribe(config => {
+      this.headerConfig = config;
+    });
   }
 
   ngAfterViewInit(): void {
@@ -124,8 +147,13 @@ export class MyApp implements AfterViewInit {
   handleBackButton() {
     this.platform.registerBackButtonAction(() => {
 
-      const navObj = this.app.getActiveNavs()[0];
-      const currentPage = navObj.getActive().name;
+      let navObj = this.app.getRootNavs()[0];
+      let currentPage = navObj.getActive().name;
+      if (currentPage === 'TabsPage') {
+        navObj = this.app.getActiveNavs()[0];
+        currentPage = navObj.getActive().name;
+      }
+      console.log(currentPage);
 
       if (navObj.canGoBack()) {
         return navObj.pop();
@@ -189,10 +217,10 @@ export class MyApp implements AfterViewInit {
               .then((currentUser: any) => {
 
                 if (currentUser.profileType === ProfileType.STUDENT) {
-                  initTabs(this.container, GUEST_STUDENT_TABS);
+                  initTabs(this.containerService, GUEST_STUDENT_TABS);
                   this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise().then();
                 } else {
-                  initTabs(this.container, GUEST_TEACHER_TABS);
+                  initTabs(this.containerService, GUEST_TEACHER_TABS);
                   this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();
                 }
 
@@ -202,7 +230,7 @@ export class MyApp implements AfterViewInit {
                 this.app.getRootNav().setRoot(TabsPage);
 
               }).catch(() => {
-            });
+              });
 
           });
         } else if (response && action && action.actionType === 'connected') {
@@ -240,7 +268,7 @@ export class MyApp implements AfterViewInit {
     this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE)
       .then(response => {
         if (response === 'true') {
-          this.nav.setRoot('ProfileSettingsPage', {hideBackButton: hideBackButton});
+          this.nav.setRoot('ProfileSettingsPage', { hideBackButton: hideBackButton });
         } else {
           this.nav.setRoot(TabsPage);
         }
@@ -256,8 +284,9 @@ export class MyApp implements AfterViewInit {
 
   private async navigateToAppropriatePage() {
     const session = await this.authService.getSession().toPromise();
-
+    console.log(`Platform Session`, session);
     if (!session) {
+      console.log(`Success Platform Session`, session);
       this.preferences.getString(PreferenceKey.SELECTED_USER_TYPE).toPromise()
         .then(async (profileType: ProfileType | undefined) => {
           if (!profileType) {
@@ -266,7 +295,7 @@ export class MyApp implements AfterViewInit {
             return;
           }
 
-          switch (profileType) {
+          switch (profileType.toLocaleLowerCase()) {
             case ProfileType.TEACHER: {
               await this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise();
               initTabs(this.containerService, GUEST_TEACHER_TABS);
@@ -285,7 +314,8 @@ export class MyApp implements AfterViewInit {
           if (display_cat_page === 'false') {
             await this.nav.setRoot(TabsPage);
           } else {
-            const profile = await this.profileService.getActiveSessionProfile({requiredFields: ProfileConstants.REQUIRED_FIELDS}).toPromise();
+            const profile = await this.profileService.getActiveSessionProfile({ requiredFields: ProfileConstants.REQUIRED_FIELDS })
+              .toPromise();
             if (
               profile
               && profile.syllabus && profile.syllabus[0]
@@ -301,7 +331,7 @@ export class MyApp implements AfterViewInit {
                 if ((await this.preferences.getString(PreferenceKey.IS_ONBOARDING_COMPLETED).toPromise()) === 'true') {
                   this.getProfileSettingConfig(true);
                 } else {
-                  await this.nav.insertPages(0, [{page: LanguageSettingsPage}, {page: UserTypeSelectionPage}]);
+                  await this.nav.insertPages(0, [{ page: LanguageSettingsPage }, { page: UserTypeSelectionPage }]);
                 }
               } catch (e) {
                 this.getProfileSettingConfig();
@@ -310,6 +340,7 @@ export class MyApp implements AfterViewInit {
           }
         });
     } else {
+      console.log(`Failure Session`, session);
       this.profileService.getActiveSessionProfile({
         requiredFields: ProfileConstants.REQUIRED_FIELDS
       }).toPromise()
@@ -412,7 +443,7 @@ export class MyApp implements AfterViewInit {
         if (response.type === 'dialcode') {
           const results = response.code.split('/');
           const dialCode = results[results.length - 1];
-          this.nav.push(SearchPage, {dialCode: dialCode});
+          this.nav.push(SearchPage, { dialCode: dialCode });
         } else if (response.type === 'contentDetails') {
           const hierarchyInfo = JSON.parse(response.hierarchyInfo);
 
@@ -444,14 +475,14 @@ export class MyApp implements AfterViewInit {
       undefined
     );
   }
- private generateImpressionEvent(pageid: string) {
-  pageid = pageid.toLowerCase();
-   const env = pageid.localeCompare(PageId.PROFILE) ? Environment.HOME : Environment.USER;
-  this.telemetryGeneratorService.generateImpressionTelemetry(
-    ImpressionType.VIEW, '',
-    pageid,
-    env);
- }
+  private generateImpressionEvent(pageid: string) {
+    pageid = pageid.toLowerCase();
+    const env = pageid.localeCompare(PageId.PROFILE) ? Environment.HOME : Environment.USER;
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, '',
+      pageid,
+      env);
+  }
   private navigateToContentDetails(content) {
     if (content.contentData.contentType === ContentType.COURSE) {
       this.nav.push(EnrolledCourseDetailsPage, {
@@ -504,7 +535,7 @@ export class MyApp implements AfterViewInit {
       .then(result => {
         if (result !== undefined) {
           setTimeout(() => {
-            this.events.publish('force_optional_upgrade', {upgrade: result});
+            this.events.publish('force_optional_upgrade', { upgrade: result });
           }, 5000);
         }
       }).catch(err => {
@@ -551,53 +582,93 @@ export class MyApp implements AfterViewInit {
       .subscribe();
   }
 
-  // updateCallback(error) {
-  //   if (error) {
-  //   } else {
-  //     const confirm = window['thisRef'].alertCtrl.create({
-  //       title: 'Application Update',
-  //       message: 'Update available, do you want to apply it?',
-  //       buttons: [
-  //         {text: 'No'},
-  //         {
-  //           text: 'Yes',
-  //           handler: () => {
-  //             chcp.installUpdate(errorResponse => {
-  //               if (errorResponse) {
-  //                 window['thisRef'].alertCtrl.create({
-  //                   title: 'Update Download',
-  //                   subTitle: `Error ${errorResponse.code}`,
-  //                   buttons: ['OK']
-  //                 }).present();
-  //               } else {
-  //               }
-  //             });
-  //           }
-  //         }
-  //       ]
-  //     });
-  //     confirm.present();
-  //   }
-  // }
+  handleHeaderEvents($event) {
+    if ($event.name === 'back') {
+      // this.handleBackButton();
+      let navObj = this.app.getRootNavs()[0];
+      let currentPage = navObj.getActive().name;
+      if (currentPage === 'TabsPage') {
+        navObj = this.app.getActiveNavs()[0];
+        currentPage = navObj.getActive().name;
+      }
+      console.log(currentPage);
+      if (navObj.canGoBack()) {
+        return navObj.pop();
+      } else {
+        this.commonUtilService.showExitPopUp(this.computePageId(currentPage), Environment.HOME, false);
+      }
+    } else {
+      this.headerServie.sidebarEvent($event);
+    }
+  }
 
-  // private async showGreetingPopup() {
-  //   const popover = this.popoverCtrl.create(BroadcastComponent,
-  //     {
-  //       'greetings': 'Diwali Greetings',
-  //       'imageurl': 'https://t3.ftcdn.net/jpg/01/71/29/20/240_F_171292090_liVMi9liOzZaW0gjsmCIZzwVr2Qw7g4i.jpg',
-  //       'customButton': 'custom button',
-  //       'greetingText': 'this diwali may enlighten your dreams'
-  //     },
-  //     {cssClass: 'broadcast-popover'}
-  //   );
-  //
-  //   return popover.present();
-  // }
+  menuItemAction(menuName) {
+    switch (menuName.menuItem) {
+      case 'USERS_AND_GROUPS':
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.USER_GROUP_CLICKED,
+          Environment.USER,
+          PageId.PROFILE
+        );
+        if (this.app.getRootNavs().length > 0) {
+          this.app.getRootNavs()[0].push(UserAndGroupsPage, { profile: this.profile });
+        }
+        break;
 
-  // fetchUpdate() {
-  //   const options = {
-  //     'config-file': 'http://172.16.0.23:3000/updates/chcp.json'
-  //   };
-  //   chcp.fetchUpdate(this.updateCallback, options);
-  // }
+      case 'REPORTS':
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.REPORTS_CLICKED,
+          Environment.USER,
+          PageId.PROFILE
+        );
+        if (this.app.getRootNavs().length > 0) {
+          this.app.getRootNavs()[0].push(ReportsPage, { profile: this.profile });
+        }
+        break;
+
+      case 'SETTINGS': {
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.SETTINGS_CLICKED,
+          Environment.USER,
+          PageId.PROFILE,
+          null,
+          undefined,
+          undefined
+        );
+        if (this.app.getRootNavs().length > 0) {
+          this.app.getRootNavs()[0].push(SettingsPage);
+        }
+        break;
+      }
+      case 'LANGUAGE': {
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.LANGUAGE_CLICKED,
+          Environment.USER,
+          PageId.PROFILE,
+          null,
+          undefined,
+          undefined
+        );
+        if (this.app.getRootNavs().length > 0) {
+          this.app.getRootNavs()[0].push(LanguageSettingsPage, {
+            isFromSettings: true
+          });
+        }
+        break;
+      }
+      case 'LOGOUT':
+        if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
+          this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
+        } else {
+          this.logoutHandlerService.onLogout();
+        }
+        break;
+
+    }
+  }
+
 }

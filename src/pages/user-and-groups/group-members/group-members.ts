@@ -20,6 +20,7 @@ import {
   ObjectType,
   PageId
 } from '../../../service/telemetry-constants';
+import { AppHeaderService } from '@app/service';
 
 @IonicPage()
 @Component({
@@ -42,7 +43,8 @@ export class GroupMembersPage {
     private zone: NgZone,
     private loadingCtrl: LoadingController,
     private commonUtilService: CommonUtilService,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private headerService: AppHeaderService
   ) {
     this.group = this.navParams.get('group');
   }
@@ -57,6 +59,9 @@ export class GroupMembersPage {
 
   ionViewWillEnter() {
     this.loading = true; // present only loader, untill users are fetched from service
+    const header = this.headerService.getDefaultPageConfig();
+    header.showHeader = false;
+    this.headerService.updatePageConfig(header);
     this.getAllProfile();
   }
 

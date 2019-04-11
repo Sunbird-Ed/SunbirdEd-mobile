@@ -5,7 +5,7 @@ import {NavController} from 'ionic-angular';
 import {AppVersion} from '@ionic-native/app-version';
 import {initTabs, LOGIN_TEACHER_TABS} from '../../app/module.service';
 import {TelemetryGeneratorService} from '@app/service';
-import {ProfileConstants} from '../../app/app.constant';
+import {ProfileConstants, PreferenceKey} from '../../app/app.constant';
 import {FormAndFrameworkUtilService} from '../../pages/profile/formandframeworkutil.service';
 import {
   ApiService,
@@ -105,6 +105,7 @@ export class SignInCardComponent {
       this.authService.setSession(new OAuthSessionProvider(this.sdkConfig.apiConfig, this.apiService))
         .toPromise()
         .then(() => {
+          loader.present();
           initTabs(that.container, LOGIN_TEACHER_TABS);
           return that.refreshProfileData();
         })
@@ -179,8 +180,10 @@ export class SignInCardComponent {
   refreshTenantData(slug: string, title: string) {
     return new Promise((resolve, reject) => {
       this.profileService.getTenantInfo().toPromise()
-        .then((value) => {
-          (<any>window).splashscreen.setContent(title, value.logo);
+      .then((res) => {
+          this.preferences.putString(PreferenceKey.APP_LOGO, res.logo).toPromise().then();
+          this.preferences.putString(PreferenceKey.APP_NAME, title).toPromise().then();
+          (<any>window).splashscreen.setContent(title, res.logo);
           resolve();
         }).catch(() => {
         resolve(); // ignore

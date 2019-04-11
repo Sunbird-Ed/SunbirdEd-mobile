@@ -77,6 +77,8 @@ export class SunbirdQRScanner {
 
     /* Just need to override the back button functionality other wise  on pressing back button it will take to two pages back */
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      console.log('INNNNN BackButton');
+     //  this.stopScanner();
       this.backButtonFunc();
     }, 10);
     this.pauseSubscription = this.platform.pause.subscribe(() => this.stopScanner());
@@ -109,7 +111,9 @@ export class SunbirdQRScanner {
 
   public stopScanner() {
     // Unregister back button listner
+    console.log('InsideSTopScannere===>>');
     this.backButtonFunc();
+    // QRScannerAlert.dismiss();
     (<any>window).qrScanner.stopScanner();
     if (this.pauseSubscription) {
       this.pauseSubscription.unsubscribe();

@@ -183,7 +183,7 @@ page-profile {
 
     .scroll-content {
         background-color: #FAFAFA !important;
-        @include padding(0 !important);
+        // @include padding(0 !important);
     }
 
 
@@ -303,7 +303,7 @@ page-profile {
     }
     .school-recent {
         margin: 0 auto;
-        @include padding(0, 30px, 25px, 30px);
+        @include padding(0, 16px, 16px, 16px);
         text-align: center;
     }
 
@@ -495,4 +495,37 @@ page-profile {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.asPerStateRecord{
+    color: white;
+    font-size: 10px;
+    white-space:pre;
+    display:inline-block;
+    font-weight:bold;
+    background-color: black;
+    padding: 6px;
+    position: absolute;
+    right: 13px;
+    
+}
+.isymbol{
+    position: absolute;
+    top: -20px;
+     line-height: 12px;
+     
+}
+.info-icon{
+    vertical-align: sub;
+    margin-right: 13px;
+    font-size: 1.8em !important;
+    color: #a4a4a4;
+
+}
+.info-icon-text{
+    font-size: 10px;
+    text-align: center;
+}
+.icon-selected-color{
+    color: black;
 }

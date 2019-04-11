@@ -1,84 +1,19 @@
 content-rating-alert {
-  .display-inline {
-    display: inline;
-  }
-
-
-
-  .heading1{
-    color: map-get($colors, dark);
-    margin-bottom: 3%;
-    font-size: 1.6rem;
-    padding: 0;
-    @include margin(null, null, null, 0);
-    @extend .font-weight-bold;
-  }
-.heading2{
-    margin-top: 5px;
-}
-.text-gray-color {
-  color: gray;
-  @extend .NotoSans;
-  margin-top: 6px;
-}
-.subtitle {
-  text-transform: capitalize;
-  font-size: 1.3em;
-  @extend .font-weight-700;
-  color: map-get($colors, primary_black);
-}
-.feedback{
-        border-top: 0px;
-        // height: 50px;
-        // font-size: 20px;
-        @include ltr() {
-          border-left: 0px;
-          border-right: 0px;
-        }
-        @include rtl() {
-          border-left: 0px;
-          border-right: 0px;
-        }
-        border-bottom: 2px solid gray;
-        padding-top: 12px;
-    }
-    ul {
-        padding: 0px;
-        margin: 0px;
-
-        &.rating li {
-          padding: 1px !important;
-          background: none;
-          color: map-get($colors, primary);
-          ion-icon {
-            font-size: 35px;
-          }
+    /* Sb-Rating Component Styling */
+ul {
+    @include padding($base-block-space);
+      &.rating li {
+        @include padding($base-block-space * 2 !important);
+        background: none;
+        color: $info-color;
+        ion-icon {
+          font-size: (($font-size-base * 3) - 2);
         }
       }
-}
-
-.content-rating-alert .popover-content {
-    margin: 0;
-    width: 100% !important;
-    height: auto;
-    box-shadow: unset;
-    position: fixed;
-    left: 0 !important;
-    @include ltr() {
-      left: 0 !important;
     }
-
-    @include rtl() {
-      right: 0 !important;
-    }
-    top: unset !important;
-    bottom: 0;
-    transform-origin: bottom -100% !important;
-    transform: translateY(0) !important;
-    overflow-y: hidden;
-  }
 
 .content-rating-alert ion-backdrop {
     background-color: map-get($colors, dark) !important;
     opacity: 0.4 !important;
+}
 }

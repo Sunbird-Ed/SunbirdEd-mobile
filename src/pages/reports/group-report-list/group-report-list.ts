@@ -1,17 +1,16 @@
 import {CommonUtilService} from './../../../service/common-util.service';
-import {NavController} from 'ionic-angular/navigation/nav-controller';
 import {Component, Inject, NgZone} from '@angular/core';
-import {LoadingController, NavParams} from 'ionic-angular';
+import {LoadingController, NavParams, NavController} from 'ionic-angular';
 import {GroupReportAlert} from '../group-report-alert/group-report-alert';
 import {TranslateService} from '@ngx-translate/core';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
-import {AppGlobalService, UtilityService} from '@app/service';
+import {AppGlobalService, UtilityService, AppHeaderService} from '@app/service';
 import {UserReportPage} from '../user-report/user-report';
 import {File} from '@ionic-native/file';
 import {FileTransfer, FileTransferObject} from '@ionic-native/file-transfer';
 import {DatePipe} from '@angular/common';
 import {DeviceInfo, Profile, ReportSummary, SummarizerService, SummaryRequest} from 'sunbird-sdk';
-import {Environment, InteractSubtype, InteractType, PageId,} from '../../../service/telemetry-constants';
+import {Environment, InteractSubtype, InteractType, PageId} from '../../../service/telemetry-constants';
 
 
 @Component({
@@ -75,7 +74,8 @@ export class GroupReportListPage {
         private datePipe: DatePipe,
         @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
         private navCtrl: NavController,
-        private commonUtilService: CommonUtilService) {
+        private commonUtilService: CommonUtilService,
+        private headerService: AppHeaderService) {
         this.downloadDirectory = this.file.dataDirectory;
         this.utilityService.getDownloadDirectoryPath()
             .then((response: any) => {
@@ -92,6 +92,10 @@ export class GroupReportListPage {
         this.deviceId =  this.deviceInfo.getDeviceID();
         this.profile = this.appGlobalService.getCurrentUser();
         this.groupinfo = this.navParams.get('group');
+        const header = this.headerService.getDefaultPageConfig();
+        header.showHeader = false;
+        header.showBurgerMenu = false;
+        this.headerService.updatePageConfig(header);
     }
     fetchAssessment(event: string, fromUserList: boolean) {
         const subType = (event === 'users') ? InteractSubtype.REPORTS_BY_USER_CLICKED : InteractSubtype.REPORTS_BY_QUESTION_CLICKED;

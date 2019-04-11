@@ -13,7 +13,7 @@ import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { AppVersion } from '@ionic-native/app-version';
-import { AppGlobalService, UtilityService } from '@app/service';
+import { AppGlobalService, UtilityService, AppHeaderService } from '@app/service';
 import { DatePipe } from '@angular/common';
 import { CommonUtilService } from '@app/service';
 import {
@@ -46,7 +46,9 @@ export class UserReportPage {
     @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
-    private utilityService: UtilityService) {
+    private utilityService: UtilityService,
+    private headerService: AppHeaderService
+    ) {
 
     this.downloadDirectory = this.file.dataDirectory;
     this.utilityService.getDownloadDirectoryPath()
@@ -96,6 +98,9 @@ export class UserReportPage {
   }
 
   ionViewDidLoad() {
+    const header = this.headerService.getDefaultPageConfig();
+      header.showHeader = false;
+      this.headerService.updatePageConfig(header);
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
       PageId.REPORTS_USER_ASSESMENT_DETAILS,
