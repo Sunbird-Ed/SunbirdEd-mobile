@@ -1,6 +1,15 @@
 import {Component, Inject, NgZone} from '@angular/core';
 import {LoadingController} from 'ionic-angular';
-import {GetAllProfileRequest, Group, GroupService, Profile, ProfileService, ProfileExportRequest, ProfileExportResponse} from 'sunbird-sdk';
+import {
+  GetAllProfileRequest,
+  Group,
+  GroupService,
+  Profile,
+  ProfileExportRequest,
+  ProfileExportResponse,
+  ProfileService,
+  ProfileType
+} from 'sunbird-sdk';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
 import {
@@ -17,7 +26,7 @@ declare const cordova;
   templateUrl: 'share-user-and-groups.html',
 })
 export class ShareUserAndGroupPage {
-
+  ProfileType = ProfileType;
   groupName: Group;
   userList: Array<Profile> = [];
   groupList: Array<Group> = [];

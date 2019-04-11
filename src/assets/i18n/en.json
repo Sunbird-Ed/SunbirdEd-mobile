@@ -269,6 +269,7 @@
   "NUMBER_OF_VOTES": "Number of votes",
   "OFF": "Off",
   "RATE": "Rate",
+  "RATED_STARS": "You rated {{%s}} stars",
   "RATE_THE_CONTENT": "Rate the Content",
   "OFFLINE_WARNING": "Ensure your device is connected to the internet",
   "OFFLINE_WARNING_ETBUI": "Please connect to the internet to view the content",

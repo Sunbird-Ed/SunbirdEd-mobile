@@ -48,13 +48,21 @@
       .sb-common-footer-text {
         color : $white;
         font-weight: 500;
-        font-size: ($font-size-base  - 2);
+        font-size: ($font-size-base);
         text-align: center;
         text-transform: initial;
       }  
       .sb-common-footer-text.sb-sub-footer{
-         font-size:($font-size-base  - 4);
+         font-size:($font-size-base  - 2);
       }  
+    }
+    .sb-common-player-group.sb-common-title-group{
+      top: unset;
+      text-align: center;
+    }
+    .sb-common-player-group.sb-download-title-group{
+      top: 30%;
+      text-align: center;
     }
     .sb-online-message
     {
@@ -78,3 +86,6 @@
       background: rgba(0,0,0,0.4);  
     }
   }
+  // .sb-player-container.sb-offline-container{
+  //   top: none;
+  // }

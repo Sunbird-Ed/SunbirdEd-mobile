@@ -12,8 +12,8 @@
     <p class="change-role" (click)="goToRoles()" text-uppercase>
       {{'CHANGE_ROLE' | translate }}
     </p>
-    <p *ngIf="profile?.profileType === 'TEACHER'" class="user-type">{{'USER_TYPE_1' | translate }}</p>
-    <p *ngIf="profile?.profileType === 'STUDENT'" class="user-type">{{'USER_TYPE_2' | translate }}</p>
+    <p *ngIf="profile?.profileType === ProfileType.TEACHER" class="user-type">{{'USER_TYPE_1' | translate }}</p>
+    <p *ngIf="profile?.profileType === ProfileType.STUDENT" class="user-type">{{'USER_TYPE_2' | translate }}</p>
   </div>
 
   <ion-list *ngIf="appGlobalService?.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE">

@@ -253,8 +253,6 @@ export class ContentDetailsPage {
     this.downloadAndPlay = this.navParams.get('downloadAndPlay');
     this.playOnlineSpinner = true;
     this.contentPath = this.navParams.get('paths');
-    console.log('BreadCrumbs', this.contentPath);
-   console.log('NAVPARAMS FROM COLLECTION ', this.navParams.get('paths'));
 
     if (this.isResumedCourse && !this.isPlayerLaunched) {
       if (this.isUsrGrpAlrtOpen) {
@@ -400,8 +398,8 @@ export class ContentDetailsPage {
           this.userCount += 1;
         }
       }).catch((error) => {
-        console.error('Error occurred= ', error);
-      });
+      console.error('Error occurred= ', error);
+    });
   }
 
   checkCurrentUserType() {
@@ -952,6 +950,7 @@ export class ContentDetailsPage {
    * confirming popUp content
    */
   openConfirmPopUp() {
+    if (this.commonUtilService.networkInfo.isNetworkAvailable) {
     const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
       sbPopoverMainTitle: this.content.contentData.name + this.content.contentData.subject,
       icon: null,
@@ -970,6 +969,9 @@ export class ContentDetailsPage {
         this.downloadContent();
       }
     });
+  } else {
+    this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
+  }
 
 
   }
@@ -1025,10 +1027,10 @@ export class ContentDetailsPage {
           }
         });
       }).catch((error: any) => {
-        this.zone.run(() => {
-          console.log('Error: download error =>>>>>', error);
-        });
+      this.zone.run(() => {
+        console.log('Error: download error =>>>>>', error);
       });
+    });
   }
 
   /** function add eclipses to the texts**/
@@ -1048,9 +1050,10 @@ export class ContentDetailsPage {
       return false;
     } else {
       const values = new Map();
+      const subtype: string = isStreaming ? InteractSubtype.PLAY_ONLINE : InteractSubtype.PLAY_FROM_DEVICE;
       values['network-type'] = this.network.type;
       this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-        InteractSubtype.PLAY_ONLINE,
+        subtype,
         Environment.HOME,
         PageId.CONTENT_DETAIL,
         undefined,
@@ -1220,7 +1223,7 @@ export class ContentDetailsPage {
           .then((data) => {
             console.log('setContentMarker', data);
           }).catch(() => {
-          });
+        });
       }
       this.downloadAndPlay = false;
       const request: any = {};
@@ -1247,7 +1250,7 @@ export class ContentDetailsPage {
               this.canvasPlayerService.xmlToJSon(`${data.metadata.basePath}/index.ecml`).then((json) => {
                 data['data'] = json;
 
-                this.navCtrl.push(PlayerPage, { config: data });
+                this.navCtrl.push(PlayerPage, {config: data});
               }).catch((error) => {
                 console.error('error1', error);
               });
@@ -1255,17 +1258,17 @@ export class ContentDetailsPage {
               console.error('err', err);
               this.canvasPlayerService.readJSON(`${data.metadata.basePath}/index.json`).then((json) => {
                 data['data'] = json;
-                this.navCtrl.push(PlayerPage, { config: data });
+                this.navCtrl.push(PlayerPage, {config: data});
               }).catch((e) => {
                 console.error('readJSON error', e);
               });
             });
           } else {
-            this.navCtrl.push(PlayerPage, { config: data });
+            this.navCtrl.push(PlayerPage, {config: data});
           }
 
         } else {
-          this.navCtrl.push(PlayerPage, { config: data });
+          this.navCtrl.push(PlayerPage, {config: data});
         }
       });
     }
@@ -1288,8 +1291,8 @@ export class ContentDetailsPage {
         this.apiLevel = res;
         console.log('device api level', this.apiLevel);
       }).catch((error: any) => {
-        console.error('Error ', error);
-      });
+      console.error('Error ', error);
+    });
   }
 
   showOverflowMenu(event) {
@@ -1308,8 +1311,8 @@ export class ContentDetailsPage {
       pageName: PageId.CONTENT_DETAIL,
       corRelationList: this.corRelationList
     }, {
-        cssClass: 'content-action'
-      });
+      cssClass: 'content-action'
+    });
     popover.present({
       ev: event
     });
@@ -1415,16 +1418,13 @@ getMessageByConstant(constant: string) {
         this.events.publish('savedResources:update', {
           update: true
         });
-        console.log('delete response: ', data);
         this.importContent([this.identifier], this.isChildContent);
         this.contentDownloadable[this.content.identifier] = false;
         this.showToaster(this.getMessageByConstant('MSG_RESOURCE_DELETED'));
-        // this.viewCtrl.dismiss();
       }
     }).catch((error: any) => {
       console.log('delete response: ', error);
       this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
-     // this.viewCtrl.dismiss();
     });
   }
   showBookmarkMenu(event?) {
@@ -1435,8 +1435,8 @@ getMessageByConstant(constant: string) {
       corRelationList: this.corRelationList,
       position: 'bottom'
     }, {
-        cssClass: 'bookmark-menu'
-      });
+      cssClass: 'bookmark-menu'
+    });
     popover.present({
       ev: event
     });
@@ -1467,9 +1467,9 @@ getMessageByConstant(constant: string) {
           this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.content.contentType);
           this.social.share('', '', '' + response.exportedFilePath, url);
         }).catch(() => {
-          loader.dismiss();
-          this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
-        });
+        loader.dismiss();
+        this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
+      });
     } else {
       loader.dismiss();
       this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.content.contentType);
@@ -1538,8 +1538,8 @@ getMessageByConstant(constant: string) {
       body: this.commonUtilService.translateMessage('ANDROID_NOT_SUPPORTED_DESC'),
       buttonText: this.commonUtilService.translateMessage('INSTALL_CROSSWALK')
     }, {
-        cssClass: 'popover-alert'
-      });
+      cssClass: 'popover-alert'
+    });
     popover.present();
   }
 

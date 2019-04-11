@@ -1,7 +1,6 @@
 import {CommonUtilService} from './../../../service/common-util.service';
-import {NavController} from 'ionic-angular/navigation/nav-controller';
 import {Component, Inject, NgZone} from '@angular/core';
-import {LoadingController, NavParams} from 'ionic-angular';
+import {LoadingController, NavParams, NavController} from 'ionic-angular';
 import {GroupReportAlert} from '../group-report-alert/group-report-alert';
 import {TranslateService} from '@ngx-translate/core';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';

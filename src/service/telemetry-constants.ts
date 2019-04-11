@@ -232,6 +232,7 @@ export enum InteractSubtype {
     UPDATE_INITIATE = 'update-initiate',
     DOWNLOAD_INITIATE = 'download-initiate',
     PLAY_ONLINE = 'play-online',
+    PLAY_FROM_DEVICE = 'play-from-device',
     RESOURCE_PAGE_REQUEST = 'page-request-sent',
     RESOURCE_PAGE_LOADED = 'page-loaded',
     RESOURCE_PAGE_ERROR = 'page-error',
