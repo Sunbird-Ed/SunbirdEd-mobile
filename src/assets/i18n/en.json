@@ -479,5 +479,6 @@
   "SHOW_RESULTS":"Showing results of \"{{%s}}\"",
   "VIEW_RETIRED_BATCHES": "Retired Batches",
   "VIEW_ALL_BATCHES": "Please select a batch to proceed",
-  "STATE_RECORDS":"As per state records"
+  "STATE_RECORDS":"As per state records",
+  "CONTENT_PLAYER_EXIT_PERMISSION": "Would you like to leave this content?"
 }
