@@ -1277,6 +1277,7 @@ export class ContentDetailsPage {
     confirm.onDidDismiss((canDelete: any) => {
       if (canDelete) {
         this.deleteContent();
+        this.viewCtrl.dismiss();
       }
     });
   }
