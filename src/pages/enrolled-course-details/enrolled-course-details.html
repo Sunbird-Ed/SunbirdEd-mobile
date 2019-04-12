@@ -176,7 +176,7 @@
 <!-- Page footer -->
 
 <ion-footer *ngIf="courseCardData?.batchId">
-	<ion-toolbar padding>
+	<ion-toolbar class="toolbar-p-16">
 		<button ion-button block *ngIf="!courseCardData?.lastReadContentId && childrenData?.length" (click)="startContent()">{{
 			'START_COURSE' | translate }}</button>
 		<button ion-button block *ngIf="showResumeBtn" (click)="resumeContent(courseCardData?.lastReadContentId)">{{
@@ -192,7 +192,7 @@
 	</ion-toolbar>
 </ion-footer>
 <ion-footer *ngIf="!courseCardData?.batchId && course?.createdBy !== userId && !isAlreadyEnrolled">
-	<ion-toolbar padding>
+	<ion-toolbar class="toolbar-p-16">
 		<button ion-button block (click)="navigateToBatchListPage();">{{ 'ENROLL_COURSE' | translate }}</button>
 	</ion-toolbar>
 </ion-footer>
