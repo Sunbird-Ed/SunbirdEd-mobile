@@ -592,6 +592,12 @@ export class MyApp implements OnInit, AfterViewInit {
         currentPage = navObj.getActive().name;
       }
       console.log(currentPage);
+      if(currentPage === "UserTypeSelectionPage" || currentPage === "CollectionDetailsEtbPage" || 
+        currentPage == "EnrolledCourseDetailsPage" || currentPage == "OnboardingPage" || 
+        currentPage == "QrCodeResultPage" || currentPage == "CollectionDetailsPage") {
+          this.headerServie.sidebarEvent($event);
+          return;
+        }
       if (navObj.canGoBack()) {
         return navObj.pop();
       } else {

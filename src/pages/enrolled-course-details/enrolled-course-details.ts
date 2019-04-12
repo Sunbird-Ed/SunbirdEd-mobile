@@ -1204,11 +1204,13 @@ export class EnrolledCourseDetailsPage implements OnInit {
   }
 
   ionViewDidLoad() {
-    this.navBar.backButtonClick = () => {
+    /*this.navBar.backButtonClick = () => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
         true, this.identifier, this.corRelationList);
       this.handleNavBackButton();
-    };
+    };*/
+    
+    
 
     this.subscribeUtilityEvents();
   }
@@ -1331,7 +1333,11 @@ export class EnrolledCourseDetailsPage implements OnInit {
       case 'share': this.share();
                     break;
       case 'more': this.showOverflowMenu($event);
-                      break;
+                    break;
+      case 'back': this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
+        true, this.identifier, this.corRelationList);
+                    this.handleNavBackButton();
+                    break;
     }
   }
 }

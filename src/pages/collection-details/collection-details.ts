@@ -186,6 +186,7 @@ export class CollectionDetailsPage {
   public baseUrl = '';
   guestUser = false;
   profileType = '';
+  
   public corRelationList: Array<CorrelationData>;
   public shouldGenerateEndTelemetry = false;
   public source = '';
@@ -220,11 +221,11 @@ export class CollectionDetailsPage {
   }
 
   ionViewDidLoad() {
-    this.navBar.backButtonClick = () => {
+    /*this.navBar.backButtonClick = () => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
         true, this.cardData.identifier, this.corRelationList);
       this.handleBackButton();
-    };
+    };*/
     this.registerDeviceBackButton();
   }
 
@@ -1056,10 +1057,14 @@ export class CollectionDetailsPage {
 
   handleHeaderEvents($event) {
     switch ($event.name) {
-      case 'share': this.share();
+      case 'share' : this.share();
+        break;
+      case 'more' : this.showOverflowMenu($event);
+        break;
+      case 'back': this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
+        true, this.cardData.identifier, this.corRelationList);
+      this.handleBackButton();
                     break;
-      case 'more': this.showOverflowMenu($event);
-                      break;
     }
   }
 
