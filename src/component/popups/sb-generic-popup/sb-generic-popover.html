@@ -14,11 +14,11 @@
         <div class="sb-popover-content-details">
           <div class="main-title">
             {{sbPopoverMainTitle}}
-            <div class="meta-info">
+            <div class="meta-info" *ngIf="metaInfo">
               {{metaInfo}}
             </div>
           </div>
-          <div class="sb-popover-content">
+          <div class="sb-popover-content" *ngIf="sbPopoverContent">
             {{sbPopoverContent}}
           </div>
         </div>

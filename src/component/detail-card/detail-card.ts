@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import {Content} from "sunbird-sdk";
 
 /**
  * Generated class for the DetailCardComponent component.
@@ -11,7 +12,7 @@ import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
   templateUrl: 'detail-card.html'
 })
 export class DetailCardComponent implements OnInit {
-  @Input() contentDetail: any;
+  @Input() contentDetail: Content;
   @Input() defaultAppIcon: string;
   @Input() localImage: string;
   @Input() showDownloadBtn: boolean;

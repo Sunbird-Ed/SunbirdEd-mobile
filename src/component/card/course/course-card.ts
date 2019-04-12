@@ -1,3 +1,4 @@
+import { AppVersion } from '@ionic-native/app-version';
 import { BatchConstants } from './../../../app/app.constant';
 import {Component, Inject, Input, OnInit, NgZone} from '@angular/core';
 import {Events, NavController, PopoverController} from 'ionic-angular';
@@ -214,6 +215,18 @@ export class CourseCard implements OnInit {
 
 
   resumeCourse(content: any) {
+    const identifier = content.contentId || content.identifier;
+    const telemetryObject: TelemetryObject = new TelemetryObject(identifier, ContentType.COURSE, content.pkgVersion);
+    const values = new Map();
+    values['sectionName'] = this.sectionName;
+    values['positionClicked'] = this.index;
+
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.RESUME_CLICKED,
+      this.env,
+      this.pageName ? this.pageName : this.layoutName,
+      telemetryObject,
+      values);
     this.saveContentContext(content);
     if (content.lastReadContentId && content.status === 1) {
       this.events.publish('course:resume', {
