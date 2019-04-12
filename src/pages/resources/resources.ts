@@ -245,6 +245,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.toast = await this.toastController.create({
       message: this.commonUtilService.translateMessage('NO_INTERNET_TITLE'),
       showCloseButton: true,
+      duration: 2000,
       position: 'top',
       closeButtonText: '',
       cssClass: 'toastAfterHeader'

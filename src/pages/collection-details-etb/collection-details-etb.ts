@@ -331,6 +331,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   async presentToastWithOptions() {
     this.toast = await this.toastController.create({
       message: this.commonUtilService.translateMessage('NO_INTERNET_TITLE'),
+      duration: 2000,
       showCloseButton: true,
       position: 'top',
       closeButtonText: '',
