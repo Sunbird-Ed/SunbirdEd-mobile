@@ -1009,11 +1009,13 @@ export class EnrolledCourseDetailsPage implements OnInit {
           // Show download percentage
           if (event.type === DownloadEventType.PROGRESS) {
             const downloadEvent = event as DownloadProgress;
+            if(downloadEvent.payload.identifier === this.identifier) {
               this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
               if (this.downloadProgress === 100) {
                 this.getBatchDetails();
                 this.showLoading = false;
               }
+            }
           }
 
           // Get child content
@@ -1041,7 +1043,8 @@ export class EnrolledCourseDetailsPage implements OnInit {
           // For content update available
           const hierarchyInfo = this.courseCardData.hierarchyInfo ? this.courseCardData.hierarchyInfo : null;
           const contentUpdateEvent = event as ContentUpdate;
-          if (contentUpdateEvent.payload && contentUpdateEvent.type === ContentEventType.UPDATE
+          if (contentUpdateEvent.payload && contentUpdateEvent.payload.contentId === this.identifier &&
+            contentUpdateEvent.type === ContentEventType.UPDATE
             && hierarchyInfo === null) {
             this.zone.run(() => {
               this.showLoading = true;
