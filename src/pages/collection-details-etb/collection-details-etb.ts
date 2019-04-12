@@ -263,20 +263,12 @@ export class CollectionDetailsEtbPage implements OnInit {
   }
 
   ionViewDidLoad() {
-<<<<<<< HEAD
     /*this.navBar.backButtonClick = () => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
         true, this.cardData.identifier, this.corRelationList);
       this.handleBackButton();
     };*/
     
-=======
-    // this.navBar.backButtonClick = () => {
-    //   this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
-    //     true, this.cardData.identifier, this.corRelationList);
-    //   this.handleBackButton();
-    // };
->>>>>>> 578ff0c3cdcd6058e527e2d3d05c52e150555e80
     this.registerDeviceBackButton();
   }
 
