@@ -241,6 +241,7 @@ export enum InteractSubtype {
     ENROLL_CLICKED = 'enroll-clicked',
     YES_CLICKED = 'yes-clicked',
     NO_CLICKED = 'no-clicked',
+    RESUME_CLICKED = 'resume-clicked'
 }
 
 
