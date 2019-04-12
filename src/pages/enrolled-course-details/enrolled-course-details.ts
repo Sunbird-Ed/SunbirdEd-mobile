@@ -1,14 +1,5 @@
 import {Component, Inject, NgZone, ViewChild, OnInit} from '@angular/core';
-import {
-  AlertController,
-  Events,
-  IonicPage,
-  Navbar,
-  NavController,
-  NavParams,
-  Platform,
-  PopoverController
-} from 'ionic-angular';
+import {AlertController, Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController} from 'ionic-angular';
 import { Observable } from 'rxjs/Observable';
 import * as _ from 'lodash';
 import {SocialSharing} from '@ionic-native/social-sharing';
@@ -41,6 +32,7 @@ import {
   ContentImportResponse,
   ContentImportStatus,
   ContentService,
+  ContentState,
   ContentStateResponse,
   ContentUpdate,
   CorrelationData,
@@ -456,6 +448,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
     const option: ContentDetailRequest = {
       contentId: identifier,
       attachFeedback: true,
+      emitUpdateIfAny: true,
       attachContentAccess: true
     };
     this.contentService.getContentDetails(option).toPromise()
@@ -875,9 +868,8 @@ export class EnrolledCourseDetailsPage implements OnInit {
    * @param content
    * @param depth
    */
-  navigateToChildrenDetailsPage(content, depth): void {
-    console.log(content.contentType);
-    const contentState = {
+  navigateToChildrenDetailsPage(content: Content, depth): void {
+    const contentState: ContentState = {
       batchId: this.courseCardData.batchId ? this.courseCardData.batchId : '',
       courseId: this.identifier
     };
@@ -1017,7 +1009,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
           // Show download percentage
           if (event.type === DownloadEventType.PROGRESS) {
             const downloadEvent = event as DownloadProgress;
-            if (downloadEvent.payload.identifier === this.identifier) {
+            if(downloadEvent.payload.identifier === this.identifier) {
               this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
               if (this.downloadProgress === 100) {
                 this.getBatchDetails();
@@ -1051,8 +1043,9 @@ export class EnrolledCourseDetailsPage implements OnInit {
           // For content update available
           const hierarchyInfo = this.courseCardData.hierarchyInfo ? this.courseCardData.hierarchyInfo : null;
           const contentUpdateEvent = event as ContentUpdate;
-          if (contentUpdateEvent.payload && contentUpdateEvent.payload.contentId === this.identifier
-            && contentUpdateEvent.type === ContentEventType.UPDATE && hierarchyInfo === null) {
+          if (contentUpdateEvent.payload && contentUpdateEvent.payload.contentId === this.identifier &&
+            contentUpdateEvent.type === ContentEventType.UPDATE
+            && hierarchyInfo === null) {
             this.zone.run(() => {
               this.showLoading = true;
               this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.course, false);
@@ -1204,11 +1197,13 @@ export class EnrolledCourseDetailsPage implements OnInit {
   }
 
   ionViewDidLoad() {
-    this.navBar.backButtonClick = () => {
+    /*this.navBar.backButtonClick = () => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
         true, this.identifier, this.corRelationList);
       this.handleNavBackButton();
-    };
+    };*/
+    
+    
 
     this.subscribeUtilityEvents();
   }
@@ -1331,7 +1326,11 @@ export class EnrolledCourseDetailsPage implements OnInit {
       case 'share': this.share();
                     break;
       case 'more': this.showOverflowMenu($event);
-                      break;
+                    break;
+      case 'back': this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
+        true, this.identifier, this.corRelationList);
+                    this.handleNavBackButton();
+                    break;
     }
   }
 }

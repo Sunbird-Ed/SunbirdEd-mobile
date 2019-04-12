@@ -212,6 +212,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   contentId: string;
   batchDetails: any;
   pageName: any;
+  headerObservable: any;
 
 
   // Local Image
@@ -242,7 +243,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     public viewCtrl: ViewController,
     private toastController: ToastController,
     private fileSizePipe: FileSizePipe,
-    private headerServie: AppHeaderService,
+    private headerService: AppHeaderService,
   ) {
     this.objRollup = new Rollup();
     this.checkLoggedInOrGuestUser();
@@ -262,11 +263,12 @@ export class CollectionDetailsEtbPage implements OnInit {
   }
 
   ionViewDidLoad() {
-    // this.navBar.backButtonClick = () => {
-    //   this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
-    //     true, this.cardData.identifier, this.corRelationList);
-    //   this.handleBackButton();
-    // };
+    /*this.navBar.backButtonClick = () => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
+        true, this.cardData.identifier, this.corRelationList);
+      this.handleBackButton();
+    };*/
+    
     this.registerDeviceBackButton();
   }
 
@@ -275,11 +277,14 @@ export class CollectionDetailsEtbPage implements OnInit {
    */
   ionViewWillEnter() {
     this.zone.run(() => {
-      this.headerConfig = this.headerServie.getDefaultPageConfig();
+      this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
+        this.handleHeaderEvents(eventName);
+      });
+      this.headerConfig = this.headerService.getDefaultPageConfig();
       this.headerConfig.actionButtons = [];
       this.headerConfig.showHeader = false;
       this.headerConfig.showBurgerMenu = false;
-      this.headerServie.updatePageConfig(this.headerConfig);
+      this.headerService.updatePageConfig(this.headerConfig);
       this.resetVariables();
       this.cardData = this.navParams.get('content');
       console.log('this.cardData', this.cardData);
@@ -331,6 +336,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   async presentToastWithOptions() {
     this.toast = await this.toastController.create({
       message: this.commonUtilService.translateMessage('NO_INTERNET_TITLE'),
+      duration: 2000,
       showCloseButton: true,
       position: 'top',
       closeButtonText: '',
@@ -1083,7 +1089,7 @@ export class CollectionDetailsEtbPage implements OnInit {
           this.downloadAllContent();
         } else {
           // Cancel Clicked Telemetry
-          this.telemetryGeneratorService.generateCancelDownloadTelemetry(this.contentDetail);
+          this.generateCancelDownloadTelemetry(this.contentDetail);
         }
       });
     } else {
@@ -1107,6 +1113,17 @@ export class CollectionDetailsEtbPage implements OnInit {
           this.navCtrl.pop();
         });
       });
+  }
+  generateCancelDownloadTelemetry(content: any) {
+    const values = new Map();
+    const telemetryObject = new TelemetryObject(content.identifier || content.contentId, content.contentType, content.pkgVersion);
+    this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        InteractSubtype.CLOSE_CLICKED,
+        Environment.HOME,
+        PageId.COLLECTION_DETAIL,
+        telemetryObject,
+        values);
   }
 
   /**
@@ -1132,6 +1149,7 @@ export class CollectionDetailsEtbPage implements OnInit {
    */
   ionViewWillLeave() {
     this.downloadProgress = 0;
+    this.headerObservable.unsubscribe();
     if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
     }
@@ -1240,10 +1258,18 @@ export class CollectionDetailsEtbPage implements OnInit {
   }
 
   refreshHeader() {
-    this.headerConfig = this.headerServie.getDefaultPageConfig();
+    this.headerConfig = this.headerService.getDefaultPageConfig();
     this.headerConfig.actionButtons = [];
     this.headerConfig.showBurgerMenu = false;
     this.headerConfig.showHeader = true;
-    this.headerServie.updatePageConfig(this.headerConfig);
+    this.headerService.updatePageConfig(this.headerConfig);
+  }
+  handleHeaderEvents($event) {
+    switch ($event.name) {
+      case 'back': this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
+        true, this.cardData.identifier, this.corRelationList);
+      this.handleBackButton();
+                    break;
+    }
   }
 }

@@ -53,6 +53,7 @@ import {TabsPage} from '@app/pages/tabs/tabs';
 import {PlayerPage} from '../player/player';
 import {CanvasPlayerService} from '../player/canvas-player.service';
 import {File} from '@ionic-native/file';
+import { AppHeaderService } from '@app/service';
 
 declare const cordova;
 
@@ -117,6 +118,7 @@ export class QrCodeResultPage implements OnDestroy {
   downloadProgress: any = 0;
   isUpdateAvailable: boolean;
   eventSubscription: Subscription;
+  headerObservable: any;
 
   constructor(
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
@@ -137,7 +139,8 @@ export class QrCodeResultPage implements OnDestroy {
     @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     @Inject('PLAYER_SERVICE') private playerService: PlayerService,
     private canvasPlayerService: CanvasPlayerService,
-    private file: File
+    private file: File,
+    private headerService: AppHeaderService
   ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
@@ -169,6 +172,9 @@ export class QrCodeResultPage implements OnDestroy {
       this.handleBackButton(InteractSubtype.DEVICE_BACK_CLICKED);
     }, 10);
     this.subscribeSdkEvent();
+    this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
   }
 
   ionViewDidLoad() {
@@ -176,15 +182,17 @@ export class QrCodeResultPage implements OnDestroy {
       PageId.DIAL_CODE_SCAN_RESULT,
       !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME);
 
-    this.navBar.backButtonClick = () => {
+    /*this.navBar.backButtonClick = () => {
       this.handleBackButton(InteractSubtype.NAV_BACK_CLICKED);
-    };
+    };*/
     if (!AppGlobalService.isPlayerLaunched) {
       this.calculateAvailableUserCount();
     }
   }
+  
 
   ionViewWillLeave() {
+    this.headerObservable.unsubscribe();
     // Unregister the custom back button action for this page
     if (this.unregisterBackButton) {
       this.unregisterBackButton();
@@ -818,5 +826,11 @@ export class QrCodeResultPage implements OnDestroy {
         this.navCtrl.push(PlayerPage, { config: data });
       }
     });
+  }
+  handleHeaderEvents($event) {
+    switch ($event.name) {
+      case 'back': this.handleBackButton(InteractSubtype.NAV_BACK_CLICKED);
+                    break;
+    }
   }
 }
