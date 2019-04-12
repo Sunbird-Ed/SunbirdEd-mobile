@@ -10,6 +10,7 @@
           <span *ngIf="assessmentData?.totalQuestionsScore"> / {{assessmentData?.totalQuestionsScore}} </span>
           <span *ngIf="!assessmentData?.totalQuestionsScore && assessmentData.maxTotalScore"> / {{assessmentData?.maxTotalScore}}</span>
         </span>
+        <span *ngIf="!assessmentData?.totalScore.toString()">--</span>
       </div>
     </div>
     <div class="assessment-time">
