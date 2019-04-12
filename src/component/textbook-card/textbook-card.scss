@@ -12,5 +12,9 @@ textbook-card {
         overflow: hidden;
         text-overflow: ellipsis; 
     }
+
+    .textbook-margin-4{
+        margin: 0 ($base-block-space/2);
+    }
 }
 
