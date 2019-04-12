@@ -1,8 +1,8 @@
 import {SplashscreenActionHandlerDelegate} from "./splashscreen-action-handler-delegate";
 import {Observable} from "rxjs";
 import {Inject, Injectable} from "@angular/core";
-import {TelemetryService} from "sunbird-sdk";
-import {Environment, InteractType} from "@app/service/telemetry-constants";
+import {TelemetryService, InteractType} from "sunbird-sdk";
+import {Environment} from "@app/service/telemetry-constants";
 
 interface TelemetryActionPayload {
   eid: 'IMPRESSION' | 'INTERACT',
