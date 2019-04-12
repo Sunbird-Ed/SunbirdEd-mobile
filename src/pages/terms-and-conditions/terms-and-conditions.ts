@@ -16,7 +16,7 @@ import {ProfileConstants} from '../../app';
 })
 export class TermsAndConditionsPage {
   public tncLatestVersionUrl: SafeUrl;
-  public shouldAcceptanceButtonEnabled = false;
+  public termsAgreed = false;
   private loading?: Loading;
   private unregisterBackButtonAction?: Function;
   private userProfileDetails: ServerProfile;
@@ -70,9 +70,9 @@ export class TermsAndConditionsPage {
     }
   }
 
-  public onConfirmationChange(change: boolean) {
+  public onConfirmationChange(event) {
     const valuesMap = new Map();
-    valuesMap['isChecked'] = change;
+    valuesMap['isChecked'] = event.checked;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.ACCEPTANCE_CHECKBOX_CLICKED,
@@ -81,7 +81,7 @@ export class TermsAndConditionsPage {
       undefined,
       valuesMap
     );
-    this.shouldAcceptanceButtonEnabled = change;
+    this.termsAgreed = event.checked;
   }
 
   public async onAcceptanceClick(): Promise<void> {
