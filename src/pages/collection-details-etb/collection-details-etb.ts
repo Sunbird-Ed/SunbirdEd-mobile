@@ -1084,7 +1084,7 @@ export class CollectionDetailsEtbPage implements OnInit {
           this.downloadAllContent();
         } else {
           // Cancel Clicked Telemetry
-          this.telemetryGeneratorService.generateCancelDownloadTelemetry(this.contentDetail);
+          this.generateCancelDownloadTelemetry(this.contentDetail);
         }
       });
     } else {
@@ -1108,6 +1108,17 @@ export class CollectionDetailsEtbPage implements OnInit {
           this.navCtrl.pop();
         });
       });
+  }
+  generateCancelDownloadTelemetry(content: any) {
+    const values = new Map();
+    const telemetryObject = new TelemetryObject(content.identifier || content.contentId, content.contentType, content.pkgVersion);
+    this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        InteractSubtype.CLOSE_CLICKED,
+        Environment.HOME,
+        PageId.COLLECTION_DETAIL,
+        telemetryObject,
+        values);
   }
 
   /**

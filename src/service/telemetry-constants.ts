@@ -222,6 +222,7 @@ export enum InteractSubtype {
     LOADING_SPINE = 'loading-spine',
     DOWNLOAD_ALL_CLICKED = 'download-all-clicked',
     CANCEL_CLICKED = 'cancel-clicked',
+    CLOSE_CLICKED = 'close-clicked',
     PULL_TO_REFRESH = 'pull-to-refresh',
     EDIT_CLICKED = 'edit-clicked',
     VIEW_MORE_CLICKED = 'view-more-clicked',
