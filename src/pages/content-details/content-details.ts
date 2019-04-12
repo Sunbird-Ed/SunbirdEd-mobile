@@ -351,6 +351,7 @@ export class ContentDetailsPage {
   // You are Offline Toast
   async presentToastForOffline() {
     this.toast = await this.toastController.create({
+      duration: 2000,
       message: this.commonUtilService.translateMessage('NO_INTERNET_TITLE'),
       showCloseButton: true,
       position: 'top',
@@ -832,6 +833,8 @@ export class ContentDetailsPage {
         if (event.type === DownloadEventType.PROGRESS) {
           const downloadEvent = event as DownloadProgress;
           if (downloadEvent.payload.identifier === this.content.identifier) {
+            this.showDownload =  true;
+            this.isDownloadStarted = true;
             this.downloadProgress = downloadEvent.payload.progress === -1 ? '0' : downloadEvent.payload.progress;
             this.downloadProgress = Math.round(this.downloadProgress);
             if (this.downloadProgress === 100) {
@@ -849,7 +852,7 @@ export class ContentDetailsPage {
             this.isDownloadStarted = false;
             this.cancelDownloading = false;
             this.contentDownloadable[this.content.identifier] = true;
-            this.setContentDetails(this.identifier, false,false);
+            this.setContentDetails(this.identifier, false, false);
             this.downloadProgress = '';
             this.events.publish('savedResources:update', {
               update: true
