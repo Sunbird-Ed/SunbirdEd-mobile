@@ -588,7 +588,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
                       ],
                       icon: null
                     }, {
-                        cssClass: 'confirm-alert',
+                        cssClass: 'sb-popover info',
                       });
                       confirm.present({
                         ev: event
