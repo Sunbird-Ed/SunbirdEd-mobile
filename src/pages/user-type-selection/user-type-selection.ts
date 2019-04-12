@@ -36,6 +36,7 @@ export class UserTypeSelectionPage {
   continueAs = '';
   profile: Profile;
   backButtonFunc = undefined;
+  headerObservable: any;
 
   /**
    * Contains paths to icons
@@ -58,14 +59,14 @@ export class UserTypeSelectionPage {
     private scannerService: SunbirdQRScanner,
     private platform: Platform,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
-    private headerServie: AppHeaderService
+    private headerService: AppHeaderService
   ) { }
 
   ionViewDidLoad() {
-    this.navBar.backButtonClick = (e: UIEvent) => {
+    /*this.navBar.backButtonClick = (e: UIEvent) => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.USER_TYPE_SELECTION, Environment.HOME, true);
       this.handleBackButton();
-    };
+    };*/
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
       PageId.USER_TYPE_SELECTION,
@@ -76,10 +77,14 @@ export class UserTypeSelectionPage {
         this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
       }
     });
+    
   }
 
   ionViewWillEnter() {
-    this.headerServie.showHeaderWithBackButton();
+    this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
+    this.headerService.showHeaderWithBackButton();
     this.profile = this.appGlobalService.getCurrentUser();
     this.isChangeRoleRequest = Boolean(this.navParams.get('isChangeRoleRequest'));
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
@@ -90,7 +95,9 @@ export class UserTypeSelectionPage {
   }
 
   ionViewWillLeave() {
+    this.headerObservable.unsubscribe();
     // Unregister the custom back button action for this page
+    this.event.unsubscribe('back');
     if (this.backButtonFunc) {
       this.backButtonFunc();
     }
@@ -101,6 +108,13 @@ export class UserTypeSelectionPage {
       this.navCtrl.pop();
     } else {
       this.navCtrl.setRoot(LanguageSettingsPage);
+    }
+  }
+  handleHeaderEvents($event) {
+    switch ($event.name) {
+      case 'back': this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.USER_TYPE_SELECTION, Environment.HOME, true);
+      this.handleBackButton();
+                    break;
     }
   }
 
