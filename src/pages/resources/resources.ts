@@ -932,8 +932,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   generateClassInteractTelemetry(currentClass: string, previousClass: string) {
     const values = new Map();
-    values['currentClass'] = currentClass;
-    values['previousClass'] = previousClass;
+    values['currentSelected'] = currentClass;
+    values['previousSelected'] = previousClass;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.CLASS_CLICKED,
       Environment.HOME,
@@ -944,8 +944,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   generateMediumInteractTelemetry(currentMedium: string, previousMedium: string) {
     const values = new Map();
-    values['currentMedium'] = currentMedium;
-    values['previousMedium'] = previousMedium;
+    values['currentSelected'] = currentMedium;
+    values['previousSelected'] = previousMedium;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.MEDIUM_CLICKED,
       Environment.HOME,
