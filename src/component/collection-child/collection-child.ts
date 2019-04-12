@@ -8,6 +8,7 @@ import {
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import { CommonUtilService } from '@app/service';
+import {Content} from "sunbird-sdk";
 
 @Component({
     selector: 'collection-child',
@@ -15,7 +16,7 @@ import { CommonUtilService } from '@app/service';
 })
 export class CollectionChildComponent implements AfterViewInit {
 
-    @Input() childData: any;
+    @Input() childData: Content;
     @Input() index: any;
     @Input() depth: any;
     @Input() corRelationList: any;
@@ -29,7 +30,7 @@ export class CollectionChildComponent implements AfterViewInit {
         private commonUtilService: CommonUtilService
     ) { }
 
-    navigateToDetailsPage(content: any, depth) {
+    navigateToDetailsPage(content: Content, depth) {
         const stateData = this.navParams.get('contentState');
 
         this.zone.run(() => {
