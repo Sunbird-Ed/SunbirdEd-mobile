@@ -194,6 +194,8 @@ export enum InteractSubtype {
     GROUPS_TAB_CLICKED = 'groups-tab-clicked',
     USER_CLICKED = 'user-clicked',
     GROUP_CLICKED = 'group-clicked',
+    CLASS_CLICKED = 'class-clicked',
+    MEDIUM_CLICKED = 'medium-clicked',
     REPORTS_BY_USER_CLICKED = 'byuser-tab-clicked',
     REPORTS_BY_QUESTION_CLICKED = 'byquestion-tab-clicked',
     REPORTS_SORTBY_QUESTION_CLICKED = 'sortby-question-clicked',

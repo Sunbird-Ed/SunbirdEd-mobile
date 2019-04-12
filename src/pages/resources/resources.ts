@@ -930,7 +930,32 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     return !resource.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable;
   }
 
+  generateClassInteractTelemetry(currentClass: string, previousClass: string) {
+    const values = new Map();
+    values['currentClass'] = currentClass;
+    values['previousClass'] = previousClass;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.MEDIUM_CLICKED,
+      Environment.HOME,
+      PageId.LIBRARY,
+      undefined,
+      values);
+  }
+
+  generateMediumInteractTelemetry(currentMedium: string, previousMedium: string) {
+    const values = new Map();
+    values['currentMedium'] = currentMedium;
+    values['previousMedium'] = previousMedium;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.MEDIUM_CLICKED,
+      Environment.HOME,
+      PageId.LIBRARY,
+      undefined,
+      values);
+  }
+
   classClick(index) {
+    this.generateClassInteractTelemetry(this.categoryGradeLevels[index].name, this.getGroupByPageReq.grade[0]);
     this.getGroupByPageReq.grade = [this.categoryGradeLevels[index].name];
     // [grade.name];
     if ((this.currentGrade) && (this.currentGrade.name !== this.categoryGradeLevels[index].name)) {
@@ -949,6 +974,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   mediumClick(mediumName: string) {
+    this.generateMediumInteractTelemetry(mediumName, this.getGroupByPageReq.medium[0]);
     this.getGroupByPageReq.medium = [mediumName];
     if (this.currentMedium !== mediumName) {
       this.getGroupByPage();
