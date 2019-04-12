@@ -72,6 +72,7 @@ import {ContainerService} from '@app/service/container.services';
 import { FileSizePipe } from '@app/pipes/file-size/file-size';
 import { TranslateService } from '@ngx-translate/core';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
+import { animateChild } from '@angular/animations';
 
 declare const cordova;
 
@@ -89,6 +90,7 @@ export class ContentDetailsPage {
   isChildContent = false;
   contentDetails: any;
   identifier: string;
+  headerObservable: any;
   new: Boolean = true;
 
   /**
@@ -187,7 +189,8 @@ export class ContentDetailsPage {
     private fileSizePipe: FileSizePipe,
     private headerServie: AppHeaderService,
     private translate: TranslateService,
-    private viewCtrl: ViewController
+    private viewCtrl: ViewController,
+    private headerService: AppHeaderService
   ) {
 
     this.objRollup = new Rollup();
@@ -209,7 +212,7 @@ export class ContentDetailsPage {
     //   this.handleNavBackButton();
     // };
     // this.handleDeviceBackButton();
-
+    
     if (!AppGlobalService.isPlayerLaunched) {
       this.calculateAvailableUserCount();
     }
@@ -240,6 +243,9 @@ export class ContentDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
+    this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
     this.headerServie.hideHeader();
     this.cardData = this.navParams.get('content');
     this.isChildContent = this.navParams.get('isChildContent');
@@ -286,6 +292,7 @@ export class ContentDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillLeave(): void {
+    this.headerObservable.unsubscribe();
     if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
     }
@@ -1486,6 +1493,15 @@ getMessageByConstant(constant: string) {
       first = second.concat(first);
       first = Array.from(new Set(first));
       return first.join(', ');
+    }
+  }
+  handleHeaderEvents($event) {
+    this.animateChilsdfsdfds;
+    switch ($event.name) {
+      case 'back': this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
+             true, this.cardData.identifier, this.corRelationList);
+           this.handleNavBackButton();
+                    break;
     }
   }
 }
