@@ -124,6 +124,7 @@ export enum InteractType {
 }
 
 export enum InteractSubtype {
+    NETWORK_STATUS = 'networkStatus',
     INTERNET_CONNECTED = 'internet-connected',
     INTERNET_DISCONNECTED = 'internet-disconnected',
     LOGIN_INITIATE = 'login-initiate',
@@ -193,6 +194,8 @@ export enum InteractSubtype {
     GROUPS_TAB_CLICKED = 'groups-tab-clicked',
     USER_CLICKED = 'user-clicked',
     GROUP_CLICKED = 'group-clicked',
+    CLASS_CLICKED = 'class-clicked',
+    MEDIUM_CLICKED = 'medium-clicked',
     REPORTS_BY_USER_CLICKED = 'byuser-tab-clicked',
     REPORTS_BY_QUESTION_CLICKED = 'byquestion-tab-clicked',
     REPORTS_SORTBY_QUESTION_CLICKED = 'sortby-question-clicked',
@@ -225,6 +228,7 @@ export enum InteractSubtype {
     READ_MORE_CLICKED = 'read-more-clicked',
     READ_LESS_CLICKED = 'read-less-clicked',
     DOWNLOAD_PLAY_CLICKED = 'download-play-clicked',
+    DOWNLOAD_REPORT_CLICKED = 'download-report-clicked',
     PLAY_CLICKED = 'play-clicked',
     EXTRA_INFO = 'extra-info',
     PROFILE_ATTRIBUTE_POPULATION = 'profile-attribute-population',
@@ -239,6 +243,7 @@ export enum InteractSubtype {
     ENROLL_CLICKED = 'enroll-clicked',
     YES_CLICKED = 'yes-clicked',
     NO_CLICKED = 'no-clicked',
+    RESUME_CLICKED = 'resume-clicked'
 }
 
 
