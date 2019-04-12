@@ -935,7 +935,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     values['currentClass'] = currentClass;
     values['previousClass'] = previousClass;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-      InteractSubtype.MEDIUM_CLICKED,
+      InteractSubtype.CLASS_CLICKED,
       Environment.HOME,
       PageId.LIBRARY,
       undefined,
