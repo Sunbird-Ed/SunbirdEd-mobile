@@ -170,7 +170,8 @@ export class GroupReportListPage {
                     totalScore: averageScore,
                     uiTotalTime: that.formatTime(averageTime),
                     fromGroup: true,
-                    fromUser: false
+                    fromUser: false,
+                    questionsScore: this.reportSummary.totalQuestionsScore
                 };
                 that.zone.run(() => {
                     loader.dismiss();

@@ -20,6 +20,7 @@ import {
   ServerProfileDetailsRequest,
   CachedItemRequestSourceFrom
 } from 'sunbird-sdk';
+import { AppHeaderService } from '@app/service';
 import { ContainerService } from '@app/service/container.services';
 import { TabsPage } from '../tabs/tabs';
 import {FormAndFrameworkUtilService} from '../profile/formandframeworkutil.service';
@@ -51,6 +52,11 @@ export class CategoriesEditPage {
   showOnlyMandatoryFields: Boolean = true;
   editData: Boolean = true;
   loader: any;
+  headerConfig = {
+    showHeader: false,
+    showBurgerMenu: false,
+    actionButtons: []
+  };
 
   /* Custom styles for the select box popup */
   boardOptions = {
@@ -84,6 +90,7 @@ export class CategoriesEditPage {
     @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
     @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+    private headerService: AppHeaderService,
   ) {
     this.profile = this.appGlobalService.getCurrentUser();
     if (this.navParams.get('showOnlyMandatoryFields')) {
@@ -102,6 +109,11 @@ export class CategoriesEditPage {
    */
   ionViewWillEnter() {
     this.getSyllabusDetails();
+    this.headerConfig = this.headerService.getDefaultPageConfig();
+    this.headerConfig.actionButtons = [];
+    this.headerConfig.showHeader = false;
+    this.headerConfig.showBurgerMenu = false;
+    this.headerService.updatePageConfig(this.headerConfig);
   }
 
   /**

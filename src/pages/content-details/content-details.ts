@@ -52,7 +52,8 @@ import {
   ProfileType,
   Rollup,
   SharedPreferences,
-  TelemetryObject
+  TelemetryObject,
+  ContentDeleteStatus
 } from 'sunbird-sdk';
 import {CanvasPlayerService} from '../player/canvas-player.service';
 import {PlayerPage} from '../player/player';
@@ -264,7 +265,7 @@ export class ContentDetailsPage {
       this.generateTelemetry();
     }
 
-    this.setContentDetails(this.identifier, this.isPlayerLaunched);
+    this.setContentDetails(this.identifier, true, this.isPlayerLaunched);
     this.subscribeSdkEvent();
     // this.setContentDetails(this.identifier, true, false);
     // this.subscribeGenieEvent();
@@ -489,7 +490,7 @@ export class ContentDetailsPage {
    * @param showRating
    */
 
-  setContentDetails(identifier, showRating: boolean) {
+  setContentDetails(identifier, refreshContentDetails: boolean, showRating: boolean) {
     let loader;
     if (!showRating) {
       loader = this.commonUtilService.getLoader();
@@ -498,7 +499,8 @@ export class ContentDetailsPage {
     const req: ContentDetailRequest = {
       contentId: identifier,
       attachFeedback: true,
-      attachContentAccess: true
+      attachContentAccess: true,
+      emitUpdateIfAny: refreshContentDetails
     };
 
     this.contentService.getContentDetails(req).toPromise()
@@ -847,7 +849,7 @@ export class ContentDetailsPage {
             this.isDownloadStarted = false;
             this.cancelDownloading = false;
             this.contentDownloadable[this.content.identifier] = true;
-            this.setContentDetails(this.identifier, false);
+            this.setContentDetails(this.identifier, false,false);
             this.downloadProgress = '';
             this.events.publish('savedResources:update', {
               update: true
@@ -1312,8 +1314,7 @@ getMessageByConstant(constant: string) {
       this.corRelationList);
     const tmp = this.getDeleteRequestBody();
     this.contentService.deleteContent(tmp).toPromise().then((res: any) => {
-      const data = JSON.parse(res);
-      if (data.result && data.result.status === 'NOT_FOUND') {
+      if (res && res.status === ContentDeleteStatus.NOT_FOUND) {
         this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
       } else {
         // Publish saved resources update event
