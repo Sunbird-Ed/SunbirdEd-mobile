@@ -245,6 +245,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.toast = await this.toastController.create({
       message: this.commonUtilService.translateMessage('NO_INTERNET_TITLE'),
       showCloseButton: true,
+      duration: 2000,
       position: 'top',
       closeButtonText: '',
       cssClass: 'toastAfterHeader'
@@ -627,20 +628,19 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   orderBySubject(searchResults: any[]) {
-      let selectedSubject: string[];
-       const filteredSubject: string[] = [];
-      selectedSubject = this.applyProfileFilter(this.profile.subject,
-                        selectedSubject, 'subject');
-        for ( let i = 0; i < selectedSubject.length; i++) {
-          const index = searchResults.findIndex((el) => {
-            return el.name === selectedSubject[i];
-          });
-          if (index !== -1) {
-            filteredSubject.push(searchResults.splice(index, 1)[0]);
-          }
-        }
-        filteredSubject.push(...searchResults);
-        return filteredSubject;
+    let selectedSubject: string[];
+    const filteredSubject: string[] = [];
+    selectedSubject = this.applyProfileFilter(this.profile.subject, selectedSubject, 'subject');
+    for ( let i = 0; i < selectedSubject.length; i++) {
+      const index = searchResults.findIndex((el) => {
+        return el.name.toLowerCase().trim() === selectedSubject[i].toLowerCase().trim();
+      });
+      if (index !== -1) {
+        filteredSubject.push(searchResults.splice(index, 1)[0]);
+      }
+    }
+    filteredSubject.push(...searchResults);
+    return filteredSubject;
   }
 
   generateExtraInfoTelemetry(sectionsCount) {

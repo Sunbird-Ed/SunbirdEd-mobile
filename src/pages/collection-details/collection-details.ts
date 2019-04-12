@@ -265,7 +265,7 @@ export class CollectionDetailsPage {
 
       if (this.isDepthChild) {
         const actionsButtons = ['share'];
-        if (this.contentDetail.isAvailableLocally) {
+        if (this.cardData.isAvailableLocally) {
           actionsButtons.push('more');
         }
         this.headerService.showHeaderWithBackButton(actionsButtons);

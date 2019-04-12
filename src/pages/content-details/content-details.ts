@@ -52,7 +52,8 @@ import {
   ProfileType,
   Rollup,
   SharedPreferences,
-  TelemetryObject
+  TelemetryObject,
+  ContentDeleteStatus
 } from 'sunbird-sdk';
 import {CanvasPlayerService} from '../player/canvas-player.service';
 import {PlayerPage} from '../player/player';
@@ -357,6 +358,7 @@ export class ContentDetailsPage {
   // You are Offline Toast
   async presentToastForOffline() {
     this.toast = await this.toastController.create({
+      duration: 2000,
       message: this.commonUtilService.translateMessage('NO_INTERNET_TITLE'),
       showCloseButton: true,
       position: 'top',
@@ -838,6 +840,8 @@ export class ContentDetailsPage {
         if (event.type === DownloadEventType.PROGRESS) {
           const downloadEvent = event as DownloadProgress;
           if (downloadEvent.payload.identifier === this.content.identifier) {
+            this.showDownload =  true;
+            this.isDownloadStarted = true;
             this.downloadProgress = downloadEvent.payload.progress === -1 ? '0' : downloadEvent.payload.progress;
             this.downloadProgress = Math.round(this.downloadProgress);
             if (this.downloadProgress === 100) {
@@ -855,7 +859,7 @@ export class ContentDetailsPage {
             this.isDownloadStarted = false;
             this.cancelDownloading = false;
             this.contentDownloadable[this.content.identifier] = true;
-            this.setContentDetails(this.identifier, false,false);
+            this.setContentDetails(this.identifier, false, false);
             this.downloadProgress = '';
             this.events.publish('savedResources:update', {
               update: true
@@ -1320,8 +1324,7 @@ getMessageByConstant(constant: string) {
       this.corRelationList);
     const tmp = this.getDeleteRequestBody();
     this.contentService.deleteContent(tmp).toPromise().then((res: any) => {
-      const data = JSON.parse(res);
-      if (data.result && data.result.status === 'NOT_FOUND') {
+      if (res && res.status === ContentDeleteStatus.NOT_FOUND) {
         this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
       } else {
         // Publish saved resources update event

@@ -127,9 +127,9 @@
 						<button ion-button outline small>{{content?.contentData?.resourceType}}</button>
 					</div>
 				</div>
-				<div class="right" *ngIf="content?.contentData?.me_totalRatings">
+				<div class="right" *ngIf="content?.contentData?.me_averageRating">
 					<div class="sb-rating-view">
-						<span class="sb-rating-value">{{ content?.me_totalRatings }}</span>
+						<span class="sb-rating-value">{{ content?.contentData?.me_averageRating }}</span>
 						<span class="sb-rating-star">
 							<ion-icon ios="ios-star" md="md-star"></ion-icon>
 						</span>
@@ -147,7 +147,7 @@
 						 clear icon-only class="sb-btn-tile">
 							<ion-icon ios="ios-cloud-download" md="md-cloud-download" class="sb-dt-card-blue-icon"></ion-icon>
 							<span *ngIf="!isDownloadStarted" class="sb-btn-footer-text">{{'DOWNLOAD' | translate}}</span>
-							<span *ngIf="isDownloadStarted" class="btn-popover-progress-container">
+							<span *ngIf="isDownloadStarted && showDownload" class="btn-popover-progress-container">
 								<span class="btn-progress-highlight" [ngStyle]="{'width': this.downloadProgress + '%'}"></span>
 							</span>
 						</button>
@@ -159,7 +159,7 @@
 							 clear icon-only class="sb-btn-tile">
 								<ion-icon ios="ios-cloud-download" md="md-cloud-download" class="sb-dt-card-blue-icon"></ion-icon>
 								<span *ngIf="!isDownloadStarted" class="sb-btn-footer-text">{{'DOWNLOAD' | translate}}</span>
-								<span *ngIf="isDownloadStarted" class="btn-popover-progress-container">
+								<span *ngIf="isDownloadStarted && showDownload" class="btn-popover-progress-container">
 									<span class="btn-progress-highlight" [ngStyle]="{'width': this.downloadProgress + '%'}"></span>
 								</span>
 							</button>
@@ -170,7 +170,7 @@
 							 clear icon-only class="sb-btn-tile">
 								<ion-icon ios="ios-cloud-download" md="md-cloud-download" class="sb-dt-card-blue-icon"></ion-icon>
 								<span *ngIf="!isDownloadStarted" class="sb-btn-footer-text">{{'DOWNLOAD' | translate}}</span>
-								<span *ngIf="isDownloadStarted" class="btn-popover-progress-container">
+								<span *ngIf="isDownloadStarted && showDownload" class="btn-popover-progress-container">
 									<span class="btn-progress-highlight" [ngStyle]="{'width': this.downloadProgress + '%'}"></span>
 								</span>
 							</button>
