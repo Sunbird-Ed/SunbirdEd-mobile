@@ -12,7 +12,7 @@ import {
   CourseEnrollmentType,
   CourseBatchStatus
 } from 'sunbird-sdk';
-import { PreferenceKey, ProfileConstants, EventTopics, ContentType, MimeType, ContentCard } from '@app/app/app.constant';
+import { PreferenceKey, ProfileConstants, EventTopics, ContentType, MimeType, ContentCard, BatchConstants } from '@app/app/app.constant';
 import { CommonUtilService, TelemetryGeneratorService } from '@app/service';
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
@@ -102,9 +102,10 @@ export class EnrollmentDetailsPage {
     const courseBatchesRequest: CourseBatchesRequest = {
       filters: {
         courseId: content.contentId ? content.contentId : content.identifier,
-      enrollmentType: CourseEnrollmentType.OPEN,
-      status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
-      }
+        enrollmentType: CourseEnrollmentType.OPEN,
+        status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
+      },
+      fields: BatchConstants.REQUIRED_FIELDS
     };
     const reqvalues = new Map();
     reqvalues['enrollReq'] = courseBatchesRequest;

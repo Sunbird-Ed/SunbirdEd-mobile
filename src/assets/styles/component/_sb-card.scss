@@ -16,7 +16,7 @@
         background: $bg-white;
         
         .img-container {
-            background-color: $bg-gray-0;
+            background-color: $gray-100;
             width:($base-block-space * 9);
             height: ($base-block-space * 9);
             grid-column: 1;
@@ -103,6 +103,7 @@
               align-items: center;
                 background-color: $tertiary-color;	
                 box-shadow: 0 3px 5px 0 rgba(0,0,0,0.12);
+                opacity: 0.5;
             }
 
               .offline-icon{
@@ -174,7 +175,7 @@
         display: grid;
         grid-template-columns: ($base-block-space * 10) auto;
         .img-container {
-            background-color: $bg-gray-0;
+            background-color: $gray-100;
             width:($base-block-space * 10);
             height: ($base-block-space * 10);
         }

@@ -15,7 +15,7 @@ import {
   ProfileConstants
 } from '@app/app';
 import {LanguageSettingsPage} from '@app/pages/language-settings/language-settings';
-import {AppGlobalService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
+import {AppGlobalService, CommonUtilService, TelemetryGeneratorService, AppHeaderService} from '@app/service';
 import {
   ApiService,
   AuthService,
@@ -51,6 +51,7 @@ export class OnboardingPage {
   appDir: string;
   appName = '';
   orgName: string;
+  headerObservable: any;
   backButtonFunc: any = undefined;
 
   constructor(
@@ -68,7 +69,8 @@ export class OnboardingPage {
     private events: Events,
     private appGlobalService: AppGlobalService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+    private headerService: AppHeaderService
   ) {
 
     this.slides = [
@@ -95,10 +97,11 @@ export class OnboardingPage {
       .then((appName: any) => {
         this.appName = appName;
       });
-    this.navBar.backButtonClick = (e: UIEvent) => {
+    /*this.navBar.backButtonClick = (e: UIEvent) => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.ONBOARDING, Environment.HOME, true);
       this.navCtrl.setRoot(LanguageSettingsPage);
-    };
+    };*/
+    
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
       PageId.ONBOARDING,
@@ -106,6 +109,9 @@ export class OnboardingPage {
   }
 
   ionViewWillEnter() {
+    this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.ONBOARDING, Environment.HOME, false);
       this.backButtonFunc();
@@ -116,6 +122,7 @@ export class OnboardingPage {
   }
 
   ionViewWillLeave() {
+    this.headerObservable.unsubscribe();
     this.backButtonFunc();
   }
 
@@ -284,6 +291,13 @@ export class OnboardingPage {
       PageId.LOGIN,
       undefined,
       valuesMap);
+  }
+  handleHeaderEvents($event) {
+    switch ($event.name) {
+      case 'back': this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.ONBOARDING, Environment.HOME, true);
+                    this.navCtrl.setRoot(LanguageSettingsPage);
+                    break;
+    }
   }
 
 }

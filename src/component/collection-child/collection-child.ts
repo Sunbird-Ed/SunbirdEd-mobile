@@ -10,6 +10,8 @@ import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import { CommonUtilService } from '@app/service';
 import { PopoverController } from 'ionic-angular';
 import { SbGenericPopoverComponent } from '../popups/sb-generic-popup/sb-generic-popover';
+import {Content} from 'sunbird-sdk';
+
 
 @Component({
     selector: 'collection-child',
@@ -17,7 +19,7 @@ import { SbGenericPopoverComponent } from '../popups/sb-generic-popup/sb-generic
 })
 export class CollectionChildComponent implements AfterViewInit {
 
-    @Input() childData: any;
+    @Input() childData: Content;
     @Input() index: any;
     @Input() depth: any;
     @Input() corRelationList: any;
@@ -32,7 +34,7 @@ export class CollectionChildComponent implements AfterViewInit {
         private popoverCtrl: PopoverController
     ) { }
 
-    navigateToDetailsPage(content: any, depth) {
+    navigateToDetailsPage(content: Content, depth) {
         const stateData = this.navParams.get('contentState');
 
         this.zone.run(() => {

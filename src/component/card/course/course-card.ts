@@ -1,3 +1,5 @@
+import { AppVersion } from '@ionic-native/app-version';
+import { BatchConstants } from './../../../app/app.constant';
 import {Component, Inject, Input, OnInit, NgZone} from '@angular/core';
 import {Events, NavController, PopoverController} from 'ionic-angular';
 import {EnrolledCourseDetailsPage} from '../../../pages/enrolled-course-details/enrolled-course-details';
@@ -117,7 +119,8 @@ export class CourseCard implements OnInit {
         courseId: layoutName === ContentCard.LAYOUT_INPROGRESS ? content.contentId : content.identifier,
         enrollmentType: CourseEnrollmentType.OPEN,
         status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
-      }
+      },
+      fields: BatchConstants.REQUIRED_FIELDS
     };
     const reqvalues = new Map();
     reqvalues['enrollReq'] = courseBatchesRequest;
@@ -212,6 +215,18 @@ export class CourseCard implements OnInit {
 
 
   resumeCourse(content: any) {
+    const identifier = content.contentId || content.identifier;
+    const telemetryObject: TelemetryObject = new TelemetryObject(identifier, ContentType.COURSE, content.pkgVersion);
+    const values = new Map();
+    values['sectionName'] = this.sectionName;
+    values['positionClicked'] = this.index;
+
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.RESUME_CLICKED,
+      this.env,
+      this.pageName ? this.pageName : this.layoutName,
+      telemetryObject,
+      values);
     this.saveContentContext(content);
     if (content.lastReadContentId && content.status === 1) {
       this.events.publish('course:resume', {

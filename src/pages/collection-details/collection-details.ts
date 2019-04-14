@@ -186,6 +186,7 @@ export class CollectionDetailsPage {
   public baseUrl = '';
   guestUser = false;
   profileType = '';
+  
   public corRelationList: Array<CorrelationData>;
   public shouldGenerateEndTelemetry = false;
   public source = '';
@@ -220,11 +221,11 @@ export class CollectionDetailsPage {
   }
 
   ionViewDidLoad() {
-    this.navBar.backButtonClick = () => {
+    /*this.navBar.backButtonClick = () => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
         true, this.cardData.identifier, this.corRelationList);
       this.handleBackButton();
-    };
+    };*/
     this.registerDeviceBackButton();
   }
 
@@ -264,7 +265,7 @@ export class CollectionDetailsPage {
 
       if (this.isDepthChild) {
         const actionsButtons = ['share'];
-        if (this.contentDetail.isAvailableLocally) {
+        if (this.cardData.isAvailableLocally) {
           actionsButtons.push('more');
         }
         this.headerService.showHeaderWithBackButton(actionsButtons);
@@ -283,7 +284,7 @@ export class CollectionDetailsPage {
       }
 
       this.didViewLoad = true;
-      this.setContentDetails(this.identifier);
+      this.setContentDetails(this.identifier, true);
       this.subscribeSdkEvent();
     });
   }
@@ -429,13 +430,14 @@ export class CollectionDetailsPage {
    * To set content details in local variable
    * @param {string} identifier identifier of content / course
    */
-  setContentDetails(identifier) {
+  setContentDetails(identifier, refreshContentDetails: boolean) {
     const loader = this.commonUtilService.getLoader();
     loader.present();
     const option: ContentDetailRequest = {
       contentId: identifier,
       attachFeedback: true,
-      attachContentAccess: true
+      attachContentAccess: true,
+      emitUpdateIfAny:refreshContentDetails
     };
     this.contentService.getContentDetails(option).toPromise()
       .then((data: Content) => {
@@ -805,12 +807,12 @@ export class CollectionDetailsPage {
             // but we have to refresh only the child content.
             this.showLoading = false;
             this.refreshHeader();
-            this.setContentDetails(this.identifier);
+            this.setContentDetails(this.identifier, false);
           } else {
             if (this.isUpdateAvailable && contentImportEvent.payload.contentId === this.contentDetail.identifier) {
               this.showLoading = false;
               this.refreshHeader();
-              this.setContentDetails(this.identifier);
+              this.setContentDetails(this.identifier, false);
             } else {
               if (contentImportEvent.payload.contentId === this.contentDetail.identifier) {
                 this.showLoading = false;
@@ -835,7 +837,7 @@ export class CollectionDetailsPage {
               this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.contentDetail, false);
               this.importContent([parentIdentifier], false);
             } else {
-              this.setContentDetails(this.identifier);
+              this.setContentDetails(this.identifier, false);
             }
           });
         }
@@ -1055,10 +1057,14 @@ export class CollectionDetailsPage {
 
   handleHeaderEvents($event) {
     switch ($event.name) {
-      case 'share': this.share();
+      case 'share' : this.share();
+        break;
+      case 'more' : this.showOverflowMenu($event);
+        break;
+      case 'back': this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
+        true, this.cardData.identifier, this.corRelationList);
+      this.handleBackButton();
                     break;
-      case 'more': this.showOverflowMenu($event);
-                      break;
     }
   }
 

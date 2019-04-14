@@ -20,6 +20,8 @@ import {
   ImpressionType,
   PageId,
   Environment,
+  InteractType,
+  InteractSubtype,
 } from '../../../service/telemetry-constants';
 
 @IonicPage()
@@ -160,6 +162,7 @@ export class UserReportPage {
           that.assessmentData = data;
           that.assessmentData['showPopup'] = true;
           that.assessmentData['popupCallback'] = ReportAlert;
+          that.assessmentData['totalQuestionsScore'] = that.reportSummaryRequest.totalQuestionsScore;
           this.totalScore = data.totalScore;
           this.maxTotalScore = data.maxTotalScore;
           this.totalTime = data.totalTime;
@@ -212,6 +215,12 @@ export class UserReportPage {
   }
 
   importcsv(body) {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.DOWNLOAD_REPORT_CLICKED,
+      Environment.USER,
+      PageId.REPORTS_USER_ASSESMENT_DETAILS, undefined,
+      );
     this.exptime = new Date().getTime();
     const csv: any = this.convertToCSV(this.response);
     const combinefilename = this.deviceId + '_' + this.response[0].uid + '_' + this.response[0].contentId + '_' + this.exptime + '.csv';

@@ -53,6 +53,7 @@ import {TabsPage} from '@app/pages/tabs/tabs';
 import {PlayerPage} from '../player/player';
 import {CanvasPlayerService} from '../player/canvas-player.service';
 import {File} from '@ionic-native/file';
+import { AppHeaderService } from '@app/service';
 
 declare const cordova;
 
@@ -117,6 +118,7 @@ export class QrCodeResultPage implements OnDestroy {
   downloadProgress: any = 0;
   isUpdateAvailable: boolean;
   eventSubscription: Subscription;
+  headerObservable: any;
 
   constructor(
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
@@ -137,7 +139,8 @@ export class QrCodeResultPage implements OnDestroy {
     @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     @Inject('PLAYER_SERVICE') private playerService: PlayerService,
     private canvasPlayerService: CanvasPlayerService,
-    private file: File
+    private file: File,
+    private headerService: AppHeaderService
   ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
@@ -163,12 +166,15 @@ export class QrCodeResultPage implements OnDestroy {
       this.isParentContentAvailable = false;
       this.identifier = this.content.identifier;
     }
-    this.setContentDetails(this.identifier);
+    this.setContentDetails(this.identifier, true);
     this.getChildContents();
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.handleBackButton(InteractSubtype.DEVICE_BACK_CLICKED);
     }, 10);
     this.subscribeSdkEvent();
+    this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
   }
 
   ionViewDidLoad() {
@@ -176,15 +182,17 @@ export class QrCodeResultPage implements OnDestroy {
       PageId.DIAL_CODE_SCAN_RESULT,
       !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME);
 
-    this.navBar.backButtonClick = () => {
+    /*this.navBar.backButtonClick = () => {
       this.handleBackButton(InteractSubtype.NAV_BACK_CLICKED);
-    };
+    };*/
     if (!AppGlobalService.isPlayerLaunched) {
       this.calculateAvailableUserCount();
     }
   }
+  
 
   ionViewWillLeave() {
+    this.headerObservable.unsubscribe();
     // Unregister the custom back button action for this page
     if (this.unregisterBackButton) {
       this.unregisterBackButton();
@@ -386,11 +394,12 @@ export class QrCodeResultPage implements OnDestroy {
    * To set content details in local variable
    * @param {string} identifier identifier of content / course
    */
-  setContentDetails(identifier) {
+  setContentDetails(identifier, refreshContentDetails: boolean) {
     const option: ContentDetailRequest = {
       contentId: identifier,
       attachFeedback: true,
-      attachContentAccess: true
+      attachContentAccess: true,
+      emitUpdateIfAny: refreshContentDetails
     };
     this.contentService.getContentDetails(option).toPromise()
       .then((data: any) => {
@@ -413,6 +422,22 @@ export class QrCodeResultPage implements OnDestroy {
         }
       }
     });
+  }
+
+  setMedium(reset, mediums) {
+    if (reset) {
+      this.profile.medium = [];
+    } else {
+      _.each(mediums, (medium) => {
+        if (medium && this.profile.medium.indexOf(medium) === -1) {
+          if (this.profile.medium && this.profile.medium.length) {
+            this.profile.medium.push(medium);
+          } else {
+            this.profile.medium = [medium];
+          }
+        }
+      });
+    }
   }
 
   /**
@@ -445,20 +470,20 @@ export class QrCodeResultPage implements OnDestroy {
       case 0:
         this.profile.syllabus = [data.framework];
         this.profile.board = [data.board];
-        this.profile.medium = [data.medium];
+        this.setMedium(true, data.medium);
         // this.profile.subject = [data.subject];
         this.profile.subject = [];
         this.setGrade(true, data.gradeLevel);
         break;
       case 1:
         this.profile.board = [data.board];
-        this.profile.medium = [data.medium];
+        this.setMedium(true, data.medium);
         // this.profile.subject = [data.subject];
         this.profile.subject = [];
         this.setGrade(true, data.gradeLevel);
         break;
       case 2:
-        this.profile.medium.push(data.medium);
+        this.setMedium(false, data.medium);
         break;
       case 3:
         this.setGrade(false, data.gradeLevel);
@@ -477,8 +502,7 @@ export class QrCodeResultPage implements OnDestroy {
    * @param {object} profile
    */
   checkProfileData(data, profile) {
-    console.log('dial data', data);
-    console.log('local profile', profile);
+
     if (data && data.framework) {
 
       const getSuggestedFrameworksRequest: GetSuggestedFrameworksRequest = {
@@ -498,7 +522,6 @@ export class QrCodeResultPage implements OnDestroy {
               };
               this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
                 .then((framework: Framework) => {
-                  console.log('framework', framework);
                   this.categories = framework.categories;
                   this.boardList = _.find(this.categories, (category) => category.code === 'board').terms;
                   this.mediumList = _.find(this.categories, (category) => category.code === 'medium').terms;
@@ -508,7 +531,13 @@ export class QrCodeResultPage implements OnDestroy {
                     data.board = this.findCode(this.boardList, data, 'board');
                   }
                   if (data.medium) {
-                    data.medium = this.findCode(this.mediumList, data, 'medium');
+                    if (typeof data.medium === 'string') {
+                      data.medium = [this.findCode(this.mediumList, data, 'medium')];
+                    } else {
+                      data.medium = _.map(data.medium, (dataMedium) => {
+                        return _.find(this.mediumList, (medium) => medium.name === dataMedium).code;
+                      });
+                    }
                   }
                   /*                   if (data.subject) {
                                       data.subject = this.findCode(this.subjectList, data, 'subject');
@@ -523,9 +552,15 @@ export class QrCodeResultPage implements OnDestroy {
                       if (profile.board && !(profile.board.length > 1) && data.board === profile.board[0]) {
                         if (data.medium) {
                           let existingMedium = false;
-                          existingMedium = _.find(profile.medium, (medium) => {
-                            return medium === data.medium;
-                          });
+                            for (let i = 0; i < data.medium.length; i++) {
+                              const mediumExists = _.find(profile.medium, (medium) => {
+                                return medium === data.medium[i];
+                              });
+                              if (!mediumExists) {
+                                break;
+                              }
+                              existingMedium = true;
+                            }
                           if (!existingMedium) {
                             this.setCurrentProfile(2, data);
                           }
@@ -560,7 +595,10 @@ export class QrCodeResultPage implements OnDestroy {
                   } else {
                     this.setCurrentProfile(0, data);
                   }
-                }).catch(() => {
+                }).catch((err) => {
+                  if (err instanceof NetworkError) {
+                    this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
+                  }
                 });
 
               return;
@@ -605,7 +643,7 @@ export class QrCodeResultPage implements OnDestroy {
         }
         // For content update available
         // if (res.data && res.type === 'contentUpdateAvailable' && res.data.identifier === this.identifier) {
-        if (event.payload && event.type === ContentEventType.UPDATE && event.payload.contentId === this.content.identifier) {
+        if (event.payload && event.type === ContentEventType.UPDATE && event.payload.contentId === this.identifier) {
           this.zone.run(() => {
             if (this.parentContent) {
               const parentIdentifier = this.parentContent.contentId || this.parentContent.identifier;
@@ -788,5 +826,11 @@ export class QrCodeResultPage implements OnDestroy {
         this.navCtrl.push(PlayerPage, { config: data });
       }
     });
+  }
+  handleHeaderEvents($event) {
+    switch ($event.name) {
+      case 'back': this.handleBackButton(InteractSubtype.NAV_BACK_CLICKED);
+                    break;
+    }
   }
 }

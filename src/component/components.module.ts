@@ -34,6 +34,8 @@ import { ApplicationHeaderComponent } from './application-header/application-hea
 import { SbPopoverComponent } from './popups/sb-popover/sb-popover';
 import { SbDownloadPopupComponent } from './popups/sb-download-popup/sb-download-popup';
 import { SbGenericPopoverComponent } from './popups/sb-generic-popup/sb-generic-popover';
+import { SideMenuComponent } from './side-menu/side-menu';
+import { DirectivesModule } from '@app/directives/directives.module';
 
 @NgModule({
     declarations: [
@@ -62,8 +64,10 @@ import { SbGenericPopoverComponent } from './popups/sb-generic-popup/sb-generic-
         CollectionChildComponent,
         ApplicationHeaderComponent,
         SbPopoverComponent,
+        ReportIssuesComponent,
         SbDownloadPopupComponent,
-        SbGenericPopoverComponent
+        SbGenericPopoverComponent,
+        SideMenuComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -74,7 +78,8 @@ import { SbGenericPopoverComponent } from './popups/sb-generic-popup/sb-generic-
         BrowserAnimationsModule,
         NgxDatatableModule,
         IonicModule,
-        IonicPageModule.forChild(ResourceCard)
+        IonicPageModule.forChild(ResourceCard),
+        DirectivesModule
     ],
     exports: [
         CourseCard,
@@ -88,6 +93,7 @@ import { SbGenericPopoverComponent } from './popups/sb-generic-popup/sb-generic-
         ViewCreditsComponent,
         ProfileAvatarComponent,
         DialogPopupComponent,
+        ReportIssuesComponent,
         BookmarkComponent,
         UnenrollAlertComponent,
         EditContactDetailsPopupComponent,
@@ -102,7 +108,8 @@ import { SbGenericPopoverComponent } from './popups/sb-generic-popup/sb-generic-
         ApplicationHeaderComponent,
         SbPopoverComponent,
         SbDownloadPopupComponent,
-        SbGenericPopoverComponent
+        SbGenericPopoverComponent,
+        SideMenuComponent
 
     ],
     entryComponents: [

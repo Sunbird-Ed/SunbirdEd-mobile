@@ -1,7 +1,6 @@
 import {CommonUtilService} from './../../../service/common-util.service';
-import {NavController} from 'ionic-angular/navigation/nav-controller';
 import {Component, Inject, NgZone} from '@angular/core';
-import {LoadingController, NavParams} from 'ionic-angular';
+import {LoadingController, NavParams, NavController} from 'ionic-angular';
 import {GroupReportAlert} from '../group-report-alert/group-report-alert';
 import {TranslateService} from '@ngx-translate/core';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
@@ -171,7 +170,8 @@ export class GroupReportListPage {
                     totalScore: averageScore,
                     uiTotalTime: that.formatTime(averageTime),
                     fromGroup: true,
-                    fromUser: false
+                    fromUser: false,
+                    questionsScore: this.reportSummary.totalQuestionsScore
                 };
                 that.zone.run(() => {
                     loader.dismiss();
@@ -333,6 +333,12 @@ export class GroupReportListPage {
         return csv;
     }
     importcsv() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        InteractSubtype.DOWNLOAD_REPORT_CLICKED,
+        Environment.USER,
+        PageId.REPORTS_GROUP_ASSESMENT_DETAILS, undefined,
+        );
         this.exptime = new Date().getTime();
         const csv: any = this.convertToCSV();
         const combinefilename = this.deviceId + '_' + this.groupinfo.gid + '_' + this.reportSummary.contentId + '_' + this.exptime + '.csv';

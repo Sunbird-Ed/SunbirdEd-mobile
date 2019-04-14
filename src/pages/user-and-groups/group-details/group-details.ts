@@ -63,7 +63,7 @@ export class GroupDetailsPage {
   userUids = [];
   isNoUsers = false;
   playConfig: any;
-
+  ProfileType = ProfileType;
   isCurrentGroupActive = false;
 
   constructor(

@@ -78,7 +78,7 @@ export class SunbirdQRScanner {
     /* Just need to override the back button functionality other wise  on pressing back button it will take to two pages back */
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       console.log('INNNNN BackButton');
-     //  this.stopScanner();
+      //  this.stopScanner();
       this.backButtonFunc();
     }, 10);
     this.pauseSubscription = this.platform.pause.subscribe(() => this.stopScanner());
@@ -96,7 +96,7 @@ export class SunbirdQRScanner {
         }
 
         if (!toRequest.length) {
-          return Observable.of({hasPermission: true});
+          return Observable.of({ hasPermission: true });
         }
 
         return this.permission.requestPermissions(toRequest);
@@ -205,6 +205,10 @@ export class SunbirdQRScanner {
   }
 
   showInvalidCodeAlert() {
+    if (this.source !== 'user-type-selection') {
+      this.commonUtil.afterOnBoardQRErrorAlert('INVALID_QR', 'UNKNOWN_QR');
+      return;
+    }
     let popUp: Popover;
     const self = this;
     const callback: QRAlertCallBack = {

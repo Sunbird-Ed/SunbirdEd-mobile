@@ -77,7 +77,7 @@
 				</div>
         <div *ngIf="contentDetail?.contentData.subject" margin-top>
 					<div class="content-meta-title" text-uppercase>{{ 'SUBJECT' | translate }}</div>
-          <span class="text-gray-color">{{contentDetail?.contentData.subject}}</span>
+          <span class="text-gray-color">{{contentDetail?.contentData.subject | csa}}</span>
 				</div>
         <div *ngIf="contentDetail?.contentData.board" margin-top>
 					<div class="content-meta-title" text-uppercase>{{ 'BOARD' | translate }}</div>
@@ -85,7 +85,7 @@
 				</div>
 				<div *ngIf="contentDetail?.medium" margin-top>
 					<div class="content-meta-title">{{ 'MEDIUM' | translate }}</div>
-          <span class="text-gray-color">{{contentDetail?.contentData.medium}}</span>
+          <span class="text-gray-color">{{contentDetail?.contentData.medium | csa}}</span>
 				</div>
 			</div>
 

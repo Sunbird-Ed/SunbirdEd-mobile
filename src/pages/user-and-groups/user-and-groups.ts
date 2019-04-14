@@ -1,6 +1,6 @@
-import { GroupDetailsPage } from './group-details/group-details';
-import { TranslateService } from '@ngx-translate/core';
-import { Component, Inject, NgZone, ViewChild } from '@angular/core';
+import {GroupDetailsPage} from './group-details/group-details';
+import {TranslateService} from '@ngx-translate/core';
+import {Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {
   AlertController,
   App,
@@ -14,7 +14,7 @@ import {
   Platform,
   PopoverController
 } from 'ionic-angular';
-import { PopoverPage } from './popover/popover';
+import {PopoverPage} from './popover/popover';
 import {
   AuthService,
   GetAllProfileRequest,
@@ -23,13 +23,13 @@ import {
   Profile,
   ProfileService,
   ProfileType,
-  TelemetryObject,
-  SharedPreferences
+  SharedPreferences,
+  TelemetryObject
 } from 'sunbird-sdk';
-import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
-import { ShareUserAndGroupPage } from './share-user-and-groups/share-user-and-groups';
-import { AppGlobalService } from '../../service/app-global.service';
-import { CommonUtilService } from '../../service/common-util.service';
+import {GuestEditProfilePage} from '../profile/guest-edit.profile/guest-edit.profile';
+import {ShareUserAndGroupPage} from './share-user-and-groups/share-user-and-groups';
+import {AppGlobalService} from '../../service/app-global.service';
+import {CommonUtilService} from '../../service/common-util.service';
 import {
   GUEST_STUDENT_SWITCH_TABS,
   GUEST_STUDENT_TABS,
@@ -37,10 +37,10 @@ import {
   GUEST_TEACHER_TABS,
   initTabs
 } from '../../app/module.service';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { Map } from '../../app/telemetryutil';
-import { PreferenceKey } from '../../app/app.constant';
-import { CreateGroupPage } from './create-group/create-group';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {Map} from '../../app/telemetryutil';
+import {PreferenceKey} from '../../app/app.constant';
+import {CreateGroupPage} from './create-group/create-group';
 import {
   Environment,
   ImpressionType,
@@ -84,6 +84,7 @@ export class UserAndGroupsPage {
 
   selectedUsername: string;
   isCurUserSelected: boolean;
+  ProfileType = ProfileType;
 
   constructor(
     private navCtrl: NavController,
@@ -673,7 +674,8 @@ export class UserAndGroupsPage {
         {
           btntext: this.commonUtilService.translateMessage('CANCEL'),
           btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
-        },{
+        },
+        {
           btntext: this.commonUtilService.translateMessage('YES'),
           btnClass: 'popover-color'
         }

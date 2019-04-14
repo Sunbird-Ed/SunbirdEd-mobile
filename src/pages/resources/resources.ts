@@ -51,7 +51,6 @@ import {ProfileConstants} from '../../app';
 import { AppHeaderService } from '@app/service';
 import { GuestProfilePage } from '../profile';
 import { ProfilePage } from '../profile/profile';
-import { Page } from 'ionic-angular/umd/navigation/nav-util';
 
 @Component({
   selector: 'page-resources',
@@ -246,6 +245,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.toast = await this.toastController.create({
       message: this.commonUtilService.translateMessage('NO_INTERNET_TITLE'),
       showCloseButton: true,
+      duration: 2000,
       position: 'top',
       closeButtonText: '',
       cssClass: 'toastAfterHeader'
@@ -628,20 +628,19 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   orderBySubject(searchResults: any[]) {
-      let selectedSubject: string[];
-       const filteredSubject: string[] = [];
-      selectedSubject = this.applyProfileFilter(this.profile.subject,
-                        selectedSubject, 'subject');
-        for ( let i = 0; i < selectedSubject.length; i++) {
-          const index = searchResults.findIndex((el) => {
-            return el.name === selectedSubject[i];
-          });
-          if (index !== -1) {
-            filteredSubject.push(searchResults.splice(index, 1)[0]);
-          }
-        }
-        filteredSubject.push(...searchResults);
-        return filteredSubject;
+    let selectedSubject: string[];
+    const filteredSubject: string[] = [];
+    selectedSubject = this.applyProfileFilter(this.profile.subject, selectedSubject, 'subject');
+    for ( let i = 0; i < selectedSubject.length; i++) {
+      const index = searchResults.findIndex((el) => {
+        return el.name.toLowerCase().trim() === selectedSubject[i].toLowerCase().trim();
+      });
+      if (index !== -1) {
+        filteredSubject.push(searchResults.splice(index, 1)[0]);
+      }
+    }
+    filteredSubject.push(...searchResults);
+    return filteredSubject;
   }
 
   generateExtraInfoTelemetry(sectionsCount) {
@@ -699,9 +698,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewDidEnter() {
-    this.scrollEventRemover = this.scroll.addScrollEventListener((event) => {
-      this.onScroll(event);
-    });
+    // this.scrollEventRemover = this.scroll.addScrollEventListener((event) => {
+    //   this.onScroll(event);
+    // });
     this.preferences.getString('show_app_walkthrough_screen').toPromise()
       .then(value => {
         if (value === 'true') {
@@ -810,7 +809,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.navCtrl.push(SearchPage, {contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY});
   }
   onProfileClick() {
-    const currentProfile: Page = (this.appGlobalService.isGuestUser) ? GuestProfilePage : ProfilePage;
+    const currentProfile = (this.appGlobalService.isGuestUser) ? GuestProfilePage : ProfilePage;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       'profile-button-clicked',
       Environment.HOME,
@@ -931,7 +930,32 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     return !resource.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable;
   }
 
+  generateClassInteractTelemetry(currentClass: string, previousClass: string) {
+    const values = new Map();
+    values['currentSelected'] = currentClass;
+    values['previousSelected'] = previousClass;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.CLASS_CLICKED,
+      Environment.HOME,
+      PageId.LIBRARY,
+      undefined,
+      values);
+  }
+
+  generateMediumInteractTelemetry(currentMedium: string, previousMedium: string) {
+    const values = new Map();
+    values['currentSelected'] = currentMedium;
+    values['previousSelected'] = previousMedium;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.MEDIUM_CLICKED,
+      Environment.HOME,
+      PageId.LIBRARY,
+      undefined,
+      values);
+  }
+
   classClick(index) {
+    this.generateClassInteractTelemetry(this.categoryGradeLevels[index].name, this.getGroupByPageReq.grade[0]);
     this.getGroupByPageReq.grade = [this.categoryGradeLevels[index].name];
     // [grade.name];
     if ((this.currentGrade) && (this.currentGrade.name !== this.categoryGradeLevels[index].name)) {
@@ -950,6 +974,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   mediumClick(mediumName: string) {
+    this.generateMediumInteractTelemetry(mediumName, this.getGroupByPageReq.medium[0]);
     this.getGroupByPageReq.medium = [mediumName];
     if (this.currentMedium !== mediumName) {
       this.getGroupByPage();

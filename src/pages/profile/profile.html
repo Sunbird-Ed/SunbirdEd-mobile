@@ -13,7 +13,8 @@
 </ion-header> -->
 
 
-<ion-content overflow-scroll="true" (click)="toggleTooltips($event)" class="main-container avoid-bottom-tabs-space">
+<ion-content hide-header-footer overflow-scroll="true" (click)="toggleTooltips($event)"
+    class="main-container avoid-bottom-tabs-space">
     <!-- Pull to Refresh -->
     <div class="spinner-div" *ngIf="refresh">
         <ion-spinner icon="spiral" class="refreshspinner"></ion-spinner>
@@ -25,9 +26,11 @@
 
     <div padding-horizontal text-center>
         <ion-spinner *ngIf="isUploading"></ion-spinner>
-        <p style="position: relative;"><span class="profile-name">{{ profile?.firstName }} {{ profile?.lastName }}</span>
-            <span *ngIf="profile?.firstName" class="isymbol" item-right text-left (click)="toggleTooltips($event, 'name')">
-                <ion-icon name="ios-information-circle-outline" [ngClass]="{'icon-selected-color' : informationProfileName === true}" class="info-icon"></ion-icon>
+        <p style="position: relative;"><span class="profile-name">{{ profile?.firstName }}
+                {{ profile?.lastName }}</span>
+            <span *ngIf="profile?.firstName" class="isymbol" item-right text-left
+                (click)="toggleTooltips($event, 'name')">
+                <ion-icon name="information-circle" class="info-icon"></ion-icon>
                 <span class="asPerStateRecord" *ngIf="informationProfileName">{{'STATE_RECORDS' | translate}}</span>
             </span>
         </p>
@@ -41,11 +44,15 @@
             </div>
         </div>
         <div class="" text-center>
-            <button ion-button clear *ngIf="rolesLimit < roles?.length" (click)="showMoreItems()" class="txt-capitalize">
-                + {{roles?.length - 2}} {{'MORE' | translate}} <ion-icon class="ML10" name="ios-arrow-down"></ion-icon>
+            <button ion-button clear *ngIf="rolesLimit < roles?.length" (click)="showMoreItems()"
+                class="txt-capitalize">
+                + {{roles?.length - 2}} {{'MORE' | translate}}
+                <ion-icon class="ML10" name="ios-arrow-down"></ion-icon>
             </button>
-            <button ion-button clear *ngIf="rolesLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessItems()" class="txt-capitalize">
-                {{'SHOW_LESS' | translate }} <ion-icon class="ML10" name="ios-arrow-up"></ion-icon>
+            <button ion-button clear *ngIf="rolesLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessItems()"
+                class="txt-capitalize">
+                {{'SHOW_LESS' | translate }}
+                <ion-icon class="ML10" name="ios-arrow-up"></ion-icon>
             </button>
         </div>
     </div>
@@ -53,7 +60,7 @@
         <p class="bolder MB5" style="position: relative;">{{profile?.organisations[0].orgName}}
             <span *ngIf="profile?.firstName" class="isymbol" item-right text-left
                 (click)="toggleTooltips($event, 'org')">
-                <ion-icon name="ios-information-circle-outline" [ngClass]="{'icon-selected-color' : informationOrgName === true}" class="info-icon"></ion-icon>
+                <ion-icon name="information-circle" class="info-icon"></ion-icon>
                 <span class="asPerStateRecord" *ngIf="informationOrgName">{{'STATE_RECORDS'
                     | translate}}</span>
             </span>
@@ -68,14 +75,17 @@
     <div class="location text-center" *ngIf="isCustodianOrgId">
         <div>
             <span class="bolder">{{'STATE' | translate}}: </span>
-            <span *ngIf="userLocation?.state && userLocation?.state?.name && userLocation?.state?.name?.length">{{userLocation.state.name}}</span>
+            <span
+                *ngIf="userLocation?.state && userLocation?.state?.name && userLocation?.state?.name?.length">{{userLocation.state.name}}</span>
             <span *ngIf="!(userLocation?.state && userLocation?.state?.name && userLocation?.state?.name?.length)"
                 class="lighter">{{'ADD_STATE' | translate}}</span>
         </div>
         <div>
             <span class="bolder">{{'DISTRICT' | translate}}: </span>
-            <span *ngIf="userLocation?.district && userLocation?.district?.name && userLocation?.district?.name?.length">{{userLocation.district.name}}</span>
-            <span *ngIf="!(userLocation?.district && userLocation?.district?.name && userLocation?.district?.name?.length)"
+            <span
+                *ngIf="userLocation?.district && userLocation?.district?.name && userLocation?.district?.name?.length">{{userLocation.district.name}}</span>
+            <span
+                *ngIf="!(userLocation?.district && userLocation?.district?.name && userLocation?.district?.name?.length)"
                 class="lighter">{{'ADD_DISTRICT' | translate}}</span>
         </div>
         <div class="container MT10 MB10">
@@ -154,10 +164,13 @@
         <div class="" text-center>
             <button ion-button round *ngIf="badgesLimit < profile?.badgeAssertions?.length" (click)="showMoreBadges()"
                 class="txt-capitalize custom-round">
-                + {{profile?.badgeAssertions?.length - 2}} {{'MORE' | translate}} <ion-icon class="ML10" name="ios-arrow-down"></ion-icon>
+                + {{profile?.badgeAssertions?.length - 2}} {{'MORE' | translate}}
+                <ion-icon class="ML10" name="ios-arrow-down"></ion-icon>
             </button>
-            <button ion-button round *ngIf="badgesLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessBadges()" class="txt-capitalize custom-round">
-                {{'SHOW_LESS' | translate }} <ion-icon class="ML10" name="ios-arrow-up"></ion-icon>
+            <button ion-button round *ngIf="badgesLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessBadges()"
+                class="txt-capitalize custom-round">
+                {{'SHOW_LESS' | translate }}
+                <ion-icon class="ML10" name="ios-arrow-up"></ion-icon>
             </button>
         </div>
     </div>
@@ -169,7 +182,8 @@
         <div class="cards-container" style="padding:15px 5px; background-color: #fff; ">
             <ion-scroll scrollX="true" style="width: 100%" no-padding>
                 <div *ngIf="contentCreatedByMe  && isLoggedInUser">
-                    <ion-card *ngFor="let courseItem of contentCreatedByMe; let i=index" (click)="navigateToDetailPage(courseItem, layoutPopular, i);">
+                    <ion-card *ngFor="let courseItem of contentCreatedByMe; let i=index"
+                        (click)="navigateToDetailPage(courseItem, layoutPopular, i);">
                         <ion-card-content>
                             <ion-row class="top">
                                 <ion-col col-3 class="img-container">
@@ -184,7 +198,8 @@
                                     <div class="f11 ellipsis info" *ngIf="courseItem.subject">
                                         {{'SUBJECT'| translate}}: {{courseItem?.subject}}
                                     </div>
-                                    <div class="f11 ellipsis info" *ngIf="courseItem.gradeLevel && courseItem.gradeLevel.length">
+                                    <div class="f11 ellipsis info"
+                                        *ngIf="courseItem.gradeLevel && courseItem.gradeLevel.length">
                                         {{'CLASS' | translate}}: {{courseItem?.gradeLevel}}
                                     </div>
                                     <div class="f11 ellipsis info" *ngIf="courseItem.medium">
@@ -225,13 +240,15 @@
                 </div>
             </div>
             <div class="" text-center>
-                <button ion-button round class="txt-capitalize custom-round" *ngIf="trainingsLimit < trainingsCompleted.length"
-                    (click)="showMoreTainings()">
-                    + {{trainingsCompleted?.length - 2}} {{'MORE' | translate}} <ion-icon class="ML10" name="ios-arrow-down"></ion-icon>
+                <button ion-button round class="txt-capitalize custom-round"
+                    *ngIf="trainingsLimit < trainingsCompleted.length" (click)="showMoreTainings()">
+                    + {{trainingsCompleted?.length - 2}} {{'MORE' | translate}}
+                    <ion-icon class="ML10" name="ios-arrow-down"></ion-icon>
                 </button>
-                <button ion-button round class="txt-capitalize custom-round" *ngIf="trainingsLimit > DEFAULT_PAGINATION_LIMIT"
-                    (click)="showLessTrainings()">
-                    {{'SHOW_LESS' | translate }} <ion-icon class="ML10" name="ios-arrow-up"></ion-icon>
+                <button ion-button round class="txt-capitalize custom-round"
+                    *ngIf="trainingsLimit > DEFAULT_PAGINATION_LIMIT" (click)="showLessTrainings()">
+                    {{'SHOW_LESS' | translate }}
+                    <ion-icon class="ML10" name="ios-arrow-up"></ion-icon>
                 </button>
             </div>
         </div>

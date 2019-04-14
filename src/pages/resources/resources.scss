@@ -28,7 +28,7 @@ ion-spinner {
     padding-top: 30px;
   } 
   .scrollable-container{
-   margin-top:128px
+   margin-top:112px;
   }
   .fixed-container{
     width: 100%;
@@ -38,10 +38,15 @@ ion-spinner {
   }
   .offline-header{
     color: $gray-300;
+    font-size: 16px;
   }
   .offline-content{
     color:$gray-300 !important;
     width:65%; 
     margin: auto;
+  }
+
+  .view-all-p8{
+    padding: 0 $base-block-space !important;
   }
 }

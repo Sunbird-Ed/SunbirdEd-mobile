@@ -2,9 +2,24 @@
 <ion-content *ngIf="new && content && appGlobalService?.CONTENT_STREAMING_ENABLED">
 	<div class="sb-play-container sb-player-container" *ngIf="commonUtilService.networkInfo.isNetworkAvailable">
 		<div *ngIf="streamingUrl">
-			<div>
+			<div *ngIf="contentDownloadable[content?.identifier]">
 				<img class="sb-player-container" src='{{content?.contentData.appIcon}}'>
 				<div class="sb-overlay-container" (click)="showSwitchUserAlert(false)">
+					<div class="sb-back-transparent" (click)="handleNavBackButton();$event.stopPropagation()">
+						<div class="sb-circle">
+							<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
+						</div>
+					</div>
+					<div class="sb-common-player-group sb-play-title-group">
+						<button ion-button clear icon-only class="sb-common-title">
+							<ion-icon ios="ios-play" md="md-play" class="sb-common-white-icon"></ion-icon>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div *ngIf="!contentDownloadable[content?.identifier]">
+				<img class="sb-player-container" src='{{content?.contentData.appIcon}}'>
+				<div class="sb-overlay-container" (click)="showSwitchUserAlert(true)">
 					<div class="sb-back-transparent" (click)="handleNavBackButton();$event.stopPropagation()">
 						<div class="sb-circle">
 							<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
@@ -25,7 +40,7 @@
 						<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
 					</div>
 				</div>
-				<div class="sb-common-player-group sb-common-title-group" (click)="openConfirmPopUp()">
+				<div class="sb-common-player-group sb-download-title-group" (click)="openConfirmPopUp()">
 					<button ion-button clear icon-only class="sb-common-title">
 						<ion-icon ios="ios-cloud-download" md="md-cloud-download" class="sb-common-white-icon"></ion-icon>
 					</button>
@@ -109,12 +124,12 @@
 			<div class="sb-dt-content pt-0">
 				<div class="left" *ngIf="content?.contentData?.resourceType">
 					<div class="sb-practice">
-						<button ion-button outline small>{{content?.contentData?.resourceType}}</button>
+						<button ion-button outline small class="content-btn-padding">{{content?.contentData?.resourceType}}</button>
 					</div>
 				</div>
-				<div class="right" *ngIf="content?.contentData?.me_totalRatings">
+				<div class="right" *ngIf="content?.contentData?.me_averageRating">
 					<div class="sb-rating-view">
-						<span class="sb-rating-value">{{ content?.me_totalRatings }}</span>
+						<span class="sb-rating-value">{{ content?.contentData?.me_averageRating }}</span>
 						<span class="sb-rating-star">
 							<ion-icon ios="ios-star" md="md-star"></ion-icon>
 						</span>
@@ -132,7 +147,7 @@
 						 clear icon-only class="sb-btn-tile">
 							<ion-icon ios="ios-cloud-download" md="md-cloud-download" class="sb-dt-card-blue-icon"></ion-icon>
 							<span *ngIf="!isDownloadStarted" class="sb-btn-footer-text">{{'DOWNLOAD' | translate}}</span>
-							<span *ngIf="isDownloadStarted" class="btn-popover-progress-container">
+							<span *ngIf="isDownloadStarted && showDownload" class="btn-popover-progress-container">
 								<span class="btn-progress-highlight" [ngStyle]="{'width': this.downloadProgress + '%'}"></span>
 							</span>
 						</button>
@@ -144,7 +159,7 @@
 							 clear icon-only class="sb-btn-tile">
 								<ion-icon ios="ios-cloud-download" md="md-cloud-download" class="sb-dt-card-blue-icon"></ion-icon>
 								<span *ngIf="!isDownloadStarted" class="sb-btn-footer-text">{{'DOWNLOAD' | translate}}</span>
-								<span *ngIf="isDownloadStarted" class="btn-popover-progress-container">
+								<span *ngIf="isDownloadStarted && showDownload" class="btn-popover-progress-container">
 									<span class="btn-progress-highlight" [ngStyle]="{'width': this.downloadProgress + '%'}"></span>
 								</span>
 							</button>
@@ -155,7 +170,7 @@
 							 clear icon-only class="sb-btn-tile">
 								<ion-icon ios="ios-cloud-download" md="md-cloud-download" class="sb-dt-card-blue-icon"></ion-icon>
 								<span *ngIf="!isDownloadStarted" class="sb-btn-footer-text">{{'DOWNLOAD' | translate}}</span>
-								<span *ngIf="isDownloadStarted" class="btn-popover-progress-container">
+								<span *ngIf="isDownloadStarted && showDownload" class="btn-popover-progress-container">
 									<span class="btn-progress-highlight" [ngStyle]="{'width': this.downloadProgress + '%'}"></span>
 								</span>
 							</button>
@@ -196,7 +211,7 @@
 				</div>
 				<div class="sb-info" *ngIf="content?.contentData?.medium">
 					<div class="sb-content-title">{{'MEDIUM' | translate}}</div>
-					<div class="sb-content-title-data">{{content?.contentData?.medium}}</div>
+					<div class="sb-content-title-data">{{content?.contentData?.medium | csa}}</div>
 				</div>
 				<div class="sb-info" *ngIf="content?.contentData?.gradeLevel && content?.contentData?.gradeLevel?.length">
 					<div class="sb-content-title">{{'CLASS' | translate}}</div>
@@ -204,7 +219,7 @@
 				</div>
 				<div class="sb-info" *ngIf="content?.contentData?.subject">
 					<div class="sb-content-title">{{'SUBJECT' | translate}}</div>
-					<div class="sb-content-title-data">{{content?.contentData?.subject}}</div>
+					<div class="sb-content-title-data">{{content?.contentData?.subject | csa}}</div>
 				</div>
 				<div class="sb-info" *ngIf="content?.contentData?.license">
 					<div class="sb-content-title">{{'LICENSE' | translate}}</div>
