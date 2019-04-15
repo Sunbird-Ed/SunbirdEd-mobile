@@ -69,7 +69,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 16
         ext.buildNumber = System.getenv("TRAVIS_BUILD_NUMBER") ?: "local"
         versionName "2.0.$ext.buildNumber"
         manifestPlaceholders = [fabricKey: "${release_fabric_api_key}", fabricSecret: "${release_fabric_api_secret}"]
@@ -329,6 +329,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile ("com.google.android.gms:play-services-analytics:9.4.0")
+    compile ("com.android.support:multidex:1.0.3")
     compile('com.crashlytics.sdk.android:crashlytics:2.9.4@aar') {
           transitive = true;
     }
