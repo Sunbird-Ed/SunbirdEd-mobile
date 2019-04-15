@@ -1213,7 +1213,7 @@ export class ContentDetailsPage {
           this.corRelationList);
       });
 
-      if (isStreaming || this.hierarchyInfo) {
+      if (isStreaming) {
         const extraInfoMap = { hierarchyInfo: [] };
         if (this.cardData && this.cardData.hierarchyInfo) {
           extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
