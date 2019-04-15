@@ -20,6 +20,7 @@
   <preference name="KeyboardDisplayRequiresUserAction" value="false"/>
   <hook src="scripts/copyGradleFiles.js" type="before_build"/>
   <hook src="scripts/copyBundledData.js" type="before_build"/>
+  <hook src="scripts/application/add_application.js" type="before_run" />
   <hook src="scripts/copyGradleFiles.js" type="before_run"/>
   <hook src="scripts/copyBundledData.js" type="before_run"/>
   <platform name="android">
