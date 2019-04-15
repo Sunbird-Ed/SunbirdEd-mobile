@@ -612,7 +612,7 @@ export class MyApp implements OnInit, AfterViewInit {
       if (navObj.canGoBack()) {
         return navObj.pop();
       } else {
-        this.commonUtilService.showExitPopUp(this.computePageId(currentPage), Environment.HOME, false);
+        this.commonUtilService.showExitPopUp(this.computePageId((<any>activeView).instance), Environment.HOME, false);
       }
     } else {
       this.headerServie.sidebarEvent($event);
