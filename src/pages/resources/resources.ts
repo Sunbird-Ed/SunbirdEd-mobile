@@ -757,8 +757,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.eventSubscription = this.eventsBusService.events().subscribe((event: EventsBusEvent) => {
       if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
         this.loadRecentlyViewedContent();
-        this.networkSubscription = this.commonUtilService.subject.subscribe((res) => {
-          if  (!res) {
+        this.networkSubscription = this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
+          if  (!available) {
             this.presentToastWithOptions();
           } else {
             if (this.toast) {

@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 import { ProfileSettingsPage } from './../pages/profile-settings/profile-settings';
 import { AfterViewInit, Component, Inject, NgZone, ViewChild, OnInit, EventEmitter } from '@angular/core';
-import { App, Events, Nav, Platform, PopoverController, ToastController, ViewController } from 'ionic-angular';
+import { App, Events, Nav, Platform, PopoverController, ToastController, ViewController, NavControllerBase } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, LOGIN_TEACHER_TABS } from './module.service';
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
@@ -138,8 +138,26 @@ export class MyApp implements OnInit, AfterViewInit {
     this.headerServie.headerConfigEmitted$.subscribe(config => {
       this.headerConfig = config;
     });
+
+    this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
+      const navObj: NavControllerBase = this.app.getActiveNavs()[0];
+        const activeView: ViewController = navObj.getActive();
+        const pageId: string = this.computePageId((<any>activeView).instance);
+      if (available) {
+        this.addNetworkTelemetry(InteractSubtype.INTERNET_CONNECTED, pageId);
+      } else {
+        this.addNetworkTelemetry(InteractSubtype.INTERNET_DISCONNECTED, pageId);
+      }
+    });
   }
 
+  addNetworkTelemetry(subtype: string, pageId: string) {
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+        subtype,
+        Environment.HOME,
+        pageId, undefined
+    );
+}
   ngAfterViewInit(): void {
     this.platform.resume.subscribe(() => {
       this.telemetryGeneratorService.generateInterruptTelemetry('resume', '');
@@ -187,7 +205,15 @@ export class MyApp implements OnInit, AfterViewInit {
       pageId = PageId.PROFILE;
     } else if (page instanceof GuestProfilePage) {
       pageId = PageId.GUEST_PROFILE;
-    }
+    }  else if (page instanceof CollectionDetailsEtbPage) {
+      pageId = PageId.COLLECTION_DETAIL;
+  } else if (page instanceof ContentDetailsPage) {
+      pageId = PageId.CONTENT_DETAIL;
+  } else if (page instanceof QrCodeResultPage) {
+      pageId = PageId.DIAL_CODE_SCAN_RESULT;
+  } else if (page instanceof CollectionDetailsPage) {
+      pageId = PageId.COLLECTION_DETAIL;
+  }
     return pageId;
   }
 
