@@ -203,7 +203,7 @@
 		<div class="sb-content-info-items" *ngIf="content?.contentData?.description || content?.contentData?.gradeLevel || content?.contentData?.subject || content?.contentData?.board">
 			<div class="sb-content-info-title">{{'ABOUT' | translate}}</div>
 
-			<ion-card class="sb-content-info-card">
+			<ion-card class="sb-content-info-card" *ngIf="content?.contentData?.description || content?.contentData?.gradeLevel || content?.contentData?.subject || content?.contentData?.board">
 				<div class="sb-content-info-heading" *ngIf="content?.contentData?.description && content?.contentData?.description?.length">{{content?.description}}</div>
 				<div class="sb-info" *ngIf="content?.contentData?.board">
 					<div class="sb-content-title">{{ 'BOARD' | translate }}</div>
