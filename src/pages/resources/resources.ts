@@ -217,7 +217,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
     this.events.subscribe('tab.change', (data) => {
       // this.ngZone.run(() => {
-        console.log('Dataa--', data);
         if (data === 'LIBRARY') {
           if (this.appliedFilter) {
             this.filterIcon = './assets/imgs/ic_action_filter.png';
@@ -844,7 +843,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   findWithAttr(array, attr, value) {
     for (let i = 0; i < array.length; i += 1) {
-      console.log(array[i][attr]);
       if (array[i][attr].toLowerCase() === value.toLowerCase()) {
         return i;
       }
