@@ -11,7 +11,8 @@ import {
     Alert,
     AlertController,
     App,
-    NavControllerBase
+    NavControllerBase,
+    ViewController
 } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
@@ -27,6 +28,14 @@ import { TelemetryGeneratorService } from '../service/telemetry-generator.servic
 import { InteractType, InteractSubtype, PageId, Environment } from '../service/telemetry-constants';
 import { Subject } from 'rxjs';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
+import { ResourcesPage } from '@app/pages/resources/resources';
+import { CoursesPage } from '@app/pages/courses/courses';
+import { ProfilePage } from '@app/pages/profile/profile';
+import { GuestProfilePage } from '@app/pages/profile';
+import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
+import { ContentDetailsPage } from '@app/pages/content-details/content-details';
+import { QrCodeResultPage } from '@app/pages/qr-code-result';
+import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
 
 export interface NetworkInfo {
     isNetworkAvailable: boolean;
@@ -191,41 +200,24 @@ export class CommonUtilService implements OnDestroy {
             popOver.present();
         }, 300);
     }
-    computePageId(pageName: string): string {
+    computePageId(page): string {
         let pageId = '';
-        switch (pageName) {
-            case 'ResourcesPage': {
-                pageId = PageId.LIBRARY;
-                break;
-            }
-            case 'CoursesPage': {
-                pageId = PageId.COURSES;
-                break;
-            }
-            case 'ProfilePage': {
-                pageId = PageId.PROFILE;
-                break;
-            }
-            case 'GuestProfilePage': {
-                pageId = PageId.GUEST_PROFILE;
-                break;
-            }
-            case 'CollectionDetailsEtbPage': {
-                pageId = PageId.COLLECTION_DETAIL;
-                break;
-            }
-            case 'ContentDetailsPage': {
-                pageId = PageId.CONTENT_DETAIL;
-                break;
-            }
-            case 'QrCodeResultPage': {
-                pageId = PageId.DIAL_CODE_SCAN_RESULT;
-                break;
-            }
-            case 'CollectionDetailsPage': {
-                pageId = PageId.COLLECTION_DETAIL;
-                break;
-            }
+        if (page instanceof ResourcesPage) {
+            pageId = PageId.LIBRARY;
+        } else if (page instanceof CoursesPage) {
+            pageId = PageId.COURSES;
+        } else if (page instanceof ProfilePage) {
+            pageId = PageId.PROFILE;
+        } else if (page instanceof GuestProfilePage) {
+            pageId = PageId.GUEST_PROFILE;
+        } else if (page instanceof CollectionDetailsEtbPage) {
+            pageId = PageId.COLLECTION_DETAIL;
+        } else if (page instanceof ContentDetailsPage) {
+            pageId = PageId.CONTENT_DETAIL;
+        } else if (page instanceof QrCodeResultPage) {
+            pageId = PageId.DIAL_CODE_SCAN_RESULT;
+        } else if (page instanceof CollectionDetailsPage) {
+            pageId = PageId.COLLECTION_DETAIL;
         }
         return pageId;
     }
@@ -233,7 +225,8 @@ export class CommonUtilService implements OnDestroy {
     getPageName() {
         const navObj: NavControllerBase = this.app.getActiveNavs()[0];
         let currentPage: string = navObj.getActive().name;
-        currentPage = this.computePageId(currentPage);
+        const activeView: ViewController = navObj.getActive();
+        currentPage = this.computePageId((<any>activeView).instance);
 
         return (currentPage);
     }
