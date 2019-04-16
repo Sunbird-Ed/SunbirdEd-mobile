@@ -53,6 +53,7 @@ import {
   Rollup,
   SharedPreferences,
   TelemetryObject,
+  ChildContentRequest,
   ContentDeleteStatus
 } from 'sunbird-sdk';
 import {CanvasPlayerService} from '../player/canvas-player.service';
@@ -212,7 +213,7 @@ export class ContentDetailsPage {
     //   this.handleNavBackButton();
     // };
     // this.handleDeviceBackButton();
-    
+
     if (!AppGlobalService.isPlayerLaunched) {
       this.calculateAvailableUserCount();
     }
@@ -275,8 +276,8 @@ export class ContentDetailsPage {
     this.subscribeSdkEvent();
     // this.setContentDetails(this.identifier, true, false);
     // this.subscribeGenieEvent();
-    this.networkSubscription = this.commonUtilService.subject.subscribe((res) => {
-      if  (res) {
+    this.networkSubscription =  this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
+      if  (available) {
         this.presentToast();
         if (this.toast) {
           this.toast.dismiss();
@@ -519,6 +520,9 @@ export class ContentDetailsPage {
             if (!showRating) {
               loader.dismiss();
             }
+            if (data.contentData.status === 'Retired') {
+              this.showRetiredContentPopup();
+            }
           } else {
             if (!showRating) {
               loader.dismiss();
@@ -555,6 +559,10 @@ export class ContentDetailsPage {
   }
 
   extractApiResponse(data: Content) {
+    if (this.isResumedCourse) {
+      this.setChildContents();
+    }
+
     this.content = data;
     this.contentDownloadable[this.content.identifier] = data.isAvailableLocally;
     if (this.content.lastUpdatedTime !== 0) {
@@ -652,6 +660,65 @@ export class ContentDetailsPage {
          * If the content is already downloaded then just play it
          */
         this.showSwitchUserAlert(false);
+      }
+    }
+  }
+
+    /**
+   * Function to set child contents
+   */
+  setChildContents(): void {
+    this.showChildrenLoader = true;
+    // const option = new ChildContentRequest();
+    const resumedCourseCardData =  this.navParams.get('resumedCourseCardData');
+    const option: ChildContentRequest = {
+      contentId: resumedCourseCardData && resumedCourseCardData.contentId ?
+      resumedCourseCardData.contentId : resumedCourseCardData.identifier,
+      hierarchyInfo: null,
+      level: !this.courseCardData.batchId ? 1 : 0,
+    };
+    // if (this.navParams.get('resumedCourseCardData')) {
+    //   option.contentId = this.navParams.get('resumedCourseCardData').contentId || this.navParams.get('resumedCourseCardData').identifier;
+    // }
+    option.hierarchyInfo = null;
+
+    if (this.courseCardData && !this.courseCardData.batchId) {
+      option.level = 1;
+    }
+    this.contentService.getChildContents(option).toPromise()
+      .then((data: any) => {
+        data = JSON.parse(data);
+        this.zone.run(() => {
+          if (data && data.result && data.result.children) {
+            this.hierarchyInfo = this.getHierarchyInfo(data.result);
+          }
+        });
+      })
+      .catch((error: string) => {
+        this.zone.run(() => {
+        });
+      });
+  }
+
+  getHierarchyInfo(childrenData) {
+    // step 1: if children.length != 0
+    // step 2: then, loopthrough and match identifier
+    // step 3: if matches, then, return hirearchy info
+    // step 4: else, step 1 again
+    let hierarchyInfo: any;
+    if (childrenData.children && childrenData.children.length) {
+      // hierarchyInfo = childrenData.children.find((ele) => {
+      // childrenData.children.forEach(ele => {
+      for (let i = 0; i < childrenData.children.length; i++) {
+        const ele = childrenData.children[i];
+        if (!hierarchyInfo && ele.identifier === this.identifier) {
+          return ele;
+        } else if (!hierarchyInfo) {
+          hierarchyInfo = this.getHierarchyInfo(ele);
+          if (hierarchyInfo) {
+            return hierarchyInfo;
+          }
+        }
       }
     }
   }
@@ -1054,6 +1121,28 @@ export class ContentDetailsPage {
     }
   }
 
+  showRetiredContentPopup() {
+    const popover = this.popoverCtrl.create(SbGenericPopoverComponent, {
+      sbPopoverHeading: this.commonUtilService.translateMessage('CONTENT_NOT_AVAILABLE'),
+      sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_RETIRED_BY_AUTHOR'),
+      actionsButtons: [
+      ],
+      icon: {
+        md: 'md-warning',
+        ios: 'ios-warning',
+        className: ''
+      }
+    }, {
+      cssClass: 'sb-popover warning',
+    });
+    popover.present({
+      ev: event
+    });
+    popover.onDidDismiss(() => {
+      this.navCtrl.pop();
+    });
+  }
+
   openPlayAsPopup(isStreaming) {
     const profile = this.appGlobalService.getCurrentUser();
     this.isUsrGrpAlrtOpen = true;
@@ -1125,9 +1214,11 @@ export class ContentDetailsPage {
       });
 
       if (isStreaming) {
-        const extraInfoMap = {hierarchyInfo: []};
+        const extraInfoMap = { hierarchyInfo: [] };
         if (this.cardData && this.cardData.hierarchyInfo) {
           extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
+        } else if (this.hierarchyInfo && this.hierarchyInfo.hierarchyInfo) {
+          extraInfoMap.hierarchyInfo = this.hierarchyInfo.hierarchyInfo;
         }
 
         const playContent = this.playingContent;
@@ -1150,6 +1241,12 @@ export class ContentDetailsPage {
       if (isStreaming) {
         request.streaming = isStreaming;
       }
+
+      if (this.isResumedCourse) {
+        this.playingContent.hierarchyInfo = this.hierarchyInfo.hierarchyInfo;
+      }
+
+
       const contentAccessRequest: ContentAccess = {
         status: ContentAccessStatus.PLAYED,
         contentId: this.identifier,

@@ -480,6 +480,10 @@
   "SHOW_RESULTS": "Showing results of \"{{%s}}\"",
   "VIEW_RETIRED_BATCHES": "Retired Batches",
   "VIEW_ALL_BATCHES": "Please select a batch to proceed",
-  "STATE_RECORDS": "As per state records",
+  "STATE_RECORDS":"As per state records",
+  "CONTENT_COMMING_SOON": "Content will be available soon",
+  "CONTENT_IS_BEEING_ADDED": "Content is beeing added to ",
+  "CONTENT_NOT_AVAILABLE": "Content not available",
+  "CONTENT_RETIRED_BY_AUTHOR": "This content is been retired by the author and hence not available any more",
   "CONTENT_PLAYER_EXIT_PERMISSION": "Would you like to leave this content?"
 }

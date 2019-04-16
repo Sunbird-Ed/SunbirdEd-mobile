@@ -11,7 +11,8 @@ import {
     Alert,
     AlertController,
     App,
-    NavControllerBase
+    NavControllerBase,
+    ViewController
 } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
@@ -25,7 +26,7 @@ import { QRScannerAlert } from './../pages/qrscanner/qrscanner_alert';
 
 import { TelemetryGeneratorService } from '../service/telemetry-generator.service';
 import { InteractType, InteractSubtype, PageId, Environment } from '../service/telemetry-constants';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 
 export interface NetworkInfo {
@@ -33,13 +34,17 @@ export interface NetworkInfo {
 }
 @Injectable()
 export class CommonUtilService implements OnDestroy {
+    public networkAvailability$: Observable<boolean>;
+
     networkInfo: NetworkInfo = {
         isNetworkAvailable: false
     };
-    subject = new Subject<boolean>();
+
     connectSubscription: any;
+
     disconnectSubscription: any;
     private alert?: Alert;
+
     constructor(
         private toastCtrl: ToastController,
         private translate: TranslateService,
@@ -52,9 +57,13 @@ export class CommonUtilService implements OnDestroy {
         private alertCtrl: AlertController,
         private telemetryGeneratorService: TelemetryGeneratorService,
         @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
-        private app: App
     ) {
         this.listenForEvents();
+
+        this.networkAvailability$ = Observable.merge(
+            this.network.onConnect().mapTo(true),
+            this.network.onDisconnect().mapTo(false)
+        );
     }
 
     listenForEvents() {
@@ -191,52 +200,7 @@ export class CommonUtilService implements OnDestroy {
             popOver.present();
         }, 300);
     }
-    computePageId(pageName: string): string {
-        let pageId = '';
-        switch (pageName) {
-            case 'ResourcesPage': {
-                pageId = PageId.LIBRARY;
-                break;
-            }
-            case 'CoursesPage': {
-                pageId = PageId.COURSES;
-                break;
-            }
-            case 'ProfilePage': {
-                pageId = PageId.PROFILE;
-                break;
-            }
-            case 'GuestProfilePage': {
-                pageId = PageId.GUEST_PROFILE;
-                break;
-            }
-            case 'CollectionDetailsEtbPage': {
-                pageId = PageId.COLLECTION_DETAIL;
-                break;
-            }
-            case 'ContentDetailsPage': {
-                pageId = PageId.CONTENT_DETAIL;
-                break;
-            }
-            case 'QrCodeResultPage': {
-                pageId = PageId.DIAL_CODE_SCAN_RESULT;
-                break;
-            }
-            case 'CollectionDetailsPage': {
-                pageId = PageId.COLLECTION_DETAIL;
-                break;
-            }
-        }
-        return pageId;
-    }
 
-    getPageName() {
-        const navObj: NavControllerBase = this.app.getActiveNavs()[0];
-        let currentPage: string = navObj.getActive().name;
-        currentPage = this.computePageId(currentPage);
-
-        return (currentPage);
-    }
     /**
      * Show popup with Close.
      * @param {string} heading Alert heading
@@ -266,7 +230,7 @@ export class CommonUtilService implements OnDestroy {
      * Its check for the network availability
      * @returns {boolean} status of the network
      */
-    handleNetworkAvailability(): boolean {
+    private handleNetworkAvailability(): boolean {
         const updateNetworkAvailabilityStatus = (status: boolean) => {
             this.zone.run(() => {
                 this.networkInfo.isNetworkAvailable = status;
@@ -280,27 +244,14 @@ export class CommonUtilService implements OnDestroy {
         }
 
         this.connectSubscription = this.network.onDisconnect().subscribe(() => {
-            this.subject.next(false);
-
-            this.addNetworkTelemetry(InteractSubtype.INTERNET_DISCONNECTED, this.getPageName());
             updateNetworkAvailabilityStatus(false);
         });
-        this.disconnectSubscription = this.network.onConnect().subscribe(() => {
 
-            this.addNetworkTelemetry(InteractSubtype.INTERNET_CONNECTED, this.getPageName());
-            this.subject.next(true);
+        this.disconnectSubscription = this.network.onConnect().subscribe(() => {
             updateNetworkAvailabilityStatus(true);
         });
 
         return this.networkInfo.isNetworkAvailable;
-    }
-
-    addNetworkTelemetry(subtype: string, pageId: string) {
-        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-            subtype,
-            Environment.HOME,
-            pageId, undefined
-        );
     }
 
     ngOnDestroy() {

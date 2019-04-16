@@ -533,9 +533,8 @@ export class SearchPage implements  OnDestroy {
       if (!this.guestUser) {
         this.courseService.getCourseBatches(courseBatchesRequest).toPromise()
           .then((data: any) => {
-            data = JSON.parse(data);
             this.zone.run(() => {
-              this.batches = data.result.content;
+              this.batches = data;
               if (this.batches.length) {
                 this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
                   'showing-enrolled-ongoing-batch-popup',

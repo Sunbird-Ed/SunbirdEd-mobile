@@ -320,8 +320,8 @@ export class CollectionDetailsEtbPage implements OnInit {
       this.didViewLoad = true;
       this.setContentDetails(this.identifier, true);
       this.subscribeSdkEvent();
-      this.networkSubscription = this.commonUtilService.subject.subscribe((res) => {
-        if (res) {
+      this.networkSubscription = this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
+        if (available) {
           if (this.toast) {
             this.toast.dismiss();
             this.toast = undefined;
