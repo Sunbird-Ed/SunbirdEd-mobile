@@ -94,6 +94,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   layoutPopular = ContentCard.LAYOUT_POPULAR;
   headerObservable: any;
+  timer: any;
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
@@ -692,6 +693,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   toggleTooltips(event, field) {
+    clearTimeout(this.timer);
     if (field === 'name') {
       this.informationProfileName = this.informationProfileName ? false : true;
       this.informationOrgName = false;
@@ -711,7 +713,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
     event.stopPropagation();
   }
   dismissMessage() {
-  setTimeout(() => {
+  this.timer = setTimeout(() => {
     this.informationProfileName = false;
     this.informationOrgName = false;
   }, 3000);
