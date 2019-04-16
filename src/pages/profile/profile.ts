@@ -176,6 +176,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
     if (!refresher) {
       loader.present();
     } else {
+      this.telemetryGeneratorService.generatePullToRefreshTelemetry(PageId.PROFILE, Environment.HOME);
       refresher.complete();
       this.refresh = true;
     }
