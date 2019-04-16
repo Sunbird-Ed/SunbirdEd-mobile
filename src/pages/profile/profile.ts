@@ -695,14 +695,26 @@ export class ProfilePage implements OnInit, AfterViewInit {
     if (field === 'name') {
       this.informationProfileName = this.informationProfileName ? false : true;
       this.informationOrgName = false;
+      if (this.informationProfileName) {
+        this.dismissMessage();
+      }
     } else if (field === 'org') {
       this.informationOrgName = this.informationOrgName ? false : true;
       this.informationProfileName = false;
+      if (this.informationOrgName) {
+        this.dismissMessage();
+      }
     } else {
       this.informationProfileName = false;
       this.informationOrgName = false;
     }
     event.stopPropagation();
+  }
+  dismissMessage() {
+  setTimeout(() => {
+    this.informationProfileName = false;
+    this.informationOrgName = false;
+  }, 3000);
   }
 
 }
