@@ -241,20 +241,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.getCurrentUser();
   }
 
-  async presentToastWithOptions() {
-    this.toast = await this.toastController.create({
-      message: this.commonUtilService.translateMessage('NO_INTERNET_TITLE'),
-      showCloseButton: true,
-      duration: 2000,
-      position: 'top',
-      closeButtonText: '',
-      cssClass: 'toastAfterHeader'
-    });
-   this.toast.present();
-   this.toast.onDidDismiss(() => {
-     this.toast = undefined;
-   });
-  }
 
   generateNetworkType() {
     const values = new Map();
@@ -751,22 +737,38 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.getPopularContent();
     }
     this.subscribeSdkEvent();
+    this.networkSubscription = this.commonUtilService.subject.subscribe((res) => {
+      if  (res) {
+        if (this.toast) {
+          this.toast.dismiss();
+          this.toast = undefined;
+        }
+      } else {
+        this.presentToastForOffline();
+      }
+    });
+  }
+
+  // Offline Toast
+  async presentToastForOffline() {
+    this.toast = await this.toastController.create({
+      duration: 3000,
+      message: this.commonUtilService.translateMessage('NO_INTERNET_TITLE'),
+      showCloseButton: true,
+      position: 'top',
+      closeButtonText: '',
+      cssClass: 'toastHeader'
+    });
+    this.toast.present();
+    this.toast.onDidDismiss(() => {
+      this.toast = undefined;
+    });
   }
 
   subscribeSdkEvent() {
     this.eventSubscription = this.eventsBusService.events().subscribe((event: EventsBusEvent) => {
       if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
         this.loadRecentlyViewedContent();
-        this.networkSubscription = this.commonUtilService.subject.subscribe((res) => {
-          if  (!res) {
-            this.presentToastWithOptions();
-          } else {
-            if (this.toast) {
-            this.toast.dismiss();
-            this.toast = undefined;
-          }
-          }
-        });
       }
     }) as any;
   }
