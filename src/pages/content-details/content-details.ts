@@ -276,8 +276,8 @@ export class ContentDetailsPage {
     this.subscribeSdkEvent();
     // this.setContentDetails(this.identifier, true, false);
     // this.subscribeGenieEvent();
-    this.networkSubscription = this.commonUtilService.subject.subscribe((res) => {
-      if  (res) {
+    this.networkSubscription =  this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
+      if  (available) {
         this.presentToast();
         if (this.toast) {
           this.toast.dismiss();
