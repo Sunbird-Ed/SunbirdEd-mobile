@@ -43,6 +43,7 @@ export class EnrollmentDetailsPage {
   layoutName: any;
   pageName: any;
   env: any;
+  courseId: any;
 
   constructor(
     @Inject('AUTH_SERVICE') private authService: AuthService,
@@ -59,6 +60,7 @@ export class EnrollmentDetailsPage {
     this.ongoingBatches = this.navParams.get('ongoingBatches');
     this.upcommingBatches = this.navParams.get('upcommingBatches');
     this.retiredBatched = this.navParams.get('retiredBatched');
+    this.courseId = this.navParams.get('courseId');
     this.getUserId();
 
   }
@@ -116,8 +118,8 @@ export class EnrollmentDetailsPage {
       reqvalues);
     const enrollCourseRequest: EnrollCourseRequest = {
       userId: this.userId,
-      courseId: content.courseId,
-      contentId: content.courseId,
+      courseId: content.courseId || this.courseId,
+      contentId: content.courseId || this.courseId,
       batchId: content.id,
       batchStatus: content.status
     };
