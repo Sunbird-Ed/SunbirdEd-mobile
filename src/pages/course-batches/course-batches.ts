@@ -5,6 +5,7 @@ import {Events, IonicPage, NavController, NavParams} from 'ionic-angular';
 import {EventTopics} from '../../app/app.constant';
 import {CommonUtilService} from '../../service/common-util.service';
 import { InteractType, InteractSubtype, Environment, PageId } from '@app/service/telemetry-constants';
+import { AppHeaderService } from '@app/service';
 
 /**
  * Generated class for the CourseBatchesPage page.
@@ -58,6 +59,11 @@ export class CourseBatchesPage implements OnInit {
    * Selected filter
    */
   selectedFilter: string;
+  headerConfig = {
+    showHeader: false,
+    showBurgerMenu: false,
+    actionButtons: []
+  };
 
   /**
    * Default method of class CourseBatchesComponent
@@ -76,12 +82,21 @@ export class CourseBatchesPage implements OnInit {
     private zone: NgZone,
     private commonUtilService: CommonUtilService,
     private events: Events,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private headerService: AppHeaderService,
   ) {
   }
 
   ngOnInit(): void {
     this.getUserId();
+  }
+
+  ionViewWillEnter() {
+    this.headerConfig = this.headerService.getDefaultPageConfig();
+    this.headerConfig.actionButtons = [];
+    this.headerConfig.showHeader = false;
+    this.headerConfig.showBurgerMenu = false;
+    this.headerService.updatePageConfig(this.headerConfig);
   }
 
   /**

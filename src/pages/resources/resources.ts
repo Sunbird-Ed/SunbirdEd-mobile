@@ -217,7 +217,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
     this.events.subscribe('tab.change', (data) => {
       // this.ngZone.run(() => {
-        console.log('Dataa--', data);
         if (data === 'LIBRARY') {
           if (this.appliedFilter) {
             this.filterIcon = './assets/imgs/ic_action_filter.png';
@@ -241,20 +240,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.getCurrentUser();
   }
 
-  async presentToastWithOptions() {
-    this.toast = await this.toastController.create({
-      message: this.commonUtilService.translateMessage('NO_INTERNET_TITLE'),
-      showCloseButton: true,
-      duration: 2000,
-      position: 'top',
-      closeButtonText: '',
-      cssClass: 'toastAfterHeader'
-    });
-   this.toast.present();
-   this.toast.onDidDismiss(() => {
-     this.toast = undefined;
-   });
-  }
 
   generateNetworkType() {
     const values = new Map();
@@ -576,6 +561,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           for (let i = 0; i < this.storyAndWorksheets.length; i++) {
             const sectionName = this.storyAndWorksheets[i].name,
               count = this.storyAndWorksheets[i].contents.length;
+              // check if locally available
+            this.markLocallyAvailableTextBook();
             sectionInfo[sectionName] = count;
           }
 
@@ -642,7 +629,21 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     filteredSubject.push(...searchResults);
     return filteredSubject;
   }
-
+  markLocallyAvailableTextBook() {
+    if (!this.recentlyViewedResources || !this.storyAndWorksheets) {
+        return;
+    }
+    for (let i = 0;  i < this.recentlyViewedResources.length; i++) {
+      for (let j = 0;  j < this.storyAndWorksheets.length; j++) {
+        for (let k = 0;  k < this.storyAndWorksheets[j].contents.length; k++) {
+            if (this.recentlyViewedResources[i].isAvailableLocally &&
+              this.recentlyViewedResources[i].identifier ===  this.storyAndWorksheets[j].contents[k].identifier) {
+              this.storyAndWorksheets[j].contents[k].isAvailableLocally = true;
+            }
+        }
+      }
+    }
+  }
   generateExtraInfoTelemetry(sectionsCount) {
     const values = new Map();
     values['savedItemVisible'] = (this.localResources && this.localResources.length) ? 'Y' : 'N';
@@ -698,7 +699,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewDidEnter() {
-    // this.scrollEventRemover = this.scroll.addScrollEventListener((event) => {
+    // this.scrollEventRemover = this.scroll.nativeElement.onscroll((event) => {
     //   this.onScroll(event);
     // });
     this.preferences.getString('show_app_walkthrough_screen').toPromise()
@@ -751,22 +752,38 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.getPopularContent();
     }
     this.subscribeSdkEvent();
+    this.networkSubscription = this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
+      if  (available) {
+        if (this.toast) {
+          this.toast.dismiss();
+          this.toast = undefined;
+        }
+      } else {
+        this.presentToastForOffline();
+      }
+    });
+  }
+
+  // Offline Toast
+  async presentToastForOffline() {
+    this.toast = await this.toastController.create({
+      duration: 3000,
+      message: this.commonUtilService.translateMessage('NO_INTERNET_TITLE'),
+      showCloseButton: true,
+      position: 'top',
+      closeButtonText: '',
+      cssClass: 'toastHeader'
+    });
+    this.toast.present();
+    this.toast.onDidDismiss(() => {
+      this.toast = undefined;
+    });
   }
 
   subscribeSdkEvent() {
     this.eventSubscription = this.eventsBusService.events().subscribe((event: EventsBusEvent) => {
       if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
         this.loadRecentlyViewedContent();
-        this.networkSubscription = this.commonUtilService.subject.subscribe((res) => {
-          if  (!res) {
-            this.presentToastWithOptions();
-          } else {
-            if (this.toast) {
-            this.toast.dismiss();
-            this.toast = undefined;
-          }
-          }
-        });
       }
     }) as any;
   }
@@ -844,7 +861,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   findWithAttr(array, attr, value) {
     for (let i = 0; i < array.length; i += 1) {
-      console.log(array[i][attr]);
       if (array[i][attr].toLowerCase() === value.toLowerCase()) {
         return i;
       }

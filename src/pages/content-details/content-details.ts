@@ -276,8 +276,8 @@ export class ContentDetailsPage {
     this.subscribeSdkEvent();
     // this.setContentDetails(this.identifier, true, false);
     // this.subscribeGenieEvent();
-    this.networkSubscription = this.commonUtilService.subject.subscribe((res) => {
-      if  (res) {
+    this.networkSubscription =  this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
+      if  (available) {
         this.presentToast();
         if (this.toast) {
           this.toast.dismiss();
@@ -1421,7 +1421,10 @@ getMessageByConstant(constant: string) {
       this.objRollup,
       this.corRelationList);
     const tmp = this.getDeleteRequestBody();
+    const loader = this.commonUtilService.getLoader();
+    loader.present();
     this.contentService.deleteContent(tmp).toPromise().then((res: any) => {
+      loader.dismiss();
       if (res && res.status === ContentDeleteStatus.NOT_FOUND) {
         this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
       } else {
@@ -1434,6 +1437,7 @@ getMessageByConstant(constant: string) {
         this.showToaster(this.getMessageByConstant('MSG_RESOURCE_DELETED'));
       }
     }).catch((error: any) => {
+      loader.dismiss();
       console.log('delete response: ', error);
       this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
     });

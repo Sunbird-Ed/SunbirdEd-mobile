@@ -169,6 +169,7 @@ export enum InteractSubtype {
     LANGUAGE_SETTINGS_SUCCESS = 'language-settings-success',
     MANUALSYNC_INITIATED = 'manualsync-initiated',
     MANUALSYNC_SUCCESS = 'manualsync-success',
+    DATA_SYNC_TYPE = 'data-sync-type-clicked',
     RATING_CLICKED = 'rating-clicked',
     RATING_SUBMITTED = 'rating-submitted',
     CREATE_USER_CLICKED = 'create-user-clicked',
