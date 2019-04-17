@@ -565,6 +565,10 @@ export class CoursesPage implements OnInit, AfterViewInit {
   }
 
   search() {
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.SEARCH_BUTTON_CLICKED,
+      Environment.HOME,
+      PageId.COURSES);
     this.navCtrl.push(SearchPage, {
       contentType: ContentType.FOR_COURSE_TAB,
       source: PageId.COURSES,

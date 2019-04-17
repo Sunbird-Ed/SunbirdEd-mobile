@@ -217,7 +217,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
     this.events.subscribe('tab.change', (data) => {
       // this.ngZone.run(() => {
-        console.log('Dataa--', data);
         if (data === 'LIBRARY') {
           if (this.appliedFilter) {
             this.filterIcon = './assets/imgs/ic_action_filter.png';
@@ -562,6 +561,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           for (let i = 0; i < this.storyAndWorksheets.length; i++) {
             const sectionName = this.storyAndWorksheets[i].name,
               count = this.storyAndWorksheets[i].contents.length;
+              // check if locally available
+            this.markLocallyAvailableTextBook();
             sectionInfo[sectionName] = count;
           }
 
@@ -628,7 +629,21 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     filteredSubject.push(...searchResults);
     return filteredSubject;
   }
-
+  markLocallyAvailableTextBook() {
+    if (!this.recentlyViewedResources || !this.storyAndWorksheets) {
+        return;
+    }
+    for (let i = 0;  i < this.recentlyViewedResources.length; i++) {
+      for (let j = 0;  j < this.storyAndWorksheets.length; j++) {
+        for (let k = 0;  k < this.storyAndWorksheets[j].contents.length; k++) {
+            if (this.recentlyViewedResources[i].isAvailableLocally &&
+              this.recentlyViewedResources[i].identifier ===  this.storyAndWorksheets[j].contents[k].identifier) {
+              this.storyAndWorksheets[j].contents[k].isAvailableLocally = true;
+            }
+        }
+      }
+    }
+  }
   generateExtraInfoTelemetry(sectionsCount) {
     const values = new Map();
     values['savedItemVisible'] = (this.localResources && this.localResources.length) ? 'Y' : 'N';
@@ -684,7 +699,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewDidEnter() {
-    // this.scrollEventRemover = this.scroll.addScrollEventListener((event) => {
+    // this.scrollEventRemover = this.scroll.nativeElement.onscroll((event) => {
     //   this.onScroll(event);
     // });
     this.preferences.getString('show_app_walkthrough_screen').toPromise()
@@ -846,7 +861,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   findWithAttr(array, attr, value) {
     for (let i = 0; i < array.length; i += 1) {
-      console.log(array[i][attr]);
       if (array[i][attr].toLowerCase() === value.toLowerCase()) {
         return i;
       }

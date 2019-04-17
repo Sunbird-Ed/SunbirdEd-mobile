@@ -1239,7 +1239,10 @@ export class CollectionDetailsEtbPage implements OnInit {
       this.objRollup,
       this.corRelationList);
     const tmp = this.getDeleteRequestBody();
+    const loader = this.commonUtilService.getLoader();
+    loader.present();
     this.contentService.deleteContent(tmp).toPromise().then((res: any) => {
+      loader.dismiss();
       if (res && res.status === ContentDeleteStatus.NOT_FOUND) {
         this.commonUtilService.showToast('CONTENT_DELETE_FAILED');
       } else {
@@ -1251,6 +1254,7 @@ export class CollectionDetailsEtbPage implements OnInit {
         this.viewCtrl.dismiss('delete.success');
       }
     }).catch((error: any) => {
+      loader.dismiss();
       console.log('delete response: ', error);
       this.commonUtilService.showToast('CONTENT_DELETE_FAILED');
       this.viewCtrl.dismiss();
