@@ -1,75 +1,77 @@
+"use strict";
+
 if (!window.genieservice) {
-    getCurrentUser = function () {
-        console.log("Inside getCurrentUser");
-        return window.parent.handleAction('getCurrentUser');
-    }
+  var getCurrentUser = function getCurrentUser() {
+    console.log("Inside getCurrentUser");
+    return window.parent.handleAction('getCurrentUser');
+  };
 
-    getAllUserProfile = function (profileRequest) {
-        return window.parent.handleAction('getAllUserProfile', [profileRequest]);
-    }
+  var getAllUserProfile = function getAllUserProfile(profileRequest) {
+    return window.parent.handleAction('getAllUserProfile', [profileRequest]);
+  };
 
-    setUser = function (userId) {
-        return window.parent.handleAction('setUser', [userId]);
-    }
+  var setUser = function setUser(userId) {
+    return window.parent.handleAction('setUser', [userId]);
+  };
 
-    getContent = function (contentId) {
-        return window.parent.handleAction('getContent', [contentId]);
-    }
+  var getContent = function getContent(contentId) {
+    return window.parent.handleAction('getContent', [contentId]);
+  };
 
-    getRelatedContent = function () {
-        return window.parent.handleAction('getRelatedContent');
-    }
+  var getRelatedContent = function getRelatedContent() {
+    return window.parent.handleAction('getRelatedContent');
+  };
 
-    getRelevantContent = function (req) {
-        return window.parent.handleAction('getRelevantContent', [req]);
-    }
+  var getRelevantContent = function getRelevantContent(req) {
+    return window.parent.handleAction('getRelevantContent', [req]);
+  };
 
-    getContentList = function (filter) {
-        return window.parent.handleAction('getContentList', [filter]);
-    }
+  var getContentList = function getContentList(filter) {
+    return window.parent.handleAction('getContentList', [filter]);
+  };
 
-    sendFeedback = function (args) {
-        return window.parent.handleAction('sendFeedback', [args]);
-    }
+  var sendFeedback = function sendFeedback(args) {
+    return window.parent.handleAction('sendFeedback', [args]);
+  };
 
-    languageSearch = function (filter) {
-        return window.parent.handleAction('languageSearch', [filter]);
-    }
+  var languageSearch = function languageSearch(filter) {
+    return window.parent.handleAction('languageSearch', [filter]);
+  };
 
-    endGenieCanvas = function () {
-        return window.parent.handleAction('endGenieCanvas');
-    }
+  var endGenieCanvas = function endGenieCanvas() {
+    return window.parent.handleAction('endGenieCanvas');
+  };
 
-    endContent = function () {
-        return window.parent.handleAction('endContent');
-    }
+  var endContent = function endContent() {
+    return window.parent.handleAction('endContent');
+  };
 
-    launchContent = function () {
-        return window.parent.handleAction('launchContent');
-    }
+  var launchContent = function launchContent() {
+    return window.parent.handleAction('launchContent');
+  };
 
-    sendTelemetry =  function (data) {
-		return new Promise(function (resolve, reject) {
-			resolve(data)
-		});
-	}
+  var sendTelemetry = function sendTelemetry(data) {
+    return new Promise(function (resolve, reject) {
+      resolve(data);
+    });
+  };
 
-    window.genieservice = (function () {
-        return {
-            getCurrentUser,
-            getAllUserProfile,
-            setUser,
-            getContent,
-            getRelevantContent,
-            getRelatedContent,
-            getContentList,
-            sendFeedback,
-            endGenieCanvas,
-            endContent,
-            launchContent,
-            sendTelemetry
-        }
-    })();
-    
-    console.log("GenieService Loaded");
+  window.genieservice = function () {
+    return {
+      getCurrentUser: getCurrentUser,
+      getAllUserProfile: getAllUserProfile,
+      setUser: setUser,
+      getContent: getContent,
+      getRelevantContent: getRelevantContent,
+      getRelatedContent: getRelatedContent,
+      getContentList: getContentList,
+      sendFeedback: sendFeedback,
+      endGenieCanvas: endGenieCanvas,
+      endContent: endContent,
+      launchContent: launchContent,
+      sendTelemetry: sendTelemetry
+    };
+  }();
+
+  console.log("GenieService Loaded");
 }

@@ -28,7 +28,7 @@
         <ion-spinner *ngIf="isUploading"></ion-spinner>
         <p style="position: relative;"><span class="profile-name">{{ profile?.firstName }}
                 {{ profile?.lastName }}</span>
-            <span *ngIf="profile?.firstName" class="isymbol" item-right text-left
+            <span *ngIf="!isCustodianOrgId && profile?.firstName" class="isymbol" item-right text-left
                 (click)="toggleTooltips($event, 'name')">
                 <ion-icon name="information-circle" class="info-icon"></ion-icon>
                 <span class="asPerStateRecord" *ngIf="informationProfileName">{{'STATE_RECORDS' | translate}}</span>
@@ -58,7 +58,7 @@
     </div>
     <div class="school-recent" *ngIf="profile?.organisations?.length > 0 ">
         <p class="bolder MB5" style="position: relative;">{{profile?.organisations[0].orgName}}
-            <span *ngIf="profile?.firstName" class="isymbol" item-right text-left
+            <span *ngIf="!isCustodianOrgId && profile?.organisations[0].orgName" class="isymbol" item-right text-left
                 (click)="toggleTooltips($event, 'org')">
                 <ion-icon name="information-circle" class="info-icon"></ion-icon>
                 <span class="asPerStateRecord" *ngIf="informationOrgName">{{'STATE_RECORDS'

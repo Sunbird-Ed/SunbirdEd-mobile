@@ -41,10 +41,13 @@
      
       .right {
         .img-container {
-          background-color: transparent;
+          background-color: $gray-100;
           max-width:($base-block-space * 7);
           height: ($base-block-space * 7);
           overflow:hidden;
+          // background: #eee;
+          display: flex;
+          align-items: center;
         } 
       }
       .left {
