@@ -535,6 +535,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
       this.setChildContents();
     } else {
       this.showLoading = true;
+      this.headerService.hideHeader();
       this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.course, true);
       this.importContent([this.identifier], false);
     }
@@ -701,6 +702,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
         this.zone.run(() => {
           if (data && data[0].status === ContentImportStatus.NOT_FOUND) {
             this.showLoading = false;
+            this.headerService.showHeaderWithBackButton(['share', 'more']);
           }
           if (data && data.length && this.isDownloadStarted) {
             _.forEach(data, (value) => {
@@ -910,11 +912,13 @@ export class EnrolledCourseDetailsPage implements OnInit {
       .then(() => {
         this.zone.run(() => {
           this.showLoading = false;
+          this.headerService.showHeaderWithBackButton(['share', 'more']);
           this.navCtrl.pop();
         });
       }).catch(() => {
       this.zone.run(() => {
         this.showLoading = false;
+        this.headerService.showHeaderWithBackButton(['share', 'more']);
         this.navCtrl.pop();
       });
     });
@@ -1014,6 +1018,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
               if (this.downloadProgress === 100) {
                 this.getBatchDetails();
                 this.showLoading = false;
+                this.headerService.showHeaderWithBackButton(['share', 'more']);
               }
             }
           }
@@ -1021,6 +1026,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
           // Get child content
           if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
             this.showLoading = false;
+            this.headerService.showHeaderWithBackButton(['share', 'more']);
             const contentImportCompleted = event as ContentImportCompleted;
             if (this.queuedIdentifiers.length && this.isDownloadStarted) {
               if (_.includes(this.queuedIdentifiers, contentImportCompleted.payload.contentId)) {
@@ -1048,6 +1054,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
             && hierarchyInfo === null) {
             this.zone.run(() => {
               this.showLoading = true;
+              this.headerService.hideHeader();
               this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.course, false);
               this.importContent([this.identifier], false);
             });

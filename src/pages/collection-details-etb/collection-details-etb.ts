@@ -615,6 +615,7 @@ export class CollectionDetailsEtbPage implements OnInit {
    * @param {boolean} isChild
    */
   importContent(identifiers: Array<string>, isChild: boolean, isDownloadAllClicked?) {
+    this.headerService.hideHeader();
     const option: ContentImportRequest = {
       contentImportArray: this.getImportContentRequestBody(identifiers, isChild),
       contentStatusArray: []
@@ -864,6 +865,7 @@ export class CollectionDetailsEtbPage implements OnInit {
             // this condition is for when the child content update is available and we have downloaded parent content
             // but we have to refresh only the child content.
             this.showLoading = false;
+            this.refreshHeader();
             this.setContentDetails(this.identifier, false);
           } else {
             if (this.isUpdateAvailable && contentImportedEvent.payload.contentId === this.contentDetail.identifier) {
