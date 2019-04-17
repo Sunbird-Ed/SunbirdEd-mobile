@@ -8,10 +8,10 @@
     <ion-content no-padding class="sb-popover-container">
         <div class="sb-popover-items">
             <rating [(ngModel)]="userRating" (ngModelChange)="rateContent($event)"></rating>
-            <div class="sb-popover-content-details" *ngIf="this.userRating">
+            <div class="sb-popover-content-details" *ngIf="userRating">
               <div class="main-title">
                 <div class="meta-info">
-                 {{'RATED_STARS' | translate: {'%s': ratingCount} }}
+                 {{'RATED_STARS' | translate: {'%s': userRating} }}
                 </div>
               </div>
             </div>

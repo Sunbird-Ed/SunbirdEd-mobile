@@ -200,7 +200,6 @@ export class CommonUtilService implements OnDestroy {
             popOver.present();
         }, 300);
     }
-
     /**
      * Show popup with Close.
      * @param {string} heading Alert heading
