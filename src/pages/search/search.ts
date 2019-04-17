@@ -30,7 +30,8 @@ import {
   CourseService,
   CourseBatchesRequest,
   CourseEnrollmentType,
-  CourseBatchStatus
+  CourseBatchStatus,
+  Batch
 } from 'sunbird-sdk';
 import {FilterPage} from './filters/filter';
 import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
@@ -532,7 +533,7 @@ export class SearchPage implements  OnDestroy {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       if (!this.guestUser) {
         this.courseService.getCourseBatches(courseBatchesRequest).toPromise()
-          .then((data: any) => {
+          .then((data: Batch[]) => {
             this.zone.run(() => {
               this.batches = data;
               if (this.batches.length) {
@@ -544,7 +545,8 @@ export class SearchPage implements  OnDestroy {
                 const popover = this.popoverCtrl.create(EnrollmentDetailsPage,
                   {
                     upcommingBatches: this.batches,
-                    retiredBatched: retiredBatched
+                    retiredBatched: retiredBatched,
+                    courseId: content.identifier
                   },
                   { cssClass: 'enrollement-popover' }
                 );
