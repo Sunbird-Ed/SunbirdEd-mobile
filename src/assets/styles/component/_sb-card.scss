@@ -150,7 +150,7 @@
 }
 
 
-.sb-card-textbook-container, .sb-card-view-all-container{
+.sb-card-textbook-container, .sb-card-view-all-container, .sb-card-download-container {
     flex-direction: column;
     box-shadow: 0px 3px 5px 2px rgba(0, 0, 0, 0.10);
     width: 100%;
@@ -170,7 +170,7 @@
     }
 }
 
-.sb-card-view-all-container{
+.sb-card-view-all-container, .sb-card-download-container{
     .sb-card{
         display: grid;
         grid-template-columns: ($base-block-space * 10) auto;
@@ -328,5 +328,28 @@
   }
 }
 
-
+.sb-card-download-container {
+  .sb-card {
+    grid-template-columns: ($base-block-space * 4) ($base-block-space * 10) auto;
+    @include padding(0);
+    .check-container {
+      grid-column: 1;
+      display: flex;
+      align-items: center;
+      background: $gray-0;
+      justify-content: center;
+    }
+    .img-container {
+      grid-column: 2;
+      margin: $base-block-space 0;
+    }
+    .sb-card-details {
+      grid-column: 3;
+      margin-bottom: 0;
+    }
+    .sb-card-actions {
+      @include padding(0, $base-block-space, 0 0)
+    }
+  }
+}
 

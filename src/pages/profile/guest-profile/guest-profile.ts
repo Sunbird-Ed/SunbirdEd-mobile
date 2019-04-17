@@ -17,7 +17,7 @@ import {
   ProfileType,
   SharedPreferences
 } from 'sunbird-sdk';
-import {PageId} from '../../../service/telemetry-constants';
+import {PageId, Environment} from '../../../service/telemetry-constants';
 import {ProfileConstants} from '../../../app';
 
 @Component({
@@ -131,7 +131,9 @@ export class GuestProfilePage implements OnInit, AfterViewInit {
     if (showLoader) {
       this.loader.present();
     }
-
+    if (refresher) {
+      this.telemetryGeneratorService.generatePullToRefreshTelemetry(PageId.GUEST_PROFILE, Environment.HOME);
+    }
     this.profileService.getActiveSessionProfile({requiredFields: ProfileConstants.REQUIRED_FIELDS}).toPromise()
       .then((res: any) => {
         this.profile = res;
