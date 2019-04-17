@@ -62,19 +62,22 @@
     <ion-list class="sb-menu-list">
       <ion-item (click)="emitSideMenuItemEvent($event, 'USERS_AND_GROUPS')">
         <span class="sb-menu-icon">
-          <ion-icon ios="ios-contacts" md="md-contacts"></ion-icon>
+          <!-- <ion-icon ios="ios-contacts" md="md-contacts"></ion-icon> -->
+          <img src="./assets/imgs/Users_and_Groups.png" class="tool-icon">
         </span>
         <span class="sb-menu-item" menuClose>{{'USERS_AND_GROUPS' | translate}}</span>
       </ion-item>
       <ion-item (click)="emitSideMenuItemEvent($event, 'REPORTS')">
         <span class="sb-menu-icon">
-          <ion-icon ios="ios-clipboard" md="md-clipboard" MR5></ion-icon>
+          <!-- <ion-icon ios="ios-clipboard" md="md-clipboard" MR5></ion-icon> -->
+          <img src="./assets/imgs/Reports.png" class="tool-icon">
         </span>
         <span class="sb-menu-item" menuClose>{{'REPORTS' | translate}}</span>
       </ion-item>
       <ion-item (click)="emitSideMenuItemEvent($event, 'LANGUAGE')">
         <span class="sb-menu-icon sb-pt-6">
-          <ion-icon ios="ios-planet" md="md-planet"></ion-icon>
+          <!-- <ion-icon ios="ios-planet" md="md-planet"></ion-icon> -->
+          <img src="./assets/imgs/Language.png" class="tool-icon">
         </span>
         <div class="sb-menu-icon sb-language">
           <div class="sb-menu-item">{{'LANGUAGE' | translate}}</div>
@@ -83,13 +86,15 @@
       </ion-item>
       <ion-item (click)="emitSideMenuItemEvent($event, 'SETTINGS')">
         <span class="sb-menu-icon">
-          <ion-icon ios="ios-settings" md="md-settings"></ion-icon>
+          <!-- <ion-icon ios="ios-settings" md="md-settings"></ion-icon> -->
+          <img src="./assets/imgs/Settings.png" class="tool-icon">
         </span>
         <span class="sb-menu-item" menuClose>{{'SETTINGS' | translate}}</span>
       </ion-item>
       <ion-item (click)="emitSideMenuItemEvent($event, 'LOGOUT')" *ngIf="isLoggedIn">
         <span class="sb-menu-icon">
-          <ion-icon ios="ios-log-out" md="md-log-out"></ion-icon>
+          <!-- <ion-icon ios="ios-log-out" md="md-log-out"></ion-icon> -->
+          <img src="./assets/imgs/Sign_out.png" class="tool-icon">
         </span>
         <span class="sb-menu-item" menuClose>{{'LOGOUT' | translate}}</span>
       </ion-item>
