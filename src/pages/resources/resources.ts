@@ -963,8 +963,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       values);
   }
 
-  classClick(index, isSendTelemetry?: boolean) {
-    if (isSendTelemetry) {
+  classClick(index, isClassClicked?: boolean) {
+    if (isClassClicked) {
       this.generateClassInteractTelemetry(this.categoryGradeLevels[index].name, this.getGroupByPageReq.grade[0]);
     }
     this.getGroupByPageReq.grade = [this.categoryGradeLevels[index].name];
@@ -984,8 +984,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     document.getElementById('gradeScroll').scrollTo({top: 0, left: index * 60, behavior: 'smooth'});
   }
 
-  mediumClick(mediumName: string, isSendTelemetry?: boolean) {
-    if (isSendTelemetry) {
+  mediumClick(mediumName: string, isMediumClicked?: boolean) {
+    if (isMediumClicked) {
        this.generateMediumInteractTelemetry(mediumName, this.getGroupByPageReq.medium[0]);
     }
     this.getGroupByPageReq.medium = [mediumName];
