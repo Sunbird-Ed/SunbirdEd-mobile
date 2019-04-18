@@ -235,7 +235,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
   ionViewWillLeave() {
     this.headerObservable.unsubscribe();
     this.events.unsubscribe('update_header');
-    this.tabBarElement.style.display = 'flex';
+    // this.tabBarElement.style.display = 'flex';
     this.ngZone.run(() => {
       if (this.eventSubscription) {
         this.eventSubscription.unsubscribe();
@@ -289,7 +289,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
 
     this.events.subscribe(EventTopics.ENROL_COURSE_SUCCESS, (res) => {
       if (res && res.batchId) {
-        this.getEnrolledCourses(false, false);
+        this.getEnrolledCourses(false, true);
       }
     });
 
