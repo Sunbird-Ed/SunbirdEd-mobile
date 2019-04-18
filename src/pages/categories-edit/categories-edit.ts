@@ -24,7 +24,8 @@ import {
   ContainerService,
   TabsPage,
   FrameworkService,
-  SuggestedFrameworkRequest
+  SuggestedFrameworkRequest,
+  UserProfileDetailsRequest
 } from 'sunbird';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
@@ -32,7 +33,8 @@ import { Events } from 'ionic-angular';
 import {
   initTabs,
   LOGIN_TEACHER_TABS,
-  FrameworkCategory
+  FrameworkCategory,
+  ProfileConstants
 } from '@app/app';
 import { Select } from 'ionic-angular';
 
@@ -384,8 +386,22 @@ export class CategoriesEditPage {
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_SUCCESS'));
         this.events.publish('loggedInProfile:update', req.framework);
         if (this.showOnlyMandatoryFields) {
-          initTabs(this.container, LOGIN_TEACHER_TABS);
-          this.navCtrl.setRoot(TabsPage);
+          const reqObj: UserProfileDetailsRequest = {
+            userId: this.profile.uid,
+            requiredFields: ProfileConstants.REQUIRED_FIELDS,
+            returnRefreshedUserProfileDetails: true
+          };
+          this.userProfileService.getUserProfileDetails(reqObj,
+            updatedProfile => {
+              this.formAndFrameworkUtilService.updateLoggedInUser(updatedProfile, this.profile)
+                .then((value) => {
+                  initTabs(this.container, LOGIN_TEACHER_TABS);
+                  this.navCtrl.setRoot(TabsPage);
+                });
+            }, (e) => {
+              initTabs(this.container, LOGIN_TEACHER_TABS);
+              this.navCtrl.setRoot(TabsPage);
+            });
         } else {
           this.navCtrl.pop();
         }
