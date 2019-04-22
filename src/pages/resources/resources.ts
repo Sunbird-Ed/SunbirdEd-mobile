@@ -94,7 +94,6 @@ import { ProfilePage } from '../profile/profile';
   ]
 })
 export class ResourcesPage implements OnInit, AfterViewInit {
-  @ViewChild(Scroll) scroll: Scroll;
   pageLoadedSuccess = false;
   storyAndWorksheets: Array<any>;
   selectedValue: Array<string> = [];
@@ -269,9 +268,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         this.toast.dismiss();
         this.toast = undefined;
       }
-    }
-    if ( this.scrollEventRemover) {
-      this.scrollEventRemover();
     }
 }
 
@@ -699,9 +695,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewDidEnter() {
-    // this.scrollEventRemover = this.scroll.nativeElement.onscroll((event) => {
-    //   this.onScroll(event);
-    // });
     this.preferences.getString('show_app_walkthrough_screen').toPromise()
       .then(value => {
         if (value === 'true') {
@@ -970,8 +963,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       values);
   }
 
-  classClick(index) {
-    this.generateClassInteractTelemetry(this.categoryGradeLevels[index].name, this.getGroupByPageReq.grade[0]);
+  classClick(index, isClassClicked?: boolean) {
+    if (isClassClicked) {
+      this.generateClassInteractTelemetry(this.categoryGradeLevels[index].name, this.getGroupByPageReq.grade[0]);
+    }
     this.getGroupByPageReq.grade = [this.categoryGradeLevels[index].name];
     // [grade.name];
     if ((this.currentGrade) && (this.currentGrade.name !== this.categoryGradeLevels[index].name)) {
@@ -989,8 +984,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     document.getElementById('gradeScroll').scrollTo({top: 0, left: index * 60, behavior: 'smooth'});
   }
 
-  mediumClick(mediumName: string) {
-    this.generateMediumInteractTelemetry(mediumName, this.getGroupByPageReq.medium[0]);
+  mediumClick(mediumName: string, isMediumClicked?: boolean) {
+    if (isMediumClicked) {
+       this.generateMediumInteractTelemetry(mediumName, this.getGroupByPageReq.medium[0]);
+    }
     this.getGroupByPageReq.medium = [mediumName];
     if (this.currentMedium !== mediumName) {
       this.getGroupByPage();
