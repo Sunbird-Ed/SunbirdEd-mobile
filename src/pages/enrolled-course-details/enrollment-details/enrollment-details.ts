@@ -135,14 +135,12 @@ export class EnrollmentDetailsPage {
           this.viewCtrl.dismiss();
           this.navigateToDetailPage(content);
         });
-      })
-      .catch((error: any) => {
-        console.log('error while enrolling into batch ==>', error);
+      }, (error) => {
         this.zone.run(() => {
-          error = JSON.parse(error);
-          if (error && error.error === 'CONNECTION_ERROR') {
+          if (error && error.code === 'NETWORK_ERROR') {
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NO_INTERNET_MESSAGE'));
-          } else if (error && error.error === 'USER_ALREADY_ENROLLED_COURSE') {
+          } else if (error && error.response
+            && error.response.body && error.response.body.params && error.response.body.params.err === 'USER_ALREADY_ENROLLED_COURSE') {
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('ALREADY_ENROLLED_COURSE'));
           }
         });
