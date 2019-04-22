@@ -538,7 +538,7 @@ export class SearchPage implements  OnDestroy {
               this.batches = data;
               if (this.batches.length) {
                 this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-                  'showing-enrolled-ongoing-batch-popup',
+                  'ongoing-batch-popup',
                   Environment.HOME,
                   PageId.CONTENT_DETAIL, undefined,
                   reqvalues);
