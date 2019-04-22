@@ -123,15 +123,17 @@ export class EnrollmentDetailsPage {
       batchId: content.id,
       batchStatus: content.status
     };
+    const loader = this.commonUtilService.getLoader();
+    loader.present();
     this.courseService.enrollCourse(enrollCourseRequest).toPromise()
       .then((data: any) => {
         this.zone.run(() => {
-          console.log('You have successfully enrolled...');
           this.commonUtilService.showToast(this.commonUtilService.translateMessage('COURSE_ENROLLED'));
           this.events.publish(EventTopics.ENROL_COURSE_SUCCESS, {
             batchId: content.id,
             courseId: content.courseId
           });
+          loader.dismiss();
           this.viewCtrl.dismiss();
           this.navigateToDetailPage(content);
         });

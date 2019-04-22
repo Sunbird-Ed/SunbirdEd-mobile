@@ -281,12 +281,12 @@ export class EnrolledCourseDetailsPage implements OnInit {
               }
               this.appGlobalService.setEnrolledCourseList(courseList);
             }
-            this.removeUnenrolledCourse(unenrolledCourse);
+            // this.removeUnenrolledCourse(unenrolledCourse);
           });
         }
       })
       .catch(() => {
-        this.removeUnenrolledCourse(unenrolledCourse);
+        // this.removeUnenrolledCourse(unenrolledCourse);
       });
   }
 
