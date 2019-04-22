@@ -544,7 +544,7 @@ export class SearchPage implements  OnDestroy {
                 this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
                   'ongoing-batch-popup',
                   Environment.HOME,
-                  PageId.CONTENT_DETAIL, undefined,
+                  PageId.SEARCH, undefined,
                   reqvalues);
                 const popover = this.popoverCtrl.create(EnrollmentDetailsPage,
                   {
