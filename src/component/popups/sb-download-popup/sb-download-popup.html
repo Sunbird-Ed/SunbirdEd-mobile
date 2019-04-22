@@ -1,25 +1,17 @@
 <div class="sb-popover sb-popover-download" *ngIf="!this.showPopover && showDownload">
-  <div class="backdrop"></div>
+  <div class="backdrop" (click)="togglePopover(); this.showPopover = !this.showPopover"></div>
   <div class="popover-content">
     <ion-header class="sb-popover-header">
       <ion-toolbar class="sb-popover-toolbar">
           <ion-title class="sb-popover-title" *ngIf="collectionName">{{ 'DOWNLOADING_2' | translate }}
               <button ion-button clear class="sb-modal-close"
-                (click)="togglePopover(); this.showPopover = !this.showPopover">Hide</button>
+                (click)="togglePopover(); this.showPopover = !this.showPopover">{{'HIDE' | translate}}</button>
             </ion-title>
         <ion-title class="sb-popover-title" *ngIf="contentName && !popupUpdate && showDownload">{{ 'DOWNLOADING_2' | translate }}
           <button ion-button clear class="sb-modal-close"
-            (click)="togglePopover(); this.showPopover = !this.showPopover">Hide</button>
+            (click)="togglePopover(); this.showPopover = !this.showPopover">{{'HIDE' | translate}}</button>
         </ion-title>
-        <!-- <ion-title class="sb-popover-title" *ngIf="contentName && popupUpdate">{{ 'UPDATING' | translate }}
-            <button ion-button clear class="sb-modal-close"
-              (click)="togglePopover(); this.showPopover = !this.showPopover">Hide</button>
-          </ion-title> -->
       </ion-toolbar>
-      <!-- <div class="popover-progress-container">
-        <div class="progress-highlight" [ngStyle]="{'left': (currentCount/queuedIdentifiers.length)*100 + '%'}">
-        </div>
-      </div> -->
     </ion-header>
     <ion-content class="sb-popover-container noscroll">
       <!-- <div no-padding class="scroll-content sb-popover-container"> -->
@@ -29,8 +21,6 @@
             <div class="sb-accordian-grey-text p-0">
                 {{ collectionName }}
               <div class="meta-info font-weight-bold py-8">
-                  <!-- <span *ngIf="isDownloadStarted" ion-button block outline [ngStyle]="{'background': '-webkit-linear-gradient(left, #DBECFF '  +(currentCount/queuedIdentifiers.length)*100+ '%, white 0%)'}">
-                </span> -->
                 {{ currentCount }} / {{ queuedIdentifiers?.length }}
               </div>
             </div>
@@ -42,8 +32,6 @@
               <div class="sb-accordian-grey-text p-0">
                   {{ contentName }}
                 <div class="meta-info font-weight-bold py-8">
-                    <!-- <span *ngIf="isDownloadStarted" ion-button block outline [ngStyle]="{'background': '-webkit-linear-gradient(left, #DBECFF '  +(currentCount/queuedIdentifiers.length)*100+ '%, white 0%)'}">
-                  </span> -->
                   {{ constContentSize }}
                 </div>
               </div>
@@ -67,30 +55,22 @@
         <ion-toolbar class="sb-popover-toolbar">
           <ion-title class="sb-popover-title" *ngIf="contentName && popupUpdate">{{ 'UPDATING' | translate }}
               <button ion-button clear class="sb-modal-close"
-                (click)="togglePopover(); this.showPopover = !this.showPopover">Hide</button>
+                (click)="togglePopover(); this.showPopover = !this.showPopover">{{'HIDE' | translate}}</button>
             </ion-title>
         </ion-toolbar>
-        <!-- <div class="popover-progress-container">
-          <div class="progress-highlight" [ngStyle]="{'left': (currentCount/queuedIdentifiers.length)*100 + '%'}">
-          </div>
-        </div> -->
       </ion-header>
       <ion-content class="sb-popover-container noscroll">
-        <!-- <div no-padding class="scroll-content sb-popover-container"> -->
           <div class="sb-popover-items" *ngIf = "contentName && this.isUpdateAvail">
               <div class="sb-popover-content-details">
                 <div class="sb-progress-percent-text pb-8">{{downloadProgress + '%'}}</div>
                 <div class="sb-accordian-grey-text p-0">
                     {{ contentName }}
                   <div class="meta-info font-weight-bold py-8">
-                      <!-- <span *ngIf="isDownloadStarted" ion-button block outline [ngStyle]="{'background': '-webkit-linear-gradient(left, #DBECFF '  +(currentCount/queuedIdentifiers.length)*100+ '%, white 0%)'}">
-                    </span> -->
                     {{ constContentSize }}
                   </div>
                 </div>
               </div>
             </div>
-        <!-- </div> -->
         </ion-content>
       <ion-footer>
         <div class="sb-popover-footer">
@@ -107,7 +87,7 @@
         <ion-title padding-left padding-right class="sb-popover-title"> {{ 'DOWNLOADING_2' | translate }}
           <span class="meta-info">{{ currentCount }} / {{ queuedIdentifiers?.length }}</span>
           <button ion-button clear class="sb-modal-close"
-            (click)="togglePopover(); this.showPopover = !this.showPopover">Show</button>
+            (click)="togglePopover(); this.showPopover = !this.showPopover">{{ 'SHOW' | translate }}</button>
         </ion-title>
       </ion-toolbar>
       <div class="popover-progress-container">
@@ -124,7 +104,7 @@
           <ion-title  padding-left padding-right class="sb-popover-title"> {{ 'DOWNLOADING_2' | translate }}
             <span class="meta-info">{{this.constContentSize}} </span>
             <button ion-button clear class="sb-modal-close"
-              (click)="togglePopover(); this.showPopover = !this.showPopover">Show</button>
+              (click)="togglePopover(); this.showPopover = !this.showPopover">{{ 'SHOW' | translate }}</button>
           </ion-title>
         </ion-toolbar>
         <div class="popover-progress-container">
@@ -142,7 +122,7 @@
             <ion-title padding-left padding-right class="sb-popover-title"> {{ 'UPDATING' | translate }}
               <span class="meta-info">{{this.constContentSize}}</span>
               <button ion-button clear class="sb-modal-close"
-                (click)="togglePopover(); this.showPopover = !this.showPopover">Show</button>
+                (click)="togglePopover(); this.showPopover = !this.showPopover">{{ 'SHOW' | translate }} </button>
             </ion-title>
           </ion-toolbar>
           <div class="popover-progress-container">
