@@ -134,10 +134,11 @@ export class EnrollmentDetailsPage {
             courseId: content.courseId
           });
           loader.dismiss();
-          this.viewCtrl.dismiss();
+          this.viewCtrl.dismiss(true);
           this.navigateToDetailPage(content);
         });
       }, (error) => {
+        loader.dismiss();
         this.zone.run(() => {
           if (error && error.code === 'NETWORK_ERROR') {
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NO_INTERNET_MESSAGE'));
