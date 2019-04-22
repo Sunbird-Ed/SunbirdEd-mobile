@@ -250,7 +250,7 @@ export class GuestEditProfilePage {
             grades: [[]],
             subjects: [[]]
           });
-          this.guestEditForm.controls['profileType'].setValue('STUDENT');
+          this.guestEditForm.controls['profileType'].setValue(this.ProfileType.STUDENT);
         }
       });
   }
