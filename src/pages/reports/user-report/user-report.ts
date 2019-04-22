@@ -85,7 +85,7 @@ export class UserReportPage {
   fileTransfer: FileTransferObject = this.transfer.create();
   formatTime(time: number): string {
     const minutes: any = '0' + Math.floor(time / 60);
-    const seconds: any = '0' + (time - minutes * 60);
+    const seconds: any = '0' + Math.round(time % 60);
     return minutes.substr(-2) + ':' + seconds.substr(-2);
   }
 
