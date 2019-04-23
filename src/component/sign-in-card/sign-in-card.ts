@@ -1,12 +1,12 @@
-import {CommonUtilService} from './../../service/common-util.service';
-import {Component, EventEmitter, Inject, Input, NgZone, Output} from '@angular/core';
-import {TranslateService} from '@ngx-translate/core';
-import {NavController} from 'ionic-angular';
-import {AppVersion} from '@ionic-native/app-version';
-import {initTabs, LOGIN_TEACHER_TABS} from '../../app/module.service';
-import {TelemetryGeneratorService} from '@app/service';
-import {ProfileConstants, PreferenceKey} from '../../app/app.constant';
-import {FormAndFrameworkUtilService} from '../../pages/profile/formandframeworkutil.service';
+import { CommonUtilService } from './../../service/common-util.service';
+import { Component, EventEmitter, Inject, Input, NgZone, Output } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { NavController } from 'ionic-angular';
+import { AppVersion } from '@ionic-native/app-version';
+import { initTabs, LOGIN_TEACHER_TABS } from '../../app/module.service';
+import { TelemetryGeneratorService } from '@app/service';
+import { ProfileConstants, PreferenceKey } from '../../app/app.constant';
+import { FormAndFrameworkUtilService } from '../../pages/profile/formandframeworkutil.service';
 import {
   ApiService,
   AuthService,
@@ -17,6 +17,7 @@ import {
   ProfileSource,
   ProfileType,
   SdkConfig,
+  SignInError,
   ServerProfileDetailsRequest,
   SharedPreferences
 } from 'sunbird-sdk';
@@ -27,7 +28,6 @@ import {
   PageId
 } from '../../service/telemetry-constants';
 import { ContainerService } from '../../service/container.services';
-import {SignInError} from "sunbird-sdk/auth/errors/sign-in-error";
 
 @Component({
   selector: 'sign-in-card',
@@ -73,7 +73,7 @@ export class SignInCardComponent {
   }
 
   initText() {
-    this.translate.get(this.DEFAULT_TEXT, {'%s': this.appName}).subscribe((value) => {
+    this.translate.get(this.DEFAULT_TEXT, { '%s': this.appName }).subscribe((value) => {
       this.translateDisplayText = value;
       if (this.title.length === 0) {
         this.title = 'OVERLAY_LABEL_COMMON';
@@ -91,12 +91,12 @@ export class SignInCardComponent {
       this.valueChange.emit(true);
     } else {
       this.telemetryGeneratorService.generateInteractTelemetry(
-          InteractType.TOUCH,
-          InteractSubtype.SIGNIN_OVERLAY_CLICKED,
-          Environment.HOME,
-          this.source, null,
-          undefined,
-          undefined
+        InteractType.TOUCH,
+        InteractSubtype.SIGNIN_OVERLAY_CLICKED,
+        Environment.HOME,
+        this.source, null,
+        undefined,
+        undefined
       );
 
       this.generateLoginInteractTelemetry(InteractType.TOUCH, InteractSubtype.LOGIN_INITIATE, '');
@@ -122,7 +122,7 @@ export class SignInCardComponent {
           });
         })
         .catch((err) => {
-          if(err instanceof SignInError) {
+          if (err instanceof SignInError) {
             this.commonUtilService.showToast(err.message);
           }
           return loader.dismiss();
@@ -140,7 +140,7 @@ export class SignInCardComponent {
             const req: ServerProfileDetailsRequest = {
               userId: session.userToken,
               requiredFields: ProfileConstants.REQUIRED_FIELDS
-          };
+            };
             that.profileService.getServerProfilesDetails(req).toPromise()
               .then((success) => {
                 that.generateLoginInteractTelemetry(InteractType.OTHER, InteractSubtype.LOGIN_SUCCESS, success.id);
@@ -158,24 +158,24 @@ export class SignInCardComponent {
                       .then(() => {
                         that.formAndFrameworkUtilService.updateLoggedInUser(success, profile)
                           .then(() => {
-                            resolve({slug: success.rootOrg.slug, title: success.rootOrg.orgName});
+                            resolve({ slug: success.rootOrg.slug, title: success.rootOrg.orgName });
                           }).catch(() => {
-                          resolve({slug: success.rootOrg.slug, title: success.rootOrg.orgName});
-                        }).catch((err) => {
-                          reject(err);
-                        });
+                            resolve({ slug: success.rootOrg.slug, title: success.rootOrg.orgName });
+                          }).catch((err) => {
+                            reject(err);
+                          });
                       }).catch((err) => {
-                      console.log('err in setActiveSessionProfile in sign-in card --', err);
-                    });
+                        console.log('err in setActiveSessionProfile in sign-in card --', err);
+                      });
                   }).catch(() => {
 
-              });
+                  });
               }).catch((err) => {
-              reject(err);
-          });
-        } else {
-          reject('session is null');
-        }
+                reject(err);
+              });
+          } else {
+            reject('session is null');
+          }
         });
     });
   }
@@ -183,14 +183,14 @@ export class SignInCardComponent {
   refreshTenantData(slug: string, title: string) {
     return new Promise((resolve, reject) => {
       this.profileService.getTenantInfo().toPromise()
-      .then((res) => {
+        .then((res) => {
           this.preferences.putString(PreferenceKey.APP_LOGO, res.logo).toPromise().then();
           this.preferences.putString(PreferenceKey.APP_NAME, title).toPromise().then();
           (<any>window).splashscreen.setContent(title, res.logo);
           resolve();
         }).catch(() => {
-        resolve(); // ignore
-      });
+          resolve(); // ignore
+        });
     });
   }
 
@@ -198,13 +198,13 @@ export class SignInCardComponent {
     const valuesMap = new Map();
     valuesMap['UID'] = uid;
     this.telemetryGeneratorService.generateInteractTelemetry(
-        interactType,
-        interactSubtype,
-        Environment.HOME,
-        PageId.LOGIN,
-        undefined,
-        valuesMap,
-        undefined,
-        undefined);
+      interactType,
+      interactSubtype,
+      Environment.HOME,
+      PageId.LOGIN,
+      undefined,
+      valuesMap,
+      undefined,
+      undefined);
   }
 }
