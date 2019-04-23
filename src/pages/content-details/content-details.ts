@@ -1230,11 +1230,11 @@ export class ContentDetailsPage {
           isMarked: true,
           extraInfo: extraInfoMap
         };
-        this.contentService.setContentMarker(req).toPromise()
-          .then((data) => {
-            console.log('setContentMarker', data);
-          }).catch(() => {
-        });
+        // this.contentService.setContentMarker(req).toPromise()
+        //   .then((data) => {
+        //     console.log('setContentMarker', data);
+        //   }).catch(() => {
+        // });
       }
       this.downloadAndPlay = false;
       const request: any = {};
@@ -1252,7 +1252,7 @@ export class ContentDetailsPage {
         contentId: this.identifier,
         contentType: this.content.contentType
       };
-      this.profileService.addContentAccess(contentAccessRequest).subscribe();
+     // this.profileService.addContentAccess(contentAccessRequest).subscribe();
       this.playerService.getPlayerConfig(this.playingContent, request).subscribe((data) => {
         data['data'] = {};
         if (data.metadata.mimeType === 'application/vnd.ekstep.ecml-archive') {
