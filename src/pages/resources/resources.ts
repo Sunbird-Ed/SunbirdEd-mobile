@@ -981,7 +981,15 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         this.categoryGradeLevels[i].selected = '';
       }
     }
-    document.getElementById('gradeScroll').scrollTo({top: 0, left: index * 60, behavior: 'smooth'});
+    let el: HTMLElement | null = document.getElementById('class' + index);
+    if (el) {
+    el.scrollIntoView({behavior: 'smooth', block: 'end', inline: 'start'});
+    } else {
+      setTimeout(() => {
+        el = document.getElementById('class' + index);
+        el.scrollIntoView({behavior: 'smooth', block: 'end', inline: 'start'});
+      }, 1000);
+    }
   }
 
   mediumClick(mediumName: string, isMediumClicked?: boolean) {
