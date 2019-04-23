@@ -27,6 +27,7 @@ import {
   PageId
 } from '../../service/telemetry-constants';
 import { ContainerService } from '../../service/container.services';
+import {SignInError} from "sunbird-sdk/auth/errors/sign-in-error";
 
 @Component({
   selector: 'sign-in-card',
@@ -120,8 +121,10 @@ export class SignInCardComponent {
             // TabsPage.prototype.ionVieit wWillEnter();
           });
         })
-        .catch(error => {
-          console.log(error);
+        .catch((err) => {
+          if(err instanceof SignInError) {
+            this.commonUtilService.showToast(err.message);
+          }
           return loader.dismiss();
         });
     }
