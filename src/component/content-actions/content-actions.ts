@@ -134,7 +134,7 @@ export class ContentActionsComponent {
         });
         confirm.onDidDismiss((canDelete: any) => {
           if (canDelete) {
-            // this.deleteContent();
+            this.deleteContent();
           }
         });
         break;

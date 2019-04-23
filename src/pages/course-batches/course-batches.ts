@@ -112,7 +112,8 @@ export class CourseBatchesPage implements OnInit {
       contentId: item.courseId,
       batchStatus: item.status
     };
-
+    const loader = this.commonUtilService.getLoader();
+    loader.present();
     const reqvalues = new Map();
     reqvalues['enrollReq'] = enrollCourseRequest;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
@@ -129,6 +130,7 @@ export class CourseBatchesPage implements OnInit {
             batchId: item.id,
             courseId: item.courseId
           });
+          loader.dismiss();
           this.navCtrl.pop();
         });
       }, (error) => {

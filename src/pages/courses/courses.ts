@@ -573,7 +573,8 @@ export class CoursesPage implements OnInit, AfterViewInit {
       contentType: ContentType.FOR_COURSE_TAB,
       source: PageId.COURSES,
       enrolledCourses: this.enrolledCourses,
-      guestUser: this.guestUser
+      guestUser: this.guestUser,
+      userId: this.userId
     });
   }
 
