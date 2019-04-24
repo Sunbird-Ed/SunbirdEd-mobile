@@ -507,13 +507,14 @@ page-profile {
     padding: 6px;
     position: absolute;
     right: 13px;
+    top: 22px;
     
 }
 .isymbol{
-    position: absolute;
-    top: -20px;
-     line-height: 12px;
-     
+    position: relative;
+    top: 0;
+    line-height: 12px;
+    margin-left: 5px;
 }
 .info-icon{
     vertical-align: sub;
