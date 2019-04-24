@@ -1,5 +1,5 @@
-import {SplashscreenActionHandlerDelegate} from "@app/service/sunbird-splashscreen/splashscreen-action-handler-delegate";
-import {Observable} from "rxjs";
+import {SplashscreenActionHandlerDelegate} from '@app/service/sunbird-splashscreen/splashscreen-action-handler-delegate';
+import {Observable} from 'rxjs';
 import {
   ContentEventType,
   ContentImportProgress,
@@ -10,10 +10,10 @@ import {
   TelemetryService,
   ContentImportResponse,
   ContentImportStatus
-} from "sunbird-sdk";
-import {Inject, Injectable} from "@angular/core";
-import {CommonUtilService} from "@app/service";
-import {Events} from "ionic-angular";
+} from 'sunbird-sdk';
+import {Inject, Injectable} from '@angular/core';
+import {CommonUtilService} from '@app/service';
+import {Events} from 'ionic-angular';
 
 @Injectable()
 export class SplashscreenImportActionHandlerDelegate implements SplashscreenActionHandlerDelegate {
@@ -22,7 +22,7 @@ export class SplashscreenImportActionHandlerDelegate implements SplashscreenActi
               @Inject('PROFILE_SERVICE') private profileService: ProfileService,
               @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
               private events: Events,
-              private commonUtilService: CommonUtilService,) {
+              private commonUtilService: CommonUtilService) {
   }
 
   onAction(type: string, payload: { filePath: string }): Observable<undefined> {
@@ -40,7 +40,7 @@ export class SplashscreenImportActionHandlerDelegate implements SplashscreenActi
               .takeUntil(
                 this.eventsBusService.events(EventNamespace.CONTENT)
                   .filter(e => e.type === ContentEventType.IMPORT_COMPLETED)
-              )
+              );
           }).do((event: ContentImportProgress) => {
             splashscreen.setImportProgress(event.payload.currentCount, event.payload.totalCount);
           }).mapTo(undefined) as any;
@@ -49,11 +49,7 @@ export class SplashscreenImportActionHandlerDelegate implements SplashscreenActi
         return this.profileService.importProfile({
           sourceFilePath: filePath
         }).do(({imported, failed}) => {
-          if (failed) {
-            this.commonUtilService.showToast('CONTENT_IMPORTED_FAILED');
-          } else if (imported) {
-            this.commonUtilService.showToast('CONTENT_IMPORTED');
-          }
+          this.commonUtilService.showToast('CONTENT_IMPORTED');
         }).mapTo(undefined) as any;
       }
       case 'gsa': {
@@ -90,8 +86,8 @@ export class SplashscreenImportActionHandlerDelegate implements SplashscreenActi
         return;
       }
 
-      response.forEach((response: ContentImportResponse) => {
-        switch (response.status) {
+      response.forEach((contentImportResponse: ContentImportResponse) => {
+        switch (contentImportResponse.status) {
           case ContentImportStatus.ALREADY_EXIST:
             this.commonUtilService.showToast('CONTENT_ALREADY_EXIST');
             break;
@@ -99,6 +95,6 @@ export class SplashscreenImportActionHandlerDelegate implements SplashscreenActi
       });
     }).catch(() => {
       this.commonUtilService.showToast('CONTENT_IMPORTED_FAILED');
-    })
+    });
   }
 }
