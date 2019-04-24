@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { TranslateService} from '@ngx-translate/core';
+// import { NoDownloadsComponent } from './../../component/downloads/no-downloads';
+
 /**
  * Generated class for the DownloadManagerPage page.
  *
