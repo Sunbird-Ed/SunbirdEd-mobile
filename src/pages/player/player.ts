@@ -116,6 +116,9 @@ export class PlayerPage implements playerActionHandlerDelegate {
     } catch (err) {
       console.error("End telemetry error:", err.message)
     }
+    this.events.publish(EventTopics.PLAYER_CLOSED, {
+      selectedUser: this.appGlobalService.getSelectedUser()
+    });
     this.navCtrl.pop();
   }
 
@@ -146,9 +149,6 @@ export class PlayerPage implements playerActionHandlerDelegate {
             this.previewElement.nativeElement.contentWindow['EkstepRendererAPI'].dispatchEvent("renderer:telemetry:end")
 
             this.closeIframe();
-            this.events.publish(EventTopics.PLAYER_CLOSED, {
-              selectedUser: this.appGlobalService.getSelectedUser()
-            });
           }
         }
       ]

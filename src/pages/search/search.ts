@@ -30,7 +30,10 @@ import {
   CourseService,
   CourseBatchesRequest,
   CourseEnrollmentType,
-  CourseBatchStatus
+  CourseBatchStatus,
+  Course,
+  Batch,
+  FetchEnrolledCourseRequest
 } from 'sunbird-sdk';
 import {FilterPage} from './filters/filter';
 import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
@@ -131,6 +134,7 @@ export class SearchPage implements  OnDestroy {
   guestUser: any;
   batches: any;
   loader?: Loading;
+  userId: any;
   constructor(
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private navParams: NavParams,
@@ -502,6 +506,7 @@ export class SearchPage implements  OnDestroy {
       retiredBatches = this.enrolledCourses.filter((element) =>  {
         if (element.contentId === content.identifier && element.batch.status === 1 && element.cProgress !== 100) {
           anyOpenBatch = true;
+          content.batch = element.batch;
         }
         if (element.contentId === content.identifier && element.batch.status === 2 && element.cProgress !== 100) {
           return element;
@@ -532,24 +537,30 @@ export class SearchPage implements  OnDestroy {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       if (!this.guestUser) {
         this.courseService.getCourseBatches(courseBatchesRequest).toPromise()
-          .then((data: any) => {
+          .then((data: Batch[]) => {
             this.zone.run(() => {
               this.batches = data;
               if (this.batches.length) {
                 this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-                  'showing-enrolled-ongoing-batch-popup',
+                  'ongoing-batch-popup',
                   Environment.HOME,
-                  PageId.CONTENT_DETAIL, undefined,
+                  PageId.SEARCH, undefined,
                   reqvalues);
                 const popover = this.popoverCtrl.create(EnrollmentDetailsPage,
                   {
                     upcommingBatches: this.batches,
-                    retiredBatched: retiredBatched
+                    retiredBatched: retiredBatched,
+                    courseId: content.identifier
                   },
                   { cssClass: 'enrollement-popover' }
                 );
                 this.loader.dismiss();
                 popover.present();
+                popover.onDidDismiss(enrolled => {
+                  if (enrolled) {
+                    this.getEnrolledCourses();
+                  }
+                });
               } else {
                 this.loader.dismiss();
                 this.showContentDetails(content, true);
@@ -574,6 +585,7 @@ export class SearchPage implements  OnDestroy {
     this.source = this.navParams.get('source');
     this.enrolledCourses = this.navParams.get('enrolledCourses');
     this.guestUser = this.navParams.get('guestUser');
+    this.userId = this.navParams.get('userId');
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.generateImpressionEvent();
     const values = new Map();
@@ -1050,6 +1062,40 @@ export class SearchPage implements  OnDestroy {
         ImpressionType.SEARCH,
         params);
     }
+  }
+
+  /**
+   * To get enrolled course(s) of logged-in user.
+   *
+   * It internally calls course handler of genie sdk
+   */
+  getEnrolledCourses(refreshEnrolledCourses: boolean = true, returnRefreshedCourses: boolean = false): void {
+    this.showLoader = true;
+
+    const option: FetchEnrolledCourseRequest = {
+      userId: this.userId,
+      returnFreshCourses: returnRefreshedCourses
+    };
+    this.courseService.getEnrolledCourses(option).toPromise()
+      .then((enrolledCourses) => {
+        if (enrolledCourses) {
+          this.zone.run(() => {
+            this.enrolledCourses = enrolledCourses ? enrolledCourses : [];
+            if (this.enrolledCourses.length > 0) {
+              const courseList: Array<Course> = [];
+              for (const course of this.enrolledCourses) {
+                courseList.push(course);
+              }
+
+              this.appGlobalService.setEnrolledCourseList(courseList);
+            }
+
+            this.showLoader = false;
+          });
+        }
+      }, (err) => {
+        this.showLoader = false;
+      });
   }
 
 }
