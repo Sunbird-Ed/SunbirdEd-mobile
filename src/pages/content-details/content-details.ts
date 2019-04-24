@@ -968,7 +968,6 @@ export class ContentDetailsPage {
       icon: null,
       metaInfo:
            '1 item ' + '(' + this.fileSizePipe.transform(this.content.contentData.size, 2) + ')',
-      // sbPopoverContent: this.commonUtilService.translateMessage('CONTENT_NOT_PLAYABLE_OFFLINE'),
       isUpdateAvail: this.contentDownloadable[this.content.identifier] && this.isUpdateAvail,
     }, {
         cssClass: 'sb-popover info',
