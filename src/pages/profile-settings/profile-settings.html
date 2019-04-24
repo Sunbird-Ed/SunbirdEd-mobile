@@ -34,7 +34,7 @@
 
 	</form>
 
-	<ion-footer padding no-border>
+	<ion-footer padding no-border [ngClass]="{'padding-bottom-if-header': hideBackButton}">
 		<button class="arrow-icon" [ngStyle]="{'background-color': btnColor}" [disabled]="userForm.invalid" ion-button
 		 icon-end block (click)="onSubmit()">
 			{{ 'BTN_SUBMIT' | translate }}

@@ -99,6 +99,7 @@ export class CourseCard implements OnInit {
       retiredBatches = this.enrolledCourses.filter((element) =>  {
         if (element.contentId === content.identifier && element.batch.status === 1 && element.cProgress !== 100) {
           anyOpenBatch = true;
+          content.batch = element.batch;
         }
         if (element.contentId === content.identifier && element.batch.status === 2 && element.cProgress !== 100) {
           return element;

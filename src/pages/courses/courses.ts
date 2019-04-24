@@ -86,7 +86,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
   filterIcon = './assets/imgs/ic_action_filter.png';
   profile: any;
   isVisible = false;
-  inProgressSection = 'In-Progress Course';
+  inProgressSection = 'courses-in-progress';
 
   /**
    * To queue downloaded identifier
@@ -573,7 +573,8 @@ export class CoursesPage implements OnInit, AfterViewInit {
       contentType: ContentType.FOR_COURSE_TAB,
       source: PageId.COURSES,
       enrolledCourses: this.enrolledCourses,
-      guestUser: this.guestUser
+      guestUser: this.guestUser,
+      userId: this.userId
     });
   }
 
