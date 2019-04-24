@@ -507,11 +507,12 @@ page-profile {
     padding: 6px;
     position: absolute;
     right: 13px;
+    top: 22px;
     
 }
 .isymbol{
-    position: absolute;
-    top: -8px;
+    position: relative;
+    top: 0;
     line-height: 12px;
     margin-left: 5px;
 }
