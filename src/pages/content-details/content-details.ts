@@ -19,7 +19,7 @@ import {EventTopics, PreferenceKey, XwalkConstants} from '../../app/app.constant
 import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, Map, ShareUrl} from '@app/app';
 import {BookmarkComponent, ContentActionsComponent,
   ContentRatingAlertComponent, ConfirmAlertComponent, SbPopoverComponent} from '@app/component';
-import {AppGlobalService, CourseUtilService, UtilityService, AppHeaderService} from '@app/service';
+import {AppGlobalService, CourseUtilService, UtilityService, AppHeaderService, AppRatingService} from '@app/service';
 import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
 import {Network} from '@ionic-native/network';
 import {UserAndGroupsPage} from '../user-and-groups/user-and-groups';
@@ -74,6 +74,8 @@ import { FileSizePipe } from '@app/pipes/file-size/file-size';
 import { TranslateService } from '@ngx-translate/core';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 import { animateChild } from '@angular/animations';
+import { AppRatingAlertComponent } from '@app/component/app-rating-alert/app-rating-alert';
+import moment from 'moment';
 
 declare const cordova;
 
@@ -191,7 +193,8 @@ export class ContentDetailsPage {
     private headerServie: AppHeaderService,
     private translate: TranslateService,
     private viewCtrl: ViewController,
-    private headerService: AppHeaderService
+    private headerService: AppHeaderService,
+    private appRatingService: AppRatingService
   ) {
 
     this.objRollup = new Rollup();
@@ -455,26 +458,34 @@ export class ContentDetailsPage {
   rateContent(popupType: string) {
     const paramsMap = new Map();
     if (this.isContentPlayed || this.content.contentAccess.length) {
+      if (popupType === 'automatic') {
 
-      paramsMap['IsPlayed'] = 'Y';
-      const popover = this.popoverCtrl.create(ContentRatingAlertComponent, {
-        content: this.content,
-        pageId: PageId.CONTENT_DETAIL,
-        rating: this.userRating,
-        comment: this.ratingComment,
-        popupType: popupType,
-      }, {
-          cssClass: 'sb-popover info',
+        this.preferences.getString(PreferenceKey.APP_RATING_DATE).toPromise().then(res => {
+          const presentDate = moment();
+          const initialDate = moment(res);
+          if (initialDate.isValid()) {
+            const diffInDays = presentDate.diff(initialDate, 'days');
+            console.log(this.commonUtilService.networkInfo.isNetworkAvailable);
+            if ((diffInDays >= this.appRatingService.APP_RATING_DATE_DIFF) && this.commonUtilService.networkInfo.isNetworkAvailable) {
+              paramsMap['IsPlayed'] = 'N';
+              this.appRating();
+            } else {
+              paramsMap['IsPlayed'] = 'Y';
+              this.contentRating(popupType);
+            }
+          } else {
+            paramsMap['IsPlayed'] = 'Y';
+            this.contentRating(popupType);
+          }
+        }).catch(err => {
+          paramsMap['IsPlayed'] = 'Y';
+          this.contentRating(popupType);
         });
-      popover.present({
-        ev: event
-      });
-      popover.onDidDismiss(data => {
-        if (data && data.message === 'rating.success') {
-          this.userRating = data.rating;
-          this.ratingComment = data.comment;
-        }
-      });
+      } else if (popupType === 'manual') {
+        paramsMap['IsPlayed'] = 'Y';
+        this.contentRating(popupType);
+      }
+
     } else {
       paramsMap['IsPlayed'] = 'N';
       this.commonUtilService.showToast('TRY_BEFORE_RATING');
@@ -490,7 +501,38 @@ export class ContentDetailsPage {
       this.corRelationList);
   }
 
+  contentRating(popupType) {
+    const popover = this.popoverCtrl.create(ContentRatingAlertComponent, {
+      content: this.content,
+      pageId: PageId.CONTENT_DETAIL,
+      rating: this.userRating,
+      comment: this.ratingComment,
+      popupType: popupType,
+    }, {
+        cssClass: 'sb-popover info',
+      });
+    popover.present({
+      ev: event
+    });
+    popover.onDidDismiss(data => {
+      if (data && data.message === 'rating.success') {
+        this.userRating = data.rating;
+        this.ratingComment = data.comment;
+      }
+    });
+  }
 
+  appRating() {
+    const popover = this.popoverCtrl.create(AppRatingAlertComponent, {}, {
+      cssClass: 'sb-popover'
+    });
+    popover.present({
+      ev: event
+    });
+    popover.onDidDismiss((data: any) => {
+      console.log(data);
+    });
+  }
 
   /**
    * To set content details in local variable

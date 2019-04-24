@@ -1,0 +1,29 @@
+<ion-content style="margin: 5%; border-radius: 5px; width: 90%;" no-padding class="sb-popover-container ">
+  <div class="sb-popover-items">
+    <ion-icon end name="close" float-right class="sb-modal-close" (click)="closePopover()"></ion-icon>
+
+    <img class="img-container app-rating-img" src="{{appLogo$ | async}}">
+    <div class="app-rate-appname"><b>{{appName$ | async}}</b></div>
+    <p class="app-rate-heading"><b>{{currentViewText.heading | translate}}</b></p>
+    <p>{{currentViewText.message | translate}}</p>
+
+    <div *ngIf="currentViewText.type === 'appRate'">
+      <rating #rating></rating>
+      <ion-row padding-bottom padding-left padding-right>
+        <ion-col col-6 class="btn-pr-8"><button ion-button outline block class="app-rate-btn-outline" (click)="rateLater()">Later</button></ion-col>
+        <ion-col col-6 class="btn-pl-8"><button ion-button [disabled]="!rating.value" block class="app-rate-btn" (click)="submitRating(rating.value)">Submit</button></ion-col>
+      </ion-row>
+    </div>
+
+    <div *ngIf="currentViewText.type === 'storeRate'">
+      <ion-row padding-bottom padding-left padding-right>
+        <ion-col col-4 class="btn-pr-8"><button ion-button outline block class="app-rate-btn-outline" (click)="rateLater()">Later</button></ion-col>
+        <ion-col col-8 class="btn-pl-8"><button ion-button block class="app-rate-btn" (click)="rateOnStore()">Rate us on playstore</button></ion-col>
+      </ion-row>
+    </div>
+
+    <div *ngIf="currentViewText.type === 'helpDesk'">
+      <button margin-bottom ion-button class="app-rate-btn" (click)="goToHelpSection()">Visit help section</button>
+    </div>
+  </div>
+</ion-content>
