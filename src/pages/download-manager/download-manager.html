@@ -10,48 +10,6 @@
 </ion-content> -->
 
 <ion-content overflow-scroll="true">
-  <!-- <no-downloads></no-downloads> -->
-  <div class="sb-view-all-container">
-    <div class="sb-view-all-items">
-        <div class="sb-view-all-title">
-          <span class="page-heading">Downloads</span>
-          <span class="page-info" >Space Taken By DIKSHA: 274 MB</span>
-        </div>
-    </div>
-    <div class="sb-dw-manager o-hide p-8">
-      <div class="pull-left">  
-        <span (click)="selectAll()">{{'SELECT_ALL' | translate}}</span>
-        <span (click)="unSelectAll()">{{'UNSELECT_ALL' | translate}}</span>
-      </div>
-      <div class="pull-right">
-        <span (click)="showOverflowMenu($event)">filters</span>
-      </div>
-    </div>
-    <div class="sb-card-container sb-card-download-container">
-      <div class="sb-card" *ngFor="let content of downloadedContentList">
-        <div class="check-container">
-          <input type="checkbox">
-        </div>
-        <div class="img-container">
-
-        </div>
-        <div class="sb-card-details">
-          <div class="title">Great thinkers and their new religion</div>
-          <div class="info grade_ellipsis"><span class=" class">Social science</span><span
-              class="separator-dot"></span><span class=" subject">Class 5</span>
-          </div>
-          <div>
-            32MB
-          </div>
-          <div class="sb-card-actions">
-            <button ion-button class="action-btn float-end delete mr-8" (click)="showDeletePopup()">
-              <ion-icon ios="ios-trash" md="md-trash" class="MR5"></ion-icon>
-              delete
-            </button>
-          </div>
-        </div>
-      </div>
-        
-    </div>
-  </div>
+  <no-downloads *ngIf="!downloadedContents.length"></no-downloads>
+  <downloads-tab *ngIf="downloadedContents.length" [downloadedContents]="downloadedContents"></downloads-tab>
 </ion-content>
