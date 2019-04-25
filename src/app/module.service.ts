@@ -26,6 +26,7 @@ import {TermsAndConditionsPageModule} from '@app/pages/terms-and-conditions/term
 import { ContainerService, TabOptions } from '../service/container.services';
 import {DownloadManagerPageModule } from '../pages/download-manager/download-manager.module';
 import {DownloadManagerPage } from '../pages/download-manager/download-manager';
+import { ActiveDownloadsPageModule } from '../pages/active-downloads/active-downloads.module';
 
 
 // const HOME_TAB = { root: HomePage, icon: "home", label: "HOME_BNAV", index: 0, tabsHideOnSubPages: true };
@@ -178,5 +179,6 @@ export const PluginModules = [
     ProfileSettingsPageModule,
   QrCodeResultPageModule,
   TermsAndConditionsPageModule,
-  DownloadManagerPageModule
+  DownloadManagerPageModule,
+  ActiveDownloadsPageModule
 ];

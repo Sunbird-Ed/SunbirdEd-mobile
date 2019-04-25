@@ -6,11 +6,15 @@ import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { CommonUtilService } from '@app/service';
 import { SbPopoverComponent } from './../../component/popups/sb-popover/sb-popover';
 import { Component, NgZone, Inject, OnInit } from '@angular/core';
-import { IonicPage, NavController, NavParams, PopoverController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, PopoverController, Events } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { ContentRequest, ContentService } from 'sunbird-sdk';
 import { Content } from 'sunbird-sdk';
 import { downloadsDummyData } from './downloads-spec.data';
+import { AppHeaderService } from '@app/service';
+import { ActiveDownloadsPage } from '../active-downloads/active-downloads';
+// import { NoDownloadsComponent } from './../../component/downloads/no-downloads';
+
 /**
  * Generated class for the DownloadManagerPage page.
  *
