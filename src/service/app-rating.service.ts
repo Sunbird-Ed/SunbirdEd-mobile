@@ -28,7 +28,7 @@ export class AppRatingService {
     }
 
     setEndAppRate() {
-        this.preference.putString(PreferenceKey.APP_RATING_DATE, '---------').toPromise().then();
+
     }
 
 }

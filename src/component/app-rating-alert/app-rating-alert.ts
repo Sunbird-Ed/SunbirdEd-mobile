@@ -1,6 +1,6 @@
-import { Component, Inject, NgZone, ChangeDetectionStrategy } from '@angular/core';
-import { ViewController, Events } from 'ionic-angular';
-import { AppGlobalService, UtilityService, AppRatingService } from '@app/service';
+import { Component, Inject } from '@angular/core';
+import { ViewController, Platform } from 'ionic-angular';
+import { UtilityService, AppRatingService } from '@app/service';
 import { SharedPreferences } from 'sunbird-sdk';
 import { AppVersion } from '@ionic-native/app-version';
 import { Observable } from 'rxjs';
@@ -34,6 +34,7 @@ export class AppRatingAlertComponent {
   public currentViewText: ViewText;
   public appLogo$: Observable<string>;
   public appName$: Observable<string>;
+  backButtonFunc = undefined;
 
   constructor(private viewCtrl: ViewController,
     private appVersion: AppVersion,
@@ -41,11 +42,23 @@ export class AppRatingAlertComponent {
     private appRatingService: AppRatingService,
     @Inject('SHARED_PREFERENCES') private preference: SharedPreferences,
     private translate: TranslateService,
+    private platform: Platform,
   ) {
     this.appLogo$ = this.preference.getString('app_logo').map((logo) => logo || './assets/imgs/ic_launcher.png');
     this.appName$ = this.preference.getString('app_name');
     this.currentViewText = this.appRateView[ViewType.APP_RATE];
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.viewCtrl.dismiss(null);
+      this.backButtonFunc();
+    }, 20);
   }
+
+  // backButtonFunc() {
+  //   this.platform.registerBackButtonAction(() => {
+  //     this.viewCtrl.dismiss(null);
+  //     this.backButtonFunc();
+  //   }, 20);
+  // }
 
   ionViewDidLoad() {
     this.viewCtrl.onDidDismiss((data: null | 'close') => {
