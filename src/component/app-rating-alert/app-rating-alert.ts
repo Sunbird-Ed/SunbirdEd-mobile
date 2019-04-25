@@ -53,13 +53,6 @@ export class AppRatingAlertComponent {
     }, 20);
   }
 
-  // backButtonFunc() {
-  //   this.platform.registerBackButtonAction(() => {
-  //     this.viewCtrl.dismiss(null);
-  //     this.backButtonFunc();
-  //   }, 20);
-  // }
-
   ionViewDidLoad() {
     this.viewCtrl.onDidDismiss((data: null | 'close') => {
       console.log(data);
