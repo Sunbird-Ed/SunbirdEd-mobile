@@ -38,7 +38,7 @@ export class DownloadManagerPage {
     private popoverCtrl: PopoverController,
     private commonUtilService: CommonUtilService,
     private viewCtrl: ViewController,
-    private headerServie: AppHeaderService, private events: Events
+    private headerServie: AppHeaderService, private events: Events,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     ) {
       this.downloadedContentList = downloadsDummyData;
