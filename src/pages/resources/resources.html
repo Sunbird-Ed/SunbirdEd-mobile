@@ -83,8 +83,7 @@
 			</div>
 		</div>
 		<div class="sb-slider-pills-container">
-			<div class="sb-pills-container sb-grade-pills-container" id="gradeScroll"
-				[@ScrollHorizontal]="{value: currentGrade?.selected, params: {left_indent: current_index * 72}}">
+			<div class="sb-pills-container sb-grade-pills-container" id="gradeScroll">
 				<div class="pill" *ngFor="let grade of categoryGradeLevels; let i = index; let first = first"
 					[ngClass]="{'active': grade?.selected, '': !grade?.selected}" attr.id="class{{i}}" (click)="classClick(i,'sendClassClickedTelemetry');">
 					{{grade?.name}}</div>
