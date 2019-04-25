@@ -170,6 +170,7 @@ export class PreferenceKey {
     public static readonly KEY_DATA_SYNC_TIME = 'sunbirddata_sync_time';
     public static readonly APP_LOGO = 'app_logo';
     public static readonly APP_NAME = 'app_name';
+    public static readonly APP_RATING_DATE = 'app_rating_date';
 }
 
 export class GenericAppConfig {
