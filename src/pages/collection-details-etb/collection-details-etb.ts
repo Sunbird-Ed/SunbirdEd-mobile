@@ -546,13 +546,16 @@ export class CollectionDetailsEtbPage implements OnInit {
     if (this.contentDetail.contentData.me_totalDownloads) {
       this.contentDetail.contentData.me_totalDownloads = this.contentDetail.contentData.me_totalDownloads.split('.')[0];
     }
-    this.setCollectionStructure();
+      this.setCollectionStructure();
   }
 
   setCollectionStructure() {
     this.showChildrenLoader = true;
     if (this.contentDetail.contentData.contentTypesCount) {
-      this.contentTypesCount = JSON.parse(this.contentDetail.contentData.contentTypesCount);
+      if (!_.isObject(this.contentDetail.contentData.contentTypesCount)) {
+        this.contentTypesCount = JSON.parse(this.contentDetail.contentData.contentTypesCount);
+      }
+      this.contentTypesCount = this.contentDetail.contentData.contentTypesCount;
       // this.contentDetail.contentData.contentTypesCount = JSON.parse(this.contentDetail.contentData.contentTypesCount);
     } else if (this.cardData.contentTypesCount) {
       if (!_.isObject(this.cardData.contentTypesCount)) {

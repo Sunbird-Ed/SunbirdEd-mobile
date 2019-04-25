@@ -18,6 +18,7 @@ export class ViewAllCardComponent {
   @Input() content: any;
   @Input() type: any;
   @Input() sectionName: any;
+  @Input() userId: any;
 
   constructor(
     public commonUtilService: CommonUtilService

@@ -989,6 +989,7 @@ export class ContentDetailsPage {
             const eventPayload = event.payload;
             if (eventPayload.contentId === this.content.identifier) {
               if (eventPayload.streamingUrl) {
+                this.streamingUrl = eventPayload.streamingUrl;
                 this.playingContent.contentData.streamingUrl = eventPayload.streamingUrl;
               } else {
                 this.playOnlineSpinner = false;
@@ -1272,11 +1273,11 @@ export class ContentDetailsPage {
           isMarked: true,
           extraInfo: extraInfoMap
         };
-        this.contentService.setContentMarker(req).toPromise()
-          .then((data) => {
-            console.log('setContentMarker', data);
-          }).catch(() => {
-        });
+        // this.contentService.setContentMarker(req).toPromise()
+        //   .then((data) => {
+        //     console.log('setContentMarker', data);
+        //   }).catch(() => {
+        // });
       }
       this.downloadAndPlay = false;
       const request: any = {};
@@ -1294,7 +1295,7 @@ export class ContentDetailsPage {
         contentId: this.identifier,
         contentType: this.content.contentType
       };
-      this.profileService.addContentAccess(contentAccessRequest).subscribe();
+     // this.profileService.addContentAccess(contentAccessRequest).subscribe();
       this.playerService.getPlayerConfig(this.playingContent, request).subscribe((data) => {
         data['data'] = {};
         if (data.metadata.mimeType === 'application/vnd.ekstep.ecml-archive') {
@@ -1416,7 +1417,7 @@ export class ContentDetailsPage {
     confirm.onDidDismiss((canDelete: any) => {
       if (canDelete) {
         this.deleteContent();
-        this.viewCtrl.dismiss();
+        // this.viewCtrl.dismiss();
       }
     });
   }
@@ -1474,7 +1475,10 @@ getMessageByConstant(constant: string) {
         this.events.publish('savedResources:update', {
           update: true
         });
-        this.importContent([this.identifier], this.isChildContent);
+        this.content.contentData.streamingUrl = this.streamingUrl;
+        this.contentDownloadable[this.content.identifier] = false;
+        const playContent = this.playingContent;
+        playContent.isAvailableLocally = false;
         this.contentDownloadable[this.content.identifier] = false;
         this.showToaster(this.getMessageByConstant('MSG_RESOURCE_DELETED'));
       }

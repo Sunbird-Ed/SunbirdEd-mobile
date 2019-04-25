@@ -123,26 +123,27 @@ export class EnrollmentDetailsPage {
       batchId: content.id,
       batchStatus: content.status
     };
+    const loader = this.commonUtilService.getLoader();
+    loader.present();
     this.courseService.enrollCourse(enrollCourseRequest).toPromise()
       .then((data: any) => {
         this.zone.run(() => {
-          console.log('You have successfully enrolled...');
           this.commonUtilService.showToast(this.commonUtilService.translateMessage('COURSE_ENROLLED'));
           this.events.publish(EventTopics.ENROL_COURSE_SUCCESS, {
             batchId: content.id,
             courseId: content.courseId
           });
-          this.viewCtrl.dismiss();
+          loader.dismiss();
+          this.viewCtrl.dismiss(true);
           this.navigateToDetailPage(content);
         });
-      })
-      .catch((error: any) => {
-        console.log('error while enrolling into batch ==>', error);
+      }, (error) => {
+        loader.dismiss();
         this.zone.run(() => {
-          error = JSON.parse(error);
-          if (error && error.error === 'CONNECTION_ERROR') {
+          if (error && error.code === 'NETWORK_ERROR') {
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NO_INTERNET_MESSAGE'));
-          } else if (error && error.error === 'USER_ALREADY_ENROLLED_COURSE') {
+          } else if (error && error.response
+            && error.response.body && error.response.body.params && error.response.body.params.err === 'USER_ALREADY_ENROLLED_COURSE') {
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('ALREADY_ENROLLED_COURSE'));
           }
         });
