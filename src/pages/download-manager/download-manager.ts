@@ -4,10 +4,14 @@ import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { CommonUtilService } from '@app/service';
 import { SbPopoverComponent } from './../../component/popups/sb-popover/sb-popover';
 import { Component, NgZone, Inject } from '@angular/core';
-import { IonicPage, NavController, NavParams, PopoverController } from 'ionic-angular';
-import { TranslateService} from '@ngx-translate/core';
 import { ContentRequest, ContentService } from 'sunbird-sdk';
 import { downloadsDummyData } from './downloads-spec.data';
+import { IonicPage, NavController, NavParams, Events  , PopoverController} from 'ionic-angular';
+import { TranslateService} from '@ngx-translate/core';
+import { AppHeaderService } from '@app/service';
+import { ActiveDownloadsPage } from '../active-downloads/active-downloads';
+// import { NoDownloadsComponent } from './../../component/downloads/no-downloads';
+
 /**
  * Generated class for the DownloadManagerPage page.
  *
@@ -21,6 +25,7 @@ import { downloadsDummyData } from './downloads-spec.data';
   templateUrl: 'download-manager.html',
 })
 export class DownloadManagerPage {
+  headerObservable: any;
 
   showLoader = false;
   downloadedContentList: Array<object>;
@@ -33,6 +38,7 @@ export class DownloadManagerPage {
     private popoverCtrl: PopoverController,
     private commonUtilService: CommonUtilService,
     private viewCtrl: ViewController,
+    private headerServie: AppHeaderService, private events: Events
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     ) {
       this.downloadedContentList = downloadsDummyData;
@@ -40,6 +46,35 @@ export class DownloadManagerPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad DownloadManagerPage');
+  }
+  ionViewWillEnter() {
+    this.events.subscribe('update_header', (data) => {
+      this.headerServie.showHeaderWithHomeButton(['download']);
+    });
+    this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
+
+    this.headerServie.showHeaderWithHomeButton(['download']);
+  }
+  ionViewWillLeave(): void {
+    // if (this.eventSubscription) {
+    //   this.eventSubscription.unsubscribe();
+    // }
+    this.events.unsubscribe('update_header');
+    this.headerObservable.unsubscribe();
+}
+
+  handleHeaderEvents($event) {
+    console.log('inside handleHeaderEvents', $event);
+    switch ($event.name) {
+      case 'download': this.download();
+                    break;
+    }
+  }
+
+  download() {
+    this.navCtrl.push(ActiveDownloadsPage);
   }
 
   showDeletePopup() {
