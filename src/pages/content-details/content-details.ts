@@ -1,18 +1,5 @@
 import {Component, Inject, NgZone, ViewChild} from '@angular/core';
-import {
-  AlertController,
-  App,
-  Events,
-  IonicApp,
-  IonicPage,
-  Navbar,
-  NavController,
-  NavParams,
-  Platform,
-  PopoverController,
-  ToastController,
-  ViewController
-} from 'ionic-angular';
+import {AlertController, App, Events, IonicApp, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController, ViewController} from 'ionic-angular';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
 import {EventTopics, PreferenceKey, XwalkConstants} from '../../app/app.constant';
@@ -158,8 +145,10 @@ export class ContentDetailsPage {
 
   showDownload: boolean;
   contentPath: Array<any> [];
+  childPaths: Array<string> = [];
   FileSizePipe: any;
   toast: any;
+  breadCrumbData: any;
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
@@ -259,6 +248,7 @@ export class ContentDetailsPage {
     this.downloadAndPlay = this.navParams.get('downloadAndPlay');
     this.playOnlineSpinner = true;
     this.contentPath = this.navParams.get('paths');
+    this.breadCrumbData = this.navParams.get('breadCrumb');
 
     if (this.isResumedCourse && !this.isPlayerLaunched) {
       if (this.isUsrGrpAlrtOpen) {
@@ -274,6 +264,7 @@ export class ContentDetailsPage {
 
     this.setContentDetails(this.identifier, true, this.isPlayerLaunched);
     this.subscribeSdkEvent();
+    this.findHierarchyOfContent();
     // this.setContentDetails(this.identifier, true, false);
     // this.subscribeGenieEvent();
     this.networkSubscription =  this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
@@ -562,7 +553,6 @@ export class ContentDetailsPage {
     if (this.isResumedCourse) {
       this.setChildContents();
     }
-
     this.content = data;
     this.contentDownloadable[this.content.identifier] = data.isAvailableLocally;
     if (this.content.lastUpdatedTime !== 0) {
@@ -1609,5 +1599,18 @@ getMessageByConstant(constant: string) {
                     break;
     }
   }
+  findHierarchyOfContent() {
+    if (this.cardData && this.cardData.hierarchyInfo) {
+      this.cardData.hierarchyInfo.forEach((element) => {
+        const contentName = this.breadCrumbData.get(element.identifier);
+        this.childPaths.push(contentName);
+      });
+      this.childPaths.push(this.breadCrumbData.get(this.cardData.identifier));
+    }
+    }
+
+    goBack() {
+      this.navCtrl.pop();
+    }
 }
 

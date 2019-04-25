@@ -98,16 +98,14 @@
 	</div>
 
 
-	<!-- <div class="breadcrumb-container">
-		<div class="step-indicator">
-			<a class="step completed" href="#">Unit - 1.1 </a>
-			<a class="step completed" href="#">Unit - 1.2 </a>
-			<a class="step completed" href="#">Unit - 1.3 </a>
-			<a class="step completed" href="#">Unit - 1.4 </a>
-			<a class="step completed" href="#">Unit - 1.5 </a>
-			<a class="step" href="#">Step three</a>
+	<div class="breadcrumb-container">
+		<div class="step-indicator" >
+			<a class="step completed" href="#" *ngFor="let result of childPaths; let i = index">
+				<span *ngIf="i!=(childPaths.length-1); else templateName" (click)="goBack()">{{result}} </span>
+				<ng-template #templateName><span class="breadCrumbStyle">{{result}}</span></ng-template>
+			</a>
 		</div>
-	</div> -->
+	</div>
 	<div class="sb-detail-card-info">
 		<div class="sb-dt-card">
 			<div class="sb-dt-content sb-dt-content-main">

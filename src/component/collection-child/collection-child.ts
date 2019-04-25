@@ -24,6 +24,7 @@ export class CollectionChildComponent implements AfterViewInit {
     @Input() depth: any;
     @Input() corRelationList: any;
     @Input() isDepthChild: any;
+    @Input() breadCrumb: any;
 
 
     constructor(
@@ -59,7 +60,8 @@ export class CollectionChildComponent implements AfterViewInit {
                     content: content,
                     depth: depth,
                     contentState: stateData,
-                    corRelation: this.corRelationList
+                    corRelation: this.corRelationList,
+                    breadCrumb: this.breadCrumb
                 });
             }
         });

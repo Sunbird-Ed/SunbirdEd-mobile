@@ -213,7 +213,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   batchDetails: any;
   pageName: any;
   headerObservable: any;
-
+  breadCrumb = new Map();
 
   // Local Image
   localImage = '';
@@ -268,7 +268,7 @@ export class CollectionDetailsEtbPage implements OnInit {
         true, this.cardData.identifier, this.corRelationList);
       this.handleBackButton();
     };*/
-    
+
     this.registerDeviceBackButton();
   }
 
@@ -546,7 +546,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     if (this.contentDetail.contentData.me_totalDownloads) {
       this.contentDetail.contentData.me_totalDownloads = this.contentDetail.contentData.me_totalDownloads.split('.')[0];
     }
-      this.setCollectionStructure();
+    this.setCollectionStructure();
   }
 
   setCollectionStructure() {
@@ -708,7 +708,7 @@ export class CollectionDetailsEtbPage implements OnInit {
       .then((data: Content) => {
         this.zone.run(() => {
           if (data && data.children) {
-            //  console.log('ChildrenData', this.childrenData);
+            this.breadCrumb.set(data.identifier, data.contentData.name);
             this.childrenData = data.children;
           }
 
@@ -727,7 +727,8 @@ export class CollectionDetailsEtbPage implements OnInit {
   }
 
   getContentsSize(data) {
-    _.forEach(data, (value) => {
+    _.forEach(data, (value, index) => {
+      this.breadCrumb.set(value.identifier, value.contentData.name);
       if (value.contentData.size) {
         this.downloadSize += Number(value.contentData.size);
       }
@@ -762,7 +763,6 @@ export class CollectionDetailsEtbPage implements OnInit {
 
   navigateToDetailsPage(content: any, depth) {
     const stateData = this.navParams.get('contentState');
-
     this.zone.run(() => {
       if (content.contentType === ContentType.COURSE) {
         this.navCtrl.push(EnrolledCourseDetailsPage, {
@@ -785,7 +785,8 @@ export class CollectionDetailsEtbPage implements OnInit {
           content: content,
           depth: depth,
           contentState: stateData,
-          corRelation: this.corRelationList
+          corRelation: this.corRelationList,
+          breadCrumb: this.breadCrumb
         });
       }
     });
@@ -798,7 +799,8 @@ export class CollectionDetailsEtbPage implements OnInit {
       content: content,
       depth: depth,
       contentState: stateData,
-      corRelation: this.corRelationList
+      corRelation: this.corRelationList,
+      bradeCrumb: this.breadCrumb
     });
   }
 
@@ -1123,12 +1125,12 @@ export class CollectionDetailsEtbPage implements OnInit {
     const values = new Map();
     const telemetryObject = new TelemetryObject(content.identifier || content.contentId, content.contentType, content.pkgVersion);
     this.telemetryGeneratorService.generateInteractTelemetry(
-        InteractType.TOUCH,
-        InteractSubtype.CLOSE_CLICKED,
-        Environment.HOME,
-        PageId.COLLECTION_DETAIL,
-        telemetryObject,
-        values);
+      InteractType.TOUCH,
+      InteractSubtype.CLOSE_CLICKED,
+      Environment.HOME,
+      PageId.COLLECTION_DETAIL,
+      telemetryObject,
+      values);
   }
 
   /**
@@ -1209,7 +1211,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     confirm.present({
       ev: event
     });
-       confirm.onDidDismiss((canDelete: any) => {
+    confirm.onDidDismiss((canDelete: any) => {
       if (canDelete) {
         this.deleteContent();
       }
@@ -1277,8 +1279,8 @@ export class CollectionDetailsEtbPage implements OnInit {
     switch ($event.name) {
       case 'back': this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
         true, this.cardData.identifier, this.corRelationList);
-      this.handleBackButton();
-                    break;
+        this.handleBackButton();
+        break;
     }
   }
 }
