@@ -28,8 +28,8 @@ import { ActiveDownloadsPage } from '../active-downloads/active-downloads';
   templateUrl: 'download-manager.html',
 })
 export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit {
-
-  constructor() { }
+  headerObservable: any;
+  // constructor() { }
 
   storageInfo: AppStorageInfo;
   // downloadedContents: Content[];
@@ -47,5 +47,50 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
   onSortCriteriaChange(sortAttribute): Content[] {
     throw new Error('not implemented');
   }
+  constructor(
+    public navCtrl: NavController,
+    public navParams: NavParams,
+    private translate: TranslateService,
+    private ngZone: NgZone,
+    private popoverCtrl: PopoverController,
+    private commonUtilService: CommonUtilService,
+    private viewCtrl: ViewController,
+    private headerServie: AppHeaderService, private events: Events,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
+    ) {
+     // this.downloadedContentList = downloadsDummyData;
+  }
 
+  ionViewDidLoad() {
+    console.log('ionViewDidLoad DownloadManagerPage');
+  }
+  ionViewWillEnter() {
+    this.events.subscribe('update_header', (data) => {
+      this.headerServie.showHeaderWithHomeButton(['download']);
+    });
+    this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
+
+    this.headerServie.showHeaderWithHomeButton(['download']);
+  }
+  ionViewWillLeave(): void {
+    // if (this.eventSubscription) {
+    //   this.eventSubscription.unsubscribe();
+    // }
+    this.events.unsubscribe('update_header');
+    this.headerObservable.unsubscribe();
+}
+
+handleHeaderEvents($event) {
+  console.log('inside handleHeaderEvents', $event);
+  switch ($event.name) {
+    case 'download': this.download();
+                  break;
+  }
+}
+
+download() {
+  this.navCtrl.push(ActiveDownloadsPage);
+}
 }
