@@ -213,7 +213,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   batchDetails: any;
   pageName: any;
   headerObservable: any;
-
+  breadCrumb = new Map();
 
   // Local Image
   localImage = '';
@@ -708,7 +708,7 @@ export class CollectionDetailsEtbPage implements OnInit {
       .then((data: Content) => {
         this.zone.run(() => {
           if (data && data.children) {
-            //  console.log('ChildrenData', this.childrenData);
+            this.breadCrumb.set(data.identifier, data.contentData.name);
             this.childrenData = data.children;
           }
 
@@ -728,6 +728,7 @@ export class CollectionDetailsEtbPage implements OnInit {
 
   getContentsSize(data) {
     _.forEach(data, (value) => {
+      this.breadCrumb.set(value.identifier, value.contentData.name);
       if (value.contentData.size) {
         this.downloadSize += Number(value.contentData.size);
       }
@@ -785,7 +786,8 @@ export class CollectionDetailsEtbPage implements OnInit {
           content: content,
           depth: depth,
           contentState: stateData,
-          corRelation: this.corRelationList
+          corRelation: this.corRelationList,
+          breadCrumb: this.breadCrumb
         });
       }
     });
@@ -798,7 +800,8 @@ export class CollectionDetailsEtbPage implements OnInit {
       content: content,
       depth: depth,
       contentState: stateData,
-      corRelation: this.corRelationList
+      corRelation: this.corRelationList,
+      breadCrumb: this.breadCrumb
     });
   }
 
