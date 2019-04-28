@@ -10,6 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ContentRequest, ContentService } from 'sunbird-sdk';
 import { downloadsDummyData } from '../downloads-spec.data';
 import { Content } from 'sunbird-sdk';
+import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 
 /**
  * Generated class for the DownloadManagerPage page.
@@ -28,6 +29,7 @@ export class DownloadsTabPage {
     @Input() downloadedContents: any;
     showLoader = false;
     selectedContents: string[] = [];
+    showDeleteButton: Boolean = true;
 
     constructor(
         public navCtrl: NavController,
@@ -45,7 +47,7 @@ export class DownloadsTabPage {
         console.log('ionViewDidLoad DownloadManagerPage');
     }
 
-    showDeletePopup() {
+    showDeletePopup(identifier?) {
         // this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
         //   InteractSubtype.KEBAB_MENU_CLICKED,
         //   Environment.HOME,
@@ -54,6 +56,9 @@ export class DownloadsTabPage {
         //   undefined,
         //   this.objRollup,
         //   this.corRelationList);
+        if (identifier) {
+            this.selectedContents = [identifier];
+        }
         const confirm = this.popoverCtrl.create(SbPopoverComponent, {
             sbPopoverHeading: this.commonUtilService.translateMessage('DELETE'),
             // sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_DELETE'),
@@ -81,7 +86,13 @@ export class DownloadsTabPage {
     }
 
     deleteContent() {
-
+        // const deleteList = [];
+        // this.downloadedContents.forEach(element => {
+        //     if (element.isSelected) {
+        //         deleteList.push(element.identifier);
+        //     }
+        // });
+        console.log('deleteContent called', this.selectedContents);
     }
 
     showOverflowMenu(event) {
@@ -95,15 +106,78 @@ export class DownloadsTabPage {
     }
 
     selectAllContents() {
-
+        console.log('selectAllContents clicked');
+        this.downloadedContents.forEach(element => {
+            element.isSelected = true;
+        });
+        this.showDeleteButton = false;
+        this.deleteAllContents();
+        console.log('after select all', this.downloadedContents);
     }
 
     unSelectAllContents() {
-
+        console.log('unSelectAllContents clicked');
+        this.downloadedContents.forEach(element => {
+            element.isSelected = false;
+        });
+        this.showDeleteButton = true;
+        console.log('after un select all', this.downloadedContents);
     }
 
     toggleContentSelect(event, idx) {
+        console.log('toggleContentSelect clicked event', event);
+        console.log('toggleContentSelect clicked idx', idx);
+        this.downloadedContents[idx]['isSelected'] = !this.downloadedContents[idx]['isSelected'];
+        // const selectedContents = (this.downloadedContents.filter((element) => element.isSelected));
+        // if (selectedContents.length) {
+        //     this.showDeleteButton = false;
+        //     this.deleteAllContents();
+        // } else {
+        //     this.showDeleteButton = true;
+        // }
+    }
 
+    deleteAllContents() {
+        const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
+            // sbPopoverHeading: this.commonUtilService.translateMessage('ALERT'),
+            sbPopoverMainTitle: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE'),
+            actionsButtons: [
+                {
+                    btntext: this.commonUtilService.translateMessage('CANCEL'),
+                    btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+                }, {
+                    btntext: this.commonUtilService.translateMessage('DELETE'),
+                    btnClass: 'popover-color'
+                }
+            ],
+            showHeader: false,
+            icon: null
+        }, {
+                cssClass: 'sb-popover',
+            });
+        confirm.present({
+            ev: event
+        });
+        confirm.onDidDismiss((leftBtnClicked: any) => {
+            console.log('leftBtnClicked', leftBtnClicked);
+            if (leftBtnClicked == null) {
+                this.unSelectAllContents();
+                console.log('dismiss');
+                return;
+            } else if (leftBtnClicked) {
+                this.unSelectAllContents();
+                console.log('delete cancel');
+            } else {
+                console.log('delete confirm');
+                this.selectedContents = [];
+                this.downloadedContents.forEach(element => {
+                    if (element.isSelected) {
+                        this.selectedContents.push(element.identifier);
+                    }
+                });
+                this.showDeletePopup();
+            }
+        });
     }
 
 }

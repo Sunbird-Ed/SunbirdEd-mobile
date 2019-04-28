@@ -1,4 +1,4 @@
-<ion-header class="sb-popover-header">
+<ion-header class="sb-popover-header" *ngIf="showHeader">
   <ion-toolbar class="sb-popover-toolbar">
     <ion-title class="sb-popover-title">{{sbPopoverHeading}}
         <ion-icon name="close" class="sb-modal-close" (click)="closePopover()"></ion-icon> </ion-title>

@@ -57,8 +57,8 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     private viewCtrl: ViewController,
     private headerServie: AppHeaderService, private events: Events,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
-    ) {
-     // this.downloadedContentList = downloadsDummyData;
+  ) {
+    // this.downloadedContentList = downloadsDummyData;
   }
 
   ionViewDidLoad() {
@@ -80,17 +80,17 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     // }
     this.events.unsubscribe('update_header');
     this.headerObservable.unsubscribe();
-}
-
-handleHeaderEvents($event) {
-  console.log('inside handleHeaderEvents', $event);
-  switch ($event.name) {
-    case 'download': this.download();
-                  break;
   }
-}
 
-download() {
-  this.navCtrl.push(ActiveDownloadsPage);
-}
+  handleHeaderEvents($event) {
+    console.log('inside handleHeaderEvents', $event);
+    switch ($event.name) {
+      case 'download': this.download();
+        break;
+    }
+  }
+
+  download() {
+    this.navCtrl.push(ActiveDownloadsPage);
+  }
 }
