@@ -295,7 +295,7 @@ export class FrameworkCategory {
     ];
 }
 
-export class StoreRatingConstants {
+export class StoreRating {
     public static readonly DATE_DIFF = 2;
     public static readonly APP_MIN_RATE = 4;
     public static readonly FOLDER_NAME = 'sunbird-apprating';

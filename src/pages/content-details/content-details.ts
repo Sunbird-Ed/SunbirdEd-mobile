@@ -15,7 +15,7 @@ import {
 } from 'ionic-angular';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
-import {EventTopics, PreferenceKey, XwalkConstants} from '../../app/app.constant';
+import {EventTopics, PreferenceKey, XwalkConstants, StoreRating } from '../../app/app.constant';
 import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, Map, ShareUrl} from '@app/app';
 import {BookmarkComponent, ContentActionsComponent,
   ContentRatingAlertComponent, ConfirmAlertComponent, SbPopoverComponent} from '@app/component';
@@ -501,18 +501,18 @@ export class ContentDetailsPage {
   }
 
   async validateAndCheckDateDiff(date) {
-    const presentDate = moment();
-    const initialDate = moment(date);
-    if (initialDate.isValid()) {
-      const diffInDays = presentDate.diff(initialDate, 'days');
-      if ((diffInDays >= this.appRatingService.APP_RATING_DATE_DIFF) && await this.commonUtilService.networkInfo.isNetworkAvailable) {
-        return true;
-      } else {
-        return false;
+    let isValid = false;
+    if (await this.commonUtilService.networkInfo.isNetworkAvailable) {
+      const presentDate = moment();
+      const initialDate = moment(date);
+      if (initialDate.isValid()) {
+        const diffInDays = presentDate.diff(initialDate, 'days');
+        if (diffInDays >= StoreRating.DATE_DIFF) {
+          isValid = true;
+        }
       }
-    } else {
-      return false;
     }
+    return isValid;
   }
 
   contentRating(popupType) {
