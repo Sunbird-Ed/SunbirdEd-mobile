@@ -298,7 +298,7 @@ export class FrameworkCategory {
 export class StoreRating {
     public static readonly DATE_DIFF = 2;
     public static readonly APP_MIN_RATE = 4;
-    public static readonly FOLDER_NAME = 'sunbird-apprating';
+    public static readonly FOLDER_NAME = 'sunbird-app-rating';
     public static readonly FILE_NAME = 'app-rating.doc';
     public static readonly FILE_TEXT = 'APP-Rating';
     public static readonly DEVICE_FOLDER_PATH = cordova.file.dataDirectory;
