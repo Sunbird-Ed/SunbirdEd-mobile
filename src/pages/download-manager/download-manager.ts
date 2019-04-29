@@ -8,7 +8,7 @@ import { SbPopoverComponent } from './../../component/popups/sb-popover/sb-popov
 import { Component, NgZone, Inject, OnInit } from '@angular/core';
 import { IonicPage, NavController, NavParams, PopoverController, Events } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { ContentRequest, ContentService } from 'sunbird-sdk';
+import { ContentRequest, ContentService, DownloadService } from 'sunbird-sdk';
 import { Content } from 'sunbird-sdk';
 import { downloadsDummyData } from './downloads-spec.data';
 import { AppHeaderService } from '@app/service';

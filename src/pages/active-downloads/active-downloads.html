@@ -8,9 +8,17 @@
 
     <div class="sb-view-all-container">
         <div class="sb-view-all-items">
+          <div class = "sb-download-all">
             <div class="sb-view-all-title">
               <span class="page-heading">Active Downloads</span>
               <span class="page-info" >Downloading Content : 1/2</span>
+            </div>
+            <div class="ion-button sb-download-cancel" (click)="cancelAllActiveDownloads()">
+                <div>
+                    <ion-icon ios="ios-close" md="md-close" class="PL20"></ion-icon>
+                </div>
+              Cancel All
+            </div>
             </div>
         </div>
       <div class="sb-card-container sb-card-view-all-container">
@@ -26,12 +34,16 @@
               5.45MB/32MB
             </div>
             <div class="sb-card-actions">
-              <button ion-button class="action-btn float-end delete mr-8" (click)="showDeletePopup()">
+              <button ion-button class="action-btn float-end delete mr-8" (click)="cancelActiveDownload()">
                 Cancel
               </button>
             </div>
           </div>
         </div>
+        <div class="popover-progress-container">
+            <div class="progress-highlight" [ngStyle]="{'left': '50%'}">  
+            </div>
+          </div>
         <div class="sb-card">
             <div class="img-container">
             </div>
@@ -44,12 +56,12 @@
                 Waiting To Download..
               </div>
               <div class="sb-card-actions">
-                <button ion-button class="action-btn float-end delete mr-8" (click)="showDeletePopup()">
+                <button ion-button class="action-btn float-end delete mr-8" (click)="cancelActiveDownload()">
                  Cancel
                 </button>
               </div>
             </div>
-          </div>     
+          </div>   
       </div>
       </div>
   </ion-content>
