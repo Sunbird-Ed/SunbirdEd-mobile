@@ -675,22 +675,21 @@ export class ContentDetailsPage {
       contentId: resumedCourseCardData && resumedCourseCardData.contentId ?
       resumedCourseCardData.contentId : resumedCourseCardData.identifier,
       hierarchyInfo: null,
-      level: !this.courseCardData.batchId ? 1 : 0,
+      level: !resumedCourseCardData ? 1 : 0,
     };
     // if (this.navParams.get('resumedCourseCardData')) {
     //   option.contentId = this.navParams.get('resumedCourseCardData').contentId || this.navParams.get('resumedCourseCardData').identifier;
     // }
     option.hierarchyInfo = null;
 
-    if (this.courseCardData && !this.courseCardData.batchId) {
+    if (resumedCourseCardData && !resumedCourseCardData.batchId) {
       option.level = 1;
     }
     this.contentService.getChildContents(option).toPromise()
       .then((data: any) => {
-        data = JSON.parse(data);
         this.zone.run(() => {
-          if (data && data.result && data.result.children) {
-            this.hierarchyInfo = this.getHierarchyInfo(data.result);
+          if (data &&  data.children) {
+            this.hierarchyInfo = this.getHierarchyInfo(data);
           }
         });
       })

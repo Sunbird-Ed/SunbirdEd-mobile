@@ -658,7 +658,10 @@ export class EnrolledCourseDetailsPage implements OnInit {
    */
   setCourseStructure(): void {
     if (this.course.contentTypesCount) {
-      this.course.contentTypesCount = JSON.parse(this.course.contentTypesCount);
+      if (!_.isObject(this.course.contentTypesCount)) {
+        this.course.contentTypesCount = JSON.parse(this.course.contentTypesCount);
+      }
+      this.course.contentTypesCount = this.course.contentTypesCount;
     } else if (this.courseCardData.contentTypesCount && !_.isObject(this.courseCardData.contentTypesCount)) {
       this.course.contentTypesCount = JSON.parse(this.courseCardData.contentTypesCount);
     }
