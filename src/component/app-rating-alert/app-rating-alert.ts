@@ -5,6 +5,7 @@ import { SharedPreferences } from 'sunbird-sdk';
 import { AppVersion } from '@ionic-native/app-version';
 import { Observable } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
+import { StoreRating } from '../../app/app.constant';
 
 enum ViewType {
   APP_RATE = 'appRate',
@@ -30,6 +31,7 @@ export class AppRatingAlertComponent {
     helpDesk: { type: ViewType.HELP_DESK, heading: 'APP_RATING_THANKS_FOR_RATING', message: 'APP_RATING_REPORT_AN_ISSUE' }
   };
   private ratingNumber: number;
+  private appRate = 0;
 
   public currentViewText: ViewText;
   public appLogo$: Observable<string>;
@@ -82,16 +84,16 @@ export class AppRatingAlertComponent {
   rateOnStore() {
     this.appVersion.getPackageName().then((pkg: any) => {
       this.utilityService.openPlayStore(pkg);
-      this.appRatingService.setEndStoreRate();
+      this.appRatingService.setEndStoreRate(this.appRate);
       this.viewCtrl.dismiss('close');
     });
   }
 
   submitRating(rating) {
-    console.log(rating);
     setTimeout(() => {
-      if (rating >= this.appRatingService.APP_MIN_RATE) {
+      if (rating >= StoreRating.APP_MIN_RATE) {
         this.currentViewText = this.appRateView[ViewType.STORE_RATE];
+        this.appRate = rating;
         return;
       }
       this.currentViewText = this.appRateView[ViewType.HELP_DESK];
