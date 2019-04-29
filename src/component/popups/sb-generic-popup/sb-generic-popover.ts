@@ -25,6 +25,7 @@ export class SbGenericPopoverComponent {
   icon: any;
   metaInfo: any;
   backButtonFunc = undefined;
+  showHeader: Boolean = true;
 
 
   constructor(public viewCtrl: ViewController, public navParams: NavParams,
@@ -36,6 +37,9 @@ export class SbGenericPopoverComponent {
     this.sbPopoverContent = this.navParams.get('sbPopoverContent');
     this.sbPopoverHeading = this.navParams.get('sbPopoverHeading');
     this.sbPopoverMainTitle = this.navParams.get('sbPopoverMainTitle');
+    if (this.navParams.get('showHeader') === false) {
+      this.showHeader = this.navParams.get('showHeader');
+    }
 
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.viewCtrl.dismiss(null);
