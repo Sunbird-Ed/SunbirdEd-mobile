@@ -82,6 +82,7 @@ export class AppRatingAlertComponent {
   rateOnStore() {
     this.appVersion.getPackageName().then((pkg: any) => {
       this.utilityService.openPlayStore(pkg);
+      this.appRatingService.setEndStoreRate();
       this.viewCtrl.dismiss('close');
     });
   }

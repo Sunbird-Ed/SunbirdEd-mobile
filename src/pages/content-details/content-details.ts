@@ -459,32 +459,27 @@ export class ContentDetailsPage {
    * Function to rate content
    */
 
-  rateContent(popupType: string) {
+  async rateContent(popupType: string) {
     const paramsMap = new Map();
     if (this.isContentPlayed || this.content.contentAccess.length) {
       if (popupType === 'automatic') {
-
-        this.preferences.getString(PreferenceKey.APP_RATING_DATE).toPromise().then(res => {
-          const presentDate = moment();
-          const initialDate = moment(res);
-          if (initialDate.isValid()) {
-            const diffInDays = presentDate.diff(initialDate, 'days');
-            console.log(this.commonUtilService.networkInfo.isNetworkAvailable);
-            if ((diffInDays >= this.appRatingService.APP_RATING_DATE_DIFF) && this.commonUtilService.networkInfo.isNetworkAvailable) {
+        if (!(await this.appRatingService.checkReadFile())) {
+          this.preferences.getString(PreferenceKey.APP_RATING_DATE).toPromise().then(async res => {
+            if (await this.validateAndCheckDateDiff(res)) {
               paramsMap['IsPlayed'] = 'N';
               this.appRating();
             } else {
               paramsMap['IsPlayed'] = 'Y';
               this.contentRating(popupType);
             }
-          } else {
+          }).catch(err => {
             paramsMap['IsPlayed'] = 'Y';
             this.contentRating(popupType);
-          }
-        }).catch(err => {
+          });
+        } else {
           paramsMap['IsPlayed'] = 'Y';
           this.contentRating(popupType);
-        });
+        }
       } else if (popupType === 'manual') {
         paramsMap['IsPlayed'] = 'Y';
         this.contentRating(popupType);
@@ -503,6 +498,21 @@ export class ContentDetailsPage {
       paramsMap,
       this.objRollup,
       this.corRelationList);
+  }
+
+  async validateAndCheckDateDiff(date) {
+    const presentDate = moment();
+    const initialDate = moment(date);
+    if (initialDate.isValid()) {
+      const diffInDays = presentDate.diff(initialDate, 'days');
+      if ((diffInDays >= this.appRatingService.APP_RATING_DATE_DIFF) && await this.commonUtilService.networkInfo.isNetworkAvailable) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
 
   contentRating(popupType) {
