@@ -45,7 +45,7 @@ import {
   EventsBusEvent,
   EventsBusService,
   FetchEnrolledCourseRequest,
-  GetContentStateRequest,
+  GetContentStateRequest, NetworkError,
   ProfileService,
   ProfileType,
   ServerProfileDetailsRequest,
@@ -458,7 +458,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
         });
       })
       .catch((error: any) => {
-        if (JSON.parse(error).error === 'CONNECTION_ERROR') {
+        if (error instanceof NetworkError) {
           this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
         } else {
           this.commonUtilService.showToast('ERROR_FETCHING_DATA');
@@ -950,7 +950,8 @@ export class EnrolledCourseDetailsPage implements OnInit {
         courseId: this.identifier
       },
       isResumedCourse: true,
-      isChildContent: true
+      isChildContent: true,
+      resumedCourseCardData: this.courseCardData
     });
   }
 
