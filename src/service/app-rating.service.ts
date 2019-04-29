@@ -1,17 +1,15 @@
 import { Injectable, Inject } from '@angular/core';
 import { SharedPreferences } from 'sunbird-sdk';
-import { PreferenceKey } from '@app/app/app.constant';
+import { PreferenceKey, StoreRating } from '@app/app/app.constant';
 import moment from 'moment';
+import { File } from '@ionic-native/file';
 
 @Injectable()
 export class AppRatingService {
 
-    /** Number of Days */
-    readonly APP_RATING_DATE_DIFF = 2;
-    readonly APP_MIN_RATE = 4;
-
     constructor(
         @Inject('SHARED_PREFERENCES') private preference: SharedPreferences,
+        private fileCtrl: File
     ) { }
 
     checkInitialDate() {
@@ -27,8 +25,37 @@ export class AppRatingService {
         this.preference.putString(PreferenceKey.APP_RATING_DATE, String(presentDate)).toPromise().then();
     }
 
-    setEndAppRate() {
+    setEndStoreRate(rate) {
+        this.createFolder(rate);
+    }
 
+    createFolder(rate) {
+        this.fileCtrl.createDir(StoreRating.DEVICE_FOLDER_PATH, StoreRating.FOLDER_NAME, true).then(res => {
+            console.log('Check Floder RES', res);
+            this.writeFile(rate);
+        }).catch(err => {
+            console.log('Check Floder ERR', err);
+        });
+    }
+
+    writeFile(rate) {
+        this.fileCtrl.writeFile(StoreRating.DEVICE_FOLDER_PATH + '/' + StoreRating.FOLDER_NAME,
+            StoreRating.FILE_NAME, StoreRating.FILE_TEXT + ' = ' + rate, { replace: true }).then(res => {
+                console.log('Check Write RES', res);
+            }).catch(err => {
+                console.log('Check Write ERR', err);
+            });
+    }
+
+    checkReadFile() {
+        return this.fileCtrl.readAsText(StoreRating.DEVICE_FOLDER_PATH + '/' + StoreRating.FOLDER_NAME,
+            StoreRating.FILE_NAME).then(res => {
+                console.log('Check Write RES', res);
+                return true;
+            }).catch(err => {
+                console.log('Check Write ERR', err);
+                return false;
+            });
     }
 
 }
