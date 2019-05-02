@@ -1,25 +1,16 @@
 import {FileTransfer} from '@ionic-native/file-transfer';
 import {
   AuthService,
-  BuildParamService,
-  ContainerService,
   ContentService,
   CourseService,
-  DeviceInfoService,
-  FileUtil,
   FrameworkService,
-  OAuthService,
   PageAssembleService,
   ProfileService,
-  ReportService,
+  SummarizerService,
   SharedPreferences,
-  ShareUtil,
   TelemetryService,
-  UserProfileService,
-  UpdateUserInfoRequest,
-  UserExistRequest,
-  GenerateOTPRequest,
-  GroupService} from 'sunbird';
+  GenerateOtpRequest,
+  GroupService} from 'sunbird-sdk';
 
 import {
   App,
@@ -36,7 +27,13 @@ import {
 } from 'ionic-angular';
 
 import { NgZone } from '@angular/core';
-import { AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService } from '@app/service';
+import {
+  AppGlobalService,
+  AppRatingService,
+  CommonUtilService,
+  CourseUtilService,
+  TelemetryGeneratorService
+} from '@app/service';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { AppVersion } from '@ionic-native/app-version';
@@ -51,6 +48,9 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ImageLoader } from 'ionic-image-loader';
 import { Network } from '@ionic-native/network';
 import { AppHeaderService } from '@app/service';
+import {ContainerService} from "@app/service/container.services";
+import {UtilityService} from "@app/service";
+
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
 };
@@ -90,10 +90,11 @@ export const zoneMock = createSpyObj<NgZone>([
   'run'
 ]);
 
-export const oAuthServiceMock = createSpyObj<OAuthService>([
-  'doOAuthStepOne',
-  'doOAuthStepTwo',
-  'doLogOut'
+export const oAuthServiceMock = createSpyObj<AuthService>([
+  'setSession',
+  'getSession',
+  'resignSession',
+  'refreshSession'
 ]);
 
 export const containerServiceMock = createSpyObj<ContainerService>([
@@ -101,7 +102,7 @@ export const containerServiceMock = createSpyObj<ContainerService>([
   'addTab'
 ]);
 
-export const userProfileServiceMock = createSpyObj<UserProfileService>([
+export const userProfileServiceMock = createSpyObj<ProfileService>([
   'getUserProfileDetails',
   'getTenantInfo',
   'searchLocation',
@@ -168,7 +169,7 @@ export const popoverCtrlMock = createSpyObj<PopoverController>([
   'onDidDismiss'
 ]);
 
-export const fileUtilMock = createSpyObj<FileUtil>([
+export const fileUtilMock = createSpyObj<File>([
   'internalStoragePath'
 ]);
 
@@ -190,14 +191,14 @@ export const socialSharingMock = createSpyObj<SocialSharing>([
   'use'
 ]);
 
-export const shareUtilMock = createSpyObj<ShareUtil>([
+export const shareUtilMock = createSpyObj<UtilityService>([
   'exportApk',
   'exportTelemetry',
   'exportEcar'
 ]);
 
-export const buildParamServiceMock = createSpyObj<BuildParamService>([
-  'getBuildConfigParam'
+export const buildParamServiceMock = createSpyObj<UtilityService>([
+  'getBuildConfigValue'
 ]);
 
 export const appGlobalServiceMock = createSpyObj<AppGlobalService>([
@@ -280,7 +281,7 @@ export const loadingControllerMock = createSpyObj<LoadingController>([
   'present'
 ]);
 
-export const reportServiceMock = createSpyObj<ReportService>([
+export const reportServiceMock = createSpyObj<SummarizerService>([
   'getListOfReports',
   'getImportContentRequestBody',
   'getDetailReport',
@@ -307,7 +308,7 @@ export const loadingMock = createSpyObj<LoadingController>([
   'dismiss'
 ]);
 
-export const deviceInfoServiceMock = createSpyObj<DeviceInfoService>([
+export const deviceInfoServiceMock = createSpyObj<UtilityService>([
   'getDeviceID',
   'getDownloadDirectoryPath',
   'getDeviceAPILevel',
@@ -394,14 +395,11 @@ export const imageLoaderMock = createSpyObj<ImageLoader>([
 
 ]);
 
-export const updateUserInfoRequestMock = createSpyObj<UpdateUserInfoRequest>([
-
-]);
-export const userExistRequestMock = createSpyObj<UserExistRequest>([
+export const updateUserInfoRequestMock = createSpyObj<ProfileService>([
 
 ]);
 
-export const generateOTPRequestMock = createSpyObj<GenerateOTPRequest>([
+export const generateOTPRequestMock = createSpyObj<GenerateOtpRequest>([
 
 ]);
 
@@ -409,3 +407,13 @@ export const networkMock = createSpyObj<Network>([]);
 
 export const appHeaderSrvMock = createSpyObj<AppHeaderService>([]);
 
+export const utilityServiceMock = createSpyObj<UtilityService>([
+  'openPlayStore'
+]);
+export const appRatingServiceMock = createSpyObj<AppRatingService>([
+  'setInitialDate',
+  'checkInitialDate',
+  'setEndStoreRate',
+  'createFolder',
+
+])
