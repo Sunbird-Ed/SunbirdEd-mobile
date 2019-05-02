@@ -245,7 +245,10 @@ export enum InteractSubtype {
     ENROLL_CLICKED = 'enroll-clicked',
     YES_CLICKED = 'yes-clicked',
     NO_CLICKED = 'no-clicked',
-    RESUME_CLICKED = 'resume-clicked'
+    RESUME_CLICKED = 'resume-clicked',
+    PLAY_STORE_BUTTON_CLICKED = 'play-store-clicked',
+    HELP_SECTION_CLICKED = 'help-section-clicked',
+    RATE_LATER_CLICKED = 'rate-later-clicked'
 }
 
 
