@@ -95,6 +95,9 @@ export function playerService() {
 export function formService() {
   return SunbirdSdk.instance.formService;
 }
+export function downloadService() {
+  return SunbirdSdk.instance.downloadService;
+}
 export function sdkDriverFactory() {
   return [{
     provide: 'SDK_CONFIG',
@@ -162,6 +165,9 @@ export function sdkDriverFactory() {
   }, {
     provide: 'PLAYER_SERVICE',
     useFactory: playerService
+  }, {
+    provide: 'DOWNLOAD_MANAGER_SERVICE',
+    useFactory: downloadService
   }
   ];
 }

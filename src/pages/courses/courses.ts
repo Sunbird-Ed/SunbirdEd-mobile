@@ -751,7 +751,8 @@ export class CoursesPage implements OnInit, AfterViewInit {
   importContent(identifiers, isChild) {
     const option: ContentImportRequest = {
       contentImportArray: this.courseUtilService.getImportContentRequestBody(identifiers, isChild),
-      contentStatusArray: []
+      contentStatusArray: [],
+      fields: ['appIcon', 'name', 'subject', 'size', 'gradeLevel']
     };
 
     this.contentService.importContent(option).toPromise()

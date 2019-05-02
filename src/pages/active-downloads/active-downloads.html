@@ -6,22 +6,24 @@
 -->
 <ion-content overflow-scroll="true">
 
-    <div class="sb-view-all-container">
-        <div class="sb-view-all-items">
-          <div class = "sb-download-all">
-            <div class="sb-view-all-title">
-              <span class="page-heading">Active Downloads</span>
-              <span class="page-info" >Downloading Content : 1/2</span>
-            </div>
-            <div class="ion-button sb-download-cancel" (click)="cancelAllActiveDownloads()">
-                <div>
-                    <ion-icon ios="ios-close" md="md-close" class="PL20"></ion-icon>
-                </div>
-              Cancel All
-            </div>
-            </div>
+  <div class="sb-view-all-container">
+    <div class="sb-view-all-items" *ngIf="(activeDownloadRequests$ | async)?.length>0">
+      <div class="sb-download-all">
+        <div class="sb-view-all-title">
+          <span class="page-heading">Active Downloads</span>
+          <span class="page-info">Downloading Content : 1/{{(activeDownloadRequests$ | async)?.length}}</span>
         </div>
-      <div class="sb-card-container sb-card-view-all-container">
+        <div class="ion-button sb-download-cancel" (click)="cancelAllActiveDownloads()">
+          <div>
+            <ion-icon ios="ios-close" md="md-close" class="PL20"></ion-icon>
+          </div>
+          Cancel All
+        </div>
+      </div>
+    </div>
+
+    <!-- <div class="sb-card-container sb-card-view-all-container">
+      <div>
         <div class="sb-card">
           <div class="img-container">
           </div>
@@ -41,27 +43,67 @@
           </div>
         </div>
         <div class="popover-progress-container">
-            <div class="progress-highlight" [ngStyle]="{'left': '50%'}">  
+          <div class="progress-highlight" [ngStyle]="{'left': '50%'}">
+          </div>
+        </div>
+      </div> -->
+
+    <!-- STATIC UI START -->
+    <!-- <div class="sb-card">
+        <div class="img-container">
+        </div>
+        <div class="sb-card-details">
+          <div class="title">Great thinkers and their new religion testing some long text</div>
+          <div class="info grade_ellipsis"><span class=" class">Social science</span><span
+              class="separator-dot"></span><span class=" subject">Class 5</span>
+          </div>
+          <div>
+            Waiting To Download..
+          </div>
+          <div class="sb-card-actions">
+            <button ion-button class="action-btn float-end delete mr-8" (click)="cancelActiveDownload()">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div> -->
+    <!-- STATIC UI END -->
+
+
+    <!-- STATIC UI IMPLIMENTATION -->
+    <!-- </div> -->
+
+    <div class="sb-card-container sb-card-view-all-container">
+      <div *ngFor="let activeDownload of (activeDownloadRequests$ | async); let i = index">
+        <div class="sb-card">
+          <div class="img-container">
+            <img src="{{ activeDownload.contentMeta.appIcon || defaultImg }}">
+          </div>
+          <div class="sb-card-details">
+            <div class="title">{{activeDownload?.contentMeta?.name}}</div>
+            <div class="info grade_ellipsis"><span class=" class">{{activeDownload?.contentMeta?.subject}}</span><span
+                class="separator-dot"></span><span
+                class=" subject">{{activeDownload?.contentMeta?.gradeLevel?.join(', ')}}</span>
+            </div>
+            <div *ngIf="(i === 0">
+              5.45MB/{{activeDownload?.contentMeta?.size}}
+            </div>
+            <div *ngIf="i > 0">
+              Waiting To Download...
+            </div>
+            <div class="sb-card-actions">
+              <button ion-button class="action-btn float-end delete mr-8" (click)="cancelActiveDownload()">
+                Cancel
+              </button>
             </div>
           </div>
-        <div class="sb-card">
-            <div class="img-container">
-            </div>
-            <div class="sb-card-details">
-              <div class="title">Great thinkers and their new religion testing some long text</div>
-              <div class="info grade_ellipsis"><span class=" class">Social science</span><span
-                  class="separator-dot"></span><span class=" subject">Class 5</span>
-              </div>
-              <div>
-                Waiting To Download..
-              </div>
-              <div class="sb-card-actions">
-                <button ion-button class="action-btn float-end delete mr-8" (click)="cancelActiveDownload()">
-                 Cancel
-                </button>
-              </div>
-            </div>
-          </div>   
+        </div>
+        <div class="popover-progress-container" *ngIf="i===0">
+          <div class="progress-highlight" [ngStyle]="{'left': '50%'}">
+          </div>
+        </div>
       </div>
-      </div>
-  </ion-content>
+    </div>
+
+  </div>
+</ion-content>
