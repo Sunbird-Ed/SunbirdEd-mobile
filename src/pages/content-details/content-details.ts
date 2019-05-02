@@ -957,34 +957,34 @@ export class ContentDetailsPage {
       });
     }) as any;
   }
+
   /**
    * confirming popUp content
    */
   openConfirmPopUp() {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-    const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
-      sbPopoverMainTitle: this.content.contentData.name + this.content.contentData.subject,
-      icon: null,
-      metaInfo:
-           '1 item ' + '(' + this.fileSizePipe.transform(this.content.contentData.size, 2) + ')',
-      isUpdateAvail: this.contentDownloadable[this.content.identifier] && this.isUpdateAvail,
-    }, {
-        cssClass: 'sb-popover info',
+      const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
+        sbPopoverMainTitle: this.content.contentData.name,
+        icon: null,
+        metaInfo:
+          '1 item ' + '(' + this.fileSizePipe.transform(this.content.contentData.size, 2) + ')',
+        isUpdateAvail: this.contentDownloadable[this.content.identifier] && this.isUpdateAvail,
+      }, {
+          cssClass: 'sb-popover info',
+        });
+      popover.present({
+        ev: event
       });
-    popover.present({
-      ev: event
-    });
-    popover.onDidDismiss((canDownload: boolean = false) => {
-      if (canDownload) {
-        this.downloadContent();
-      }
-    });
-  } else {
-    this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
+      popover.onDidDismiss((canDownload: boolean = false) => {
+        if (canDownload) {
+          this.downloadContent();
+        }
+      });
+    } else {
+      this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
+    }
   }
 
-
-  }
   /**
    * Download content
    */
@@ -1609,4 +1609,3 @@ getMessageByConstant(constant: string) {
     }
   }
 }
-
