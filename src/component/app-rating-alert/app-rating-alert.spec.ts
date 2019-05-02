@@ -13,17 +13,6 @@ import {Observable} from "rxjs";
 
 describe('AppRatingAlertComponent', () => {
   let appRatingPage: AppRatingAlertComponent;
-  enum ViewType {
-    APP_RATE = 'appRate',
-    STORE_RATE = 'storeRate',
-    HELP_DESK = 'helpDesk',
-  }
-  const appRateView = {
-
-    appRate: { type: ViewType.APP_RATE, heading: 'APP_RATING_RATE_EXPERIENCE', message: 'APP_RATING_TAP_ON_STARS' },
-    storeRate: { type: ViewType.STORE_RATE, heading: 'APP_RATING_THANKS_FOR_RATING', message: 'APP_RATING_RATE_ON_PLAYSTORE' },
-    helpDesk: { type: ViewType.HELP_DESK, heading: 'APP_RATING_THANKS_FOR_RATING', message: 'APP_RATING_REPORT_AN_ISSUE' }
-  };
   beforeEach(() => {
     sharedPreferencesMock.getString.mockImplementation((key: string) => {
       if (key === 'app_name') {
@@ -49,9 +38,6 @@ describe('AppRatingAlertComponent', () => {
     // arrange
     viewControllerMock.onDidDismiss.mockImplementation((cb) => {
       cb();
-      if(cb === null) {
-        spyOn(appRatingServiceMock, 'setInitialDate').and.stub();
-      }
       return {};
     });
     spyOn(appRatingPage, 'ionViewDidLoad').and.callThrough();
@@ -63,21 +49,16 @@ describe('AppRatingAlertComponent', () => {
 
   it('should call viewController dismiss() when closePopOver method is triggered', () => {
     spyOn(appRatingPage, 'closePopover').and.callThrough();
+    viewControllerMock.dismiss.mockReturnValue('close');
     appRatingPage.closePopover();
-    viewControllerMock.dismiss.mockReturnValue((data: null) => {
-      if (data) {
-        return expect(appRatingPage.closePopover()).toHaveBeenCalled();
-      }
-    });
+
+    expect(appRatingPage.closePopover()).toHaveBeenCalled();
   });
   it('should call viewController dismiss() when rateLater() is called ', () => {
     spyOn(appRatingPage, 'rateLater').and.callThrough();
     appRatingPage.rateLater();
-    viewControllerMock.dismiss.mockReturnValue((data: null) => {
-      if (data) {
-        expect(appRatingPage.rateLater).toHaveBeenCalled();
-      }
-    });
+    viewControllerMock.dismiss.mockResolvedValue('RATE_LATER');
+    expect(appRatingPage.rateLater).toHaveBeenCalled();
   });
   it('should call appVersion.getPackageName() when submitRating() is triggered', () => {
     appVersionMock.getPackageName.mockResolvedValue('SAMPLE_PACKAGE_NAME');
