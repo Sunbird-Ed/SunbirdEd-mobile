@@ -487,5 +487,13 @@
   "CONTENT_IS_BEEING_ADDED": "Content is beeing added to ",
   "CONTENT_NOT_AVAILABLE": "Content not available",
   "CONTENT_RETIRED_BY_AUTHOR": "This content is been retired by the author and hence not available any more",
-  "CONTENT_PLAYER_EXIT_PERMISSION": "Would you like to leave this content?"
+  "CONTENT_PLAYER_EXIT_PERMISSION": "Would you like to leave this content?",
+
+  "DELETE_CONTENT": "Delete Content?",
+  "DELETE_CONTENT_WARNING": "Deleting content will remove content from the device",
+  "DELETE_ALL_CONTENT_WARNING": "Deleting content will remove the selected contents from the device",
+  "DELETE_PROGRESS": "Deleting Selected Contents",
+  "NO_DOWNLOADS": "No downloads yet",
+  "NO_DOWNLOADS_INFO": "Download content from Courses or Library"
+  
 }

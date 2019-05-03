@@ -1,23 +1,15 @@
-import { DownloadManagerPageInterface } from '../download-manager.interface';
 import { MenuOverflow } from '../../../app/app.constant';
 import { OverflowMenuComponent } from '@app/pages/profile';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { CommonUtilService } from '@app/service';
 import { SbPopoverComponent } from '../../../component/popups/sb-popover/sb-popover';
-import { Component, NgZone, Inject, Input } from '@angular/core';
+import { Component, NgZone, Inject, Input, EventEmitter, Output } from '@angular/core';
 import { IonicPage, NavController, NavParams, PopoverController } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
 import { ContentRequest, ContentService } from 'sunbird-sdk';
 import { downloadsDummyData } from '../downloads-spec.data';
-import { Content } from 'sunbird-sdk';
+import { Content, ContentDelete } from 'sunbird-sdk';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 
-/**
- * Generated class for the DownloadManagerPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @Component({
     selector: 'downloads-tab',
@@ -25,26 +17,28 @@ import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popu
 })
 export class DownloadsTabPage {
 
-    // @Input() downloadedContentList: Content[];
-    @Input() downloadedContents: any;
+    @Input() downloadedContents: Content[] = [];
+    @Output() deleteContents = new EventEmitter();
+    @Output() sortCriteriaChanged = new EventEmitter();
     showLoader = false;
-    selectedContents: string[] = [];
+    selectedContents: ContentDelete[] = [];
     showDeleteButton: Boolean = true;
+    deletePopupPresent: Boolean = false;
+    showSelectAll: Boolean = true;
+    selectedFilter: string = MenuOverflow.DOWNLOAD_FILTERS[0];
+
 
     constructor(
         public navCtrl: NavController,
         public navParams: NavParams,
-        private translate: TranslateService,
-        private ngZone: NgZone,
         private popoverCtrl: PopoverController,
         private commonUtilService: CommonUtilService,
         private viewCtrl: ViewController,
     ) {
-        // this.downloadedContentList = downloadsDummyData;
     }
 
     ionViewDidLoad() {
-        console.log('ionViewDidLoad DownloadManagerPage');
+        console.log('ionViewDidLoad DownloadManagerTabsPage');
     }
 
     showDeletePopup(identifier?) {
@@ -57,11 +51,14 @@ export class DownloadsTabPage {
         //   this.objRollup,
         //   this.corRelationList);
         if (identifier) {
-            this.selectedContents = [identifier];
+            const contentDelete: ContentDelete = {
+                contentId: identifier,
+                isChildContent: false
+            };
+            this.selectedContents = [contentDelete];
         }
         const confirm = this.popoverCtrl.create(SbPopoverComponent, {
-            sbPopoverHeading: this.commonUtilService.translateMessage('DELETE'),
-            // sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_DELETE'),
+            sbPopoverHeading: this.commonUtilService.translateMessage('DELETE_CONTENT'),
             actionsButtons: [
                 {
                     btntext: this.commonUtilService.translateMessage('REMOVE'),
@@ -70,7 +67,7 @@ export class DownloadsTabPage {
             ],
             icon: null,
             // metaInfo: this.content.contentData.name,
-            sbPopoverContent: 'deleting content will remove the content from the device',
+            sbPopoverContent: this.commonUtilService.translateMessage('DELETE_CONTENT_WARNING')
         }, {
                 cssClass: 'sb-popover danger',
             });
@@ -86,59 +83,65 @@ export class DownloadsTabPage {
     }
 
     deleteContent() {
-        // const deleteList = [];
-        // this.downloadedContents.forEach(element => {
-        //     if (element.isSelected) {
-        //         deleteList.push(element.identifier);
-        //     }
-        // });
         console.log('deleteContent called', this.selectedContents);
+        this.deleteContents.emit(this.selectedContents);
     }
 
-    showOverflowMenu(event) {
-        this.popoverCtrl.create(OverflowMenuComponent, {
+    showSortMenu(event) {
+        const dropdown = this.popoverCtrl.create(OverflowMenuComponent, {
             list: MenuOverflow.DOWNLOAD_FILTERS
         }, {
-                cssClass: 'box'
-            }).present({
-                ev: event
-            });
+            cssClass: 'box download-popover'
+        });
+        dropdown.present({
+            ev: event
+        });
+        dropdown.onDidDismiss((element: any) => {
+            console.log('dropdown selected', JSON.parse(element));
+            if (element) {
+                this.sortCriteriaChanged.emit(JSON.parse(element));
+                this.selectedFilter = JSON.parse(element).content;
+            }
+        });
     }
 
     selectAllContents() {
-        console.log('selectAllContents clicked');
         this.downloadedContents.forEach(element => {
-            element.isSelected = true;
+            element['isSelected'] = true;
         });
         this.showDeleteButton = false;
+        this.showSelectAll = false;
         this.deleteAllContents();
         console.log('after select all', this.downloadedContents);
     }
 
     unSelectAllContents() {
-        console.log('unSelectAllContents clicked');
         this.downloadedContents.forEach(element => {
-            element.isSelected = false;
+            element['isSelected'] = false;
         });
         this.showDeleteButton = true;
+        this.showSelectAll = true;
         console.log('after un select all', this.downloadedContents);
     }
 
     toggleContentSelect(event, idx) {
-        console.log('toggleContentSelect clicked event', event);
-        console.log('toggleContentSelect clicked idx', idx);
         this.downloadedContents[idx]['isSelected'] = !this.downloadedContents[idx]['isSelected'];
-        // const selectedContents = (this.downloadedContents.filter((element) => element.isSelected));
-        // if (selectedContents.length) {
-        //     this.showDeleteButton = false;
-        //     this.deleteAllContents();
-        // } else {
-        //     this.showDeleteButton = true;
-        // }
+        const selectedContents = (this.downloadedContents.filter((element) => element['isSelected']));
+        if (selectedContents.length) {
+            if (selectedContents.length === this.downloadedContents.length) {
+                this.showSelectAll = false;
+            } else {
+                this.showSelectAll = true;
+            }
+            this.showDeleteButton = false;
+            this.deleteAllContents();
+        } else {
+            this.showDeleteButton = true;
+        }
     }
 
     deleteAllContents() {
-        const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
+        const deleteConfirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
             // sbPopoverHeading: this.commonUtilService.translateMessage('ALERT'),
             sbPopoverMainTitle: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE'),
             actionsButtons: [
@@ -153,13 +156,18 @@ export class DownloadsTabPage {
             showHeader: false,
             icon: null
         }, {
-                cssClass: 'sb-popover',
-            });
-        confirm.present({
-            ev: event
+            cssClass: 'sb-popover danger sb-dw-delete-popover',
+            showBackdrop: false,
+            enableBackdropDismiss: false
         });
-        confirm.onDidDismiss((leftBtnClicked: any) => {
-            console.log('leftBtnClicked', leftBtnClicked);
+        if (!this.deletePopupPresent) {
+            deleteConfirm.present({
+                ev: event
+            });
+            this.deletePopupPresent = true;
+        }
+        deleteConfirm.onDidDismiss((leftBtnClicked: any) => {
+            this.deletePopupPresent = false;
             if (leftBtnClicked == null) {
                 this.unSelectAllContents();
                 console.log('dismiss');
@@ -171,8 +179,12 @@ export class DownloadsTabPage {
                 console.log('delete confirm');
                 this.selectedContents = [];
                 this.downloadedContents.forEach(element => {
-                    if (element.isSelected) {
-                        this.selectedContents.push(element.identifier);
+                    if (element['isSelected']) {
+                        const contentDelete: ContentDelete = {
+                            contentId: element.identifier,
+                            isChildContent: false
+                        };
+                        this.selectedContents.push(contentDelete);
                     }
                 });
                 this.showDeletePopup();

@@ -2,3 +2,9 @@
     color: $primary-color;
     margin: 0 10px;
 }
+.sb-dw-delete-popover{
+    top: auto;
+    .popover-content{
+        box-shadow: 0 0 4px 2px #ccc;
+    }
+}

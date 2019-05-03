@@ -17,5 +17,5 @@ export interface DownloadManagerPageInterface extends OnInit {
     downloadedContents: Content[];
 
     deleteContents(contentIds: string[]): void ;
-    onSortCriteriaChange(sortAttribute: SortAttribute): Content[];
+    onSortCriteriaChange(sortAttribute: SortAttribute): void;
 }

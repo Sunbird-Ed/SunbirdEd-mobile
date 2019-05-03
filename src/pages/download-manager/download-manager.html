@@ -10,6 +10,8 @@
 </ion-content> -->
 
 <ion-content overflow-scroll="true">
+  <!-- <ion-refresher (ionRefresh)="swipeDownToRefresh($event)"></ion-refresher> -->
   <no-downloads *ngIf="!downloadedContents.length"></no-downloads>
-  <downloads-tab *ngIf="downloadedContents.length" [downloadedContents]="downloadedContents"></downloads-tab>
+  <downloads-tab *ngIf="downloadedContents.length" [downloadedContents]="downloadedContents" (deleteContents)="deleteContents($event)"
+  (sortCriteriaChanged)="onSortCriteriaChange($event)"></downloads-tab>
 </ion-content>
