@@ -13,7 +13,7 @@ import { ContentDetailsPage } from '../pages/content-details/content-details';
 import { ContentType, EventTopics, GenericAppConfig, MimeType, PreferenceKey, ProfileConstants } from './app.constant';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { FormAndFrameworkUtilService, GuestProfilePage } from '@app/pages/profile';
-import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, UtilityService, AppHeaderService } from '@app/service';
+import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, UtilityService, AppHeaderService, AppRatingService } from '@app/service';
 import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
 import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
 import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
@@ -101,7 +101,8 @@ export class MyApp implements OnInit, AfterViewInit {
     private splashscreenImportActionHandlerDelegate: SplashscreenImportActionHandlerDelegate,
     private headerServie: AppHeaderService,
     private logoutHandlerService: LogoutHandlerService,
-    private network: Network
+    private network: Network,
+    private appRatingService: AppRatingService
   ) {
     this.telemetryAutoSyncUtil = new TelemetryAutoSyncUtil(this.telemetryService);
     platform.ready().then(async () => {
@@ -128,6 +129,7 @@ export class MyApp implements OnInit, AfterViewInit {
       window['thisRef'] = this;
       this.statusBar.styleBlackTranslucent();
       this.handleBackButton();
+      this.appRatingService.checkInitialDate();
     });
   }
 

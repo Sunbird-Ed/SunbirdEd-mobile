@@ -485,5 +485,13 @@
   "CONTENT_COMMING_SOON": "Content will be available soon",
   "CONTENT_IS_BEEING_ADDED": "Content is beeing added to ",
   "CONTENT_NOT_AVAILABLE": "Content not available",
-  "CONTENT_RETIRED_BY_AUTHOR": "This content is been retired by the author and hence not available any more"
+  "CONTENT_RETIRED_BY_AUTHOR": "This content is been retired by the author and hence not available any more",
+  "APP_RATING_RATE_EXPERIENCE": "Rate your app experience",
+  "APP_RATING_TAP_ON_STARS": "Tap on stars to rate in on the playstore",
+  "APP_RATING_THANKS_FOR_RATING": "Thanks for rating your experience!",
+  "APP_RATING_RATE_ON_PLAYSTORE": "Would you like to submit your rating to the Play store?",
+  "APP_RATING_REPORT_AN_ISSUE": "We are sorry you are having a bad experience. Would you like to report an issue?",
+  "BTN_LATER": "Later",
+  "BTN_RATE_ON_PLAYSTORE": "Rate us on playstore",
+  "BTN_VISIT_HELP_SECTION": "Visit help section"
 }

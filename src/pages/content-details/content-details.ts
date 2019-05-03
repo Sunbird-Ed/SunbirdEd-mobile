@@ -15,11 +15,11 @@ import {
 } from 'ionic-angular';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
-import {EventTopics, PreferenceKey, XwalkConstants} from '../../app/app.constant';
+import {EventTopics, PreferenceKey, XwalkConstants, StoreRating } from '../../app/app.constant';
 import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, Map, ShareUrl} from '@app/app';
 import {BookmarkComponent, ContentActionsComponent,
   ContentRatingAlertComponent, ConfirmAlertComponent, SbPopoverComponent} from '@app/component';
-import {AppGlobalService, CourseUtilService, UtilityService, AppHeaderService} from '@app/service';
+import {AppGlobalService, CourseUtilService, UtilityService, AppHeaderService, AppRatingService} from '@app/service';
 import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
 import {Network} from '@ionic-native/network';
 import {UserAndGroupsPage} from '../user-and-groups/user-and-groups';
@@ -74,6 +74,8 @@ import { FileSizePipe } from '@app/pipes/file-size/file-size';
 import { TranslateService } from '@ngx-translate/core';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 import { animateChild } from '@angular/animations';
+import { AppRatingAlertComponent } from '@app/component/app-rating-alert/app-rating-alert';
+import moment from 'moment';
 
 declare const cordova;
 
@@ -160,6 +162,8 @@ export class ContentDetailsPage {
   contentPath: Array<any> [];
   FileSizePipe: any;
   toast: any;
+  childPaths: Array<string> = [];
+  breadCrumbData: any;
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
@@ -191,7 +195,8 @@ export class ContentDetailsPage {
     private headerServie: AppHeaderService,
     private translate: TranslateService,
     private viewCtrl: ViewController,
-    private headerService: AppHeaderService
+    private headerService: AppHeaderService,
+    private appRatingService: AppRatingService
   ) {
 
     this.objRollup = new Rollup();
@@ -259,6 +264,7 @@ export class ContentDetailsPage {
     this.downloadAndPlay = this.navParams.get('downloadAndPlay');
     this.playOnlineSpinner = true;
     this.contentPath = this.navParams.get('paths');
+    this.breadCrumbData = this.navParams.get('breadCrumb');
 
     if (this.isResumedCourse && !this.isPlayerLaunched) {
       if (this.isUsrGrpAlrtOpen) {
@@ -274,6 +280,7 @@ export class ContentDetailsPage {
 
     this.setContentDetails(this.identifier, true, this.isPlayerLaunched);
     this.subscribeSdkEvent();
+    this.findHierarchyOfContent();
     // this.setContentDetails(this.identifier, true, false);
     // this.subscribeGenieEvent();
     this.networkSubscription =  this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
@@ -452,29 +459,32 @@ export class ContentDetailsPage {
    * Function to rate content
    */
 
-  rateContent(popupType: string) {
+  async rateContent(popupType: string) {
     const paramsMap = new Map();
     if (this.isContentPlayed || this.content.contentAccess.length) {
-
-      paramsMap['IsPlayed'] = 'Y';
-      const popover = this.popoverCtrl.create(ContentRatingAlertComponent, {
-        content: this.content,
-        pageId: PageId.CONTENT_DETAIL,
-        rating: this.userRating,
-        comment: this.ratingComment,
-        popupType: popupType,
-      }, {
-          cssClass: 'sb-popover info',
-        });
-      popover.present({
-        ev: event
-      });
-      popover.onDidDismiss(data => {
-        if (data && data.message === 'rating.success') {
-          this.userRating = data.rating;
-          this.ratingComment = data.comment;
+      if (popupType === 'automatic') {
+        if (!(await this.appRatingService.checkReadFile())) {
+          this.preferences.getString(PreferenceKey.APP_RATING_DATE).toPromise().then(async res => {
+            if (await this.validateAndCheckDateDiff(res)) {
+              paramsMap['IsPlayed'] = 'N';
+              this.appRating();
+            } else {
+              paramsMap['IsPlayed'] = 'Y';
+              this.contentRating(popupType);
+            }
+          }).catch(err => {
+            paramsMap['IsPlayed'] = 'Y';
+            this.contentRating(popupType);
+          });
+        } else {
+          paramsMap['IsPlayed'] = 'Y';
+          this.contentRating(popupType);
         }
-      });
+      } else if (popupType === 'manual') {
+        paramsMap['IsPlayed'] = 'Y';
+        this.contentRating(popupType);
+      }
+
     } else {
       paramsMap['IsPlayed'] = 'N';
       this.commonUtilService.showToast('TRY_BEFORE_RATING');
@@ -490,7 +500,53 @@ export class ContentDetailsPage {
       this.corRelationList);
   }
 
+  async validateAndCheckDateDiff(date) {
+    let isValid = false;
+    if (await this.commonUtilService.networkInfo.isNetworkAvailable) {
+      const presentDate = moment();
+      const initialDate = moment(date);
+      if (initialDate.isValid()) {
+        const diffInDays = presentDate.diff(initialDate, 'days');
+        if (diffInDays >= StoreRating.DATE_DIFF) {
+          isValid = true;
+        }
+      }
+    }
+    return isValid;
+  }
 
+  contentRating(popupType) {
+    const popover = this.popoverCtrl.create(ContentRatingAlertComponent, {
+      content: this.content,
+      pageId: PageId.CONTENT_DETAIL,
+      rating: this.userRating,
+      comment: this.ratingComment,
+      popupType: popupType,
+    }, {
+        cssClass: 'sb-popover info',
+      });
+    popover.present({
+      ev: event
+    });
+    popover.onDidDismiss(data => {
+      if (data && data.message === 'rating.success') {
+        this.userRating = data.rating;
+        this.ratingComment = data.comment;
+      }
+    });
+  }
+
+  appRating() {
+    const popover = this.popoverCtrl.create(AppRatingAlertComponent, {}, {
+      cssClass: 'sb-popover'
+    });
+    popover.present({
+      ev: event
+    });
+    popover.onDidDismiss((data: any) => {
+      console.log(data);
+    });
+  }
 
   /**
    * To set content details in local variable
@@ -1610,5 +1666,18 @@ getMessageByConstant(constant: string) {
                     break;
     }
   }
+  findHierarchyOfContent() {
+    if (this.cardData && this.cardData.hierarchyInfo) {
+      this.cardData.hierarchyInfo.forEach((element) => {
+        const contentName = this.breadCrumbData.get(element.identifier);
+        this.childPaths.push(contentName);
+      });
+      this.childPaths.push(this.breadCrumbData.get(this.cardData.identifier));
+    }
+    }
+
+    goBack() {
+      this.navCtrl.pop();
+    }
 }
 

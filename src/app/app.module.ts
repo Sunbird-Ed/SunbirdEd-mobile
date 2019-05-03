@@ -18,7 +18,8 @@ import {
   CourseUtilService,
   TelemetryGeneratorService,
   UtilityService,
-  AppHeaderService
+  AppHeaderService,
+  AppRatingService
 } from '@app/service';
 import { UpgradePopover } from '@app/pages/upgrade';
 import { QRScannerResultHandler } from '../../src/pages/qrscanner';
@@ -328,6 +329,7 @@ export const sunbirdSdkFactory =
     UniqueDeviceID,
     UtilityService,
     AppHeaderService,
+    AppRatingService,
     Device,
     AndroidPermissionsService,
     ...sunbirdSdkServicesProvidersFactory(),

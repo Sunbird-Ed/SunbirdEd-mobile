@@ -170,6 +170,7 @@ export class PreferenceKey {
     public static readonly KEY_DATA_SYNC_TIME = 'sunbirddata_sync_time';
     public static readonly APP_LOGO = 'app_logo';
     public static readonly APP_NAME = 'app_name';
+    public static readonly APP_RATING_DATE = 'app_rating_date';
 }
 
 export class GenericAppConfig {
@@ -292,4 +293,13 @@ export class FrameworkCategory {
         FrameworkCategory.GRADE_LEVEL,
         FrameworkCategory.SUBJECT
     ];
+}
+
+export class StoreRating {
+    public static readonly DATE_DIFF = 2;
+    public static readonly APP_MIN_RATE = 4;
+    public static readonly FOLDER_NAME = 'sunbird-app-rating';
+    public static readonly FILE_NAME = 'app-rating.doc';
+    public static readonly FILE_TEXT = 'APP-Rating';
+    public static readonly DEVICE_FOLDER_PATH = cordova.file.dataDirectory;
 }
