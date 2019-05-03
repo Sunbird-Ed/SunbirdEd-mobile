@@ -85,7 +85,7 @@
                 class="separator-dot"></span><span
                 class=" subject">{{activeDownload?.contentMeta?.gradeLevel?.join(', ')}}</span>
             </div>
-            <div *ngIf="(i === 0">
+            <div *ngIf="i === 0">
               5.45MB/{{activeDownload?.contentMeta?.size}}
             </div>
             <div *ngIf="i > 0">
@@ -98,7 +98,7 @@
             </div>
           </div>
         </div>
-        <div class="popover-progress-container" *ngIf="i===0">
+        <div class="popover-progress-container" *ngIf="i === 0">
           <div class="progress-highlight" [ngStyle]="{'left': '50%'}">
           </div>
         </div>
