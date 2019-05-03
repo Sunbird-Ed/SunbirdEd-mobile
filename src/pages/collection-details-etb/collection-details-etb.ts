@@ -618,7 +618,8 @@ export class CollectionDetailsEtbPage implements OnInit {
     this.headerService.hideHeader();
     const option: ContentImportRequest = {
       contentImportArray: this.getImportContentRequestBody(identifiers, isChild),
-      contentStatusArray: []
+      contentStatusArray: [],
+      fields: ['appIcon', 'name', 'subject', 'size', 'gradeLevel']
     };
     // Call content service
     this.contentService.importContent(option).toPromise()
