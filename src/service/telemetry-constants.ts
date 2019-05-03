@@ -159,6 +159,7 @@ export enum InteractSubtype {
     SIGNIN_OVERLAY_CLICKED = 'signin-overlay-clicked',
     SETTINGS_CLICKED = 'settings-clicked',
     LANGUAGE_CLICKED = 'language-clicked',
+    HELP_CLICKED = 'help-clicked',
     DATA_SYNC_CLICKED = 'data-sync-clicked',
     DEVICE_TAGS_CLICKED = 'device-tags-clicked',
     SUPPORT_CLICKED = 'support-clicked',

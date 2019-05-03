@@ -1,3 +1,4 @@
+import { HelpPageModule } from './../pages/help/help.module';
 import {ProfileSettingsPageModule} from '../pages/profile-settings/profile-settings.module';
 import {ContentDetailsPageModule} from './../pages/content-details/content-details.module';
 import {CollectionDetailsPageModule} from './../pages/collection-details/collection-details.module';
@@ -160,6 +161,7 @@ export const PluginModules = [
     ResourcesPageModule,
     OnboardingPageModule,
     LanguageSettingsPageModule,
+    HelpPageModule,
     UserTypeSelectionPageModule,
     CourseBatchesPageModule,
     EnrolledCourseDetailsPageModule,
