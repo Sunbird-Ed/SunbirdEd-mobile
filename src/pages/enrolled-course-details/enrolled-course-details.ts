@@ -45,7 +45,7 @@ import {
   EventsBusEvent,
   EventsBusService,
   FetchEnrolledCourseRequest,
-  GetContentStateRequest,
+  GetContentStateRequest, NetworkError,
   ProfileService,
   ProfileType,
   ServerProfileDetailsRequest,
@@ -458,7 +458,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
         });
       })
       .catch((error: any) => {
-        if (JSON.parse(error).error === 'CONNECTION_ERROR') {
+        if (error instanceof NetworkError) {
           this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
         } else {
           this.commonUtilService.showToast('ERROR_FETCHING_DATA');
@@ -658,7 +658,10 @@ export class EnrolledCourseDetailsPage implements OnInit {
    */
   setCourseStructure(): void {
     if (this.course.contentTypesCount) {
-      this.course.contentTypesCount = JSON.parse(this.course.contentTypesCount);
+      if (!_.isObject(this.course.contentTypesCount)) {
+        this.course.contentTypesCount = JSON.parse(this.course.contentTypesCount);
+      }
+      this.course.contentTypesCount = this.course.contentTypesCount;
     } else if (this.courseCardData.contentTypesCount && !_.isObject(this.courseCardData.contentTypesCount)) {
       this.course.contentTypesCount = JSON.parse(this.courseCardData.contentTypesCount);
     }
@@ -950,7 +953,8 @@ export class EnrolledCourseDetailsPage implements OnInit {
         courseId: this.identifier
       },
       isResumedCourse: true,
-      isChildContent: true
+      isChildContent: true,
+      resumedCourseCardData: this.courseCardData
     });
   }
 
