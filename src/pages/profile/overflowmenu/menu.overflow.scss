@@ -1,3 +1,17 @@
 menu-overflow{
     .popover-content{height:480px !important;}
 }
+.box.download-popover{
+    .popover-content{
+        .item{
+            .label{
+                color: $primary-600;
+            }:first-child{
+                margin-bottom: 0;
+            }
+            .item-inner{
+                border: none; 
+            }
+        }
+    }
+}

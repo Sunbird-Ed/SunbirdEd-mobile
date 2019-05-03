@@ -1,18 +1,19 @@
+import { AppGlobalService } from './../../service/app-global.service';
 // import { SortAttribute } from './download-manager.interface';
 import { DownloadManagerPageInterface, AppStorageInfo } from './download-manager.interface';
-import { MenuOverflow } from './../../app/app.constant';
-import { OverflowMenuComponent } from '@app/pages/profile';
+import { MenuOverflow, ContentType, AudienceFilter } from './../../app/app.constant';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { CommonUtilService } from '@app/service';
-import { SbPopoverComponent } from './../../component/popups/sb-popover/sb-popover';
 import { Component, NgZone, Inject, OnInit } from '@angular/core';
-import { IonicPage, NavController, NavParams, PopoverController, Events } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, PopoverController, Events, Loading } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { ContentRequest, ContentService, DownloadService, Content } from 'sunbird-sdk';
-import { downloadsDummyData } from './downloads-spec.data';
+import {
+  ContentRequest, ContentService, DownloadService, Profile, ContentDeleteResponse, ContentDeleteRequest,
+  ContentSortCriteria, SortOrder, ContentDeleteStatus
+} from 'sunbird-sdk';
+import { Content, ProfileType } from 'sunbird-sdk';
 import { AppHeaderService } from '@app/service';
 import { ActiveDownloadsPage } from '../active-downloads/active-downloads';
-// import { NoDownloadsComponent } from './../../component/downloads/no-downloads';
 
 /**
  * Generated class for the DownloadManagerPage page.
@@ -28,24 +29,15 @@ import { ActiveDownloadsPage } from '../active-downloads/active-downloads';
 })
 export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit {
   headerObservable: any;
-  // constructor() { }
 
   storageInfo: AppStorageInfo;
-  // downloadedContents: Content[];
-  downloadedContents: any;
+  downloadedContents: Content[] = [];
+  profile: Profile;
+  audienceFilter = [];
+  guestUser = false;
+  defaultImg: string;
+  loader?: Loading;
 
-  ngOnInit() {
-    // throw new Error('not implemented');
-    this.downloadedContents = downloadsDummyData;
-  }
-
-  deleteContents(contentIds: string[]): void {
-    throw new Error('not implemented');
-  }
-
-  onSortCriteriaChange(sortAttribute): Content[] {
-    throw new Error('not implemented');
-  }
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -55,9 +47,79 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     private commonUtilService: CommonUtilService,
     private viewCtrl: ViewController,
     private headerServie: AppHeaderService, private events: Events,
+    private appGlobalService: AppGlobalService,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
   ) {
-    // this.downloadedContentList = downloadsDummyData;
+  }
+
+  ngOnInit() {
+    this.defaultImg = 'assets/imgs/ic_launcher.png';
+    this.getCurrentUser();
+    this.getDownloadedContents();
+    this.subscribeEvents();
+  }
+
+
+  deleteContents(event) {
+    console.log('in parent deleteContents', event);
+    this.loader = this.commonUtilService.getLoader();
+    this.loader.present();
+    this.loader.onDidDismiss(() => { this.loader = undefined; });
+    // const telemetryObject = new TelemetryObject(this.content.identifier, this.content.contentType, this.content.pkgVersion);
+
+    // this.telemetryGeneratorService.generateInteractTelemetry(
+    //   InteractType.TOUCH,
+    //   InteractSubtype.DELETE_CLICKED,
+    //   Environment.HOME,
+    //   this.pageName,
+    //   telemetryObject,
+    //   undefined,
+    //   this.objRollup,
+    //   this.corRelationList);
+
+    const contentDeleteRequest: ContentDeleteRequest = {
+      contentDeleteList: event
+    };
+    console.log('contentDeleteRequest', contentDeleteRequest);
+    this.contentService.deleteContent(contentDeleteRequest).toPromise()
+      .then((data: ContentDeleteResponse[]) => {
+        console.log('deleteContentresp', data);
+        this.loader.dismiss();
+        // this.getDownloadedContents();
+        if (data && data[0].status === ContentDeleteStatus.NOT_FOUND) {
+          // this.showToaster(this.commonUtilService.translateMessage('CONTENT_DELETE_FAILED'));
+          this.commonUtilService.showToast(this.commonUtilService.translateMessage('CONTENT_DELETE_FAILED'));
+        } else {
+          // Publish saved resources update event
+          this.events.publish('savedResources:update', {
+            update: true
+          });
+          // this.showToaster(this.getMessageByConstant('MSG_RESOURCE_DELETED'));
+          this.commonUtilService.showToast(this.commonUtilService.translateMessage('MSG_RESOURCE_DELETED'));
+          // this.viewCtrl.dismiss('delete.success');
+        }
+      }).catch((error: any) => {
+        this.loader.dismiss();
+        console.log('delete response: ', error);
+        // this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('CONTENT_DELETE_FAILED'));
+      });
+  }
+
+
+  onSortCriteriaChange(sortAttribute): void {
+    console.log('parent onSortCriteriaChange', sortAttribute);
+    let sortAttr: string;
+    if (sortAttribute.content === 'Content size') {
+      sortAttr = 'sizeOnDevice';
+    } else if (sortAttribute.content === 'Last viewed') {
+      sortAttr = 'lastUsedOn';
+    }
+    const sortCriteria: ContentSortCriteria[] = [{
+      sortOrder: SortOrder.DESC,
+      sortAttribute: sortAttr
+    }];
+    this.getDownloadedContents(sortCriteria);
   }
 
   ionViewDidLoad() {
@@ -74,11 +136,17 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     this.headerServie.showHeaderWithHomeButton(['download']);
   }
   ionViewWillLeave(): void {
-    // if (this.eventSubscription) {
-    //   this.eventSubscription.unsubscribe();
-    // }
     this.events.unsubscribe('update_header');
     this.headerObservable.unsubscribe();
+    // this.events.unsubscribe('savedResources:update');
+  }
+
+  subscribeEvents() {
+    this.events.subscribe('savedResources:update', (res) => {
+      if (res && res.update) {
+        this.getDownloadedContents();
+      }
+    });
   }
 
   handleHeaderEvents($event) {
@@ -92,4 +160,67 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
   download() {
     this.navCtrl.push(ActiveDownloadsPage);
   }
+
+  async getDownloadedContents(sortCriteria?) {
+    this.loader = this.commonUtilService.getLoader();
+    this.loader.present();
+    this.loader.onDidDismiss(() => { this.loader = undefined; });
+    const defaultSortCriteria: ContentSortCriteria[] = [{
+      sortAttribute: 'sizeOnDevice',
+      sortOrder: SortOrder.DESC
+    }];
+    const requestParams: ContentRequest = {
+      uid: this.profile ? this.profile.uid : undefined,
+      contentTypes: ContentType.FOR_LIBRARY_TAB,
+      audience: this.audienceFilter,
+      sortCriteria: sortCriteria || defaultSortCriteria
+    };
+    console.log('requestParams', requestParams);
+    await this.contentService.getContents(requestParams).toPromise()
+      .then(data => {
+        data.forEach((value) => {
+          value.contentData['lastUpdatedOn'] = value.lastUpdatedTime;
+          if (value.contentData.appIcon) {
+            if (value.contentData.appIcon.includes('http:') || value.contentData.appIcon.includes('https:')) {
+              if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+                value.contentData.appIcon = value.contentData.appIcon;
+              } else {
+                value.contentData.appIcon = this.defaultImg;
+              }
+            } else if (value.basePath) {
+              value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
+            }
+          }
+
+        });
+        this.ngZone.run(() => {
+          console.log('downloadedContents', data);
+          this.downloadedContents = data;
+          this.loader.dismiss();
+        });
+      })
+      .catch(() => {
+        this.ngZone.run(() => {
+          this.loader.dismiss();
+        });
+      });
+  }
+
+  getCurrentUser(): void {
+    this.guestUser = !this.appGlobalService.isUserLoggedIn();
+    const profileType = this.appGlobalService.getGuestUserType();
+
+    if (this.guestUser) {
+      if (profileType === ProfileType.TEACHER) {
+        this.audienceFilter = AudienceFilter.GUEST_TEACHER;
+      } else if (profileType === ProfileType.STUDENT) {
+        this.audienceFilter = AudienceFilter.GUEST_STUDENT;
+      }
+    } else {
+      this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
+    }
+
+    this.profile = this.appGlobalService.getCurrentUser();
+  }
+
 }
