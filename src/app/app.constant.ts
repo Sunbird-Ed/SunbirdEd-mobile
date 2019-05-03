@@ -171,6 +171,8 @@ export class PreferenceKey {
     public static readonly APP_LOGO = 'app_logo';
     public static readonly APP_NAME = 'app_name';
     public static readonly APP_RATING_DATE = 'app_rating_date';
+    public static readonly APP_RATE_LATER_CLICKED = 'app_rate_later_clicked';
+    public static readonly APP_RATING_POPUP_APPEARED = 'app_rating_popup_appeared';
 }
 
 export class GenericAppConfig {

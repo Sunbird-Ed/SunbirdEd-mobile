@@ -1,11 +1,11 @@
 import {Component, Inject} from '@angular/core';
 import {NavParams, Platform, ViewController} from 'ionic-angular';
 import {AppRatingService, TelemetryGeneratorService, UtilityService} from '@app/service';
-import {LogLevel, LogType, SharedPreferences, TelemetryLogRequest, TelemetryService} from 'sunbird-sdk';
+import {SharedPreferences, TelemetryService} from 'sunbird-sdk';
 import {AppVersion} from '@ionic-native/app-version';
 import {Observable} from 'rxjs';
 import {TranslateService} from '@ngx-translate/core';
-import {StoreRating} from '../../app/app.constant';
+import {PreferenceKey, StoreRating} from '../../app/app.constant';
 import {
   Environment,
   ImpressionSubtype,
@@ -41,15 +41,14 @@ export class AppRatingAlertComponent {
     },
     helpDesk: {type: ViewType.HELP_DESK, heading: 'APP_RATING_THANKS_FOR_RATING', message: 'APP_RATING_REPORT_AN_ISSUE'}
   };
-  private ratingNumber: number;
-  private rateLaterCount = 0;
-  private popupType: string;
   private appRate = 0;
   private pageId = '';
   public currentViewText: ViewText;
   public appLogo$: Observable<string>;
   public appName$: Observable<string>;
   backButtonFunc = undefined;
+  private appRatingPopCount = 0;
+  private rateLaterClickedCount = 0;
 
   constructor(private viewCtrl: ViewController,
               private appVersion: AppVersion,
@@ -75,28 +74,13 @@ export class AppRatingAlertComponent {
     this.pageId = this.navParams.get('pageId');
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW,
-      ImpressionSubtype.RATING_POPUP,
+      ImpressionSubtype.APP_RATING_POPUP,
       this.pageId,
       Environment.HOME, '', '', '',
       undefined,
       undefined
     );
-    const log = new TelemetryLogRequest();
-    log.level = LogLevel.INFO;
-    log.message = this.pageId;
-    log.env = Environment.HOME;
-    log.type = LogType.NOTIFICATION;
-    const params = new Array<any>();
-    const paramsMap = new Map();
-    paramsMap['PopupType'] = this.popupType;
-    params.push(paramsMap);
-    log.params = params;
-    this.telemetryService.log(log).subscribe((data) => {
-      console.log(data);
-    }, (error) => {
-      console.log('errorOccurred', error);
-    });
-
+    this.appRatePopup();
     this.viewCtrl.onDidDismiss((data: null | 'close') => {
       switch (data) {
         case null: {
@@ -111,16 +95,16 @@ export class AppRatingAlertComponent {
     });
   }
 
-  closePopover() {
+   closePopover() {
     this.viewCtrl.dismiss(null);
   }
 
-  rateLater() {
-    this.rateLaterCount += 1;
-    console.log('rateLater count ', this.rateLaterCount);
+  async rateLater() {
+    this.rateLaterClickedCount = Number(await this.appRatingService.anotherMethodExtra());
     const paramsMap = new Map();
-    paramsMap['rateLater'] = this.rateLaterCount;
-    this.telemetryGeneratorService.generateInteractTelemetry(
+    paramsMap['rateLaterCount'] = this.rateLaterClickedCount;
+    paramsMap['appRating'] = this.appRate;
+    await this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.RATE_LATER_CLICKED,
       Environment.HOME,
@@ -152,12 +136,21 @@ export class AppRatingAlertComponent {
       if (rating >= StoreRating.APP_MIN_RATE) {
         this.currentViewText = this.appRateView[ViewType.STORE_RATE];
         this.appRate = rating;
+        const paramsMap = new Map();
+        paramsMap['Ratings'] = rating;
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.RATING_SUBMITTED,
+          Environment.HOME,
+          this.pageId, undefined, paramsMap,
+          undefined, undefined
+        );
         return;
       }
       this.currentViewText = this.appRateView[ViewType.HELP_DESK];
     }, 0);
     const paramsMap = new Map();
-    paramsMap['Ratings'] = this.appRate;
+    paramsMap['Ratings'] = rating;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.RATING_SUBMITTED,
@@ -178,4 +171,33 @@ export class AppRatingAlertComponent {
     );
   }
 
+  private async appRatePopup() {
+    this.appRatingPopCount = await this.countAppRatingPopupAppeared();
+    const paramsMap = new Map();
+    paramsMap['app-rating-popup-appeared'] = this.appRatingPopCount;
+    await this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.OTHER, InteractSubtype.APP_RATING_APPEARED,
+      this.pageId, Environment.HOME, undefined, paramsMap,
+      undefined, undefined
+    );
+  }
+
+  calculateAppRatingCountAppeared(value) {
+    // this.appRatingPopupAppeared = this.appRatingPopupAppeared + 1;
+    this.preference.putString(PreferenceKey.APP_RATING_POPUP_APPEARED, String(value)).toPromise().then();
+  }
+
+  async countAppRatingPopupAppeared() {
+    return this.preference.getString(PreferenceKey.APP_RATE_LATER_CLICKED).toPromise().then((val) => {
+      if (val) {
+        // this.appRatingPopupAppeared = Number(val);
+        const incrementedVal = Number(val) + 1;
+        this.calculateAppRatingCountAppeared(incrementedVal);
+        return incrementedVal;
+      } else {
+        this.calculateAppRatingCountAppeared(1);
+        return ;
+      }
+    });
+  }
 }

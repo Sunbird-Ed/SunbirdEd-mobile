@@ -5,7 +5,8 @@ import {
   sharedPreferencesMock,
   appRatingServiceMock,
   translateServiceMock,
-  platformMock
+  platformMock,
+  telemetryGeneratorServiceMock
 } from "@app/__tests__/mocks";
 
 import {AppRatingAlertComponent} from "@app/component/app-rating-alert/app-rating-alert";
@@ -27,7 +28,7 @@ describe('AppRatingAlertComponent', () => {
     appRatingPage = new AppRatingAlertComponent(
       viewControllerMock as any, appVersionMock as any, utilityServiceMock as any,
       appRatingServiceMock as any, sharedPreferencesMock as any, translateServiceMock as any,
-      platformMock as any
+      platformMock as any, telemetryGeneratorServiceMock as any
     );
     jest.resetAllMocks();
   });

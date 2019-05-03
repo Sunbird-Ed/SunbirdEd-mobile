@@ -89,7 +89,8 @@ export enum PageId {
     DIAL_NOT_LINKED = 'dial-not-linked',
     DIAL_LINKED_NO_CONTENT = 'dial-linked-but-no-content',
     TERMS_N_CONDITIONS = 'terms-n-conditions',
-    TERMS_N_CONDITIONS_STATIC_PAGE = 'terms-n-conditions-static-page'
+    TERMS_N_CONDITIONS_STATIC_PAGE = 'terms-n-conditions-static-page',
+    APP_RATING = 'app-rating'
 }
 export enum LogType {
     NOTIFICATION = 'notification'
@@ -115,7 +116,8 @@ export enum ImpressionSubtype {
     QRCodeScanInitiate = 'qr-code-scan-initiate',
     RATING_POPUP = 'rating-popup',
     QR_CODE_VALID = 'qr-code-valid',
-    INVALID_QR_CODE = 'invalid-qr-code'
+    INVALID_QR_CODE = 'invalid-qr-code',
+    APP_RATING_POPUP = 'app-rating-popup'
 }
 export enum InteractType {
     TOUCH = 'TOUCH',
@@ -248,7 +250,8 @@ export enum InteractSubtype {
     RESUME_CLICKED = 'resume-clicked',
     PLAY_STORE_BUTTON_CLICKED = 'play-store-clicked',
     HELP_SECTION_CLICKED = 'help-section-clicked',
-    RATE_LATER_CLICKED = 'rate-later-clicked'
+    RATE_LATER_CLICKED = 'rate-later-clicked',
+    APP_RATING_APPEARED = 'app-rating-appeared'
 }
 
 
