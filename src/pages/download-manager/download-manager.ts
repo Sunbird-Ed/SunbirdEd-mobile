@@ -59,72 +59,6 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     this.subscribeEvents();
   }
 
-
-  deleteContents(event) {
-    console.log('in parent deleteContents', event);
-    this.loader = this.commonUtilService.getLoader();
-    this.loader.present();
-    this.loader.onDidDismiss(() => { this.loader = undefined; });
-    // const telemetryObject = new TelemetryObject(this.content.identifier, this.content.contentType, this.content.pkgVersion);
-
-    // this.telemetryGeneratorService.generateInteractTelemetry(
-    //   InteractType.TOUCH,
-    //   InteractSubtype.DELETE_CLICKED,
-    //   Environment.HOME,
-    //   this.pageName,
-    //   telemetryObject,
-    //   undefined,
-    //   this.objRollup,
-    //   this.corRelationList);
-
-    const contentDeleteRequest: ContentDeleteRequest = {
-      contentDeleteList: event
-    };
-    console.log('contentDeleteRequest', contentDeleteRequest);
-    this.contentService.deleteContent(contentDeleteRequest).toPromise()
-      .then((data: ContentDeleteResponse[]) => {
-        console.log('deleteContentresp', data);
-        this.loader.dismiss();
-        // this.getDownloadedContents();
-        if (data && data[0].status === ContentDeleteStatus.NOT_FOUND) {
-          // this.showToaster(this.commonUtilService.translateMessage('CONTENT_DELETE_FAILED'));
-          this.commonUtilService.showToast(this.commonUtilService.translateMessage('CONTENT_DELETE_FAILED'));
-        } else {
-          // Publish saved resources update event
-          this.events.publish('savedResources:update', {
-            update: true
-          });
-          // this.showToaster(this.getMessageByConstant('MSG_RESOURCE_DELETED'));
-          this.commonUtilService.showToast(this.commonUtilService.translateMessage('MSG_RESOURCE_DELETED'));
-          // this.viewCtrl.dismiss('delete.success');
-        }
-      }).catch((error: any) => {
-        this.loader.dismiss();
-        console.log('delete response: ', error);
-        // this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
-        this.commonUtilService.showToast(this.commonUtilService.translateMessage('CONTENT_DELETE_FAILED'));
-      });
-  }
-
-
-  onSortCriteriaChange(sortAttribute): void {
-    console.log('parent onSortCriteriaChange', sortAttribute);
-    let sortAttr: string;
-    if (sortAttribute.content === 'Content size') {
-      sortAttr = 'sizeOnDevice';
-    } else if (sortAttribute.content === 'Last viewed') {
-      sortAttr = 'lastUsedOn';
-    }
-    const sortCriteria: ContentSortCriteria[] = [{
-      sortOrder: SortOrder.DESC,
-      sortAttribute: sortAttr
-    }];
-    this.getDownloadedContents(sortCriteria);
-  }
-
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad DownloadManagerPage');
-  }
   ionViewWillEnter() {
     this.events.subscribe('update_header', (data) => {
       this.headerServie.showHeaderWithHomeButton(['download']);
@@ -135,30 +69,22 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
 
     this.headerServie.showHeaderWithHomeButton(['download']);
   }
-  ionViewWillLeave(): void {
-    this.events.unsubscribe('update_header');
-    this.headerObservable.unsubscribe();
-    // this.events.unsubscribe('savedResources:update');
-  }
 
-  subscribeEvents() {
-    this.events.subscribe('savedResources:update', (res) => {
-      if (res && res.update) {
-        this.getDownloadedContents();
+  getCurrentUser(): void {
+    this.guestUser = !this.appGlobalService.isUserLoggedIn();
+    const profileType = this.appGlobalService.getGuestUserType();
+
+    if (this.guestUser) {
+      if (profileType === ProfileType.TEACHER) {
+        this.audienceFilter = AudienceFilter.GUEST_TEACHER;
+      } else if (profileType === ProfileType.STUDENT) {
+        this.audienceFilter = AudienceFilter.GUEST_STUDENT;
       }
-    });
-  }
-
-  handleHeaderEvents($event) {
-    console.log('inside handleHeaderEvents', $event);
-    switch ($event.name) {
-      case 'download': this.download();
-        break;
+    } else {
+      this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
     }
-  }
 
-  download() {
-    this.navCtrl.push(ActiveDownloadsPage);
+    this.profile = this.appGlobalService.getCurrentUser();
   }
 
   async getDownloadedContents(sortCriteria?) {
@@ -206,21 +132,87 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
       });
   }
 
-  getCurrentUser(): void {
-    this.guestUser = !this.appGlobalService.isUserLoggedIn();
-    const profileType = this.appGlobalService.getGuestUserType();
+  deleteContents(event) {
+    console.log('in parent deleteContents', event);
+    this.loader = this.commonUtilService.getLoader();
+    this.loader.present();
+    this.loader.onDidDismiss(() => { this.loader = undefined; });
+    // const telemetryObject = new TelemetryObject(this.content.identifier, this.content.contentType, this.content.pkgVersion);
 
-    if (this.guestUser) {
-      if (profileType === ProfileType.TEACHER) {
-        this.audienceFilter = AudienceFilter.GUEST_TEACHER;
-      } else if (profileType === ProfileType.STUDENT) {
-        this.audienceFilter = AudienceFilter.GUEST_STUDENT;
-      }
-    } else {
-      this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
+    // this.telemetryGeneratorService.generateInteractTelemetry(
+    //   InteractType.TOUCH,
+    //   InteractSubtype.DELETE_CLICKED,
+    //   Environment.HOME,
+    //   this.pageName,
+    //   telemetryObject,
+    //   undefined,
+    //   this.objRollup,
+    //   this.corRelationList);
+
+    const contentDeleteRequest: ContentDeleteRequest = {
+      contentDeleteList: event
+    };
+    console.log('contentDeleteRequest', contentDeleteRequest);
+    this.contentService.deleteContent(contentDeleteRequest).toPromise()
+      .then((data: ContentDeleteResponse[]) => {
+        console.log('deleteContentresp', data);
+        this.loader.dismiss();
+        // this.getDownloadedContents();
+        if (data && data[0].status === ContentDeleteStatus.NOT_FOUND) {
+          this.commonUtilService.showToast(this.commonUtilService.translateMessage('CONTENT_DELETE_FAILED'));
+        } else {
+          this.events.publish('savedResources:update', {
+            update: true
+          });
+          this.commonUtilService.showToast(this.commonUtilService.translateMessage('MSG_RESOURCE_DELETED'));
+        }
+      }).catch((error: any) => {
+        this.loader.dismiss();
+        console.log('delete response err: ', error);
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('CONTENT_DELETE_FAILED'));
+      });
+  }
+
+
+  onSortCriteriaChange(sortAttribute): void {
+    console.log('parent onSortCriteriaChange', sortAttribute);
+    let sortAttr: string;
+    if (sortAttribute.content === 'Content size') {
+      sortAttr = 'sizeOnDevice';
+    } else if (sortAttribute.content === 'Last viewed') {
+      sortAttr = 'lastUsedOn';
     }
+    const sortCriteria: ContentSortCriteria[] = [{
+      sortOrder: SortOrder.DESC,
+      sortAttribute: sortAttr
+    }];
+    this.getDownloadedContents(sortCriteria);
+  }
 
-    this.profile = this.appGlobalService.getCurrentUser();
+  ionViewWillLeave(): void {
+    this.events.unsubscribe('update_header');
+    this.headerObservable.unsubscribe();
+    // this.events.unsubscribe('savedResources:update');
+  }
+
+  subscribeEvents() {
+    this.events.subscribe('savedResources:update', (res) => {
+      if (res && res.update) {
+        this.getDownloadedContents();
+      }
+    });
+  }
+
+  handleHeaderEvents($event) {
+    console.log('inside handleHeaderEvents', $event);
+    switch ($event.name) {
+      case 'download': this.download();
+        break;
+    }
+  }
+
+  download() {
+    this.navCtrl.push(ActiveDownloadsPage);
   }
 
 }

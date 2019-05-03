@@ -1,4 +1,5 @@
-import { Content } from 'sunbird-sdk';
+import { Loading } from 'ionic-angular';
+import { Content, Profile } from 'sunbird-sdk';
 import { OnInit } from '@angular/core';
 
 export interface AppStorageInfo {
@@ -15,6 +16,11 @@ export interface DownloadManagerPageInterface extends OnInit {
 
     storageInfo: AppStorageInfo;
     downloadedContents: Content[];
+    profile: Profile;
+    audienceFilter: any;
+    guestUser: Boolean;
+    defaultImg: string;
+    loader?: Loading;
 
     deleteContents(contentIds: string[]): void ;
     onSortCriteriaChange(sortAttribute: SortAttribute): void;
