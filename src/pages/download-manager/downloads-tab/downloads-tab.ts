@@ -131,7 +131,8 @@ export class DownloadsTabPage {
     }
 
     toggleContentSelect(event, idx) {
-        this.downloadedContents[idx]['isSelected'] = !this.downloadedContents[idx]['isSelected'];
+        // this.downloadedContents[idx]['isSelected'] = !this.downloadedContents[idx]['isSelected'];
+        this.downloadedContents[idx]['isSelected'] = event.value;
         const selectedContents = (this.downloadedContents.filter((element) => element['isSelected']));
         if (selectedContents.length) {
             if (selectedContents.length === this.downloadedContents.length) {
