@@ -1,41 +1,118 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, PopoverController, ViewController} from 'ionic-angular';
-import { AppHeaderService } from '@app/service';
-import { SbPopoverComponent } from './../../component/popups/sb-popover/sb-popover';
-import { CommonUtilService } from '@app/service';
-import {ToastController} from 'ionic-angular';
-import { ActiveDownloadsInterface } from './active-downloads.interface';
-import { Observable } from 'rxjs';
-import { ContentDownloadRequest, DownloadRequest, DownloadService } from 'sunbird-sdk';
+import {ChangeDetectorRef, Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {IonicPage, PopoverController, ViewController} from 'ionic-angular';
+import {ActiveDownloadsInterface} from './active-downloads.interface';
+import {Observable, Subscription} from 'rxjs';
+import {
+  ContentDownloadRequest,
+  DownloadEventType,
+  DownloadProgress,
+  DownloadRequest,
+  DownloadService,
+  EventNamespace,
+  EventsBusService
+} from 'sunbird-sdk';
+import {SbPopoverComponent} from '@app/component';
 
 @IonicPage()
 @Component({
   selector: 'page-active-downloads',
   templateUrl: 'active-downloads.html',
 })
-export class ActiveDownloadsPage implements OnInit, ActiveDownloadsInterface {
+export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsInterface {
 
+  downloadProgressMap: { [key: string]: number };
+  private downloadProgressSubscription?: Subscription;
   activeDownloadRequests$: Observable<ContentDownloadRequest[]>;
   defaultImg = 'assets/imgs/ic_launcher.png';
 
   constructor(
-    @Inject('DOWNLOAD_MANAGER_SERVICE') private downloadService: DownloadService,
+    private popoverCtrl: PopoverController,
+    private viewCtrl: ViewController,
+    private changeDetectionRef: ChangeDetectorRef,
+    @Inject('DOWNLOAD_SERVICE') private downloadService: DownloadService,
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
   ) {
-    this.activeDownloadRequests$ = this.downloadService.getActiveDownloadRequests() as Observable<ContentDownloadRequest[]>;
+    this.downloadProgressMap = {};
+    // @ts-ignore
+    this.activeDownloadRequests$ = this.downloadService.getActiveDownloadRequests();
   }
 
   cancelAllDownloads(): void {
-    throw new Error('Method not implemented.');
+    const confirm = this.popoverCtrl.create(SbPopoverComponent, {
+      sbPopoverHeading: 'Cancel Downloads?',
+      // sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_DELETE'),
+      actionsButtons: [
+        {
+          btntext: 'Cancel Downloads',
+          btnClass: 'popover-color'
+        },
+      ],
+      icon: null,
+      // metaInfo: this.content.contentData.name,
+      sbPopoverMainTitle: 'Cancelling Download will remove the content from the Active Downloads',
+    }, {
+      cssClass: 'sb-popover danger',
+    });
+    confirm.present({
+      ev: event
+    });
+    confirm.onDidDismiss(async (canDelete: any) => {
+      if (canDelete) {
+        await this.downloadService.cancelAll().toPromise();
+        await this.viewCtrl.dismiss();
+      }
+    });
   }
 
   cancelDownload(downloadRequest: DownloadRequest): void {
-    throw new Error('Method not implemented.');
+    const confirm = this.popoverCtrl.create(SbPopoverComponent, {
+      sbPopoverHeading: 'Cancel Download?',
+      // sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_DELETE'),
+      actionsButtons: [
+        {
+          btntext: 'Cancel Download',
+          btnClass: 'popover-color'
+        },
+      ],
+      icon: null,
+      // metaInfo: this.content.contentData.name,
+      sbPopoverMainTitle: 'Cancelling Download will remove the content from the Active Downloads',
+    }, {
+      cssClass: 'sb-popover danger',
+    });
+
+    confirm.present({
+      ev: event
+    });
+
+    confirm.onDidDismiss(async (canDelete: any) => {
+      if (canDelete) {
+        await this.downloadService.cancel(downloadRequest).toPromise();
+        await this.viewCtrl.dismiss();
+      }
+    });
   }
 
   ngOnInit() {
+    // @ts-ignore
+    this.downloadProgressSubscription = this.eventsBusService.events(EventNamespace.DOWNLOADS)
+      .filter((event) => event.type === DownloadEventType.PROGRESS)
+      .do((event) => {
+        const downloadEvent = event as DownloadProgress;
+        this.downloadProgressMap[downloadEvent.payload.identifier] = downloadEvent.payload.progress;
+        this.changeDetectionRef.detectChanges();
+      })
+      .subscribe();
   }
 
-  ionViewDidLeave() {
+  ngOnDestroy() {
+    if (this.downloadProgressSubscription) {
+      this.downloadProgressSubscription.unsubscribe();
+    }
+  }
+
+  getContentDownloadProgress(contentId: string): number {
+    return this.downloadProgressMap[contentId] && (this.downloadProgressMap[contentId] > -1) ? this.downloadProgressMap[contentId] : 0;
   }
 
   // headerObservable: any;
