@@ -4,7 +4,7 @@ import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { CommonUtilService } from '@app/service';
 import { SbPopoverComponent } from '../../../component/popups/sb-popover/sb-popover';
 import { Component, NgZone, Inject, Input, EventEmitter, Output } from '@angular/core';
-import { IonicPage, NavController, NavParams, PopoverController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, PopoverController, Popover } from 'ionic-angular';
 import { ContentRequest, ContentService } from 'sunbird-sdk';
 import { downloadsDummyData } from '../downloads-spec.data';
 import { Content, ContentDelete } from 'sunbird-sdk';
@@ -26,6 +26,7 @@ export class DownloadsTabPage {
     deletePopupPresent: Boolean = false;
     showSelectAll: Boolean = true;
     selectedFilter: string = MenuOverflow.DOWNLOAD_FILTERS[0];
+    deleteAllConfirm: Popover;
 
 
     constructor(
@@ -57,7 +58,7 @@ export class DownloadsTabPage {
             };
             this.selectedContents = [contentDelete];
         }
-        const confirm = this.popoverCtrl.create(SbPopoverComponent, {
+        const deleteConfirm = this.popoverCtrl.create(SbPopoverComponent, {
             sbPopoverHeading: this.commonUtilService.translateMessage('DELETE_CONTENT'),
             actionsButtons: [
                 {
@@ -71,10 +72,10 @@ export class DownloadsTabPage {
         }, {
                 cssClass: 'sb-popover danger',
             });
-        confirm.present({
+        deleteConfirm.present({
             ev: event
         });
-        confirm.onDidDismiss((canDelete: any) => {
+        deleteConfirm.onDidDismiss((canDelete: any) => {
             if (canDelete) {
                 this.deleteContent();
                 this.viewCtrl.dismiss();
@@ -87,20 +88,22 @@ export class DownloadsTabPage {
         this.deleteContents.emit(this.selectedContents);
     }
 
-    showSortMenu(event) {
-        const dropdown = this.popoverCtrl.create(OverflowMenuComponent, {
+    showSortOptions(event) {
+        const sortOptions = this.popoverCtrl.create(OverflowMenuComponent, {
             list: MenuOverflow.DOWNLOAD_FILTERS
         }, {
             cssClass: 'box download-popover'
         });
-        dropdown.present({
+        sortOptions.present({
             ev: event
         });
-        dropdown.onDidDismiss((element: any) => {
-            console.log('dropdown selected', JSON.parse(element));
-            if (element) {
-                this.sortCriteriaChanged.emit(JSON.parse(element));
-                this.selectedFilter = JSON.parse(element).content;
+        sortOptions.onDidDismiss((selectedSort: any) => {
+            if (selectedSort) {
+                const sortattribute = JSON.parse(selectedSort);
+                if (sortattribute.content !== this.selectedFilter) {
+                    this.selectedFilter = sortattribute.content;
+                    this.sortCriteriaChanged.emit(sortattribute);
+                }
             }
         });
     }
@@ -121,6 +124,7 @@ export class DownloadsTabPage {
         });
         this.showDeleteButton = true;
         this.showSelectAll = true;
+        this.deleteAllConfirm.dismiss(null);
         console.log('after un select all', this.downloadedContents);
     }
 
@@ -141,7 +145,7 @@ export class DownloadsTabPage {
     }
 
     deleteAllContents() {
-        const deleteConfirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
+        this.deleteAllConfirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
             // sbPopoverHeading: this.commonUtilService.translateMessage('ALERT'),
             sbPopoverMainTitle: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE'),
             actionsButtons: [
@@ -161,12 +165,12 @@ export class DownloadsTabPage {
             enableBackdropDismiss: false
         });
         if (!this.deletePopupPresent) {
-            deleteConfirm.present({
+            this.deleteAllConfirm.present({
                 ev: event
             });
             this.deletePopupPresent = true;
         }
-        deleteConfirm.onDidDismiss((leftBtnClicked: any) => {
+        this.deleteAllConfirm.onDidDismiss((leftBtnClicked: any) => {
             this.deletePopupPresent = false;
             if (leftBtnClicked == null) {
                 this.unSelectAllContents();
