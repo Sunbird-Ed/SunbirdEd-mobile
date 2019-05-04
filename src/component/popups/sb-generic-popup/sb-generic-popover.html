@@ -13,7 +13,7 @@
 
         <div class="sb-popover-content-details">
           <div class="main-title">
-            {{sbPopoverMainTitle}}
+            {{selectedContents?.count}} {{sbPopoverMainTitle}} ({{selectedContents?.totalSize | fileSize}})
             <div class="meta-info" *ngIf="metaInfo">
               {{metaInfo}}
             </div>

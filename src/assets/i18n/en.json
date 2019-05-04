@@ -493,7 +493,10 @@
   "DELETE_CONTENT_WARNING": "Deleting content will remove content from the device",
   "DELETE_ALL_CONTENT_WARNING": "Deleting content will remove the selected contents from the device",
   "DELETE_PROGRESS": "Deleting Selected Contents",
+  "ITEMS_SELECTED": "items selected",
   "NO_DOWNLOADS": "No downloads yet",
-  "NO_DOWNLOADS_INFO": "Download content from Courses or Library"
+  "NO_DOWNLOADS_INFO": "Download content from Courses or Library",
+  "AVAILABLE": "Available",
+  "SPACE_TAKEN": "Space taken by DIKSHA"
   
 }

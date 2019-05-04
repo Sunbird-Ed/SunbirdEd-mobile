@@ -4,7 +4,7 @@ import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { CommonUtilService } from '@app/service';
 import { SbPopoverComponent } from '../../../component/popups/sb-popover/sb-popover';
 import { Component, NgZone, Inject, Input, EventEmitter, Output } from '@angular/core';
-import { IonicPage, NavController, NavParams, PopoverController, Popover } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, PopoverController, Popover, Events } from 'ionic-angular';
 import { ContentRequest, ContentService } from 'sunbird-sdk';
 import { downloadsDummyData } from '../downloads-spec.data';
 import { Content, ContentDelete } from 'sunbird-sdk';
@@ -35,6 +35,7 @@ export class DownloadsTabPage {
         private popoverCtrl: PopoverController,
         private commonUtilService: CommonUtilService,
         private viewCtrl: ViewController,
+        private events: Events
     ) {
     }
 
@@ -125,6 +126,7 @@ export class DownloadsTabPage {
         this.showDeleteButton = true;
         this.showSelectAll = true;
         this.deleteAllConfirm.dismiss(null);
+        this.selectedContents = [];
         console.log('after un select all', this.downloadedContents);
     }
 
@@ -141,30 +143,52 @@ export class DownloadsTabPage {
             this.deleteAllContents();
         } else {
             this.showDeleteButton = true;
+            this.deleteAllConfirm.dismiss(null);
         }
     }
 
     deleteAllContents() {
-        this.deleteAllConfirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
-            // sbPopoverHeading: this.commonUtilService.translateMessage('ALERT'),
-            sbPopoverMainTitle: this.commonUtilService.translateMessage('REMOVE_FROM_DEVICE'),
-            actionsButtons: [
-                {
-                    btntext: this.commonUtilService.translateMessage('CANCEL'),
-                    btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
-                }, {
-                    btntext: this.commonUtilService.translateMessage('DELETE'),
-                    btnClass: 'popover-color'
-                }
-            ],
-            showHeader: false,
-            icon: null
-        }, {
-            cssClass: 'sb-popover danger sb-dw-delete-popover',
-            showBackdrop: false,
-            enableBackdropDismiss: false
+        console.log('in deleteallcontents', this.selectedContents);
+        const selectedContentsInfo = {
+            totalSize: 0,
+            count: 0
+        };
+        this.selectedContents = [];
+        this.downloadedContents.forEach(element => {
+            if (element['isSelected']) {
+                const contentDelete: ContentDelete = {
+                    contentId: element.identifier,
+                    isChildContent: false
+                };
+                selectedContentsInfo.totalSize += element.sizeOnDevice;
+                this.selectedContents.push(contentDelete);
+            }
+        });
+        selectedContentsInfo.count = this.selectedContents.length;
+        this.events.publish('selectedContents:changed', {
+            selectedContents: selectedContentsInfo
         });
         if (!this.deletePopupPresent) {
+            this.deleteAllConfirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
+                // sbPopoverHeading: this.commonUtilService.translateMessage('ALERT'),
+                sbPopoverMainTitle: this.commonUtilService.translateMessage('ITEMS_SELECTED'),
+                selectedContents: selectedContentsInfo,
+                actionsButtons: [
+                    {
+                        btntext: this.commonUtilService.translateMessage('CANCEL'),
+                        btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+                    }, {
+                        btntext: this.commonUtilService.translateMessage('DELETE'),
+                        btnClass: 'popover-color'
+                    }
+                ],
+                showHeader: false,
+                icon: null
+            }, {
+                cssClass: 'sb-popover danger sb-dw-delete-popover',
+                showBackdrop: false,
+                enableBackdropDismiss: false
+            });
             this.deleteAllConfirm.present({
                 ev: event
             });
@@ -181,16 +205,6 @@ export class DownloadsTabPage {
                 console.log('delete cancel');
             } else {
                 console.log('delete confirm');
-                this.selectedContents = [];
-                this.downloadedContents.forEach(element => {
-                    if (element['isSelected']) {
-                        const contentDelete: ContentDelete = {
-                            contentId: element.identifier,
-                            isChildContent: false
-                        };
-                        this.selectedContents.push(contentDelete);
-                    }
-                });
                 this.showDeletePopup();
             }
         });
