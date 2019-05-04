@@ -315,6 +315,9 @@
               display: block;
               font-size: $font-size-base - 2;
               line-height: 15px;
+              .pull-right{
+                font-size: $font-size-xs;
+              }
           }
       }
       .sb-card-scroll-container{
@@ -356,7 +359,8 @@
       grid-column: 1;
       display: flex;
       align-items: center;
-      background: $gray-0;
+      // background: $gray-0;
+      background: $light-blue-bg;
       justify-content: center;
     }
     .img-container {
@@ -373,6 +377,17 @@
     .sb-card-actions {
       @include padding(0, $base-block-space, 0 0)
     }
+    .checkbox-md {
+      .checkbox-icon{
+        border-width: 1px;
+        border-color: #7AB4EE;
+        border-radius: 4px;
+      }
+      .checkbox-checked{
+        border-color: $blue;
+        background-color: $blue;
+      }
+    } 
   }
 }
 

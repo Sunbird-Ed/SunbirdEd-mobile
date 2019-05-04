@@ -497,6 +497,7 @@
   "NO_DOWNLOADS": "No downloads yet",
   "NO_DOWNLOADS_INFO": "Download content from Courses or Library",
   "AVAILABLE": "Available",
-  "SPACE_TAKEN": "Space taken by DIKSHA"
+  "SPACE_TAKEN": "Space taken by DIKSHA",
+  "CANCEL_LOWER_CASE": "Cancel"
   
 }

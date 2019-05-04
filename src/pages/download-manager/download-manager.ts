@@ -9,7 +9,7 @@ import { IonicPage, NavController, NavParams, PopoverController, Events, Loading
 import { TranslateService } from '@ngx-translate/core';
 import {
   ContentRequest, ContentService, DownloadService, Profile, ContentDeleteResponse, ContentDeleteRequest,
-  ContentSortCriteria, SortOrder, ContentDeleteStatus
+  ContentSortCriteria, SortOrder, ContentDeleteStatus, DeviceInfo
 } from 'sunbird-sdk';
 import { Content, ProfileType } from 'sunbird-sdk';
 import { AppHeaderService } from '@app/service';
@@ -49,6 +49,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     private headerServie: AppHeaderService, private events: Events,
     private appGlobalService: AppGlobalService,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
+    @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
   ) {
   }
 
@@ -57,6 +58,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     this.getCurrentUser();
     this.getDownloadedContents();
     this.subscribeEvents();
+    this.getAppStorageInfo();
   }
 
   ionViewWillEnter() {
@@ -68,6 +70,19 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     });
 
     this.headerServie.showHeaderWithHomeButton(['download']);
+  }
+  getAppStorageInfo() {
+    // const req: ContentSpaceUsageSummaryRequest = { paths: [cordova.file.externalDataDirectory] };
+    // this.contentService.getContentSpaceUsageSummary(req).subscribe((res: ContentSpaceUsageSummaryResponse[]) => {
+    //   const sizeOnDevice = res[0].sizeOnDevice;
+    //   console.log('Space taken by app ', sizeOnDevice);
+    //   this.storageInfo.usedSpace = res[0].sizeOnDevice;
+    // });
+
+    // this.deviceInfo.getAvailableInternalMemorySize().subscribe((size) => {
+    //   console.log('Available memory', size);
+    //   this.storageInfo.availableSpace = size;
+    // });
   }
 
   getCurrentUser(): void {
