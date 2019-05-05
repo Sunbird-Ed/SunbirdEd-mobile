@@ -45,7 +45,8 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
   ) {
     this.downloadProgressMap = {};
     // @ts-ignore
-    this.activeDownloadRequests$ = this.downloadService.getActiveDownloadRequests();
+    this.activeDownloadRequests$ = this.downloadService.getActiveDownloadRequests()
+      .do(() => this.changeDetectionRef.detectChanges());
   }
 
   ngOnInit() {
@@ -124,9 +125,17 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
       ev: event
     });
 
-    confirm.onDidDismiss(async (canDelete: any) => {
+    const loader = this.commonUtilService.getLoader();
+
+    confirm.onDidDismiss((canDelete: any) => {
       if (canDelete) {
-        downloadRequest ? await this.downloadService.cancel(downloadRequest).toPromise() : await this.downloadService.cancelAll().toPromise();
+        loader.present().then(() => {
+          return downloadRequest ?
+            this.downloadService.cancel(downloadRequest).toPromise() :
+            this.downloadService.cancelAll().toPromise();
+        }).then(() => {
+          return loader.dismiss();
+        });
       }
     });
   }
