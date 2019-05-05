@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, Inject, OnDestroy, OnInit} from '@angular/core';
-import {IonicPage, NavController, PopoverController, ViewController} from 'ionic-angular';
+import {IonicPage, NavController, PopoverController, ViewController, ToastController} from 'ionic-angular';
 import {ActiveDownloadsInterface} from './active-downloads.interface';
 import {Observable, Subscription} from 'rxjs';
 import {
@@ -27,11 +27,13 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
 
   private _appHeaderSubscription?: Subscription;
   private _downloadProgressSubscription?: Subscription;
+  private _networkSubscription?: Subscription;
   private _headerConfig = {
     showHeader: true,
     showBurgerMenu: false,
     actionButtons: [] as string[]
   };
+  private _toast: any;
 
   constructor(
     private popoverCtrl: PopoverController,
@@ -40,6 +42,7 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
     private headerService: AppHeaderService,
     private navCtrl: NavController,
     private commonUtilService: CommonUtilService,
+    private toastController: ToastController,
     @Inject('DOWNLOAD_SERVICE') private downloadService: DownloadService,
     @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
   ) {
@@ -52,6 +55,7 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
   ngOnInit() {
     this.initDownloadProgress();
     this.initAppHeader();
+    this.initNetworkDetection();
   }
 
   ngOnDestroy() {
@@ -60,6 +64,13 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
     }
     if (this._appHeaderSubscription) {
       this._appHeaderSubscription.unsubscribe();
+    }
+    if (this._networkSubscription) {
+      this._networkSubscription.unsubscribe();
+      if (this._toast) {
+        this._toast.dismiss();
+        this._toast = undefined;
+      }
     }
   }
 
@@ -104,6 +115,31 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
     }
   }
 
+  private initNetworkDetection() {
+    this._networkSubscription =  this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
+      if (available) {
+        this.presentToast();
+        if (this._toast) {
+          this._toast.dismiss();
+          this._toast = undefined;
+        }
+      } else {
+        this.presentToastForOffline();
+      }
+    });
+  }
+
+  private async presentToast() {
+    const toast = await this.toastController.create({
+      duration: 2000,
+      message: this.commonUtilService.translateMessage('INTERNET_AVAILABLE'),
+      showCloseButton: false,
+      position: 'top',
+      cssClass: 'toastForOnline'
+    });
+    toast.present();
+  }
+
   private showCancelPopUp(downloadRequest?: DownloadRequest): void {
     const popupMessage = downloadRequest ? 'CANCEL_DOWNLOAD_MESSAGE' : 'CANCEL_ALL_DOWNLOAD_MESSAGE';
     const confirm = this.popoverCtrl.create(SbPopoverComponent, {
@@ -138,6 +174,17 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
         });
       }
     });
+  }
+
+  private async presentToastForOffline() {
+      this._toast =  await this.toastController.create({
+      message: 'No Internet Connectivity Downloads will resume automatically when there is internet connectivity',
+      showCloseButton: true,
+      position: 'top',
+      closeButtonText: '',
+      cssClass: 'toastAfterHeader'
+    });
+    this._toast.present();
   }
 
   // headerObservable: any;

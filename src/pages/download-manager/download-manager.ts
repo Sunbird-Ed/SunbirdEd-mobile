@@ -15,13 +15,6 @@ import { Content, ProfileType } from 'sunbird-sdk';
 import { AppHeaderService } from '@app/service';
 import { ActiveDownloadsPage } from '../active-downloads/active-downloads';
 
-/**
- * Generated class for the DownloadManagerPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 @IonicPage()
 @Component({
   selector: 'page-download-manager',
