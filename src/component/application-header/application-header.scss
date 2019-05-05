@@ -11,4 +11,20 @@
     .sb-header-toolbar{
         padding: 0 $base-block-space !important;
     }
+
+    @keyframes jump {
+        0%   {left:0px; top:0px;}
+        50%  {left:0; top:10px;}
+        100% {left:0px; top:0px;}
+    }
+
+    .dw-icon{
+        width: 15px;
+    }
+
+    .jump-animation{
+        display: inline-block;
+        animation: jump 2s linear infinite;
+        position: relative;
+    }
 }

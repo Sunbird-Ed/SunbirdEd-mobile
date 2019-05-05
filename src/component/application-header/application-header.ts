@@ -1,15 +1,18 @@
+import { ActiveDownloadsPage } from './../../pages/active-downloads/active-downloads';
 import { Component, Input, Output, EventEmitter, OnInit, Inject } from '@angular/core';
-import { Events, App, MenuController } from 'ionic-angular';
-import { CommonUtilService, AppGlobalService, UtilityService } from '@app/service';
-import { SharedPreferences } from 'sunbird-sdk';
+import { Events, App, MenuController, NavController } from 'ionic-angular';
+import { AppGlobalService, UtilityService } from '@app/service';
+import { SharedPreferences, ContentDownloadRequest, DownloadService } from 'sunbird-sdk';
 import { PreferenceKey, GenericAppConfig } from '../../app/app.constant';
 import { AppVersion } from '@ionic-native/app-version';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'application-header',
   templateUrl: 'application-header.html',
 })
 export class ApplicationHeaderComponent implements OnInit {
+  ActiveDownloadsPage = ActiveDownloadsPage;
   chosenLanguageString: string;
   selectedLanguage: string;
   @Input() headerConfig: any = false;
@@ -20,14 +23,17 @@ export class ApplicationHeaderComponent implements OnInit {
   isLoggedIn = false;
   versionName: string;
   versionCode: string;
+  activeDownloadRequests$: Observable<ContentDownloadRequest[]>;
+  showDownloadAnimation: Boolean = false;
 
   constructor(public menuCtrl: MenuController,
-    private commonUtilService: CommonUtilService,
     @Inject('SHARED_PREFERENCES') private preference: SharedPreferences,
+    @Inject('DOWNLOAD_SERVICE') private downloadService: DownloadService,
     private events: Events,
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
-    private utilityService: UtilityService) {
+    private utilityService: UtilityService,
+    private app: App) {
     this.setLanguageValue();
     this.events.subscribe('onAfterLanguageChange:update', (res) => {
       if (res && res.selectedLanguage) {
@@ -40,27 +46,28 @@ export class ApplicationHeaderComponent implements OnInit {
     this.setAppLogo();
     this.setAppVersion();
     this.events.subscribe('user-profile-changed', (res) => {
-     this.setAppLogo();
+      this.setAppLogo();
     });
     this.events.subscribe('app-global:profile-obj-changed', (res) => {
       this.setAppLogo();
-     });
+    });
+    this.listenDownloads();
   }
   setAppVersion(): any {
-    this.utilityService.getBuildConfigValue(GenericAppConfig.VERSION_NAME )
-            .then(vName => {
-              this.versionName = vName;
-                this.utilityService.getBuildConfigValue(GenericAppConfig.VERSION_CODE )
-                .then(vCode => {
-                  this.versionCode = vCode;
-                })
-                .catch(error => {
-                  console.log('Error in getting app version code');
-                });
-            })
-            .catch(error => {
-              console.log('Error in getting app version name');
-            });
+    this.utilityService.getBuildConfigValue(GenericAppConfig.VERSION_NAME)
+      .then(vName => {
+        this.versionName = vName;
+        this.utilityService.getBuildConfigValue(GenericAppConfig.VERSION_CODE)
+          .then(vCode => {
+            this.versionCode = vCode;
+          })
+          .catch(error => {
+            console.log('Error in getting app version code');
+          });
+      })
+      .catch(error => {
+        console.log('Error in getting app version name');
+      });
   }
 
   setLanguageValue() {
@@ -68,6 +75,18 @@ export class ApplicationHeaderComponent implements OnInit {
       .then(value => {
         this.selectedLanguage = value;
       });
+  }
+
+  listenDownloads() {
+    this.activeDownloadRequests$ = this.downloadService.getActiveDownloadRequests();
+    this.activeDownloadRequests$.subscribe((list) => {
+      console.log('active downloads', list);
+      if (list.length) {
+        this.showDownloadAnimation = true;
+      } else {
+        this.showDownloadAnimation = false;
+      }
+    });
   }
 
   setAppLogo() {
@@ -93,7 +112,11 @@ export class ApplicationHeaderComponent implements OnInit {
   }
 
   emitEvent($event, name) {
-    this.headerEvents.emit({ name });
+    if (name === 'download') {
+      this.app.getRootNav().push(ActiveDownloadsPage);
+    } else {
+      this.headerEvents.emit({ name });
+    }
   }
 
   emitSideMenuItemEvent($event, menuItem) {
