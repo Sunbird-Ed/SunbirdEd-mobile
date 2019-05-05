@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, Inject, OnDestroy, OnInit} from '@angular/core';
-import {IonicPage, PopoverController, ViewController} from 'ionic-angular';
+import {IonicPage, NavController, PopoverController, ViewController} from 'ionic-angular';
 import {ActiveDownloadsInterface} from './active-downloads.interface';
 import {Observable, Subscription} from 'rxjs';
 import {
@@ -12,6 +12,7 @@ import {
   EventsBusService
 } from 'sunbird-sdk';
 import {SbPopoverComponent} from '@app/component';
+import {AppHeaderService, CommonUtilService} from '@app/service';
 
 @IonicPage()
 @Component({
@@ -21,98 +22,122 @@ import {SbPopoverComponent} from '@app/component';
 export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsInterface {
 
   downloadProgressMap: { [key: string]: number };
-  private downloadProgressSubscription?: Subscription;
   activeDownloadRequests$: Observable<ContentDownloadRequest[]>;
   defaultImg = 'assets/imgs/ic_launcher.png';
+
+  private _appHeaderSubscription?: Subscription;
+  private _downloadProgressSubscription?: Subscription;
+  private _headerConfig = {
+    showHeader: true,
+    showBurgerMenu: false,
+    actionButtons: [] as string[]
+  };
 
   constructor(
     private popoverCtrl: PopoverController,
     private viewCtrl: ViewController,
     private changeDetectionRef: ChangeDetectorRef,
+    private headerService: AppHeaderService,
+    private navCtrl: NavController,
+    private commonUtilService: CommonUtilService,
     @Inject('DOWNLOAD_SERVICE') private downloadService: DownloadService,
     @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
   ) {
     this.downloadProgressMap = {};
     // @ts-ignore
-    this.activeDownloadRequests$ = this.downloadService.getActiveDownloadRequests();
-  }
-
-  cancelAllDownloads(): void {
-    const confirm = this.popoverCtrl.create(SbPopoverComponent, {
-      sbPopoverHeading: 'Cancel Downloads?',
-      // sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_DELETE'),
-      actionsButtons: [
-        {
-          btntext: 'Cancel Downloads',
-          btnClass: 'popover-color'
-        },
-      ],
-      icon: null,
-      // metaInfo: this.content.contentData.name,
-      sbPopoverMainTitle: 'Cancelling Download will remove the content from the Active Downloads',
-    }, {
-      cssClass: 'sb-popover danger',
-    });
-    confirm.present({
-      ev: event
-    });
-    confirm.onDidDismiss(async (canDelete: any) => {
-      if (canDelete) {
-        await this.downloadService.cancelAll().toPromise();
-        await this.viewCtrl.dismiss();
-      }
-    });
-  }
-
-  cancelDownload(downloadRequest: DownloadRequest): void {
-    const confirm = this.popoverCtrl.create(SbPopoverComponent, {
-      sbPopoverHeading: 'Cancel Download?',
-      // sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_DELETE'),
-      actionsButtons: [
-        {
-          btntext: 'Cancel Download',
-          btnClass: 'popover-color'
-        },
-      ],
-      icon: null,
-      // metaInfo: this.content.contentData.name,
-      sbPopoverMainTitle: 'Cancelling Download will remove the content from the Active Downloads',
-    }, {
-      cssClass: 'sb-popover danger',
-    });
-
-    confirm.present({
-      ev: event
-    });
-
-    confirm.onDidDismiss(async (canDelete: any) => {
-      if (canDelete) {
-        await this.downloadService.cancel(downloadRequest).toPromise();
-        await this.viewCtrl.dismiss();
-      }
-    });
+    this.activeDownloadRequests$ = this.downloadService.getActiveDownloadRequests()
+      .do(() => this.changeDetectionRef.detectChanges());
   }
 
   ngOnInit() {
+    this.initDownloadProgress();
+    this.initAppHeader();
+  }
+
+  ngOnDestroy() {
+    if (this._downloadProgressSubscription) {
+      this._downloadProgressSubscription.unsubscribe();
+    }
+    if (this._appHeaderSubscription) {
+      this._appHeaderSubscription.unsubscribe();
+    }
+  }
+
+  cancelAllDownloads(): void {
+    this.showCancelPopUp();
+  }
+
+  cancelDownload(downloadRequest: DownloadRequest): void {
+    this.showCancelPopUp(downloadRequest);
+  }
+
+  getContentDownloadProgress(contentId: string): number {
+    return this.downloadProgressMap[contentId] && (this.downloadProgressMap[contentId] > -1) ? this.downloadProgressMap[contentId] : 0;
+  }
+
+  private initDownloadProgress(): void {
     // @ts-ignore
-    this.downloadProgressSubscription = this.eventsBusService.events(EventNamespace.DOWNLOADS)
+    this._downloadProgressSubscription = this.eventsBusService.events(EventNamespace.DOWNLOADS)
       .filter((event) => event.type === DownloadEventType.PROGRESS)
       .do((event) => {
         const downloadEvent = event as DownloadProgress;
         this.downloadProgressMap[downloadEvent.payload.identifier] = downloadEvent.payload.progress;
         this.changeDetectionRef.detectChanges();
-      })
-      .subscribe();
+      }).subscribe();
   }
 
-  ngOnDestroy() {
-    if (this.downloadProgressSubscription) {
-      this.downloadProgressSubscription.unsubscribe();
+  private initAppHeader() {
+    this._appHeaderSubscription = this.headerService.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
+    this._headerConfig = this.headerService.getDefaultPageConfig();
+    this._headerConfig.actionButtons = [];
+    this._headerConfig.showBurgerMenu = false;
+    this.headerService.updatePageConfig(this._headerConfig);
+  }
+
+  private handleHeaderEvents(event: { name: string }) {
+    switch (event.name) {
+      case 'back':
+        this.navCtrl.pop();
+        break;
     }
   }
 
-  getContentDownloadProgress(contentId: string): number {
-    return this.downloadProgressMap[contentId] && (this.downloadProgressMap[contentId] > -1) ? this.downloadProgressMap[contentId] : 0;
+  private showCancelPopUp(downloadRequest?: DownloadRequest): void {
+    const popupMessage = downloadRequest ? 'CANCEL_DOWNLOAD_MESSAGE' : 'CANCEL_ALL_DOWNLOAD_MESSAGE';
+    const confirm = this.popoverCtrl.create(SbPopoverComponent, {
+      sbPopoverHeading: this.commonUtilService.translateMessage('CANCEL_DOWNLOAD_TITLE'),
+      sbPopoverMainTitle: this.commonUtilService.translateMessage(popupMessage),
+      actionsButtons: [
+        {
+          btntext: this.commonUtilService.translateMessage('CANCEL_DOWNLOAD'),
+          btnClass: 'popover-color'
+        },
+      ],
+      icon: null,
+      // metaInfo: this.content.contentData.name,
+    }, {
+      cssClass: 'sb-popover danger',
+    });
+
+    confirm.present({
+      ev: event
+    });
+
+    const loader = this.commonUtilService.getLoader();
+
+    confirm.onDidDismiss((canDelete: any) => {
+      if (canDelete) {
+        loader.present().then(() => {
+          return downloadRequest ?
+            this.downloadService.cancel(downloadRequest).toPromise() :
+            this.downloadService.cancelAll().toPromise();
+        }).then(() => {
+          return loader.dismiss();
+        });
+      }
+    });
   }
 
   // headerObservable: any;

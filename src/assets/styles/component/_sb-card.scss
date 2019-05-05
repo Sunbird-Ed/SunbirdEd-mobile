@@ -301,6 +301,10 @@
       }
       .sb-download-cancel{
         color: #ffffff;
+        font-size: $font-size-base * 2;
+        span{
+          font-size: $font-size-base - 2;
+        }
       }
       }
       .sb-view-all-title{
