@@ -1,8 +1,8 @@
 import { ActiveDownloadsPage } from './../../pages/active-downloads/active-downloads';
 import { Component, Input, Output, EventEmitter, OnInit, Inject } from '@angular/core';
-import { Events, App, MenuController, NavController } from 'ionic-angular';
+import { Events, App, MenuController } from 'ionic-angular';
 import { AppGlobalService, UtilityService } from '@app/service';
-import { SharedPreferences, ContentDownloadRequest, DownloadService } from 'sunbird-sdk';
+import { SharedPreferences, DownloadService, DownloadRequest } from 'sunbird-sdk';
 import { PreferenceKey, GenericAppConfig } from '../../app/app.constant';
 import { AppVersion } from '@ionic-native/app-version';
 import { Observable } from 'rxjs';
@@ -23,7 +23,7 @@ export class ApplicationHeaderComponent implements OnInit {
   isLoggedIn = false;
   versionName: string;
   versionCode: string;
-  activeDownloadRequests$: Observable<ContentDownloadRequest[]>;
+  activeDownloadRequests$: Observable<DownloadRequest[]>;
   showDownloadAnimation: Boolean = false;
 
   constructor(public menuCtrl: MenuController,

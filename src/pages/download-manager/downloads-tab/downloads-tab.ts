@@ -212,4 +212,8 @@ export class DownloadsTabPage {
         });
     }
 
+    navigateToDetailsPage(content) {
+
+    }
+
 }
