@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { IonicPage, PopoverController, ViewController, NavController } from 'ionic-angular';
-import { ActiveDownloadsInterface } from './active-downloads.interface';
-import { Observable, Subscription } from 'rxjs';
+import {ChangeDetectorRef, Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {IonicPage, NavController, PopoverController, ViewController} from 'ionic-angular';
+import {ActiveDownloadsInterface} from './active-downloads.interface';
+import {Observable, Subscription} from 'rxjs';
 import {
   ContentDownloadRequest,
   DownloadEventType,
@@ -11,8 +11,8 @@ import {
   EventNamespace,
   EventsBusService
 } from 'sunbird-sdk';
-import { SbPopoverComponent } from '@app/component';
-import { AppHeaderService, CommonUtilService } from '@app/service';
+import {SbPopoverComponent} from '@app/component';
+import {AppHeaderService, CommonUtilService} from '@app/service';
 
 @IonicPage()
 @Component({
@@ -25,35 +25,30 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
   activeDownloadRequests$: Observable<ContentDownloadRequest[]>;
   defaultImg = 'assets/imgs/ic_launcher.png';
 
+  private _appHeaderSubscription?: Subscription;
   private _downloadProgressSubscription?: Subscription;
   private _headerConfig = {
     showHeader: true,
     showBurgerMenu: false,
-    actionButtons: []
+    actionButtons: [] as string[]
   };
-  private _appHeaderSubscription: Subscription;
 
   constructor(
     private popoverCtrl: PopoverController,
     private viewCtrl: ViewController,
     private changeDetectionRef: ChangeDetectorRef,
-    @Inject('DOWNLOAD_SERVICE') private downloadService: DownloadService,
-    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
-    private headerServie: AppHeaderService,
+    private headerService: AppHeaderService,
     private navCtrl: NavController,
     private commonUtilService: CommonUtilService,
+    @Inject('DOWNLOAD_SERVICE') private downloadService: DownloadService,
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
   ) {
     this.downloadProgressMap = {};
     // @ts-ignore
     this.activeDownloadRequests$ = this.downloadService.getActiveDownloadRequests();
-      console.log(this.activeDownloadRequests$);
-      setInterval(() => {
-        console.log(this.activeDownloadRequests$);
-    }, 5000);
   }
 
   ngOnInit() {
-    // @ts-ignore
     this.initDownloadProgress();
     this.initAppHeader();
   }
@@ -80,6 +75,7 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
   }
 
   private initDownloadProgress(): void {
+    // @ts-ignore
     this._downloadProgressSubscription = this.eventsBusService.events(EventNamespace.DOWNLOADS)
       .filter((event) => event.type === DownloadEventType.PROGRESS)
       .do((event) => {
@@ -89,18 +85,17 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
       }).subscribe();
   }
 
-  /* Back button Implementation*/
   private initAppHeader() {
-    this._appHeaderSubscription = this.headerServie.headerEventEmitted$.subscribe(eventName => {
+    this._appHeaderSubscription = this.headerService.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
-    this._headerConfig = this.headerServie.getDefaultPageConfig();
+    this._headerConfig = this.headerService.getDefaultPageConfig();
     this._headerConfig.actionButtons = [];
     this._headerConfig.showBurgerMenu = false;
-    this.headerServie.updatePageConfig(this._headerConfig);
+    this.headerService.updatePageConfig(this._headerConfig);
   }
 
-  private handleHeaderEvents(event) {
+  private handleHeaderEvents(event: { name: string }) {
     switch (event.name) {
       case 'back':
         this.navCtrl.pop();
@@ -122,8 +117,8 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
       icon: null,
       // metaInfo: this.content.contentData.name,
     }, {
-        cssClass: 'sb-popover danger',
-      });
+      cssClass: 'sb-popover danger',
+    });
 
     confirm.present({
       ev: event
@@ -132,7 +127,6 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
     confirm.onDidDismiss(async (canDelete: any) => {
       if (canDelete) {
         downloadRequest ? await this.downloadService.cancel(downloadRequest).toPromise() : await this.downloadService.cancelAll().toPromise();
-        // await this.viewCtrl.dismiss();
       }
     });
   }
