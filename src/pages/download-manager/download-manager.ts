@@ -1,20 +1,27 @@
-import { AppGlobalService } from './../../service/app-global.service';
-// import { SortAttribute } from './download-manager.interface';
-import { DownloadManagerPageInterface, AppStorageInfo } from './download-manager.interface';
-import { MenuOverflow, ContentType, AudienceFilter } from './../../app/app.constant';
-import { ViewController } from 'ionic-angular/navigation/view-controller';
-import { CommonUtilService } from '@app/service';
-import { Component, NgZone, Inject, OnInit } from '@angular/core';
-import { IonicPage, NavController, NavParams, PopoverController, Events, Loading, Popover } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
+import {AppGlobalService, AppHeaderService, CommonUtilService} from '@app/service';
+import {AppStorageInfo, DownloadManagerPageInterface} from './download-manager.interface';
+import {AudienceFilter, ContentType} from './../../app/app.constant';
+import {ViewController} from 'ionic-angular/navigation/view-controller';
+import {Component, Inject, NgZone, OnInit} from '@angular/core';
+import {Events, IonicPage, Loading, NavController, NavParams, Popover, PopoverController} from 'ionic-angular';
+import {TranslateService} from '@ngx-translate/core';
 import {
-  ContentRequest, ContentService, DownloadService, Profile, ContentDeleteResponse, ContentDeleteRequest,
-  ContentSortCriteria, SortOrder, ContentDeleteStatus, DeviceInfo, ContentSpaceUsageSummaryRequest, ContentSpaceUsageSummaryResponse
+  Content,
+  ContentDeleteRequest,
+  ContentDeleteResponse,
+  ContentDeleteStatus,
+  ContentRequest,
+  ContentService,
+  ContentSortCriteria,
+  ContentSpaceUsageSummaryRequest,
+  ContentSpaceUsageSummaryResponse,
+  DeviceInfo,
+  Profile,
+  ProfileType,
+  SortOrder
 } from 'sunbird-sdk';
-import { Content, ProfileType } from 'sunbird-sdk';
-import { AppHeaderService } from '@app/service';
-import { ActiveDownloadsPage } from '../active-downloads/active-downloads';
-import { SbPopoverComponent } from '@app/component';
+import {ActiveDownloadsPage} from '../active-downloads/active-downloads';
+import {SbPopoverComponent} from '@app/component';
 
 @IonicPage()
 @Component({
@@ -56,7 +63,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
   }
 
   ionViewWillEnter() {
-    this.events.subscribe('update_header', (data) => {
+    this.events.subscribe('update_header', () => {
       this.headerServie.showHeaderWithHomeButton(['download']);
     });
     this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
@@ -69,14 +76,14 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
 
   getAppStorageInfo() {
 
-    const req: ContentSpaceUsageSummaryRequest = { paths: [cordova.file.externalDataDirectory] };
+    const req: ContentSpaceUsageSummaryRequest = {paths: [cordova.file.externalDataDirectory]};
     this.contentService.getContentSpaceUsageSummary(req).toPromise()
       .then((res: ContentSpaceUsageSummaryResponse[]) => {
         this.deviceInfo.getAvailableInternalMemorySize().toPromise()
           .then((size) => {
             this.storageInfo = {
               usedSpace: res[0].sizeOnDevice,
-              availableSpace:  parseInt(size, 10)
+              availableSpace: parseInt(size, 10)
             };
             console.log('this.storageInfo', this.storageInfo);
           });
@@ -105,7 +112,9 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
   async getDownloadedContents(sortCriteria?) {
     this.loader = this.commonUtilService.getLoader();
     this.loader.present();
-    this.loader.onDidDismiss(() => { this.loader = undefined; });
+    this.loader.onDidDismiss(() => {
+      this.loader = undefined;
+    });
     const defaultSortCriteria: ContentSortCriteria[] = [{
       sortAttribute: 'sizeOnDevice',
       sortOrder: SortOrder.DESC
@@ -137,12 +146,12 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
         this.ngZone.run(() => {
           console.log('downloadedContents', data);
           this.downloadedContents = data;
-          this.loader.dismiss();
+          this.loader!.dismiss();
         });
       })
       .catch(() => {
         this.ngZone.run(() => {
-          this.loader.dismiss();
+          this.loader!.dismiss();
         });
       });
   }
@@ -157,7 +166,9 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     } else {
       this.loader = this.commonUtilService.getLoader();
       this.loader.present();
-      this.loader.onDidDismiss(() => { this.loader = undefined; });
+      this.loader.onDidDismiss(() => {
+        this.loader = undefined;
+      });
       // const telemetryObject = new TelemetryObject(this.content.identifier, this.content.contentType, this.content.pkgVersion);
 
       // this.telemetryGeneratorService.generateInteractTelemetry(
@@ -186,10 +197,10 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('MSG_RESOURCE_DELETED'));
           }
         }).catch((error: any) => {
-          this.loader.dismiss();
-          console.log('delete response err: ', error);
-          this.commonUtilService.showToast(this.commonUtilService.translateMessage('CONTENT_DELETE_FAILED'));
-        });
+        this.loader.dismiss();
+        console.log('delete response err: ', error);
+        this.commonUtilService.showToast(this.commonUtilService.translateMessage('CONTENT_DELETE_FAILED'));
+      });
     }
   }
 
@@ -208,8 +219,8 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
       metaInfo: this.commonUtilService.translateMessage('FILES_DELETED'),
       // sbPopoverContent: this.commonUtilService.translateMessage('FILES_DELETED')
     }, {
-        cssClass: 'sb-popover danger sb-popover-cancel-delete',
-      });
+      cssClass: 'sb-popover danger sb-popover-cancel-delete',
+    });
     this.deleteAllConfirm.present({
       ev: event
     });
@@ -222,22 +233,31 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     });
     this.contentService.enqueueContentDelete(contentDeleteRequest).toPromise();
     this.contentService.getContentDeleteQueue().skip(1).takeWhile((list) => !!list.length)
-    .finally(() => {
-      this.deleteAllConfirm.dismiss();
-      this.getAppStorageInfo();
-      this.events.publish('savedResources:update', {
-        update: true
+      .finally(() => {
+        this.events.publish('deletedContentList:changed', {
+          deletedContentsInfo: {
+            totalCount: contentDeleteRequest.contentDeleteList.length,
+            deletedCount: contentDeleteRequest.contentDeleteList.length
+          }
+        });
+
+        this.deleteAllConfirm.dismiss();
+
+        this.getAppStorageInfo();
+
+        this.events.publish('savedResources:update', {
+          update: true
+        });
+      })
+      .subscribe((list) => {
+        console.log('deleteList', list);
+        this.events.publish('deletedContentList:changed', {
+          deletedContentsInfo: {
+            totalCount: contentDeleteRequest.contentDeleteList.length,
+            deletedCount: contentDeleteRequest.contentDeleteList.length - list.length
+          }
+        });
       });
-    })
-    .subscribe((list) => {
-      console.log('deleteList', list);
-      this.events.publish('deletedContentList:changed', {
-        deletedContentsInfo: {
-          totalCount: contentDeleteRequest.contentDeleteList.length,
-          deletedCount: contentDeleteRequest.contentDeleteList.length - list.length
-        }
-      });
-    });
   }
 
 
@@ -273,7 +293,8 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
   handleHeaderEvents($event) {
     console.log('inside handleHeaderEvents', $event);
     switch ($event.name) {
-      case 'download': this.download();
+      case 'download':
+        this.download();
         break;
     }
   }
