@@ -37,13 +37,11 @@
       </div>
     </div>
 
-    <!-- <div *ngIf="dummyAD.length" class="sb-card-container sb-card-view-all-container ad-pb-88">
-      <div *ngFor="let activeDownload of dummyAD; let i = index"> -->
     <div *ngIf="(activeDownloadRequests$ | async)?.length"
-      class="sb-card-container sb-card-view-all-container ad-pb-88">
+      class="sb-card-container sb-card-view-all-container ad-pb-88 ad-no-box-shadow">
       <div *ngFor="let activeDownload of (activeDownloadRequests$ | async); let i = index">
         <div>
-          <ion-row>
+          <ion-row class="ad-border-bottom-1">
             <ion-col no-padding col-10>
 
               <div class="sb-card">

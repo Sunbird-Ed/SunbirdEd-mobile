@@ -16,13 +16,6 @@ import { AppHeaderService } from '@app/service';
 import { ActiveDownloadsPage } from '../active-downloads/active-downloads';
 import { SbPopoverComponent } from '@app/component';
 
-/**
- * Generated class for the DownloadManagerPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 @IonicPage()
 @Component({
   selector: 'page-download-manager',
