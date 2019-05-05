@@ -1,4 +1,5 @@
-import {Component} from '@angular/core';
+import { AppStorageInfo } from './../../download-manager.interface';
+import { Component, Input } from '@angular/core';
 
 
 @Component({
@@ -6,6 +7,8 @@ import {Component} from '@angular/core';
   templateUrl: 'downloads-header.html'
 })
 export class DownloadsHeaderComponent {
+
+  @Input() storageInfo: AppStorageInfo;
 
   constructor() {
 

@@ -69,7 +69,8 @@ export class DownloadsTabPage {
             ],
             icon: null,
             // metaInfo: this.content.contentData.name,
-            sbPopoverContent: this.commonUtilService.translateMessage('DELETE_CONTENT_WARNING')
+            sbPopoverContent: identifier ? this.commonUtilService.translateMessage('DELETE_CONTENT_WARNING')
+                                            : this.commonUtilService.translateMessage('DELETE_ALL_CONTENT_WARNING')
         }, {
                 cssClass: 'sb-popover danger',
             });
@@ -131,7 +132,8 @@ export class DownloadsTabPage {
     }
 
     toggleContentSelect(event, idx) {
-        this.downloadedContents[idx]['isSelected'] = !this.downloadedContents[idx]['isSelected'];
+        // this.downloadedContents[idx]['isSelected'] = !this.downloadedContents[idx]['isSelected'];
+        this.downloadedContents[idx]['isSelected'] = event.value;
         const selectedContents = (this.downloadedContents.filter((element) => element['isSelected']));
         if (selectedContents.length) {
             if (selectedContents.length === this.downloadedContents.length) {
@@ -175,7 +177,7 @@ export class DownloadsTabPage {
                 selectedContents: selectedContentsInfo,
                 actionsButtons: [
                     {
-                        btntext: this.commonUtilService.translateMessage('CANCEL'),
+                        btntext: this.commonUtilService.translateMessage('CANCEL_LOWER_CASE'),
                         btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
                     }, {
                         btntext: this.commonUtilService.translateMessage('DELETE'),
