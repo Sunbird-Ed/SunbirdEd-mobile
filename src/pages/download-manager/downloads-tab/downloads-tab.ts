@@ -80,7 +80,7 @@ export class DownloadsTabPage {
         deleteConfirm.onDidDismiss((canDelete: any) => {
             if (canDelete) {
                 this.deleteContent();
-                this.viewCtrl.dismiss();
+                // this.viewCtrl.dismiss();
             }
         });
     }
