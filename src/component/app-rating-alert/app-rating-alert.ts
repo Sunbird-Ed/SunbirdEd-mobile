@@ -100,10 +100,9 @@ export class AppRatingAlertComponent {
   }
 
   async rateLater() {
-    this.rateLaterClickedCount = Number(await this.appRatingService.anotherMethodExtra());
+    this.rateLaterClickedCount = Number(await this.appRatingService.rateLaterClickedCount());
     const paramsMap = new Map();
     paramsMap['rateLaterCount'] = this.rateLaterClickedCount;
-    paramsMap['appRating'] = this.appRate;
     await this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.RATE_LATER_CLICKED,
@@ -119,7 +118,7 @@ export class AppRatingAlertComponent {
       this.utilityService.openPlayStore(pkg);
       this.appRatingService.setEndStoreRate(this.appRate);
       const paramsMap = new Map();
-      paramsMap['rateProvided'] = this.appRate;
+      paramsMap['appRating'] = this.appRate;
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.TOUCH,
         InteractSubtype.PLAY_STORE_BUTTON_CLICKED,
@@ -136,7 +135,7 @@ export class AppRatingAlertComponent {
         this.currentViewText = this.appRateView[ViewType.STORE_RATE];
         this.appRate = rating;
         const paramsMap = new Map();
-        paramsMap['ratingProvided'] = rating;
+        paramsMap['appRating'] = rating;
         this.telemetryGeneratorService.generateInteractTelemetry(
           InteractType.TOUCH,
           InteractSubtype.RATING_SUBMITTED,
@@ -148,7 +147,7 @@ export class AppRatingAlertComponent {
       }
       this.currentViewText = this.appRateView[ViewType.HELP_DESK];
     const paramsMap = new Map();
-    paramsMap['ratingProvided'] = rating;
+    paramsMap['appRating'] = rating;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.RATING_SUBMITTED,

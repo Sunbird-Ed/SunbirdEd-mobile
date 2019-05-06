@@ -58,7 +58,7 @@ export class AppRatingService {
                 return false;
             });
     }
-     async anotherMethodExtra() {
+     async rateLaterClickedCount() {
       return this.someExtraVariable = Number(await this.checkRateLaterCount());
     }
      increaseRateLaterClickedCount(value) {

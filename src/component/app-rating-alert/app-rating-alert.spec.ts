@@ -6,7 +6,7 @@ import {
   appRatingServiceMock,
   translateServiceMock,
   platformMock,
-  telemetryGeneratorServiceMock
+  telemetryGeneratorServiceMock, navParamsMock, telemetryServiceMock
 } from "@app/__tests__/mocks";
 
 import {AppRatingAlertComponent} from "@app/component/app-rating-alert/app-rating-alert";
@@ -28,7 +28,7 @@ describe('AppRatingAlertComponent', () => {
     appRatingPage = new AppRatingAlertComponent(
       viewControllerMock as any, appVersionMock as any, utilityServiceMock as any,
       appRatingServiceMock as any, sharedPreferencesMock as any, translateServiceMock as any,
-      platformMock as any, telemetryGeneratorServiceMock as any
+      platformMock as any, telemetryGeneratorServiceMock as any, navParamsMock as any, telemetryServiceMock as any
     );
     jest.resetAllMocks();
   });
@@ -69,7 +69,7 @@ describe('AppRatingAlertComponent', () => {
     appRatingPage.rateOnStore();
     expect(appRatingPage.rateOnStore).toHaveBeenCalled();
   });
-  xit('should change currentViewText when rating is greater than 4 or more', () => {
+  it('should change currentViewText when rating is greater than 4 or more', () => {
     // arrange
     spyOn(appRatingPage, 'submitRating').and.stub();
     //act
@@ -77,7 +77,7 @@ describe('AppRatingAlertComponent', () => {
     // assert
     expect(appRatingPage.submitRating(5)).toHaveBeenCalled();
   });
-  xit('should changeViewText when rating is less than 3', () => {
+  it('should changeViewText when rating is less than 3', () => {
     // arrange
     spyOn(appRatingPage, 'submitRating').and.callThrough();
     // act
