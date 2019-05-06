@@ -6,8 +6,8 @@ import { NavParams, ViewController } from 'ionic-angular';
   templateUrl: 'sb-no-network-popup.html'
 })
 export class SbNoNetworkPopupComponent {
-  sbPopoverHeading: string;
-  sbPopoverMessage: string;
+  sbPopoverHeading = '';
+  sbPopoverMessage = '';
 
   constructor(private navParams: NavParams,
     private viewCtrl: ViewController) {

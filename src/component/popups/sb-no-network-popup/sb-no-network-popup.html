@@ -15,7 +15,7 @@
       </ion-col>
     </ion-row>
       
-    <ion-row>
+    <ion-row *ngIf="sbPopoverMessage?.length">
       <ion-col no-padding offset-1 col-10>
         <div class="no-net-message">{{sbPopoverMessage}}</div>        
       </ion-col>
