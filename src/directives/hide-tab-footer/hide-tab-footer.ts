@@ -8,8 +8,7 @@ export class HideTabFooterDirective implements OnInit {
 
   hideTimer: NodeJS.Timer;
 
-  constructor(private elemRef: ElementRef, private renderer: Renderer2, public event: Events) {
-  }
+  constructor(private elemRef: ElementRef, private renderer: Renderer2, public event: Events) {}
 
   ngOnInit() {
     this.event.subscribe('hideFooterTabOnScroll', (data) => {
