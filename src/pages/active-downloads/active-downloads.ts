@@ -13,6 +13,7 @@ import {
 } from 'sunbird-sdk';
 import {SbPopoverComponent} from '@app/component';
 import {AppHeaderService, CommonUtilService} from '@app/service';
+import { SbNoNetworkPopupComponent } from '@app/component/popups/sb-no-network-popup/sb-no-network-popup';
 
 @IonicPage()
 @Component({
@@ -124,7 +125,7 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
           this._toast = undefined;
         }
       } else {
-        this.presentToastForOffline();
+        this.presentPopupForOffline();
       }
     });
   }
@@ -176,16 +177,16 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
     });
   }
 
-  private async presentToastForOffline() {
-      this._toast =  await this.toastController.create({
-      message: 'No Internet Connectivity Downloads will resume automatically when there is internet connectivity',
-      showCloseButton: true,
-      position: 'top',
-      closeButtonText: '',
-      cssClass: 'toastAfterHeader'
+  private async presentPopupForOffline() {
+    this._toast =  this.popoverCtrl.create(SbNoNetworkPopupComponent, {
+      sbPopoverHeading: 'No internet connectivity',
+      sbPopoverMessage: 'Downloads will resume automatically when there is internet connectivity',
+    }, {
+      cssClass: 'sb-popover no-network',
     });
+
     this._toast.present();
-  }
+}
 
   // headerObservable: any;
   // networkSubscription: any;
