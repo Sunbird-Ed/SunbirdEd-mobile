@@ -47,37 +47,26 @@ export class HelpPage {
               private headerService: AppHeaderService) {
   }
 
-  ionViewWillEnter(): void {
+ async ionViewWillEnter() {
     this.headerService.showHeaderWithBackButton();
     this.appVersion.getAppName()
       .then((appName) => {
         this.appName = appName;
       });
-    this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE).toPromise()
+     await this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE).toPromise()
       .then(value => {
         // get chosen language code from  lang mapping constant array
-         this.selectedLanguage = appLanguages.filter((el) => {
+       this.selectedLanguage = appLanguages.filter((el) => {
           return value.trim() === el.label;
         })[0].code ;
-        console.log('choosen Language Code', this.selectedLanguage);
-        if (this.selectedLanguage) {
-        this.video.url += this.selectedLanguage;
-        } else {
-          // default to en in case mapping not found in array
-          this.video.url += 'en';
-        }
-        this.trustedVideoUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.video.url);
-        (<any>window).addEventListener('message', (event) => {
-          this.receiveMessage(event);
-        }, false);
-      }).catch( () => {
-        // if not able to get selected lang then default to english language
-        this.video.url += 'en';
-        this.trustedVideoUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.video.url);
-        (<any>window).addEventListener('message', (event) => {
-          this.receiveMessage(event);
-        }, false);
       });
+      if (this.selectedLanguage) {
+        this.video.url += this.selectedLanguage;
+      }
+        this.trustedVideoUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.video.url);
+        (<any>window).addEventListener('message', (event) => {
+          this.receiveMessage(event);
+        }, false);
   }
   receiveMessage(event) {
   const values = new Map();
