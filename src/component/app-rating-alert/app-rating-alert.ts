@@ -119,7 +119,7 @@ export class AppRatingAlertComponent {
       this.utilityService.openPlayStore(pkg);
       this.appRatingService.setEndStoreRate(this.appRate);
       const paramsMap = new Map();
-      paramsMap['RateStore'] = this.appRate;
+      paramsMap['rateProvided'] = this.appRate;
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.TOUCH,
         InteractSubtype.PLAY_STORE_BUTTON_CLICKED,
@@ -132,12 +132,11 @@ export class AppRatingAlertComponent {
   }
 
   submitRating(rating) {
-    setTimeout(() => {
       if (rating >= StoreRating.APP_MIN_RATE) {
         this.currentViewText = this.appRateView[ViewType.STORE_RATE];
         this.appRate = rating;
         const paramsMap = new Map();
-        paramsMap['Ratings'] = rating;
+        paramsMap['ratingProvided'] = rating;
         this.telemetryGeneratorService.generateInteractTelemetry(
           InteractType.TOUCH,
           InteractSubtype.RATING_SUBMITTED,
@@ -148,9 +147,8 @@ export class AppRatingAlertComponent {
         return;
       }
       this.currentViewText = this.appRateView[ViewType.HELP_DESK];
-    }, 0);
     const paramsMap = new Map();
-    paramsMap['Ratings'] = rating;
+    paramsMap['ratingProvided'] = rating;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.RATING_SUBMITTED,
@@ -162,7 +160,7 @@ export class AppRatingAlertComponent {
 
   goToHelpSection() {
     const paramsMap = new Map();
-    paramsMap['Help-section'] = this.appRate;
+    paramsMap['helpSectionWentAfterRating'] = this.appRate;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.HELP_SECTION_CLICKED,
@@ -174,7 +172,7 @@ export class AppRatingAlertComponent {
   private async appRatePopup() {
     this.appRatingPopCount = await this.countAppRatingPopupAppeared();
     const paramsMap = new Map();
-    paramsMap['app-rating-popup-appeared'] = this.appRatingPopCount;
+    paramsMap['appRatingPopAppearedCount'] = this.appRatingPopCount;
     await this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.OTHER, InteractSubtype.APP_RATING_APPEARED,
       this.pageId, Environment.HOME, undefined, paramsMap,
