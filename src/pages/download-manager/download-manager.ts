@@ -89,7 +89,6 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
           });
       });
 
-
   }
 
   getCurrentUser(): void {

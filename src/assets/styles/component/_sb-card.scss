@@ -356,6 +356,7 @@
 }
 
 .sb-card-download-container {
+  margin-bottom: 65px;
   .sb-card {
     grid-template-columns: ($base-block-space * 4) ($base-block-space * 10) auto;
     @include padding(0);
@@ -393,6 +394,9 @@
       }
     } 
   }
+}
+.sb-card-download-container.extra-margin{
+  margin-bottom: 130px;
 }
 
 .popover-progress-container{

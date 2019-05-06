@@ -181,13 +181,13 @@ export class CoursesPage implements OnInit, AfterViewInit {
 
   ionViewWillEnter() {
     this.events.subscribe('update_header', (data) => {
-      this.headerServie.showHeaderWithHomeButton(['search', 'filter']);
+      this.headerServie.showHeaderWithHomeButton(['search', 'filter', 'download']);
     });
     this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
     this.getEnrolledCourses();
-    this.headerServie.showHeaderWithHomeButton(['search', 'filter']);
+    this.headerServie.showHeaderWithHomeButton(['search', 'filter', 'download']);
 
   }
 
