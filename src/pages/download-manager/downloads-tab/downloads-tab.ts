@@ -1,3 +1,6 @@
+import { ContentDetailsPage } from './../../content-details/content-details';
+import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
+import { ContentType, MimeType } from '@app/app/app.constant';
 import { MenuOverflow } from '../../../app/app.constant';
 import { OverflowMenuComponent } from '@app/pages/profile';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
@@ -213,6 +216,12 @@ export class DownloadsTabPage {
     }
 
     navigateToDetailsPage(content) {
+
+        switch (content.mimeType) {
+            case MimeType.COLLECTION: this.navCtrl.push( CollectionDetailsEtbPage, {content: content});
+               break;
+            default: this.navCtrl.push(ContentDetailsPage, {content: content});
+          }
 
     }
 
