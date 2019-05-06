@@ -9,6 +9,7 @@ import { Component, Input } from '@angular/core';
 export class DownloadsHeaderComponent {
 
   @Input() storageInfo: AppStorageInfo;
+  @Input() appName: string;
 
   constructor() {
 
