@@ -204,6 +204,7 @@ export class DownloadsTabPage {
             selectedContents: selectedContentsInfo
         });
         if (!this.deletePopupPresent) {
+            this.telemetryGeneratorService.generatePageViewTelemetry(PageId.BULK_DELETE_POPUP, Environment.DOWNLOADS);
             this.deleteAllConfirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
                 // sbPopoverHeading: this.commonUtilService.translateMessage('ALERT'),
                 sbPopoverMainTitle: this.commonUtilService.translateMessage('ITEMS_SELECTED'),
@@ -258,7 +259,8 @@ export class DownloadsTabPage {
     }
 
     navigateToDetailsPage(content) {
-        const objectType = this.telemetryGeneratorService.isCollection(content.mimeType) ? content.contentType : ContentType.RESOURCE;
+        const objectType = this.telemetryGeneratorService.isCollection(content.mimeType) ? content.contentData.contentType
+            : ContentType.RESOURCE;
         const telemetryObject: TelemetryObject = new TelemetryObject(content.identifier, objectType, content.contentData.pkgVersion);
         this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
             InteractSubtype.CONTENT_CLICKED,

@@ -95,18 +95,19 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
   }
 
 
-  getAppStorageInfo() {
+  async getAppStorageInfo(): Promise<AppStorageInfo> {
 
     const req: ContentSpaceUsageSummaryRequest = { paths: [cordova.file.externalDataDirectory] };
-    this.contentService.getContentSpaceUsageSummary(req).toPromise()
+    return this.contentService.getContentSpaceUsageSummary(req).toPromise()
       .then((res: ContentSpaceUsageSummaryResponse[]) => {
-        this.deviceInfo.getAvailableInternalMemorySize().toPromise()
+       return  this.deviceInfo.getAvailableInternalMemorySize().toPromise()
           .then((size) => {
             this.storageInfo = {
               usedSpace: res[0].sizeOnDevice,
               availableSpace: parseInt(size, 10)
             };
             console.log('this.storageInfo', this.storageInfo);
+            return this.storageInfo;
           });
       });
 
@@ -175,7 +176,8 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
           this.loader.dismiss();
         });
       })
-      .catch(() => {
+      .catch((e) => {
+        console.log(e);
         this.ngZone.run(() => {
           this.loader.dismiss();
         });
