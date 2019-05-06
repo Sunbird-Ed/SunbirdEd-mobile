@@ -205,6 +205,22 @@
         background-color: $tertiary-color;
     }
 }
+
+.sb-popover.no-network{
+    ion-backdrop{
+        background-color: $white-color;
+        opacity: 0;
+    }
+
+    .popover-content {
+        left: 0px !important;
+        right: 0px;
+        bottom: auto !important;
+        top: 58px !important;
+        width: auto !important;
+    }
+}
+
 .sb-popover.sb-popover-cancel-delete{
     .sb-popover-items{
         .sb-popover-content-details{

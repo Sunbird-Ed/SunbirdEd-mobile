@@ -4,6 +4,7 @@ import {ActiveDownloadsPage} from './active-downloads';
 import {FileSizePipe} from '@app/pipes/file-size/file-size';
 import {PipesModule} from '@app/pipes/pipes.module';
 import { TranslateModule } from '@ngx-translate/core';
+import { ComponentsModule } from '@app/component/components.module';
 
 @NgModule({
   declarations: [
@@ -13,6 +14,7 @@ import { TranslateModule } from '@ngx-translate/core';
     IonicPageModule.forChild(ActiveDownloadsPage),
     PipesModule,
     TranslateModule.forChild(),
+    ComponentsModule
   ],
   providers: [
     FileSizePipe

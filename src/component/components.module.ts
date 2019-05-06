@@ -36,6 +36,7 @@ import { SbDownloadPopupComponent } from './popups/sb-download-popup/sb-download
 import { SbGenericPopoverComponent } from './popups/sb-generic-popup/sb-generic-popover';
 import { SideMenuComponent } from './side-menu/side-menu';
 import { DirectivesModule } from '@app/directives/directives.module';
+import { SbNoNetworkPopupComponent } from './popups/sb-no-network-popup/sb-no-network-popup';
 
 @NgModule({
     declarations: [
@@ -67,7 +68,8 @@ import { DirectivesModule } from '@app/directives/directives.module';
         ReportIssuesComponent,
         SbDownloadPopupComponent,
         SbGenericPopoverComponent,
-        SideMenuComponent
+        SideMenuComponent,
+        SbNoNetworkPopupComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -109,8 +111,8 @@ import { DirectivesModule } from '@app/directives/directives.module';
         SbPopoverComponent,
         SbDownloadPopupComponent,
         SbGenericPopoverComponent,
-        SideMenuComponent
-
+        SideMenuComponent,
+        SbNoNetworkPopupComponent
     ],
     entryComponents: [
         ConfirmAlertComponent,
@@ -123,7 +125,8 @@ import { DirectivesModule } from '@app/directives/directives.module';
         ApplicationHeaderComponent,
         SbPopoverComponent,
         SbDownloadPopupComponent,
-        SbGenericPopoverComponent
+        SbGenericPopoverComponent,
+        SbNoNetworkPopupComponent
     ],
     providers: [
         FormAndFrameworkUtilService
