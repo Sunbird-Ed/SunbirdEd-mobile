@@ -205,7 +205,6 @@
         background-color: $tertiary-color;
     }
 }
-<<<<<<< HEAD
 
 .sb-popover.no-network{
     ion-backdrop{
@@ -219,7 +218,9 @@
         bottom: auto !important;
         top: 58px !important;
         width: auto !important;
-=======
+    }
+}
+
 .sb-popover.sb-popover-cancel-delete{
     .sb-popover-items{
         .sb-popover-content-details{
@@ -244,6 +245,5 @@
         border-radius: 2px;
         @extend .flex-grow-1;
         
->>>>>>> 68d39b271c5d1054173b8a8c01b2e42c14468c3a
     }
 }
