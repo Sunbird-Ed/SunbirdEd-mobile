@@ -213,7 +213,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   batchDetails: any;
   pageName: any;
   headerObservable: any;
-
+  breadCrumb = new Map();
 
   // Local Image
   localImage = '';
@@ -546,13 +546,16 @@ export class CollectionDetailsEtbPage implements OnInit {
     if (this.contentDetail.contentData.me_totalDownloads) {
       this.contentDetail.contentData.me_totalDownloads = this.contentDetail.contentData.me_totalDownloads.split('.')[0];
     }
-    this.setCollectionStructure();
+      this.setCollectionStructure();
   }
 
   setCollectionStructure() {
     this.showChildrenLoader = true;
     if (this.contentDetail.contentData.contentTypesCount) {
-      this.contentTypesCount = JSON.parse(this.contentDetail.contentData.contentTypesCount);
+      if (!_.isObject(this.contentDetail.contentData.contentTypesCount)) {
+        this.contentTypesCount = JSON.parse(this.contentDetail.contentData.contentTypesCount);
+      }
+      this.contentTypesCount = this.contentDetail.contentData.contentTypesCount;
       // this.contentDetail.contentData.contentTypesCount = JSON.parse(this.contentDetail.contentData.contentTypesCount);
     } else if (this.cardData.contentTypesCount) {
       if (!_.isObject(this.cardData.contentTypesCount)) {
@@ -705,7 +708,7 @@ export class CollectionDetailsEtbPage implements OnInit {
       .then((data: Content) => {
         this.zone.run(() => {
           if (data && data.children) {
-            //  console.log('ChildrenData', this.childrenData);
+            this.breadCrumb.set(data.identifier, data.contentData.name);
             this.childrenData = data.children;
           }
 
@@ -725,6 +728,7 @@ export class CollectionDetailsEtbPage implements OnInit {
 
   getContentsSize(data) {
     _.forEach(data, (value) => {
+      this.breadCrumb.set(value.identifier, value.contentData.name);
       if (value.contentData.size) {
         this.downloadSize += Number(value.contentData.size);
       }
@@ -782,7 +786,8 @@ export class CollectionDetailsEtbPage implements OnInit {
           content: content,
           depth: depth,
           contentState: stateData,
-          corRelation: this.corRelationList
+          corRelation: this.corRelationList,
+          breadCrumb: this.breadCrumb
         });
       }
     });
@@ -795,7 +800,8 @@ export class CollectionDetailsEtbPage implements OnInit {
       content: content,
       depth: depth,
       contentState: stateData,
-      corRelation: this.corRelationList
+      corRelation: this.corRelationList,
+      breadCrumb: this.breadCrumb
     });
   }
 
