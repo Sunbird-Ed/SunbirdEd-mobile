@@ -15,6 +15,13 @@
       </ion-buttons>
 
       <ion-buttons class="sb-header-btn-group" end>
+        <!-- <button ion-button icon-only *ngIf="headerConfig?.actionButtons?.indexOf('download') >=0"
+            (click)="emitEvent($event, 'download');">
+            <img src="./assets/imgs/active_download.png" class="tool-icon">
+        </button> -->
+        <button ion-button icon-only (click)="emitEvent($event, 'download');">
+            <img src="./assets/imgs/active_download.png" class="tool-icon dw-icon" [ngClass]="{'jump-animation': showDownloadAnimation}">
+        </button>
         <button ion-button icon-only *ngIf="headerConfig?.actionButtons?.indexOf('notification') >=0"
           (click)="emitEvent($event, 'notification');">
           <ion-icon name="notifications-outline"></ion-icon>
@@ -23,10 +30,7 @@
           (click)="emitEvent($event, 'search');">
           <img src="./assets/imgs/ic_search.png" class="tool-icon">
         </button>
-        <button ion-button icon-only *ngIf="headerConfig?.actionButtons?.indexOf('download') >=0"
-            (click)="emitEvent($event, 'download');">
-            <img src="./assets/imgs/ic_download_selected.png" class="tool-icon">
-        </button>
+        
         <button ion-button icon-only *ngIf="headerConfig?.actionButtons?.indexOf('person') >=0"
           (click)="emitEvent($event, 'person');">
           <ion-icon name="person"></ion-icon>
