@@ -1,3 +1,4 @@
+import { ActiveDownloadsPage } from '@app/pages/active-downloads/active-downloads';
 import {ViewMoreActivityPage} from './../view-more-activity/view-more-activity';
 import {Component, Inject, NgZone, OnInit, AfterViewInit} from '@angular/core';
 import {Events, IonicPage, NavController, PopoverController, MenuController, Tabs} from 'ionic-angular';
@@ -821,7 +822,13 @@ export class CoursesPage implements OnInit, AfterViewInit {
                     break;
       case 'filter': this.showFilter();
                       break;
+      case 'download': this.redirectToActivedownloads();
+      break;
     }
+  }
+
+  redirectToActivedownloads() {
+    this.navCtrl.push(ActiveDownloadsPage);
   }
 
   toggleMenu() {

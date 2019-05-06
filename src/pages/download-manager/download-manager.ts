@@ -1,4 +1,5 @@
-import { AppGlobalService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
+import { AppVersion } from '@ionic-native/app-version';
+import { AppGlobalService, AppHeaderService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
 import { AppStorageInfo, DownloadManagerPageInterface } from './download-manager.interface';
 import { AudienceFilter, ContentType } from './../../app/app.constant';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
@@ -21,7 +22,6 @@ import {
   SortOrder
 } from 'sunbird-sdk';
 import { SbPopoverComponent } from '@app/component';
-import { AppHeaderService } from '@app/service';
 import { ActiveDownloadsPage } from '../active-downloads/active-downloads';
 import { PageId, InteractType, Environment, InteractSubtype } from '@app/service/telemetry-constants';
 
@@ -48,6 +48,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
   defaultImg: string;
   loader?: Loading;
   deleteAllConfirm: Popover;
+  appName: string;
 
   constructor(
     public navCtrl: NavController,
@@ -59,6 +60,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     private viewCtrl: ViewController,
     private headerServie: AppHeaderService, private events: Events,
     private appGlobalService: AppGlobalService,
+    private appVersion: AppVersion,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
     private telemetryGeneratorService: TelemetryGeneratorService,
@@ -70,6 +72,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     this.getCurrentUser();
     this.getDownloadedContents(true);
     this.subscribeEvents();
+    this.getAppName();
   }
 
   ionViewWillEnter() {
@@ -84,7 +87,15 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     this.getAppStorageInfo();
   }
 
-  async getAppStorageInfo() {
+  getAppName() {
+    this.appVersion.getAppName()
+      .then((appName: any) => {
+        this.appName = appName;
+      });
+  }
+
+
+  getAppStorageInfo() {
 
     const req: ContentSpaceUsageSummaryRequest = { paths: [cordova.file.externalDataDirectory] };
     this.contentService.getContentSpaceUsageSummary(req).toPromise()
@@ -217,6 +228,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
               update: true
             });
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('MSG_RESOURCE_DELETED'));
+            this.getAppStorageInfo();
           }
         }).catch((error: any) => {
           this.loader.dismiss();
@@ -328,12 +340,12 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
           InteractSubtype.ACTIVE_DOWNLOADS_CLICKED,
           Environment.DOWNLOADS,
           PageId.DOWNLOADS);
-        this.download();
+        this.redirectToActivedownloads();
         break;
     }
   }
 
-  download() {
+  redirectToActivedownloads() {
     this.navCtrl.push(ActiveDownloadsPage);
   }
 

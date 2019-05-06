@@ -28,18 +28,20 @@
         <div class="img-container">
             <img src="{{ content?.contentData?.courseLogoUrl || content?.contentData?.appIcon || defaultImg }}"/>
         </div>
-        <div class="sb-card-details" (click)="!content.isSelected && navigateToDetailsPage(content)">
-          <div class="title">{{content.contentData?.name}}</div>
-          <div class="info grade_ellipsis">
-            <span class=" class">{{content.contentData?.subject}}</span>
-            <span class="separator-dot"></span>
-            <span class=" subject">{{content.contentData?.gradeLevel | csa}}</span>
+        <div class="sb-card-details">
+          <div (click)="!content.isSelected && navigateToDetailsPage(content)">
+            <div class="title">{{content.contentData?.name}}</div>
+            <div class="info grade_ellipsis">
+              <span class=" class">{{content.contentData?.subject}}</span>
+              <span class="separator-dot"></span>
+              <span class=" subject">{{content.contentData?.gradeLevel | csa}}</span>
+            </div>
+            <div class="info"> {{ content.sizeOnDevice | fileSize }}</div>
           </div>
-          <div class="info"> {{ content.sizeOnDevice | fileSize }}</div>
           <div class="sb-card-actions">
             <button *ngIf="showDeleteButton" ion-button class="action-btn float-end delete mr-8" (click)="showDeletePopup(content.identifier)">
               <!-- <ion-icon ios="ios-trash" md="md-trash" class="MR5"></ion-icon> -->
-              delete
+              {{'DELETE' | translate}}
             </button>
           </div>
         </div>

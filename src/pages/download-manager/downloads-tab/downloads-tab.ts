@@ -81,6 +81,7 @@ export class DownloadsTabPage {
         deleteConfirm.onDidDismiss((canDelete: any) => {
             switch (canDelete) {
                 case undefined:
+                    this.unSelectAllContents();
                     this.telemetryGeneratorService.generateInteractTelemetry(
                         InteractType.TOUCH,
                         InteractSubtype.CLOSE_CLICKED,
@@ -88,6 +89,7 @@ export class DownloadsTabPage {
                         PageId.SINGLE_DELETE_POPUP);
                     break;
                 case null:
+                    this.unSelectAllContents();
                     this.telemetryGeneratorService.generateInteractTelemetry(
                         InteractType.TOUCH,
                         InteractSubtype.OUTSIDE_POPUP_AREA_CLICKED,
@@ -155,7 +157,9 @@ export class DownloadsTabPage {
         });
         this.showDeleteButton = true;
         this.showSelectAll = true;
-        this.deleteAllConfirm.dismiss(null);
+        if (this.deleteAllConfirm) {
+            this.deleteAllConfirm.dismiss(null);
+        }
         this.selectedContents = [];
         console.log('after un select all', this.downloadedContents);
     }
@@ -254,17 +258,20 @@ export class DownloadsTabPage {
     }
 
     navigateToDetailsPage(content) {
-      const objectType = this.telemetryGeneratorService.isCollection(content.mimeType) ? content.contentType : ContentType.RESOURCE;
-      const telemetryObject: TelemetryObject = new TelemetryObject(content.identifier, objectType, content.contentData.pkgVersion);
+        const objectType = this.telemetryGeneratorService.isCollection(content.mimeType) ? content.contentType : ContentType.RESOURCE;
+        const telemetryObject: TelemetryObject = new TelemetryObject(content.identifier, objectType, content.contentData.pkgVersion);
         this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
             InteractSubtype.CONTENT_CLICKED,
             Environment.DOWNLOADS,
             PageId.DOWNLOADS,
             telemetryObject);
-        switch (content.mimeType) {
-            case MimeType.COLLECTION: this.navCtrl.push(CollectionDetailsEtbPage, { content: content });
-                break;
-            default: this.navCtrl.push(ContentDetailsPage, { content: content });
+        if (!this.selectedContents.length) {
+            switch (content.mimeType) {
+
+                case MimeType.COLLECTION: this.navCtrl.push(CollectionDetailsEtbPage, { content: content });
+                    break;
+                default: this.navCtrl.push(ContentDetailsPage, { content: content });
+            }
         }
 
     }

@@ -1,3 +1,4 @@
+import { ActiveDownloadsPage } from '@app/pages/active-downloads/active-downloads';
 import {Search} from './../../app/app.constant';
 import {AfterViewInit, Component, Inject, NgZone, OnInit, ViewChild} from '@angular/core';
 import {Events, NavController, ToastController, MenuController, Scroll, Tabs} from 'ionic-angular';
@@ -1032,7 +1033,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     switch ($event.name) {
       case 'search': this.search();
                     break;
+      case 'download': this.redirectToActivedownloads();
+      break;
+
     }
+  }
+
+  redirectToActivedownloads() {
+    this.navCtrl.push(ActiveDownloadsPage);
   }
 
   toggleMenu() {

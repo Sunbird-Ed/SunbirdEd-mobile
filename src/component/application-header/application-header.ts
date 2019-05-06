@@ -1,4 +1,3 @@
-import {ActiveDownloadsPage} from '@app/pages/active-downloads/active-downloads';
 import {ChangeDetectorRef, Component, EventEmitter, Inject, Input, OnInit, Output} from '@angular/core';
 import {App, Events, MenuController} from 'ionic-angular';
 import {AppGlobalService, UtilityService} from '@app/service';
@@ -110,11 +109,7 @@ export class ApplicationHeaderComponent implements OnInit {
   }
 
   emitEvent($event, name) {
-    if (name === 'download') {
-      this.app.getRootNav().push(ActiveDownloadsPage);
-    } else {
       this.headerEvents.emit({name});
-    }
   }
 
   emitSideMenuItemEvent($event, menuItem) {
