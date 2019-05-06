@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { HelpPage } from './help';
 import { TranslateModule } from '@ngx-translate/core';
+import { LanguageSettingsPageModule } from '../language-settings/language-settings.module';
 
 @NgModule({
   declarations: [
@@ -9,7 +10,8 @@ import { TranslateModule } from '@ngx-translate/core';
   ],
   imports: [
     IonicPageModule.forChild(HelpPage),
-    TranslateModule.forChild()
+    TranslateModule.forChild(),
+    LanguageSettingsPageModule
   ],
 })
 export class HelpPageModule {}
