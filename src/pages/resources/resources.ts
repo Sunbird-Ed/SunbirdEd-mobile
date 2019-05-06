@@ -407,6 +407,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 	 * Load/get recently viewed content
 	 */
   async loadRecentlyViewedContent() {
+    this.recentlyViewedResources = [];
     this.showLoader = true;
     const requestParams: ContentRequest = {
       uid: this.profile ? this.profile.uid : undefined,
