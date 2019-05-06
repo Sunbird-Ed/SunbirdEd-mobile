@@ -12,7 +12,7 @@
   <allow-intent href="mailto:*"/>
   <allow-intent href="geo:*"/>
   <preference name="ScrollEnabled" value="false"/>
-  <preference name="android-minSdkVersion" value="21"/>
+  <preference name="android-minSdkVersion" value="16"/>
   <preference name="BackupWebStorage" value="none"/>
   <preference name="SplashScreenDelay" value="5000"/>
   <preference name="Orientation" value="portrait"/>
@@ -20,6 +20,7 @@
   <preference name="KeyboardDisplayRequiresUserAction" value="false"/>
   <hook src="scripts/copyGradleFiles.js" type="before_build"/>
   <hook src="scripts/copyBundledData.js" type="before_build"/>
+  <hook src="scripts/application/add_application.js" type="before_run" />
   <hook src="scripts/copyGradleFiles.js" type="before_run"/>
   <hook src="scripts/copyBundledData.js" type="before_run"/>
   <platform name="android">

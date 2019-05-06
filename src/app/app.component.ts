@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 import { ProfileSettingsPage } from './../pages/profile-settings/profile-settings';
 import { AfterViewInit, Component, Inject, NgZone, ViewChild, OnInit, EventEmitter } from '@angular/core';
-import { App, Events, Nav, Platform, PopoverController, ToastController } from 'ionic-angular';
+import { App, Events, Nav, Platform, PopoverController, ToastController, ViewController, NavControllerBase } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, LOGIN_TEACHER_TABS } from './module.service';
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
@@ -12,7 +12,7 @@ import { CollectionDetailsPage } from '../pages/collection-details/collection-de
 import { ContentDetailsPage } from '../pages/content-details/content-details';
 import { ContentType, EventTopics, GenericAppConfig, MimeType, PreferenceKey, ProfileConstants } from './app.constant';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
-import { FormAndFrameworkUtilService } from '@app/pages/profile';
+import { FormAndFrameworkUtilService, GuestProfilePage } from '@app/pages/profile';
 import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, UtilityService, AppHeaderService } from '@app/service';
 import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
 import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
@@ -41,6 +41,11 @@ import { ReportsPage } from '@app/pages/reports';
 import { UserAndGroupsPage } from '@app/pages/user-and-groups';
 import { LogoutHandlerService } from '@app/service/handlers/logout-handler.service';
 import { Network } from '@ionic-native/network';
+import { ResourcesPage } from '@app/pages/resources/resources';
+import { CoursesPage } from '@app/pages/courses/courses';
+import { ProfilePage } from '@app/pages/profile/profile';
+import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
+import { QrCodeResultPage } from '@app/pages/qr-code-result';
 
 @Component({
   templateUrl: 'app.html',
@@ -133,8 +138,26 @@ export class MyApp implements OnInit, AfterViewInit {
     this.headerServie.headerConfigEmitted$.subscribe(config => {
       this.headerConfig = config;
     });
+
+    this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
+      const navObj: NavControllerBase = this.app.getActiveNavs()[0];
+        const activeView: ViewController = navObj.getActive();
+        const pageId: string = this.computePageId((<any>activeView).instance);
+      if (available) {
+        this.addNetworkTelemetry(InteractSubtype.INTERNET_CONNECTED, pageId);
+      } else {
+        this.addNetworkTelemetry(InteractSubtype.INTERNET_DISCONNECTED, pageId);
+      }
+    });
   }
 
+  addNetworkTelemetry(subtype: string, pageId: string) {
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+        subtype,
+        Environment.HOME,
+        pageId, undefined
+    );
+}
   ngAfterViewInit(): void {
     this.platform.resume.subscribe(() => {
       this.telemetryGeneratorService.generateInterruptTelemetry('resume', '');
@@ -152,16 +175,16 @@ export class MyApp implements OnInit, AfterViewInit {
 
       let navObj = this.app.getRootNavs()[0];
       let currentPage = navObj.getActive().name;
-      if (currentPage === 'TabsPage') {
+      const activeView: ViewController = this.nav.getActive();
+      if (activeView != null && ((<any>activeView).instance instanceof TabsPage)) {
         navObj = this.app.getActiveNavs()[0];
         currentPage = navObj.getActive().name;
       }
-      console.log(currentPage);
 
       if (navObj.canGoBack()) {
         return navObj.pop();
       } else {
-        this.commonUtilService.showExitPopUp(this.computePageId(currentPage), Environment.HOME, false);
+        this.commonUtilService.showExitPopUp(this.computePageId((<any>activeView).instance), Environment.HOME, false);
       }
     });
   }
@@ -172,26 +195,25 @@ export class MyApp implements OnInit, AfterViewInit {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
       InteractSubtype.NETWORK_STATUS, Environment.HOME, PageId.SPLASH_SCREEN, undefined, value) ;
   }
-  computePageId(pageName: string): string {
+  computePageId(page): string {
     let pageId = '';
-    switch (pageName) {
-      case 'ResourcesPage': {
-        pageId = PageId.LIBRARY;
-        break;
-      }
-      case 'CoursesPage': {
-        pageId = PageId.COURSES;
-        break;
-      }
-      case 'ProfilePage': {
-        pageId = PageId.PROFILE;
-        break;
-      }
-      case 'GuestProfilePage': {
-        pageId = PageId.GUEST_PROFILE;
-        break;
-      }
-    }
+    if (page instanceof ResourcesPage) {
+      pageId = PageId.LIBRARY;
+    } else if (page instanceof CoursesPage) {
+      pageId = PageId.COURSES;
+    } else if (page instanceof ProfilePage) {
+      pageId = PageId.PROFILE;
+    } else if (page instanceof GuestProfilePage) {
+      pageId = PageId.GUEST_PROFILE;
+    }  else if (page instanceof CollectionDetailsEtbPage) {
+      pageId = PageId.COLLECTION_DETAIL;
+  } else if (page instanceof ContentDetailsPage) {
+      pageId = PageId.CONTENT_DETAIL;
+  } else if (page instanceof QrCodeResultPage) {
+      pageId = PageId.DIAL_CODE_SCAN_RESULT;
+  } else if (page instanceof CollectionDetailsPage) {
+      pageId = PageId.COLLECTION_DETAIL;
+  }
     return pageId;
   }
 
@@ -595,22 +617,28 @@ export class MyApp implements OnInit, AfterViewInit {
     if ($event.name === 'back') {
       // this.handleBackButton();
       let navObj = this.app.getRootNavs()[0];
-      let currentPage = navObj.getActive().name;
-      if (currentPage === 'TabsPage') {
+      const activeView: ViewController = this.nav.getActive();
+      if (activeView != null && ((<any>activeView).instance instanceof TabsPage)) {
         navObj = this.app.getActiveNavs()[0];
-        currentPage = navObj.getActive().name;
+        // currentPage = navObj.getActive().name;
       }
-      console.log(currentPage);
-      if(currentPage === "UserTypeSelectionPage" || currentPage === "CollectionDetailsEtbPage" || 
-        currentPage == "EnrolledCourseDetailsPage" || currentPage == "OnboardingPage" || 
-        currentPage == "QrCodeResultPage" || currentPage == "CollectionDetailsPage") {
-          this.headerServie.sidebarEvent($event);
-          return;
-        }
+      // if (currentPage === 'TabsPage') {
+      //   navObj = this.app.getActiveNavs()[0];
+      //   currentPage = navObj.getActive().name;
+      // }
+      if (((<any>activeView).instance instanceof UserTypeSelectionPage)
+        || ((<any>activeView).instance instanceof CollectionDetailsEtbPage)
+        || ((<any>activeView).instance instanceof EnrolledCourseDetailsPage)
+        || ((<any>activeView).instance instanceof OnboardingPage)
+        || ((<any>activeView).instance instanceof QrCodeResultPage)
+        || ((<any>activeView).instance instanceof CollectionDetailsPage)) {
+        this.headerServie.sidebarEvent($event);
+        return;
+      }
       if (navObj.canGoBack()) {
         return navObj.pop();
       } else {
-        this.commonUtilService.showExitPopUp(this.computePageId(currentPage), Environment.HOME, false);
+        this.commonUtilService.showExitPopUp(this.computePageId((<any>activeView).instance), Environment.HOME, false);
       }
     } else {
       this.headerServie.sidebarEvent($event);

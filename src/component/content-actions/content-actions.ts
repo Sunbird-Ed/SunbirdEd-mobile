@@ -134,7 +134,7 @@ export class ContentActionsComponent {
         });
         confirm.onDidDismiss((canDelete: any) => {
           if (canDelete) {
-            // this.deleteContent();
+            this.deleteContent();
           }
         });
         break;
@@ -199,9 +199,11 @@ export class ContentActionsComponent {
       this.objRollup,
       this.corRelationList);
 
-
+      const loader = this.commonUtilService.getLoader();
+      loader.present();
     this.contentService.deleteContent(this.getDeleteRequestBody()).toPromise()
       .then((data: ContentDeleteResponse[]) => {
+        loader.dismiss();
         if (data && data[0].status === ContentDeleteStatus.NOT_FOUND) {
         this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
       } else {
@@ -214,6 +216,7 @@ export class ContentActionsComponent {
         this.viewCtrl.dismiss('delete.success');
       }
     }).catch((error: any) => {
+      loader.dismiss();
       console.log('delete response: ', error);
       this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
       this.viewCtrl.dismiss();

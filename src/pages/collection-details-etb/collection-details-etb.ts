@@ -320,8 +320,8 @@ export class CollectionDetailsEtbPage implements OnInit {
       this.didViewLoad = true;
       this.setContentDetails(this.identifier, true);
       this.subscribeSdkEvent();
-      this.networkSubscription = this.commonUtilService.subject.subscribe((res) => {
-        if (res) {
+      this.networkSubscription = this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
+        if (available) {
           if (this.toast) {
             this.toast.dismiss();
             this.toast = undefined;
@@ -546,13 +546,16 @@ export class CollectionDetailsEtbPage implements OnInit {
     if (this.contentDetail.contentData.me_totalDownloads) {
       this.contentDetail.contentData.me_totalDownloads = this.contentDetail.contentData.me_totalDownloads.split('.')[0];
     }
-    this.setCollectionStructure();
+      this.setCollectionStructure();
   }
 
   setCollectionStructure() {
     this.showChildrenLoader = true;
     if (this.contentDetail.contentData.contentTypesCount) {
-      this.contentTypesCount = JSON.parse(this.contentDetail.contentData.contentTypesCount);
+      if (!_.isObject(this.contentDetail.contentData.contentTypesCount)) {
+        this.contentTypesCount = JSON.parse(this.contentDetail.contentData.contentTypesCount);
+      }
+      this.contentTypesCount = this.contentDetail.contentData.contentTypesCount;
       // this.contentDetail.contentData.contentTypesCount = JSON.parse(this.contentDetail.contentData.contentTypesCount);
     } else if (this.cardData.contentTypesCount) {
       if (!_.isObject(this.cardData.contentTypesCount)) {
@@ -615,6 +618,7 @@ export class CollectionDetailsEtbPage implements OnInit {
    * @param {boolean} isChild
    */
   importContent(identifiers: Array<string>, isChild: boolean, isDownloadAllClicked?) {
+    this.headerService.hideHeader();
     const option: ContentImportRequest = {
       contentImportArray: this.getImportContentRequestBody(identifiers, isChild),
       contentStatusArray: []
@@ -864,6 +868,7 @@ export class CollectionDetailsEtbPage implements OnInit {
             // this condition is for when the child content update is available and we have downloaded parent content
             // but we have to refresh only the child content.
             this.showLoading = false;
+            this.refreshHeader();
             this.setContentDetails(this.identifier, false);
           } else {
             if (this.isUpdateAvailable && contentImportedEvent.payload.contentId === this.contentDetail.identifier) {
@@ -1239,7 +1244,10 @@ export class CollectionDetailsEtbPage implements OnInit {
       this.objRollup,
       this.corRelationList);
     const tmp = this.getDeleteRequestBody();
+    const loader = this.commonUtilService.getLoader();
+    loader.present();
     this.contentService.deleteContent(tmp).toPromise().then((res: any) => {
+      loader.dismiss();
       if (res && res.status === ContentDeleteStatus.NOT_FOUND) {
         this.commonUtilService.showToast('CONTENT_DELETE_FAILED');
       } else {
@@ -1251,6 +1259,7 @@ export class CollectionDetailsEtbPage implements OnInit {
         this.viewCtrl.dismiss('delete.success');
       }
     }).catch((error: any) => {
+      loader.dismiss();
       console.log('delete response: ', error);
       this.commonUtilService.showToast('CONTENT_DELETE_FAILED');
       this.viewCtrl.dismiss();

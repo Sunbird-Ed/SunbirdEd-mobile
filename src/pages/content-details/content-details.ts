@@ -53,6 +53,7 @@ import {
   Rollup,
   SharedPreferences,
   TelemetryObject,
+  ChildContentRequest,
   ContentDeleteStatus
 } from 'sunbird-sdk';
 import {CanvasPlayerService} from '../player/canvas-player.service';
@@ -212,7 +213,7 @@ export class ContentDetailsPage {
     //   this.handleNavBackButton();
     // };
     // this.handleDeviceBackButton();
-    
+
     if (!AppGlobalService.isPlayerLaunched) {
       this.calculateAvailableUserCount();
     }
@@ -275,8 +276,8 @@ export class ContentDetailsPage {
     this.subscribeSdkEvent();
     // this.setContentDetails(this.identifier, true, false);
     // this.subscribeGenieEvent();
-    this.networkSubscription = this.commonUtilService.subject.subscribe((res) => {
-      if  (res) {
+    this.networkSubscription =  this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
+      if  (available) {
         this.presentToast();
         if (this.toast) {
           this.toast.dismiss();
@@ -519,6 +520,9 @@ export class ContentDetailsPage {
             if (!showRating) {
               loader.dismiss();
             }
+            if (data.contentData.status === 'Retired') {
+              this.showRetiredContentPopup();
+            }
           } else {
             if (!showRating) {
               loader.dismiss();
@@ -555,6 +559,10 @@ export class ContentDetailsPage {
   }
 
   extractApiResponse(data: Content) {
+    if (this.isResumedCourse) {
+      this.setChildContents();
+    }
+
     this.content = data;
     this.contentDownloadable[this.content.identifier] = data.isAvailableLocally;
     if (this.content.lastUpdatedTime !== 0) {
@@ -652,6 +660,64 @@ export class ContentDetailsPage {
          * If the content is already downloaded then just play it
          */
         this.showSwitchUserAlert(false);
+      }
+    }
+  }
+
+    /**
+   * Function to set child contents
+   */
+  setChildContents(): void {
+    this.showChildrenLoader = true;
+    // const option = new ChildContentRequest();
+    const resumedCourseCardData =  this.navParams.get('resumedCourseCardData');
+    const option: ChildContentRequest = {
+      contentId: resumedCourseCardData && resumedCourseCardData.contentId ?
+      resumedCourseCardData.contentId : resumedCourseCardData.identifier,
+      hierarchyInfo: null,
+      level: !resumedCourseCardData ? 1 : 0,
+    };
+    // if (this.navParams.get('resumedCourseCardData')) {
+    //   option.contentId = this.navParams.get('resumedCourseCardData').contentId || this.navParams.get('resumedCourseCardData').identifier;
+    // }
+    option.hierarchyInfo = null;
+
+    if (resumedCourseCardData && !resumedCourseCardData.batchId) {
+      option.level = 1;
+    }
+    this.contentService.getChildContents(option).toPromise()
+      .then((data: any) => {
+        this.zone.run(() => {
+          if (data &&  data.children) {
+            this.hierarchyInfo = this.getHierarchyInfo(data);
+          }
+        });
+      })
+      .catch((error: string) => {
+        this.zone.run(() => {
+        });
+      });
+  }
+
+  getHierarchyInfo(childrenData) {
+    // step 1: if children.length != 0
+    // step 2: then, loopthrough and match identifier
+    // step 3: if matches, then, return hirearchy info
+    // step 4: else, step 1 again
+    let hierarchyInfo: any;
+    if (childrenData.children && childrenData.children.length) {
+      // hierarchyInfo = childrenData.children.find((ele) => {
+      // childrenData.children.forEach(ele => {
+      for (let i = 0; i < childrenData.children.length; i++) {
+        const ele = childrenData.children[i];
+        if (!hierarchyInfo && ele.identifier === this.identifier) {
+          return ele;
+        } else if (!hierarchyInfo) {
+          hierarchyInfo = this.getHierarchyInfo(ele);
+          if (hierarchyInfo) {
+            return hierarchyInfo;
+          }
+        }
       }
     }
   }
@@ -880,6 +946,7 @@ export class ContentDetailsPage {
             const eventPayload = event.payload;
             if (eventPayload.contentId === this.content.identifier) {
               if (eventPayload.streamingUrl) {
+                this.streamingUrl = eventPayload.streamingUrl;
                 this.playingContent.contentData.streamingUrl = eventPayload.streamingUrl;
               } else {
                 this.playOnlineSpinner = false;
@@ -890,35 +957,34 @@ export class ContentDetailsPage {
       });
     }) as any;
   }
+
   /**
    * confirming popUp content
    */
   openConfirmPopUp() {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-    const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
-      sbPopoverMainTitle: this.content.contentData.name + this.content.contentData.subject,
-      icon: null,
-      metaInfo:
-           '1 item ' + '(' + this.fileSizePipe.transform(this.content.contentData.size, 2) + ')',
-      // sbPopoverContent: this.commonUtilService.translateMessage('CONTENT_NOT_PLAYABLE_OFFLINE'),
-      isUpdateAvail: this.contentDownloadable[this.content.identifier] && this.isUpdateAvail,
-    }, {
-        cssClass: 'sb-popover info',
+      const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
+        sbPopoverMainTitle: this.content.contentData.name,
+        icon: null,
+        metaInfo:
+          '1 item ' + '(' + this.fileSizePipe.transform(this.content.contentData.size, 2) + ')',
+        isUpdateAvail: this.contentDownloadable[this.content.identifier] && this.isUpdateAvail,
+      }, {
+          cssClass: 'sb-popover info',
+        });
+      popover.present({
+        ev: event
       });
-    popover.present({
-      ev: event
-    });
-    popover.onDidDismiss((canDownload: boolean = false) => {
-      if (canDownload) {
-        this.downloadContent();
-      }
-    });
-  } else {
-    this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
+      popover.onDidDismiss((canDownload: boolean = false) => {
+        if (canDownload) {
+          this.downloadContent();
+        }
+      });
+    } else {
+      this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
+    }
   }
 
-
-  }
   /**
    * Download content
    */
@@ -1054,6 +1120,28 @@ export class ContentDetailsPage {
     }
   }
 
+  showRetiredContentPopup() {
+    const popover = this.popoverCtrl.create(SbGenericPopoverComponent, {
+      sbPopoverHeading: this.commonUtilService.translateMessage('CONTENT_NOT_AVAILABLE'),
+      sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_RETIRED_BY_AUTHOR'),
+      actionsButtons: [
+      ],
+      icon: {
+        md: 'md-warning',
+        ios: 'ios-warning',
+        className: ''
+      }
+    }, {
+      cssClass: 'sb-popover warning',
+    });
+    popover.present({
+      ev: event
+    });
+    popover.onDidDismiss(() => {
+      this.navCtrl.pop();
+    });
+  }
+
   openPlayAsPopup(isStreaming) {
     const profile = this.appGlobalService.getCurrentUser();
     this.isUsrGrpAlrtOpen = true;
@@ -1125,9 +1213,11 @@ export class ContentDetailsPage {
       });
 
       if (isStreaming) {
-        const extraInfoMap = {hierarchyInfo: []};
+        const extraInfoMap = { hierarchyInfo: [] };
         if (this.cardData && this.cardData.hierarchyInfo) {
           extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
+        } else if (this.hierarchyInfo && this.hierarchyInfo.hierarchyInfo) {
+          extraInfoMap.hierarchyInfo = this.hierarchyInfo.hierarchyInfo;
         }
 
         const playContent = this.playingContent;
@@ -1139,23 +1229,29 @@ export class ContentDetailsPage {
           isMarked: true,
           extraInfo: extraInfoMap
         };
-        this.contentService.setContentMarker(req).toPromise()
-          .then((data) => {
-            console.log('setContentMarker', data);
-          }).catch(() => {
-        });
+        // this.contentService.setContentMarker(req).toPromise()
+        //   .then((data) => {
+        //     console.log('setContentMarker', data);
+        //   }).catch(() => {
+        // });
       }
       this.downloadAndPlay = false;
       const request: any = {};
       if (isStreaming) {
         request.streaming = isStreaming;
       }
+
+      if (this.isResumedCourse) {
+        this.playingContent.hierarchyInfo = this.hierarchyInfo.hierarchyInfo;
+      }
+
+
       const contentAccessRequest: ContentAccess = {
         status: ContentAccessStatus.PLAYED,
         contentId: this.identifier,
         contentType: this.content.contentType
       };
-      this.profileService.addContentAccess(contentAccessRequest).subscribe();
+     // this.profileService.addContentAccess(contentAccessRequest).subscribe();
       this.playerService.getPlayerConfig(this.playingContent, request).subscribe((data) => {
         data['data'] = {};
         if (data.metadata.mimeType === 'application/vnd.ekstep.ecml-archive') {
@@ -1277,7 +1373,7 @@ export class ContentDetailsPage {
     confirm.onDidDismiss((canDelete: any) => {
       if (canDelete) {
         this.deleteContent();
-        this.viewCtrl.dismiss();
+        // this.viewCtrl.dismiss();
       }
     });
   }
@@ -1324,7 +1420,10 @@ getMessageByConstant(constant: string) {
       this.objRollup,
       this.corRelationList);
     const tmp = this.getDeleteRequestBody();
+    const loader = this.commonUtilService.getLoader();
+    loader.present();
     this.contentService.deleteContent(tmp).toPromise().then((res: any) => {
+      loader.dismiss();
       if (res && res.status === ContentDeleteStatus.NOT_FOUND) {
         this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
       } else {
@@ -1332,11 +1431,15 @@ getMessageByConstant(constant: string) {
         this.events.publish('savedResources:update', {
           update: true
         });
-        this.importContent([this.identifier], this.isChildContent);
+        this.content.contentData.streamingUrl = this.streamingUrl;
+        this.contentDownloadable[this.content.identifier] = false;
+        const playContent = this.playingContent;
+        playContent.isAvailableLocally = false;
         this.contentDownloadable[this.content.identifier] = false;
         this.showToaster(this.getMessageByConstant('MSG_RESOURCE_DELETED'));
       }
     }).catch((error: any) => {
+      loader.dismiss();
       console.log('delete response: ', error);
       this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
     });
@@ -1506,4 +1609,3 @@ getMessageByConstant(constant: string) {
     }
   }
 }
-

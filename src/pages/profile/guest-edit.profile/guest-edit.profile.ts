@@ -121,7 +121,6 @@ export class GuestEditProfilePage {
   ) {
     this.isNewUser = Boolean(this.navParams.get('isNewUser'));
     this.isCurrentUser = Boolean(this.navParams.get('isCurrentUser'));
-    this.previousProfileType = this.profile.profileType;
     if (this.isNewUser) {
       this.profile = this.navParams.get('lastCreatedProfile') || {};
       this.isEditData = false;
@@ -147,6 +146,7 @@ export class GuestEditProfilePage {
         subjects: [this.profile.subject || []]
       });
     }
+    this.previousProfileType = this.profile.profileType;
     this.profileForTelemetry = this.profile;
   }
 
@@ -250,7 +250,7 @@ export class GuestEditProfilePage {
             grades: [[]],
             subjects: [[]]
           });
-          this.guestEditForm.controls['profileType'].setValue('STUDENT');
+          this.guestEditForm.controls['profileType'].setValue(this.ProfileType.STUDENT);
         }
       });
   }

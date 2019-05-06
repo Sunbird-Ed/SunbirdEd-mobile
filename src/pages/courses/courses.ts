@@ -86,7 +86,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
   filterIcon = './assets/imgs/ic_action_filter.png';
   profile: any;
   isVisible = false;
-  inProgressSection = 'In-Progress Course';
+  inProgressSection = 'courses-in-progress';
 
   /**
    * To queue downloaded identifier
@@ -235,7 +235,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
   ionViewWillLeave() {
     this.headerObservable.unsubscribe();
     this.events.unsubscribe('update_header');
-    this.tabBarElement.style.display = 'flex';
+    // this.tabBarElement.style.display = 'flex';
     this.ngZone.run(() => {
       if (this.eventSubscription) {
         this.eventSubscription.unsubscribe();
@@ -289,7 +289,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
 
     this.events.subscribe(EventTopics.ENROL_COURSE_SUCCESS, (res) => {
       if (res && res.batchId) {
-        this.getEnrolledCourses(false, false);
+        this.getEnrolledCourses(false, true);
       }
     });
 
@@ -565,11 +565,16 @@ export class CoursesPage implements OnInit, AfterViewInit {
   }
 
   search() {
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.SEARCH_BUTTON_CLICKED,
+      Environment.HOME,
+      PageId.COURSES);
     this.navCtrl.push(SearchPage, {
       contentType: ContentType.FOR_COURSE_TAB,
       source: PageId.COURSES,
       enrolledCourses: this.enrolledCourses,
-      guestUser: this.guestUser
+      guestUser: this.guestUser,
+      userId: this.userId
     });
   }
 

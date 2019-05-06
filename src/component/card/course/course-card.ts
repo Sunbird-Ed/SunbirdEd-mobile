@@ -99,6 +99,7 @@ export class CourseCard implements OnInit {
       retiredBatches = this.enrolledCourses.filter((element) =>  {
         if (element.contentId === content.identifier && element.batch.status === 1 && element.cProgress !== 100) {
           anyOpenBatch = true;
+          content.batch = element.batch;
         }
         if (element.contentId === content.identifier && element.batch.status === 2 && element.cProgress !== 100) {
           return element;
@@ -134,9 +135,8 @@ export class CourseCard implements OnInit {
       if (!this.guestUser) {
         this.courseService.getCourseBatches(courseBatchesRequest).toPromise()
           .then((data: any) => {
-            data = JSON.parse(data);
             this.zone.run(() => {
-              this.batches = data.result.content;
+              this.batches = data;
               if (this.batches.length) {
                 this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
                   'showing-enrolled-ongoing-batch-popup',
@@ -147,7 +147,8 @@ export class CourseCard implements OnInit {
                 const popover = this.popoverCtrl.create(EnrollmentDetailsPage,
                   {
                     upcommingBatches: this.batches,
-                    retiredBatched: retiredBatched
+                    retiredBatched: retiredBatched,
+                    courseId: content.identifier
                   },
                   { cssClass: 'enrollement-popover' }
                 );

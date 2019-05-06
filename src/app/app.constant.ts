@@ -95,6 +95,7 @@ export class BatchConstants {
     'enrollmentType',
     'hashTagId',
     'startDate',
+    'courseId',
     'status',
     'createdBy',
     'creatorFirstName',

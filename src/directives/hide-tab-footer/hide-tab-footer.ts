@@ -1,10 +1,10 @@
-import { Directive, Renderer2, ElementRef } from '@angular/core';
+import { Directive, Renderer2, ElementRef, OnInit } from '@angular/core';
 import { Events } from 'ionic-angular';
 
 @Directive({
   selector: '[hide-tab-footer]' // Attribute selector
 })
-export class HideTabFooterDirective {
+export class HideTabFooterDirective implements OnInit {
 
   hideTimer: NodeJS.Timer;
 
@@ -12,7 +12,6 @@ export class HideTabFooterDirective {
 
   ngOnInit() {
     this.event.subscribe('hideFooterTabOnScroll', (data) => {
-      console.log('hideFooterTabOnScroll');
       this.renderer.setStyle(document.querySelector('.tabbar'), 'webkitTransition', 'bottom 500ms');
       this.renderer.setStyle(document.querySelector('.tabbar'), 'bottom', '-88px');
       this.hideTimer = setTimeout(() => {

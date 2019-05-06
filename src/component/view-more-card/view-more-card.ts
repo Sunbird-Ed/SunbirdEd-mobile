@@ -7,11 +7,15 @@ import { Component, Input, NgZone, OnInit, Inject } from '@angular/core';
 import { Events, NavController, NavParams, PopoverController } from 'ionic-angular';
 import { ContentType, MimeType, ContentCard } from '../../app/app.constant';
 import { CourseUtilService } from '../../service/course-util.service';
-import { CommonUtilService, TelemetryGeneratorService } from '@app/service';
+import { CommonUtilService, TelemetryGeneratorService, AppGlobalService } from '@app/service';
 import { EnrollmentDetailsPage } from '@app/pages/enrolled-course-details/enrollment-details/enrollment-details';
 import {
-  CourseBatchesRequest, CourseEnrollmentType,
-  CourseBatchStatus, CourseService
+  CourseBatchesRequest,
+  CourseEnrollmentType,
+  CourseBatchStatus,
+  CourseService,
+  FetchEnrolledCourseRequest,
+  Course
 } from 'sunbird-sdk';
 import { Environment, PageId, InteractType } from '../../service/telemetry-constants';
 
@@ -46,6 +50,8 @@ export class ViewMoreCardComponent implements OnInit {
 
   @Input() guestUser: any;
 
+  @Input() userId: any;
+
   /**
    * Contains default image path.
    *
@@ -75,7 +81,8 @@ export class ViewMoreCardComponent implements OnInit {
     private commonUtilService: CommonUtilService,
     @Inject('COURSE_SERVICE') private courseService: CourseService,
     private popoverCtrl: PopoverController,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private appGlobalService: AppGlobalService
   ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
@@ -90,6 +97,7 @@ export class ViewMoreCardComponent implements OnInit {
       retiredBatches = this.enrolledCourses.filter((element) => {
         if (element.contentId === content.identifier && element.batch.status === 1 && element.cProgress !== 100) {
           anyOpenBatch = true;
+          content.batch = element.batch;
         }
         if (element.contentId === content.identifier && element.batch.status === 2 && element.cProgress !== 100) {
           return element;
@@ -121,9 +129,8 @@ export class ViewMoreCardComponent implements OnInit {
         // loader.present();
         this.courseService.getCourseBatches(courseBatchesRequest).toPromise()
           .then((data: any) => {
-            data = JSON.parse(data);
             this.zone.run(() => {
-              this.batches = data.result.content;
+              this.batches = data;
               if (this.batches.length) {
                 this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
                   'showing-enrolled-ongoing-batch-popup',
@@ -134,10 +141,16 @@ export class ViewMoreCardComponent implements OnInit {
                 const popover = this.popoverCtrl.create(EnrollmentDetailsPage,
                   {
                     upcommingBatches: this.batches,
-                    retiredBatched: retiredBatched
+                    retiredBatched: retiredBatched,
+                    courseId: content.identifier
                   },
                   { cssClass: 'enrollement-popover' }
                 );
+                popover.onDidDismiss(enrolled => {
+                  if (enrolled) {
+                    this.getEnrolledCourses();
+                  }
+                });
                 // this.navCtrl.push(EnrollmentDetailsPage, {
                 //   ongoingBatches: ongoingBatches,
                 //   upcommingBatches: upcommingBatches
@@ -210,4 +223,38 @@ export class ViewMoreCardComponent implements OnInit {
       this.batchExp = false;
     }
   }
+
+    /**
+   * To get enrolled course(s) of logged-in user.
+   *
+   * It internally calls course handler of genie sdk
+   */
+  getEnrolledCourses(refreshEnrolledCourses: boolean = true, returnRefreshedCourses: boolean = false): void {
+
+    const option: FetchEnrolledCourseRequest = {
+      userId: this.userId,
+      returnFreshCourses: returnRefreshedCourses
+    };
+    this.courseService.getEnrolledCourses(option).toPromise()
+      .then((enrolledCourses) => {
+        if (enrolledCourses) {
+          this.zone.run(() => {
+            this.enrolledCourses = enrolledCourses ? enrolledCourses : [];
+            if (this.enrolledCourses.length > 0) {
+              const courseList: Array<Course> = [];
+              for (const course of this.enrolledCourses) {
+                courseList.push(course);
+              }
+
+              this.appGlobalService.setEnrolledCourseList(courseList);
+            }
+
+            // this.showLoader = false;
+          });
+        }
+      }, (err) => {
+        // this.showLoader = false;
+      });
+  }
+
 }

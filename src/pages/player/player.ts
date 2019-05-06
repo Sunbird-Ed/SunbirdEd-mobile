@@ -49,6 +49,11 @@ export class PlayerPage implements playerActionHandlerDelegate {
     this.config = this.navParams.get('config');
     this.config['uid'] = this.config['context'].actor.id;
 
+
+    if (this.config['metadata'].mimeType === 'video/x-youtube') {
+      this.previewElement.nativeElement.setAttribute("sandbox", "allow-scripts allow-top-navigation allow-same-origin");
+    }
+
     // This is to reload a iframe as iframes reload method not working on cross-origin.
     const src = this.previewElement.nativeElement.src;
     this.previewElement.nativeElement.src = '';
@@ -116,6 +121,9 @@ export class PlayerPage implements playerActionHandlerDelegate {
     } catch (err) {
       console.error("End telemetry error:", err.message)
     }
+    this.events.publish(EventTopics.PLAYER_CLOSED, {
+      selectedUser: this.appGlobalService.getSelectedUser()
+    });
     this.navCtrl.pop();
   }
 
@@ -146,9 +154,6 @@ export class PlayerPage implements playerActionHandlerDelegate {
             this.previewElement.nativeElement.contentWindow['EkstepRendererAPI'].dispatchEvent("renderer:telemetry:end")
 
             this.closeIframe();
-            this.events.publish(EventTopics.PLAYER_CLOSED, {
-              selectedUser: this.appGlobalService.getSelectedUser()
-            });
           }
         }
       ]

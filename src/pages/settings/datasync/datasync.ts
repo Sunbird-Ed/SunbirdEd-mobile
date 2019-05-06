@@ -92,10 +92,22 @@ export class DatasyncPage {
   onSelected() {
     /*istanbul ignore else */
     if (this.dataSyncType !== undefined) {
+    this.generateSyncTypeInteractTelemetry(this.dataSyncType);
       this.preferences.putString(PreferenceKey.KEY_DATA_SYNC_TYPE, this.dataSyncType).toPromise().then();
     }
   }
-
+  generateSyncTypeInteractTelemetry(dataSyncType: string) {
+    const value = new Map();
+      value['dataSyncType'] = dataSyncType;
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        InteractSubtype.DATA_SYNC_TYPE,
+        Environment.SETTINGS,
+        PageId.SETTINGS_DATASYNC,
+        undefined,
+        value
+    );
+  }
   getLastSyncTime() {
     this.telemetryService.getTelemetryStat().subscribe((syncStat: TelemetryStat) => {
       const that = this;
@@ -137,7 +149,7 @@ export class DatasyncPage {
     const loader = this.commonUtilService.getLoader();
     loader.present();
     this.generateInteractEvent(InteractType.TOUCH, InteractSubtype.MANUALSYNC_INITIATED, null);
-    this.telemetryService.sync()
+    this.telemetryService.sync(true)
       .subscribe((syncStat: TelemetrySyncStat) => {
 
         that.zone.run(() => {
