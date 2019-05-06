@@ -1,18 +1,19 @@
-import { Directive, Renderer2, ElementRef, OnInit } from '@angular/core';
+import { Directive, Renderer2, ElementRef } from '@angular/core';
 import { Events } from 'ionic-angular';
 
 @Directive({
-  selector: '[hide-header]'
+  selector: '[hide-resourse-filter]' // Attribute selector
 })
-export class HideHeaderDirective implements OnInit {
+export class HideResourseFilterDirective {
   hideTimer: NodeJS.Timer;
 
   constructor(private elemRef: ElementRef, private renderer: Renderer2, public event: Events) {}
 
   ngOnInit() {
-    this.event.subscribe('hideHeaderOnScroll', (data) => {
+    this.event.subscribe('hideResourseFilterOnScroll', (data) => {
+      console.log('hideResourseFilterOnScroll', data);
       this.renderer.setStyle(this.elemRef.nativeElement, 'webkitTransition', 'top 200ms');
-      this.renderer.setStyle(this.elemRef.nativeElement, 'top', '-56px');
+      this.renderer.setStyle(this.elemRef.nativeElement, 'top', '-170px');
       this.hideTimer = setTimeout(() => {
         this.renderer.setStyle(this.elemRef.nativeElement, 'webkitTransition', 'top 500ms');
         this.renderer.setStyle(this.elemRef.nativeElement, 'top', '0px');
