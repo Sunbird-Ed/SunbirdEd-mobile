@@ -49,7 +49,7 @@
 
 <!-- Update Popup -->
 <div class="sb-popover sb-popover-download" *ngIf="!this.showPopover && this.isUpdateAvail && contentName && this.popupUpdate">
-    <div class="backdrop"></div>
+    <div class="backdrop" (click)="togglePopover(); this.showPopover = !this.showPopover"></div>
     <div class="popover-content">
       <ion-header class="sb-popover-header">
         <ion-toolbar class="sb-popover-toolbar">
