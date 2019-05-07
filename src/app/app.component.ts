@@ -19,6 +19,8 @@ import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
 import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
 import {
   AuthService,
+  EventNamespace,
+  EventsBusService,
   OAuthSession,
   ProfileService,
   ProfileType,
@@ -79,6 +81,7 @@ export class MyApp implements OnInit, AfterViewInit {
     @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
     @Inject('AUTH_SERVICE') private authService: AuthService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     private platform: Platform,
     private statusBar: StatusBar,
     private toastCtrl: ToastController,
@@ -121,6 +124,7 @@ export class MyApp implements OnInit, AfterViewInit {
       this.requestAppPermissions();
       this.makeEntryInSupportFolder();
       this.checkForTncUpdate();
+      this.handleAuthErrors();
       await this.getSelectedLanguage();
       await this.navigateToAppropriatePage();
       this.handleSunbirdSplashScreenActions();
@@ -714,4 +718,9 @@ export class MyApp implements OnInit, AfterViewInit {
     }
   }
 
+  private handleAuthErrors() {
+    this.eventsBusService.events(EventNamespace.ERROR).take(1).subscribe(() => {
+      this.logoutHandlerService.onLogout();
+    });
+  }
 }
