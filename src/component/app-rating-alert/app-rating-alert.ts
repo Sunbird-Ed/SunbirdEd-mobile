@@ -95,12 +95,12 @@ export class AppRatingAlertComponent {
     });
   }
 
-   closePopover() {
+  closePopover() {
     this.viewCtrl.dismiss(null);
   }
 
   async rateLater() {
-    this.rateLaterClickedCount = Number(await this.appRatingService.rateLaterClickedCount());
+    this.rateLaterClickedCount = await this.appRatingService.rateLaterClickedCount();
     const paramsMap = new Map();
     paramsMap['rateLaterCount'] = this.rateLaterClickedCount;
     await this.telemetryGeneratorService.generateInteractTelemetry(
@@ -131,21 +131,21 @@ export class AppRatingAlertComponent {
   }
 
   submitRating(rating) {
-      if (rating >= StoreRating.APP_MIN_RATE) {
-        this.currentViewText = this.appRateView[ViewType.STORE_RATE];
-        this.appRate = rating;
-        const paramsMap = new Map();
-        paramsMap['appRating'] = rating;
-        this.telemetryGeneratorService.generateInteractTelemetry(
-          InteractType.TOUCH,
-          InteractSubtype.RATING_SUBMITTED,
-          Environment.HOME,
-          this.pageId, undefined, paramsMap,
-          undefined, undefined
-        );
-        return;
-      }
-      this.currentViewText = this.appRateView[ViewType.HELP_DESK];
+    if (rating >= StoreRating.APP_MIN_RATE) {
+      this.currentViewText = this.appRateView[ViewType.STORE_RATE];
+      this.appRate = rating;
+      const paramsMap = new Map();
+      paramsMap['appRating'] = rating;
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        InteractSubtype.RATING_SUBMITTED,
+        Environment.HOME,
+        this.pageId, undefined, paramsMap,
+        undefined, undefined
+      );
+      return;
+    }
+    this.currentViewText = this.appRateView[ViewType.HELP_DESK];
     const paramsMap = new Map();
     paramsMap['appRating'] = rating;
     this.telemetryGeneratorService.generateInteractTelemetry(
@@ -158,13 +158,11 @@ export class AppRatingAlertComponent {
   }
 
   goToHelpSection() {
-    const paramsMap = new Map();
-    paramsMap['helpSectionWentAfterRating'] = this.appRate;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.HELP_SECTION_CLICKED,
       Environment.HOME,
-      this.pageId, undefined, paramsMap, undefined, undefined
+      this.pageId, undefined, undefined, undefined
     );
   }
 
@@ -179,21 +177,18 @@ export class AppRatingAlertComponent {
     );
   }
 
-  calculateAppRatingCountAppeared(value) {
-    // this.appRatingPopupAppeared = this.appRatingPopupAppeared + 1;
-    this.preference.putString(PreferenceKey.APP_RATING_POPUP_APPEARED, String(value)).toPromise().then();
+  async calculateAppRatingCountAppeared(value) {
+    return this.preference.putString(PreferenceKey.APP_RATING_POPUP_APPEARED, String(value)).toPromise().then(() => value);
   }
 
   async countAppRatingPopupAppeared() {
-    return this.preference.getString(PreferenceKey.APP_RATE_LATER_CLICKED).toPromise().then((val) => {
+    return this.preference.getString(PreferenceKey.APP_RATE_LATER_CLICKED).toPromise().then(async (val) => {
       if (val) {
-        // this.appRatingPopupAppeared = Number(val);
         const incrementedVal = Number(val) + 1;
-        this.calculateAppRatingCountAppeared(incrementedVal);
+        await this.calculateAppRatingCountAppeared(incrementedVal);
         return incrementedVal;
       } else {
-        this.calculateAppRatingCountAppeared(1);
-        return ;
+        return this.calculateAppRatingCountAppeared(1);
       }
     });
   }
