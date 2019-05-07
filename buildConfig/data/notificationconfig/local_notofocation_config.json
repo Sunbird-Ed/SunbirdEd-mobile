@@ -1,0 +1,14 @@
+{
+    "id": 1004,
+    "type": 1,
+    "data": {
+      "start": "2 12:25",
+      "interval": "week",
+      "translations": {
+        "en": {
+          "title": "Sunbird",
+          "msg": "Learn something new on DIKSHA today!"
+        }
+      }
+    }
+}

@@ -1,13 +1,14 @@
 
-import { Component, ViewChild, ComponentFactoryResolver } from '@angular/core';
+import { Component, ViewChild, Inject } from '@angular/core';
 import { ContainerService } from '../../service/container.services';
 import { Tabs, Tab, Events, ToastController } from 'ionic-angular';
 import { NavParams } from 'ionic-angular';
-import { LocalNotifications, ELocalNotificationTriggerUnit } from '@ionic-native/local-notifications/ngx';
-import { LocalNotificationConfig } from '@app/app';
+import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 import { TelemetryGeneratorService } from '@app/service';
-import { ImpressionType, ImpressionSubtype, Environment, InteractType, InteractSubtype, PageId } from '@app/service/telemetry-constants';
-import { TelemetryObject } from 'sunbird-sdk';
+import { Environment, InteractType, InteractSubtype, PageId } from '@app/service/telemetry-constants';
+import { SharedPreferences } from 'sunbird-sdk';
+import { PreferenceKey } from '@app/app';
+import { File } from '@ionic-native/file';
 
 declare const cordova;
 
@@ -20,19 +21,7 @@ declare const cordova;
 })
 export class TabsPage {
 
-  dummyData: any = {
-    id: 1004,
-    type: 1,
-    data: {
-      start: '4 19:00',
-      interval: 'week',
-      translations: {
-        en: {
-          title: 'Learn something new on DIKSHA today!',
-        }
-      }
-    }
-  };
+  configData: any;
 
   @ViewChild('myTabs') tabRef: Tabs;
   tabIndex = 0;
@@ -42,9 +31,12 @@ export class TabsPage {
     showBurgerMenu: true,
     actionButtons: ['search', 'filter'],
   };
-  constructor(private container: ContainerService, private navParams: NavParams, private events: Events,
+  selectedLanguage: string;
+  constructor(
+    private container: ContainerService, private navParams: NavParams, private events: Events,
     public toastCtrl: ToastController, private localNotifications: LocalNotifications,
-    private telemetryGeneratorService: TelemetryGeneratorService) {
+    private telemetryGeneratorService: TelemetryGeneratorService, private file: File,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences) {
       const notifcationData = cordova.plugins.notification.local.launchDetails;
       if (notifcationData !== undefined) {
         const values = new Map();
@@ -62,17 +54,28 @@ export class TabsPage {
           PageId.HOME);
       }
 
-      cordova.plugins.notification.local.getScheduledIds( (val) => {
-        if (this.dummyData.id !== val[val.length - 1]) {
-          this.localNotification();
-        } else {
+      this.file.readAsText(this.file.applicationDirectory + 'www/assets/data', 'local_notofocation_config.json').then( data => {
+        this.configData = JSON.parse(data);
+        cordova.plugins.notification.local.getScheduledIds( (val) => {
+          if (this.configData.id !== val[val.length - 1]) {
+            this.localNotification();
+          }
+        });
+      });
+  }
+
+  getPreffLanCode() {
+    this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
+      .then(val => {
+        if (val && val.length) {
+          this.selectedLanguage = val;
         }
       });
   }
 
   triggerConfig() {
-    console.log(this.dummyData);
-    let d1 = this.dummyData.data.start;
+    console.log(this.configData);
+    let d1 = this.configData.data.start;
     d1 = d1.split(' ');
     const hour = +d1[1].split(':')[0];
     const minute = +d1[1].split(':')[1];
@@ -86,20 +89,20 @@ export class TabsPage {
         minute: '',
         hour: ''
       };
-      if (!isNaN(+this.dummyData.data.interval) && typeof(+this.dummyData.data.interval) === 'number') {
-        every.day = +this.dummyData.data.interval;
-      } else if (typeof(this.dummyData.data.interval) === 'string') {
-        every[this.dummyData.data.interval] = +d1[0];
+      if (!isNaN(+this.configData.data.interval) && typeof(+this.configData.data.interval) === 'number') {
+        every.day = +this.configData.data.interval;
+      } else if (typeof(this.configData.data.interval) === 'string') {
+        every[this.configData.data.interval] = +d1[0];
       }
       every.hour = hour;
       every.minute = minute;
       trigger.every = every;
       console.log(trigger);
     } else if (d1.length === 3) {
-      trigger.firstAt = new Date(this.dummyData.data.start);
-      trigger.every = this.dummyData.data.interval;
-      if (this.dummyData.data.occurance)  {
-        trigger.count = this.dummyData.data.occurance;
+      trigger.firstAt = new Date(this.configData.data.start);
+      trigger.every = this.configData.data.interval;
+      if (this.configData.data.occurance)  {
+        trigger.count = this.configData.data.occurance;
       }
       console.log(trigger);
     }
@@ -107,17 +110,24 @@ export class TabsPage {
   }
 
   localNotification() {
-    const lang = Object.keys(this.dummyData.data.translations)[0];
-    // TODO check user language condition
     const trigger = this.triggerConfig();
     const img = cordova.file.applicationDirectory + 'www/assets/imgs/ic_launcher.png';
-    cordova.plugins.notification.local.schedule({
-      id: this.dummyData.id,
-      title: this.dummyData.data.translations[lang].title,
-      sound: 'file://sound.mp3',
-      icon: 'res://icon',
-      smallIcon: 'res://n_icon',
-      trigger: trigger
+
+    this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
+      .then(val => {
+        if (val && val.length) {
+          this.selectedLanguage = val;
+          console.log('lang code: ', this.selectedLanguage);
+          cordova.plugins.notification.local.schedule({
+            id: this.configData.id,
+            title: this.configData.data.translations[this.selectedLanguage].title,
+            text: this.configData.data.translations[this.selectedLanguage].msg,
+            sound: 'file://sound.mp3',
+            icon: 'res://icon',
+            smallIcon: 'res://n_icon',
+            trigger: trigger
+          });
+      }
     });
   }
 
