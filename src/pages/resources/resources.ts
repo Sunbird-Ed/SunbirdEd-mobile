@@ -1052,6 +1052,11 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   redirectToActivedownloads() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.ACTIVE_DOWNLOADS_CLICKED,
+      Environment.HOME,
+      PageId.LIBRARY);
     this.navCtrl.push(ActiveDownloadsPage);
   }
 

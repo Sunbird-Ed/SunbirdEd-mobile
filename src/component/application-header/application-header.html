@@ -47,7 +47,7 @@
             <img src="./assets/imgs/active_download.png" class="tool-icon dw-icon" [ngClass]="{'jump-animation': showDownloadAnimation}">
         </button> -->
         <button ion-button icon-only *ngIf="headerConfig?.actionButtons?.indexOf('notification') >=0"
-          (click)="emitEvent($event, 'notification');">
+          (click)="emitEvent($event, 'notification');" class="active-download-icon">
           <ion-icon name="notifications-outline"></ion-icon>
         </button>
         <button ion-button icon-only *ngIf="headerConfig?.actionButtons?.indexOf('search') >=0"
