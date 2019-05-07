@@ -1,6 +1,6 @@
-import { appLanguages } from './../../app/app.constant';
-import { AppGlobalService } from './../../service/app-global.service';
-import { CommonUtilService } from './../../service/common-util.service';
+import { appLanguages } from '../../app/app.constant';
+import { AppGlobalService } from '../../service/app-global.service';
+import { CommonUtilService } from '../../service/common-util.service';
 import { AppHeaderService, TelemetryGeneratorService, UtilityService } from '@app/service';
 import { Component, Inject } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
@@ -16,15 +16,16 @@ const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
 const SUBJECT_NAME = 'support request';
 @IonicPage()
 @Component({
-  selector: 'page-help',
-  templateUrl: 'help.html',
+  selector: 'faq-help',
+  templateUrl: 'faq.html',
 })
-export class HelpPage {
+export class FaqPage {
 
-  trustedVideoUrl: SafeResourceUrl;
+  consumptionFaqUrl: SafeResourceUrl;
 
-  video: any = {
-    url: 'https://ankur01oct.github.io/index.html?selectedlang='
+  faq: any = {
+    url: 'https://ankur01oct.github.io/consumption-faqs.html?selectedlang='
+    // url: 'file:///android_asset/www/assets/faq/index.html?selectedlang='
   };
   selectedLanguage: string;
   chosenLanguageString: any;
@@ -47,6 +48,12 @@ export class HelpPage {
               private headerService: AppHeaderService) {
   }
 
+  ionViewDidLoad() {
+    (<any>window).addEventListener('message', (event) => {
+      this.receiveMessage(event);
+    }, false);
+  }
+
  async ionViewWillEnter() {
     this.headerService.showHeaderWithBackButton();
     this.appVersion.getAppName()
@@ -61,18 +68,35 @@ export class HelpPage {
         })[0].code ;
       });
       if (this.selectedLanguage) {
-        this.video.url += this.selectedLanguage;
+        this.faq.url += this.selectedLanguage + '&randomid=' + Math.random();
       }
-        this.trustedVideoUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.video.url);
-        (<any>window).addEventListener('message', (event) => {
-          this.receiveMessage(event);
-        }, false);
+      if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
+        this.faq.url = 'file:///android_asset/www/assets/faq/index.html?selectedlang=en&randomid=' + Math.random();
+      }
+        this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
   }
+  onLoad() {
+    console.log('onLoad executed');
+}
+
+  ionViewDidLeave() {
+    (<any>window).supportfile.removeFile(
+      result => ({}),
+      error => {
+        console.error('error' + error);
+      });
+      this.consumptionFaqUrl = undefined;
+  }
+
+  ionViewWillLeave() {
+    document.getElementById('iframeId').remove();
+  }
+
   receiveMessage(event) {
   const values = new Map();
   values['values'] = event.data;
   // send telemetry for all events except Initiate-Email
-  if (event.data && event.data.action && event.data.action !== 'Initiate-Email-Clicked') {
+  if (event.data && event.data.action && event.data.action !== 'initiate-email-clicked') {
   this.generateInteractTelemetry(event.data.action, values);
   } else {
     this.generateInteractTelemetry(event.data.action, values);
@@ -85,7 +109,7 @@ generateInteractTelemetry(interactSubtype, values) {
   this.telemetryGeneratorService.generateInteractTelemetry(
     InteractType.TOUCH, interactSubtype,
     Environment.USER,
-    PageId.HELP, undefined,
+    PageId.FAQ, undefined,
     values,
     undefined
   );

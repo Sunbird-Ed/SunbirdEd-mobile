@@ -56,7 +56,7 @@ export enum PageId {
     NOTIFICATION_LIST = 'notifiaction-list',
     SIGNIN_OVERLAY = 'signin-overlay',
     SETTINGS = 'settings',
-    HELP = 'help',
+    FAQ = 'faq',
     SETTINGS_LANGUAGE = 'settings-language',
     SETTINGS_DATASYNC = 'settings-datasync',
     SETTINGS_DEVICE_TAGS = 'settings-device-tags',

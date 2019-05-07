@@ -1,17 +1,17 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { HelpPage } from './help';
+import { FaqPage } from './faq';
 import { TranslateModule } from '@ngx-translate/core';
 import { LanguageSettingsPageModule } from '../language-settings/language-settings.module';
 
 @NgModule({
   declarations: [
-    HelpPage,
+    FaqPage,
   ],
   imports: [
-    IonicPageModule.forChild(HelpPage),
+    IonicPageModule.forChild(FaqPage),
     TranslateModule.forChild(),
     LanguageSettingsPageModule
   ],
 })
-export class HelpPageModule {}
+export class FaqPageModule {}
