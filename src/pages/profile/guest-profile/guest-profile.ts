@@ -1,3 +1,4 @@
+import { ActiveDownloadsPage } from './../../active-downloads/active-downloads';
 import {TranslateService} from '@ngx-translate/core';
 import {Component, Inject, OnInit, AfterViewInit} from '@angular/core';
 import {Events, NavController, PopoverController} from 'ionic-angular';
@@ -17,7 +18,7 @@ import {
   ProfileType,
   SharedPreferences
 } from 'sunbird-sdk';
-import {PageId, Environment} from '../../../service/telemetry-constants';
+import {PageId, Environment, InteractType, InteractSubtype} from '../../../service/telemetry-constants';
 import {ProfileConstants} from '../../../app';
 
 @Component({
@@ -108,12 +109,12 @@ export class GuestProfilePage implements OnInit, AfterViewInit {
 
   ionViewWillEnter() {
     this.events.subscribe('update_header', (data) => {
-      this.headerServie.showHeaderWithHomeButton();
+      this.headerServie.showHeaderWithHomeButton(['download']);
     });
     this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
-    this.headerServie.showHeaderWithHomeButton();
+    this.headerServie.showHeaderWithHomeButton(['download']);
   }
 
   ngAfterViewInit() {
@@ -259,7 +260,20 @@ export class GuestProfilePage implements OnInit, AfterViewInit {
   }
 
   handleHeaderEvents($event) {
-    // Handle any click on headers
+    switch ($event.name) {
+      case 'download':
+        this.redirectToActivedownloads();
+        break;
+    }
+  }
+
+  private redirectToActivedownloads() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.ACTIVE_DOWNLOADS_CLICKED,
+      Environment.HOME,
+      PageId.GUEST_PROFILE);
+    this.navCtrl.push(ActiveDownloadsPage);
   }
 
 }

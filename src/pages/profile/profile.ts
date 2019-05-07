@@ -1,3 +1,4 @@
+import { ActiveDownloadsPage } from './../active-downloads/active-downloads';
 import { Component, NgZone, OnInit, AfterViewInit, Inject} from '@angular/core';
 import {
   App,
@@ -690,7 +691,20 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   handleHeaderEvents($event) {
-    // Handle any click on headers
+    switch ($event.name) {
+      case 'download':
+        this.redirectToActivedownloads();
+        break;
+    }
+  }
+
+  private redirectToActivedownloads() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.ACTIVE_DOWNLOADS_CLICKED,
+      Environment.HOME,
+      PageId.PROFILE);
+    this.navCtrl.push(ActiveDownloadsPage);
   }
 
   toggleTooltips(event, field) {

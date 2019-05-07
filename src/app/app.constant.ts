@@ -146,7 +146,7 @@ export class ShareUrl {
 export class MenuOverflow {
     public static readonly MENU_GUEST = ['USERS_AND_GROUPS', 'REPORTS', 'SETTINGS'];
     public static readonly MENU_LOGIN = ['USERS_AND_GROUPS', 'REPORTS', 'SETTINGS', 'LOGOUT'];
-    public static readonly DOWNLOAD_FILTERS = ['Content size', 'Last viewed'];
+    public static readonly DOWNLOAD_FILTERS = ['CONTENT_SIZE', 'LAST_VIEWED'];
 }
 
 export class SideMenu {
