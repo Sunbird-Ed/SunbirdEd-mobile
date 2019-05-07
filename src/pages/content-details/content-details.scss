@@ -49,3 +49,11 @@ page-content-details {
     grid-template-columns: auto;
 }
 
+.disable-ripple ion-button-effect {
+    display: none;
+}
+
+.disable-ripple {
+    pointer-events: none;
+}
+
