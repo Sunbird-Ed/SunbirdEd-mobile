@@ -1065,7 +1065,7 @@ export class CollectionDetailsEtbPage implements OnInit {
 
       const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
         sbPopoverHeading: this.commonUtilService.translateMessage('DOWNLOAD'),
-        sbPopoverMainTitle: this.contentDetail.contentData.name + this.contentDetail.contentData.subject,
+        sbPopoverMainTitle: this.contentDetail.contentData.name,
         actionsButtons: [
           {
             btntext: this.commonUtilService.translateMessage('DOWNLOAD'),
