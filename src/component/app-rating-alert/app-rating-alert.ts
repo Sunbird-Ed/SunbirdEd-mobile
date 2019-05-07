@@ -35,7 +35,7 @@ export class AppRatingAlertComponent {
 
   public currentViewText: ViewText;
   public appLogo$: Observable<string>;
-  public appName$: Observable<string>;
+  public appName: string;
   backButtonFunc = undefined;
 
   constructor(private viewCtrl: ViewController,
@@ -46,13 +46,20 @@ export class AppRatingAlertComponent {
     private translate: TranslateService,
     private platform: Platform,
   ) {
+    this.getAppName();
     this.appLogo$ = this.preference.getString('app_logo').map((logo) => logo || './assets/imgs/ic_launcher.png');
-    this.appName$ = this.preference.getString('app_name');
     this.currentViewText = this.appRateView[ViewType.APP_RATE];
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.viewCtrl.dismiss(null);
       this.backButtonFunc();
     }, 20);
+  }
+
+  getAppName() {
+    this.appVersion.getAppName()
+      .then((appName: any) => {
+        this.appName = appName;
+      });
   }
 
   ionViewDidLoad() {
