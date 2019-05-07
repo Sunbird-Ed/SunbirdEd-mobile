@@ -227,7 +227,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
       InteractType.TOUCH,
       InteractSubtype.DELETE_CLICKED,
       Environment.DOWNLOADS,
-      PageId.BULK_DELETE_CONFIRMATION_POPUP);
+      PageId.BULK_DELETE_CONFIRMATION_POPUP, undefined, valuesMap);
     const contentDeleteRequest: ContentDeleteRequest = {
       contentDeleteList: emitedContents.selectedContents
     };
@@ -323,17 +323,17 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     console.log('inside handleHeaderEvents', $event);
     switch ($event.name) {
       case 'download':
-        this.telemetryGeneratorService.generateInteractTelemetry(
-          InteractType.TOUCH,
-          InteractSubtype.ACTIVE_DOWNLOADS_CLICKED,
-          Environment.DOWNLOADS,
-          PageId.DOWNLOADS);
         this.redirectToActivedownloads();
         break;
     }
   }
 
   redirectToActivedownloads() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.ACTIVE_DOWNLOADS_CLICKED,
+      Environment.DOWNLOADS,
+      PageId.DOWNLOADS);
     this.navCtrl.push(ActiveDownloadsPage);
   }
 

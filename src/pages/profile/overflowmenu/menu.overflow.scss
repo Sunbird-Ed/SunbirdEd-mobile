@@ -3,7 +3,7 @@ menu-overflow{
 }
 .box.download-popover{
     .popover-content{
-        top: 180px !important;
+        transform: scale(1) translateY(34px) !important;
         background: #FAFAFA;
         .item{
             .label{

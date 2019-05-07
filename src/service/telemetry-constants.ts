@@ -94,7 +94,10 @@ export enum PageId {
     DOWNLOADS = 'downloads',
     SINGLE_DELETE_CONFIRMATION_POPUP = 'single-delete-confirmation-popup',
     BULK_DELETE_POPUP = 'bulk-delete-popup',
-    BULK_DELETE_CONFIRMATION_POPUP = 'bulk-delete-confirmation-popup'
+    BULK_DELETE_CONFIRMATION_POPUP = 'bulk-delete-confirmation-popup',
+    ACTIVE_DOWNLOADS = 'active-downloads',
+    SINGLE_CANCEL_CONFIRMATION_POPUP = 'single-cancel-confirmation-popup',
+    BULK_CANCEL_CONFIRMATION_POPUP = 'bulk-cancel-confirmation-popup'
 }
 export enum LogType {
     NOTIFICATION = 'notification'
@@ -256,7 +259,9 @@ export enum InteractSubtype {
     SORT_OPTION_SELECTED = 'sort-options-selected',
     ACTION_BUTTON_CLICKED = 'action-button-clicked',
     OUTSIDE_POPUP_AREA_CLICKED = 'outside-popup-area-clicked',
-    POPUP_DISMISSED= 'popup-dismissed'
+    POPUP_DISMISSED= 'popup-dismissed',
+    DOWNLOAD_CANCEL_ALL_CLICKED = 'download-cancel-all-clicked',
+    DOWNLOAD_CANCEL_CLICKED = 'download-cancel-clicked'
 }
 
 export enum ActionButtonType {
