@@ -1,6 +1,7 @@
-import { Search } from './../../app/app.constant';
-import { AfterViewInit, Component, Inject, NgZone, OnInit, ViewChild } from '@angular/core';
-import { Events, NavController, ToastController, MenuController, Scroll, Tabs } from 'ionic-angular';
+import { ActiveDownloadsPage } from '@app/pages/active-downloads/active-downloads';
+import {Search} from './../../app/app.constant';
+import {AfterViewInit, Component, Inject, NgZone, OnInit, ViewChild} from '@angular/core';
+import {Events, NavController, ToastController, MenuController, Scroll, Tabs} from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
@@ -407,6 +408,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 	 * Load/get recently viewed content
 	 */
   async loadRecentlyViewedContent() {
+    this.recentlyViewedResources = [];
     this.showLoader = true;
     const requestParams: ContentRequest = {
       uid: this.profile ? this.profile.uid : undefined,
@@ -730,12 +732,12 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   ionViewWillEnter() {
     this.events.subscribe('update_header', (data) => {
-      this.headerServie.showHeaderWithHomeButton(['search']);
+      this.headerServie.showHeaderWithHomeButton(['search', 'download']);
     });
     this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
-    this.headerServie.showHeaderWithHomeButton(['search']);
+    this.headerServie.showHeaderWithHomeButton(['search', 'download']);
 
     this.getCategoryData();
 
@@ -1043,7 +1045,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     switch ($event.name) {
       case 'search': this.search();
         break;
+      case 'download': this.redirectToActivedownloads();
+      break;
+
     }
+  }
+
+  redirectToActivedownloads() {
+    this.navCtrl.push(ActiveDownloadsPage);
   }
 
   toggleMenu() {

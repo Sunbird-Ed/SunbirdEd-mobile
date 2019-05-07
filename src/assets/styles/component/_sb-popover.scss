@@ -205,3 +205,45 @@
         background-color: $tertiary-color;
     }
 }
+
+.sb-popover.no-network{
+    ion-backdrop{
+        background-color: $white-color;
+        opacity: 0;
+    }
+
+    .popover-content {
+        left: 0px !important;
+        right: 0px;
+        bottom: auto !important;
+        top: 58px !important;
+        width: auto !important;
+    }
+}
+
+.sb-popover.sb-popover-cancel-delete{
+    .sb-popover-items{
+        .sb-popover-content-details{
+            .main-title{
+                font-size: $font-size-md;
+                font-weight: bold;
+                color: $gray-400;
+                .meta-info{
+                    color: $gray-800;
+                    font-size: $font-size-base;
+                    font-weight: normal;
+                }
+            }
+            
+        } 
+    } 
+    .sb-popover-footer .sb-popover-action-btn.cancel-delete{
+        border-color: $red;
+        color: $red;
+        max-width: 50%;
+        box-shadow: none;
+        border-radius: 2px;
+        @extend .flex-grow-1;
+        
+    }
+}

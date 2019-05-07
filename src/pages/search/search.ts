@@ -901,7 +901,8 @@ export class SearchPage implements  OnDestroy {
 
     const option: ContentImportRequest = {
       contentImportArray: this.getImportContentRequestBody([parent.identifier], false),
-      contentStatusArray: []
+      contentStatusArray: [],
+      fields: ['appIcon', 'name', 'subject', 'size', 'gradeLevel']
     };
     // Call content service
     this.contentService.importContent(option).toPromise()
