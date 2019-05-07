@@ -176,7 +176,7 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
       icon: null,
       // metaInfo: this.content.contentData.name,
     }, {
-        cssClass: 'sb-popover danger',
+        cssClass: 'sb-popover danger dw-active-downloads-popover',
       });
 
     confirm.present({
