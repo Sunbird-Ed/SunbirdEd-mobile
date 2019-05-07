@@ -3,7 +3,7 @@
         <div class="sb-view-all-title flex-grow-1">
             <div class="page-heading">{{'DOWNLOAD_BNAV' | translate}}</div>
             <div class="page-info o-hide" >
-            <div class="pull-left">{{'SPACE_TAKEN' | translate: {'%s': appName } }}: {{storageInfo?.usedSpace | fileSize}}<b></b></div>
+            <div class="pull-left">{{'SPACE_TAKEN' | translate: {'%s': appName } }}: <b>{{storageInfo?.usedSpace | fileSize}}</b></div>
             <div class="pull-right">{{'Available' | translate}}: {{storageInfo?.availableSpace | fileSize}}</div>
             </div>
         </div>
