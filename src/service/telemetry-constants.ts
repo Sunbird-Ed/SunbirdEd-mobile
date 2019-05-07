@@ -2,6 +2,7 @@ export enum Environment {
     HOME = 'home',
     COURSE = 'course',
     LIBRARY = 'library',
+    DOWNLOADS = 'downloads',
     USER = 'user',
     SETTINGS = 'settings',
     ONBOARDING = 'onboarding'
@@ -89,7 +90,10 @@ export enum PageId {
     DIAL_NOT_LINKED = 'dial-not-linked',
     DIAL_LINKED_NO_CONTENT = 'dial-linked-but-no-content',
     TERMS_N_CONDITIONS = 'terms-n-conditions',
-    TERMS_N_CONDITIONS_STATIC_PAGE = 'terms-n-conditions-static-page'
+    TERMS_N_CONDITIONS_STATIC_PAGE = 'terms-n-conditions-static-page',
+    DOWNLOADS = 'downloads',
+    SINGLE_DELETE_POPUP = 'single-delete-popup',
+    BULK_DELETE_POPUP = 'bulk-delete-popup'
 }
 export enum LogType {
     NOTIFICATION = 'notification'
@@ -245,7 +249,17 @@ export enum InteractSubtype {
     ENROLL_CLICKED = 'enroll-clicked',
     YES_CLICKED = 'yes-clicked',
     NO_CLICKED = 'no-clicked',
-    RESUME_CLICKED = 'resume-clicked'
+    RESUME_CLICKED = 'resume-clicked',
+    ACTIVE_DOWNLOADS_CLICKED = 'active-downloads-clicked',
+    SORT_OPTION_CLICKED = 'sort-option-clicked',
+    SORT_OPTION_SELECTED = 'sort-options-selected',
+    ACTION_BUTTON_CLICKED = 'action-button-clicked',
+    OUTSIDE_POPUP_AREA_CLICKED = 'outside-popup-area-clicked'
+}
+
+export enum ActionButtonType {
+    POSITIVE = 'positive',
+    NEGATIVE = 'negative'
 }
 
 

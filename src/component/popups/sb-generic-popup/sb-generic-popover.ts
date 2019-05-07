@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ViewController } from 'ionic-angular';
+import { ViewController, Events } from 'ionic-angular';
 import {
   NavParams,
   Platform
@@ -25,10 +25,12 @@ export class SbGenericPopoverComponent {
   icon: any;
   metaInfo: any;
   backButtonFunc = undefined;
+  showHeader: Boolean = true;
+  selectedContents: any;
 
 
   constructor(public viewCtrl: ViewController, public navParams: NavParams,
-    private platform: Platform) {
+    private platform: Platform, private events: Events) {
 
     this.actionsButtons = this.navParams.get('actionsButtons');
     this.icon = this.navParams.get('icon');
@@ -36,13 +38,24 @@ export class SbGenericPopoverComponent {
     this.sbPopoverContent = this.navParams.get('sbPopoverContent');
     this.sbPopoverHeading = this.navParams.get('sbPopoverHeading');
     this.sbPopoverMainTitle = this.navParams.get('sbPopoverMainTitle');
+    this.selectedContents = this.navParams.get('selectedContents');
+    if (this.navParams.get('showHeader') === false) {
+      this.showHeader = this.navParams.get('showHeader');
+    }
 
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.viewCtrl.dismiss(null);
       this.backButtonFunc();
     }, 20);
   }
-
+  ionViewWillEnter(): void {
+    this.events.subscribe('selectedContents:changed', (data) => {
+      this.selectedContents = data.selectedContents;
+    });
+  }
+  ionViewWillLeave(): void {
+    this.events.unsubscribe('selectedContents:changed');
+  }
   closePopover() {
     this.viewCtrl.dismiss(null);
   }

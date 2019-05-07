@@ -24,6 +24,9 @@ import {UserReportModule} from '../pages/reports/user-report/user-report.module'
 import {QrCodeResultPageModule} from '../pages/qr-code-result/qr-code-result.module';
 import {TermsAndConditionsPageModule} from '@app/pages/terms-and-conditions/terms-and-conditions.module';
 import { ContainerService, TabOptions } from '../service/container.services';
+import {DownloadManagerPageModule } from '../pages/download-manager/download-manager.module';
+import {DownloadManagerPage } from '../pages/download-manager/download-manager';
+import { ActiveDownloadsPageModule } from '../pages/active-downloads/active-downloads.module';
 
 
 // const HOME_TAB = { root: HomePage, icon: "home", label: "HOME_BNAV", index: 0, tabsHideOnSubPages: true };
@@ -91,13 +94,13 @@ const DOWNLOADS_TAB = {
 };
 
 const DOWNLOADS_TAB_DISABLED = {
-    root: '',
+    root: DownloadManagerPage,
     icon: 'downloads',
     label: 'DOWNLOAD_BNAV',
     index: 4,
     tabsHideOnSubPages: true,
-    disabled: true,
-    availableLater: true    // This flag holds value for indicating that this tab will be available in the later releases
+    // disabled: true,
+    // availableLater: true    // This flag holds value for indicating that this tab will be available in the later releases
 };
 
 export const GUEST_TEACHER_TABS = [
@@ -175,5 +178,7 @@ export const PluginModules = [
     UserReportModule,
     ProfileSettingsPageModule,
   QrCodeResultPageModule,
-  TermsAndConditionsPageModule
+  TermsAndConditionsPageModule,
+  DownloadManagerPageModule,
+  ActiveDownloadsPageModule
 ];
