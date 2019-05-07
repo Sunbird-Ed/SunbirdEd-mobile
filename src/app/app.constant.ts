@@ -302,6 +302,7 @@ export class SystemSettingsIds {
     public static readonly CUSTODIAN_ORG_ID = 'custodianOrgId';
     public static readonly COURSE_FRAMEWORK_ID = 'courseFrameworkId';
     public static readonly CONTENT_COMING_SOON_MSG = 'contentComingSoonMsg';
+    public static readonly CONSUMPTION_FAQS = 'consumptionFaqs';
 }
 
 export class StoreRating {
