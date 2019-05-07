@@ -87,24 +87,26 @@ export class FlagContent {
         'OPTION_OTHER'
     ];
 }
+
 export class BatchConstants {
-  public static readonly REQUIRED_FIELDS = [
-    'endDate',
-    'description',
-    'name',
-    'enrollmentType',
-    'hashTagId',
-    'startDate',
-    'courseId',
-    'status',
-    'createdBy',
-    'creatorFirstName',
-    'creatorLastName',
-    'identifier',
-    'id'
-  ];
-  // createdFor ,courseAdditionalInfo, participant, updatedDate, createdDate, courseCreator, mentors
+    public static readonly REQUIRED_FIELDS = [
+        'endDate',
+        'description',
+        'name',
+        'enrollmentType',
+        'hashTagId',
+        'startDate',
+        'courseId',
+        'status',
+        'createdBy',
+        'creatorFirstName',
+        'creatorLastName',
+        'identifier',
+        'id'
+    ];
+    // createdFor ,courseAdditionalInfo, participant, updatedDate, createdDate, courseCreator, mentors
 }
+
 export class ProfileConstants {
     public static readonly USER_TOKEN = 'userToken';
     public static readonly REQUIRED_FIELDS = [
@@ -296,6 +298,12 @@ export class FrameworkCategory {
         FrameworkCategory.GRADE_LEVEL,
         FrameworkCategory.SUBJECT
     ];
+}
+
+export class SystemSettingsIds {
+    public static readonly CUSTODIAN_ORG_ID = 'custodianOrgId';
+    public static readonly COURSE_FRAMEWORK_ID = 'courseFrameworkId';
+    public static readonly CONTENT_COMING_SOON_MSG = 'contentComingSoonMsg';
 }
 
 export class StoreRating {

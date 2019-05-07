@@ -45,7 +45,7 @@ export class AppRatingAlertComponent {
   private pageId = '';
   public currentViewText: ViewText;
   public appLogo$: Observable<string>;
-  public appName$: Observable<string>;
+  public appName: string;
   backButtonFunc = undefined;
   private appRatingPopCount = 0;
   private rateLaterClickedCount = 0;
@@ -61,13 +61,20 @@ export class AppRatingAlertComponent {
               private navParams: NavParams,
               @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
   ) {
+    this.getAppName();
     this.appLogo$ = this.preference.getString('app_logo').map((logo) => logo || './assets/imgs/ic_launcher.png');
-    this.appName$ = this.preference.getString('app_name');
     this.currentViewText = this.appRateView[ViewType.APP_RATE];
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.viewCtrl.dismiss(null);
       this.backButtonFunc();
     }, 20);
+  }
+
+  getAppName() {
+    this.appVersion.getAppName()
+      .then((appName: any) => {
+        this.appName = appName;
+      });
   }
 
   ionViewDidLoad() {
