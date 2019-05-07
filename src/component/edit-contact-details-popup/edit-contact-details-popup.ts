@@ -1,9 +1,9 @@
-import {Component, Inject} from '@angular/core';
-import {LoadingController, Platform, ViewController, NavParams} from 'ionic-angular';
-import {GenerateOtpRequest, IsProfileAlreadyInUseRequest, ProfileService} from 'sunbird-sdk';
-import {ProfileConstants} from '@app/app';
-import {CommonUtilService} from '@app/service';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { Component, Inject } from '@angular/core';
+import { LoadingController, Platform, ViewController, NavParams } from 'ionic-angular';
+import { GenerateOtpRequest, IsProfileAlreadyInUseRequest, ProfileService } from 'sunbird-sdk';
+import { ProfileConstants } from '@app/app';
+import { CommonUtilService } from '@app/service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'edit-contact-details-popup',
@@ -23,12 +23,12 @@ export class EditContactDetailsPopupComponent {
   isRequired: Boolean = false;
 
   constructor(private navParams: NavParams,
-              public viewCtrl: ViewController,
-              public platform: Platform,
-              @Inject('PROFILE_SERVICE') private profileService: ProfileService,
-              private loadingCtrl: LoadingController,
-              private commonUtilService: CommonUtilService,
-              private fb: FormBuilder) {
+    public viewCtrl: ViewController,
+    public platform: Platform,
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    private loadingCtrl: LoadingController,
+    private commonUtilService: CommonUtilService,
+    private fb: FormBuilder) {
     // this.phoneNumber = this.navParams.get('phoneNumber');
     this.userId = this.navParams.get('userId');
     this.title = this.navParams.get('title');
@@ -49,11 +49,10 @@ export class EditContactDetailsPopupComponent {
       });
     } else {
       this.personEditForm = this.fb.group({
-        phone: ['', Validators.compose([Validators.required, Validators.pattern('^[0-9]+$')])],
+        phone: ['', Validators.compose([Validators.required, Validators.pattern('^[6-9]\\d{9}$')])],
       });
     }
   }
-
 
   validate() {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
@@ -144,4 +143,5 @@ export class EditContactDetailsPopupComponent {
   cancel() {
     this.viewCtrl.dismiss(false);
   }
+
 }

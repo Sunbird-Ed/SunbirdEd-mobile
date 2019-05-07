@@ -149,7 +149,7 @@ export class DatasyncPage {
     const loader = this.commonUtilService.getLoader();
     loader.present();
     this.generateInteractEvent(InteractType.TOUCH, InteractSubtype.MANUALSYNC_INITIATED, null);
-    this.telemetryService.sync()
+    this.telemetryService.sync(true)
       .subscribe((syncStat: TelemetrySyncStat) => {
 
         that.zone.run(() => {

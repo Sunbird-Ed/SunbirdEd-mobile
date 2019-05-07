@@ -1,11 +1,11 @@
-import {Search} from './../../app/app.constant';
-import {AfterViewInit, Component, Inject, NgZone, OnInit, ViewChild} from '@angular/core';
-import {Events, NavController, ToastController, MenuController, Scroll, Tabs} from 'ionic-angular';
+import { Search } from './../../app/app.constant';
+import { AfterViewInit, Component, Inject, NgZone, OnInit, ViewChild } from '@angular/core';
+import { Events, NavController, ToastController, MenuController, Scroll, Tabs } from 'ionic-angular';
 import * as _ from 'lodash';
-import {ViewMoreActivityPage} from '../view-more-activity/view-more-activity';
-import {SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
-import {SearchPage} from '../search/search';
-import {Map} from '../../app/telemetryutil';
+import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
+import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
+import { SearchPage } from '../search/search';
+import { Map } from '../../app/telemetryutil';
 import {
   AudienceFilter,
   CardSectionName,
@@ -14,17 +14,17 @@ import {
   PreferenceKey,
   ViewMore
 } from '../../app/app.constant';
-import {PageFilterCallback} from '../page-filter/page.filter';
-import {AppGlobalService} from '../../service/app-global.service';
+import { PageFilterCallback } from '../page-filter/page.filter';
+import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
-import {AppVersion} from '@ionic-native/app-version';
-import {updateFilterInSearchQuery} from '../../util/filter.util';
-import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
-import {CommonUtilService} from '../../service/common-util.service';
-import {TranslateService} from '@ngx-translate/core';
-import {Network} from '@ionic-native/network';
-import {animate, group, state, style, transition, trigger} from '@angular/animations';
-import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
+import { AppVersion } from '@ionic-native/app-version';
+import { updateFilterInSearchQuery } from '../../util/filter.util';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { CommonUtilService } from '../../service/common-util.service';
+import { TranslateService } from '@ngx-translate/core';
+import { Network } from '@ionic-native/network';
+import { animate, group, state, style, transition, trigger } from '@angular/animations';
+import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
 import {
   CategoryTerm,
   ContentEventType,
@@ -44,10 +44,10 @@ import {
   SharedPreferences,
   TelemetryObject
 } from 'sunbird-sdk';
-import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
-import {PlayerPage} from '../player/player';
-import {Subscription} from 'rxjs';
-import {ProfileConstants} from '../../app';
+import { Environment, ImpressionType, InteractSubtype, InteractType, PageId } from '../../service/telemetry-constants';
+import { PlayerPage } from '../player/player';
+import { Subscription } from 'rxjs';
+import { ProfileConstants } from '../../app';
 import { AppHeaderService } from '@app/service';
 import { GuestProfilePage } from '../profile';
 import { ProfilePage } from '../profile/profile';
@@ -59,10 +59,10 @@ import { ProfilePage } from '../profile/profile';
     trigger('appear', [
       state('true', style({
         left: '{{left_indent}}',
-      }), {params: {left_indent: 0}}), // default parameters values required
+      }), { params: { left_indent: 0 } }), // default parameters values required
 
       transition('* => classAnimate', [
-        style({width: 5, opacity: 0}),
+        style({ width: 5, opacity: 0 }),
         group([
           animate('0.3s 0.2s ease', style({
             transform: 'translateX(0) scale(1.2)', width: '*',
@@ -77,7 +77,7 @@ import { ProfilePage } from '../profile/profile';
       state('true', style({
         left: '{{left_indent}}',
         transform: 'translateX(-100px)',
-      }), {params: {left_indent: 0}}), // default parameters values required
+      }), { params: { left_indent: 0 } }), // default parameters values required
 
       transition('* => classAnimate', [
         // style({ width: 5, transform: 'translateX(-100px)', opacity: 0 }),
@@ -182,7 +182,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   }
   subscribeUtilityEvents() {
-    this.profileService.getActiveSessionProfile({requiredFields: ProfileConstants.REQUIRED_FIELDS}).subscribe((profile: Profile) => {
+    this.profileService.getActiveSessionProfile({ requiredFields: ProfileConstants.REQUIRED_FIELDS }).subscribe((profile: Profile) => {
       this.profile = profile;
     });
     this.events.subscribe('savedResources:update', (res) => {
@@ -216,16 +216,16 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
     this.events.subscribe('tab.change', (data) => {
       // this.ngZone.run(() => {
-        if (data === 'LIBRARY') {
-          if (this.appliedFilter) {
-            this.filterIcon = './assets/imgs/ic_action_filter.png';
-            this.resourceFilter = undefined;
-            this.appliedFilter = undefined;
-            this.isFilterApplied = false;
-            this.getPopularContent();
-          }
-        } else if (data === '') {
-          this.qrScanner.startScanner(PageId.LIBRARY);
+      if (data === 'LIBRARY') {
+        if (this.appliedFilter) {
+          this.filterIcon = './assets/imgs/ic_action_filter.png';
+          this.resourceFilter = undefined;
+          this.appliedFilter = undefined;
+          this.isFilterApplied = false;
+          this.getPopularContent();
+        }
+      } else if (data === '') {
+        this.qrScanner.startScanner(PageId.LIBRARY);
       }
       // });
     });
@@ -269,7 +269,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         this.toast = undefined;
       }
     }
-}
+  }
 
   /**
    * It will fetch the guest user profile details
@@ -391,7 +391,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           }
 
         });
-         this.ngZone.run(() => {
+        this.ngZone.run(() => {
           this.localResources = data;
         });
       })
@@ -406,7 +406,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   /**
 	 * Load/get recently viewed content
 	 */
- async loadRecentlyViewedContent() {
+  async loadRecentlyViewedContent() {
+    this.recentlyViewedResources = [];
     this.showLoader = true;
     const requestParams: ContentRequest = {
       uid: this.profile ? this.profile.uid : undefined,
@@ -433,25 +434,25 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           }
         });
         this.ngZone.run(() => {
-      // merge downloadedResources after recently viewed, which are not yet viewed
-        if ((data && data.length) && (this.localResources && this.localResources.length)) {
-          // remove if same content is downloaded and viewed.
-              for (let i = 0 ; i < data.length; i++) {
-                  const index = this.localResources.findIndex( (el) => {
-                      return el.identifier === data[i].identifier;
-                  });
+          // merge downloadedResources after recently viewed, which are not yet viewed
+          if ((data && data.length) && (this.localResources && this.localResources.length)) {
+            // remove if same content is downloaded and viewed.
+            for (let i = 0; i < data.length; i++) {
+              const index = this.localResources.findIndex((el) => {
+                return el.identifier === data[i].identifier;
+              });
 
-                  if (index !== -1) {
-                    this.localResources.splice(index, 1);
-                  }
+              if (index !== -1) {
+                this.localResources.splice(index, 1);
               }
-              data.push(...this.localResources);
-              this.recentlyViewedResources = data;
+            }
+            data.push(...this.localResources);
+            this.recentlyViewedResources = data;
           } else {
-                if (!(data && data.length) && (this.localResources && this.localResources.length)) {
-                  this.recentlyViewedResources = this.localResources;
-                } else if ((data && data.length) && !(this.localResources && this.localResources.length)) {
-                 this.recentlyViewedResources = data;
+            if (!(data && data.length) && (this.localResources && this.localResources.length)) {
+              this.recentlyViewedResources = this.localResources;
+            } else if ((data && data.length) && !(this.localResources && this.localResources.length)) {
+              this.recentlyViewedResources = data;
             }
           }
           this.showLoader = false;
@@ -551,13 +552,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           if (this.profile.subject && this.profile.subject.length) {
             this.storyAndWorksheets = this.orderBySubject([...newSections]);
           } else {
-             this.storyAndWorksheets = newSections;
+            this.storyAndWorksheets = newSections;
           }
           const sectionInfo = {};
           for (let i = 0; i < this.storyAndWorksheets.length; i++) {
             const sectionName = this.storyAndWorksheets[i].name,
               count = this.storyAndWorksheets[i].contents.length;
-              // check if locally available
+            // check if locally available
             this.markLocallyAvailableTextBook();
             sectionInfo[sectionName] = count;
           }
@@ -579,8 +580,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             if (this.tabs.getSelected().tabTitle === 'LIBRARY‌') {
               this.commonUtilService.showToast(
                 this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
-                `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
-              }
+                  `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
+            }
           }
         });
       })
@@ -614,7 +615,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     let selectedSubject: string[];
     const filteredSubject: string[] = [];
     selectedSubject = this.applyProfileFilter(this.profile.subject, selectedSubject, 'subject');
-    for ( let i = 0; i < selectedSubject.length; i++) {
+    for (let i = 0; i < selectedSubject.length; i++) {
       const index = searchResults.findIndex((el) => {
         return el.name.toLowerCase().trim() === selectedSubject[i].toLowerCase().trim();
       });
@@ -627,15 +628,15 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
   markLocallyAvailableTextBook() {
     if (!this.recentlyViewedResources || !this.storyAndWorksheets) {
-        return;
+      return;
     }
-    for (let i = 0;  i < this.recentlyViewedResources.length; i++) {
-      for (let j = 0;  j < this.storyAndWorksheets.length; j++) {
-        for (let k = 0;  k < this.storyAndWorksheets[j].contents.length; k++) {
-            if (this.recentlyViewedResources[i].isAvailableLocally &&
-              this.recentlyViewedResources[i].identifier ===  this.storyAndWorksheets[j].contents[k].identifier) {
-              this.storyAndWorksheets[j].contents[k].isAvailableLocally = true;
-            }
+    for (let i = 0; i < this.recentlyViewedResources.length; i++) {
+      for (let j = 0; j < this.storyAndWorksheets.length; j++) {
+        for (let k = 0; k < this.storyAndWorksheets[j].contents.length; k++) {
+          if (this.recentlyViewedResources[i].isAvailableLocally &&
+            this.recentlyViewedResources[i].identifier === this.storyAndWorksheets[j].contents[k].identifier) {
+            this.storyAndWorksheets[j].contents[k].isAvailableLocally = true;
+          }
         }
       }
     }
@@ -746,22 +747,22 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     }
     this.subscribeSdkEvent();
     this.networkSubscription = this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
-      if  (available) {
+      if (available) {
         if (this.toast) {
           this.toast.dismiss();
           this.toast = undefined;
         }
       } else {
-        this.presentToastForOffline();
+        this.presentToastForOffline('NO_INTERNET_TITLE');
       }
     });
   }
 
   // Offline Toast
-  async presentToastForOffline() {
+  async presentToastForOffline(msg: string) {
     this.toast = await this.toastController.create({
       duration: 3000,
-      message: this.commonUtilService.translateMessage('NO_INTERNET_TITLE'),
+      message: this.commonUtilService.translateMessage(msg),
       showCloseButton: true,
       position: 'top',
       closeButtonText: '',
@@ -816,7 +817,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       InteractSubtype.SEARCH_BUTTON_CLICKED,
       Environment.HOME,
       PageId.LIBRARY);
-    this.navCtrl.push(SearchPage, {contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY});
+    this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
   }
   onProfileClick() {
     const currentProfile = (this.appGlobalService.isGuestUser) ? GuestProfilePage : ProfilePage;
@@ -845,7 +846,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.frameworkUtilService.getFrameworkCategoryTerms(req).toPromise()
       .then((res: CategoryTerm[]) => {
         this.categoryMediums = res;
-        this.arrangeMediumsByUserData(this.categoryMediums.map(a => ({...a})));
+        this.arrangeMediumsByUserData(this.categoryMediums.map(a => ({ ...a })));
       })
       .catch(() => {
       });
@@ -983,18 +984,18 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     }
     let el: HTMLElement | null = document.getElementById('class' + index);
     if (el) {
-    el.scrollIntoView({behavior: 'smooth', block: 'end', inline: 'start'});
+      el.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'start' });
     } else {
       setTimeout(() => {
         el = document.getElementById('class' + index);
-        el.scrollIntoView({behavior: 'smooth', block: 'end', inline: 'start'});
+        el.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'start' });
       }, 1000);
     }
   }
 
   mediumClick(mediumName: string, isMediumClicked?: boolean) {
     if (isMediumClicked) {
-       this.generateMediumInteractTelemetry(mediumName, this.getGroupByPageReq.medium[0]);
+      this.generateMediumInteractTelemetry(mediumName, this.getGroupByPageReq.medium[0]);
     }
     this.getGroupByPageReq.medium = [mediumName];
     if (this.currentMedium !== mediumName) {
@@ -1025,10 +1026,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       'library',
       telemetryObject,
       values);
-
-    this.navCtrl.push(CollectionDetailsEtbPage, {
-      content: item
-    });
+    if (this.commonUtilService.networkInfo.isNetworkAvailable || item.isAvailableLocally) {
+      this.navCtrl.push(CollectionDetailsEtbPage, {
+        content: item
+      });
+    } else {
+    this.presentToastForOffline('OFFLINE_WARNING_ETBUI_1');
+    }
   }
 
   launchContent() {
@@ -1039,7 +1043,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     console.log('inside handleHeaderEvents', $event);
     switch ($event.name) {
       case 'search': this.search();
-                    break;
+        break;
     }
   }
 
@@ -1047,24 +1051,24 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.menuCtrl.toggle();
   }
 
-logScrollEnd(event) {
-  // Added Telemetry on reaching Vertical Scroll End
-  if (event.scrollElement.scrollHeight <= event.scrollElement.scrollTop + event.scrollElement.offsetHeight ) {
-    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.SCROLL,
-      InteractSubtype.BOOK_LIST_END_REACHED,
-      Environment.HOME,
-      this.source, undefined,
+  logScrollEnd(event) {
+    // Added Telemetry on reaching Vertical Scroll End
+    if (event.scrollElement.scrollHeight <= event.scrollElement.scrollTop + event.scrollElement.offsetHeight) {
+      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.SCROLL,
+        InteractSubtype.BOOK_LIST_END_REACHED,
+        Environment.HOME,
+        this.source, undefined,
       );
+    }
   }
-}
-onScroll(event) {
-  // Added Telemetry on reaching Horizontal Scroll End
-  if (event.target.scrollWidth <= event.target.scrollLeft + event.target.offsetWidth) {
-    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.SCROLL,
-      InteractSubtype.RECENTLY_VIEWED_END_REACHED,
-      Environment.HOME,
-      this.source, undefined,
+  onScroll(event) {
+    // Added Telemetry on reaching Horizontal Scroll End
+    if (event.target.scrollWidth <= event.target.scrollLeft + event.target.offsetWidth) {
+      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.SCROLL,
+        InteractSubtype.RECENTLY_VIEWED_END_REACHED,
+        Environment.HOME,
+        this.source, undefined,
       );
+    }
   }
-}
 }
