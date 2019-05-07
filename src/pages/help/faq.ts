@@ -1,3 +1,4 @@
+import { FormAndFrameworkUtilService } from '@app/pages/profile';
 import { appLanguages } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
 import { CommonUtilService } from '../../service/common-util.service';
@@ -24,8 +25,8 @@ export class FaqPage {
   consumptionFaqUrl: SafeResourceUrl;
 
   faq: any = {
-    url: 'https://ankur01oct.github.io/consumption-faqs.html?selectedlang='
-    // url: 'file:///android_asset/www/assets/faq/index.html?selectedlang='
+    url: 'file:///android_asset/www/assets/faq/index.html?selectedlang=en&randomid=' + Math.random()
+    // url: 'https://ankur01oct.github.io/consumption-faqs.html?selectedlang='
   };
   selectedLanguage: string;
   chosenLanguageString: any;
@@ -45,7 +46,8 @@ export class FaqPage {
               private commonUtilService: CommonUtilService,
               private appGlobalService: AppGlobalService,
               private utilityService: UtilityService,
-              private headerService: AppHeaderService) {
+              private headerService: AppHeaderService,
+              private formAndFrameworkUtilService: FormAndFrameworkUtilService) {
   }
 
   ionViewDidLoad() {
@@ -60,23 +62,28 @@ export class FaqPage {
       .then((appName) => {
         this.appName = appName;
       });
-     await this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE).toPromise()
+      await this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE).toPromise()
       .then(value => {
         // get chosen language code from  lang mapping constant array
        this.selectedLanguage = appLanguages.filter((el) => {
           return value.trim() === el.label;
         })[0].code ;
       });
-      if (this.selectedLanguage) {
-        this.faq.url += this.selectedLanguage + '&randomid=' + Math.random();
-      }
-      if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
-        this.faq.url = 'file:///android_asset/www/assets/faq/index.html?selectedlang=en&randomid=' + Math.random();
-      }
+      // await this.formAndFrameworkUtilService.getConsumptionFaqsUrl().then( (url: string) => {
+      //   console.log(url);
+      //   if (this.selectedLanguage && this.commonUtilService.networkInfo.isNetworkAvailable) {
+      //       url += '?selectedlang=' + this.selectedLanguage + '&randomid=' + Math.random();
+      //       this.faq.url = url;
+      //   }
+      // });
         this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
   }
   onLoad() {
     console.log('onLoad executed');
+}
+onError() {
+  this.faq.url = 'file:///android_asset/www/assets/faq/index.html?selectedlang=en&randomid=' + Math.random();
+  this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
 }
 
   ionViewDidLeave() {
