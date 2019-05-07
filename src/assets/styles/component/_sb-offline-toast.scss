@@ -1,5 +1,5 @@
 /*sb-offline-toast default taost of ionic */
-.toastAfterHeader{
+.toastAfterHeader , .toastHeader{
     position: fixed;
     top:50px;
     .toast-container { background: $orange }
@@ -70,37 +70,4 @@
   .toastHeader{
     position: fixed;
     top:0px;
-    .toast-container { background: $orange }
-    .toast-message{
-        margin-left : 35px;
-        font-weight: 500;
-        font-style: normal;
-        font-stretch: normal;
-        line-height: normal;
-        letter-spacing: -0.4px;
-        color: $white;
-    }
-    .toast-message:before{
-        font-family: "Ionicons";
-        top:10px;
-        z-index: 999;
-        position: absolute;
-        font-size: 2.1em;
-        content: url('../assets/imgs/ic_offline_white_sm.png');
-        margin-left:-35px;
-        font-weight: 500;
-        color: $white;
-    }
-    .toast-button:before {
-        font-family: "Ionicons";
-        top:0px;
-        z-index: 999;
-        position: absolute;
-        font-size: 2.2em;
-        content: "\f406";
-        font-weight: bolder;
-      }
-      .toast-button span {
-          color: $orange;
-      }
     }

@@ -575,7 +575,8 @@ export class CollectionDetailsPage {
   importContent(identifiers: Array<string>, isChild: boolean, isDownloadAllClicked?) {
     const option: ContentImportRequest = {
       contentImportArray: this.getImportContentRequestBody(identifiers, isChild),
-      contentStatusArray: []
+      contentStatusArray: [],
+      fields: ['appIcon', 'name', 'subject', 'size', 'gradeLevel']
     };
 
     // Call content service
