@@ -92,8 +92,9 @@ export enum PageId {
     TERMS_N_CONDITIONS = 'terms-n-conditions',
     TERMS_N_CONDITIONS_STATIC_PAGE = 'terms-n-conditions-static-page',
     DOWNLOADS = 'downloads',
-    SINGLE_DELETE_POPUP = 'single-delete-popup',
-    BULK_DELETE_POPUP = 'bulk-delete-popup'
+    SINGLE_DELETE_CONFIRMATION_POPUP = 'single-delete-confirmation-popup',
+    BULK_DELETE_POPUP = 'bulk-delete-popup',
+    BULK_DELETE_CONFIRMATION_POPUP = 'bulk-delete-confirmation-popup'
 }
 export enum LogType {
     NOTIFICATION = 'notification'
@@ -254,7 +255,8 @@ export enum InteractSubtype {
     SORT_OPTION_CLICKED = 'sort-option-clicked',
     SORT_OPTION_SELECTED = 'sort-options-selected',
     ACTION_BUTTON_CLICKED = 'action-button-clicked',
-    OUTSIDE_POPUP_AREA_CLICKED = 'outside-popup-area-clicked'
+    OUTSIDE_POPUP_AREA_CLICKED = 'outside-popup-area-clicked',
+    POPUP_DISMISSED= 'popup-dismissed'
 }
 
 export enum ActionButtonType {
