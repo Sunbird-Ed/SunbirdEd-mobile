@@ -4,7 +4,7 @@ import { AppGlobalService } from '../../service/app-global.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { AppHeaderService, TelemetryGeneratorService, UtilityService } from '@app/service';
 import { Component, Inject } from '@angular/core';
-import { IonicPage, NavController, Loading, LoadingController } from 'ionic-angular';
+import { IonicPage, Loading, LoadingController } from 'ionic-angular';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PageId, Environment, InteractType } from '@app/service/telemetry-constants';
 import { SharedPreferences, ProfileService, ContentService, DeviceInfo, GetAllProfileRequest, ContentRequest } from 'sunbird-sdk';
