@@ -256,6 +256,7 @@ export enum InteractSubtype {
     YES_CLICKED = 'yes-clicked',
     NO_CLICKED = 'no-clicked',
     RESUME_CLICKED = 'resume-clicked',
+    APP_INTIATED = 'app-initiated',
     ACTIVE_DOWNLOADS_CLICKED = 'active-downloads-clicked',
     SORT_OPTION_CLICKED = 'sort-option-clicked',
     SORT_OPTION_SELECTED = 'sort-options-selected',
