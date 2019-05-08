@@ -8,6 +8,10 @@
         "en": {
           "title": "Sunbird",
           "msg": "Learn something new on SUNBIRD today!"
+        },
+        "default": {
+          "title": "Sunbird",
+          "msg": "Learn something new on SUNBIRD today!"
         }
       }
     }
