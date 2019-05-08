@@ -109,10 +109,11 @@ export class TabsPage {
       .then(val => {
         if (val && val.length) {
           this.selectedLanguage = val;
+          const translate =  this.configData.data.translations[this.selectedLanguage] || this.configData.data.translations['default'];
           cordova.plugins.notification.local.schedule({
             id: this.configData.id,
-            title: this.configData.data.translations[this.selectedLanguage].title,
-            text: this.configData.data.translations[this.selectedLanguage].msg,
+            title: translate.title,
+            text: translate.msg,
             sound: 'file://sound.mp3',
             icon: 'res://icon',
             smallIcon: 'res://n_icon',
