@@ -1,6 +1,7 @@
 import { ActiveDownloadsPage } from './../active-downloads/active-downloads';
 import { Component, Inject, NgZone, ViewChild, OnInit } from '@angular/core';
 import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController } from 'ionic-angular';
+import { Content as iContent } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
@@ -215,10 +216,12 @@ export class CollectionDetailsEtbPage implements OnInit {
   pageName: any;
   headerObservable: any;
   breadCrumb = new Map();
+  scrollPosition = 0;
 
   // Local Image
   localImage = '';
   @ViewChild(Navbar) navBar: Navbar;
+  @ViewChild(iContent) ionContent: iContent;
   private eventSubscription: Subscription;
 
   showDownload: boolean;
@@ -262,7 +265,7 @@ export class CollectionDetailsEtbPage implements OnInit {
 	 */
   ngOnInit() {
   }
-
+  
   ionViewDidLoad() {
     /*this.navBar.backButtonClick = () => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
@@ -331,6 +334,9 @@ export class CollectionDetailsEtbPage implements OnInit {
           this.presentToastWithOptions();
         }
       });
+    });
+    this.ionContent.ionScroll.subscribe((event) => {
+      this.scrollPosition = event.scrollTop;
     });
   }
 
@@ -547,7 +553,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     if (this.contentDetail.contentData.me_totalDownloads) {
       this.contentDetail.contentData.me_totalDownloads = this.contentDetail.contentData.me_totalDownloads.split('.')[0];
     }
-      this.setCollectionStructure();
+    this.setCollectionStructure();
   }
 
   setCollectionStructure() {
@@ -726,6 +732,7 @@ export class CollectionDetailsEtbPage implements OnInit {
           this.showChildrenLoader = false;
         });
       });
+      this.ionContent.scrollTo(0, this.scrollPosition);
   }
 
   getContentsSize(data) {
@@ -1128,12 +1135,12 @@ export class CollectionDetailsEtbPage implements OnInit {
     const values = new Map();
     const telemetryObject = new TelemetryObject(content.identifier || content.contentId, content.contentType, content.pkgVersion);
     this.telemetryGeneratorService.generateInteractTelemetry(
-        InteractType.TOUCH,
-        InteractSubtype.CLOSE_CLICKED,
-        Environment.HOME,
-        PageId.COLLECTION_DETAIL,
-        telemetryObject,
-        values);
+      InteractType.TOUCH,
+      InteractSubtype.CLOSE_CLICKED,
+      Environment.HOME,
+      PageId.COLLECTION_DETAIL,
+      telemetryObject,
+      values);
   }
 
   /**
@@ -1214,7 +1221,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     confirm.present({
       ev: event
     });
-       confirm.onDidDismiss((canDelete: any) => {
+    confirm.onDidDismiss((canDelete: any) => {
       if (canDelete) {
         this.deleteContent();
       }
