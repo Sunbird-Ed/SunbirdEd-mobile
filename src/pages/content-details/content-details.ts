@@ -549,6 +549,17 @@ export class ContentDetailsPage {
     });
     popover.onDidDismiss((data: any) => {
       console.log(data);
+      switch (data) {
+        case null: {
+          this.appRatingService.setInitialDate();
+          break;
+        }
+        case StoreRating.RETURN_HELP: {
+          this.appRatingService.setInitialDate();
+          this.navCtrl.push('FaqPage');
+          break;
+        }
+      }
     });
   }
 

@@ -88,18 +88,6 @@ export class AppRatingAlertComponent {
       undefined
     );
     this.appRatePopup();
-    this.viewCtrl.onDidDismiss((data: null | 'close') => {
-      switch (data) {
-        case null: {
-          this.appRatingService.setInitialDate();
-          break;
-        }
-        case 'close': {
-          // this.appRatingService.setEndAppRate();
-          break;
-        }
-      }
-    });
   }
 
   closePopover() {
@@ -133,7 +121,7 @@ export class AppRatingAlertComponent {
         this.pageId, undefined, paramsMap,
         undefined, undefined
       );
-      this.viewCtrl.dismiss('close');
+      this.viewCtrl.dismiss(StoreRating.RETURN_CLOSE);
     });
   }
 
@@ -171,6 +159,7 @@ export class AppRatingAlertComponent {
       Environment.HOME,
       this.pageId, undefined, undefined, undefined
     );
+      this.viewCtrl.dismiss(StoreRating.RETURN_HELP);
   }
 
   private async appRatePopup() {
