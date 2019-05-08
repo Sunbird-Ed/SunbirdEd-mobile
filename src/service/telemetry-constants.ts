@@ -94,11 +94,10 @@ export enum PageId {
     TERMS_N_CONDITIONS_STATIC_PAGE = 'terms-n-conditions-static-page',
     DOWNLOADS = 'downloads',
     SINGLE_DELETE_CONFIRMATION_POPUP = 'single-delete-confirmation-popup',
-    BULK_DELETE_POPUP = 'bulk-delete-popup',
     BULK_DELETE_CONFIRMATION_POPUP = 'bulk-delete-confirmation-popup',
-    ACTIVE_DOWNLOADS = 'active-downloads',
-    SINGLE_CANCEL_CONFIRMATION_POPUP = 'single-cancel-confirmation-popup',
-    BULK_CANCEL_CONFIRMATION_POPUP = 'bulk-cancel-confirmation-popup'
+    SINGLE_DELETE_POPUP = 'single-delete-popup',
+    BULK_DELETE_POPUP = 'bulk-delete-popup',
+    APP_RATING = 'app-rating'
 }
 export enum LogType {
     NOTIFICATION = 'notification'
@@ -124,7 +123,8 @@ export enum ImpressionSubtype {
     QRCodeScanInitiate = 'qr-code-scan-initiate',
     RATING_POPUP = 'rating-popup',
     QR_CODE_VALID = 'qr-code-valid',
-    INVALID_QR_CODE = 'invalid-qr-code'
+    INVALID_QR_CODE = 'invalid-qr-code',
+    APP_RATING_POPUP = 'app-rating-popup'
 }
 export enum InteractType {
     TOUCH = 'TOUCH',
@@ -255,6 +255,10 @@ export enum InteractSubtype {
     ENROLL_CLICKED = 'enroll-clicked',
     YES_CLICKED = 'yes-clicked',
     NO_CLICKED = 'no-clicked',
+    PLAY_STORE_BUTTON_CLICKED = 'play-store-clicked',
+    HELP_SECTION_CLICKED = 'help-section-clicked',
+    RATE_LATER_CLICKED = 'rate-later-clicked',
+    APP_RATING_APPEARED = 'app-rating-appeared',
     RESUME_CLICKED = 'resume-clicked',
     APP_INTIATED = 'app-initiated',
     ACTIVE_DOWNLOADS_CLICKED = 'active-downloads-clicked',

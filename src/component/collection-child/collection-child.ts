@@ -11,6 +11,8 @@ import { CommonUtilService } from '@app/service';
 import { PopoverController } from 'ionic-angular';
 import { SbGenericPopoverComponent } from '../popups/sb-generic-popup/sb-generic-popover';
 import {Content} from 'sunbird-sdk';
+import {FormAndFrameworkUtilService} from "@app/pages/profile";
+import {ComingSoonMessageService} from "@app/service/coming-soon-message.service";
 
 
 @Component({
@@ -32,7 +34,8 @@ export class CollectionChildComponent implements AfterViewInit {
         private zone: NgZone,
         private navParams: NavParams,
         private commonUtilService: CommonUtilService,
-        private popoverCtrl: PopoverController
+        private popoverCtrl: PopoverController,
+        private comingSoonMessageService: ComingSoonMessageService
     ) { }
 
     navigateToDetailsPage(content: Content, depth) {
@@ -69,11 +72,12 @@ export class CollectionChildComponent implements AfterViewInit {
         });
     }
 
-    showCommingSoonPopup(childData: any) {
+   async showComingSoonPopup(childData: any) {
+      const message = await this.comingSoonMessageService.getComingSoonMessage();
         if (childData.contentData.mimeType === 'application/vnd.ekstep.content-collection' && !childData.children) {
             const popover = this.popoverCtrl.create(SbGenericPopoverComponent, {
                 sbPopoverHeading: this.commonUtilService.translateMessage('CONTENT_COMMING_SOON'),
-                sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_IS_BEEING_ADDED') + childData.contentData.name,
+                sbPopoverMainTitle: this.commonUtilService.translateMessage(message),
                 actionsButtons: [
                     {
                         btntext: this.commonUtilService.translateMessage('OKAY'),

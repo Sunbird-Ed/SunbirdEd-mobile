@@ -174,6 +174,8 @@ export class PreferenceKey {
     public static readonly APP_LOGO = 'app_logo';
     public static readonly APP_NAME = 'app_name';
     public static readonly APP_RATING_DATE = 'app_rating_date';
+    public static readonly APP_RATE_LATER_CLICKED = 'app_rate_later_clicked';
+    public static readonly APP_RATING_POPUP_APPEARED = 'app_rating_popup_appeared';
 }
 
 export class GenericAppConfig {
@@ -311,7 +313,6 @@ export class StoreRating {
     public static readonly FOLDER_NAME = 'sunbird-app-rating';
     public static readonly FILE_NAME = 'app-rating.doc';
     public static readonly FILE_TEXT = 'APP-Rating';
-    public static readonly DEVICE_FOLDER_PATH = cordova.file.dataDirectory;
 }
 export class ContentConstants {
     public static readonly DEFAULT_LICENSE = 'CC BY 4.0';

@@ -6,7 +6,9 @@ import { File } from '@ionic-native/file';
 
 @Injectable()
 export class AppRatingService {
+  public static readonly DEVICE_FOLDER_PATH = cordova.file.dataDirectory;
 
+  private rateLaterClickCount = 0;
     constructor(
         @Inject('SHARED_PREFERENCES') private preference: SharedPreferences,
         private fileCtrl: File
@@ -30,7 +32,7 @@ export class AppRatingService {
     }
 
     createFolder(rate) {
-        this.fileCtrl.createDir(StoreRating.DEVICE_FOLDER_PATH, StoreRating.FOLDER_NAME, true).then(res => {
+        this.fileCtrl.createDir(AppRatingService.DEVICE_FOLDER_PATH, StoreRating.FOLDER_NAME, true).then(res => {
             console.log('Check Floder RES', res);
             this.writeFile(rate);
         }).catch(err => {
@@ -39,23 +41,34 @@ export class AppRatingService {
     }
 
     writeFile(rate) {
-        this.fileCtrl.writeFile(StoreRating.DEVICE_FOLDER_PATH + '/' + StoreRating.FOLDER_NAME,
+        this.fileCtrl.writeFile(AppRatingService.DEVICE_FOLDER_PATH + '/' + StoreRating.FOLDER_NAME,
             StoreRating.FILE_NAME, StoreRating.FILE_TEXT + ' = ' + rate, { replace: true }).then(res => {
-                console.log('Check Write RES', res);
             }).catch(err => {
-                console.log('Check Write ERR', err);
             });
     }
 
     checkReadFile() {
-        return this.fileCtrl.readAsText(StoreRating.DEVICE_FOLDER_PATH + '/' + StoreRating.FOLDER_NAME,
+        return this.fileCtrl.readAsText(AppRatingService.DEVICE_FOLDER_PATH + '/' + StoreRating.FOLDER_NAME,
             StoreRating.FILE_NAME).then(res => {
-                console.log('Check Write RES', res);
                 return true;
             }).catch(err => {
-                console.log('Check Write ERR', err);
                 return false;
             });
     }
-
+     async rateLaterClickedCount() {
+      return this.rateLaterClickCount = await this.checkRateLaterCount();
+    }
+    async increaseRateLaterClickedCount(value) {
+      return this.preference.putString(PreferenceKey.APP_RATE_LATER_CLICKED, String(value)).toPromise().then(() => value);
+    }
+    async checkRateLaterCount() {
+     return  this.preference.getString(PreferenceKey.APP_RATE_LATER_CLICKED).toPromise().then( async (val) => {
+        if (val) {
+          const incrementValue = Number(val) +1;
+           await this.increaseRateLaterClickedCount(incrementValue);
+           return incrementValue;
+        }
+        return this.increaseRateLaterClickedCount(1);
+      });
+    }
 }
