@@ -7,9 +7,7 @@ import { Events } from 'ionic-angular';
 export class HideHeaderDirective implements OnInit {
   hideTimer: NodeJS.Timer;
 
-  constructor(private elemRef: ElementRef, private renderer: Renderer2, public event: Events) {
-    console.log('Hello HideHeaderDirective Directive');
-  }
+  constructor(private elemRef: ElementRef, private renderer: Renderer2, public event: Events) {}
 
   ngOnInit() {
     this.event.subscribe('hideHeaderOnScroll', (data) => {

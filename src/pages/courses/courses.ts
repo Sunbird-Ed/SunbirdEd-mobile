@@ -1,3 +1,4 @@
+import { ActiveDownloadsPage } from '@app/pages/active-downloads/active-downloads';
 import {ViewMoreActivityPage} from './../view-more-activity/view-more-activity';
 import {Component, Inject, NgZone, OnInit, AfterViewInit} from '@angular/core';
 import {Events, IonicPage, NavController, PopoverController, MenuController, Tabs} from 'ionic-angular';
@@ -181,13 +182,13 @@ export class CoursesPage implements OnInit, AfterViewInit {
 
   ionViewWillEnter() {
     this.events.subscribe('update_header', (data) => {
-      this.headerServie.showHeaderWithHomeButton(['search', 'filter']);
+      this.headerServie.showHeaderWithHomeButton(['search', 'filter', 'download']);
     });
     this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
     this.getEnrolledCourses();
-    this.headerServie.showHeaderWithHomeButton(['search', 'filter']);
+    this.headerServie.showHeaderWithHomeButton(['search', 'filter', 'download']);
 
   }
 
@@ -752,7 +753,8 @@ export class CoursesPage implements OnInit, AfterViewInit {
   importContent(identifiers, isChild) {
     const option: ContentImportRequest = {
       contentImportArray: this.courseUtilService.getImportContentRequestBody(identifiers, isChild),
-      contentStatusArray: []
+      contentStatusArray: [],
+      fields: ['appIcon', 'name', 'subject', 'size', 'gradeLevel']
     };
 
     this.contentService.importContent(option).toPromise()
@@ -821,7 +823,18 @@ export class CoursesPage implements OnInit, AfterViewInit {
                     break;
       case 'filter': this.showFilter();
                       break;
+      case 'download': this.redirectToActivedownloads();
+      break;
     }
+  }
+
+  redirectToActivedownloads() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.ACTIVE_DOWNLOADS_CLICKED,
+      Environment.HOME,
+      PageId.COURSES);
+    this.navCtrl.push(ActiveDownloadsPage);
   }
 
   toggleMenu() {

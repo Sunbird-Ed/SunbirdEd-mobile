@@ -2,6 +2,7 @@ export enum Environment {
     HOME = 'home',
     COURSE = 'course',
     LIBRARY = 'library',
+    DOWNLOADS = 'downloads',
     USER = 'user',
     SETTINGS = 'settings',
     ONBOARDING = 'onboarding'
@@ -56,6 +57,7 @@ export enum PageId {
     NOTIFICATION_LIST = 'notifiaction-list',
     SIGNIN_OVERLAY = 'signin-overlay',
     SETTINGS = 'settings',
+    FAQ = 'faq',
     SETTINGS_LANGUAGE = 'settings-language',
     SETTINGS_DATASYNC = 'settings-datasync',
     SETTINGS_DEVICE_TAGS = 'settings-device-tags',
@@ -89,7 +91,14 @@ export enum PageId {
     DIAL_NOT_LINKED = 'dial-not-linked',
     DIAL_LINKED_NO_CONTENT = 'dial-linked-but-no-content',
     TERMS_N_CONDITIONS = 'terms-n-conditions',
-    TERMS_N_CONDITIONS_STATIC_PAGE = 'terms-n-conditions-static-page'
+    TERMS_N_CONDITIONS_STATIC_PAGE = 'terms-n-conditions-static-page',
+    DOWNLOADS = 'downloads',
+    SINGLE_DELETE_CONFIRMATION_POPUP = 'single-delete-confirmation-popup',
+    BULK_DELETE_POPUP = 'bulk-delete-popup',
+    BULK_DELETE_CONFIRMATION_POPUP = 'bulk-delete-confirmation-popup',
+    ACTIVE_DOWNLOADS = 'active-downloads',
+    SINGLE_CANCEL_CONFIRMATION_POPUP = 'single-cancel-confirmation-popup',
+    BULK_CANCEL_CONFIRMATION_POPUP = 'bulk-cancel-confirmation-popup'
 }
 export enum LogType {
     NOTIFICATION = 'notification'
@@ -159,6 +168,7 @@ export enum InteractSubtype {
     SIGNIN_OVERLAY_CLICKED = 'signin-overlay-clicked',
     SETTINGS_CLICKED = 'settings-clicked',
     LANGUAGE_CLICKED = 'language-clicked',
+    HELP_CLICKED = 'help-clicked',
     DATA_SYNC_CLICKED = 'data-sync-clicked',
     DEVICE_TAGS_CLICKED = 'device-tags-clicked',
     SUPPORT_CLICKED = 'support-clicked',
@@ -246,7 +256,20 @@ export enum InteractSubtype {
     YES_CLICKED = 'yes-clicked',
     NO_CLICKED = 'no-clicked',
     RESUME_CLICKED = 'resume-clicked',
-    APP_INTIATED = 'app-initiated'
+    APP_INTIATED = 'app-initiated',
+    ACTIVE_DOWNLOADS_CLICKED = 'active-downloads-clicked',
+    SORT_OPTION_CLICKED = 'sort-option-clicked',
+    SORT_OPTION_SELECTED = 'sort-options-selected',
+    ACTION_BUTTON_CLICKED = 'action-button-clicked',
+    OUTSIDE_POPUP_AREA_CLICKED = 'outside-popup-area-clicked',
+    POPUP_DISMISSED= 'popup-dismissed',
+    DOWNLOAD_CANCEL_ALL_CLICKED = 'download-cancel-all-clicked',
+    DOWNLOAD_CANCEL_CLICKED = 'download-cancel-clicked'
+}
+
+export enum ActionButtonType {
+    POSITIVE = 'positive',
+    NEGATIVE = 'negative'
 }
 
 

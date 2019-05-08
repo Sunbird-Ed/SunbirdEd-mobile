@@ -46,6 +46,7 @@ import { CoursesPage } from '@app/pages/courses/courses';
 import { ProfilePage } from '@app/pages/profile/profile';
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
 import { QrCodeResultPage } from '@app/pages/qr-code-result';
+import { FaqPage } from '@app/pages/help/faq';
 
 @Component({
   templateUrl: 'app.html',
@@ -700,6 +701,23 @@ export class MyApp implements OnInit, AfterViewInit {
         );
         if (this.app.getRootNavs().length > 0) {
           this.app.getRootNavs()[0].push(LanguageSettingsPage, {
+            isFromSettings: true
+          });
+        }
+        break;
+      }
+      case 'HELP': {
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.HELP_CLICKED,
+          Environment.USER,
+          PageId.PROFILE,
+          null,
+          undefined,
+          undefined
+        );
+        if (this.app.getRootNavs().length > 0) {
+          this.app.getRootNavs()[0].push(FaqPage, {
             isFromSettings: true
           });
         }
