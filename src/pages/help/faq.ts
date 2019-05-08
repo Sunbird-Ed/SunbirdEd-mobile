@@ -25,7 +25,7 @@ export class FaqPage {
   consumptionFaqUrl: SafeResourceUrl;
 
   faq: any = {
-    url: 'file:///android_asset/www/assets/faq/index.html?selectedlang=en&randomid=' + Math.random()
+    url: 'file:///android_asset/www/assets/faq/consumption-faqs.html?selectedlang=en&randomid=' + Math.random()
   };
   selectedLanguage: string;
   chosenLanguageString: any;
@@ -99,7 +99,7 @@ export class FaqPage {
     }
   }
   onError() {
-    this.faq.url = 'file:///android_asset/www/assets/faq/index.html?selectedlang=en&randomid=' + Math.random();
+    this.faq.url = 'file:///android_asset/www/assets/faq/consumption-faqs.html?selectedlang=en&randomid=' + Math.random();
     this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
   }
 
