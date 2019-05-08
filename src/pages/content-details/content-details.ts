@@ -15,7 +15,7 @@ import {
 } from 'ionic-angular';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
-import {EventTopics, PreferenceKey, XwalkConstants} from '../../app/app.constant';
+import {EventTopics, PreferenceKey, XwalkConstants, ContentConstants} from '../../app/app.constant';
 import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, Map, ShareUrl} from '@app/app';
 import {BookmarkComponent, ContentActionsComponent,
   ContentRatingAlertComponent, ConfirmAlertComponent, SbPopoverComponent} from '@app/component';
@@ -203,7 +203,7 @@ export class ContentDetailsPage {
     this.checkDeviceAPILevel();
     this.checkappAvailability();
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
-
+    this.defaultLicense = ContentConstants.DEFAULT_LICENSE;
   }
 
   ionViewDidLoad() {
