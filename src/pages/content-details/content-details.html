@@ -225,6 +225,10 @@
 					<div class="sb-content-title">{{'LICENSE' | translate}}</div>
 					<div class="sb-content-title-data">{{content?.contentData?.license}}</div>
 				</div>
+				<div class="sb-info" *ngIf="!content?.contentData?.license">
+					<div class="sb-content-title">{{'LICENSE' | translate}}</div>
+					<div class="sb-content-title-data">{{defaultLicense}}</div>
+				</div>
 				<div class="sb-info" *ngIf="content?.contentData?.creators || content?.contentData?.creator">
 					<div class="sb-content-title">{{'CREATORS' | translate}}</div>
 					<div class="sb-content-title-data">{{mergeProperties('creators', 'creator')}}</div>
