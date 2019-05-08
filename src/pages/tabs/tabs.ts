@@ -3,7 +3,6 @@ import { Component, ViewChild, Inject } from '@angular/core';
 import { ContainerService } from '../../service/container.services';
 import { Tabs, Tab, Events, ToastController } from 'ionic-angular';
 import { NavParams } from 'ionic-angular';
-import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 import { TelemetryGeneratorService } from '@app/service';
 import { Environment, InteractType, InteractSubtype, PageId } from '@app/service/telemetry-constants';
 import { SharedPreferences } from 'sunbird-sdk';
@@ -11,9 +10,6 @@ import { PreferenceKey } from '@app/app';
 import { File } from '@ionic-native/file';
 
 declare const cordova;
-
-// import { ResourcesPage } from '../resources/resources';
-// import {ResourcesPageM:odule} from '@app/pages/resources/resources.module';
 
 @Component({
   selector: 'page-tabs',
@@ -34,7 +30,7 @@ export class TabsPage {
   selectedLanguage: string;
   constructor(
     private container: ContainerService, private navParams: NavParams, private events: Events,
-    public toastCtrl: ToastController, private localNotifications: LocalNotifications,
+    public toastCtrl: ToastController,
     private telemetryGeneratorService: TelemetryGeneratorService, private file: File,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences) {
       const notifcationData = cordova.plugins.notification.local.launchDetails;
@@ -74,17 +70,15 @@ export class TabsPage {
   }
 
   triggerConfig() {
-    console.log(this.configData);
-    let d1 = this.configData.data.start;
-    d1 = d1.split(' ');
-    const hour = +d1[1].split(':')[0];
-    const minute = +d1[1].split(':')[1];
-    d1 = d1[0].split('/');
-    console.log(d1.length);
+    let tempDate = this.configData.data.start;
+    tempDate = tempDate.split(' ');
+    const hour = +tempDate[1].split(':')[0];
+    const minute = +tempDate[1].split(':')[1];
+    tempDate = tempDate[0].split('/');
     const trigger: any = {};
 
 
-    if (d1.length === 1) {
+    if (tempDate.length === 1) {
       const every: any = {
         minute: '',
         hour: ''
@@ -92,19 +86,17 @@ export class TabsPage {
       if (!isNaN(+this.configData.data.interval) && typeof(+this.configData.data.interval) === 'number') {
         every.day = +this.configData.data.interval;
       } else if (typeof(this.configData.data.interval) === 'string') {
-        every[this.configData.data.interval] = +d1[0];
+        every[this.configData.data.interval] = +tempDate[0];
       }
       every.hour = hour;
       every.minute = minute;
       trigger.every = every;
-      console.log(trigger);
-    } else if (d1.length === 3) {
+    } else if (tempDate.length === 3) {
       trigger.firstAt = new Date(this.configData.data.start);
       trigger.every = this.configData.data.interval;
       if (this.configData.data.occurance)  {
         trigger.count = this.configData.data.occurance;
       }
-      console.log(trigger);
     }
     return trigger;
   }
@@ -117,7 +109,6 @@ export class TabsPage {
       .then(val => {
         if (val && val.length) {
           this.selectedLanguage = val;
-          console.log('lang code: ', this.selectedLanguage);
           cordova.plugins.notification.local.schedule({
             id: this.configData.id,
             title: this.configData.data.translations[this.selectedLanguage].title,
@@ -149,7 +140,6 @@ export class TabsPage {
   }
 
   public ionChange(tab: Tab) {
-    console.log('TabTitle', tab.tabTitle);
     // if active tab is other than scanner tab i.e, = tab 2
     if (tab.index !== 2) {
       this.tabs.forEach((tabTo, index) => {
@@ -191,12 +181,4 @@ export class TabsPage {
     }
   }
 
-  handleHeaderEvents($event) {
-    // switch ($event.name) {
-    //   case 'search': this.search();
-    //                 break;
-    //   case 'filter': this.showFilter();
-    //                   break;
-    // }
-  }
 }
