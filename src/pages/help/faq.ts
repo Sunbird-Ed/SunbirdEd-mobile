@@ -4,7 +4,7 @@ import { AppGlobalService } from '../../service/app-global.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { AppHeaderService, TelemetryGeneratorService, UtilityService } from '@app/service';
 import { Component, Inject } from '@angular/core';
-import { IonicPage, NavController } from 'ionic-angular';
+import { IonicPage, NavController, Loading, LoadingController } from 'ionic-angular';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PageId, Environment, InteractType } from '@app/service/telemetry-constants';
 import { SharedPreferences, ProfileService, ContentService, DeviceInfo, GetAllProfileRequest, ContentRequest } from 'sunbird-sdk';
@@ -26,7 +26,6 @@ export class FaqPage {
 
   faq: any = {
     url: 'file:///android_asset/www/assets/faq/index.html?selectedlang=en&randomid=' + Math.random()
-    // url: 'https://ankur01oct.github.io/consumption-faqs.html?selectedlang='
   };
   selectedLanguage: string;
   chosenLanguageString: any;
@@ -34,7 +33,11 @@ export class FaqPage {
   fileUrl: string;
   subjectDetails: string;
   appName: string;
-  constructor(public navCtrl: NavController,
+  loading?: Loading;
+  private messageListener: (evt: Event) => void;
+
+  constructor(
+              private loadingCtrl: LoadingController,
               private domSanitizer: DomSanitizer,
               private telemetryGeneratorService: TelemetryGeneratorService,
               @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
@@ -45,15 +48,25 @@ export class FaqPage {
               @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
               private commonUtilService: CommonUtilService,
               private appGlobalService: AppGlobalService,
-              private utilityService: UtilityService,
               private headerService: AppHeaderService,
               private formAndFrameworkUtilService: FormAndFrameworkUtilService) {
+              this.messageListener = (event) => {
+                this.receiveMessage(event);
+              };
   }
 
   ionViewDidLoad() {
-    (<any>window).addEventListener('message', (event) => {
-      this.receiveMessage(event);
-    }, false);
+    window.addEventListener('message', this.messageListener, false);
+  }
+
+  ionViewDidLeave() {
+    (<any>window).supportfile.removeFile(
+      result => ({}),
+      error => {
+        console.error('error' + error);
+      });
+
+    window.removeEventListener('message', this.messageListener);
   }
 
  async ionViewWillEnter() {
@@ -62,6 +75,7 @@ export class FaqPage {
       .then((appName) => {
         this.appName = appName;
       });
+      await this.createAndPresentLoadingSpinner();
       await this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE).toPromise()
       .then(value => {
         // get chosen language code from  lang mapping constant array
@@ -80,19 +94,23 @@ export class FaqPage {
   }
   onLoad() {
     console.log('onLoad executed');
-}
-onError() {
-  this.faq.url = 'file:///android_asset/www/assets/faq/index.html?selectedlang=en&randomid=' + Math.random();
-  this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
-}
+    if (this.loading) {
+      this.loading.dismissAll();
+    }
+  }
+  onError() {
+    this.faq.url = 'file:///android_asset/www/assets/faq/index.html?selectedlang=en&randomid=' + Math.random();
+    this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
+  }
 
-  ionViewDidLeave() {
-    (<any>window).supportfile.removeFile(
-      result => ({}),
-      error => {
-        console.error('error' + error);
-      });
-      this.consumptionFaqUrl = undefined;
+  private async createAndPresentLoadingSpinner() {
+    this.loading = this.loadingCtrl.create({
+      dismissOnPageChange: true,
+      showBackdrop: true,
+      spinner: 'crescent'
+    });
+
+    await this.loading.present();
   }
 
   ionViewWillLeave() {
