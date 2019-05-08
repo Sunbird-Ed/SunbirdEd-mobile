@@ -54,3 +54,11 @@ page-content-details {
     color: #024f9d;
 
 }
+.disable-ripple ion-button-effect {
+    display: none;
+}
+
+.disable-ripple {
+    pointer-events: none;
+}
+

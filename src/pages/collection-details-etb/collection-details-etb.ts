@@ -1069,7 +1069,7 @@ export class CollectionDetailsEtbPage implements OnInit {
 
       const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
         sbPopoverHeading: this.commonUtilService.translateMessage('DOWNLOAD'),
-        sbPopoverMainTitle: this.contentDetail.contentData.name + this.contentDetail.contentData.subject,
+        sbPopoverMainTitle: this.contentDetail.contentData.name,
         actionsButtons: [
           {
             btntext: this.commonUtilService.translateMessage('DOWNLOAD'),
@@ -1206,7 +1206,7 @@ export class CollectionDetailsEtbPage implements OnInit {
       icon: null,
       sbPopoverContent: contentTypeCount +
         'items' + '(' + this.fileSizePipe.transform(this.contentDetail.contentData.size, 2) + ')',
-      metaInfo: this.contentDetail.contentData.name + this.contentDetail.contentData.subject
+      metaInfo: this.contentDetail.contentData.name
     }, {
         cssClass: 'sb-popover danger',
       });

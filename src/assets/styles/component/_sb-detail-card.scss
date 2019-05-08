@@ -28,6 +28,8 @@
           font-size: ($font-size-base - 4);
           text-transform: initial;
           @include padding($base-block-space);
+          color: $gray-400;
+          border-color: $gray-400
         }
       }
      

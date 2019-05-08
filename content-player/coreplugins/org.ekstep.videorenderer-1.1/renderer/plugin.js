@@ -292,10 +292,12 @@ org.ekstep.contentrenderer.baseLauncher.extend({
     },
     contentProgress: function () {
         var totalDuration = 0;
-        if (content.mimeType === 'video/x-youtube') {
-            totalDuration = this.videoPlayer.duration();
-        } else {
-            totalDuration = this.videoPlayer.duration;
+        if (this.videoPlayer){
+            if (content.mimeType === 'video/x-youtube') {
+                totalDuration = this.videoPlayer.duration();
+            } else {
+                totalDuration = this.videoPlayer.duration;
+            }
         }
         totalDuration = (this.currentTime < totalDuration) ? Math.floor(totalDuration) : Math.ceil(totalDuration);
         return this.progres(this.currentTime, totalDuration);
