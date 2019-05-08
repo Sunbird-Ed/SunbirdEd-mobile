@@ -19,6 +19,8 @@ import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
 import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
 import {
   AuthService,
+  EventNamespace,
+  EventsBusService,
   OAuthSession,
   ProfileService,
   ProfileType,
@@ -46,6 +48,7 @@ import { CoursesPage } from '@app/pages/courses/courses';
 import { ProfilePage } from '@app/pages/profile/profile';
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
 import { QrCodeResultPage } from '@app/pages/qr-code-result';
+import { FaqPage } from '@app/pages/help/faq';
 
 @Component({
   templateUrl: 'app.html',
@@ -79,6 +82,7 @@ export class MyApp implements OnInit, AfterViewInit {
     @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
     @Inject('AUTH_SERVICE') private authService: AuthService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     private platform: Platform,
     private statusBar: StatusBar,
     private toastCtrl: ToastController,
@@ -122,6 +126,7 @@ export class MyApp implements OnInit, AfterViewInit {
       this.requestAppPermissions();
       this.makeEntryInSupportFolder();
       this.checkForTncUpdate();
+      this.handleAuthErrors();
       await this.getSelectedLanguage();
       await this.navigateToAppropriatePage();
       this.handleSunbirdSplashScreenActions();
@@ -705,6 +710,23 @@ export class MyApp implements OnInit, AfterViewInit {
         }
         break;
       }
+      case 'HELP': {
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.HELP_CLICKED,
+          Environment.USER,
+          PageId.PROFILE,
+          null,
+          undefined,
+          undefined
+        );
+        if (this.app.getRootNavs().length > 0) {
+          this.app.getRootNavs()[0].push(FaqPage, {
+            isFromSettings: true
+          });
+        }
+        break;
+      }
       case 'LOGOUT':
         if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
           this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
@@ -716,4 +738,9 @@ export class MyApp implements OnInit, AfterViewInit {
     }
   }
 
+  private handleAuthErrors() {
+    this.eventsBusService.events(EventNamespace.ERROR).take(1).subscribe(() => {
+      this.logoutHandlerService.onLogout();
+    });
+  }
 }

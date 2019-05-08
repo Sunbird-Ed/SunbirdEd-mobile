@@ -6,6 +6,7 @@ import { File } from '@ionic-native/file';
 
 @Injectable()
 export class AppRatingService {
+  public static readonly DEVICE_FOLDER_PATH = cordova.file.dataDirectory;
 
   private rateLaterClickCount = 0;
     constructor(
@@ -31,7 +32,7 @@ export class AppRatingService {
     }
 
     createFolder(rate) {
-        this.fileCtrl.createDir(StoreRating.DEVICE_FOLDER_PATH, StoreRating.FOLDER_NAME, true).then(res => {
+        this.fileCtrl.createDir(AppRatingService.DEVICE_FOLDER_PATH, StoreRating.FOLDER_NAME, true).then(res => {
             console.log('Check Floder RES', res);
             this.writeFile(rate);
         }).catch(err => {
@@ -40,14 +41,14 @@ export class AppRatingService {
     }
 
     writeFile(rate) {
-        this.fileCtrl.writeFile(StoreRating.DEVICE_FOLDER_PATH + '/' + StoreRating.FOLDER_NAME,
+        this.fileCtrl.writeFile(AppRatingService.DEVICE_FOLDER_PATH + '/' + StoreRating.FOLDER_NAME,
             StoreRating.FILE_NAME, StoreRating.FILE_TEXT + ' = ' + rate, { replace: true }).then(res => {
             }).catch(err => {
             });
     }
 
     checkReadFile() {
-        return this.fileCtrl.readAsText(StoreRating.DEVICE_FOLDER_PATH + '/' + StoreRating.FOLDER_NAME,
+        return this.fileCtrl.readAsText(AppRatingService.DEVICE_FOLDER_PATH + '/' + StoreRating.FOLDER_NAME,
             StoreRating.FILE_NAME).then(res => {
                 return true;
             }).catch(err => {

@@ -15,6 +15,13 @@ import {Observable} from "rxjs";
 describe('AppRatingAlertComponent', () => {
   let appRatingPage: AppRatingAlertComponent;
   beforeEach(() => {
+
+    (window as any).cordova = {
+      file: {
+        dataDirectory: 'SAMPLE_DATA_DIRECTORY'
+      }
+    } as any;
+
     sharedPreferencesMock.getString.mockImplementation((key: string) => {
       if (key === 'app_name') {
         return Observable.of('SAMPLE_APP_NAME');

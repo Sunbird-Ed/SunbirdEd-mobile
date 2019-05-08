@@ -14565,69 +14565,9 @@ visited {
     src: url(fonts/NotoSans-Bold.woff) format('woff')
 }
 
-body {
-    font-family: 'NotoSans', 'NotoSansBengali', 'NotoSansMalayalam', 'NotoSansGurmukhi', 'NotoSansDevanagari', 'NotoSansGujarati', 'NotoSansTelugu', 'NotoSansTamil', 'NotoSansKannada', 'NotoSansOriya', 'NotoNastaliqUrdu', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
-}
-
-input, textarea, optgroup, select,
-  h1, h2, h3, h4, h5, h6,
-   p, div, label
-  .ui.header,
-  .ui.text.container,
-  .ui.input input,
-  .ui.list .list>.item .header,
-  .ui.list>.item .header,
-  .ui.steps .step .title,
-  .ui.ordered.steps .step:before,
-  .ui.ordered.steps .step.completed:before,
-  .ui.message .header,
-  .ui.sortable.table thead th:after,
-  .ui.card>.content>.header,
-  .ui.cards>.card>.content>.header,
-  .ui.items>.item>.content>.header,
-  .ui.statistic>.value,
-  .ui.statistics .statistic>.value,
-  .ui.statistic>.label,
-  .ui.statistics .statistic>.label,
-  .ui.accordion .title:not(.ui),
-  .ui.checkbox label,
-  .ui.modal>.header,
-  .ui.popup>.header,
-  .ui.search>.results .result .title,
-  .ui.search>.results>.message .header,
-  .ui.form input:not([type]),
-  .ui.form input[type=date],
-  .ui.form input[type=datetime-local],
-  .ui.form input[type=email],
-  .ui.form input[type=file],
-  .ui.form input[type=number],
-  .ui.form input[type=password],
-  .ui.form input[type=search],
-  .ui.form input[type=tel],
-  .ui.form input[type=text],
-  .ui.form input[type=time],
-  .ui.form input[type=url],
-  .ui.input input,
-  .ui.menu,
-  .ui.dropdown,
-  .ngdialog.ngdialog-theme-default .ngdialog-content,
-  .ngdialog.ngdialog-theme-plain .ngdialog-content,
-  .qc-ngdialog-custome > .ngdialog-content,
-  .ngdialog.ngdialog-theme-plain .ngdialog-content h1,
-  .ngdialog.ngdialog-theme-plain .ngdialog-content h2,
-  .ngdialog.ngdialog-theme-plain .ngdialog-content h3,
-  .ngdialog.ngdialog-theme-plain .ngdialog-content h4,
-  .ngdialog.ngdialog-theme-plain .ngdialog-content h5,
-  .ngdialog.ngdialog-theme-plain .ngdialog-content h6,
-  .ngdialog.ngdialog-theme-plain .ngdialog-content li,
-  .ngdialog.ngdialog-theme-plain .ngdialog-content p,
-  .ngdialog.ngdialog-theme-plain .ngdialog-content ul
-  .ui.modal > .header,
-  .label-icon-box-text,
-  .cke_reset_all, .cke_reset_all *, .cke_reset_all a, .cke_reset_all textarea,
-  .ui.category.search> .results .category> .name,  body.cke_editable  {
-    font-family: inherit !important;
-  }
+body {	
+    font-family: NotoSans, NotoSansOriya, NotoSansGujarati, NotoSansMalayalam;	
+} 
 
 .splashText {
     position: absolute;

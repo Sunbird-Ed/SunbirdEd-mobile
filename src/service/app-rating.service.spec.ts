@@ -8,6 +8,12 @@ import {FileMock} from "ionic-mocks";
 describe('App-rating-Service', () => {
   let appRatingService = AppRatingService;
   beforeEach(() => {
+    (window as any).cordova = {
+      file: {
+        dataDirectory: 'SAMPLE_DATA_DIRECTORY'
+      }
+    } as any;
+
     appRatingService = new AppRatingService(
       sharedPreferencesMock as any,
       FileMock as any
