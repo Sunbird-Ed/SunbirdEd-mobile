@@ -87,24 +87,26 @@ export class FlagContent {
         'OPTION_OTHER'
     ];
 }
+
 export class BatchConstants {
-  public static readonly REQUIRED_FIELDS = [
-    'endDate',
-    'description',
-    'name',
-    'enrollmentType',
-    'hashTagId',
-    'startDate',
-    'courseId',
-    'status',
-    'createdBy',
-    'creatorFirstName',
-    'creatorLastName',
-    'identifier',
-    'id'
-  ];
-  // createdFor ,courseAdditionalInfo, participant, updatedDate, createdDate, courseCreator, mentors
+    public static readonly REQUIRED_FIELDS = [
+        'endDate',
+        'description',
+        'name',
+        'enrollmentType',
+        'hashTagId',
+        'startDate',
+        'courseId',
+        'status',
+        'createdBy',
+        'creatorFirstName',
+        'creatorLastName',
+        'identifier',
+        'id'
+    ];
+    // createdFor ,courseAdditionalInfo, participant, updatedDate, createdDate, courseCreator, mentors
 }
+
 export class ProfileConstants {
     public static readonly USER_TOKEN = 'userToken';
     public static readonly REQUIRED_FIELDS = [
@@ -144,7 +146,7 @@ export class ShareUrl {
 export class MenuOverflow {
     public static readonly MENU_GUEST = ['USERS_AND_GROUPS', 'REPORTS', 'SETTINGS'];
     public static readonly MENU_LOGIN = ['USERS_AND_GROUPS', 'REPORTS', 'SETTINGS', 'LOGOUT'];
-    public static readonly DOWNLOAD_FILTERS = ['Content size', 'Last viewed'];
+    public static readonly DOWNLOAD_FILTERS = ['CONTENT_SIZE', 'LAST_VIEWED'];
 }
 
 export class SideMenu {
@@ -294,6 +296,13 @@ export class FrameworkCategory {
         FrameworkCategory.GRADE_LEVEL,
         FrameworkCategory.SUBJECT
     ];
+}
+
+export class SystemSettingsIds {
+    public static readonly CUSTODIAN_ORG_ID = 'custodianOrgId';
+    public static readonly COURSE_FRAMEWORK_ID = 'courseFrameworkId';
+    public static readonly CONTENT_COMING_SOON_MSG = 'contentComingSoonMsg';
+    public static readonly CONSUMPTION_FAQS = 'consumptionFaqs';
 }
 
 export class StoreRating {

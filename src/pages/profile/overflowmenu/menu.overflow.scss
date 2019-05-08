@@ -3,13 +3,12 @@ menu-overflow{
 }
 .box.download-popover{
     .popover-content{
-        top: 180px !important;
+        transform: scale(1) translateY(34px) !important;
         background: #FAFAFA;
         .item{
             .label{
                 color: $primary-600;
-            }:first-child{
-                margin-bottom: 0;
+                margin: 10px 8px 10px 16px;
             }
             .item-inner{
                 border: none; 
