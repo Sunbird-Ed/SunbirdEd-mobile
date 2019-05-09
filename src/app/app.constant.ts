@@ -313,6 +313,8 @@ export class StoreRating {
     public static readonly FOLDER_NAME = 'sunbird-app-rating';
     public static readonly FILE_NAME = 'app-rating.doc';
     public static readonly FILE_TEXT = 'APP-Rating';
+    public static readonly RETURN_CLOSE = 'close';
+    public static readonly RETURN_HELP = 'help';
 }
 export class ContentConstants {
     public static readonly DEFAULT_LICENSE = 'CC BY 4.0';
