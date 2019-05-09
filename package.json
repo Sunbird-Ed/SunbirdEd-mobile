@@ -177,6 +177,10 @@
   },
   "jest": {
     "browser": false,
+    "globals": {
+      "cordova": true
+    },
+    "setupTestFrameworkScriptFile": "<rootDir>/src/__tests__/setup.js",
     "rootDir": "./",
     "roots": [
       "<rootDir>/src/pages",
