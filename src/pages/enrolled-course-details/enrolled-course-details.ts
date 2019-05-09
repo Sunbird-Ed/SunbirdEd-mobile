@@ -1,14 +1,14 @@
-import {Component, Inject, NgZone, ViewChild, OnInit} from '@angular/core';
-import {AlertController, Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController} from 'ionic-angular';
+import { Component, Inject, NgZone, ViewChild, OnInit } from '@angular/core';
+import { AlertController, Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController } from 'ionic-angular';
 import { Observable } from 'rxjs/Observable';
 import * as _ from 'lodash';
-import {SocialSharing} from '@ionic-native/social-sharing';
+import { SocialSharing } from '@ionic-native/social-sharing';
 
-import {ContentActionsComponent, ContentRatingAlertComponent} from '@app/component';
-import {CollectionDetailsPage} from '@app/pages/collection-details/collection-details';
-import {ContentDetailsPage} from '@app/pages/content-details/content-details';
-import {ContentType, EventTopics, MimeType, PreferenceKey, ShareUrl} from '@app/app';
-import {CourseBatchesPage} from '@app/pages/course-batches/course-batches';
+import { ContentActionsComponent, ContentRatingAlertComponent } from '@app/component';
+import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
+import { ContentDetailsPage } from '@app/pages/content-details/content-details';
+import { ContentType, EventTopics, MimeType, PreferenceKey, ShareUrl } from '@app/app';
+import { CourseBatchesPage } from '@app/pages/course-batches/course-batches';
 import {
   AppGlobalService,
   CommonUtilService,
@@ -17,7 +17,7 @@ import {
   UtilityService,
   AppHeaderService
 } from '@app/service';
-import {DatePipe} from '@angular/common';
+import { DatePipe } from '@angular/common';
 import {
   Batch,
   ChildContentRequest,
@@ -54,7 +54,7 @@ import {
   TelemetryObject,
   UnenrollCourseRequest,
 } from 'sunbird-sdk';
-import {Subscription} from 'rxjs';
+import { Subscription } from 'rxjs';
 import {
   Environment,
   ErrorType,
@@ -64,9 +64,9 @@ import {
   Mode,
   PageId
 } from '../../service/telemetry-constants';
-import {ProfileConstants} from '../../app';
+import { ProfileConstants } from '../../app';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
-import {BatchConstants} from '@app/app';
+import { BatchConstants } from '@app/app';
 
 declare const cordova;
 
@@ -181,6 +181,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
   private eventSubscription: Subscription;
   private corRelationList: Array<CorrelationData>;
   headerObservable: any;
+  content: Content;
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
@@ -200,7 +201,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
     private datePipe: DatePipe,
-     private utilityService: UtilityService,
+    private utilityService: UtilityService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     private headerService: AppHeaderService
   ) {
@@ -213,7 +214,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
   /**
    * Angular life cycle hooks
   */
- ngOnInit() {
+  ngOnInit() {
 
   }
 
@@ -335,40 +336,40 @@ export class EnrolledCourseDetailsPage implements OnInit {
 
 
         // const paramsMap = new Map();
-      // if (this.isContentPlayed || this.course.contentAccess.length) {
-      const popover = this.popoverCtrl.create(ContentRatingAlertComponent, {
-        content: this.course,
-        pageId: PageId.CONTENT_DETAIL,
-        rating: this.userRating,
-        comment: this.ratingComment,
-        // popupType: popupType,
-      }, {
-          cssClass: 'sb-popover info',
+        // if (this.isContentPlayed || this.course.contentAccess.length) {
+        const popover = this.popoverCtrl.create(ContentRatingAlertComponent, {
+          content: this.content,
+          pageId: PageId.CONTENT_DETAIL,
+          rating: this.userRating,
+          comment: this.ratingComment,
+          // popupType: popupType,
+        }, {
+            cssClass: 'sb-popover info',
+          });
+        popover.present({
+          ev: event
         });
-      popover.present({
-        ev: event
-      });
-      popover.onDidDismiss(data => {
-        if (data && data.message === 'rating.success') {
-          this.userRating = data.rating;
-          this.ratingComment = data.comment;
-        }
-      });
-    // } else {
-    //   paramsMap['IsPlayed'] = 'N';
-    //   this.commonUtilService.showToast('TRY_BEFORE_RATING');
-    // }
-    this.telemetryGeneratorService.generateInteractTelemetry(
-      InteractType.TOUCH,
-      InteractSubtype.RATING_CLICKED,
-      Environment.HOME,
-      PageId.CONTENT_DETAIL,
-      undefined,
-      // paramsMap,
-      undefined,
-      // this.objRollup,
-      undefined,
-      this.corRelationList);
+        popover.onDidDismiss(data => {
+          if (data && data.message === 'rating.success') {
+            this.userRating = data.rating;
+            this.ratingComment = data.comment;
+          }
+        });
+        // } else {
+        //   paramsMap['IsPlayed'] = 'N';
+        //   this.commonUtilService.showToast('TRY_BEFORE_RATING');
+        // }
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.RATING_CLICKED,
+          Environment.HOME,
+          PageId.CONTENT_DETAIL,
+          undefined,
+          // paramsMap,
+          undefined,
+          // this.objRollup,
+          undefined,
+          this.corRelationList);
       } else {
         this.commonUtilService.showToast('TRY_BEFORE_RATING');
       }
@@ -394,8 +395,8 @@ export class EnrolledCourseDetailsPage implements OnInit {
       batchDetails: this.batchDetails,
       pageName: 'course'
     }, {
-      cssClass: 'content-action'
-    });
+        cssClass: 'content-action'
+      });
     popover.present({
       ev: event
     });
@@ -475,6 +476,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
   extractApiResponse(data: Content): void {
     if (data.contentData) {
       this.course = data.contentData;
+      this.content = data;
       this.objId = this.course.identifier;
       this.objType = this.course.contentType;
       this.objVer = this.course.pkgVersion;
@@ -547,7 +549,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
    * Get batch details
    */
   getBatchDetails() {
-    this.courseService.getBatchDetails({batchId: this.courseCardData.batchId}).toPromise()
+    this.courseService.getBatchDetails({ batchId: this.courseCardData.batchId }).toPromise()
       .then((data: Batch) => {
         this.zone.run(() => {
           if (data) {
@@ -591,17 +593,17 @@ export class EnrolledCourseDetailsPage implements OnInit {
                     }, {
                         cssClass: 'sb-popover info',
                       });
-                      confirm.present({
-                        ev: event
-                      });
-                      confirm.onDidDismiss((leftBtnClicked: any) => {
-                        if (leftBtnClicked == null) {
-                          return;
-                        }
-                        if (leftBtnClicked) {
-                          this.preferences.putString(PreferenceKey.COURSE_IDENTIFIER, this.batchDetails.identifier).toPromise().then();
-                        }
-                      });
+                    confirm.present({
+                      ev: event
+                    });
+                    confirm.onDidDismiss((leftBtnClicked: any) => {
+                      if (leftBtnClicked == null) {
+                        return;
+                      }
+                      if (leftBtnClicked) {
+                        this.preferences.putString(PreferenceKey.COURSE_IDENTIFIER, this.batchDetails.identifier).toPromise().then();
+                      }
+                    });
                   } else if (this.batchDetails.status === 0) {
                     this.isBatchNotStarted = true;
                     this.courseStartDate = this.batchDetails.startDate;
@@ -650,7 +652,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
           this.batchDetails.creatorLastName = data.lastName ? data.lastName : '';
         }
       }).catch(() => {
-    });
+      });
   }
 
   /**
@@ -660,8 +662,9 @@ export class EnrolledCourseDetailsPage implements OnInit {
     if (this.course.contentTypesCount) {
       if (!_.isObject(this.course.contentTypesCount)) {
         this.course.contentTypesCount = JSON.parse(this.course.contentTypesCount);
+      } else {
+        this.course.contentTypesCount = this.course.contentTypesCount;
       }
-      this.course.contentTypesCount = this.course.contentTypesCount;
     } else if (this.courseCardData.contentTypesCount && !_.isObject(this.courseCardData.contentTypesCount)) {
       this.course.contentTypesCount = JSON.parse(this.courseCardData.contentTypesCount);
     }
@@ -862,10 +865,10 @@ export class EnrolledCourseDetailsPage implements OnInit {
           this.showChildrenLoader = false;
         });
       }).catch(() => {
-      this.zone.run(() => {
-        this.showChildrenLoader = false;
+        this.zone.run(() => {
+          this.showChildrenLoader = false;
+        });
       });
-    });
   }
 
   /**
@@ -919,12 +922,12 @@ export class EnrolledCourseDetailsPage implements OnInit {
           this.navCtrl.pop();
         });
       }).catch(() => {
-      this.zone.run(() => {
-        this.showLoading = false;
-        this.headerService.showHeaderWithBackButton(['share', 'more']);
-        this.navCtrl.pop();
+        this.zone.run(() => {
+          this.showLoading = false;
+          this.headerService.showHeaderWithBackButton(['share', 'more']);
+          this.navCtrl.pop();
+        });
       });
-    });
   }
 
   getContentsSize(data) {
@@ -946,7 +949,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
   resumeContent(identifier): void {
     this.showResumeBtn = false;
     this.navCtrl.push(ContentDetailsPage, {
-      content: {identifier: identifier},
+      content: { identifier: identifier },
       depth: '1', // Needed to handle some UI elements.
       contentState: {
         batchId: this.courseCardData.batchId ? this.courseCardData.batchId : '',
@@ -1017,7 +1020,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
           // Show download percentage
           if (event.type === DownloadEventType.PROGRESS) {
             const downloadEvent = event as DownloadProgress;
-            if(downloadEvent.payload.identifier === this.identifier) {
+            if (downloadEvent.payload.identifier === this.identifier) {
               this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
               if (this.downloadProgress === 100) {
                 this.getBatchDetails();
@@ -1096,15 +1099,15 @@ export class EnrolledCourseDetailsPage implements OnInit {
         status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS],
         enrollmentType: CourseEnrollmentType.OPEN
       },
-      fields:BatchConstants.REQUIRED_FIELDS
+      fields: BatchConstants.REQUIRED_FIELDS
     };
     const reqvalues = new Map();
     reqvalues['enrollReq'] = courseBatchesRequest;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.ENROLL_CLICKED,
-        Environment.HOME,
-        PageId.CONTENT_DETAIL, undefined,
-        reqvalues);
+      Environment.HOME,
+      PageId.CONTENT_DETAIL, undefined,
+      reqvalues);
 
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       if (!this.guestUser) {
@@ -1184,9 +1187,9 @@ export class EnrolledCourseDetailsPage implements OnInit {
           this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.course.contentType);
           this.social.share('', '', '' + contentExportResponse.exportedFilePath, url);
         }).catch(() => {
-        loader.dismiss();
-        this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
-      });
+          loader.dismiss();
+          this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
+        });
     } else {
       loader.dismiss();
       this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_COURSE_SUCCESS, this.course.contentType);
@@ -1213,8 +1216,8 @@ export class EnrolledCourseDetailsPage implements OnInit {
         true, this.identifier, this.corRelationList);
       this.handleNavBackButton();
     };*/
-    
-    
+
+
 
     this.subscribeUtilityEvents();
   }
@@ -1297,7 +1300,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
           }
         }).catch((error: any) => {
 
-      });
+        });
     } else {
       // to be handled when there won't be any batchId
     }
@@ -1329,19 +1332,19 @@ export class EnrolledCourseDetailsPage implements OnInit {
       telemetryObject,
       objRollup,
       corRelationList
-      );
+    );
   }
 
   handleHeaderEvents($event) {
     switch ($event.name) {
       case 'share': this.share();
-                    break;
+        break;
       case 'more': this.showOverflowMenu($event);
-                    break;
+        break;
       case 'back': this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
         true, this.identifier, this.corRelationList);
-                    this.handleNavBackButton();
-                    break;
+        this.handleNavBackButton();
+        break;
     }
   }
 }
