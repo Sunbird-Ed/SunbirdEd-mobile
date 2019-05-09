@@ -1684,7 +1684,9 @@ export class ContentDetailsPage {
     }
   }
 
-  goBack() {
-    this.navCtrl.pop();
+  goBack(index, length) {
+    if (index !== (length - 1)) {
+      this.navCtrl.pop();
+    }
   }
 }
