@@ -100,9 +100,8 @@
 
 	<div class="breadcrumb-container">
 		<div class="step-indicator" >
-			<a class="step completed" href="#" *ngFor="let result of childPaths; let i = index">
-				<span *ngIf="i!=(childPaths.length-1); else templateName" (click)="goBack()">{{result}} </span>
-				<ng-template #templateName><span class="breadCrumbStyle" >{{result}}</span></ng-template>
+			<a class="step" href="#" *ngFor="let result of childPaths; let i = index" [ngClass]="{'completed': i!=(childPaths.length-1)}" (click)="goBack(i,childPaths.length)">
+				{{result}}
 			</a>
 		</div>
 	</div>
