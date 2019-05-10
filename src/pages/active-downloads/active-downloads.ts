@@ -13,7 +13,7 @@ import {
 } from 'sunbird-sdk';
 import {SbPopoverComponent} from '@app/component';
 import {AppHeaderService, CommonUtilService} from '@app/service';
-import { SbNoNetworkPopupComponent } from '@app/component/popups/sb-no-network-popup/sb-no-network-popup';
+import {SbNoNetworkPopupComponent} from '@app/component/popups/sb-no-network-popup/sb-no-network-popup';
 
 @IonicPage()
 @Component({
@@ -158,9 +158,7 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
       cssClass: 'sb-popover danger',
     });
 
-    confirm.present({
-      ev: event
-    });
+    confirm.present();
 
     const loader = this.commonUtilService.getLoader();
 
