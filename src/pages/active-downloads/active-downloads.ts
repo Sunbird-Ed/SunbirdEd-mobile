@@ -179,9 +179,7 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
         cssClass: 'sb-popover danger dw-active-downloads-popover',
       });
 
-    confirm.present({
-      ev: event
-    });
+    confirm.present();
 
     const loader = this.commonUtilService.getLoader();
 
