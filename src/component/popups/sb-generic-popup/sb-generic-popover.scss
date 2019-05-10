@@ -19,3 +19,12 @@
         } 
     }
 }
+.dw-active-downloads-popover{
+    .popover-content{
+        .sb-popover-footer {
+            .sb-popover-action-btn{
+                box-shadow: none;
+            }
+        }
+    }
+}

@@ -20,7 +20,7 @@
         </div>
     </div>
 
-    <div class="row sb-topic-item" (click)="showCommingSoonPopup(childData)"
+    <div class="row sb-topic-item" (click)="showComingSoonPopup(childData)"
         *ngIf="childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !childData?.children">
         <div class="sb-accordian-grey-text">{{childData?.contentData?.name}}</div>
         <ion-icon ios="ios-alert" md="md-alert" class="sb-accordian-grey-icon"></ion-icon>

@@ -1,6 +1,6 @@
 import { AppVersion } from '@ionic-native/app-version';
 import { AppGlobalService, AppHeaderService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
-import { AppStorageInfo, DownloadManagerPageInterface } from './download-manager.interface';
+import { AppStorageInfo, DownloadManagerPageInterface, EmitedContents } from './download-manager.interface';
 import { AudienceFilter, ContentType } from './../../app/app.constant';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { Component, Inject, NgZone, OnInit } from '@angular/core';
@@ -53,11 +53,9 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    private translate: TranslateService,
     private ngZone: NgZone,
     private popoverCtrl: PopoverController,
     private commonUtilService: CommonUtilService,
-    private viewCtrl: ViewController,
     private headerServie: AppHeaderService, private events: Events,
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
@@ -106,7 +104,6 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
               usedSpace: res[0].sizeOnDevice,
               availableSpace: parseInt(size, 10)
             };
-            console.log('this.storageInfo', this.storageInfo);
             return this.storageInfo;
           });
       });
@@ -149,7 +146,6 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     if (shouldGenerateTelemetry) {
       await this.getAppStorageInfo();
     }
-    console.log('requestParams', requestParams);
     await this.contentService.getContents(requestParams).toPromise()
       .then(data => {
         if (shouldGenerateTelemetry) {
@@ -171,13 +167,11 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
 
         });
         this.ngZone.run(() => {
-          console.log('downloadedContents', data);
           this.downloadedContents = data;
           this.loader.dismiss();
         });
       })
       .catch((e) => {
-        console.log(e);
         this.ngZone.run(() => {
           this.loader.dismiss();
         });
@@ -186,41 +180,27 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
 
   private generateInteractTelemetry(contentCount: number, usedSpace: number, availableSpace: number) {
     const valuesMap = {};
-    valuesMap['contentsCount'] = contentCount;
-    valuesMap['spaceTakenByApp'] = this.telemetryGeneratorService.transform(usedSpace, 2);
-    valuesMap['freeSpace'] = this.telemetryGeneratorService.transform(availableSpace, 2);
+    valuesMap['count'] = contentCount;
+    valuesMap['spaceTakenByApp'] = this.commonUtilService.fileSizeInMB(usedSpace);
+    valuesMap['freeSpace'] = this.commonUtilService.fileSizeInMB(availableSpace);
     this.telemetryGeneratorService.generateExtraInfoTelemetry(valuesMap, PageId.DOWNLOADS);
   }
 
-  deleteContents(contentsList) {
+  deleteContents(emitedContents: EmitedContents) {
     const contentDeleteRequest: ContentDeleteRequest = {
-      contentDeleteList: contentsList
+      contentDeleteList: emitedContents.selectedContents
     };
-    if (contentsList.length > 1) {
-      this.deleteAllContents(contentDeleteRequest);
+    if (emitedContents.selectedContents.length > 1) {
+      this.deleteAllContents(emitedContents);
     } else {
       this.loader = this.commonUtilService.getLoader();
       this.loader.present();
       this.loader.onDidDismiss(() => {
         this.loader = undefined;
       });
-      // const telemetryObject = new TelemetryObject(this.content.identifier, this.content.contentType, this.content.pkgVersion);
 
-      // this.telemetryGeneratorService.generateInteractTelemetry(
-      //   InteractType.TOUCH,
-      //   InteractSubtype.DELETE_CLICKED,
-      //   Environment.HOME,
-      //   this.pageName,
-      //   telemetryObject,
-      //   undefined,
-      //   this.objRollup,
-      //   this.corRelationList);
-
-
-      console.log('contentDeleteRequest', contentDeleteRequest);
       this.contentService.deleteContent(contentDeleteRequest).toPromise()
         .then((data: ContentDeleteResponse[]) => {
-          console.log('deleteContentresp', data);
           this.loader.dismiss();
           // this.getDownloadedContents();
           if (data && data[0].status === ContentDeleteStatus.NOT_FOUND) {
@@ -234,14 +214,23 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
           }
         }).catch((error: any) => {
           this.loader.dismiss();
-          console.log('delete response err: ', error);
           this.commonUtilService.showToast(this.commonUtilService.translateMessage('CONTENT_DELETE_FAILED'));
         });
     }
   }
 
-  deleteAllContents(contentDeleteRequest: ContentDeleteRequest) {
-    console.log('in cancel deleteall contents', contentDeleteRequest);
+  deleteAllContents(emitedContents) {
+    const valuesMap = {};
+    valuesMap['size'] = this.commonUtilService.fileSizeInMB(emitedContents.selectedContentsInfo.totalSize);
+    valuesMap['count'] = emitedContents.selectedContentsInfo.count;
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.DELETE_CLICKED,
+      Environment.DOWNLOADS,
+      PageId.BULK_DELETE_CONFIRMATION_POPUP, undefined, valuesMap);
+    const contentDeleteRequest: ContentDeleteRequest = {
+      contentDeleteList: emitedContents.selectedContents
+    };
     this.deleteAllConfirm = this.popoverCtrl.create(SbPopoverComponent, {
       sbPopoverHeading: this.commonUtilService.translateMessage('DELETE_PROGRESS'),
       actionsButtons: [
@@ -261,7 +250,6 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
       ev: event
     });
     this.deleteAllConfirm.onDidDismiss((cancel: any) => {
-      console.log('onDidDismiss cancel', cancel);
       if (cancel) {
         this.contentService.clearContentDeleteQueue().toPromise();
         // this.viewCtrl.dismiss();
@@ -286,7 +274,6 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
         });
       })
       .subscribe((list) => {
-        console.log('deleteList', list);
         this.events.publish('deletedContentList:changed', {
           deletedContentsInfo: {
             totalCount: contentDeleteRequest.contentDeleteList.length,
@@ -298,7 +285,6 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
 
 
   onSortCriteriaChange(sortAttribute): void {
-    console.log('parent onSortCriteriaChange', sortAttribute);
     let sortAttr: string;
     if (sortAttribute.content === 'Content size') {
       sortAttr = 'sizeOnDevice';
@@ -337,17 +323,17 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     console.log('inside handleHeaderEvents', $event);
     switch ($event.name) {
       case 'download':
-        this.telemetryGeneratorService.generateInteractTelemetry(
-          InteractType.TOUCH,
-          InteractSubtype.ACTIVE_DOWNLOADS_CLICKED,
-          Environment.DOWNLOADS,
-          PageId.DOWNLOADS);
         this.redirectToActivedownloads();
         break;
     }
   }
 
   redirectToActivedownloads() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.ACTIVE_DOWNLOADS_CLICKED,
+      Environment.DOWNLOADS,
+      PageId.DOWNLOADS);
     this.navCtrl.push(ActiveDownloadsPage);
   }
 

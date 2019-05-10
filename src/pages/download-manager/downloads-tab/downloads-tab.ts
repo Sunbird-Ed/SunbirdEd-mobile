@@ -6,13 +6,13 @@ import { OverflowMenuComponent } from '@app/pages/profile';
 import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { CommonUtilService, TelemetryGeneratorService } from '@app/service';
 import { SbPopoverComponent } from '../../../component/popups/sb-popover/sb-popover';
-import { Component, NgZone, Inject, Input, EventEmitter, Output } from '@angular/core';
-import { IonicPage, NavController, NavParams, PopoverController, Popover, Events } from 'ionic-angular';
-import { ContentRequest, ContentService, InteractType, TelemetryObject } from 'sunbird-sdk';
-import { downloadsDummyData } from '../downloads-spec.data';
+import { Component, Input, EventEmitter, Output } from '@angular/core';
+import { NavController, NavParams, PopoverController, Popover, Events } from 'ionic-angular';
+import { InteractType, TelemetryObject } from 'sunbird-sdk';
 import { Content, ContentDelete } from 'sunbird-sdk';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 import { InteractSubtype, Environment, PageId, ActionButtonType } from '@app/service/telemetry-constants';
+import { EmitedContents } from '../download-manager.interface';
 
 
 @Component({
@@ -27,10 +27,14 @@ export class DownloadsTabPage {
     showLoader = false;
     selectedContents: ContentDelete[] = [];
     showDeleteButton: Boolean = true;
-    deletePopupPresent: Boolean = false;
+    deleteAllPopupPresent: Boolean = false;
     showSelectAll: Boolean = true;
     selectedFilter: string = MenuOverflow.DOWNLOAD_FILTERS[0];
     deleteAllConfirm: Popover;
+    selectedContentsInfo = {
+        totalSize: 0,
+        count: 0
+    };
 
 
     constructor(
@@ -38,28 +42,27 @@ export class DownloadsTabPage {
         public navParams: NavParams,
         private popoverCtrl: PopoverController,
         private commonUtilService: CommonUtilService,
-        private viewCtrl: ViewController,
         private events: Events,
         private telemetryGeneratorService: TelemetryGeneratorService) {
     }
 
     ionViewDidLoad() {
-        console.log('ionViewDidLoad DownloadManagerTabsPage');
     }
 
     showDeletePopup(identifier?) {
-        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-            InteractSubtype.DELETE_CLICKED,
-            Environment.DOWNLOADS,
-            PageId.DOWNLOADS);
         if (identifier) {
+            this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+                InteractSubtype.DELETE_CLICKED,
+                Environment.DOWNLOADS,
+                PageId.DOWNLOADS);
             const contentDelete: ContentDelete = {
                 contentId: identifier,
                 isChildContent: false
             };
             this.selectedContents = [contentDelete];
         }
-        this.telemetryGeneratorService.generatePageViewTelemetry(PageId.SINGLE_DELETE_POPUP, Environment.DOWNLOADS);
+        this.telemetryGeneratorService.generatePageViewTelemetry(
+            identifier ? PageId.SINGLE_DELETE_CONFIRMATION_POPUP : PageId.BULK_DELETE_CONFIRMATION_POPUP, Environment.DOWNLOADS);
         const deleteConfirm = this.popoverCtrl.create(SbPopoverComponent, {
             sbPopoverHeading: this.commonUtilService.translateMessage('DELETE_CONTENT'),
             actionsButtons: [
@@ -86,7 +89,7 @@ export class DownloadsTabPage {
                         InteractType.TOUCH,
                         InteractSubtype.CLOSE_CLICKED,
                         Environment.DOWNLOADS,
-                        PageId.SINGLE_DELETE_POPUP);
+                        PageId.SINGLE_DELETE_CONFIRMATION_POPUP);
                     break;
                 case null:
                     this.unSelectAllContents();
@@ -94,7 +97,7 @@ export class DownloadsTabPage {
                         InteractType.TOUCH,
                         InteractSubtype.OUTSIDE_POPUP_AREA_CLICKED,
                         Environment.DOWNLOADS,
-                        PageId.SINGLE_DELETE_POPUP);
+                        PageId.SINGLE_DELETE_CONFIRMATION_POPUP);
                     break;
                 default:
                     const valuesMap = {};
@@ -103,7 +106,7 @@ export class DownloadsTabPage {
                         InteractType.TOUCH,
                         InteractSubtype.ACTION_BUTTON_CLICKED,
                         Environment.DOWNLOADS,
-                        PageId.SINGLE_DELETE_POPUP, undefined,
+                        PageId.SINGLE_DELETE_CONFIRMATION_POPUP, undefined,
                         valuesMap);
                     this.deleteContent();
                     break;
@@ -112,8 +115,11 @@ export class DownloadsTabPage {
     }
 
     deleteContent() {
-        console.log('deleteContent called', this.selectedContents);
-        this.deleteContents.emit(this.selectedContents);
+        const emitedContents: EmitedContents = {
+            selectedContentsInfo: this.selectedContentsInfo,
+            selectedContents : this.selectedContents
+        };
+        this.deleteContents.emit(emitedContents);
     }
 
     showSortOptions(event) {
@@ -148,7 +154,6 @@ export class DownloadsTabPage {
         this.showDeleteButton = false;
         this.showSelectAll = false;
         this.deleteAllContents();
-        console.log('after select all', this.downloadedContents);
     }
 
     unSelectAllContents() {
@@ -157,11 +162,10 @@ export class DownloadsTabPage {
         });
         this.showDeleteButton = true;
         this.showSelectAll = true;
-        if (this.deleteAllConfirm) {
+        if (this.deleteAllPopupPresent) {
             this.deleteAllConfirm.dismiss(null);
         }
         this.selectedContents = [];
-        console.log('after un select all', this.downloadedContents);
     }
 
     toggleContentSelect(event, idx) {
@@ -183,8 +187,7 @@ export class DownloadsTabPage {
     }
 
     deleteAllContents() {
-        console.log('in deleteallcontents', this.selectedContents);
-        const selectedContentsInfo = {
+        this.selectedContentsInfo = {
             totalSize: 0,
             count: 0
         };
@@ -195,20 +198,20 @@ export class DownloadsTabPage {
                     contentId: element.identifier,
                     isChildContent: false
                 };
-                selectedContentsInfo.totalSize += element.sizeOnDevice;
+                this.selectedContentsInfo.totalSize += element.sizeOnDevice;
                 this.selectedContents.push(contentDelete);
             }
         });
-        selectedContentsInfo.count = this.selectedContents.length;
+        this.selectedContentsInfo.count = this.selectedContents.length;
         this.events.publish('selectedContents:changed', {
-            selectedContents: selectedContentsInfo
+            selectedContents: this.selectedContentsInfo
         });
-        if (!this.deletePopupPresent) {
+        if (!this.deleteAllPopupPresent) {
             this.telemetryGeneratorService.generatePageViewTelemetry(PageId.BULK_DELETE_POPUP, Environment.DOWNLOADS);
             this.deleteAllConfirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
                 // sbPopoverHeading: this.commonUtilService.translateMessage('ALERT'),
                 sbPopoverMainTitle: this.commonUtilService.translateMessage('ITEMS_SELECTED'),
-                selectedContents: selectedContentsInfo,
+                selectedContents: this.selectedContentsInfo,
                 actionsButtons: [
                     {
                         btntext: this.commonUtilService.translateMessage('CANCEL_LOWER_CASE'),
@@ -228,13 +231,18 @@ export class DownloadsTabPage {
             this.deleteAllConfirm.present({
                 ev: event
             });
-            this.deletePopupPresent = true;
+            this.deleteAllPopupPresent = true;
         }
         this.deleteAllConfirm.onDidDismiss((leftBtnClicked: any) => {
-            this.deletePopupPresent = false;
+            this.deleteAllPopupPresent = false;
             const valuesMap = {};
             if (leftBtnClicked == null) {
                 this.unSelectAllContents();
+                this.telemetryGeneratorService.generateInteractTelemetry(
+                    InteractType.TOUCH,
+                    InteractSubtype.POPUP_DISMISSED,
+                    Environment.DOWNLOADS,
+                    PageId.BULK_DELETE_POPUP);
                 return;
             } else if (leftBtnClicked) {
                 valuesMap['type'] = ActionButtonType.NEGATIVE;

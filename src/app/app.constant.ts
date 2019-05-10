@@ -146,7 +146,7 @@ export class ShareUrl {
 export class MenuOverflow {
     public static readonly MENU_GUEST = ['USERS_AND_GROUPS', 'REPORTS', 'SETTINGS'];
     public static readonly MENU_LOGIN = ['USERS_AND_GROUPS', 'REPORTS', 'SETTINGS', 'LOGOUT'];
-    public static readonly DOWNLOAD_FILTERS = ['Content size', 'Last viewed'];
+    public static readonly DOWNLOAD_FILTERS = ['CONTENT_SIZE', 'LAST_VIEWED'];
 }
 
 export class SideMenu {
@@ -174,6 +174,8 @@ export class PreferenceKey {
     public static readonly APP_LOGO = 'app_logo';
     public static readonly APP_NAME = 'app_name';
     public static readonly APP_RATING_DATE = 'app_rating_date';
+    public static readonly APP_RATE_LATER_CLICKED = 'app_rate_later_clicked';
+    public static readonly APP_RATING_POPUP_APPEARED = 'app_rating_popup_appeared';
 }
 
 export class GenericAppConfig {
@@ -302,6 +304,7 @@ export class SystemSettingsIds {
     public static readonly CUSTODIAN_ORG_ID = 'custodianOrgId';
     public static readonly COURSE_FRAMEWORK_ID = 'courseFrameworkId';
     public static readonly CONTENT_COMING_SOON_MSG = 'contentComingSoonMsg';
+    public static readonly CONSUMPTION_FAQS = 'consumptionFaqs';
 }
 
 export class StoreRating {
@@ -310,5 +313,9 @@ export class StoreRating {
     public static readonly FOLDER_NAME = 'sunbird-app-rating';
     public static readonly FILE_NAME = 'app-rating.doc';
     public static readonly FILE_TEXT = 'APP-Rating';
-    public static readonly DEVICE_FOLDER_PATH = cordova.file.dataDirectory;
+    public static readonly RETURN_CLOSE = 'close';
+    public static readonly RETURN_HELP = 'help';
+}
+export class ContentConstants {
+    public static readonly DEFAULT_LICENSE = 'CC BY 4.0';
 }

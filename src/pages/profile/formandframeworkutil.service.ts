@@ -477,4 +477,19 @@ export class FormAndFrameworkUtilService {
                 });
         });
     }
+
+    async getConsumptionFaqsUrl() {
+        return new Promise((resolve, reject) => {
+            const getSystemSettingsRequest: GetSystemSettingsRequest = {
+                id: SystemSettingsIds.CONSUMPTION_FAQS
+            };
+            this.systemSettingsService.getSystemSettings(getSystemSettingsRequest).toPromise()
+                .then((res: SystemSettings) => {
+                    resolve(res.value);
+                }).catch(err => {
+                    reject(err);
+                });
+        });
+    }
+
 }

@@ -829,6 +829,11 @@ export class CoursesPage implements OnInit, AfterViewInit {
   }
 
   redirectToActivedownloads() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.ACTIVE_DOWNLOADS_CLICKED,
+      Environment.HOME,
+      PageId.COURSES);
     this.navCtrl.push(ActiveDownloadsPage);
   }
 

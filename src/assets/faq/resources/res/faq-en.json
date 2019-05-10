@@ -1,0 +1,55 @@
+﻿{
+    "faqs": [
+        {
+            "topic": "Who is the audience for the content on DIKSHA?",
+            "description": "All content published on DIKSHA has a learning objective and hence has a target audience. The audience for the content can either be learners or instructors. The content is tagged appropriately."
+        },
+        {
+            "topic": "Can  content  be  specific  to  an  organization?",
+            "description": "Bootstrap is a sleek, intuitive, and powerful front-end framework for faster and easier web development. It is a collection of CSS and HTML conventions. "
+        },
+        {
+            "topic": " What is CSS?",
+            "description": "Yes, content can be targeted to users in an organization. Under the CCBY, CCBY-NC policy, all content is searchable and discoverable for all users of DIKSHA. However, the state/ organisation can choose what content to showcase on their own ( logged in) homepage of the app/ website. The content can be showcased based on organisation requirements. This does not impact the searchability of the content, or restrict the view of the content for this organisation, or any other organisation."
+        },
+        {
+            "topic": "How  are  content  authors  and  contributors  given  credit?",
+            "description": "When you create or upload content, you can specify the name of the author and any other contributor as part of its metadata."
+        },
+        {
+            "topic": "Which languages does DIKSHA ​support?",
+            "description": "Currently, DIKSHA supports 10 Indian languages viz. Hindi, English, Gujarati, Bengali, Assamese, Marathi, Odia, Kannada, Tamil and Telugu, both for creating and viewing content. Later, there will be support for more Indian languages."
+        },
+        {
+            "topic": "Who owns content on DIKSHA?",
+            "description": "Content creators on DIKSHA can be individuals or organisations. The content creators are owners of the content. All creators should ensure that their work does not violate any rights and possible claims of third parties. They are solely responsible for any violation of third party rights. DIKSHA is not responsible towards any third party for actions or inactions of DIKSHA users."
+        },
+        {
+            "topic": "Why does DIKSHA follow an open license framework, viz. Creative Commons License framework?",
+            "description": "DIKSHA is set up as an open learning platform. Content published on the platform is licensed under the creative commons license framework as an open educational resource.To make teaching and learning content for teachers free and openly available, and to make it widely accessible in varied languages, DIKSHA follows the creative commons license framework and all content uploaded on DIKSHA is licensed under CC-BY 4.0. or CC-BY NC <p>For details refer to:  <a href='https://en.wikipedia.org/wiki/Creative_Commons_license' title='Click here' class='text-blue' target='_blank'>https://en.wikipedia.org/wiki/Creative_Commons_license</a> </p>"
+        },
+        {
+            "topic": "Which DIKSHA features are relevant for content creators and content providers?",
+            "description": "Users with content creation rights can create content on DIKSHA. Content providers and creators can: <ul><li>Create content for courses, books, lessons and collections</li><li>Use the content authoring tool and plugin</li><li>Upload contents in supported file formats</li><li>Download available content from the repository</li><li>Edit content</li><li>Collaborate with other users and groups</li><li>Take notes</li><li>Recommend content to others</li><li>Enrol for and resume courses</li></ul>"
+        }
+    ],
+    "constants":{
+        "thanksMsg":"Thanks for your response!",
+        "sorryMsg":"Sorry about that!",
+        "knowMoreMsg":"What more would you like to know?",
+        "helpMsg":"Did this answer help you?",
+        "noMsg":"No",
+        "yesMsg":"Yes",
+        "help":"Help",
+        "faqMsg":"Frequently asked questions",
+        "resolveMsg":"Look through the list to resolve your issue",
+        "tellMoreMsg":"Tell us a more about the problem you faced",
+        "reportIssueMsg":"Report other issue",
+        "triggerEmailMsg":"After you add details in the text box and tap the Initiate email button, we will trigger an email on your behalf. You can add further details and/or attach files there.",
+        "initiateEmailButton":"Initiate email",
+        "submitButton":"Submit",
+        "typeHere":"Type Here...",
+        "reportIssue":"Report an issue",
+        "explainMsg":"Could you explain the problem?"
+    }
+}
