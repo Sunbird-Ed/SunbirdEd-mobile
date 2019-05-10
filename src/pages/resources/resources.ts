@@ -517,6 +517,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   getGroupByPage(isAfterLanguageChange = false) {
+    const selectedBoardMediumGrade = this.getGroupByPageReq.board[0] + ', ' +
+                                     this.getGroupByPageReq.medium[0] + ' Medium, ' +
+                                     this.getGroupByPageReq.grade[0] ;
+    this.appGlobalService.setSelectedBoardMediumGrade(selectedBoardMediumGrade);
     this.storyAndWorksheets = [];
     if (!this.refresh) {
       this.searchApiLoader = true;

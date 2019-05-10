@@ -133,10 +133,9 @@ export class FaqPage {
   }
   getBoardMediumGrade(): string {
     const userProfile: Profile = this.appGlobalService.getCurrentUser();
-    const userDetails: string = 'From: ' + userProfile.profileType + ', '
-                                 + userProfile.board.toString() + ', '
-                                 + userProfile.medium.toString() + ', '
-                                 + userProfile.grade.toString() + '<br> <br> Ticket summary: <br> <br>';
+    const userDetails: string = 'From: ' + userProfile.profileType[0].toUpperCase() + userProfile.profileType.slice(1) + ', ' +
+                                  this.appGlobalService.getSelectedBoardMediumGrade() +
+                                  '.<br> <br> <b>Ticket summary</b> <br> <br>';
     return userDetails;
   }
   generateInteractTelemetry(interactSubtype, values) {
