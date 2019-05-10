@@ -12,3 +12,7 @@ global.cordova = {
         applicationDirectory: "/path"
     }
 };
+
+global.supportfile = {
+    shareSunbirdConfigurations: () => {}
+}

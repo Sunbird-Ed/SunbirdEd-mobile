@@ -120,6 +120,7 @@ export const profileServiceMock = createSpyObj<ProfileService>([
   'getProfile',
   'getAllUserProfile',
   'getAllProfile',
+  'getAllProfiles',
   'exportProfile',
   'updateProfile'
 ]);
@@ -160,7 +161,8 @@ export const contentServiceMock = createSpyObj<ContentService>([
   'sendFeedback',
   'deleteContent',
   'getAllLocalContents',
-  'setContentMarker'
+  'setContentMarker',
+  'getContents'
 ]);
 
 export const popoverCtrlMock = createSpyObj<PopoverController>([
@@ -200,7 +202,9 @@ export const shareUtilMock = createSpyObj<UtilityService>([
 export const buildParamServiceMock = createSpyObj<UtilityService>([
   'getBuildConfigValue'
 ]);
-
+export const headerServiceMock = createSpyObj<AppHeaderService>([
+  'showHeaderWithBackButton'
+]);
 export const appGlobalServiceMock = createSpyObj<AppGlobalService>([
   'isUserLoggedIn',
   'getGuestUserInfo',
@@ -331,13 +335,8 @@ export const telemetryServiceMock = createSpyObj<TelemetryService>([
   'impression',
   'interact',
   'getTelemetryStat',
-  'sync'
-]);
-
-
-export const supportfileMock = createSpyObj<any>([
-  'removeFile',
-  'shareSunbirdConfigurations'
+  'sync',
+  'generateInteractTelemetry'
 ]);
 
 export const formBuilderMock = createSpyObj<FormBuilder>([
