@@ -17,20 +17,22 @@ export class ComingSoonMessageService {
   ) {
   }
 
-  async getComingSoonMessage() {
+  async getComingSoonMessage(textBookUnitChannelId: any) {
     const currentChannelId = await this.frameworkService.getActiveChannelId().toPromise();
-    const systemSettings =
-      await this.systemSettingsService.getSystemSettings({id: SystemSettingsIds.CONTENT_COMING_SOON_MSG}).toPromise();
-    const selectedLanguage =
-      await this.sharedPreferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise();
+    if(textBookUnitChannelId) {
+      const systemSettings =
+        await this.systemSettingsService.getSystemSettings({id: SystemSettingsIds.CONTENT_COMING_SOON_MSG}).toPromise();
+      const selectedLanguage =
+        await this.sharedPreferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise();
 
-    const tenantMessages: { rootOrgId: string, translations: string, value: string }[] = JSON.parse(systemSettings.value);
+      const tenantMessages: { rootOrgId: string, translations: string, value: string }[] = JSON.parse(systemSettings.value);
 
-    const tennatMessage = tenantMessages.find((message) => message.rootOrgId === currentChannelId);
-    if (tennatMessage) {
-      const tenantMessageTranslations = JSON.parse(tennatMessage.translations);
-      return tenantMessageTranslations[selectedLanguage] || tennatMessage.value;
+      const tenantMessage = tenantMessages.find((message) => message.rootOrgId === currentChannelId);
+      if (tenantMessage) {
+        const tenantMessageTranslations = JSON.parse(tenantMessage.translations);
+        return tenantMessageTranslations[selectedLanguage!] || tenantMessage.value;
+      }
     }
-    return this.commonUtilService.translateMessage('CONTENT_COMMING_SOON');
+    return this.commonUtilService.translateMessage('CONTENT_IS_BEEING_ADDED');
   }
 }

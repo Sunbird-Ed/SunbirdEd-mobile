@@ -7,7 +7,7 @@ import { Component, Inject } from '@angular/core';
 import { IonicPage, Loading, LoadingController } from 'ionic-angular';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PageId, Environment, InteractType } from '@app/service/telemetry-constants';
-import { SharedPreferences, ProfileService, ContentService, DeviceInfo, GetAllProfileRequest, ContentRequest } from 'sunbird-sdk';
+import { SharedPreferences, ProfileService, ContentService, DeviceInfo, GetAllProfileRequest, ContentRequest, Profile } from 'sunbird-sdk';
 import { PreferenceKey, ContentType, AudienceFilter } from '@app/app/app.constant';
 import { AppVersion } from '@ionic-native/app-version';
 import { SocialSharing } from '@ionic-native/social-sharing';
@@ -117,23 +117,28 @@ export class FaqPage {
     await this.loading.present();
   }
 
-  ionViewWillLeave() {
-    document.getElementById('iframeId').remove();
-  }
-
   receiveMessage(event) {
+    console.log(event);
     const values = new Map();
     values['values'] = event.data;
     // send telemetry for all events except Initiate-Email
     if (event.data && event.data.action && event.data.action !== 'initiate-email-clicked') {
       this.generateInteractTelemetry(event.data.action, values);
     } else {
+      event.data.initiateEmailBody = this.getBoardMediumGrade() + event.data.initiateEmailBody;
       this.generateInteractTelemetry(event.data.action, values);
       // launch email sharing
       this.sendMessage(event.data.initiateEmailBody);
     }
   }
-
+  getBoardMediumGrade(): string {
+    const userProfile: Profile = this.appGlobalService.getCurrentUser();
+    const userDetails: string = 'From: ' + userProfile.profileType + ', '
+                                 + userProfile.board.toString() + ', '
+                                 + userProfile.medium.toString() + ', '
+                                 + userProfile.grade.toString() + '<br> <br> Ticket summary: <br> <br>';
+    return userDetails;
+  }
   generateInteractTelemetry(interactSubtype, values) {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH, interactSubtype,
