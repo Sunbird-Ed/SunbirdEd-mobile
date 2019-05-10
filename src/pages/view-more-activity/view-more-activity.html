@@ -6,7 +6,7 @@
   </ion-navbar>
 
 </ion-header> -->
-<ion-content overflow-scroll="true">
+<ion-content overflow-scroll="true" >
   <!-- <div class="downloads-only" *ngIf="showDownloadsOnlyToggle">
     <ion-list class="PL5 bg-transparent">
       <ion-item class="PL0 bg-transparent">
@@ -15,6 +15,7 @@
       </ion-item>
     </ion-list>
   </div> -->
+  <div [ngClass]="{'p-16': !localContentsCard}">
   <div class="sb-view-all-container" *ngIf="localContentsCard">
 
     <div class="sb-view-all-items">
@@ -122,9 +123,12 @@
   </div> -->
 
   <!-- TODO: need good logic here -->
-  <button ion-button block *ngIf="searchList && searchList.length && loadMoreBtn" (click)="loadMore();">
-    {{ 'VIEW_MORE' | translate }}
-  </button>
+  <div class="px-5">
+    <button ion-button block *ngIf="searchList && searchList.length && loadMoreBtn" (click)="loadMore();">
+      {{ 'VIEW_MORE' | translate }}
+    </button>
+  </div>
+</div>
 </ion-content>
 <ion-backdrop class="loading-backdrop" *ngIf="showOverlay" text-center>
   <div class="backdrop-container">
