@@ -10,7 +10,9 @@ import {
   SharedPreferences,
   TelemetryService,
   GenerateOtpRequest,
-  GroupService} from 'sunbird-sdk';
+  GroupService,
+  DownloadService,
+  EventsBusService} from 'sunbird-sdk';
 
 import {
   App,
@@ -131,6 +133,7 @@ export const authServiceMock = createSpyObj<AuthService>([
 ]);
 
 export const commonUtilServiceMock = createSpyObj<CommonUtilService>([
+  'networkAvailability',
   'getAppDirection',
   'translateMessage',
   'showMessage',
@@ -404,7 +407,11 @@ export const generateOTPRequestMock = createSpyObj<GenerateOtpRequest>([
 
 export const networkMock = createSpyObj<Network>([]);
 
-export const appHeaderSrvMock = createSpyObj<AppHeaderService>([]);
+export const appHeaderServiceMock = createSpyObj<AppHeaderService>([
+  'getDefaultPageConfig',
+  'updatePageConfig',
+  'unsubscribe'
+]);
 
 export const utilityServiceMock = createSpyObj<UtilityService>([
   'openPlayStore'
@@ -414,5 +421,14 @@ export const appRatingServiceMock = createSpyObj<AppRatingService>([
   'checkInitialDate',
   'setEndStoreRate',
   'createFolder',
-
-])
+]);
+export const downloadServiceMock = createSpyObj<DownloadService>([
+  'getActiveDownloadRequests',
+  'cancel',
+  'cancelAll'
+]);
+export const eventBusServiceMock = createSpyObj<EventsBusService>([
+  'events',
+  'getContentDownloadProgress',
+  'unsubscribe'
+]);
