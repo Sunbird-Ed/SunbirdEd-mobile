@@ -79,6 +79,9 @@
 .mx-4 {
   @include margin(null, 4px);
 }
+.mx-5 {
+  @include margin(null, 5px);
+}
 .mx-8 {
   @include margin(null, 8px);
 }
