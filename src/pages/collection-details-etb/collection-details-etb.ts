@@ -1,5 +1,7 @@
+import { ActiveDownloadsPage } from './../active-downloads/active-downloads';
 import { Component, Inject, NgZone, ViewChild, OnInit } from '@angular/core';
 import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController } from 'ionic-angular';
+import { Content as iContent } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
@@ -214,10 +216,12 @@ export class CollectionDetailsEtbPage implements OnInit {
   pageName: any;
   headerObservable: any;
   breadCrumb = new Map();
+  scrollPosition = 0;
 
   // Local Image
   localImage = '';
   @ViewChild(Navbar) navBar: Navbar;
+  @ViewChild(iContent) ionContent: iContent;
   private eventSubscription: Subscription;
 
   showDownload: boolean;
@@ -261,14 +265,14 @@ export class CollectionDetailsEtbPage implements OnInit {
 	 */
   ngOnInit() {
   }
-
+  
   ionViewDidLoad() {
     /*this.navBar.backButtonClick = () => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
         true, this.cardData.identifier, this.corRelationList);
       this.handleBackButton();
     };*/
-    
+
     this.registerDeviceBackButton();
   }
 
@@ -281,7 +285,7 @@ export class CollectionDetailsEtbPage implements OnInit {
         this.handleHeaderEvents(eventName);
       });
       this.headerConfig = this.headerService.getDefaultPageConfig();
-      this.headerConfig.actionButtons = [];
+      this.headerConfig.actionButtons = ['download'];
       this.headerConfig.showHeader = false;
       this.headerConfig.showBurgerMenu = false;
       this.headerService.updatePageConfig(this.headerConfig);
@@ -330,6 +334,9 @@ export class CollectionDetailsEtbPage implements OnInit {
           this.presentToastWithOptions();
         }
       });
+    });
+    this.ionContent.ionScroll.subscribe((event) => {
+      this.scrollPosition = event.scrollTop;
     });
   }
 
@@ -546,7 +553,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     if (this.contentDetail.contentData.me_totalDownloads) {
       this.contentDetail.contentData.me_totalDownloads = this.contentDetail.contentData.me_totalDownloads.split('.')[0];
     }
-      this.setCollectionStructure();
+    this.setCollectionStructure();
   }
 
   setCollectionStructure() {
@@ -554,8 +561,9 @@ export class CollectionDetailsEtbPage implements OnInit {
     if (this.contentDetail.contentData.contentTypesCount) {
       if (!_.isObject(this.contentDetail.contentData.contentTypesCount)) {
         this.contentTypesCount = JSON.parse(this.contentDetail.contentData.contentTypesCount);
+      } else {
+        this.contentTypesCount = this.contentDetail.contentData.contentTypesCount;
       }
-      this.contentTypesCount = this.contentDetail.contentData.contentTypesCount;
       // this.contentDetail.contentData.contentTypesCount = JSON.parse(this.contentDetail.contentData.contentTypesCount);
     } else if (this.cardData.contentTypesCount) {
       if (!_.isObject(this.cardData.contentTypesCount)) {
@@ -618,7 +626,7 @@ export class CollectionDetailsEtbPage implements OnInit {
    * @param {boolean} isChild
    */
   importContent(identifiers: Array<string>, isChild: boolean, isDownloadAllClicked?) {
-    this.headerService.hideHeader();
+      this.headerService.hideHeader();
     const option: ContentImportRequest = {
       contentImportArray: this.getImportContentRequestBody(identifiers, isChild),
       contentStatusArray: [],
@@ -725,6 +733,7 @@ export class CollectionDetailsEtbPage implements OnInit {
           this.showChildrenLoader = false;
         });
       });
+      this.ionContent.scrollTo(0, this.scrollPosition);
   }
 
   getContentsSize(data) {
@@ -1069,7 +1078,7 @@ export class CollectionDetailsEtbPage implements OnInit {
 
       const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
         sbPopoverHeading: this.commonUtilService.translateMessage('DOWNLOAD'),
-        sbPopoverMainTitle: this.contentDetail.contentData.name + this.contentDetail.contentData.subject,
+        sbPopoverMainTitle: this.contentDetail.contentData.name,
         actionsButtons: [
           {
             btntext: this.commonUtilService.translateMessage('DOWNLOAD'),
@@ -1127,12 +1136,12 @@ export class CollectionDetailsEtbPage implements OnInit {
     const values = new Map();
     const telemetryObject = new TelemetryObject(content.identifier || content.contentId, content.contentType, content.pkgVersion);
     this.telemetryGeneratorService.generateInteractTelemetry(
-        InteractType.TOUCH,
-        InteractSubtype.CLOSE_CLICKED,
-        Environment.HOME,
-        PageId.COLLECTION_DETAIL,
-        telemetryObject,
-        values);
+      InteractType.TOUCH,
+      InteractSubtype.CLOSE_CLICKED,
+      Environment.HOME,
+      PageId.COLLECTION_DETAIL,
+      telemetryObject,
+      values);
   }
 
   /**
@@ -1206,14 +1215,14 @@ export class CollectionDetailsEtbPage implements OnInit {
       icon: null,
       sbPopoverContent: contentTypeCount +
         'items' + '(' + this.fileSizePipe.transform(this.contentDetail.contentData.size, 2) + ')',
-      metaInfo: this.contentDetail.contentData.name + this.contentDetail.contentData.subject
+      metaInfo: this.contentDetail.contentData.name
     }, {
         cssClass: 'sb-popover danger',
       });
     confirm.present({
       ev: event
     });
-       confirm.onDidDismiss((canDelete: any) => {
+    confirm.onDidDismiss((canDelete: any) => {
       if (canDelete) {
         this.deleteContent();
       }
@@ -1272,7 +1281,7 @@ export class CollectionDetailsEtbPage implements OnInit {
 
   refreshHeader() {
     this.headerConfig = this.headerService.getDefaultPageConfig();
-    this.headerConfig.actionButtons = [];
+    this.headerConfig.actionButtons = ['download'];
     this.headerConfig.showBurgerMenu = false;
     this.headerConfig.showHeader = true;
     this.headerService.updatePageConfig(this.headerConfig);
@@ -1283,6 +1292,18 @@ export class CollectionDetailsEtbPage implements OnInit {
         true, this.cardData.identifier, this.corRelationList);
       this.handleBackButton();
                     break;
+      case 'download': this.redirectToActivedownloads();
+                        break;
+
     }
+  }
+
+  private redirectToActivedownloads() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.ACTIVE_DOWNLOADS_CLICKED,
+      Environment.HOME,
+      PageId.COLLECTION_DETAIL);
+    this.navCtrl.push(ActiveDownloadsPage);
   }
 }

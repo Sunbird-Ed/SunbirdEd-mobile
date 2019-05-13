@@ -1,7 +1,8 @@
-import {ChangeDetectorRef, Component, Inject, OnDestroy, OnInit} from '@angular/core';
-import {IonicPage, NavController, PopoverController, ViewController, ToastController} from 'ionic-angular';
-import {ActiveDownloadsInterface} from './active-downloads.interface';
-import {Observable, Subscription} from 'rxjs';
+import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { IonicPage, NavController, PopoverController, ViewController, ToastController } from 'ionic-angular';
+import { ActiveDownloadsInterface } from './active-downloads.interface';
+import { Observable, Subscription } from 'rxjs';
+import { InteractSubtype, Environment, PageId, ActionButtonType, ImpressionType, InteractType } from '@app/service/telemetry-constants';
 import {
   ContentDownloadRequest,
   DownloadEventType,
@@ -11,8 +12,8 @@ import {
   EventNamespace,
   EventsBusService
 } from 'sunbird-sdk';
-import {SbPopoverComponent} from '@app/component';
-import {AppHeaderService, CommonUtilService} from '@app/service';
+import { SbPopoverComponent } from '@app/component';
+import { AppHeaderService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
 import { SbNoNetworkPopupComponent } from '@app/component/popups/sb-no-network-popup/sb-no-network-popup';
 
 @IonicPage()
@@ -44,6 +45,7 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
     private navCtrl: NavController,
     private commonUtilService: CommonUtilService,
     private toastController: ToastController,
+    private telemetryGeneratorService: TelemetryGeneratorService,
     @Inject('DOWNLOAD_SERVICE') private downloadService: DownloadService,
     @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
   ) {
@@ -75,11 +77,27 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
     }
   }
 
+  ionViewDidLoad() {
+    this.telemetryGeneratorService.generatePageViewTelemetry(
+      PageId.ACTIVE_DOWNLOADS,
+      Environment.DOWNLOADS, '');
+  }
+
   cancelAllDownloads(): void {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.DOWNLOAD_CANCEL_ALL_CLICKED,
+      Environment.DOWNLOADS,
+      PageId.ACTIVE_DOWNLOADS);
     this.showCancelPopUp();
   }
 
   cancelDownload(downloadRequest: DownloadRequest): void {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.DOWNLOAD_CANCEL_CLICKED,
+      Environment.DOWNLOADS,
+      PageId.ACTIVE_DOWNLOADS);
     this.showCancelPopUp(downloadRequest);
   }
 
@@ -117,7 +135,7 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
   }
 
   private initNetworkDetection() {
-    this._networkSubscription =  this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
+    this._networkSubscription = this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
       if (available) {
         this.presentToast();
         if (this._toast) {
@@ -142,6 +160,9 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
   }
 
   private showCancelPopUp(downloadRequest?: DownloadRequest): void {
+    this.telemetryGeneratorService.generatePageViewTelemetry(
+      downloadRequest ? PageId.SINGLE_CANCEL_CONFIRMATION_POPUP : PageId.BULK_CANCEL_CONFIRMATION_POPUP,
+      Environment.DOWNLOADS);
     const popupMessage = downloadRequest ? 'CANCEL_DOWNLOAD_MESSAGE' : 'CANCEL_ALL_DOWNLOAD_MESSAGE';
     const confirm = this.popoverCtrl.create(SbPopoverComponent, {
       sbPopoverHeading: this.commonUtilService.translateMessage('CANCEL_DOWNLOAD_TITLE'),
@@ -155,17 +176,30 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
       icon: null,
       // metaInfo: this.content.contentData.name,
     }, {
-      cssClass: 'sb-popover danger',
-    });
+        cssClass: 'sb-popover danger dw-active-downloads-popover',
+      });
 
-    confirm.present({
-      ev: event
-    });
+    confirm.present();
 
     const loader = this.commonUtilService.getLoader();
 
-    confirm.onDidDismiss((canDelete: any) => {
+    confirm.onDidDismiss(async (canDelete: any) => {
       if (canDelete) {
+        let valuesMap;
+        if (downloadRequest) {
+          valuesMap = {
+            count: 1
+          };
+        } else {
+          valuesMap = {
+            count: (await this.activeDownloadRequests$.take(1).toPromise()).length
+          };
+        }
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.DOWNLOAD_CANCEL_CLICKED,
+          Environment.DOWNLOADS,
+          PageId.ACTIVE_DOWNLOADS, undefined, valuesMap);
         loader.present().then(() => {
           return downloadRequest ?
             this.downloadService.cancel(downloadRequest).toPromise() :
@@ -178,12 +212,12 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
   }
 
   private async presentPopupForOffline() {
-    this._toast =  this.popoverCtrl.create(SbNoNetworkPopupComponent, {
+    this._toast = this.popoverCtrl.create(SbNoNetworkPopupComponent, {
       sbPopoverHeading: this.commonUtilService.translateMessage('INTERNET_CONNECTIVITY_NEEDED'),
       sbPopoverMessage: this.commonUtilService.translateMessage('OFFLINE_DOWNLOAD_MESSAGE'),
     }, {
-      cssClass: 'sb-popover no-network',
-    });
+        cssClass: 'sb-popover no-network',
+      });
 
     this._toast.present();
   }

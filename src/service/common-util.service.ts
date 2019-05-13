@@ -384,4 +384,11 @@ export class CommonUtilService implements OnDestroy {
             }
         }
     }
+
+    fileSizeInMB(bytes) {
+        if (!bytes) {
+            return '0.00';
+        }
+        return (bytes / 1048576).toFixed(2);
+    }
 }

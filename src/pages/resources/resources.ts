@@ -517,6 +517,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   getGroupByPage(isAfterLanguageChange = false) {
+    const selectedBoardMediumGrade = this.getGroupByPageReq.board[0] + ', ' +
+                                     this.getGroupByPageReq.medium[0] + ' Medium, ' +
+                                     this.getGroupByPageReq.grade[0] ;
+    this.appGlobalService.setSelectedBoardMediumGrade(selectedBoardMediumGrade);
     this.storyAndWorksheets = [];
     if (!this.refresh) {
       this.searchApiLoader = true;
@@ -559,6 +563,22 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           for (let i = 0; i < this.storyAndWorksheets.length; i++) {
             const sectionName = this.storyAndWorksheets[i].name,
               count = this.storyAndWorksheets[i].contents.length;
+
+              for (let k = 0, len = this.storyAndWorksheets[i].contents.length; k < len; k++) {
+                  const content = this.storyAndWorksheets[i].contents[k];
+                  if (content.appIcon) {
+                    if (content.appIcon.includes('http:') || content.appIcon.includes('https:')) {
+                      if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+                        content.appIcon = content.appIcon;
+                      } else {
+                        content.appIcon = this.defaultImg;
+                      }
+                    } else if (content.basePath) {
+                      content.appIcon = content.basePath + '/' + content.appIcon;
+                    }
+                  }
+              }
+
             // check if locally available
             this.markLocallyAvailableTextBook();
             sectionInfo[sectionName] = count;
@@ -1052,6 +1072,11 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   redirectToActivedownloads() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.ACTIVE_DOWNLOADS_CLICKED,
+      Environment.HOME,
+      PageId.LIBRARY);
     this.navCtrl.push(ActiveDownloadsPage);
   }
 

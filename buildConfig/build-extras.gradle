@@ -248,6 +248,18 @@ android {
        
     }
 
+    task copyDirNotificationConfig(type: Copy,overwrite: true) {
+         if (System.properties['os.name'].toLowerCase().contains('windows')){
+                from "$rootDir\\app\\data\\notificationconfig"
+                into "$rootDir\\app\\src\\main\\assets\\www\\assets\\data"
+                println "inside copydir notificationconfig windows OS"
+            } else {
+                from "$rootDir/app/data/notificationconfig"
+                into "$rootDir/app/src/main/assets/www/assets/data"
+                println "inside copydir notificationconfig linux OS"
+            }
+    }
+
     task copyDirDev(type: Copy,overwrite: true) {
          if (System.properties['os.name'].toLowerCase().contains('windows')){
                 from "$rootDir\\app\\data\\dev"
@@ -286,13 +298,13 @@ android {
     }
 
     task prod(type: GradleBuild) {
-        tasks = ['myclean', 'copyDirProd']
+        tasks = ['myclean', 'copyDirProd', 'copyDirNotificationConfig']
     }      
     task dev(type: GradleBuild) {
-        tasks = ['myclean', 'copyDirDev']
+        tasks = ['myclean', 'copyDirDev', 'copyDirNotificationConfig']
     }      
     task staging(type: GradleBuild) {
-        tasks = ['myclean', 'copyDirStaging']
+        tasks = ['myclean', 'copyDirStaging', 'copyDirNotificationConfig']
     }
 
     applicationVariants.all { variant ->

@@ -57,6 +57,7 @@ export class AppGlobalService implements OnDestroy {
     isProfileSettingsCompleted: boolean;
     isOnBoardingCompleted = false;
     selectedUser;
+    selectedBoardMediumGrade: string;
 
     constructor(
         @Inject('PROFILE_SERVICE') private profile: ProfileService,
@@ -584,5 +585,13 @@ export class AppGlobalService implements OnDestroy {
     ngOnDestroy() {
         this.event.unsubscribe(AppGlobalService.USER_INFO_UPDATED);
         this.event.unsubscribe('refresh:profile');
+    }
+
+    setSelectedBoardMediumGrade(selectedBoardMediumGrade: string): void {
+        this.selectedBoardMediumGrade = selectedBoardMediumGrade;
+    }
+
+    getSelectedBoardMediumGrade(): string {
+        return this.selectedBoardMediumGrade;
     }
 }

@@ -100,9 +100,8 @@
 
 	<div class="breadcrumb-container">
 		<div class="step-indicator" >
-			<a class="step completed" href="#" *ngFor="let result of childPaths; let i = index">
-				<span *ngIf="i!=(childPaths.length-1); else templateName" (click)="goBack()">{{result}} </span>
-				<ng-template #templateName><span class="breadCrumbStyle" >{{result}}</span></ng-template>
+			<a class="step" href="#" *ngFor="let result of childPaths; let i = index" [ngClass]="{'completed': i!=(childPaths.length-1)}" (click)="goBack(i,childPaths.length)">
+				{{result}}
 			</a>
 		</div>
 	</div>
@@ -122,7 +121,7 @@
 			<div class="sb-dt-content pt-0">
 				<div class="left" *ngIf="content?.contentData?.resourceType">
 					<div class="sb-practice">
-						<button ion-button outline small class="content-btn-padding">{{content?.contentData?.resourceType}}</button>
+						<button ion-button outline small class="content-btn-padding disable-ripple">{{content?.contentData?.resourceType}}</button>
 					</div>
 				</div>
 				<div class="right" *ngIf="content?.contentData?.me_averageRating">
@@ -222,6 +221,10 @@
 				<div class="sb-info" *ngIf="content?.contentData?.license">
 					<div class="sb-content-title">{{'LICENSE' | translate}}</div>
 					<div class="sb-content-title-data">{{content?.contentData?.license}}</div>
+				</div>
+				<div class="sb-info" *ngIf="!content?.contentData?.license">
+					<div class="sb-content-title">{{'LICENSE' | translate}}</div>
+					<div class="sb-content-title-data">{{defaultLicense}}</div>
 				</div>
 				<div class="sb-info" *ngIf="content?.contentData?.creators || content?.contentData?.creator">
 					<div class="sb-content-title">{{'CREATORS' | translate}}</div>

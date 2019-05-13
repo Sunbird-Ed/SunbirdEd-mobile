@@ -15,6 +15,7 @@
 </ion-header> -->
 
 <ion-content padding [ngClass]="{'content-with-footer': (((courseCardData && courseCardData?.batchId) && ( showResumeBtn || childrenData && childrenData?.length || downloadIdentifiers && downloadIdentifiers?.length && !isDownloadStarted )) || (courseCardData && !courseCardData?.batchId && course && course?.createdBy !== userId))}">
+	<pb-horizontal *ngIf="course?.progress" [progress]="course?.progress" class="course-progress" [ngClass]="{'blurbackground': batchExp}"></pb-horizontal>
 	<div class="content-details-holder" *ngIf="course">
 		<ion-grid class="padding-0">
 			<h6>{{course.name}}</h6>
