@@ -22,11 +22,10 @@ export interface DownloadManagerPageInterface extends OnInit {
 
     storageInfo: AppStorageInfo;
     downloadedContents: Content[];
-    profile: Profile;
-    audienceFilter: any;
-    guestUser: Boolean;
-    defaultImg: string;
     loader?: Loading;
+
+    ionViewWillEnter();
+    ionViewWillLeave();
 
     deleteContents(emitedContents: EmitedContents): void ;
     onSortCriteriaChange(sortAttribute: SortAttribute): void;
