@@ -144,7 +144,8 @@ export const commonUtilServiceMock = createSpyObj<CommonUtilService>([
   'toLocaleUpperCase',
   'showExitPopUp',
   'arrayToString',
-  'isRTL'
+  'isRTL',
+  'fileSizeInMB'
 ]);
 
 export const eventsMock = createSpyObj<Events>([
@@ -165,7 +166,11 @@ export const contentServiceMock = createSpyObj<ContentService>([
   'deleteContent',
   'getAllLocalContents',
   'setContentMarker',
-  'getContents'
+  'getContents',
+  'getContentSpaceUsageSummary',
+  'clearContentDeleteQueue',
+  'enqueueContentDelete',
+  'getContentDeleteQueue'
 ]);
 
 export const popoverCtrlMock = createSpyObj<PopoverController>([
@@ -320,7 +325,8 @@ export const deviceInfoServiceMock = createSpyObj<UtilityService>([
   'getDownloadDirectoryPath',
   'getDeviceAPILevel',
   'checkAppAvailability',
-  'getDeviceID'
+  'getDeviceID',
+  'getAvailableInternalMemorySize'
 ]);
 
 export const viewControllerMock = createSpyObj<ViewController>([
@@ -410,7 +416,8 @@ export const networkMock = createSpyObj<Network>([]);
 export const appHeaderServiceMock = createSpyObj<AppHeaderService>([
   'getDefaultPageConfig',
   'updatePageConfig',
-  'unsubscribe'
+  'unsubscribe',
+  'showHeaderWithHomeButton'
 ]);
 
 export const utilityServiceMock = createSpyObj<UtilityService>([
