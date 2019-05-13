@@ -123,6 +123,7 @@ it('receiveMessage should call sendMessage on event initiate-email-clicked', () 
         medium : ['English'],
         grade: ['10']
     });
+    appGlobalServiceMock.getSelectedBoardMediumGrade.mockReturnValue('Tamil, English, 10');
     spyOn(faqPage, 'generateInteractTelemetry').and.stub();
     spyOn(faqPage, 'sendMessage' ).and.stub();
     // act
@@ -132,7 +133,8 @@ it('receiveMessage should call sendMessage on event initiate-email-clicked', () 
                            });
 // assert
     expect(faqPage.generateInteractTelemetry).toHaveBeenCalled();
-    expect(faqPage.sendMessage).toHaveBeenCalledWith('From: Teacher, Tamil, English, 10<br> <br> Ticket summary: <br> <br>Test Body');
+    expect(faqPage.sendMessage).
+    toHaveBeenCalledWith('From: Teacher, Tamil, English, 10.<br> <br> <b>Ticket summary</b> <br> <br>Test Body');
 });
 it('on error should set the local Url', () => {
     const localurl = 'file:///android_asset/www/assets/faq/consumption-faqs.html?selectedlang=en&randomid=';
