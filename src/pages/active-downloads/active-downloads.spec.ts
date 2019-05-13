@@ -179,7 +179,6 @@ describe.only('ActiveDownloadsPage', () => {
         const events$ = Observable.from([]);
         const headerEvents$ = Observable.from([]) as any;
         const networkAvailability$ = Observable.of(true) as any;
-
         const eventSubscription = { unsubscribe: jest.fn() };
         const headerEventsSubscription = { unsubscribe: jest.fn() };
         const networkAvailabilitySubscription = { unsubscribe: jest.fn() };
