@@ -118,7 +118,6 @@ export class FaqPage {
   }
 
   receiveMessage(event) {
-    console.log(event);
     const values = new Map();
     values['values'] = event.data;
     // send telemetry for all events except Initiate-Email
