@@ -59,7 +59,7 @@
     "cordova-plugin-android-downloadmanager": "git+https://github.com/swayangjit/cordova-plugin-android-downloadmanager.git",
     "cordova-plugin-app-version": "0.1.9",
     "cordova-plugin-awesome-shared-preferences": "git+https://github.com/adriano-di-giovanni/cordova-plugin-shared-preferences.git",
-    "cordova-plugin-buildconfig-reader": "git+https://github.com/swayangjit/cordova-plugin-buildconfig-reader.git#release-2.0.0",
+    "cordova-plugin-buildconfig-reader": "git+https://github.com/swayangjit/cordova-plugin-buildconfig-reader.git",
     "cordova-plugin-console": "1.1.0",
     "cordova-plugin-customconfigparameters": "^3.0.0",
     "cordova-plugin-device": "1.1.7",
@@ -168,10 +168,10 @@
         "URL_HOST": "mobile"
       },
       "cordova-plugin-android-downloadmanager": {},
+      "cordova-plugin-buildconfig-reader": {},
       "cordova-plugin-advanced-http": {},
       "cordova-plugin-screen-orientation": {},
-      "cordova-plugin-statusbar": {},
-      "cordova-plugin-buildconfig-reader": {}
+      "cordova-plugin-statusbar": {}
     },
     "platforms": []
   },
