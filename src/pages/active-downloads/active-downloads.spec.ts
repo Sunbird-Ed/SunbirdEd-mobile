@@ -31,6 +31,7 @@ describe.only('ActiveDownloadsPage', () => {
         activeDownloadPage = new ActiveDownloadsPage(
             popoverCtrlMock as any, viewControllerMock as any, ChangeDetectorRef as any,
             appHeaderServiceMock as any, navCtrlMock as any, commonUtilServiceMock as any, toastControllerMock as any,
+            telemetryGeneratorServiceMock as any,
             downloadServiceMock as any, eventBusServiceMock as any
         );
         jest.resetAllMocks();
