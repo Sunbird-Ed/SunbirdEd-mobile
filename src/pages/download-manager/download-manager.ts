@@ -42,10 +42,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
 
   storageInfo: AppStorageInfo;
   downloadedContents: Content[] = [];
-  profile: Profile;
-  audienceFilter = [];
-  guestUser = false;
-  defaultImg: string;
+  defaultImg = 'assets/imgs/ic_launcher.png';
   loader?: Loading;
   deleteAllConfirm: Popover;
   appName: string;
@@ -56,7 +53,8 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     private ngZone: NgZone,
     private popoverCtrl: PopoverController,
     private commonUtilService: CommonUtilService,
-    private headerServie: AppHeaderService, private events: Events,
+    private headerServie: AppHeaderService,
+    private events: Events,
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
@@ -65,12 +63,12 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
   ) {
   }
 
-  ngOnInit() {
-    this.defaultImg = 'assets/imgs/ic_launcher.png';
-    this.getCurrentUser();
-    this.getDownloadedContents(true);
-    this.subscribeEvents();
-    this.getAppName();
+  async ngOnInit() {
+    this.subscribeContentUpdateEvents();
+    return Promise.all(
+      [this.getDownloadedContents(undefined, true),
+      this.getAppName()]
+      );
   }
 
   ionViewWillEnter() {
@@ -85,15 +83,15 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     this.getAppStorageInfo();
   }
 
-  getAppName() {
-    this.appVersion.getAppName()
+  private async getAppName() {
+    return this.appVersion.getAppName()
       .then((appName: any) => {
         this.appName = appName;
       });
   }
 
 
-  async getAppStorageInfo(): Promise<AppStorageInfo> {
+  private async getAppStorageInfo(): Promise<AppStorageInfo> {
 
     const req: ContentSpaceUsageSummaryRequest = { paths: [cordova.file.externalDataDirectory] };
     return this.contentService.getContentSpaceUsageSummary(req).toPromise()
@@ -110,24 +108,9 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
 
   }
 
-  getCurrentUser(): void {
-    this.guestUser = !this.appGlobalService.isUserLoggedIn();
-    const profileType = this.appGlobalService.getGuestUserType();
+  async getDownloadedContents(sortCriteria?, shouldGenerateTelemetry?) {
+    const profile: Profile = await this.appGlobalService.getCurrentUser();
 
-    if (this.guestUser) {
-      if (profileType === ProfileType.TEACHER) {
-        this.audienceFilter = AudienceFilter.GUEST_TEACHER;
-      } else if (profileType === ProfileType.STUDENT) {
-        this.audienceFilter = AudienceFilter.GUEST_STUDENT;
-      }
-    } else {
-      this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
-    }
-
-    this.profile = this.appGlobalService.getCurrentUser();
-  }
-
-  async getDownloadedContents(shouldGenerateTelemetry, sortCriteria?) {
     this.loader = this.commonUtilService.getLoader();
     this.loader.present();
     this.loader.onDidDismiss(() => {
@@ -138,9 +121,9 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
       sortOrder: SortOrder.DESC
     }];
     const requestParams: ContentRequest = {
-      uid: this.profile ? this.profile.uid : undefined,
+      uid: profile.uid,
       contentTypes: ContentType.FOR_LIBRARY_TAB,
-      audience: this.audienceFilter,
+      audience: [],
       sortCriteria: sortCriteria || defaultSortCriteria
     };
     if (shouldGenerateTelemetry) {
@@ -154,7 +137,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
         data.forEach((value) => {
           value.contentData['lastUpdatedOn'] = value.lastUpdatedTime;
           if (value.contentData.appIcon) {
-            if (value.contentData.appIcon.includes('http:') || value.contentData.appIcon.includes('https:')) {
+            if (value.contentData.appIcon.startsWith('http:') || value.contentData.appIcon.startsWith('https:')) {
               if (this.commonUtilService.networkInfo.isNetworkAvailable) {
                 value.contentData.appIcon = value.contentData.appIcon;
               } else {
@@ -164,7 +147,6 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
               value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
             }
           }
-
         });
         this.ngZone.run(() => {
           this.downloadedContents = data;
@@ -219,7 +201,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     }
   }
 
-  deleteAllContents(emitedContents) {
+  private deleteAllContents(emitedContents) {
     const valuesMap = {};
     valuesMap['size'] = this.commonUtilService.fileSizeInMB(emitedContents.selectedContentsInfo.totalSize);
     valuesMap['count'] = emitedContents.selectedContentsInfo.count;
@@ -246,13 +228,10 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     }, {
         cssClass: 'sb-popover danger sb-popover-cancel-delete',
       });
-    this.deleteAllConfirm.present({
-      ev: event
-    });
+    this.deleteAllConfirm.present();
     this.deleteAllConfirm.onDidDismiss((cancel: any) => {
       if (cancel) {
         this.contentService.clearContentDeleteQueue().toPromise();
-        // this.viewCtrl.dismiss();
       }
     });
     this.contentService.enqueueContentDelete(contentDeleteRequest).toPromise();
@@ -311,7 +290,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     // this.events.unsubscribe('savedResources:update');
   }
 
-  subscribeEvents() {
+  private subscribeContentUpdateEvents() {
     this.events.subscribe('savedResources:update', (res) => {
       if (res && res.update) {
         this.getDownloadedContents(false);
@@ -319,7 +298,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     });
   }
 
-  handleHeaderEvents($event) {
+  private handleHeaderEvents($event) {
     console.log('inside handleHeaderEvents', $event);
     switch ($event.name) {
       case 'download':
@@ -328,7 +307,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     }
   }
 
-  redirectToActivedownloads() {
+  private redirectToActivedownloads() {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.ACTIVE_DOWNLOADS_CLICKED,
