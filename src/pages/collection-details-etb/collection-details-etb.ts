@@ -51,6 +51,7 @@ import {
 } from '../../service/telemetry-constants';
 import { ViewController } from 'ionic-angular';
 import { FileSizePipe } from '@app/pipes/file-size/file-size';
+import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 
 /**
  * Generated class for the CollectionDetailsEtbPage page.
@@ -268,7 +269,7 @@ export class CollectionDetailsEtbPage implements OnInit {
         true, this.cardData.identifier, this.corRelationList);
       this.handleBackButton();
     };*/
-    
+
     this.registerDeviceBackButton();
   }
 
@@ -483,6 +484,26 @@ export class CollectionDetailsEtbPage implements OnInit {
         this.navCtrl.pop();
       });
   }
+
+  showCommingSoonPopup(childData: any) {
+    if (childData.contentData.mimeType === 'application/vnd.ekstep.content-collection' && !childData.children) {
+        const popover = this.popoverCtrl.create(SbGenericPopoverComponent, {
+            sbPopoverHeading: this.commonUtilService.translateMessage('CONTENT_COMMING_SOON'),
+            sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_IS_BEEING_ADDED') + childData.contentData.name,
+            actionsButtons: [
+                {
+                    btntext: this.commonUtilService.translateMessage('OKAY'),
+                    btnClass: 'popover-color'
+                }
+            ],
+        }, {
+            cssClass: 'sb-popover warning',
+        });
+        popover.present({
+            ev: event
+        });
+    }
+}
 
   /**
    * Function to extract api response.
