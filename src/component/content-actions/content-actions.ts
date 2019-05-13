@@ -18,7 +18,7 @@ import {Environment, InteractSubtype, InteractType} from '../../service/telemetr
 import { SbPopoverComponent } from '../popups/sb-popover/sb-popover';
 import { FileSizePipe } from '@app/pipes/file-size/file-size';
 import { SbGenericPopoverComponent } from '../popups/sb-generic-popup/sb-generic-popover';
-
+import moment from 'moment';
 @Component({
   selector: 'content-actions',
   templateUrl: 'content-actions.html'
@@ -248,5 +248,21 @@ export class ContentActionsComponent {
       (this.data.batchStatus !== 2 &&
         (this.data.contentStatus === 0 || this.data.contentStatus === 1 || this.data.courseProgress < 100) &&
         this.data.enrollmentType !== 'invite-only'));
+  }
+
+  isUnenrollDisabled() {
+    let isEnrolledDisabled = true;
+    let progress;
+    const todayDate =  moment(new Date()).format('YYYY-MM-DD');
+    if (this.data && this.data.courseProgress) {
+      progress = this.data.courseProgress ? Math.round(this.data.courseProgress) : 0;
+    }
+    if ((!(this.batchDetails.hasOwnProperty('endDate')) ||
+      (this.batchDetails.endDate > todayDate)) &&
+      (this.batchDetails.enrollmentType === 'open') &&
+      (progress !== 100)) {
+      isEnrolledDisabled = false;
+    }
+    return isEnrolledDisabled;
   }
 }

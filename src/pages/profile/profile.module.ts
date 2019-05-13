@@ -17,6 +17,7 @@ import {IonicImageLoader} from 'ionic-image-loader';
 import {CategoriesEditPageModule} from '../categories-edit/categories-edit.module';
 import {PersonalDetailsEditPage} from './personal-details-edit.profile/personal-details-edit.profile';
 import { ContainerService } from '@app/service/container.services';
+import { FaqPageModule } from '../help/faq.module';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { ContainerService } from '@app/service/container.services';
   imports: [
     IonicPageModule.forChild(ProfilePage),
     SettingsPageModule,
+    FaqPageModule,
     TranslateModule.forChild(),
     IonicImageLoader,
     TagInputModule,

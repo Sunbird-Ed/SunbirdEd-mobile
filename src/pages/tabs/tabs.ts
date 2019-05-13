@@ -1,17 +1,16 @@
 
-import { Component, ViewChild, ComponentFactoryResolver } from '@angular/core';
+import { Component, ViewChild, Inject, OnInit } from '@angular/core';
 import { ContainerService } from '../../service/container.services';
 import { Tabs, Tab, Events, ToastController } from 'ionic-angular';
-import { NavParams } from 'ionic-angular';
-
-// import { ResourcesPage } from '../resources/resources';
-// import {ResourcesPageModule} from '@app/pages/resources/resources.module';
+import { TelemetryGeneratorService } from '@app/service';
 
 @Component({
   selector: 'page-tabs',
   templateUrl: 'tabs.html'
 })
 export class TabsPage {
+
+  configData: any;
 
   @ViewChild('myTabs') tabRef: Tabs;
   tabIndex = 0;
@@ -21,9 +20,13 @@ export class TabsPage {
     showBurgerMenu: true,
     actionButtons: ['search', 'filter'],
   };
-  constructor(private container: ContainerService, private navParams: NavParams, private events: Events,
-    public toastCtrl: ToastController) {
-  }
+  selectedLanguage: string;
+  constructor(
+    private container: ContainerService,
+    private events: Events,
+    public toastCtrl: ToastController,
+    private telemetryGeneratorService: TelemetryGeneratorService
+  ) {}
 
   ionViewWillEnter() {
     this.tabs = this.container.getAllTabs();
@@ -43,7 +46,6 @@ export class TabsPage {
   }
 
   public ionChange(tab: Tab) {
-    console.log('TabTitle', tab.tabTitle);
     // if active tab is other than scanner tab i.e, = tab 2
     if (tab.index !== 2) {
       this.tabs.forEach((tabTo, index) => {
@@ -85,12 +87,4 @@ export class TabsPage {
     }
   }
 
-  handleHeaderEvents($event) {
-    // switch ($event.name) {
-    //   case 'search': this.search();
-    //                 break;
-    //   case 'filter': this.showFilter();
-    //                   break;
-    // }
-  }
 }

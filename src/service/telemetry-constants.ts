@@ -57,6 +57,7 @@ export enum PageId {
     NOTIFICATION_LIST = 'notifiaction-list',
     SIGNIN_OVERLAY = 'signin-overlay',
     SETTINGS = 'settings',
+    FAQ = 'faq',
     SETTINGS_LANGUAGE = 'settings-language',
     SETTINGS_DATASYNC = 'settings-datasync',
     SETTINGS_DEVICE_TAGS = 'settings-device-tags',
@@ -123,7 +124,8 @@ export enum ImpressionSubtype {
     QRCodeScanInitiate = 'qr-code-scan-initiate',
     RATING_POPUP = 'rating-popup',
     QR_CODE_VALID = 'qr-code-valid',
-    INVALID_QR_CODE = 'invalid-qr-code'
+    INVALID_QR_CODE = 'invalid-qr-code',
+    APP_RATING_POPUP = 'app-rating-popup'
 }
 export enum InteractType {
     TOUCH = 'TOUCH',
@@ -167,6 +169,7 @@ export enum InteractSubtype {
     SIGNIN_OVERLAY_CLICKED = 'signin-overlay-clicked',
     SETTINGS_CLICKED = 'settings-clicked',
     LANGUAGE_CLICKED = 'language-clicked',
+    HELP_CLICKED = 'help-clicked',
     DATA_SYNC_CLICKED = 'data-sync-clicked',
     DEVICE_TAGS_CLICKED = 'device-tags-clicked',
     SUPPORT_CLICKED = 'support-clicked',
@@ -254,6 +257,7 @@ export enum InteractSubtype {
     YES_CLICKED = 'yes-clicked',
     NO_CLICKED = 'no-clicked',
     RESUME_CLICKED = 'resume-clicked',
+    APP_INTIATED = 'app-initiated',
     ACTIVE_DOWNLOADS_CLICKED = 'active-downloads-clicked',
     SORT_OPTION_CLICKED = 'sort-option-clicked',
     SORT_OPTION_SELECTED = 'sort-options-selected',
@@ -261,7 +265,11 @@ export enum InteractSubtype {
     OUTSIDE_POPUP_AREA_CLICKED = 'outside-popup-area-clicked',
     POPUP_DISMISSED= 'popup-dismissed',
     DOWNLOAD_CANCEL_ALL_CLICKED = 'download-cancel-all-clicked',
-    DOWNLOAD_CANCEL_CLICKED = 'download-cancel-clicked'
+    DOWNLOAD_CANCEL_CLICKED = 'download-cancel-clicked',
+    RATE_LATER_CLICKED = 'rate-later-clicked',
+    PLAY_STORE_BUTTON_CLICKED = 'play-store-button-clicked',
+    HELP_SECTION_CLICKED = 'help-section-clicked',
+    APP_RATING_APPEARED = 'app-rating-appeared'
 }
 
 export enum ActionButtonType {
