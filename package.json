@@ -250,7 +250,7 @@
       "src/pages/download-manager/download-manager.spec.ts",
       "src/pages/search/filters/options/option.spec.ts",
       "src/pages/settings/termsofservice/termsofservice.spec.ts",
-      "src/component/unenroll-alert/unenroll-alert.ts"
+      "src/component/unenroll-alert/unenroll-alerts.spec.ts "
     ],
     "testMatch": [
       "**/?(*.)(spec).ts"
