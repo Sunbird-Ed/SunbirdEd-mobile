@@ -20,6 +20,7 @@ export class ApplicationHeaderComponent implements OnInit {
   appName?: string;
   versionName?: string;
   versionCode?: string;
+  decreaseZindex = false;
 
   isLoggedIn = false;
   showDownloadAnimation: Boolean = false;
@@ -51,6 +52,13 @@ export class ApplicationHeaderComponent implements OnInit {
     });
     this.events.subscribe('app-global:profile-obj-changed', () => {
       this.setAppLogo();
+    });
+
+    this.events.subscribe('header:decreasezIndex', () => {
+      this.decreaseZindex = true;
+    });
+    this.events.subscribe('header:setzIndexToNormal', () => {
+      this.decreaseZindex = false;
     });
     this.listenDownloads();
   }

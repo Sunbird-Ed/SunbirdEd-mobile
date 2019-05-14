@@ -81,6 +81,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
 
     this.headerServie.showHeaderWithHomeButton(['download']);
     this.getAppStorageInfo();
+    this.getDownloadedContents();
   }
 
   private async getAppName() {
@@ -192,7 +193,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
               update: true
             });
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('MSG_RESOURCE_DELETED'));
-            this.getAppStorageInfo();
+            // this.getAppStorageInfo();
           }
         }).catch((error: any) => {
           this.loader.dismiss();
@@ -246,7 +247,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
 
         this.deleteAllConfirm.dismiss();
 
-        this.getAppStorageInfo();
+        // this.getAppStorageInfo();
 
         this.events.publish('savedResources:update', {
           update: true
@@ -294,6 +295,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     this.events.subscribe('savedResources:update', (res) => {
       if (res && res.update) {
         this.getDownloadedContents(false);
+        this.getAppStorageInfo();
       }
     });
   }
