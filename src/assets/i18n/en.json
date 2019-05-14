@@ -497,7 +497,7 @@
 
   "DELETE_CONTENT": "Delete Content?",
   "DELETE_CONTENT_WARNING": "Deleting content will remove content from the device",
-  "DELETE_ALL_CONTENT_WARNING": "Deleting content will remove the selected contents from the device",
+  "DELETE_ALL_CONTENT_WARNING": "Deleting content will remove selected content(s) from the device",
   "DELETE_PROGRESS": "Deleting Selected Contents",
   "ITEMS_SELECTED": "items selected",
   "NO_DOWNLOADS": "No downloads yet",
