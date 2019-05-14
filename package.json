@@ -249,8 +249,7 @@
       "src/pages/collection-details/collection-details.spec.ts",
       "src/pages/download-manager/download-manager.spec.ts",
       "src/pages/search/filters/options/option.spec.ts",
-      "src/pages/settings/termsofservice/termsofservice.spec.ts",
-      "src/component/unenroll-alert/unenroll-alerts.spec.ts"
+      "src/pages/settings/termsofservice/termsofservice.spec.ts" 
     ],
     "testMatch": [
       "**/?(*.)(spec).ts"
