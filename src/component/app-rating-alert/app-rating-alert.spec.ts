@@ -15,13 +15,6 @@ import {Observable} from "rxjs";
 describe('AppRatingAlertComponent', () => {
   let appRatingPage: AppRatingAlertComponent;
   beforeEach(() => {
-
-    (window as any).cordova = {
-      file: {
-        dataDirectory: 'SAMPLE_DATA_DIRECTORY'
-      }
-    } as any;
-
     sharedPreferencesMock.getString.mockImplementation((key: string) => {
       if (key === 'app_name') {
         return Observable.of('SAMPLE_APP_NAME');
@@ -31,7 +24,10 @@ describe('AppRatingAlertComponent', () => {
 
       return Observable.of('')
     });
-    platformMock.registerBackButtonAction.mockReturnValue(jest.fn());
+    appVersionMock.getAppName.mockResolvedValue('SAMPLE_APP_NAME');
+    platformMock.registerBackButtonAction.mockImplementation((success) => {
+      return success
+    });
     appRatingPage = new AppRatingAlertComponent(
       viewControllerMock as any, appVersionMock as any, utilityServiceMock as any,
       appRatingServiceMock as any, sharedPreferencesMock as any, translateServiceMock as any,
@@ -60,13 +56,18 @@ describe('AppRatingAlertComponent', () => {
     viewControllerMock.dismiss.mockReturnValue('close');
     appRatingPage.closePopover();
 
-    expect(appRatingPage.closePopover()).toHaveBeenCalled();
+    expect(appRatingPage.closePopover).toHaveBeenCalled();
   });
-  it('should call viewController dismiss() when rateLater() is called ', () => {
+  it('should call viewController dismiss() when rateLater() is called ', (done) => {
     spyOn(appRatingPage, 'rateLater').and.callThrough();
+    spyOn(appRatingPage, 'closePopover').and.stub();
     appRatingPage.rateLater();
-    viewControllerMock.dismiss.mockResolvedValue('RATE_LATER');
-    expect(appRatingPage.rateLater).toHaveBeenCalled();
+    setTimeout(() => {
+      expect(appRatingPage.rateLater).toHaveBeenCalled();
+      viewControllerMock.dismiss.mockResolvedValue('RATE_LATER');
+      expect(appRatingPage.closePopover).toHaveBeenCalled();
+    }, 0);
+    done();
   });
   it('should call appVersion.getPackageName() when submitRating() is triggered', () => {
     appVersionMock.getPackageName.mockResolvedValue('SAMPLE_PACKAGE_NAME');
@@ -78,18 +79,48 @@ describe('AppRatingAlertComponent', () => {
   });
   it('should change currentViewText when rating is greater than 4 or more', () => {
     // arrange
-    spyOn(appRatingPage, 'submitRating').and.stub();
+    spyOn(appRatingPage, 'submitRating').and.returnValue(5);
     //act
     appRatingPage.submitRating(5);
     // assert
-    expect(appRatingPage.submitRating(5)).toHaveBeenCalled();
+    expect(appRatingPage.currentViewText).toEqual({
+      "heading": "APP_RATING_RATE_EXPERIENCE",
+      "message": "APP_RATING_TAP_ON_STARS",
+      "type": "appRate"
+    });
+    expect(appRatingPage.submitRating(5)).toBe(5);
   });
   it('should changeViewText when rating is less than 3', () => {
     // arrange
-    spyOn(appRatingPage, 'submitRating').and.callThrough();
+    spyOn(appRatingPage, 'submitRating').and.returnValue(2);
     // act
     appRatingPage.submitRating(2);
     // assert
-    expect(appRatingPage.submitRating(2)).toHaveBeenCalled();
-  })
+    expect(appRatingPage.currentViewText).toEqual({
+      "heading": "APP_RATING_RATE_EXPERIENCE",
+      "message": "APP_RATING_TAP_ON_STARS",
+      "type": "appRate"
+    });
+    expect(appRatingPage.submitRating(2)).toBe(2);
+  });
+  it('should navigate to helpSection page when helpButton is clicked', () => {
+    // arrange
+    spyOn(appRatingPage, 'goToHelpSection').and.callThrough();
+    viewControllerMock.dismiss.mockResolvedValue('help');
+    // act
+    appRatingPage.goToHelpSection();
+    // assert
+    expect(appRatingPage.goToHelpSection).toHaveBeenCalled();
+    expect(viewControllerMock.dismiss).toBeCalledWith('help');
+  });
+
+  it('should return the incrementalValue when method is triggered', () => {
+    sharedPreferencesMock.getString.mockReturnValue('SAMPLE_VALUE');
+
+    spyOn(appRatingPage, 'countAppRatingPopupAppeared').and.callThrough();
+
+    appRatingPage.countAppRatingPopupAppeared();
+    expect(appRatingPage.countAppRatingPopupAppeared).toHaveBeenCalled();
+
+  });
 });

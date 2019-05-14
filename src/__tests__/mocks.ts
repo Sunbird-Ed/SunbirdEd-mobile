@@ -229,7 +229,8 @@ export const appGlobalServiceMock = createSpyObj<AppGlobalService>([
   'getAverageTime',
   'getUserId',
   'getGuestUserInfo',
-  'getEnrolledCourseList'
+  'getEnrolledCourseList',
+  'getSelectedBoardMediumGrade'
 ]);
 
 export const telemetryGeneratorServiceMock = createSpyObj<TelemetryGeneratorService>([

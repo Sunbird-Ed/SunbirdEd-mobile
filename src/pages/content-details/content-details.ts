@@ -640,10 +640,10 @@ export class ContentDetailsPage {
       this.playOnlineSpinner = false;
     }
     if (this.content.contentData.appIcon) {
-      if (this.content.contentData.appIcon.includes('http:') || this.content.contentData.appIcon.includes('https:')) {
+      if (this.content.contentData.appIcon.startsWith('http')) {
         if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-          // this.content.appIcon = this.content.appIcon;
-          // } else {
+          this.content.contentData.appIcon = this.content.contentData.appIcon;
+          } else {
           this.content.contentData.appIcon = this.defaultAppIcon;
         }
       } else if (data.basePath) {
