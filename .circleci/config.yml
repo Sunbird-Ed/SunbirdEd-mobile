@@ -13,7 +13,7 @@ jobs:
             - node_modules_cache_{{ checksum "package-lock.json" }}
       - run:
           name: Install project dependencies
-          command: npm i -f
+          command: npm ci
       - save_cache:
           key: node_modules_cache_{{ checksum "package-lock.json" }}
           paths:
