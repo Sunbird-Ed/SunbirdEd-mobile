@@ -6,7 +6,6 @@ import { File } from '@ionic-native/file';
 
 @Injectable()
 export class AppRatingService {
-  public static readonly DEVICE_FOLDER_PATH = cordova.file.dataDirectory;
 
   private rateLaterClickCount = 0;
     constructor(
@@ -32,28 +31,20 @@ export class AppRatingService {
     }
 
     createFolder(rate) {
-        this.fileCtrl.createDir(AppRatingService.DEVICE_FOLDER_PATH, StoreRating.FOLDER_NAME, true).then(res => {
-            console.log('Check Floder RES', res);
+        this.fileCtrl.createDir(StoreRating.DEVICE_FOLDER_PATH, StoreRating.FOLDER_NAME, true)
+          .then(() => {
             this.writeFile(rate);
-        }).catch(err => {
-            console.log('Check Floder ERR', err);
         });
     }
 
     writeFile(rate) {
-        this.fileCtrl.writeFile(AppRatingService.DEVICE_FOLDER_PATH + '/' + StoreRating.FOLDER_NAME,
-            StoreRating.FILE_NAME, StoreRating.FILE_TEXT + ' = ' + rate, { replace: true }).then(res => {
-            }).catch(err => {
-            });
+        this.fileCtrl.writeFile(StoreRating.DEVICE_FOLDER_PATH + '/' + StoreRating.FOLDER_NAME,
+            StoreRating.FILE_NAME, StoreRating.FILE_TEXT + ' = ' + rate, { replace: true }).then(() =>{});
     }
 
     checkReadFile() {
-        return this.fileCtrl.readAsText(AppRatingService.DEVICE_FOLDER_PATH + '/' + StoreRating.FOLDER_NAME,
-            StoreRating.FILE_NAME).then(res => {
-                return true;
-            }).catch(err => {
-                return false;
-            });
+         return this.fileCtrl.readAsText(StoreRating.DEVICE_FOLDER_PATH + '/' + StoreRating.FOLDER_NAME,
+            StoreRating.FILE_NAME).then(() => {return true;}).catch(() => {return false;});
     }
      async rateLaterClickedCount() {
       return this.rateLaterClickCount = await this.checkRateLaterCount();

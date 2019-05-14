@@ -255,7 +255,8 @@ export const courseUtilServiceMock = createSpyObj<CourseUtilService>([
 ]);
 
 export const appVersionMock = createSpyObj<AppVersion>([
-  'getAppName'
+  'getAppName',
+  'getPackageName'
 ]);
 
 export const pageAssembleServiceMock = createSpyObj<PageAssembleService>([
@@ -309,7 +310,9 @@ export const transferMock = createSpyObj<FileTransfer>([
 
 export const fileMock = createSpyObj<File>([
   'writeFile',
-  'dataDirectory'
+  'createDir',
+  'dataDirectory',
+  'readAsText'
 ]);
 
 export const datePipeMock = createSpyObj<DatePipe>([
@@ -331,7 +334,8 @@ export const deviceInfoServiceMock = createSpyObj<UtilityService>([
 ]);
 
 export const viewControllerMock = createSpyObj<ViewController>([
-  'dismiss'
+  'dismiss',
+  'onDidDismiss'
 ]);
 
 
