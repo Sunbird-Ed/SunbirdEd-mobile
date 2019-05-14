@@ -621,9 +621,10 @@ export class MyApp implements OnInit, AfterViewInit {
     if ($event.name === 'back') {
       // this.handleBackButton();
       let navObj = this.app.getRootNavs()[0];
-      const activeView: ViewController = this.nav.getActive();
+      let activeView: ViewController = this.nav.getActive();
       if (activeView != null && ((<any>activeView).instance instanceof TabsPage)) {
         navObj = this.app.getActiveNavs()[0];
+        activeView = navObj.getActive();
         // currentPage = navObj.getActive().name;
       }
       // if (currentPage === 'TabsPage') {
@@ -635,7 +636,13 @@ export class MyApp implements OnInit, AfterViewInit {
         || ((<any>activeView).instance instanceof EnrolledCourseDetailsPage)
         || ((<any>activeView).instance instanceof OnboardingPage)
         || ((<any>activeView).instance instanceof QrCodeResultPage)
-        || ((<any>activeView).instance instanceof CollectionDetailsPage)) {
+        || ((<any>activeView).instance instanceof CollectionDetailsPage)
+        || ((<any>activeView).instance instanceof CollectionDetailsEtbPage)
+        || ((<any>activeView).instance instanceof CollectionDetailsPage)
+        || ((<any>activeView).instance instanceof ContentDetailsPage)
+        || ((<any>activeView).instance instanceof OnboardingPage)
+        || ((<any>activeView).instance instanceof QrCodeResultPage)
+        ) {
         this.headerServie.sidebarEvent($event);
         return;
       }
