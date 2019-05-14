@@ -586,28 +586,36 @@ export class GroupDetailsPage {
         this.profileService.setActiveSessionForProfile(selectedUser.uid).toPromise()
           .then(() => {
             if (isBeingPlayed) {
+              this.playConfig['selectedUser'] = selectedUser;
+              if (selectedUser.profileType === ProfileType.STUDENT) {
+                this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise().then();
+              } else {
+                this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();
+              }
               this.event.publish('playConfig', this.playConfig);
               this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
-            }
-            if (selectedUser.profileType === ProfileType.STUDENT) {
-              initTabs(this.container, isBeingPlayed ? GUEST_STUDENT_TABS : GUEST_STUDENT_SWITCH_TABS);
-              this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise().then();
             } else {
-              initTabs(this.container, isBeingPlayed ? GUEST_TEACHER_TABS : GUEST_TEACHER_SWITCH_TABS);
-              this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();
+              if (selectedUser.profileType === ProfileType.STUDENT) {
+                initTabs(this.container, isBeingPlayed ? GUEST_STUDENT_TABS : GUEST_STUDENT_SWITCH_TABS);
+                this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise().then();
+              } else {
+                initTabs(this.container, isBeingPlayed ? GUEST_TEACHER_TABS : GUEST_TEACHER_SWITCH_TABS);
+                this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();
+              }
+
+              this.event.publish('refresh:profile');
+              this.event.publish(AppGlobalService.USER_INFO_UPDATED);
+
+              this.app.getRootNav().setRoot(TabsPage);
+
+              const toast = this.toastCtrl.create({
+                message: this.translateMessage('SWITCHING_TO', selectedUser.handle),
+                duration: 2000,
+                position: 'bottom'
+              });
+              toast.present();
             }
 
-            this.event.publish('refresh:profile');
-            this.event.publish(AppGlobalService.USER_INFO_UPDATED);
-
-            this.app.getRootNav().setRoot(TabsPage);
-
-            const toast = this.toastCtrl.create({
-              message: this.translateMessage('SWITCHING_TO', selectedUser.handle),
-              duration: 2000,
-              position: 'bottom'
-            });
-            toast.present();
 
           }, () => {
           });
