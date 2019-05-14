@@ -1289,6 +1289,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     this.headerConfig.showBurgerMenu = false;
     this.headerConfig.showHeader = true;
     this.headerService.updatePageConfig(this.headerConfig);
+    this.events.publish('header:setzIndexToNormal');
   }
   handleHeaderEvents($event) {
     switch ($event.name) {
