@@ -204,7 +204,6 @@
       "src/pages/user-and-groups/popover/popover.spec.ts",
       "src/pages/user-and-groups/user-and-groups.spec.ts",
       "src/pages/view-more-activity/view-more-activity.spec.ts",
-
       "src/pages/download-manager/downloads-tab/downloads-tab.spec.ts",
       "src/pages/profile-settings/profile-settings.spec.ts",
       "src/component/confirm-alert/confirm-alert.component.spec.ts",
