@@ -19,4 +19,8 @@ describe('', () => {
     unenrollAlert.selectOption(false);
     expect(viewControllerMock.dismiss).toBeCalled();
   });
+
+  afterAll(() => {
+    unenrollAlert = undefined;
+  });
 });
