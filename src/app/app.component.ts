@@ -173,31 +173,31 @@ export class MyApp implements OnInit, AfterViewInit {
   }
 
   setupLocalNotification(): any {
-    const notifcationData = cordova.plugins.notification.local.launchDetails;
-      if (notifcationData !== undefined) {
-        const values = new Map();
-        values['action'] = 'via-notification';
-        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-          InteractSubtype.APP_INTIATED,
-          Environment.HOME,
-          PageId.HOME,
-          undefined,
-          values);
-      } else {
-        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-          InteractSubtype.APP_INTIATED,
-          Environment.HOME,
-          PageId.HOME);
-      }
+    const notificationData = cordova.plugins.notification.local.launchDetails;
+    if (notificationData !== undefined) {
+      const values = new Map();
+      values['action'] = 'via-notification';
+      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+        InteractSubtype.APP_INTIATED,
+        Environment.HOME,
+        PageId.HOME,
+        undefined,
+        values);
+    } else {
+      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+        InteractSubtype.APP_INTIATED,
+        Environment.HOME,
+        PageId.HOME);
+    }
 
-      this.file.readAsText(this.file.applicationDirectory + 'www/assets/data', 'local_notofocation_config.json').then( data => {
-        this.configData = JSON.parse(data);
-        cordova.plugins.notification.local.getScheduledIds( (val) => {
-          if (this.configData.id !== val[val.length - 1]) {
-            this.localNotification();
-          }
-        });
+    this.file.readAsText(this.file.applicationDirectory + 'www/assets/data', 'local_notofocation_config.json').then( data => {
+      this.configData = JSON.parse(data);
+      cordova.plugins.notification.local.getScheduledIds( (val) => {
+        if (this.configData.id !== val[val.length - 1]) {
+          this.localNotification();
+        }
       });
+    });
   }
 
   triggerConfig() {
@@ -234,25 +234,21 @@ export class MyApp implements OnInit, AfterViewInit {
 
   localNotification() {
     const trigger = this.triggerConfig();
-    const img = cordova.file.applicationDirectory + 'www/assets/imgs/ic_launcher.png';
 
     this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
       .then(val => {
         if (val && val.length) {
           this.selectedLanguage = val;
-          const translate =  this.configData.data.translations[this.selectedLanguage] || this.configData.data.translations['default'];
-          // tslint:disable-next-line:no-debugger
-          debugger;
-          cordova.plugins.notification.local.schedule({
-            id: this.configData.id,
-            title: translate.title,
-            text: translate.msg,
-            sound: 'file://sound.mp3',
-            icon: 'res://icon',
-            smallIcon: 'res://n_icon',
-            trigger: trigger
-          });
-      }
+        }
+        const translate =  this.configData.data.translations[this.selectedLanguage] || this.configData.data.translations['default'];
+        cordova.plugins.notification.local.schedule({
+          id: this.configData.id,
+          title: translate.title,
+          text: translate.msg,
+          icon: 'res://icon',
+          smallIcon: 'res://n_icon',
+          trigger: trigger
+        });
     });
   }
 
