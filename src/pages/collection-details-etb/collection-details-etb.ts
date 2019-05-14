@@ -39,7 +39,13 @@ import {
   Rollup,
   TelemetryErrorCode,
   TelemetryObject,
-  ContentDeleteStatus
+  ContentDeleteStatus,
+  ProfileService,
+  ContentAccessStatus,
+  ContentAccess,
+  ContentMarkerRequest,
+  MarkerType,
+  Profile
 } from 'sunbird-sdk';
 import { Subscription } from 'rxjs';
 import {
@@ -248,6 +254,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     private toastController: ToastController,
     private fileSizePipe: FileSizePipe,
     private headerService: AppHeaderService,
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService
   ) {
     this.objRollup = new Rollup();
     this.checkLoggedInOrGuestUser();
@@ -319,6 +326,7 @@ export class CollectionDetailsEtbPage implements OnInit {
         this.objType = contentType;
         this.generateStartEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
         this.generateImpressionEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
+        this.markContent();
       }
 
       this.didViewLoad = true;
@@ -338,6 +346,25 @@ export class CollectionDetailsEtbPage implements OnInit {
     this.ionContent.ionScroll.subscribe((event) => {
       this.scrollPosition = event.scrollTop;
     });
+  }
+
+  async markContent() {
+        const addContentAccessRequest: ContentAccess = {
+            status: ContentAccessStatus.PLAYED,
+            contentId: this.identifier,
+            contentType: this.content.contentType
+        };
+        const profile: Profile = await this.appGlobalService.getCurrentUser();
+        this.profileService.addContentAccess(addContentAccessRequest).toPromise().then();
+            const contentMarkerRequest: ContentMarkerRequest = {
+                uid: profile.uid,
+                contentId: this.identifier,
+                data: JSON.stringify(this.content.contentData),
+                marker: MarkerType.PREVIEWED,
+                isMarked: true,
+                extraInfo: {}
+            };
+            this.contentService.setContentMarker(contentMarkerRequest).toPromise().then();
   }
 
   async presentToastWithOptions() {

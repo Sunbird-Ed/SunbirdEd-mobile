@@ -46,6 +46,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
   loader?: Loading;
   deleteAllConfirm: Popover;
   appName: string;
+  sortCriteria: ContentSortCriteria[];
 
   constructor(
     public navCtrl: NavController,
@@ -66,7 +67,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
   async ngOnInit() {
     this.subscribeContentUpdateEvents();
     return Promise.all(
-      [this.getDownloadedContents(undefined, true),
+      [this.getDownloadedContents(true),
       this.getAppName()]
       );
   }
@@ -109,7 +110,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
 
   }
 
-  async getDownloadedContents(sortCriteria?, shouldGenerateTelemetry?) {
+  async getDownloadedContents(shouldGenerateTelemetry?) {
     const profile: Profile = await this.appGlobalService.getCurrentUser();
 
     this.loader = this.commonUtilService.getLoader();
@@ -125,7 +126,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
       uid: profile.uid,
       contentTypes: ContentType.FOR_LIBRARY_TAB,
       audience: [],
-      sortCriteria: sortCriteria || defaultSortCriteria
+      sortCriteria: this.sortCriteria || defaultSortCriteria
     };
     if (shouldGenerateTelemetry) {
       await this.getAppStorageInfo();
@@ -278,11 +279,11 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
       InteractSubtype.SORT_OPTION_SELECTED,
       Environment.DOWNLOADS,
       PageId.DOWNLOADS);
-    const sortCriteria: ContentSortCriteria[] = [{
+    this.sortCriteria = [{
       sortOrder: SortOrder.DESC,
       sortAttribute: sortAttr
     }];
-    this.getDownloadedContents(sortCriteria);
+    this.getDownloadedContents();
   }
 
   ionViewWillLeave(): void {
