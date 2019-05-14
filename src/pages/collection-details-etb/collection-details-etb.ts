@@ -626,7 +626,9 @@ export class CollectionDetailsEtbPage implements OnInit {
    * @param {boolean} isChild
    */
   importContent(identifiers: Array<string>, isChild: boolean, isDownloadAllClicked?) {
+    if (this.showLoading && !this.isDownloadStarted) {
       this.headerService.hideHeader();
+    }
     const option: ContentImportRequest = {
       contentImportArray: this.getImportContentRequestBody(identifiers, isChild),
       contentStatusArray: [],
@@ -1105,6 +1107,7 @@ export class CollectionDetailsEtbPage implements OnInit {
             this.objRollup,
             this.corRelationList);
           this.downloadAllContent();
+          this.events.publish('header:decreasezIndex');
         } else {
           // Cancel Clicked Telemetry
           this.generateCancelDownloadTelemetry(this.contentDetail);
@@ -1168,6 +1171,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   ionViewWillLeave() {
     this.downloadProgress = 0;
     this.headerObservable.unsubscribe();
+    this.events.publish('header:setzIndexToNormal');
     if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
     }
