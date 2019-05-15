@@ -3,8 +3,8 @@ import { appLanguages } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { AppHeaderService, TelemetryGeneratorService } from '@app/service';
-import { Component, Inject } from '@angular/core';
-import { IonicPage, Loading, LoadingController } from 'ionic-angular';
+import { Component, Inject, ElementRef, ViewChild } from '@angular/core';
+import { IonicPage, Loading, LoadingController, Platform, NavController } from 'ionic-angular';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PageId, Environment, InteractType } from '@app/service/telemetry-constants';
 import { SharedPreferences, ProfileService, ContentService, DeviceInfo, GetAllProfileRequest, ContentRequest, Profile } from 'sunbird-sdk';
@@ -35,7 +35,9 @@ export class FaqPage {
   appName: string;
   loading?: Loading;
   private messageListener: (evt: Event) => void;
-
+  @ViewChild('f') iframe: ElementRef;
+  backButtonFunc: any;
+  headerObservable: any;
   constructor(
     private loadingCtrl: LoadingController,
     private domSanitizer: DomSanitizer,
@@ -49,7 +51,11 @@ export class FaqPage {
     private commonUtilService: CommonUtilService,
     private appGlobalService: AppGlobalService,
     private headerService: AppHeaderService,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService) {
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+    private platform: Platform,
+    private navCtrl: NavController,
+    private headerServie: AppHeaderService,
+    ) {
     this.messageListener = (event) => {
       this.receiveMessage(event);
     };
@@ -76,7 +82,10 @@ export class FaqPage {
         this.appName = appName;
       });
     await this.createAndPresentLoadingSpinner();
-
+    this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
+    this.registerDeviceBackButton();
     await this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE).toPromise()
       .then(value => {
         // get chosen language code from  lang mapping constant array
@@ -85,18 +94,35 @@ export class FaqPage {
         })[0].code;
       });
 
-    // await this.formAndFrameworkUtilService.getConsumptionFaqsUrl().then( (url: string) => {
-    //   console.log(url);
-    //   if (this.selectedLanguage && this.commonUtilService.networkInfo.isNetworkAvailable) {
-    //       url += '?selectedlang=' + this.selectedLanguage + '&randomid=' + Math.random();
-    //       this.faq.url = url;
-    //   }
-    // });
+    await this.formAndFrameworkUtilService.getConsumptionFaqsUrl().then( (url: string) => {
+      if (this.selectedLanguage && this.commonUtilService.networkInfo.isNetworkAvailable) {
+          url += '?selectedlang=' + this.selectedLanguage + '&randomid=' + Math.random();
+          this.faq.url = url;
+      }
+    });
     this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
   }
-
+  private handleHeaderEvents($event) {
+    switch ($event.name) {
+      case 'back':
+        this.handleBackButton();
+        break;
+    }
+  }
+  registerDeviceBackButton() {
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.handleBackButton();
+    }, 10);
+  }
+  handleBackButton() {
+    if (this.iframe.nativeElement.contentWindow.history.length === 2 ) {
+      this.iframe.nativeElement.contentWindow.history.go(-1);
+    } else {
+      this.navCtrl.pop();
+    this.backButtonFunc();
+    }
+  }
   onLoad() {
-    console.log('onLoad executed');
     if (this.loading) {
       this.loading.dismissAll();
     }
@@ -161,7 +187,6 @@ export class FaqPage {
     const getLocalContentCount = await this.contentService.getContents(contentRequest)
       .map((contentCount) => contentCount.length).toPromise();
     (<any>window).supportfile.shareSunbirdConfigurations(getUserCount, getLocalContentCount, (result) => {
-      console.log('in setting - ', result);
       const loader = this.commonUtilService.getLoader();
       loader.present();
       this.preferences.putString(KEY_SUNBIRD_CONFIG_FILE_PATH, result).toPromise()

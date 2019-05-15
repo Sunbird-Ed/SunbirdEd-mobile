@@ -736,7 +736,8 @@ export class MyApp implements OnInit, AfterViewInit {
         || ((<any>activeView).instance instanceof EnrolledCourseDetailsPage)
         || ((<any>activeView).instance instanceof OnboardingPage)
         || ((<any>activeView).instance instanceof QrCodeResultPage)
-        || ((<any>activeView).instance instanceof CollectionDetailsPage)) {
+        || ((<any>activeView).instance instanceof CollectionDetailsPage)
+        || ((<any>activeView).instance instanceof FaqPage)) {
         this.headerServie.sidebarEvent($event);
         return;
       }
