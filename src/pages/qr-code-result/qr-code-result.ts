@@ -149,6 +149,7 @@ export class QrCodeResultPage implements OnDestroy {
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
+    this.headerService.hideHeader();
     this.content = this.navParams.get('content');
     this.corRelationList = this.navParams.get('corRelation');
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
@@ -189,7 +190,7 @@ export class QrCodeResultPage implements OnDestroy {
       this.calculateAvailableUserCount();
     }
   }
-  
+
 
   ionViewWillLeave() {
     this.headerObservable.unsubscribe();
