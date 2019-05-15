@@ -9,6 +9,7 @@ import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
 import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
 import { ResourcesPage } from '../resources/resources';
 import { File } from '@ionic-native/file';
+import { NotificationService } from '@app/service/notification.service';
 
 declare const cordova;
 
@@ -46,7 +47,8 @@ export class LanguageSettingsPage {
     private commonUtilService: CommonUtilService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     private headerServie: AppHeaderService,
-    private file: File
+    private file: File,
+    private notification: NotificationService
   ) {
     this.mainPage = this.navParams.get('mainPage');
    }
@@ -212,7 +214,7 @@ export class LanguageSettingsPage {
       this.events.publish('onAfterLanguageChange:update', {
         selectedLanguage: this.language
       });
-      this.updateNotifiaction();
+      this.notification.setupLocalNotification(this.language);
       if (this.isFromSettings) {
         this.navCtrl.pop();
       } else if (this.appGlobalService.DISPLAY_ONBOARDING_PAGE) {
@@ -227,60 +229,4 @@ export class LanguageSettingsPage {
     }
   }
 
-  triggerConfig() {
-    let tempDate = this.configData.data.start;
-    tempDate = tempDate.split(' ');
-    const hour = +tempDate[1].split(':')[0];
-    const minute = +tempDate[1].split(':')[1];
-    tempDate = tempDate[0].split('/');
-    const trigger: any = {};
-
-
-    if (tempDate.length === 1) {
-      const every: any = {
-        minute: '',
-        hour: ''
-      };
-      if (!isNaN(+this.configData.data.interval) && typeof(+this.configData.data.interval) === 'number') {
-        every.day = +this.configData.data.interval;
-      } else if (typeof(this.configData.data.interval) === 'string') {
-        every[this.configData.data.interval] = +tempDate[0];
-      }
-      every.hour = hour;
-      every.minute = minute;
-      trigger.every = every;
-    } else if (tempDate.length === 3) {
-      trigger.firstAt = new Date(this.configData.data.start);
-      trigger.every = this.configData.data.interval;
-      if (this.configData.data.occurance)  {
-        trigger.count = this.configData.data.occurance;
-      }
-    }
-    return trigger;
-  }
-
-  localNotification() {
-    const trigger = this.triggerConfig();
-    const translate =  this.configData.data.translations[this.language] || this.configData.data.translations['default'];
-    cordova.plugins.notification.local.schedule({
-      id: this.configData.id,
-      title: translate.title,
-      text: translate.msg,
-      icon: 'res://icon',
-      smallIcon: 'res://n_icon',
-      trigger: trigger
-    });
-  }
-
-  updateNotifiaction() {
-    cordova.plugins.notification.local.cancelAll();
-    this.file.readAsText(this.file.applicationDirectory + 'www/assets/data', 'local_notofocation_config.json').then( data => {
-      this.configData = JSON.parse(data);
-      cordova.plugins.notification.local.getScheduledIds( (val) => {
-        if (this.configData.id !== val[val.length - 1]) {
-          this.localNotification();
-        }
-      });
-    });
-  }
 }
