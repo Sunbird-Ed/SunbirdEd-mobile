@@ -39,7 +39,13 @@ import {
   Rollup,
   TelemetryErrorCode,
   TelemetryObject,
-  ContentDeleteStatus
+  ContentDeleteStatus,
+  ProfileService,
+  ContentAccessStatus,
+  ContentAccess,
+  ContentMarkerRequest,
+  MarkerType,
+  Profile
 } from 'sunbird-sdk';
 import { Subscription } from 'rxjs';
 import {
@@ -53,6 +59,7 @@ import {
 } from '../../service/telemetry-constants';
 import { ViewController } from 'ionic-angular';
 import { FileSizePipe } from '@app/pipes/file-size/file-size';
+import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 
 /**
  * Generated class for the CollectionDetailsEtbPage page.
@@ -248,6 +255,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     private toastController: ToastController,
     private fileSizePipe: FileSizePipe,
     private headerService: AppHeaderService,
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService
   ) {
     this.objRollup = new Rollup();
     this.checkLoggedInOrGuestUser();
@@ -319,6 +327,7 @@ export class CollectionDetailsEtbPage implements OnInit {
         this.objType = contentType;
         this.generateStartEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
         this.generateImpressionEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
+        this.markContent();
       }
 
       this.didViewLoad = true;
@@ -338,6 +347,25 @@ export class CollectionDetailsEtbPage implements OnInit {
     this.ionContent.ionScroll.subscribe((event) => {
       this.scrollPosition = event.scrollTop;
     });
+  }
+
+  async markContent() {
+        const addContentAccessRequest: ContentAccess = {
+            status: ContentAccessStatus.PLAYED,
+            contentId: this.identifier,
+            contentType: this.content.contentType
+        };
+        const profile: Profile = await this.appGlobalService.getCurrentUser();
+        this.profileService.addContentAccess(addContentAccessRequest).toPromise().then();
+            const contentMarkerRequest: ContentMarkerRequest = {
+                uid: profile.uid,
+                contentId: this.identifier,
+                data: JSON.stringify(this.content.contentData),
+                marker: MarkerType.PREVIEWED,
+                isMarked: true,
+                extraInfo: {}
+            };
+            this.contentService.setContentMarker(contentMarkerRequest).toPromise().then();
   }
 
   async presentToastWithOptions() {
@@ -491,6 +519,26 @@ export class CollectionDetailsEtbPage implements OnInit {
       });
   }
 
+  showCommingSoonPopup(childData: any) {
+    if (childData.contentData.mimeType === 'application/vnd.ekstep.content-collection' && !childData.children) {
+        const popover = this.popoverCtrl.create(SbGenericPopoverComponent, {
+            sbPopoverHeading: this.commonUtilService.translateMessage('CONTENT_COMMING_SOON'),
+            sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_IS_BEEING_ADDED') + childData.contentData.name,
+            actionsButtons: [
+                {
+                    btntext: this.commonUtilService.translateMessage('OKAY'),
+                    btnClass: 'popover-color'
+                }
+            ],
+        }, {
+            cssClass: 'sb-popover warning',
+        });
+        popover.present({
+            ev: event
+        });
+    }
+}
+
   /**
    * Function to extract api response.
    */
@@ -626,7 +674,9 @@ export class CollectionDetailsEtbPage implements OnInit {
    * @param {boolean} isChild
    */
   importContent(identifiers: Array<string>, isChild: boolean, isDownloadAllClicked?) {
+    if (this.showLoading && !this.isDownloadStarted) {
       this.headerService.hideHeader();
+    }
     const option: ContentImportRequest = {
       contentImportArray: this.getImportContentRequestBody(identifiers, isChild),
       contentStatusArray: [],
@@ -1105,6 +1155,7 @@ export class CollectionDetailsEtbPage implements OnInit {
             this.objRollup,
             this.corRelationList);
           this.downloadAllContent();
+          this.events.publish('header:decreasezIndex');
         } else {
           // Cancel Clicked Telemetry
           this.generateCancelDownloadTelemetry(this.contentDetail);
@@ -1168,6 +1219,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   ionViewWillLeave() {
     this.downloadProgress = 0;
     this.headerObservable.unsubscribe();
+    this.events.publish('header:setzIndexToNormal');
     if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
     }
@@ -1285,6 +1337,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     this.headerConfig.showBurgerMenu = false;
     this.headerConfig.showHeader = true;
     this.headerService.updatePageConfig(this.headerConfig);
+    this.events.publish('header:setzIndexToNormal');
   }
   handleHeaderEvents($event) {
     switch ($event.name) {

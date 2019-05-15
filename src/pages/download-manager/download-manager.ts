@@ -46,6 +46,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
   loader?: Loading;
   deleteAllConfirm: Popover;
   appName: string;
+  sortCriteria: ContentSortCriteria[];
 
   constructor(
     public navCtrl: NavController,
@@ -66,7 +67,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
   async ngOnInit() {
     this.subscribeContentUpdateEvents();
     return Promise.all(
-      [this.getDownloadedContents(undefined, true),
+      [this.getDownloadedContents(true),
       this.getAppName()]
       );
   }
@@ -81,6 +82,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
 
     this.headerServie.showHeaderWithHomeButton(['download']);
     this.getAppStorageInfo();
+    this.getDownloadedContents();
   }
 
   private async getAppName() {
@@ -108,7 +110,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
 
   }
 
-  async getDownloadedContents(sortCriteria?, shouldGenerateTelemetry?) {
+  async getDownloadedContents(shouldGenerateTelemetry?) {
     const profile: Profile = await this.appGlobalService.getCurrentUser();
 
     this.loader = this.commonUtilService.getLoader();
@@ -124,7 +126,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
       uid: profile.uid,
       contentTypes: ContentType.FOR_LIBRARY_TAB,
       audience: [],
-      sortCriteria: sortCriteria || defaultSortCriteria
+      sortCriteria: this.sortCriteria || defaultSortCriteria
     };
     if (shouldGenerateTelemetry) {
       await this.getAppStorageInfo();
@@ -192,7 +194,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
               update: true
             });
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('MSG_RESOURCE_DELETED'));
-            this.getAppStorageInfo();
+            // this.getAppStorageInfo();
           }
         }).catch((error: any) => {
           this.loader.dismiss();
@@ -246,7 +248,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
 
         this.deleteAllConfirm.dismiss();
 
-        this.getAppStorageInfo();
+        // this.getAppStorageInfo();
 
         this.events.publish('savedResources:update', {
           update: true
@@ -277,11 +279,11 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
       InteractSubtype.SORT_OPTION_SELECTED,
       Environment.DOWNLOADS,
       PageId.DOWNLOADS);
-    const sortCriteria: ContentSortCriteria[] = [{
+    this.sortCriteria = [{
       sortOrder: SortOrder.DESC,
       sortAttribute: sortAttr
     }];
-    this.getDownloadedContents(sortCriteria);
+    this.getDownloadedContents();
   }
 
   ionViewWillLeave(): void {
@@ -294,6 +296,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     this.events.subscribe('savedResources:update', (res) => {
       if (res && res.update) {
         this.getDownloadedContents(false);
+        this.getAppStorageInfo();
       }
     });
   }
