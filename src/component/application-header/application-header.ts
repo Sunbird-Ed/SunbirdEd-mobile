@@ -4,7 +4,6 @@ import {AppGlobalService, UtilityService} from '@app/service';
 import {DownloadService, SharedPreferences} from 'sunbird-sdk';
 import {GenericAppConfig, PreferenceKey} from '../../app/app.constant';
 import {AppVersion} from '@ionic-native/app-version';
-import { File } from '@ionic-native/file';
 import { NotificationService } from '@app/service/notification.service';
 
 declare const cordova;
@@ -27,7 +26,6 @@ export class ApplicationHeaderComponent implements OnInit {
 
   isLoggedIn = false;
   showDownloadAnimation: Boolean = false;
-  configData: any;
 
   constructor(
     public menuCtrl: MenuController,
@@ -39,7 +37,6 @@ export class ApplicationHeaderComponent implements OnInit {
     private utilityService: UtilityService,
     private changeDetectionRef: ChangeDetectorRef,
     private app: App,
-    private file: File,
     private notification: NotificationService
   ) {
     this.setLanguageValue();

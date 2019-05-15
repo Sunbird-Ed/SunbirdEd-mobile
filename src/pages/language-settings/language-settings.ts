@@ -8,7 +8,6 @@ import {OnboardingPage} from '@app/pages/onboarding/onboarding';
 import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
 import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
 import { ResourcesPage } from '../resources/resources';
-import { File } from '@ionic-native/file';
 import { NotificationService } from '@app/service/notification.service';
 
 declare const cordova;
@@ -32,7 +31,6 @@ export class LanguageSettingsPage {
   unregisterBackButton = undefined;
   mainPage: Boolean = false;
   headerConfig: any;
-  configData: any;
 
 
   constructor(
@@ -47,7 +45,6 @@ export class LanguageSettingsPage {
     private commonUtilService: CommonUtilService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     private headerServie: AppHeaderService,
-    private file: File,
     private notification: NotificationService
   ) {
     this.mainPage = this.navParams.get('mainPage');

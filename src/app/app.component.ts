@@ -56,10 +56,7 @@ import { ProfilePage } from '@app/pages/profile/profile';
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
 import { QrCodeResultPage } from '@app/pages/qr-code-result';
 import { FaqPage } from '@app/pages/help/faq';
-import { File } from '@ionic-native/file';
 import { NotificationService } from '@app/service/notification.service';
-
-declare const cordova;
 
 @Component({
   templateUrl: 'app.html',
@@ -86,7 +83,6 @@ export class MyApp implements OnInit, AfterViewInit {
   private telemetryAutoSyncUtil: TelemetryAutoSyncUtil;
 
   profile: any = {};
-  configData: any;
   selectedLanguage: string;
 
 
@@ -120,7 +116,6 @@ export class MyApp implements OnInit, AfterViewInit {
     private logoutHandlerService: LogoutHandlerService,
     private network: Network,
     private appRatingService: AppRatingService,
-    private file: File,
     private notificationSrc: NotificationService
   ) {
     this.telemetryAutoSyncUtil = new TelemetryAutoSyncUtil(this.telemetryService);
