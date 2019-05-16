@@ -56,9 +56,7 @@ import { ProfilePage } from '@app/pages/profile/profile';
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
 import { QrCodeResultPage } from '@app/pages/qr-code-result';
 import { FaqPage } from '@app/pages/help/faq';
-import { File } from '@ionic-native/file';
-
-declare const cordova;
+import { NotificationService } from '@app/service/notification.service';
 
 @Component({
   templateUrl: 'app.html',
@@ -85,7 +83,6 @@ export class MyApp implements OnInit, AfterViewInit {
   private telemetryAutoSyncUtil: TelemetryAutoSyncUtil;
 
   profile: any = {};
-  configData: any;
   selectedLanguage: string;
 
 
@@ -119,7 +116,7 @@ export class MyApp implements OnInit, AfterViewInit {
     private logoutHandlerService: LogoutHandlerService,
     private network: Network,
     private appRatingService: AppRatingService,
-    private file: File
+    private notificationSrc: NotificationService
   ) {
     this.telemetryAutoSyncUtil = new TelemetryAutoSyncUtil(this.telemetryService);
     platform.ready().then(async () => {
@@ -169,91 +166,7 @@ export class MyApp implements OnInit, AfterViewInit {
         this.addNetworkTelemetry(InteractSubtype.INTERNET_DISCONNECTED, pageId);
       }
     });
-    this.setupLocalNotification();
-  }
-
-  setupLocalNotification(): any {
-    const notifcationData = cordova.plugins.notification.local.launchDetails;
-      if (notifcationData !== undefined) {
-        const values = new Map();
-        values['action'] = 'via-notification';
-        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-          InteractSubtype.APP_INTIATED,
-          Environment.HOME,
-          PageId.HOME,
-          undefined,
-          values);
-      } else {
-        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-          InteractSubtype.APP_INTIATED,
-          Environment.HOME,
-          PageId.HOME);
-      }
-
-      this.file.readAsText(this.file.applicationDirectory + 'www/assets/data', 'local_notofocation_config.json').then( data => {
-        this.configData = JSON.parse(data);
-        cordova.plugins.notification.local.getScheduledIds( (val) => {
-          if (this.configData.id !== val[val.length - 1]) {
-            this.localNotification();
-          }
-        });
-      });
-  }
-
-  triggerConfig() {
-    let tempDate = this.configData.data.start;
-    tempDate = tempDate.split(' ');
-    const hour = +tempDate[1].split(':')[0];
-    const minute = +tempDate[1].split(':')[1];
-    tempDate = tempDate[0].split('/');
-    const trigger: any = {};
-
-
-    if (tempDate.length === 1) {
-      const every: any = {
-        minute: '',
-        hour: ''
-      };
-      if (!isNaN(+this.configData.data.interval) && typeof(+this.configData.data.interval) === 'number') {
-        every.day = +this.configData.data.interval;
-      } else if (typeof(this.configData.data.interval) === 'string') {
-        every[this.configData.data.interval] = +tempDate[0];
-      }
-      every.hour = hour;
-      every.minute = minute;
-      trigger.every = every;
-    } else if (tempDate.length === 3) {
-      trigger.firstAt = new Date(this.configData.data.start);
-      trigger.every = this.configData.data.interval;
-      if (this.configData.data.occurance)  {
-        trigger.count = this.configData.data.occurance;
-      }
-    }
-    return trigger;
-  }
-
-  localNotification() {
-    const trigger = this.triggerConfig();
-    const img = cordova.file.applicationDirectory + 'www/assets/imgs/ic_launcher.png';
-
-    this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
-      .then(val => {
-        if (val && val.length) {
-          this.selectedLanguage = val;
-          const translate =  this.configData.data.translations[this.selectedLanguage] || this.configData.data.translations['default'];
-          // tslint:disable-next-line:no-debugger
-          debugger;
-          cordova.plugins.notification.local.schedule({
-            id: this.configData.id,
-            title: translate.title,
-            text: translate.msg,
-            sound: 'file://sound.mp3',
-            icon: 'res://icon',
-            smallIcon: 'res://n_icon',
-            trigger: trigger
-          });
-      }
-    });
+    this.notificationSrc.setupLocalNotification();
   }
 
   addNetworkTelemetry(subtype: string, pageId: string) {
