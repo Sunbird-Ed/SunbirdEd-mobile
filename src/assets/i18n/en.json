@@ -512,5 +512,7 @@
   "CANCEL_ALL_DOWNLOAD_MESSAGE": "Cancelling download will remove all contents from Active Downloads",
   "OFFLINE_DOWNLOAD_MESSAGE":"Downloads will resume automatically when there is internet connectivity",
   "CONTENT_SIZE": "Content size",
-  "LAST_VIEWED": "Last viewed"
+  "LAST_VIEWED": "Last viewed",
+  "TICKET_SUMMARY": "Ticket summary",
+  "MORE_DETAILS": "More details (If needed, provide more information or attach a screenshot of the issue)"
 }

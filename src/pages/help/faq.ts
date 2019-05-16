@@ -152,17 +152,23 @@ export class FaqPage {
     if (event.data && event.data.action && event.data.action !== 'initiate-email-clicked') {
       this.generateInteractTelemetry(event.data.action, values);
     } else {
-      event.data.initiateEmailBody = this.getBoardMediumGrade() + event.data.initiateEmailBody;
+      event.data.initiateEmailBody = this.getBoardMediumGrade(event.data.initiateEmailBody) + event.data.initiateEmailBody;
       this.generateInteractTelemetry(event.data.action, values);
       // launch email sharing
       this.sendMessage(event.data.initiateEmailBody);
     }
   }
-  getBoardMediumGrade(): string {
+  getBoardMediumGrade(mailBody: string): string {
     const userProfile: Profile = this.appGlobalService.getCurrentUser();
+    let ticketSummary: string;
+    if (mailBody.length) {
+      ticketSummary = '.<br> <br> <b>' + this.commonUtilService.translateMessage('TICKET_SUMMARY') + '</b> <br> <br>';
+    } else {
+      ticketSummary = '.<br> <br> <b>' + this.commonUtilService.translateMessage('MORE_DETAILS') + '</b> <br> <br>';
+    }
     const userDetails: string = 'From: ' + userProfile.profileType[0].toUpperCase() + userProfile.profileType.slice(1) + ', ' +
                                   this.appGlobalService.getSelectedBoardMediumGrade() +
-                                  '.<br> <br> <b>Ticket summary</b> <br> <br>';
+                                  ticketSummary;
     return userDetails;
   }
   generateInteractTelemetry(interactSubtype, values) {
