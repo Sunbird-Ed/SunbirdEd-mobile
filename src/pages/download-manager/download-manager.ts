@@ -219,7 +219,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
       sbPopoverHeading: this.commonUtilService.translateMessage('DELETE_PROGRESS'),
       actionsButtons: [
         {
-          btntext: this.commonUtilService.translateMessage('CANCEL_LOWER_CASE'),
+          btntext: this.commonUtilService.translateMessage('CANCEL'),
           btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info cancel-delete'
         },
       ],
