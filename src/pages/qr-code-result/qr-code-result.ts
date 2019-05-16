@@ -54,6 +54,7 @@ import {PlayerPage} from '../player/player';
 import {CanvasPlayerService} from '../player/canvas-player.service';
 import {File} from '@ionic-native/file';
 import { AppHeaderService } from '@app/service';
+import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
 
 declare const cordova;
 
@@ -149,6 +150,7 @@ export class QrCodeResultPage implements OnDestroy {
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
+    this.headerService.hideHeader();
     this.content = this.navParams.get('content');
     this.corRelationList = this.navParams.get('corRelation');
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
@@ -189,7 +191,7 @@ export class QrCodeResultPage implements OnDestroy {
       this.calculateAvailableUserCount();
     }
   }
-  
+
 
   ionViewWillLeave() {
     this.headerObservable.unsubscribe();
@@ -323,7 +325,7 @@ export class QrCodeResultPage implements OnDestroy {
         corRelation: this.corRelationList
       });
     } else if (content && content.mimeType === MimeType.COLLECTION) {
-      this.navCtrl.push(CollectionDetailsPage, {
+      this.navCtrl.push(CollectionDetailsEtbPage, {
         content: content,
         corRelation: this.corRelationList
       });

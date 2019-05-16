@@ -151,7 +151,7 @@ P{
     resize: none;
 }
 .submit-button{
-    min-width: 88vw;
+    width: 100%;
     color: #fff;
     background: #024f9d;
     height: 40px;
@@ -163,11 +163,7 @@ P{
 }
 
 @media only screen and (max-width : 1024px) {
-    #initiate-email{
-   left: 0;
-    bottom: 50px;
-    position: absolute;
-}
+   
     .report-button{
         min-width: 90vw;
         color: #fff;
@@ -185,6 +181,21 @@ P{
     }
     .panel-body{
         padding: 8px 16px;
+    }
+    #textareainfo{
+        opacity: .5;
+        position: absolute;
+        bottom: -13px;
+        right: 0px;
+        font-weight: normal;
+        font-size: 12px;
+    }
+    .initiate-email-info-button{
+        left: 0px;
+    right: 0px;
+    position: fixed;
+    top: 80vh;
+    padding: 0px 16px;
     }
 }
 @media only screen and (min-width : 1025px) {
@@ -213,7 +224,7 @@ P{
     margin: 0 16px;
 }
 #send-email-form{
-    height: 80vh;
+    height: 40vh;
     position: relative;
 }
 
@@ -239,7 +250,7 @@ P{
         float: left;
     }
     .submit-button{
-        min-width: 150px;
+        width: 150px;
         float: right;
         color: #fff;
         background: #024f9d;
@@ -282,6 +293,9 @@ P{
   font-size: 14px;
   font-weight: normal;
 }
+.initiate-email-info{
+        margin-top: 10px;
+    }
 @media only screen and (min-width : 1025px) {
     .input-text-form{
         width: 100%;
@@ -296,6 +310,15 @@ P{
         margin: 0px;
         resize: none;
     }
+    #textareainfo{
+    opacity: .5;
+    position: absolute;
+    bottom: -24px;
+    right: 0px;
+    font-weight: normal;
+    font-size: 12px;
+    }
+    
 }
 a{
     color: #333;
@@ -306,14 +329,6 @@ a:active, a:hover{
     color: none;
 }
 
-#textareainfo{
-    opacity: .5;
-    position: absolute;
-    bottom: 6px;
-    right: 7px;
-    font-weight: normal;
-    font-size: 12px;
-}
 #textareadiv{
     position: relative
 }

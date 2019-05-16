@@ -143,6 +143,9 @@ export class DownloadsTabPage {
                     this.selectedFilter = sortattribute.content;
                     this.sortCriteriaChanged.emit(sortattribute);
                 }
+                if (this.deleteAllPopupPresent) {
+                    this.deleteAllConfirm.dismiss(null);
+                }
             }
         });
     }
@@ -214,7 +217,7 @@ export class DownloadsTabPage {
                 selectedContents: this.selectedContentsInfo,
                 actionsButtons: [
                     {
-                        btntext: this.commonUtilService.translateMessage('CANCEL_LOWER_CASE'),
+                        btntext: this.commonUtilService.translateMessage('CANCEL'),
                         btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
                     }, {
                         btntext: this.commonUtilService.translateMessage('DELETE'),

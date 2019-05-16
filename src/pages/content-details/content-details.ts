@@ -1435,7 +1435,7 @@ export class ContentDetailsPage {
       ],
       icon: null,
       metaInfo: this.content.contentData.name,
-      sbPopoverContent: ' 1 item' + ' (' + this.fileSizePipe.transform(this.content.contentData.size, 2) + ')',
+      sbPopoverContent: ' 1 item' + ' (' + this.fileSizePipe.transform(this.content.sizeOnDevice, 2) + ')',
     }, {
         cssClass: 'sb-popover danger',
       });

@@ -34,7 +34,8 @@ import {AndroidPermissionsService} from '@app/service/android-permissions/androi
 import {ComponentsModule} from '@app/component/components.module';
 import {ContainerService} from '@app/service/container.services';
 import {DirectivesModule} from '@app/directives/directives.module';
-import {ComingSoonMessageService} from "@app/service/coming-soon-message.service";
+import {ComingSoonMessageService} from '@app/service/coming-soon-message.service';
+import { NotificationService } from '@app/service/notification.service';
 
 export const translateHttpLoaderFactory = (httpClient: HttpClient) => {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
@@ -340,6 +341,7 @@ export const sunbirdSdkFactory =
     Device,
     AndroidPermissionsService,
     ComingSoonMessageService,
+    NotificationService,
     ...sunbirdSdkServicesProvidersFactory(),
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     { provide: APP_INITIALIZER, useFactory: sunbirdSdkFactory, deps: [], multi: true }
