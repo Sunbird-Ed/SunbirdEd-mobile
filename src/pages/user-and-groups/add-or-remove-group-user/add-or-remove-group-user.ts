@@ -57,9 +57,7 @@ export class AddOrRemoveGroupUserPage {
   }
 
   ionViewWillEnter() {
-    const header = this.headerService.getDefaultPageConfig();
-    header.showHeader = false;
-    this.headerService.updatePageConfig(header);
+    this.headerService.hideHeader();
     this.getAllProfile();
   }
 

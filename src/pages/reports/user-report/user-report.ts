@@ -100,9 +100,7 @@ export class UserReportPage {
   }
 
   ionViewDidLoad() {
-    const header = this.headerService.getDefaultPageConfig();
-      header.showHeader = false;
-      this.headerService.updatePageConfig(header);
+    this.headerService.hideHeader();
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
       PageId.REPORTS_USER_ASSESMENT_DETAILS,

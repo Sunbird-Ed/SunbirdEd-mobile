@@ -171,9 +171,7 @@ export class GuestEditProfilePage {
   }
 
   ionViewWillEnter() {
-    const header = this.headerService.getDefaultPageConfig();
-    header.showHeader = false;
-    this.headerService.updatePageConfig(header);
+    this.headerService.hideHeader();
     this.getSyllabusDetails();
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.dismissPopup();
