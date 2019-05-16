@@ -143,6 +143,9 @@ export class DownloadsTabPage {
                     this.selectedFilter = sortattribute.content;
                     this.sortCriteriaChanged.emit(sortattribute);
                 }
+                if (this.deleteAllPopupPresent) {
+                    this.deleteAllConfirm.dismiss(null);
+                }
             }
         });
     }
