@@ -15,7 +15,7 @@ import {
 } from 'ionic-angular';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
-import {EventTopics, PreferenceKey, XwalkConstants} from '../../app/app.constant';
+import {EventTopics, PreferenceKey, XwalkConstants, ContentConstants} from '../../app/app.constant';
 import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, Map, ShareUrl} from '@app/app';
 import {BookmarkComponent, ContentActionsComponent,
   ContentRatingAlertComponent, ConfirmAlertComponent, SbPopoverComponent} from '@app/component';
@@ -203,7 +203,7 @@ export class ContentDetailsPage {
     this.checkDeviceAPILevel();
     this.checkappAvailability();
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
-
+    this.defaultLicense = ContentConstants.DEFAULT_LICENSE;
   }
 
   ionViewDidLoad() {
@@ -675,22 +675,21 @@ export class ContentDetailsPage {
       contentId: resumedCourseCardData && resumedCourseCardData.contentId ?
       resumedCourseCardData.contentId : resumedCourseCardData.identifier,
       hierarchyInfo: null,
-      level: !this.courseCardData.batchId ? 1 : 0,
+      level: !resumedCourseCardData ? 1 : 0,
     };
     // if (this.navParams.get('resumedCourseCardData')) {
     //   option.contentId = this.navParams.get('resumedCourseCardData').contentId || this.navParams.get('resumedCourseCardData').identifier;
     // }
     option.hierarchyInfo = null;
 
-    if (this.courseCardData && !this.courseCardData.batchId) {
+    if (resumedCourseCardData && !resumedCourseCardData.batchId) {
       option.level = 1;
     }
     this.contentService.getChildContents(option).toPromise()
       .then((data: any) => {
-        data = JSON.parse(data);
         this.zone.run(() => {
-          if (data && data.result && data.result.children) {
-            this.hierarchyInfo = this.getHierarchyInfo(data.result);
+          if (data &&  data.children) {
+            this.hierarchyInfo = this.getHierarchyInfo(data);
           }
         });
       })
@@ -958,35 +957,34 @@ export class ContentDetailsPage {
       });
     }) as any;
   }
+
   /**
    * confirming popUp content
    */
   openConfirmPopUp() {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-    const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
-      sbPopoverMainTitle: this.content.contentData.name + this.content.contentData.subject,
-      icon: null,
-      metaInfo:
-           '1 item ' + '(' + this.fileSizePipe.transform(this.content.contentData.size, 2) + ')',
-      // sbPopoverContent: this.commonUtilService.translateMessage('CONTENT_NOT_PLAYABLE_OFFLINE'),
-      isUpdateAvail: this.contentDownloadable[this.content.identifier] && this.isUpdateAvail,
-    }, {
-        cssClass: 'sb-popover info',
+      const popover = this.popoverCtrl.create(ConfirmAlertComponent, {
+        sbPopoverMainTitle: this.content.contentData.name,
+        icon: null,
+        metaInfo:
+          '1 item ' + '(' + this.fileSizePipe.transform(this.content.contentData.size, 2) + ')',
+        isUpdateAvail: this.contentDownloadable[this.content.identifier] && this.isUpdateAvail,
+      }, {
+          cssClass: 'sb-popover info',
+        });
+      popover.present({
+        ev: event
       });
-    popover.present({
-      ev: event
-    });
-    popover.onDidDismiss((canDownload: boolean = false) => {
-      if (canDownload) {
-        this.downloadContent();
-      }
-    });
-  } else {
-    this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
+      popover.onDidDismiss((canDownload: boolean = false) => {
+        if (canDownload) {
+          this.downloadContent();
+        }
+      });
+    } else {
+      this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
+    }
   }
 
-
-  }
   /**
    * Download content
    */
@@ -1611,4 +1609,3 @@ getMessageByConstant(constant: string) {
     }
   }
 }
-

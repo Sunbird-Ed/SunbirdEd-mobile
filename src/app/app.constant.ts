@@ -293,3 +293,7 @@ export class FrameworkCategory {
         FrameworkCategory.SUBJECT
     ];
 }
+
+export class ContentConstants {
+    public static readonly DEFAULT_LICENSE = 'CC BY 4.0';
+}

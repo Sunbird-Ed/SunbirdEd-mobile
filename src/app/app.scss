@@ -657,3 +657,11 @@ ion-toolbar {
     color: $primary-color ;
   }
 }
+
+.expand-header-footer{
+  top: -58px;
+}
+.expand-header-footer>.scroll-content{
+  margin-bottom: 0 !important;
+  padding-top: 58px !important;
+}

@@ -19,6 +19,8 @@ import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
 import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
 import {
   AuthService,
+  EventNamespace,
+  EventsBusService,
   OAuthSession,
   ProfileService,
   ProfileType,
@@ -79,6 +81,7 @@ export class MyApp implements OnInit, AfterViewInit {
     @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
     @Inject('AUTH_SERVICE') private authService: AuthService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     private platform: Platform,
     private statusBar: StatusBar,
     private toastCtrl: ToastController,
@@ -121,6 +124,7 @@ export class MyApp implements OnInit, AfterViewInit {
       this.requestAppPermissions();
       this.makeEntryInSupportFolder();
       this.checkForTncUpdate();
+      this.handleAuthErrors();
       await this.getSelectedLanguage();
       await this.navigateToAppropriatePage();
       this.handleSunbirdSplashScreenActions();
@@ -617,9 +621,10 @@ export class MyApp implements OnInit, AfterViewInit {
     if ($event.name === 'back') {
       // this.handleBackButton();
       let navObj = this.app.getRootNavs()[0];
-      const activeView: ViewController = this.nav.getActive();
+      let activeView: ViewController = this.nav.getActive();
       if (activeView != null && ((<any>activeView).instance instanceof TabsPage)) {
         navObj = this.app.getActiveNavs()[0];
+        activeView = navObj.getActive();
         // currentPage = navObj.getActive().name;
       }
       // if (currentPage === 'TabsPage') {
@@ -631,7 +636,13 @@ export class MyApp implements OnInit, AfterViewInit {
         || ((<any>activeView).instance instanceof EnrolledCourseDetailsPage)
         || ((<any>activeView).instance instanceof OnboardingPage)
         || ((<any>activeView).instance instanceof QrCodeResultPage)
-        || ((<any>activeView).instance instanceof CollectionDetailsPage)) {
+        || ((<any>activeView).instance instanceof CollectionDetailsPage)
+        || ((<any>activeView).instance instanceof CollectionDetailsEtbPage)
+        || ((<any>activeView).instance instanceof CollectionDetailsPage)
+        || ((<any>activeView).instance instanceof ContentDetailsPage)
+        || ((<any>activeView).instance instanceof OnboardingPage)
+        || ((<any>activeView).instance instanceof QrCodeResultPage)
+        ) {
         this.headerServie.sidebarEvent($event);
         return;
       }
@@ -714,4 +725,9 @@ export class MyApp implements OnInit, AfterViewInit {
     }
   }
 
+  private handleAuthErrors() {
+    this.eventsBusService.events(EventNamespace.ERROR).take(1).subscribe(() => {
+      this.logoutHandlerService.onLogout();
+    });
+  }
 }

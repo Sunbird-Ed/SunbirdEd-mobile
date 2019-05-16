@@ -429,10 +429,9 @@ export class SearchPage implements  OnDestroy {
 
             this.addCorRelation(response.responseMessageId, 'API');
             this.searchContentResult = response.contentDataList;
+            this.isEmptyResult = !this.searchContentResult || this.searchContentResult.length === 0;
+
             this.updateFilterIcon();
-
-            this.isEmptyResult = false;
-
 
             this.generateLogEvent(response);
             const values = new Map();
@@ -847,10 +846,6 @@ export class SearchPage implements  OnDestroy {
   updateFilterIcon() {
     let isFilterApplied = false;
 
-    if (this.isEmptyResult) {
-      this.filterIcon = undefined;
-    }
-
     if (!this.responseData.filterCriteria) {
       return;
     }
@@ -869,6 +864,10 @@ export class SearchPage implements  OnDestroy {
       this.filterIcon = './assets/imgs/ic_action_filter_applied.png';
     } else {
       this.filterIcon = './assets/imgs/ic_action_filter.png';
+    }
+
+    if (this.isEmptyResult) {
+      this.filterIcon = undefined;
     }
   }
 

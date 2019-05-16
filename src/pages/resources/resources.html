@@ -74,7 +74,8 @@
     </ion-menu> -->
 
 <ion-content hide-header-footer class="main-container avoid-bottom-tabs-space" (ionScrollEnd)="logScrollEnd($event)" scrollEvents="true">
-	<div ion-fixed class="fixed-container">
+
+	<div hide-resourse-filter ion-fixed class="fixed-container">
 		<div class="sb-slider-pills-container">
 			<div class="sb-pills-container sb-medium-pills-container">
 				<div class="pill" *ngFor="let medium of categoryMediums; let i = index;"
@@ -83,8 +84,7 @@
 			</div>
 		</div>
 		<div class="sb-slider-pills-container">
-			<div class="sb-pills-container sb-grade-pills-container" id="gradeScroll"
-				[@ScrollHorizontal]="{value: currentGrade?.selected, params: {left_indent: current_index * 72}}">
+			<div class="sb-pills-container sb-grade-pills-container" id="gradeScroll">
 				<div class="pill" *ngFor="let grade of categoryGradeLevels; let i = index; let first = first"
 					[ngClass]="{'active': grade?.selected, '': !grade?.selected}" attr.id="class{{i}}" (click)="classClick(i,'sendClassClickedTelemetry');">
 					{{grade?.name}}</div>
@@ -122,7 +122,7 @@
 			</div>
 		</div>
 		<div *ngFor="let items of storyAndWorksheets">
-			<div class="sb-textbook-container" *ngIf="items?.contents">
+			<div class="sb-textbook-container" *ngIf="items?.contents && items?.contents?.length">
 				<div class="sb-textbook-items">
 					<div class="sb-textbook-title-container">
 						<span class="textbook-icon">
