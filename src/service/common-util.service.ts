@@ -220,9 +220,7 @@ export class CommonUtilService implements OnDestroy {
         }, {
                 cssClass: 'sb-popover warning',
             });
-        qrAlert.present({
-            ev: event
-        });
+        qrAlert.present();
     }
 
     /**
