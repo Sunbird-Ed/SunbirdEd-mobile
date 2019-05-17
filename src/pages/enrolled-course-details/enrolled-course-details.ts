@@ -1,6 +1,5 @@
 import { Component, Inject, NgZone, ViewChild, OnInit } from '@angular/core';
 import { AlertController, Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController } from 'ionic-angular';
-import { Observable } from 'rxjs/Observable';
 import * as _ from 'lodash';
 import { SocialSharing } from '@ionic-native/social-sharing';
 
@@ -422,7 +421,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
         batchId: this.batchDetails.id
       };
       this.courseService.unenrollCourse(unenrolCourseRequest)
-        .subscribe((data) => {
+        .subscribe(() => {
           this.zone.run(() => {
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('COURSE_UNENROLLED'));
             this.events.publish(EventTopics.UNENROL_COURSE_SUCCESS, {});
