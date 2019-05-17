@@ -692,6 +692,10 @@ export class SearchPage implements  OnDestroy {
         dialCodeResult: [],
         dialCodeContentResult: []
       };
+      if (searchResult.name) {
+        dialCodeResultObj['name'] = searchResult.name;
+      }
+
       if (collectionArray && collectionArray.length > 0) {
         collectionArray.forEach((collection) => {
           contentArray.forEach((content) => {
@@ -704,24 +708,28 @@ export class SearchPage implements  OnDestroy {
             }
           });
           dialCodeResultObj.dialCodeResult.push(collection);
-          dialCodeResultObj['name'] = searchResult.name;
         });
         // displayDialCodeResult[searchResult.name] = dialCodeResult;
         displayDialCodeResult.push(dialCodeResultObj);
       }
-      const dialCodeContentResult = [];
+
       let isAllContentMappedToCollection = false;
       if (contentArray) {
         isAllContentMappedToCollection = contentArray.length === addedContent.length;
       }
-      if (contentArray && contentArray.length > 1) {
+
+      if (!isAllContentMappedToCollection && contentArray && contentArray.length > 1) {
+        const dialCodeContentResult = [];
         contentArray.forEach((content) => {
           if (addedContent.indexOf(content.identifier) < 0) {
             dialCodeContentResult.push(content);
           }
         });
+        dialCodeResultObj.dialCodeContentResult = dialCodeContentResult;
+        displayDialCodeResult.push(dialCodeContentResult);
       }
-      dialCodeResultObj.dialCodeContentResult = dialCodeContentResult;
+
+
       let isParentCheckStarted = false;
       if (dialCodeResultObj.dialCodeResult.length === 1 && dialCodeResultObj.dialCodeResult[0].content.length === 1
         && isAllContentMappedToCollection) {
@@ -731,6 +739,7 @@ export class SearchPage implements  OnDestroy {
         isParentCheckStarted = true;
       }
       this.generateQRScanSuccessInteractEvent((contentArray ? contentArray.length : 0), this.dialCode);
+
       if (contentArray && contentArray.length === 1 && !isParentCheckStarted) {
         this.isSingleContent = true;
         this.openContent(contentArray[0], contentArray[0], 0);
@@ -738,7 +747,6 @@ export class SearchPage implements  OnDestroy {
       }
     });
     this.displayDialCodeResult = displayDialCodeResult;
-    console.log('this.displayDialCodeResult', this.displayDialCodeResult);
     if (this.displayDialCodeResult.length === 0 && !this.isSingleContent) {
       this.navCtrl.pop();
       if (this.shouldGenerateEndTelemetry) {
