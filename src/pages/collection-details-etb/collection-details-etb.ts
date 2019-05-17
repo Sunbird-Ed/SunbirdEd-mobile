@@ -945,7 +945,7 @@ export class CollectionDetailsEtbPage implements OnInit {
                 this.updateSavedResources();
                 setTimeout(() => {
                   this.setChildContents();
-                }, 2000);
+                }, 500);
                 this.contentDetail.isAvailableLocally = true;
               }
 
