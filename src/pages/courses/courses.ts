@@ -519,7 +519,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
         this.profile = this.appGlobalService.getCurrentUser();
         const sessionObj = this.appGlobalService.getSessionData();
         this.userId = sessionObj[ProfileConstants.USER_TOKEN];
-        this.getEnrolledCourses();
+        this.getEnrolledCourses(false, true);
         resolve();
       }
     });
