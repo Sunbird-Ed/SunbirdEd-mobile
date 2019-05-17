@@ -1,15 +1,16 @@
-import { Component, Input, Output, EventEmitter, OnInit, Inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, Inject, OnDestroy } from '@angular/core';
 import { Events, App, MenuController } from 'ionic-angular';
 import { CommonUtilService, AppGlobalService, UtilityService } from '@app/service';
 import { SharedPreferences } from 'sunbird-sdk';
 import { PreferenceKey, GenericAppConfig } from '../../app/app.constant';
 import { AppVersion } from '@ionic-native/app-version';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'application-header',
   templateUrl: 'application-header.html',
 })
-export class ApplicationHeaderComponent implements OnInit {
+export class ApplicationHeaderComponent implements OnInit, OnDestroy {
   chosenLanguageString: string;
   selectedLanguage: string;
   @Input() headerConfig: any = false;
@@ -20,6 +21,7 @@ export class ApplicationHeaderComponent implements OnInit {
   isLoggedIn = false;
   versionName: string;
   versionCode: string;
+  networkSubscription: Subscription;
 
   constructor(public menuCtrl: MenuController,
     private commonUtilService: CommonUtilService,
@@ -45,6 +47,9 @@ export class ApplicationHeaderComponent implements OnInit {
     this.events.subscribe('app-global:profile-obj-changed', (res) => {
       this.setAppLogo();
      });
+     this.networkSubscription = this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
+        this.setAppLogo();
+    });
   }
   setAppVersion(): any {
     this.utilityService.getBuildConfigValue(GenericAppConfig.VERSION_NAME )
@@ -80,7 +85,11 @@ export class ApplicationHeaderComponent implements OnInit {
     } else {
       this.isLoggedIn = true;
       this.preference.getString('app_logo').toPromise().then(value => {
-        this.appLogo = value;
+        if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+          this.appLogo = value;
+        } else {
+          this.appLogo = './assets/imgs/ic_launcher.png';
+        }
       });
       this.preference.getString('app_name').toPromise().then(value => {
         this.appName = value;
@@ -99,6 +108,14 @@ export class ApplicationHeaderComponent implements OnInit {
   emitSideMenuItemEvent($event, menuItem) {
     this.toggleMenu();
     this.sideMenuItemEvent.emit({ menuItem });
+  }
+
+  ngOnDestroy() {
+    if (this.networkSubscription) {
+      this.networkSubscription.unsubscribe();
+    }
+    this.events.subscribe('user-profile-changed');
+    this.events.subscribe('app-global:profile-obj-changed');
   }
 
 }
