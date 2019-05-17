@@ -692,7 +692,10 @@ export class SearchPage implements  OnDestroy {
         dialCodeResult: [],
         dialCodeContentResult: []
       };
-      if (searchResult.name) {
+      // Handle localization
+      if (searchResult.display) {
+        dialCodeResultObj['name'] = this.commonUtilService.getTranslatedValue(searchResult.display, searchResult.name);
+      } else {
         dialCodeResultObj['name'] = searchResult.name;
       }
 
