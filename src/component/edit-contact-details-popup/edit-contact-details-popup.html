@@ -5,8 +5,8 @@
     <form [formGroup]="personEditForm">
       <ion-row class="P16">
         <ion-col col-12 no-padding class="text-center">
-          <p>{{title}}</p>
-          <p class="font-weight-bold f14">{{description}}</p>
+          <p>{{'TITLE' | translate}}</p>
+          <p class="font-weight-bold f14">{{'DESCRIPTION' | translate}}</p>
         </ion-col>
         <section *ngIf="type==='phone'" class="W100 text-center MT3V">
           
