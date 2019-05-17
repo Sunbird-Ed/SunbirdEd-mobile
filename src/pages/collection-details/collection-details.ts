@@ -995,7 +995,7 @@ export class CollectionDetailsPage {
   showDownloadConfirmationAlert(myEvent) {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       const popover = this.popoverCtrl.create(ConfirmAlertComponent, {}, {
-        cssClass: 'confirm-alert-box'
+        cssClass: 'sb-popover info'
       });
       popover.present({
         ev: myEvent

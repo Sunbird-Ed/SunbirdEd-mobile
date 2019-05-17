@@ -92,10 +92,7 @@ export class GroupReportListPage {
         this.deviceId =  this.deviceInfo.getDeviceID();
         this.profile = this.appGlobalService.getCurrentUser();
         this.groupinfo = this.navParams.get('group');
-        const header = this.headerService.getDefaultPageConfig();
-        header.showHeader = false;
-        header.showBurgerMenu = false;
-        this.headerService.updatePageConfig(header);
+        this.headerService.hideHeader();
     }
     fetchAssessment(event: string, fromUserList: boolean) {
         const subType = (event === 'users') ? InteractSubtype.REPORTS_BY_USER_CLICKED : InteractSubtype.REPORTS_BY_QUESTION_CLICKED;

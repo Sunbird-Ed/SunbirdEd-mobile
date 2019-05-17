@@ -40,10 +40,7 @@ export class ReportListPage {
     }
 
     ionViewDidLoad() {
-        const header = this.headerService.getDefaultPageConfig();
-      header.showHeader = false;
-      header.showBurgerMenu = false;
-      this.headerService.updatePageConfig(header);
+        this.headerService.hideHeader();
         this.telemetryGeneratorService.generateImpressionTelemetry(
             ImpressionType.VIEW, '',
             PageId.REPORTS_ASSESMENT_CONTENT_LIST,

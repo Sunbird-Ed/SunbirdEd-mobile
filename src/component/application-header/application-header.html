@@ -81,7 +81,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-menu [content]="content" class="sb-side-menu" persistent="true" [swipeEnabled]="false">
+<ion-menu [content]="content" class="sb-side-menu" persistent="true" [swipeEnabled]="headerConfig?.showBurgerMenu || false">
   <ion-header>
     <ion-toolbar>
       <ion-title>
