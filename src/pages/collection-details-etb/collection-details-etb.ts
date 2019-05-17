@@ -902,7 +902,9 @@ export class CollectionDetailsEtbPage implements OnInit {
                 this.showLoading = false;
                 this.refreshHeader();
                 this.updateSavedResources();
-                this.setChildContents();
+                setTimeout(() => {
+                  this.setChildContents();
+                }, 500);
                 this.contentDetail.isAvailableLocally = true;
               }
 
