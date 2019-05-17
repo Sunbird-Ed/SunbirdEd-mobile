@@ -4,6 +4,9 @@ import {AppGlobalService, UtilityService} from '@app/service';
 import {DownloadService, SharedPreferences} from 'sunbird-sdk';
 import {GenericAppConfig, PreferenceKey} from '../../app/app.constant';
 import {AppVersion} from '@ionic-native/app-version';
+import { NotificationService } from '@app/service/notification.service';
+
+declare const cordova;
 
 @Component({
   selector: 'application-header',
@@ -34,7 +37,8 @@ export class ApplicationHeaderComponent implements OnInit {
     private appVersion: AppVersion,
     private utilityService: UtilityService,
     private changeDetectionRef: ChangeDetectorRef,
-    private app: App
+    private app: App,
+    private notification: NotificationService
   ) {
     this.setLanguageValue();
     this.events.subscribe('onAfterLanguageChange:update', (res) => {
@@ -85,6 +89,11 @@ export class ApplicationHeaderComponent implements OnInit {
       .then(value => {
         this.selectedLanguage = value;
       });
+    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
+    .then(langCode => {
+      console.log('Language code: ', langCode);
+      this.notification.setupLocalNotification(langCode);
+    });
   }
 
   listenDownloads() {

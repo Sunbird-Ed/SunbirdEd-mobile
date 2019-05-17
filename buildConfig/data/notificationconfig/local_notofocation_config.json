@@ -1,18 +1,18 @@
 {
-    "id": 1004,
-    "type": 1,
-    "data": {
-      "start": "4 19:00",
-      "interval": "week",
-      "translations": {
-        "en": {
-          "title": "Sunbird",
-          "msg": "Learn something new on SUNBIRD today!"
-        },
-        "default": {
-          "title": "Sunbird",
-          "msg": "Learn something new on SUNBIRD today!"
-        }
+  "id": 1004,
+  "type": 1,
+  "data": {
+    "start": "4 19:00",
+    "interval": "weekday",
+    "translations": {
+      "en": {
+        "title": "Sunbird",
+        "msg": "Learn something new on SUNBIRD today!"
+      },
+      "default": {
+        "title": "Sunbird",
+        "msg": "Learn something new on SUNBIRD today!"
       }
     }
+  }
 }
