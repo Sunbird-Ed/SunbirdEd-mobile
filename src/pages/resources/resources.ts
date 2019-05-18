@@ -204,7 +204,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     });
 
     this.events.subscribe(AppGlobalService.PROFILE_OBJ_CHANGED, () => {
-      this.swipeDownToRefresh();
+      this.swipeDownToRefresh(false, true);
     });
 
     // Event for optional and forceful upgrade
@@ -469,7 +469,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   /**
    * Get popular content
    */
-  getPopularContent(isAfterLanguageChange = false, contentSearchCriteria?: ContentSearchCriteria) {
+  getPopularContent(isAfterLanguageChange = false, contentSearchCriteria?: ContentSearchCriteria,avoidRefreshList = false) {
     // if (this.isOnBoardingCardCompleted || !this.guestUser) {
     this.storyAndWorksheets = [];
     this.searchApiLoader = true;
@@ -513,10 +513,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.getGroupByPageReq.mode = 'hard';
     this.getGroupByPageReq.facets = Search.FACETS_ETB;
     this.getGroupByPageReq.contentTypes = [ContentType.TEXTBOOK];
-    this.getGroupByPage(isAfterLanguageChange);
+    this.getGroupByPage(isAfterLanguageChange, avoidRefreshList);
   }
 
-  getGroupByPage(isAfterLanguageChange = false) {
+  getGroupByPage(isAfterLanguageChange = false, avoidRefreshList = false) {
     const selectedBoardMediumGrade = this.getGroupByPageReq.board[0] + ', ' +
                                      this.getGroupByPageReq.medium[0] + ' Medium, ' +
                                      this.getGroupByPageReq.grade[0] ;
@@ -598,7 +598,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.generateExtraInfoTelemetry(newSections.length);
           // this.checkEmptySearchResult(isAfterLanguageChange);
           if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable) {
-            if (this.tabs.getSelected().tabTitle === 'LIBRARY‌') {
+            if (this.tabs.getSelected().tabTitle === 'LIBRARY‌' && !avoidRefreshList) {
               this.commonUtilService.showToast(
                 this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
                   `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
@@ -616,7 +616,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             if (!isAfterLanguageChange) {
               this.commonUtilService.showToast('ERROR_FETCHING_DATA');
             }
-          } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable) {
+          } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable  && !avoidRefreshList) {
             this.commonUtilService.showToast(
               this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
                 `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
@@ -807,7 +807,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
    *
    * @param refresher
    */
-  swipeDownToRefresh(refresher?) {
+  swipeDownToRefresh(refresher?,avoidRefreshList?) {
     this.refresh = true;
     this.storyAndWorksheets = [];
 
@@ -818,7 +818,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.telemetryGeneratorService.generatePullToRefreshTelemetry(PageId.LIBRARY, Environment.HOME);
       this.getGroupByPage();
     } else {
-      this.getPopularContent();
+      this.getPopularContent(false, null, avoidRefreshList);
     }
 
   }
@@ -992,7 +992,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.getGroupByPageReq.grade = [this.categoryGradeLevels[index].name];
     // [grade.name];
     if ((this.currentGrade) && (this.currentGrade.name !== this.categoryGradeLevels[index].name)) {
-      this.getGroupByPage();
+      this.getGroupByPage(false,!isClassClicked);
     }
     for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
       if (i === index) {
@@ -1020,7 +1020,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     }
     this.getGroupByPageReq.medium = [mediumName];
     if (this.currentMedium !== mediumName) {
-      this.getGroupByPage();
+      this.getGroupByPage(false, !isMediumClicked);
     }
 
     for (let i = 0, len = this.categoryMediums.length; i < len; i++) {
