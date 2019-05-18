@@ -138,9 +138,7 @@ export class UserAndGroupsPage {
       this.getAllGroup();
       this.getCurrentGroup();
       // this.getLastCreatedProfile();
-      const header = this.headerService.getDefaultPageConfig();
-      header.showHeader = false;
-      this.headerService.updatePageConfig(header);
+      this.headerService.hideHeader();
 
       this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
         this.dismissPopup();

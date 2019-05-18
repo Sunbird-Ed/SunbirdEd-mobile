@@ -38,6 +38,7 @@ export class AppHeaderService {
     hideHeader() {
         const defaultConfig = this.getDefaultPageConfig();
         defaultConfig.showHeader = false;
+        defaultConfig.showBurgerMenu = false;
         this.updatePageConfig(defaultConfig);
     }
 
