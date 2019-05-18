@@ -13,8 +13,10 @@
 </ion-header> -->
 
 
-<ion-content hide-header-footer overflow-scroll="true" (click)="toggleTooltips($event)"
+<ion-content overflow-scroll="true" (click)="toggleTooltips($event)"
     class="main-container avoid-bottom-tabs-space">
+<!-- <ion-content hide-header-footer overflow-scroll="true" (click)="toggleTooltips($event)"
+    class="main-container avoid-bottom-tabs-space"> -->
     <!-- Pull to Refresh -->
     <div class="spinner-div" *ngIf="refresh">
         <ion-spinner icon="spiral" class="refreshspinner"></ion-spinner>

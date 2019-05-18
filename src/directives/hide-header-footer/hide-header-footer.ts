@@ -3,9 +3,9 @@ import { Events } from 'ionic-angular';
 
 @Directive({
   selector: '[hide-header-footer]', // Attribute
-  host: {
-    '(ionScroll)': 'onContentScroll($event)'
-  }
+  // host: {
+  //   '(ionScroll)': 'onContentScroll($event)'
+  // }
 })
 export class HideHeaderFooterDirective {
 

@@ -10,14 +10,14 @@ export class HideHeaderDirective implements OnInit {
   constructor(private elemRef: ElementRef, private renderer: Renderer2, public event: Events) {}
 
   ngOnInit() {
-    this.event.subscribe('hideHeaderOnScroll', (data) => {
-      this.renderer.setStyle(this.elemRef.nativeElement, 'webkitTransition', 'top 200ms');
-      this.renderer.setStyle(this.elemRef.nativeElement, 'top', '-56px');
-      this.hideTimer = setTimeout(() => {
-        this.renderer.setStyle(this.elemRef.nativeElement, 'webkitTransition', 'top 500ms');
-        this.renderer.setStyle(this.elemRef.nativeElement, 'top', '0px');
-      }, 500);
-    });
+    // this.event.subscribe('hideHeaderOnScroll', (data) => {
+    //   this.renderer.setStyle(this.elemRef.nativeElement, 'webkitTransition', 'top 200ms');
+    //   this.renderer.setStyle(this.elemRef.nativeElement, 'top', '-56px');
+    //   this.hideTimer = setTimeout(() => {
+    //     this.renderer.setStyle(this.elemRef.nativeElement, 'webkitTransition', 'top 500ms');
+    //     this.renderer.setStyle(this.elemRef.nativeElement, 'top', '0px');
+    //   }, 500);
+    // });
   }
 
 }
