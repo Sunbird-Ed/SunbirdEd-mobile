@@ -71,8 +71,8 @@ export class CollectionChildComponent implements AfterViewInit {
     }
 
    async showComingSoonPopup(childData: any) {
-      const channelId = this.cardData.contentData.channel | this.cardData.channel;
-      const message = await this.comingSoonMessageService.getComingSoonMessage(channelId);
+      const channelId = this.cardData.contentData.channel || this.cardData.channel;
+      const message = await this.comingSoonMessageService.getComingSoonMessage(channelId, childData);
         if (childData.contentData.mimeType === 'application/vnd.ekstep.content-collection' && !childData.children) {
             const popover = this.popoverCtrl.create(SbGenericPopoverComponent, {
                 sbPopoverHeading: this.commonUtilService.translateMessage('CONTENT_COMMING_SOON'),
