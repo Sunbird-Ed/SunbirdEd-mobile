@@ -257,7 +257,10 @@ export class ContentActionsComponent {
     if (this.data && this.data.courseProgress) {
       progress = this.data.courseProgress ? Math.round(this.data.courseProgress) : 0;
     }
-    if ((!(this.batchDetails.hasOwnProperty('endDate')) ||
+    if (!this.batchDetails) {
+      return isEnrolledDisabled;
+    }
+    if ((!(this.batchDetails && this.batchDetails.hasOwnProperty('endDate')) ||
       (this.batchDetails.endDate > todayDate)) &&
       (this.batchDetails.enrollmentType === 'open') &&
       (progress !== 100)) {

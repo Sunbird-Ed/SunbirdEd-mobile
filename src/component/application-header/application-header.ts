@@ -1,10 +1,11 @@
-import {ChangeDetectorRef, Component, EventEmitter, Inject, Input, OnInit, Output} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Inject, Input, OnInit, Output, OnDestroy} from '@angular/core';
 import {App, Events, MenuController} from 'ionic-angular';
-import {AppGlobalService, UtilityService} from '@app/service';
+import {AppGlobalService, UtilityService, CommonUtilService} from '@app/service';
 import {DownloadService, SharedPreferences} from 'sunbird-sdk';
 import {GenericAppConfig, PreferenceKey} from '../../app/app.constant';
 import {AppVersion} from '@ionic-native/app-version';
 import { NotificationService } from '@app/service/notification.service';
+import { Subscription } from 'rxjs';
 
 declare const cordova;
 
@@ -12,13 +13,13 @@ declare const cordova;
   selector: 'application-header',
   templateUrl: 'application-header.html',
 })
-export class ApplicationHeaderComponent implements OnInit {
-
+export class ApplicationHeaderComponent implements OnInit, OnDestroy {
+  chosenLanguageString: string;
+  selectedLanguage: string;
   @Input() headerConfig: any = false;
   @Output() headerEvents = new EventEmitter();
   @Output() sideMenuItemEvent = new EventEmitter();
 
-  selectedLanguage?: string;
   appLogo?: string;
   appName?: string;
   versionName?: string;
@@ -27,9 +28,11 @@ export class ApplicationHeaderComponent implements OnInit {
 
   isLoggedIn = false;
   showDownloadAnimation: Boolean = false;
+  networkSubscription: Subscription;
 
   constructor(
     public menuCtrl: MenuController,
+    private commonUtilService: CommonUtilService,
     @Inject('SHARED_PREFERENCES') private preference: SharedPreferences,
     @Inject('DOWNLOAD_SERVICE') private downloadService: DownloadService,
     private events: Events,
@@ -65,6 +68,9 @@ export class ApplicationHeaderComponent implements OnInit {
       this.decreaseZindex = false;
     });
     this.listenDownloads();
+    this.networkSubscription = this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
+        this.setAppLogo();
+    });
   }
 
   setAppVersion(): any {
@@ -113,7 +119,11 @@ export class ApplicationHeaderComponent implements OnInit {
     } else {
       this.isLoggedIn = true;
       this.preference.getString('app_logo').toPromise().then(value => {
-        this.appLogo = value;
+        if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+          this.appLogo = value;
+        } else {
+          this.appLogo = './assets/imgs/ic_launcher.png';
+        }
       });
       this.preference.getString('app_name').toPromise().then(value => {
         this.appName = value;
@@ -132,6 +142,14 @@ export class ApplicationHeaderComponent implements OnInit {
   emitSideMenuItemEvent($event, menuItem) {
     this.toggleMenu();
     this.sideMenuItemEvent.emit({menuItem});
+  }
+
+  ngOnDestroy() {
+    if (this.networkSubscription) {
+      this.networkSubscription.unsubscribe();
+    }
+    this.events.subscribe('user-profile-changed');
+    this.events.subscribe('app-global:profile-obj-changed');
   }
 
 }

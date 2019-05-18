@@ -429,17 +429,16 @@ export class QrCodeResultPage implements OnDestroy {
   setMedium(reset, mediums) {
     if (reset) {
       this.profile.medium = [];
-    } else {
-      _.each(mediums, (medium) => {
-        if (medium && this.profile.medium.indexOf(medium) === -1) {
-          if (this.profile.medium && this.profile.medium.length) {
-            this.profile.medium.push(medium);
-          } else {
-            this.profile.medium = [medium];
-          }
-        }
-      });
     }
+    _.each(mediums, (medium) => {
+      if (medium && this.profile.medium.indexOf(medium) === -1) {
+        if (this.profile.medium && this.profile.medium.length) {
+          this.profile.medium.push(medium);
+        } else {
+          this.profile.medium = [medium];
+        }
+      }
+    });
   }
 
   /**
