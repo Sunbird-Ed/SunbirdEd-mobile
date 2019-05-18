@@ -643,7 +643,7 @@ export class ContentDetailsPage {
       if (this.content.contentData.appIcon.startsWith('http')) {
         if (this.commonUtilService.networkInfo.isNetworkAvailable) {
           this.content.contentData.appIcon = this.content.contentData.appIcon;
-          } else {
+        } else {
           this.content.contentData.appIcon = this.defaultAppIcon;
         }
       } else if (data.basePath) {
