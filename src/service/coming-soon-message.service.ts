@@ -1,5 +1,7 @@
 import {Inject, Injectable} from "@angular/core";
 import {
+  Content,
+  ContentService,
   FrameworkService,
   SharedPreferences,
   SystemSettingsService
@@ -13,26 +15,33 @@ export class ComingSoonMessageService {
     @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
     @Inject('SHARED_PREFERENCES') private sharedPreferences: SharedPreferences,
     @Inject('SYSTEM_SETTINGS_SERVICE') private systemSettingsService: SystemSettingsService,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService
   ) {
   }
 
-  async getComingSoonMessage(textBookUnitChannelId: any) {
+  async getComingSoonMessage(textBookUnitChannelId?: any, childData?: Content) {
     const currentChannelId = await this.frameworkService.getActiveChannelId().toPromise();
-    if(textBookUnitChannelId) {
-      const systemSettings =
-        await this.systemSettingsService.getSystemSettings({id: SystemSettingsIds.CONTENT_COMING_SOON_MSG}).toPromise();
+    if (textBookUnitChannelId) {
       const selectedLanguage =
         await this.sharedPreferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise();
-
-      const tenantMessages: { rootOrgId: string, translations: string, value: string }[] = JSON.parse(systemSettings.value);
-
-      const tenantMessage = tenantMessages.find((message) => message.rootOrgId === currentChannelId);
-      if (tenantMessage) {
-        const tenantMessageTranslations = JSON.parse(tenantMessage.translations);
-        return tenantMessageTranslations[selectedLanguage!] || tenantMessage.value;
+      if (childData.contentData.altMsg) {
+        const comingSoonMsg = childData.contentData.altMsg.find((altMsg) => altMsg.key === 'comingSoonMsg');
+        if (comingSoonMsg) {
+          const messageTranslations = JSON.parse(comingSoonMsg.translations);
+          return messageTranslations[selectedLanguage!] || comingSoonMsg.value;
+        }
+      } else {
+        const systemSettings =
+          await this.systemSettingsService.getSystemSettings({id: SystemSettingsIds.CONTENT_COMING_SOON_MSG}).toPromise();
+        const tenantMessages: { rootOrgId: string, translations: string, value: string }[] = JSON.parse(systemSettings.value);
+        const tenantMessage = tenantMessages.find((message) => message.rootOrgId === currentChannelId);
+        if (tenantMessage) {
+          const tenantMessageTranslations = JSON.parse(tenantMessage.translations);
+          return tenantMessageTranslations[selectedLanguage!] || tenantMessage.value;
+        }
       }
     }
-    return this.commonUtilService.translateMessage('CONTENT_IS_BEEING_ADDED');
+    return this.commonUtilService.translateMessage('CONTENT_IS_BEEING_ADDED') + childData.contentData.name;
   }
 }
