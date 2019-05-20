@@ -330,10 +330,10 @@ export class CommonUtilService implements OnDestroy {
                 sbPopoverMainTitle: '',
                 actionsButtons: [
                     {
-                        btntext: this.translateMessage('NO'),
+                        btntext: this.translateMessage('YES'),
                         btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
                     }, {
-                        btntext: this.translateMessage('YES'),
+                        btntext: this.translateMessage('NO'),
                         btnClass: 'popover-color'
                     }
                 ],
@@ -354,19 +354,19 @@ export class CommonUtilService implements OnDestroy {
                 if (!leftBtnClicked) {
                     this.telemetryGeneratorService.generateInteractTelemetry(
                         InteractType.TOUCH,
+                        InteractSubtype.NO_CLICKED,
+                        environment,
+                        pageId
+                    );
+                } else {
+                    this.telemetryGeneratorService.generateInteractTelemetry(
+                        InteractType.TOUCH,
                         InteractSubtype.YES_CLICKED,
                         environment,
                         pageId
                     );
                     this.platform.exitApp();
                     this.telemetryGeneratorService.generateEndTelemetry('app', '', '', environment);
-                } else {
-                    this.telemetryGeneratorService.generateInteractTelemetry(
-                        InteractType.TOUCH,
-                        InteractSubtype.NO_CLICKED,
-                        environment,
-                        pageId
-                    );
                 }
             });
             confirm.present({
