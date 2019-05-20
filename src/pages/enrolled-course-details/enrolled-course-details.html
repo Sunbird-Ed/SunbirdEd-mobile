@@ -178,7 +178,7 @@
 
 <ion-footer *ngIf="courseCardData?.batchId">
 	<ion-toolbar class="toolbar-p-16">
-		<button ion-button block *ngIf="!courseCardData?.lastReadContentId && childrenData?.length" (click)="startContent()">{{
+		<button ion-button block *ngIf="!showResumeBtn && childrenData?.length" (click)="startContent()">{{
 			'START_COURSE' | translate }}</button>
 		<button ion-button block *ngIf="showResumeBtn" (click)="resumeContent(courseCardData?.lastReadContentId)">{{
 			'RESUME_COURSE' | translate }}</button>

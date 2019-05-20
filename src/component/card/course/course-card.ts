@@ -233,15 +233,23 @@ export class CourseCard implements OnInit {
     // Update enrolled courses playedOffline status.
     this.getContentState(content);
     this.saveContentContext(content);
-    if (content.lastReadContentId && content.status === 1) {
-      this.events.publish('course:resume', {
-        content: content
-      });
-    } else {
-      this.navCtrl.push(EnrolledCourseDetailsPage, {
-        content: content
-      });
-    }
+
+    const userId = content.userId;
+    const lastReadContentIdKey = 'lastReadContentId_' + userId + '_' + identifier + '_' + content.batchId;
+    this.preferences.getString(lastReadContentIdKey).toPromise()
+    .then(val => {
+      content.lastReadContentId = val;
+
+      if (content.lastReadContentId) {
+        this.events.publish('course:resume', {
+          content: content
+        });
+      } else {
+        this.navCtrl.push(EnrolledCourseDetailsPage, {
+          content: content
+        });
+      }
+    });
   }
 
   ngOnInit() {
