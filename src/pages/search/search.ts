@@ -729,7 +729,7 @@ export class SearchPage implements  OnDestroy {
           }
         });
         dialCodeResultObj.dialCodeContentResult = dialCodeContentResult;
-        displayDialCodeResult.push(dialCodeContentResult);
+        displayDialCodeResult.push(dialCodeResultObj);
       }
 
 
