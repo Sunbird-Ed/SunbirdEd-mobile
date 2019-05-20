@@ -307,7 +307,7 @@ org.ekstep.contentrenderer.baseLauncher.extend({
         return progress === 0 ? 1 : progress;  // setting default value of progress=1 when video opened
     },
     onOverlayAudioMute: function () {
-        if (!this.videoPlayer) return false 
+        if (!this.videoPlayer) return false
         videojs('videoElement').muted(true);
     },
     onOverlayAudioUnmute: function () {
