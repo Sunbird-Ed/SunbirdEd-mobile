@@ -9,7 +9,7 @@ import {ContentCard, ContentType, MimeType, PreferenceKey} from '../../../app/ap
 import {CourseUtilService} from '../../../service/course-util.service';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
 import {SharedPreferences, TelemetryObject,
-CourseService, CourseBatchesRequest, CourseEnrollmentType, CourseBatchStatus} from 'sunbird-sdk';
+CourseService, CourseBatchesRequest, CourseEnrollmentType, CourseBatchStatus, GetContentStateRequest} from 'sunbird-sdk';
 import {InteractSubtype, InteractType, Environment, PageId} from '../../../service/telemetry-constants';
 import { CommonUtilService } from '@app/service';
 import { EnrollmentDetailsPage } from '@app/pages/enrolled-course-details/enrollment-details/enrollment-details';
