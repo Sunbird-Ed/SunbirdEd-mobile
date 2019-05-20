@@ -303,7 +303,8 @@ org.ekstep.contentrenderer.baseLauncher.extend({
             }
         }
         totalDuration = (this.currentTime < totalDuration) ? Math.floor(totalDuration) : Math.ceil(totalDuration);
-        return this.progres(this.currentTime, totalDuration);
+        var progress = this.progres(this.currentTime, totalDuration);
+        return progress === 0 ? 1 : progress;  // setting default value of progress=1 when video opened
     },
     onOverlayAudioMute: function () {
         if (!this.videoPlayer) return false
