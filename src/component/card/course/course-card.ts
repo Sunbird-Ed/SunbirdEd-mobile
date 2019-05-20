@@ -197,7 +197,9 @@ export class CourseCard implements OnInit {
       this.pageName ? this.pageName : this.layoutName,
       telemetryObject,
       values);
-    this.loader.dismiss();
+      if (this.loader) {
+        this.loader.dismiss();
+      }
     if (layoutName === this.layoutInProgress || content.contentType === ContentType.COURSE) {
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content
@@ -228,6 +230,8 @@ export class CourseCard implements OnInit {
       this.pageName ? this.pageName : this.layoutName,
       telemetryObject,
       values);
+    // Update enrolled courses playedOffline status.
+    this.getContentState(content);
     this.saveContentContext(content);
     if (content.lastReadContentId && content.status === 1) {
       this.events.publish('course:resume', {
@@ -251,6 +255,16 @@ export class CourseCard implements OnInit {
       }
     }
   }
+
+  getContentState(course: any) {
+    const request: GetContentStateRequest = {
+      userId: course['userId'],
+      courseIds: [course['contentId']],
+      returnRefreshedContentStates: true,
+      batchId: course['batchId']
+    };
+    this.courseService.getContentState(request).subscribe();
+}
 
 
   saveContentContext(content: any) {
