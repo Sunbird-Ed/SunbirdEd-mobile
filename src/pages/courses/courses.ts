@@ -1,6 +1,6 @@
 import {ViewMoreActivityPage} from './../view-more-activity/view-more-activity';
 import {Component, Inject, NgZone, OnInit, AfterViewInit} from '@angular/core';
-import {Events, IonicPage, NavController, PopoverController, MenuController, Tabs} from 'ionic-angular';
+import {Events, IonicPage, NavController, ToastController, PopoverController, MenuController, Tabs} from 'ionic-angular';
 import {AppVersion} from '@ionic-native/app-version';
 import {QRResultCallback, SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
 import {SearchPage} from '../search/search';
@@ -79,6 +79,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
   showWarning = false;
   isOnBoardingCardCompleted = false;
   onBoardingProgress = 0;
+  toast: any;
   selectedLanguage = 'en';
   appLabel: string;
   courseFilter: any;
@@ -145,6 +146,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
     @Inject('PAGE_ASSEMBLE_SERVICE') private pageService: PageAssembleService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     public menuCtrl: MenuController,
+    public toastController: ToastController,
     private headerServie: AppHeaderService
   ) {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
@@ -518,7 +520,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
         this.profile = this.appGlobalService.getCurrentUser();
         const sessionObj = this.appGlobalService.getSessionData();
         this.userId = sessionObj[ProfileConstants.USER_TOKEN];
-        this.getEnrolledCourses();
+        this.getEnrolledCourses(false, true);
         resolve();
       }
     });
@@ -648,6 +650,20 @@ export class CoursesPage implements OnInit, AfterViewInit {
     }
 
   }
+  async presentToastForOffline(msg: string) {
+    this.toast = await this.toastController.create({
+      duration: 3000,
+      message: this.commonUtilService.translateMessage(msg),
+      showCloseButton: true,
+      position: 'top',
+      closeButtonText: '',
+      cssClass: 'toastHeader'
+    });
+    this.toast.present();
+    this.toast.onDidDismiss(() => {
+      this.toast = undefined;
+    });
+  }
 
   showFilterPage(filterOptions) {
     this.popCtrl.create(PageFilter, filterOptions, {cssClass: 'resource-filter'}).present();
@@ -703,6 +719,12 @@ export class CoursesPage implements OnInit, AfterViewInit {
   }
 
   navigateToViewMoreContentsPage(showEnrolledCourses: boolean, searchQuery?: any, headerTitle?: string) {
+    if(this.commonUtilService.networkInfo.isNetworkAvailable) {
+      
+    } else {
+      //this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
+      this.presentToastForOffline('NO_INTERNET_TITLE');return;
+    }
     let params;
     let title;
     if (showEnrolledCourses) {
