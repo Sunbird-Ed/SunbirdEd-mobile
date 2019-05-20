@@ -787,7 +787,15 @@ export class EnrolledCourseDetailsPage implements OnInit {
    */
   getStatusOfChildContent(childrenData) {
     const contentStatusData = this.contentStatusData;
-    const lastReadContent = this.courseCardData.lastReadContentId;
+    let lastReadContentId = this.courseCardData.lastReadContentId;
+    const userId = this.appGlobalService.getUserId();
+    const lastReadContentIdKey = 'lastReadContentId_' + userId + '_' + this.identifier + '_' + this.courseCardData.batchId;
+    this.preferences.getString(lastReadContentIdKey).toPromise()
+    .then(val => {
+      this.courseCardData.lastReadContentId = val;
+      lastReadContentId = val;
+    });
+
     this.zone.run(() => {
       childrenData.forEach(childContent => {
         // Inside First level
@@ -805,7 +813,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
                 if (eachContent.identifier === contentData.contentId) {
                   contentLength = contentLength + 1;
                   // checking for contentId from getContentState and lastReadContentId
-                  if (contentData.contentId === lastReadContent) {
+                  if (contentData.contentId === lastReadContentId) {
                     childContent.lastRead = true;
                   }
                   if (contentData.status === 0 || contentData.status === 1) {
@@ -979,7 +987,10 @@ export class EnrolledCourseDetailsPage implements OnInit {
     if (this.batchId) {
       this.courseCardData.batchId = this.batchId;
     }
-    this.showResumeBtn = !!this.courseCardData.lastReadContentId;
+    // this.showResumeBtn = !!this.courseCardData.lastReadContentId;
+    if (this.courseCardData.progress && this.courseCardData.progress > 0) {
+      this.showResumeBtn = true;
+    }
     this.setContentDetails(this.identifier);
     this.headerService.showHeaderWithBackButton(['share', 'more']);
     // If courseCardData does not have a batch id then it is not a enrolled course
@@ -1295,6 +1306,23 @@ export class EnrolledCourseDetailsPage implements OnInit {
       this.courseService.getContentState(request).toPromise()
         .then((success: ContentStateResponse) => {
           this.contentStatusData = success;
+
+          if (this.contentStatusData && this.contentStatusData.contentList) {
+            let progress = 0;
+            this.contentStatusData.contentList.forEach((contentState: ContentState) => {
+              if (contentState.status === 2) {
+                progress = progress + 1;
+              }
+            });
+
+            this.courseCardData.progress = progress;
+            this.getCourseProgress();
+
+            if (this.courseCardData.progress && this.courseCardData.progress > 0) {
+              this.showResumeBtn = true;
+            }
+          }
+
           if (this.childrenData) {
             this.getStatusOfChildContent(this.childrenData);
           }
