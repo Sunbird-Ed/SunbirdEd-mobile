@@ -319,4 +319,6 @@ export class StoreRating {
 }
 export class ContentConstants {
     public static readonly DEFAULT_LICENSE = 'CC BY 4.0';
+    public static readonly COMING_SOON_MSG = 'comingSoonMsg';
 }
+
