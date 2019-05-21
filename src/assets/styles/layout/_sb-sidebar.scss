@@ -47,6 +47,23 @@ div
 
 .toolbar-title {
   color: $primary-color;
+  overflow: hidden;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  white-space: unset;
+  align-items: center;
+
+  .app-name{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: unset;
+    word-break: break-all;
+  }
 }
 .sb-menu-list  {
 

@@ -9,7 +9,7 @@ import {ContentCard, ContentType, MimeType, PreferenceKey} from '../../../app/ap
 import {CourseUtilService} from '../../../service/course-util.service';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
 import {SharedPreferences, TelemetryObject,
-CourseService, CourseBatchesRequest, CourseEnrollmentType, CourseBatchStatus} from 'sunbird-sdk';
+CourseService, CourseBatchesRequest, CourseEnrollmentType, CourseBatchStatus, GetContentStateRequest} from 'sunbird-sdk';
 import {InteractSubtype, InteractType, Environment, PageId} from '../../../service/telemetry-constants';
 import { CommonUtilService } from '@app/service';
 import { EnrollmentDetailsPage } from '@app/pages/enrolled-course-details/enrollment-details/enrollment-details';
@@ -197,7 +197,9 @@ export class CourseCard implements OnInit {
       this.pageName ? this.pageName : this.layoutName,
       telemetryObject,
       values);
-    this.loader.dismiss();
+      if (this.loader) {
+        this.loader.dismiss();
+      }
     if (layoutName === this.layoutInProgress || content.contentType === ContentType.COURSE) {
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content
@@ -228,16 +230,26 @@ export class CourseCard implements OnInit {
       this.pageName ? this.pageName : this.layoutName,
       telemetryObject,
       values);
+    // Update enrolled courses playedOffline status.
+    this.getContentState(content);
     this.saveContentContext(content);
-    if (content.lastReadContentId && content.status === 1) {
-      this.events.publish('course:resume', {
-        content: content
-      });
-    } else {
-      this.navCtrl.push(EnrolledCourseDetailsPage, {
-        content: content
-      });
-    }
+
+    const userId = content.userId;
+    const lastReadContentIdKey = 'lastReadContentId_' + userId + '_' + identifier + '_' + content.batchId;
+    this.preferences.getString(lastReadContentIdKey).toPromise()
+    .then(val => {
+      content.lastReadContentId = val;
+
+      if (content.lastReadContentId) {
+        this.events.publish('course:resume', {
+          content: content
+        });
+      } else {
+        this.navCtrl.push(EnrolledCourseDetailsPage, {
+          content: content
+        });
+      }
+    });
   }
 
   ngOnInit() {
@@ -251,6 +263,16 @@ export class CourseCard implements OnInit {
       }
     }
   }
+
+  getContentState(course: any) {
+    const request: GetContentStateRequest = {
+      userId: course['userId'],
+      courseIds: [course['contentId']],
+      returnRefreshedContentStates: true,
+      batchId: course['batchId']
+    };
+    this.courseService.getContentState(request).subscribe();
+}
 
 
   saveContentContext(content: any) {
