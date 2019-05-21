@@ -6,6 +6,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { DownloadManagerPage } from './download-manager';
 import { TranslateModule } from '@ngx-translate/core';
 import { PipesModule } from '../../pipes/pipes.module';
+import { DirectivesModule } from '../../directives/directives.module';
 
 
 @NgModule({
@@ -18,7 +19,8 @@ import { PipesModule } from '../../pipes/pipes.module';
   imports: [
     IonicPageModule.forChild(DownloadManagerPage),
     TranslateModule.forChild(),
-    PipesModule
+    PipesModule,
+    DirectivesModule,
   ],
 })
 export class DownloadManagerPageModule {}

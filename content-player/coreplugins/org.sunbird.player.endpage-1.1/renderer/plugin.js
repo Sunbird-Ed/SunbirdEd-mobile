@@ -24,7 +24,7 @@ org.ekstep.contentrenderer.baseEndepage.extend({
     gotTohome: function() {
         if (!isbrowserpreview) {
             EkstepRendererAPI.hideEndPage();
-            stageId = !_.isUndefined(Renderer) ? Renderer.theme._currentStage : " ";
+            stageId = !_.isUndefined(Renderer && Renderer.theme) ? Renderer.theme._currentStage : " ";
             TelemetryService.interact("TOUCH", "gc_genie", "TOUCH", {
                 stageId: stageId
             });
