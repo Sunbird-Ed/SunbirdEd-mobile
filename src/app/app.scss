@@ -640,6 +640,22 @@ padding-top: 12px !important;
   ion-content{
     margin-top: 58px;
   }
+
+  page-courses, page-resources, page-download-manager, page-profile {
+    ion-content {
+      margin-top: 0px;
+
+      .fixed-content {
+        transform: translateY(56px);
+        z-index: 2;
+        height: 112px;
+      }
+
+      .scroll-content {
+        padding-top: 58px;
+      }
+    }
+  }
 }
 
 ion-content.avoid-bottom-tabs-space .scroll-content{
@@ -658,10 +674,28 @@ ion-toolbar {
   }
 }
 
-.expand-header-footer{
-  top: -58px;
+.main-container .fixed-content, application-header > ion-header, ion-tabs > .tabbar {
+  transition: transform 200ms linear;
 }
-.expand-header-footer>.scroll-content{
-  margin-bottom: 0 !important;
-  padding-top: 58px !important;
+
+ion-app {
+  &.hide-header-footer {
+    application-header > ion-header {
+      transform: translateY(-58px);
+    }
+
+    page-resources > .main-container .fixed-content, page-courses > .main-container .fixed-content,
+    page-download-manager > ion-content .fixed-content, page-profile > .main-container .fixed-content {
+      transform: translateY(0px);
+    }
+
+    page-resources > .main-container .scroll-content, page-courses > .main-container .scroll-content,
+    page-download-manager > ion-content .scroll-content, page-profile > .main-container .scroll-content {
+      margin-bottom: 0 !important;
+    }
+
+    ion-tabs > .tabbar {
+      transform: translateY(88px);
+    }
+  }
 }
