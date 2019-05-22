@@ -129,11 +129,7 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
       this.isLoggedIn = true;
       this.preference.getString('app_logo').toPromise().then(value => {
         if (value) {
-          if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-            this.appLogo = value;
-          } else {
-            this.appLogo = './assets/imgs/ic_launcher.png';
-          }
+          this.appLogo =  this.commonUtilService.networkInfo.isNetworkAvailable ? value : './assets/imgs/ic_launcher.png';
         } else {
           this.appLogo = './assets/imgs/ic_launcher.png';
         }
