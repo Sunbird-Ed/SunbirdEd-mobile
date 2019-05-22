@@ -641,15 +641,19 @@ padding-top: 12px !important;
     margin-top: 58px;
   }
 
-  page-courses, page-resources, page-download-manager, page-profile {
-    ion-content {
-      margin-top: 0px;
-
+  page-resources {
+    ion-content{
       .fixed-content {
         transform: translateY(56px);
         z-index: 2;
         height: 112px;
       }
+    }
+  }
+
+  page-courses, page-resources, page-download-manager, page-profile {
+    ion-content {
+      margin-top: 0px;
 
       .scroll-content {
         padding-top: 58px;
