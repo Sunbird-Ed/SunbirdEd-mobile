@@ -1,11 +1,12 @@
 import {ChangeDetectorRef, Component, EventEmitter, Inject, Input, OnInit, Output, OnDestroy} from '@angular/core';
-import {App, Events, MenuController} from 'ionic-angular';
+import {App, Events, MenuController, Platform} from 'ionic-angular';
 import {AppGlobalService, UtilityService, CommonUtilService} from '@app/service';
 import {DownloadService, SharedPreferences} from 'sunbird-sdk';
 import {GenericAppConfig, PreferenceKey} from '../../app/app.constant';
 import {AppVersion} from '@ionic-native/app-version';
 import { NotificationService } from '@app/service/notification.service';
 import { Subscription } from 'rxjs';
+import {TranslateService} from "@ngx-translate/core";
 
 declare const cordova;
 
@@ -25,7 +26,7 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
   versionName?: string;
   versionCode?: string;
   decreaseZindex = false;
-
+  isRtl: boolean;
   isLoggedIn = false;
   showDownloadAnimation: Boolean = false;
   networkSubscription: Subscription;
@@ -41,7 +42,9 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
     private utilityService: UtilityService,
     private changeDetectionRef: ChangeDetectorRef,
     private app: App,
-    private notification: NotificationService
+    private notification: NotificationService,
+    private translate: TranslateService,
+    private platform : Platform
   ) {
     this.setLanguageValue();
     this.events.subscribe('onAfterLanguageChange:update', (res) => {
@@ -60,7 +63,13 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
     this.events.subscribe('app-global:profile-obj-changed', () => {
       this.setAppLogo();
     });
-
+    this.translate.onLangChange.subscribe((params) => {
+      if(params.lang == 'ur' && !this.platform.isRTL) {
+        this.isRtl = true;
+      } else if(this.platform.isRTL) {
+        this.isRtl = false;
+      }
+    });
     this.events.subscribe('header:decreasezIndex', () => {
       this.decreaseZindex = true;
     });
