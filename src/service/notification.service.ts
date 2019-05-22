@@ -3,6 +3,8 @@ import { TelemetryGeneratorService } from '@app/service';
 import { File } from '@ionic-native/file';
 import { ProfileService, SharedPreferences } from "sunbird-sdk";
 import { PreferenceKey } from "@app/app";
+import { TranslateService } from '@ngx-translate/core';
+import { AppVersion } from "@ionic-native/app-version";
 
 declare const cordova;
 
@@ -11,13 +13,17 @@ export class NotificationService {
 
     selectedLanguage: string;
     configData: any;
+    appName: any;
 
     constructor(
         @Inject('PROFILE_SERVICE') private profileService: ProfileService,
         @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
         private telemetryGeneratorService: TelemetryGeneratorService,
-        private file: File
+        private file: File,
+        private translate: TranslateService,
+        private appVersion: AppVersion
     ) {
+        this.getAppName();
     }
 
     setupLocalNotification(language?: string): any {
@@ -72,12 +78,19 @@ export class NotificationService {
         const translate = this.configData.data.translations[this.selectedLanguage] || this.configData.data.translations['default'];
         cordova.plugins.notification.local.schedule({
             id: this.configData.id,
-            title: translate.title,
-            text: translate.msg,
+            title: translate.title.replace('{{%s}}', this.appName),
+            text: translate.msg.replace('{{%s}}', this.appName),
             icon: 'res://icon',
             smallIcon: 'res://n_icon',
             trigger: trigger
         });
+    }
+
+    getAppName() {
+        this.appVersion.getAppName()
+            .then((appName: any) => {
+                this.appName = appName;
+            });
     }
 
 
