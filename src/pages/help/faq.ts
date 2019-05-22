@@ -128,6 +128,12 @@ export class FaqPage {
     if (this.loading) {
       this.loading.dismissAll();
     }
+    const element = document.getElementsByTagName('iframe')[0];
+    if (element) {
+      if (element.contentDocument.documentElement.getElementsByTagName('body').length === 0 ) {
+        this.onError();
+      }
+    }
   }
 
   onError() {
