@@ -30,6 +30,9 @@
       <uses-permission android:name="android.permission.RECORD_AUDIO"/>
       <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     </config-file>
+    <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
+            <application android:allowBackup="false" />
+    </edit-config>
     <preference name="android-manifest/@xmlns:tools" value="http://schemas.android.com/tools"/>
     <preference name="android-manifest/application/@tools:replace" value="android:allowBackup"/>
     <preference name="android-manifest/application/@android:allowBackup" value="false"/>

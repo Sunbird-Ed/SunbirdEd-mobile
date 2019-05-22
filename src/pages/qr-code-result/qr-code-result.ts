@@ -184,9 +184,10 @@ export class QrCodeResultPage implements OnDestroy {
       PageId.DIAL_CODE_SCAN_RESULT,
       !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME);
 
-    /*this.navBar.backButtonClick = () => {
+    this.navBar.backButtonClick = () => {
       this.handleBackButton(InteractSubtype.NAV_BACK_CLICKED);
-    };*/
+    };
+
     if (!AppGlobalService.isPlayerLaunched) {
       this.calculateAvailableUserCount();
     }

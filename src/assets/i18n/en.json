@@ -95,7 +95,7 @@
   "CONTENT_NOT_ADDED_YET": "Content not available as yet for the selected textbook or collection",
   "CONTENT_NOT_AVAILABLE": "Content not available",
   "CONTENT_PLAYER_EXIT_PERMISSION": "Would you like to leave this content?",
-  "CONTENT_RETIRED_BY_AUTHOR": "This content has been removed by the author and hence not available any more",
+  "CONTENT_RETIRED_BY_AUTHOR": "This content is removed by the author and hence not available any more",
   "CONTENT_SIZE": "Content size",
   "CONTINUE": "Continue",
   "CONTINUE_AS_ROLE": "Continue as '{{%s}}'",

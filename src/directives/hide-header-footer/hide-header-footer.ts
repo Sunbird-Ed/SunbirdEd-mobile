@@ -1,27 +1,67 @@
 import { Directive, ElementRef, Renderer2, Input } from '@angular/core';
-import { Events } from 'ionic-angular';
+import { Events, ScrollEvent } from 'ionic-angular';
+import { Subject, Observable, Subscription } from 'rxjs';
+import { eventNames } from 'cluster';
 
 @Directive({
   selector: '[hide-header-footer]', // Attribute
   host: {
-    '(ionScroll)': 'onContentScroll($event)'
+    '(ionScroll)': 'onContentScroll($event)',
+    '(touchend)': 'onTouchEnd($event)',
+    '(touchstart)': 'onTouchStart($event)',
   }
 })
 export class HideHeaderFooterDirective {
 
-  headerHeight;
-  hideTimer: NodeJS.Timer;
+  private scrollEvent = new Subject<undefined>();
+  private scrollEvent$ = this.scrollEvent.asObservable();
+
+  private touchEndEvent = new Subject<undefined>();
+  private touchEndEvent$ = this.touchEndEvent.asObservable();
+
+  private scrollEventSubscription?: Subscription;
 
   constructor(private elemRef: ElementRef, private renderer: Renderer2, public event: Events) {}
 
-  onContentScroll(event) {
-    // this.renderer.addClass(this.elemRef.nativeElement, 'expand-header-footer');
-    // this.event.publish('hideHeaderOnScroll', true);
-    // this.event.publish('hideFooterTabOnScroll', true);
-    // this.event.publish('hideResourseFilterOnScroll', true);
-    // this.hideTimer = setTimeout(() => {
-    //   this.renderer.removeClass(this.elemRef.nativeElement, 'expand-header-footer');
-    // }, 500);
+  onContentScroll(event: ScrollEvent) {
+    if (event.scrollTop <= 58) {
+      return;
+    }
+
+    this.scrollEvent.next(undefined);
   }
 
+  onTouchStart(event) {
+    this.hideHeaderFooter();
+  }
+
+  onTouchEnd(event) {
+    this.touchEndEvent.next(undefined);
+  }
+
+  private hideHeaderFooter() {
+    if (this.scrollEventSubscription) {
+      return;
+    }
+
+    this.scrollEventSubscription = this.scrollEvent$
+      .takeUntil(Observable.defer(() => {
+        return this.touchEndEvent$.take(1).mergeMap(() => {
+          return this.scrollEvent$.startWith(undefined).switchMap(() => Observable.timer(100).take(1))
+        });
+      }))
+      .do(() => {
+        const appRootRef: HTMLElement = document.getElementsByTagName('ion-app')[0] as HTMLElement;
+
+        appRootRef.classList.add('hide-header-footer');
+      })
+      .finally(() => {
+        const appRootRef: HTMLElement = document.getElementsByTagName('ion-app')[0] as HTMLElement;
+        appRootRef.classList.remove('hide-header-footer');
+
+        this.scrollEventSubscription.unsubscribe();
+        this.scrollEventSubscription = undefined;
+      })
+      .subscribe();
+  }
 }
