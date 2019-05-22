@@ -1510,7 +1510,7 @@ export class ContentDetailsPage {
         this.contentDownloadable[this.content.identifier] = false;
         const playContent = this.playingContent;
         playContent.isAvailableLocally = false;
-        this.contentDownloadable[this.content.identifier] = false;
+        this.isDownloadStarted = false;
         this.showToaster(this.getMessageByConstant('MSG_RESOURCE_DELETED'));
       }
     }).catch((error: any) => {
