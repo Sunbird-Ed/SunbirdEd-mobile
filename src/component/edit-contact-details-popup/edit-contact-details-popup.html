@@ -2,7 +2,7 @@
   <ion-spinner *ngIf="loader" padding></ion-spinner>
 
   <ion-grid class="P0">
-    <form [formGroup]="personEditForm" (ngSubmit)="validate($event)">
+    <form [formGroup]="personEditForm" (ngSubmit)="validate()">
       <ion-row class="P16">
         <ion-col col-12 no-padding class="text-center">
           <p>{{title}}</p>
