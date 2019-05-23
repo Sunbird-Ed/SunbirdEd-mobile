@@ -403,6 +403,7 @@ export class SearchPage implements  OnDestroy {
 
     this.dialCodeContentResult = undefined;
     this.dialCodeResult = undefined;
+    this.corRelationList = [];
 
     // if (this.profile) {
 

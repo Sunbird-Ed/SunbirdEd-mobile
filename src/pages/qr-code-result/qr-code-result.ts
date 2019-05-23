@@ -340,7 +340,8 @@ export class QrCodeResultPage implements OnDestroy {
         content: content,
         depth: '1',
         isChildContent: true,
-        downloadAndPlay: true
+        downloadAndPlay: true,
+        corRelation: this.corRelationList
       });
     }
   }

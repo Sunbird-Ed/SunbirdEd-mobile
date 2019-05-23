@@ -1083,11 +1083,12 @@ export class ContentDetailsPage {
             }
           });
         });
+        const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
         this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
           InteractSubtype.UPDATE_INITIATE ? this.isUpdateAvail : InteractSubtype.DOWNLOAD_INITIATE,
           Environment.HOME,
           PageId.CONTENT_DETAIL,
-          undefined,
+          telemetryObject,
           values,
           this.objRollup,
           this.corRelationList);
@@ -1133,12 +1134,13 @@ export class ContentDetailsPage {
     } else {
       const values = new Map();
       const subtype: string = isStreaming ? InteractSubtype.PLAY_ONLINE : InteractSubtype.PLAY_FROM_DEVICE;
-      values['network-type'] = this.network.type;
+      values['networkType'] = this.network.type;
+      const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
       this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
         subtype,
         Environment.HOME,
         PageId.CONTENT_DETAIL,
-        undefined,
+        telemetryObject,
         values,
         this.objRollup,
         this.corRelationList);
@@ -1273,12 +1275,13 @@ export class ContentDetailsPage {
         const values = new Map();
 
         values['autoAfterDownload'] = this.downloadAndPlay;
-
+        values['isStreaming'] = isStreaming;
+        const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
         this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
           InteractSubtype.CONTENT_PLAY,
           Environment.HOME,
           PageId.CONTENT_DETAIL,
-          undefined,
+          telemetryObject,
           values,
           this.objRollup,
           this.corRelationList);
@@ -1293,36 +1296,18 @@ export class ContentDetailsPage {
         }
 
         const playContent = this.playingContent;
-        const req: ContentMarkerRequest = {
-          uid: this.appGlobalService.getCurrentUser().uid,
-          contentId: this.identifier,
-          data: JSON.stringify(playContent.contentData),
-          marker: MarkerType.PREVIEWED,
-          isMarked: true,
-          extraInfo: extraInfoMap
-        };
-        // this.contentService.setContentMarker(req).toPromise()
-        //   .then((data) => {
-        //     console.log('setContentMarker', data);
-        //   }).catch(() => {
-        // });
       }
       this.downloadAndPlay = false;
       const request: any = {};
       if (isStreaming) {
         request.streaming = isStreaming;
       }
+      request['correlationData'] = this.corRelationList;
 
       if (this.isResumedCourse) {
         this.playingContent.hierarchyInfo = this.hierarchyInfo.hierarchyInfo;
       }
 
-      const contentAccessRequest: ContentAccess = {
-        status: ContentAccessStatus.PLAYED,
-        contentId: this.identifier,
-        contentType: this.content.contentType
-      };
-      // this.profileService.addContentAccess(contentAccessRequest).subscribe();
       this.playerService.getPlayerConfig(this.playingContent, request).subscribe((data) => {
         data['data'] = {};
         if (data.metadata.mimeType === 'application/vnd.ekstep.ecml-archive') {
@@ -1377,11 +1362,12 @@ export class ContentDetailsPage {
   }
 
   showOverflowMenu(event) {
+    const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.KEBAB_MENU_CLICKED,
       Environment.HOME,
       PageId.CONTENT_DETAIL,
-      undefined,
+      telemetryObject,
       undefined,
       this.objRollup,
       this.corRelationList);
@@ -1411,11 +1397,12 @@ export class ContentDetailsPage {
   }
 
   showDeletePopup() {
+    const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.KEBAB_MENU_CLICKED,
       Environment.HOME,
       PageId.CONTENT_DETAIL,
-      undefined,
+      telemetryObject,
       undefined,
       this.objRollup,
       this.corRelationList);
@@ -1580,11 +1567,12 @@ export class ContentDetailsPage {
   generateShareInteractEvents(interactType, subType, contentType) {
     const values = new Map();
     values['ContentType'] = contentType;
+    const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
     this.telemetryGeneratorService.generateInteractTelemetry(interactType,
       subType,
       Environment.HOME,
       PageId.CONTENT_DETAIL,
-      undefined,
+      telemetryObject,
       values,
       this.objRollup,
       this.corRelationList);

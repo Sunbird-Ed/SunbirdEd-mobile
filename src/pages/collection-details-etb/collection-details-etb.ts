@@ -660,7 +660,7 @@ export class CollectionDetailsEtbPage implements OnInit {
         isChildContent: isChild,
         destinationFolder: cordova.file.externalDataDirectory,
         contentId: value,
-        correlationData: this.corRelationList !== undefined ? this.corRelationList : []
+        correlationData: this.corRelationList ? this.corRelationList : []
       });
     });
 
@@ -680,7 +680,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     const option: ContentImportRequest = {
       contentImportArray: this.getImportContentRequestBody(identifiers, isChild),
       contentStatusArray: [],
-      fields: ['appIcon', 'name', 'subject', 'size', 'gradeLevel']
+      fields: ['appIcon', 'name', 'subject', 'size', 'gradeLevel'],
     };
     // Call content service
     this.contentService.importContent(option).toPromise()
