@@ -277,4 +277,8 @@ export enum ActionButtonType {
     NEGATIVE = 'negative'
 }
 
+export enum CorReleationDataType {
+    COURSE_BATCH = 'CourseBatch',
+}
+
 

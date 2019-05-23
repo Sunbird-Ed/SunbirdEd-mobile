@@ -61,7 +61,8 @@ import {
   InteractSubtype,
   InteractType,
   Mode,
-  PageId
+  PageId,
+  CorReleationDataType
 } from '../../service/telemetry-constants';
 import { ProfileConstants } from '../../app';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
@@ -181,12 +182,10 @@ export class EnrolledCourseDetailsPage implements OnInit {
   private corRelationList: Array<CorrelationData>;
   headerObservable: any;
   content: Content;
-
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     private navCtrl: NavController,
     private navParams: NavParams,
-    private alertCtrl: AlertController,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private zone: NgZone,
     private events: Events,
@@ -562,23 +561,6 @@ export class EnrolledCourseDetailsPage implements OnInit {
                 } else {
                   if (this.batchDetails.status === 2) {
                     this.batchExp = true;
-                    /*const alert = this.alertCtrl.create({
-                      title: this.commonUtilService.translateMessage('BATCH_EXPIRED'),
-                      message: this.commonUtilService.translateMessage('BATCH_EXPIRED_DESCRIPTION'),
-                      mode: 'wp',
-                      cssClass: 'confirm-alert',
-                      buttons: [
-                        {
-                          text: this.commonUtilService.translateMessage('BATCH_EXPIRED_BUTTON'),
-                          role: 'cancel',
-                          cssClass: 'doneButton',
-                          handler: () => {
-                            this.preferences.putString(PreferenceKey.COURSE_IDENTIFIER, this.batchDetails.identifier).toPromise().then();
-                          }
-                        }
-                      ]
-                    });
-                    alert.present();*/
                     const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
                       sbPopoverHeading: this.commonUtilService.translateMessage('BATCH_EXPIRED'),
                       sbPopoverMainTitle: this.commonUtilService.translateMessage('BATCH_EXPIRED_DESCRIPTION'),
@@ -791,10 +773,10 @@ export class EnrolledCourseDetailsPage implements OnInit {
     const userId = this.appGlobalService.getUserId();
     const lastReadContentIdKey = 'lastReadContentId_' + userId + '_' + this.identifier + '_' + this.courseCardData.batchId;
     this.preferences.getString(lastReadContentIdKey).toPromise()
-    .then(val => {
-      this.courseCardData.lastReadContentId = val;
-      lastReadContentId = val;
-    });
+      .then(val => {
+        this.courseCardData.lastReadContentId = val;
+        lastReadContentId = val;
+      });
 
     this.zone.run(() => {
       childrenData.forEach(childContent => {
@@ -995,6 +977,15 @@ export class EnrolledCourseDetailsPage implements OnInit {
     this.headerService.showHeaderWithBackButton(['share', 'more']);
     // If courseCardData does not have a batch id then it is not a enrolled course
     this.subscribeSdkEvent();
+    this.populateCorRelationData( this.courseCardData.batchId);
+  }
+
+  populateCorRelationData(batchId) {
+    if (batchId && !this.corRelationList) {
+      this.corRelationList = [];
+      this.corRelationList.push({id: batchId, type: CorReleationDataType.COURSE_BATCH});
+    }
+    console.log('Correlation list', this.corRelationList);
   }
 
   isCourseEnrolled(identifier: string) {
@@ -1117,7 +1108,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.ENROLL_CLICKED,
       Environment.HOME,
-      PageId.CONTENT_DETAIL, undefined,
+      PageId.COURSE_DETAIL, undefined,
       reqvalues);
 
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
