@@ -5,19 +5,21 @@ page-permission {
   .permission-container {
     .item-row {
       .icon-col {
-        border-right: 1px solid $gray-100;
+        @include ltr() {
+          border-right: 1px solid $gray-100;
+        }
+      
+        @include rtl() {
+          border-left: 1px solid $gray-100;
+        }
         min-width: 45px;
         text-align: end;
-        // padding-right: 16px;
-        @extend .pr-16;
 
         ion-icon {
           font-size: 3rem;
         }
       }
       .toggle-col {
-        padding-right: 16px;
-        @extend .pr-16;
         min-width: 55px;
         text-align: end;
       }
@@ -37,7 +39,7 @@ page-permission {
       width: 40px;
       height: 22px;
       padding: 0;
-  
+
       .toggle-inner {
         left: 2px;
         top: 1px;
@@ -49,5 +51,15 @@ page-permission {
     .toggle-md-secondary.toggle-checked .toggle-inner {
       background-color: $white;
     }
+  }
+
+  .pl-16 {
+    @include padding(null, null, null, 16px);
+  }
+  .pt-0 {
+    @include padding(0 !important, null, null, null);
+  }
+  .pr-16 {
+    @include padding(null, 16px, null, null);
   }
 }

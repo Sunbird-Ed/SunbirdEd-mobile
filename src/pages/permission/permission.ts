@@ -1,12 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
-/**
- * Generated class for the PermissionPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { CommonUtilService } from '@app/service';
 
 @IonicPage()
 @Component({
@@ -17,23 +11,23 @@ export class PermissionPage {
 
   permissionList = [
     {
-      title: 'Camera',
+      title: this.commonUtilService.translateMessage('CAMERA'),
       icon: 'camera',
-      description: 'Camera access is needed for scanning of Sunbird QR codes'
+      description: this.commonUtilService.translateMessage('CAMERA_PERMISSION_DESCRIPTION')
     },
     {
-      title: 'File Manager',
+      title: this.commonUtilService.translateMessage('FILE_MANAGER'),
       icon: 'folder-open',
-      description: 'Storage access is needed for downloading of files and moving content to SD cards'
+      description: this.commonUtilService.translateMessage('FILE_MANAGER_PERMISSION_DESCRIPTION')
     },
     {
-      title: 'Microphone',
+      title: this.commonUtilService.translateMessage('MICROPHONE'),
       icon: 'mic',
-      description: "Microphone access will be used only in content where you can 'record' your voice. This is used to improve pronunciation of words"
+      description: this.commonUtilService.translateMessage('MICROPHONE_PERMISSION_DESCRIPTION')
     }
   ];
   changePermissionAccess = false;
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public commonUtilService: CommonUtilService) {
   }
 
   ionViewDidLoad() {
