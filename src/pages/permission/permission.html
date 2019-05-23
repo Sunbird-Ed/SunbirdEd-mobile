@@ -1,0 +1,38 @@
+<ion-content padding *ngIf="!changePermissionAccess">
+  <p class="permission-title mt-0">Sunbird requires access to the following permissions so we can
+    provide an effective experience for you:</p>
+  <div class="permission-container">
+    <div *ngFor="let item of permissionList" class="item-row d-flex mb-16">
+      <div class="icon-col pr-16">
+        <ion-icon item-start name="{{item?.icon}}"></ion-icon>
+      </div>
+      <div style="padding-left: 16px;">
+        <p class="title m-0 mb-8">{{item?.title}}</p>
+        <p class="description">{{item?.description}}</p>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<ion-footer padding *ngIf="!changePermissionAccess">
+  <button ion-button block (click)="onSyncClick()">Grant Access</button>
+  <button ion-button block outline class="mt-8" (click)="onSyncClick()">Not Now</button>
+</ion-footer>
+
+<!-- For Edit permission page -->
+<ion-content *ngIf="changePermissionAccess" padding-vertical class="changePermissionAccess">
+  <div>
+    <p class="permission-title" style="padding-left: 16px;">Permission required for effective use of Sunbird</p>
+  </div>
+  <div class="permission-container">
+      <div *ngFor="let item of permissionList" class="item-row mb-16 d-flex">
+        <div style="padding-left: 16px;flex-grow:1000;">
+          <p class="title m-0 mb-8">{{item?.title}}</p>
+          <p class="description">{{item?.description}}</p>
+        </div>
+        <div class="toggle-col">
+          <ion-toggle style="padding-top: 0;" color="secondary" value="foo" checked="true"></ion-toggle>
+        </div>
+      </div>
+    </div>
+</ion-content>

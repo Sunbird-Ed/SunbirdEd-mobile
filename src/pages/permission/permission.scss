@@ -1,0 +1,53 @@
+page-permission {
+  .permission-title {
+    font-size: 1.8rem;
+  }
+  .permission-container {
+    .item-row {
+      .icon-col {
+        border-right: 1px solid $gray-100;
+        min-width: 45px;
+        text-align: end;
+        // padding-right: 16px;
+        @extend .pr-16;
+
+        ion-icon {
+          font-size: 3rem;
+        }
+      }
+      .toggle-col {
+        padding-right: 16px;
+        @extend .pr-16;
+        min-width: 55px;
+        text-align: end;
+      }
+      .title {
+        font-size: 1.6rem;
+        font-weight: 600;
+      }
+      .description {
+        margin: 0;
+        color: $gray-400;
+      }
+    }
+  }
+
+  .changePermissionAccess {
+    .toggle-md {
+      width: 40px;
+      height: 22px;
+      padding: 0;
+  
+      .toggle-inner {
+        left: 2px;
+        top: 1px;
+      }
+      .toggle-icon {
+        max-height: 23px;
+      }
+    }
+    .toggle-md-secondary.toggle-checked .toggle-inner {
+      background-color: $white;
+    }
+  }
+}
