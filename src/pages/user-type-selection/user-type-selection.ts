@@ -1,12 +1,12 @@
-import {Component, Inject, NgZone, ViewChild} from '@angular/core';
-import {Events, IonicPage, Navbar, NavController, NavParams, Platform} from 'ionic-angular';
-import {TranslateService} from '@ngx-translate/core';
-import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, Map, PreferenceKey} from '@app/app';
-import {AppGlobalService, CommonUtilService, TelemetryGeneratorService, AppHeaderService} from '@app/service';
-import {SunbirdQRScanner} from '@app/pages/qrscanner';
-import {ProfileSettingsPage} from '@app/pages/profile-settings/profile-settings';
-import {LanguageSettingsPage} from '@app/pages/language-settings/language-settings';
-import {Profile, ProfileService, ProfileSource, ProfileType, SharedPreferences} from 'sunbird-sdk';
+import { Component, Inject, NgZone, ViewChild } from '@angular/core';
+import { Events, IonicPage, Navbar, NavController, NavParams, Platform } from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
+import { GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, Map, PreferenceKey } from '@app/app';
+import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, AppHeaderService } from '@app/service';
+import { SunbirdQRScanner } from '@app/pages/qrscanner';
+import { ProfileSettingsPage } from '@app/pages/profile-settings/profile-settings';
+import { LanguageSettingsPage } from '@app/pages/language-settings/language-settings';
+import { Profile, ProfileService, ProfileSource, ProfileType, SharedPreferences } from 'sunbird-sdk';
 import {
   Environment,
   ImpressionType,
@@ -16,7 +16,8 @@ import {
 } from '../../service/telemetry-constants';
 import { ContainerService } from '@app/service/container.services';
 import { TabsPage } from '../tabs/tabs';
-import {ProfileConstants} from '../../app';
+import { ProfileConstants } from '../../app';
+import { PermissionPage } from '../permission/permission';
 
 const selectedCardBorderColor = '#006DE5';
 const borderColor = '#F7F7F7';
@@ -77,7 +78,7 @@ export class UserTypeSelectionPage {
         this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
       }
     });
-    
+
   }
 
   ionViewWillEnter() {
@@ -113,8 +114,8 @@ export class UserTypeSelectionPage {
   handleHeaderEvents($event) {
     switch ($event.name) {
       case 'back': this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.USER_TYPE_SELECTION, Environment.HOME, true);
-      this.handleBackButton();
-                    break;
+        this.handleBackButton();
+        break;
     }
   }
 
@@ -167,7 +168,7 @@ export class UserTypeSelectionPage {
   setProfile(profileRequest: Profile) {
     this.profileService.updateProfile(profileRequest).toPromise().then(() => {
       return this.profileService.setActiveSessionForProfile(profileRequest.uid).toPromise().then(() => {
-        return this.profileService.getActiveSessionProfile({requiredFields: ProfileConstants.REQUIRED_FIELDS}).toPromise()
+        return this.profileService.getActiveSessionProfile({ requiredFields: ProfileConstants.REQUIRED_FIELDS }).toPromise()
           .then((success: any) => {
             const userId = success.uid;
             this.event.publish(AppGlobalService.USER_INFO_UPDATED);
@@ -209,7 +210,7 @@ export class UserTypeSelectionPage {
               loginMode: 'guest'
             });
           }).catch(() => {
-        });
+          });
         // this.navCtrl.setRoot(TabsPage);
       }
     } else if (this.appGlobalService.isProfileSettingsCompleted) {
@@ -227,12 +228,18 @@ export class UserTypeSelectionPage {
           this.profile.profileType = this.selectedUserType;
           this.profileService.updateProfile(this.profile).toPromise()
             .then((res: any) => {
-              this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
+              // this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
+              this.navCtrl.push(PermissionPage, {
+                showScannerPage: true
+              });
             }).catch(error => {
               console.error('Error=');
             });
         } else {
-          this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
+          // this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
+          this.navCtrl.push(PermissionPage, {
+            showScannerPage: true
+          });
         }
       }
     } else if (this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
@@ -240,22 +247,31 @@ export class UserTypeSelectionPage {
         this.profile.profileType = this.selectedUserType;
         this.profileService.updateProfile(this.profile).toPromise()
           .then((res: any) => {
-            this.navCtrl.push(ProfileSettingsPage);
+            // this.navCtrl.push(ProfileSettingsPage);
+            this.navCtrl.push(PermissionPage, {
+              showProfileSettingPage: true
+            });
           }).catch(error => {
             console.error('Error=');
           });
       } else {
-        this.navCtrl.push(ProfileSettingsPage);
+        // this.navCtrl.push(ProfileSettingsPage);
+        this.navCtrl.push(PermissionPage, {
+          showProfileSettingPage: true
+        });
       }
     } else {
       this.profile.profileType = this.selectedUserType;
       this.profileService.updateProfile(this.profile).toPromise()
         .then(() => {
-          this.navCtrl.push(TabsPage, {
-            loginMode: 'guest'
+          // this.navCtrl.push(TabsPage, {
+          //   loginMode: 'guest'
+          // });
+          this.navCtrl.push(PermissionPage, {
+            showTabsPage: true,
           });
         }).catch(() => {
-      });
+        });
     }
   }
 

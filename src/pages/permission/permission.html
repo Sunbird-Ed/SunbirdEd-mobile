@@ -14,8 +14,8 @@
 </ion-content>
 
 <ion-footer padding *ngIf="!changePermissionAccess">
-  <button ion-button block (click)="onSyncClick()">{{'GRANT_ACCESS' | translate}}</button>
-  <button ion-button block outline class="mt-8" (click)="onSyncClick()">{{'NOT_NOW' | translate}}</button>
+  <button ion-button block (click)="grantAccess()">{{'GRANT_ACCESS' | translate}}</button>
+  <button ion-button block outline class="mt-8" (click)="skipAccess()">{{'NOT_NOW' | translate}}</button>
 </ion-footer>
 
 <!-- For Edit permission page -->
