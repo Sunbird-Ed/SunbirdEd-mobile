@@ -1138,7 +1138,8 @@ export class CollectionDetailsEtbPage implements OnInit {
           },
         ],
         icon: null,
-        metaInfo: this.commonUtilService.translateMessage('ITEMS', contentTypeCount) + ' (' + this.fileSizePipe.transform(this.contentDetail.contentData.size, 2) + ')',
+        metaInfo: this.commonUtilService.translateMessage('ITEMS', contentTypeCount)
+          + ' (' + this.fileSizePipe.transform(this.downloadSize, 2) + ')',
       }, {
           cssClass: 'sb-popover info',
         });
