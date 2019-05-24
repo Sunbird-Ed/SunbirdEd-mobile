@@ -18,7 +18,7 @@ page-language-settings {
             float: left !important;
         }
     }
-    
+
     .list-wrap{
        margin-bottom:8px; 
        padding-bottom:16px;
@@ -50,9 +50,7 @@ page-language-settings {
         color: map-get($colors, primary_black);
         @extend .font-weight-700;
     }
-    .label{
-        padding: 8px !important;
-    }
+    
 }
 
 
