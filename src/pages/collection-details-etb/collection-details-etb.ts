@@ -1258,9 +1258,9 @@ export class CollectionDetailsEtbPage implements OnInit {
       this.corRelationList);
     let contentTypeCount;
     let metaInfo: string;
+
     if (this.localResourseCount) {
       contentTypeCount = this.localResourseCount + '';
-
       metaInfo = this.commonUtilService.translateMessage('ITEMS', contentTypeCount) +
       ' (' + this.fileSizePipe.transform(this.contentDetail.sizeOnDevice, 2) + ')';
     } else {
