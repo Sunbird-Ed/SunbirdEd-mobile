@@ -518,5 +518,5 @@
   "YES": "Yes",
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
   "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "You are not connected to the internet",
-  "ITEMS": "items"
+  "ITEMS": "{{%s}} items"
 }
