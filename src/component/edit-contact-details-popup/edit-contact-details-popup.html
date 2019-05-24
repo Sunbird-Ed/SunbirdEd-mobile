@@ -2,11 +2,11 @@
   <ion-spinner *ngIf="loader" padding></ion-spinner>
 
   <ion-grid class="P0">
-    <form [formGroup]="personEditForm">
+    <form [formGroup]="personEditForm" (ngSubmit)="validate()">
       <ion-row class="P16">
         <ion-col col-12 no-padding class="text-center">
-          <p>{{'TITLE' | translate}}</p>
-          <p class="font-weight-bold f14">{{'DESCRIPTION' | translate}}</p>
+          <p>{{title}}</p>
+          <p class="font-weight-bold f14">{{description}}</p>
         </ion-col>
         <section *ngIf="type==='phone'" class="W100 text-center MT3V">
           
@@ -49,7 +49,7 @@
           <button ion-button block outline (click)="cancel()">{{ 'CANCEL' | translate }} </button>
         </ion-col>
         <ion-col padding>
-          <button ion-button block (click)="validate()" [disabled]="!personEditForm.valid">{{ 'BTN_SUBMIT' | translate }}
+          <button ion-button block type="submit" [disabled]="!personEditForm.valid">{{ 'BTN_SUBMIT' | translate }}
           </button>
         </ion-col>
         <!-- <ion-col padding>

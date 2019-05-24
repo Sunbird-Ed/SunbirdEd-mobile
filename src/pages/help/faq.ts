@@ -117,7 +117,8 @@ export class FaqPage {
   }
   handleBackButton() {
     const length = this.iframe.nativeElement.contentWindow.location.href.split('/').length;
-    if (this.iframe.nativeElement.contentWindow.location.href.split('/')[length - 1].startsWith('consumption')) {
+    if (this.iframe.nativeElement.contentWindow.location.href.split('/')[length - 1].startsWith('consumption') ||
+        this.iframe.nativeElement.contentWindow.history.length === 1) {
       this.navCtrl.pop();
       this.backButtonFunc();
     } else {
@@ -130,7 +131,9 @@ export class FaqPage {
     }
     const element = document.getElementsByTagName('iframe')[0];
     if (element) {
-      if (element.contentDocument.documentElement.getElementsByTagName('body').length === 0 ) {
+      if (element.contentDocument.documentElement.getElementsByTagName('body').length === 0 ||
+          element['contentWindow'].location.href.startsWith('chrome-error:')
+          ) {
         this.onError();
       }
     }

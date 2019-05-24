@@ -22,7 +22,7 @@
     
     <ion-footer>
         <div class="sb-popover-footer">
-          <button ion-button class="sb-popover-action-btn popover-color" (click)="submit()">{{ 'BTN_SUBMIT' | translate }}</button>
+          <button ion-button class="sb-popover-action-btn popover-color" [disabled]="!userRating" (click)="submit()">{{ 'BTN_SUBMIT' | translate }}</button>
         </div>
       </ion-footer>
   
