@@ -909,6 +909,8 @@ export class CollectionDetailsEtbPage implements OnInit {
           if (downloadEvent.payload.identifier === this.contentDetail.identifier) {
             this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
             if (this.downloadProgress === 100) {
+              this.showLoading = false;
+              this.refreshHeader();
               this.contentDetail.isAvailableLocally = true;
             }
           }
@@ -916,8 +918,6 @@ export class CollectionDetailsEtbPage implements OnInit {
 
         // Get child content
         if (event.type === ContentEventType.IMPORT_COMPLETED) {
-          this.showLoading = false;
-          this.refreshHeader();
           const contentImportedEvent = event as ContentImportCompleted;
 
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {
@@ -953,9 +953,7 @@ export class CollectionDetailsEtbPage implements OnInit {
                 this.showLoading = false;
                 this.refreshHeader();
                 this.updateSavedResources();
-                setTimeout(() => {
-                  this.setChildContents();
-                }, 500);
+                this.setChildContents();
                 this.contentDetail.isAvailableLocally = true;
               }
 
