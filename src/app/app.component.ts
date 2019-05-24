@@ -57,12 +57,14 @@ import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/coll
 import { QrCodeResultPage } from '@app/pages/qr-code-result';
 import { FaqPage } from '@app/pages/help/faq';
 import { NotificationService } from '@app/service/notification.service';
+import {SplaschreenDeeplinkActionHandlerDelegate} from '@app/service/sunbird-splashscreen/splaschreen-deeplink-action-handler-delegate';
 
 @Component({
   templateUrl: 'app.html',
   providers: [
     SplashcreenTelemetryActionHandlerDelegate,
-    SplashscreenImportActionHandlerDelegate
+    SplashscreenImportActionHandlerDelegate,
+    SplaschreenDeeplinkActionHandlerDelegate
   ]
 })
 export class MyApp implements OnInit, AfterViewInit {
@@ -112,6 +114,7 @@ export class MyApp implements OnInit, AfterViewInit {
     private utilityService: UtilityService,
     private splashcreenTelemetryActionHandlerDelegate: SplashcreenTelemetryActionHandlerDelegate,
     private splashscreenImportActionHandlerDelegate: SplashscreenImportActionHandlerDelegate,
+    private splaschreenDeeplinkActionHandlerDelegate: SplaschreenDeeplinkActionHandlerDelegate,
     private headerServie: AppHeaderService,
     private logoutHandlerService: LogoutHandlerService,
     private network: Network,
@@ -609,6 +612,10 @@ export class MyApp implements OnInit, AfterViewInit {
         }
         case 'IMPORT': {
           await this.splashscreenImportActionHandlerDelegate.onAction(action.type, action.payload).toPromise();
+          break;
+        }
+        case 'DEEPLINK': {
+          await this.splaschreenDeeplinkActionHandlerDelegate.onAction(action.type, action.payload).toPromise();
           break;
         }
         default:
