@@ -100,7 +100,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   selectedValue: Array<string> = [];
   guestUser = false;
   showSignInCard = false;
-  showWarning = false;
   localResources: Array<any>;
   recentlyViewedResources: Array<any>;
   userId: string;

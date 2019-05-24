@@ -77,7 +77,6 @@ export class CoursesPage implements OnInit, AfterViewInit {
   pageApiLoader = true;
   guestUser = false;
   showSignInCard = false;
-  showWarning = false;
   isOnBoardingCardCompleted = false;
   onBoardingProgress = 0;
   toast: any;
