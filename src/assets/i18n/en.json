@@ -517,5 +517,6 @@
   "WHAT_WENT_WRONG": "What went wrong?",
   "YES": "Yes",
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
-  "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "You are not connected to the internet"
+  "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "You are not connected to the internet",
+  "ITEMS": "{{%s}} items"
 }
