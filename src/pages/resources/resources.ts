@@ -2,6 +2,7 @@ import { ActiveDownloadsPage } from '@app/pages/active-downloads/active-download
 import {Search} from './../../app/app.constant';
 import {AfterViewInit, Component, Inject, NgZone, OnInit, ViewChild} from '@angular/core';
 import {Events, NavController, ToastController, MenuController, Scroll, Tabs} from 'ionic-angular';
+import {Content as ContentView} from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
@@ -146,6 +147,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   networkSubscription: Subscription;
   headerObservable: any;
   scrollEventRemover: any;
+  @ViewChild('contentView') contentView: ContentView;
+
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
@@ -717,6 +720,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewDidEnter() {
+    this.scrollToTop();
     this.preferences.getString('show_app_walkthrough_screen').toPromise()
       .then(value => {
         if (value === 'true') {
@@ -1086,7 +1090,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   logScrollEnd(event) {
     // Added Telemetry on reaching Vertical Scroll End
-    if (event.scrollElement.scrollHeight <= event.scrollElement.scrollTop + event.scrollElement.offsetHeight) {
+    if (event && event.scrollElement.scrollHeight <= event.scrollElement.scrollTop + event.scrollElement.offsetHeight) {
       this.telemetryGeneratorService.generateInteractTelemetry(InteractType.SCROLL,
         InteractSubtype.BOOK_LIST_END_REACHED,
         Environment.HOME,
@@ -1096,12 +1100,19 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
   onScroll(event) {
     // Added Telemetry on reaching Horizontal Scroll End
-    if (event.target.scrollWidth <= event.target.scrollLeft + event.target.offsetWidth) {
+    if (event && event.target.scrollWidth <= event.target.scrollLeft + event.target.offsetWidth) {
       this.telemetryGeneratorService.generateInteractTelemetry(InteractType.SCROLL,
         InteractSubtype.RECENTLY_VIEWED_END_REACHED,
         Environment.HOME,
         this.source, undefined,
       );
     }
+  }
+
+  scrollToTop() {
+
+    this.contentView.scrollToTop();
+    // this.contentView._scrollContent.nativeElement.scrollToTop();
+
   }
 }
