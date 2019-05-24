@@ -19,6 +19,10 @@ page-language-settings {
         }
     }
 
+    .list-wrap{
+       margin-bottom:8px; 
+       padding-bottom:16px;
+    }
     ion-list[inset] {
         margin: 0 !important;
     }
@@ -46,7 +50,9 @@ page-language-settings {
         color: map-get($colors, primary_black);
         @extend .font-weight-700;
     }
+    
 }
+
 
 .font-size-17 {
     font-size: 17px !important;
