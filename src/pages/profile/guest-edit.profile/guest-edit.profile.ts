@@ -279,6 +279,10 @@ export class GuestEditProfilePage {
   }
 
   getSyllabusDetails() {
+    if (this.loader) {
+      this.loader.dismiss();
+      this.loader = undefined;
+    }
     this.loader = this.getLoader();
     this.loader.present();
     const getSuggestedFrameworksRequest: GetSuggestedFrameworksRequest = {
@@ -309,15 +313,23 @@ export class GuestEditProfilePage {
 
               }).catch(() => {
                 this.isFormValid = false;
-                this.loader.dismiss();
+                if (this.loader) {
+                  this.loader.dismiss();
+                  this.loader = undefined;
+                }
                 this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
               });
           } else {
-            this.loader.dismiss();
+            if (this.loader) {
+              this.loader.dismiss();
+              this.loader = undefined;
+            }
           }
         } else {
-          this.loader.dismiss();
-
+          if (this.loader) {
+            this.loader.dismiss();
+            this.loader = undefined;
+          }
           this.commonUtilService.showToast(this.commonUtilService.translateMessage('NO_DATA_FOUND'));
         }
       });
@@ -332,8 +344,9 @@ export class GuestEditProfilePage {
     this.frameworkUtilService.getFrameworkCategoryTerms(req).toPromise()
     .then((result: CategoryTerm[]) => {
 
-        if (this.loader !== undefined) {
+        if (this.loader) {
           this.loader.dismiss();
+          this.loader = undefined;
         }
 
         this[list] = result;
@@ -444,6 +457,10 @@ export class GuestEditProfilePage {
           medium: []
         });
         if (showloader) {
+          if (this.loader) {
+            this.loader.dismiss();
+            this.loader = undefined;
+          }
           this.loader = this.getLoader();
           this.loader.present();
         }
@@ -601,7 +618,10 @@ export class GuestEditProfilePage {
         if (this.isCurrentUser) {
           this.publishProfileEvents(formVal);
         }
-        loader.dismiss();
+        if (loader) {
+          loader.dismiss();
+          loader = undefined;
+        }
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_SUCCESS'));
         this.telemetryGeneratorService.generateInteractTelemetry(
           InteractType.OTHER,
@@ -611,7 +631,10 @@ export class GuestEditProfilePage {
         );
         this.navCtrl.pop();
       }, (err: any) => {
-        loader.dismiss();
+        if (loader) {
+          loader.dismiss();
+          loader = undefined;
+        }
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
       });
   }
@@ -668,13 +691,19 @@ export class GuestEditProfilePage {
     }
 
     this.profileService.createProfile(req, req.source).subscribe((res: any) => {
-      loader.dismiss();
+      if (loader) {
+        loader.dismiss();
+        loader = undefined;
+      }
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('USER_CREATED_SUCCESSFULLY'));
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.OTHER, InteractSubtype.CREATE_USER_SUCCESS, Environment.USER, PageId.CREATE_USER);
       this.navCtrl.pop();
     }, (err: any) => {
-        loader.dismiss();
+        if (loader) {
+          loader.dismiss();
+          loader = undefined;
+        }
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('FILL_THE_MANDATORY_FIELDS'));
       });
   }
