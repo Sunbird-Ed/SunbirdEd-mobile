@@ -689,10 +689,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
   }
 
   showOfflineWarning() {
-    this.showWarning = true;
-    setTimeout(() => {
-      this.showWarning = false;
-    }, 3000);
+    this.presentToastForOffline('NO_INTERNET_TITLE');
   }
 
   retryShowingPopularCourses(showRefresh = false) {
