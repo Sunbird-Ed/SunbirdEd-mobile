@@ -100,7 +100,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   selectedValue: Array<string> = [];
   guestUser = false;
   showSignInCard = false;
-  showWarning = false;
   localResources: Array<any>;
   recentlyViewedResources: Array<any>;
   userId: string;
@@ -944,10 +943,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   showOfflineNetworkWarning() {
-    this.showWarning = true;
-    setTimeout(() => {
-      this.showWarning = false;
-    }, 3000);
+    this.presentToastForOffline('NO_INTERNET_TITLE');
   }
 
   checkNetworkStatus(showRefresh = false) {

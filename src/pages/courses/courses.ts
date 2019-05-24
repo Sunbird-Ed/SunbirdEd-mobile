@@ -77,7 +77,6 @@ export class CoursesPage implements OnInit, AfterViewInit {
   pageApiLoader = true;
   guestUser = false;
   showSignInCard = false;
-  showWarning = false;
   isOnBoardingCardCompleted = false;
   onBoardingProgress = 0;
   toast: any;
@@ -689,10 +688,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
   }
 
   showOfflineWarning() {
-    this.showWarning = true;
-    setTimeout(() => {
-      this.showWarning = false;
-    }, 3000);
+    this.presentToastForOffline('NO_INTERNET_TITLE');
   }
 
   retryShowingPopularCourses(showRefresh = false) {
