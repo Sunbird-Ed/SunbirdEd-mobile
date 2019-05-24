@@ -201,6 +201,8 @@ export class CollectionDetailsEtbPage implements OnInit {
   ratingComment = '';
   // defaultIcon
   defaultAppIcon: string;
+
+  localResourseCount: number;
   /**
    * Telemetry roll up object
    */
@@ -773,6 +775,7 @@ export class CollectionDetailsEtbPage implements OnInit {
 
           if (!this.isDepthChild) {
             this.downloadSize = 0;
+            this.localResourseCount = 0;
             this.getContentsSize(data.children || []);
           }
           this.showChildrenLoader = false;
@@ -792,10 +795,17 @@ export class CollectionDetailsEtbPage implements OnInit {
       if (value.contentData.size) {
         this.downloadSize += Number(value.contentData.size);
       }
+      if (!value.children) {
+        if (value.isAvailableLocally) {
+          this.localResourseCount++;
+        }
+      }
+
       this.getContentsSize(value.children);
       if (value.isAvailableLocally === false) {
         this.downloadIdentifiers.push(value.contentData.identifier);
       }
+
     });
     if (this.downloadIdentifiers.length && !this.isDownloadCompleted) {
       this.showDownloadBtn = true;
@@ -1122,8 +1132,8 @@ export class CollectionDetailsEtbPage implements OnInit {
   showDownloadConfirmationAlert(myEvent) {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       let contentTypeCount;
-      if (this.contentDetail.contentData.contentTypesCount) {
-        contentTypeCount = this.contentTypesCount.TextBookUnit;
+      if (this.downloadIdentifiers.length) {
+        contentTypeCount = this.downloadIdentifiers.length;
       } else {
         contentTypeCount = '';
       }
@@ -1248,13 +1258,13 @@ export class CollectionDetailsEtbPage implements OnInit {
       this.corRelationList);
     let contentTypeCount;
     let metaInfo: string;
-    if (this.contentTypesCount && this.contentTypesCount.Resource) {
-      contentTypeCount = this.contentTypesCount.Resource;
+    if (this.localResourseCount) {
+      contentTypeCount = this.localResourseCount + '';
+
       metaInfo = this.commonUtilService.translateMessage('ITEMS', contentTypeCount) +
-      ' (' + this.fileSizePipe.transform(this.contentDetail.contentData.size, 2) + ')';
+      ' (' + this.fileSizePipe.transform(this.contentDetail.sizeOnDevice, 2) + ')';
     } else {
-      contentTypeCount = '';
-      metaInfo = this.fileSizePipe.transform(this.contentDetail.contentData.size, 2);
+      metaInfo = this.fileSizePipe.transform(this.contentDetail.sizeOnDevice, 2);
     }
 
     const confirm = this.popoverCtrl.create(SbPopoverComponent, {
