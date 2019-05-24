@@ -22,8 +22,8 @@
 
     <div class="row sb-topic-item" (click)="showComingSoonPopup(childData)"
         *ngIf="childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !childData?.children">
-        <ion-icon ios="ios-alert" md="md-alert" class="sb-accordian-grey-icon"></ion-icon>
         <div class="sb-accordian-grey-text">{{childData?.contentData?.name}}</div>
+        <ion-icon ios="ios-alert" md="md-alert" class="grey-icon mt-4"></ion-icon>
     </div>
 
     <!-- <div *ngIf="childData?.children && childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection'"
