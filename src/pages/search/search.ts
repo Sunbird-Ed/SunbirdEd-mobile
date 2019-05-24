@@ -408,21 +408,21 @@ export class SearchPage implements  OnDestroy {
     this.dialCodeResult = undefined;
     this.corRelationList = [];
 
-    if (this.profile) {
+    // if (this.profile) {
 
-      if (this.profile.board && this.profile.board.length) {
-        contentSearchRequest.board = this.applyProfileFilter(this.profile.board, contentSearchRequest.board, 'board');
-      }
+    //   if (this.profile.board && this.profile.board.length) {
+    //     contentSearchRequest.board = this.applyProfileFilter(this.profile.board, contentSearchRequest.board, 'board');
+    //   }
 
-      if (this.profile.medium && this.profile.medium.length) {
-        contentSearchRequest.medium = this.applyProfileFilter(this.profile.medium, contentSearchRequest.medium, 'medium');
-      }
+    //   if (this.profile.medium && this.profile.medium.length) {
+    //     contentSearchRequest.medium = this.applyProfileFilter(this.profile.medium, contentSearchRequest.medium, 'medium');
+    //   }
 
-      if (this.profile.grade && this.profile.grade.length) {
-        contentSearchRequest.grade = this.applyProfileFilter(this.profile.grade, contentSearchRequest.grade, 'gradeLevel');
-      }
+    //   if (this.profile.grade && this.profile.grade.length) {
+    //     contentSearchRequest.grade = this.applyProfileFilter(this.profile.grade, contentSearchRequest.grade, 'gradeLevel');
+    //   }
 
-    }
+    // }
 
     this.contentService.searchContent(contentSearchRequest).toPromise()
       .then((response: ContentSearchResult) => {

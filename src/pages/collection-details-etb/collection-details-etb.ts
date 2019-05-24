@@ -1138,8 +1138,8 @@ export class CollectionDetailsEtbPage implements OnInit {
           },
         ],
         icon: null,
-        metaInfo: contentTypeCount +
-          'items' + '(' + this.fileSizePipe.transform(this.contentDetail.contentData.size, 2) + ')',
+        metaInfo: this.commonUtilService.translateMessage('ITEMS', contentTypeCount)
+          + ' (' + this.fileSizePipe.transform(this.downloadSize, 2) + ')',
       }, {
           cssClass: 'sb-popover info',
         });
@@ -1267,8 +1267,7 @@ export class CollectionDetailsEtbPage implements OnInit {
         },
       ],
       icon: null,
-      sbPopoverContent: contentTypeCount +
-        'items' + '(' + this.fileSizePipe.transform(this.contentDetail.contentData.size, 2) + ')',
+      sbPopoverContent: this.commonUtilService.translateMessage('ITEMS', contentTypeCount) +' (' + this.fileSizePipe.transform(this.contentDetail.sizeOnDevice, 2) + ')',
       metaInfo: this.contentDetail.contentData.name
     }, {
         cssClass: 'sb-popover danger',
