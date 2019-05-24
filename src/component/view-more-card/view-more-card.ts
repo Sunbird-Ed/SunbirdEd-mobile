@@ -15,7 +15,7 @@ import {
   CourseBatchStatus,
   CourseService,
   FetchEnrolledCourseRequest,
-  Course
+  Course, GetContentStateRequest, SharedPreferences
 } from 'sunbird-sdk';
 import { Environment, PageId, InteractType } from '../../service/telemetry-constants';
 
@@ -70,7 +70,14 @@ export class ViewMoreCardComponent implements OnInit {
    * Default method of cass SearchListComponent
    * @param {NavController} navCtrl To navigate user from one page to another
    * @param {NavParams} navParams ref of navigation params
-   * @param {NgZone} ngZone To bind data
+   * @param zone
+   * @param courseUtilService
+   * @param events
+   * @param commonUtilService
+   * @param courseService
+   * @param popoverCtrl
+   * @param telemetryGeneratorService
+   * @param appGlobalService
    */
   constructor(
     public navCtrl: NavController,
@@ -82,7 +89,8 @@ export class ViewMoreCardComponent implements OnInit {
     @Inject('COURSE_SERVICE') private courseService: CourseService,
     private popoverCtrl: PopoverController,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private appGlobalService: AppGlobalService
+    private appGlobalService: AppGlobalService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
   ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
@@ -197,17 +205,33 @@ export class ViewMoreCardComponent implements OnInit {
   }
 
   resumeCourse(content: any) {
-    if (content.lastReadContentId && content.status === 1) {
-      this.events.publish('course:resume', {
-        content: content
-      });
-    } else {
-      this.navCtrl.push(EnrolledCourseDetailsPage, {
-        content: content
-      });
-    }
-  }
+    const identifier  = content.contentId || content.identifier;
+    this.getContentState(content);
 
+    const userId = content.userId;
+    const lastReadContentIdKey = 'lastReadContentId_' + userId + '_' + identifier + '_' + content.batchId;
+    this.preferences.getString(lastReadContentIdKey).subscribe((value) => {
+      content.lastReadContentId = value;
+      if (content.lastReadContentId) {
+        this.events.publish('course:resume', {
+          content: content
+        });
+      } else {
+        this.navCtrl.push(EnrolledCourseDetailsPage, {
+          content: content
+        });
+      }
+    });
+  }
+  getContentState(course: any) {
+    const request: GetContentStateRequest = {
+      userId: course['userId'],
+      courseIds: [course['contentId']],
+      returnRefreshedContentStates: true,
+      batchId: course['batchId']
+    };
+    this.courseService.getContentState(request).subscribe();
+  }
   ngOnInit() {
     if (this.type === 'enrolledCourse') {
       this.content.cProgress = this.courseUtilService.getCourseProgress(this.content.leafNodesCount, this.content.progress);

@@ -182,10 +182,12 @@ export class EnrolledCourseDetailsPage implements OnInit {
   private corRelationList: Array<CorrelationData>;
   headerObservable: any;
   content: Content;
+
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     private navCtrl: NavController,
     private navParams: NavParams,
+    private alertCtrl: AlertController,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private zone: NgZone,
     private events: Events,
@@ -767,16 +769,16 @@ export class EnrolledCourseDetailsPage implements OnInit {
   /**
    * Function to get status of child contents
    */
-  getStatusOfChildContent(childrenData) {
+  async getStatusOfChildContent(childrenData) {
     const contentStatusData = this.contentStatusData;
     let lastReadContentId = this.courseCardData.lastReadContentId;
     const userId = this.appGlobalService.getUserId();
     const lastReadContentIdKey = 'lastReadContentId_' + userId + '_' + this.identifier + '_' + this.courseCardData.batchId;
-    this.preferences.getString(lastReadContentIdKey).toPromise()
-      .then(val => {
-        this.courseCardData.lastReadContentId = val;
-        lastReadContentId = val;
-      });
+    await this.preferences.getString(lastReadContentIdKey).toPromise()
+    .then(val => {
+      this.courseCardData.lastReadContentId = val;
+      lastReadContentId = val;
+    });
 
     this.zone.run(() => {
       childrenData.forEach(childContent => {
