@@ -1268,7 +1268,7 @@ export class CollectionDetailsEtbPage implements OnInit {
       ],
       icon: null,
       sbPopoverContent: contentTypeCount +
-        'items' + '(' + this.fileSizePipe.transform(this.contentDetail.contentData.size, 2) + ')',
+        'items' + '(' + this.fileSizePipe.transform(this.contentDetail.sizeOnDevice, 2) + ')',
       metaInfo: this.contentDetail.contentData.name
     }, {
         cssClass: 'sb-popover danger',
