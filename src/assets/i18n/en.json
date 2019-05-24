@@ -243,7 +243,7 @@
   "INVALID_CONTENT": "Invalid content",
   "INVALID_QR": "Invalid QR code",
   "ITEMS_SELECTED": "files selected",
-  "ITMES": "{{%s}} items",
+  "ITEMS": "{{%s}} items",
   "I_AGREE_TO_TNC": "I agree to the terms and conditions of use",
   "JOIN": "JOIN",
   "LANGUAGE": "Language",
