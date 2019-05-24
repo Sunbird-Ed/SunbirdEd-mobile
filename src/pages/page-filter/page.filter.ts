@@ -29,6 +29,7 @@ export class PageFilter {
   filters;
   pageId;
   facetsFilter;
+  backupFilters;
 
   backButtonFunc = undefined;
   selectedLanguage = 'en';
@@ -83,6 +84,7 @@ export class PageFilter {
 
   async initFilterValues() {
     this.filters = this.navParams.get('filter');
+    this.backupFilters = JSON.parse(JSON.stringify(this.filters));
     this.pageId = this.navParams.get('pageId');
     const loader = this.commonUtilService.getLoader();
     loader.present();
@@ -236,6 +238,8 @@ export class PageFilter {
       InteractSubtype.CANCEL,
       Environment.HOME,
       this.pageId);
+
+    this.callback.applyFilter(this.pagetAssemblefilter, this.backupFilters);
     this.viewCtrl.dismiss();
   }
 
