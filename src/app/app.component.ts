@@ -26,6 +26,7 @@ import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
 import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
 import {
   AuthService,
+  ErrorEventType,
   EventNamespace,
   EventsBusService,
   OAuthSession,
@@ -761,8 +762,10 @@ export class MyApp implements OnInit, AfterViewInit {
   }
 
   private handleAuthErrors() {
-    this.eventsBusService.events(EventNamespace.ERROR).take(1).subscribe(() => {
-      this.logoutHandlerService.onLogout();
-    });
+    this.eventsBusService.events(EventNamespace.ERROR)
+      .filter((e) => e.type === ErrorEventType.AUTH_TOKEN_REFRESH_ERROR)
+      .take(1).subscribe(() => {
+        this.logoutHandlerService.onLogout();
+      });
   }
 }
