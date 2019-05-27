@@ -648,6 +648,9 @@ export class SearchPage implements  OnDestroy {
         this.showLoader = false;
         if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
           this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
+        } else {
+          this.commonUtilService.showToast('SOMETHING_WENT_WRONG');
+          this.navCtrl.pop();
         }
       });
     });
