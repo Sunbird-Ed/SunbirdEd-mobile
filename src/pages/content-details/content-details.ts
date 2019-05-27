@@ -720,7 +720,7 @@ export class ContentDetailsPage {
     if (this.downloadAndPlay) {
       console.log('Inside Download And Play');
 
-      if (!this.contentDownloadable[this.content.identifier]) {
+      if (!this.contentDownloadable[this.content.identifier] || this.content.isUpdateAvailable) {
         /**
          * Content is not downloaded then call the following method
          * It will download the content and play it
