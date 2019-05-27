@@ -2,43 +2,43 @@
     "faqs": [
         {
             "topic": "A message “Content Coming Soon” is displayed on my screen and I cannot see any content for the QR code scanned",
-            "description": "The state you belong to is in the process of creating content for this QR code. The state is working on huge quantities of textbooks thereby causing this delay. The content will soon be available once the state has created it."
+            "description": "Your State is currently creating content for this QR code. The delay is because there is a large number of textbooks for many classes, mediums and subjects. You will see the content  as soon as the State has created it."
         },
         {
-            "topic": "My device is on Andriod 4.4, I cannot play content on my device",
+            "topic": "I have an Android 4.4 device, I cannot play content on it",
             "description": "DIKSHA mobile app is not compatible with Android 4.4, hence you cannot play some content on your device"
         },
         {
-            "topic": "I cannot  see details for my medium, class, subject and language in the drop-down menu",
-            "description": "The state you belong to has not created this list yet. These details will become available as soon as the State adds them"
+            "topic": "I cannot  see my board, medium, class and subject",
+            "description": "Your State does not currently support all boards, mediums, classes and subjects. As soon as your State adds them, you will see it in the list.  "
         },
         {
             "topic": "I am unable to sign in",
-            "description": "To use the DIKSHA mobile app, you must first Sign Up. You can sign up using any of these options:\n\t\t<ul>\n\t\t<li> Registered mobile number or email ID </li>\n\t\t<li> State provided ID </li>\n\t\t<li> Existing Google(gmail) ID </li>\n\t\t</ul>"
+            "description": "To use the DIKSHA mobile app, you must first Sign Up. You can sign up when you are connected to the Internet using any of these options:\n\t\t<ul>\n\t\t<li> Registered mobile number or email ID </li>\n\t\t<li> State provided ID </li>\n\t\t<li> Existing Google(Gmail) ID </li>\n\t\t</ul>\nIf you have already Signed Up, check if you have proper Internet connectivity."
         },
         {
-            "topic": "I cannot see content for my medium, class, subject and language",
-            "description": "The state you belong to has not created or added content for this list yet"
+            "topic": "I cannot see content for my board, medium, class or subject ",
+            "description": "Your State has not yet created or added content for your medium, board, class or subject. If you see  books listed in the app library, you will most likely get the content in this academic year.   "
         },
         {
-            "topic": "I want to play content when there is no internet",
-            "description": "You can download content when there is Internet and only the downloaded content can be played when there is no Internet\nYou can play YouTube videos only when there is an Internet connection, as YouTube does not allow video downloading"
+            "topic": "I want to play content when there is no Internet",
+            "description": "You can download content only when you are connected to the Internet. Only the downloaded content can be played later without the Internet. \nYou can play YouTube videos only when you are connected to the Internet because YouTube does not allow other apps to download videos."
         },
         {
-            "topic": "DIKSHA content consumes a lot of space on my phone",
-            "description": "You can move or delete the downloaded content from your phone storage to clear space"
+            "topic": "DIKSHA content takes up a lot of space on my phone",
+            "description": "You can delete the downloaded content from the downloads tab in the app to free up space"
         },
         {
             "topic": "I want to create and add content on DIKSHA",
-            "description": "Only teachers appointed by their respective state board can create and add content on DIKSHA. Contact your state authorities for creation rights"
+            "description": "Currently, the State appoints  teachers to create and add content on DIKSHA. If you are interested in creating content,  send a request to your State authority to get creation rights"
         },
         {
             "topic": "I want to unenroll from a course",
-            "description": "Select the course you want to unenroll from, tap the burger menu(three vertical dots) on the top right corner and tap Unenroll"
+            "description": "Select the course you want to unenroll from, tap the options menu (three vertical dots) on the top right corner and tap 'Unenroll'"
         },
         {
-            "topic": "I want to view DIKSHA app on IOS and desktop",
-            "description": "This is currently not supported. However, we are currently working on an offline desktop application which is expected to be ready later this year"
+            "topic": "I want to get the DIKSHA app on iOS or desktop",
+            "description": "You can visit https://www.diksha.gov.in/explore/ using your browser on iOS or desktop devices to view DIKSHA content. We are currently working on a desktop application for offline use that is expected to be ready later this year"
         }
     ],
     "constants": {
@@ -54,8 +54,8 @@
         "resolveMsg": "Look through the list to resolve your issue",
         "sorryMsg": "Sorry about that!",
         "submitButton": "Submit",
-        "tellMoreMsg": "Tell us a more about the problem you faced",
-        "thanksMsg": "Thanks for your response!",
+        "tellMoreMsg": "Tell us more about the problem you faced",
+        "thanksMsg": "Thank you for your response!",
         "triggerEmailMsg": "After you add details in the text box and tap the Initiate email button, we will trigger an email on your behalf. You can add further details and/or attach files there.",
         "typeHere": "Type Here...",
         "yesMsg": "Yes"

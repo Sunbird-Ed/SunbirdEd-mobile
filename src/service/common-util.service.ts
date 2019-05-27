@@ -43,7 +43,7 @@ export class CommonUtilService implements OnDestroy {
     connectSubscription: any;
 
     disconnectSubscription: any;
-    private alert?: Alert;
+    private alert?: any;
 
     constructor(
         private toastCtrl: ToastController,
@@ -325,7 +325,7 @@ export class CommonUtilService implements OnDestroy {
                 ]
             });
             this.alert.present();*/
-            const confirm = this.popOverCtrl.create(SbGenericPopoverComponent, {
+            this.alert = this.popOverCtrl.create(SbGenericPopoverComponent, {
                 sbPopoverHeading: this.translateMessage('BACK_TO_EXIT'),
                 sbPopoverMainTitle: '',
                 actionsButtons: [
@@ -341,7 +341,7 @@ export class CommonUtilService implements OnDestroy {
             }, {
                     cssClass: 'sb-popover',
                 });
-            confirm.onDidDismiss((leftBtnClicked: any) => {
+            this.alert.onDidDismiss((leftBtnClicked: any) => {
                 if (leftBtnClicked == null) {
                     this.telemetryGeneratorService.generateInteractTelemetry(
                         InteractType.TOUCH,
@@ -369,7 +369,7 @@ export class CommonUtilService implements OnDestroy {
                     this.telemetryGeneratorService.generateEndTelemetry('app', '', '', environment);
                 }
             });
-            confirm.present({
+            this.alert.present({
                 ev: event
             });
             this.telemetryGeneratorService.generateBackClickedTelemetry(pageId, environment, isNavBack);

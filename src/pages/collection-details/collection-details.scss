@@ -28,4 +28,19 @@ page-collection-details {
     .scroll-content { 
         margin-bottom: 0px !important;
     }
+
+    ul {
+        padding: 0 !important;
+        margin: 0px;
+  
+        &.rating li {
+          padding: 1px 1px !important;
+          background: none;
+          color: map-get($colors, primary);
+  
+          ion-icon {
+            font-size: 16px;
+          }
+        }
+    }
 }

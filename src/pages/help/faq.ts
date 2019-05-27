@@ -73,6 +73,9 @@ export class FaqPage {
       });
 
     window.removeEventListener('message', this.messageListener);
+    if (this.loading) {
+      this.loading.dismissAll();
+    }
   }
 
   async ionViewWillEnter() {
@@ -117,7 +120,8 @@ export class FaqPage {
   }
   handleBackButton() {
     const length = this.iframe.nativeElement.contentWindow.location.href.split('/').length;
-    if (this.iframe.nativeElement.contentWindow.location.href.split('/')[length - 1].startsWith('consumption')) {
+    if (this.iframe.nativeElement.contentWindow.location.href.split('/')[length - 1].startsWith('consumption') ||
+        this.iframe.nativeElement.contentWindow.history.length === 1) {
       this.navCtrl.pop();
       this.backButtonFunc();
     } else {
@@ -125,25 +129,29 @@ export class FaqPage {
     }
   }
   onLoad() {
-    if (this.loading) {
-      this.loading.dismissAll();
-    }
     const element = document.getElementsByTagName('iframe')[0];
     if (element) {
-      if (element.contentDocument.documentElement.getElementsByTagName('body').length === 0 ) {
+      if (element.contentDocument.documentElement.getElementsByTagName('body')[0].innerHTML.length !== 0 && this.loading ) {
+          this.loading.dismissAll();
+      }
+      if (element.contentDocument.documentElement.getElementsByTagName('body').length === 0 ||
+          element['contentWindow'].location.href.startsWith('chrome-error:')
+          ) {
         this.onError();
       }
     }
   }
 
   onError() {
+    if (this.loading) {
+      this.loading.dismissAll();
+    }
     this.faq.url = 'file:///android_asset/www/assets/faq/consumption-faqs.html?selectedlang=en&randomid=' + Math.random();
     this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
   }
 
   private async createAndPresentLoadingSpinner() {
     this.loading = this.loadingCtrl.create({
-      dismissOnPageChange: true,
       showBackdrop: true,
       spinner: 'crescent'
     });

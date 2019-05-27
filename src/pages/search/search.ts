@@ -1,6 +1,7 @@
 import { BatchConstants } from './../../app/app.constant';
 import {Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
 import {Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, Loading} from 'ionic-angular';
+import {Content as ContentView} from 'ionic-angular';
 import {
   CachedItemRequestSourceFrom,
   Content,
@@ -135,6 +136,7 @@ export class SearchPage implements  OnDestroy {
   batches: any;
   loader?: Loading;
   userId: any;
+  @ViewChild('contentView') contentView: ContentView;
   constructor(
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private navParams: NavParams,
@@ -380,6 +382,7 @@ export class SearchPage implements  OnDestroy {
   }
 
   handleSearch() {
+    this.scrollToTop();
     if (this.searchKeywords.length < 3) {
       return;
     }
@@ -405,21 +408,21 @@ export class SearchPage implements  OnDestroy {
     this.dialCodeResult = undefined;
     this.corRelationList = [];
 
-    if (this.profile) {
+    // if (this.profile) {
 
-      if (this.profile.board && this.profile.board.length) {
-        contentSearchRequest.board = this.applyProfileFilter(this.profile.board, contentSearchRequest.board, 'board');
-      }
+    //   if (this.profile.board && this.profile.board.length) {
+    //     contentSearchRequest.board = this.applyProfileFilter(this.profile.board, contentSearchRequest.board, 'board');
+    //   }
 
-      if (this.profile.medium && this.profile.medium.length) {
-        contentSearchRequest.medium = this.applyProfileFilter(this.profile.medium, contentSearchRequest.medium, 'medium');
-      }
+    //   if (this.profile.medium && this.profile.medium.length) {
+    //     contentSearchRequest.medium = this.applyProfileFilter(this.profile.medium, contentSearchRequest.medium, 'medium');
+    //   }
 
-      if (this.profile.grade && this.profile.grade.length) {
-        contentSearchRequest.grade = this.applyProfileFilter(this.profile.grade, contentSearchRequest.grade, 'gradeLevel');
-      }
+    //   if (this.profile.grade && this.profile.grade.length) {
+    //     contentSearchRequest.grade = this.applyProfileFilter(this.profile.grade, contentSearchRequest.grade, 'gradeLevel');
+    //   }
 
-    }
+    // }
 
     this.contentService.searchContent(contentSearchRequest).toPromise()
       .then((response: ContentSearchResult) => {
@@ -1110,4 +1113,7 @@ export class SearchPage implements  OnDestroy {
       });
   }
 
+  scrollToTop() {
+    this.contentView.scrollToTop();
+  }
 }
