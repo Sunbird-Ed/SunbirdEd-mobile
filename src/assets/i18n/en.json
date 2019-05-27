@@ -151,7 +151,7 @@
   "DOWNLOAD_BNAV": "Downloads",
   "DOWNLOAD_CANCELED": "Download canceled",
   "DOWNLOAD_COMPLETED": "Download completed",
-  "DOWNLOAD_CONFIRMATION_TEXT": "Do you want to download?",
+  "DOWNLOAD_CONFIRMATION_TEXT": "Content will be saved on your device",
   "DOWNLOAD_CONTENT": "Download ({{%s}})",
   "EDIT": "Edit",
   "EDIT_EMAIL_POPUP_TITLE": "Edit Email ID",
