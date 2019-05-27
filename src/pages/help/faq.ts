@@ -73,6 +73,9 @@ export class FaqPage {
       });
 
     window.removeEventListener('message', this.messageListener);
+    if (this.loading) {
+      this.loading.dismissAll();
+    }
   }
 
   async ionViewWillEnter() {
@@ -126,11 +129,11 @@ export class FaqPage {
     }
   }
   onLoad() {
-    if (this.loading) {
-      this.loading.dismissAll();
-    }
     const element = document.getElementsByTagName('iframe')[0];
     if (element) {
+      if (element.contentDocument.documentElement.getElementsByTagName('body')[0].innerHTML.length !== 0 && this.loading ) {
+          this.loading.dismissAll();
+      }
       if (element.contentDocument.documentElement.getElementsByTagName('body').length === 0 ||
           element['contentWindow'].location.href.startsWith('chrome-error:')
           ) {
@@ -140,13 +143,15 @@ export class FaqPage {
   }
 
   onError() {
+    if (this.loading) {
+      this.loading.dismissAll();
+    }
     this.faq.url = 'file:///android_asset/www/assets/faq/consumption-faqs.html?selectedlang=en&randomid=' + Math.random();
     this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
   }
 
   private async createAndPresentLoadingSpinner() {
     this.loading = this.loadingCtrl.create({
-      dismissOnPageChange: true,
       showBackdrop: true,
       spinner: 'crescent'
     });

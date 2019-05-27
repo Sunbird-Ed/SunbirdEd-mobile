@@ -133,7 +133,7 @@ export class MyApp implements OnInit, AfterViewInit {
 
 
       this.registerDeeplinks();
-      // this.startOpenrapDiscovery();
+      this.startOpenrapDiscovery();
       this.saveDefaultSyncSetting();
       this.showAppWalkThroughScreen();
       this.checkAppUpdateAvailable();
@@ -568,6 +568,13 @@ export class MyApp implements OnInit, AfterViewInit {
           }
         );
       }).do((response: { ip?: string, actionType: 'connected' | 'disconnected' }) => {
+        const values = new Map();
+        values['openrapInfo'] = response;
+        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+          response.actionType === 'connected' ? 'openrap-device-connected' : 'openrap-device-disconnected',
+          Environment.HOME,
+          Environment.HOME, undefined,
+          values);
         SunbirdSdk.instance.updateContentServiceConfig({
           host: response.actionType === 'connected' ? response.ip : undefined
         });

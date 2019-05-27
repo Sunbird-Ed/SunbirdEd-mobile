@@ -201,6 +201,8 @@ export class CollectionDetailsEtbPage implements OnInit {
   ratingComment = '';
   // defaultIcon
   defaultAppIcon: string;
+
+  localResourseCount: number;
   /**
    * Telemetry roll up object
    */
@@ -773,6 +775,7 @@ export class CollectionDetailsEtbPage implements OnInit {
 
           if (!this.isDepthChild) {
             this.downloadSize = 0;
+            this.localResourseCount = 0;
             this.getContentsSize(data.children || []);
           }
           this.showChildrenLoader = false;
@@ -792,10 +795,17 @@ export class CollectionDetailsEtbPage implements OnInit {
       if (value.contentData.size) {
         this.downloadSize += Number(value.contentData.size);
       }
+      if (!value.children) {
+        if (value.isAvailableLocally) {
+          this.localResourseCount++;
+        }
+      }
+
       this.getContentsSize(value.children);
       if (value.isAvailableLocally === false) {
         this.downloadIdentifiers.push(value.contentData.identifier);
       }
+
     });
     if (this.downloadIdentifiers.length && !this.isDownloadCompleted) {
       this.showDownloadBtn = true;
@@ -899,6 +909,8 @@ export class CollectionDetailsEtbPage implements OnInit {
           if (downloadEvent.payload.identifier === this.contentDetail.identifier) {
             this.downloadProgress = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
             if (this.downloadProgress === 100) {
+              this.showLoading = false;
+              this.refreshHeader();
               this.contentDetail.isAvailableLocally = true;
             }
           }
@@ -906,8 +918,6 @@ export class CollectionDetailsEtbPage implements OnInit {
 
         // Get child content
         if (event.type === ContentEventType.IMPORT_COMPLETED) {
-          this.showLoading = false;
-          this.refreshHeader();
           const contentImportedEvent = event as ContentImportCompleted;
 
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {
@@ -943,9 +953,7 @@ export class CollectionDetailsEtbPage implements OnInit {
                 this.showLoading = false;
                 this.refreshHeader();
                 this.updateSavedResources();
-                setTimeout(() => {
-                  this.setChildContents();
-                }, 500);
+                this.setChildContents();
                 this.contentDetail.isAvailableLocally = true;
               }
 
@@ -1122,8 +1130,8 @@ export class CollectionDetailsEtbPage implements OnInit {
   showDownloadConfirmationAlert(myEvent) {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       let contentTypeCount;
-      if (this.contentDetail.contentData.contentTypesCount) {
-        contentTypeCount = this.contentTypesCount.TextBookUnit;
+      if (this.downloadIdentifiers.length) {
+        contentTypeCount = this.downloadIdentifiers.length;
       } else {
         contentTypeCount = '';
       }
@@ -1138,7 +1146,8 @@ export class CollectionDetailsEtbPage implements OnInit {
           },
         ],
         icon: null,
-        metaInfo: this.commonUtilService.translateMessage('ITEMS', contentTypeCount) + ' (' + this.fileSizePipe.transform(this.contentDetail.contentData.size, 2) + ')',
+        metaInfo: this.commonUtilService.translateMessage('ITEMS', contentTypeCount)
+          + ' (' + this.fileSizePipe.transform(this.downloadSize, 2) + ')',
       }, {
           cssClass: 'sb-popover info',
         });
@@ -1246,11 +1255,16 @@ export class CollectionDetailsEtbPage implements OnInit {
       this.objRollup,
       this.corRelationList);
     let contentTypeCount;
-    if (this.contentDetail.contentData.contentTypesCount) {
-      contentTypeCount = this.contentTypesCount.TextBookUnit;
+    let metaInfo: string;
+
+    if (this.localResourseCount) {
+      contentTypeCount = this.localResourseCount + '';
+      metaInfo = this.commonUtilService.translateMessage('ITEMS', contentTypeCount) +
+      ' (' + this.fileSizePipe.transform(this.contentDetail.sizeOnDevice, 2) + ')';
     } else {
-      contentTypeCount = '';
+      metaInfo = this.fileSizePipe.transform(this.contentDetail.sizeOnDevice, 2);
     }
+
     const confirm = this.popoverCtrl.create(SbPopoverComponent, {
       content: this.contentDetail,
       isChild: this.isDepthChild,
@@ -1266,7 +1280,7 @@ export class CollectionDetailsEtbPage implements OnInit {
         },
       ],
       icon: null,
-      sbPopoverContent: this.commonUtilService.translateMessage('ITEMS', contentTypeCount) +' (' + this.fileSizePipe.transform(this.contentDetail.sizeOnDevice, 2) + ')',
+      sbPopoverContent: metaInfo,
       metaInfo: this.contentDetail.contentData.name
     }, {
         cssClass: 'sb-popover danger',

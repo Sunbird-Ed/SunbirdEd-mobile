@@ -134,4 +134,6 @@
           spec="https://github.com/swayangjit/cordova-plugin-android-downloadmanager.git"/>
   <plugin name="cordova-plugin-statusbar" spec="^2.4.2"/>
   <plugin name="cordova-plugin-local-notification" spec="https://github.com/katzer/cordova-plugin-local-notifications.git#master" />
+  <plugin name="com.jjdltc.cordova.plugin.zip" spec="https://github.com/swayangjit/jjdltc-cordova-plugin-zip.git"/>
+  <plugin name="cordova-plugin-openrap" spec="https://github.com/project-sunbird/cordova-plugin-openrap.git" />
 </widget>
