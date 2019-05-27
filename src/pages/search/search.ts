@@ -1,6 +1,7 @@
 import { BatchConstants } from './../../app/app.constant';
 import {Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
 import {Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, Loading} from 'ionic-angular';
+import {Content as ContentView} from 'ionic-angular';
 import {
   CachedItemRequestSourceFrom,
   Content,
@@ -135,6 +136,7 @@ export class SearchPage implements  OnDestroy {
   batches: any;
   loader?: Loading;
   userId: any;
+  @ViewChild('contentView') contentView: ContentView;
   constructor(
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private navParams: NavParams,
@@ -380,6 +382,7 @@ export class SearchPage implements  OnDestroy {
   }
 
   handleSearch() {
+    this.scrollToTop();
     if (this.searchKeywords.length < 3) {
       return;
     }
@@ -1110,4 +1113,7 @@ export class SearchPage implements  OnDestroy {
       });
   }
 
+  scrollToTop() {
+    this.contentView.scrollToTop();
+  }
 }
