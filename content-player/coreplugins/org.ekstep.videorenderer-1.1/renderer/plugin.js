@@ -102,7 +102,8 @@ org.ekstep.contentrenderer.baseLauncher.extend({
 
         if (data.streamingUrl || window.cordova) {
             var videoPlayer = videojs('videoElement', {
-                "controls": true, "autoplay": true, "preload": "auto"
+                "controls": true, "autoplay": true, "preload": "auto",
+                "nativeControlsForTouch": true
             });
         } else {
             var videoPlayer = videojs('videoElement', {
