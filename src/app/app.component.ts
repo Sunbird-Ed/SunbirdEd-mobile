@@ -79,10 +79,10 @@ export class MyApp implements OnInit, AfterViewInit {
   };
   public sideMenuEvent = new EventEmitter;
 
-  readonly permissionList = [
-    AndroidPermission.WRITE_EXTERNAL_STORAGE,
-    AndroidPermission.RECORD_AUDIO,
-    AndroidPermission.CAMERA];
+  // readonly permissionList = [
+  //   AndroidPermission.WRITE_EXTERNAL_STORAGE,
+  //   AndroidPermission.RECORD_AUDIO,
+  //   AndroidPermission.CAMERA];
   private telemetryAutoSyncUtil: TelemetryAutoSyncUtil;
 
   profile: any = {};
@@ -137,7 +137,7 @@ export class MyApp implements OnInit, AfterViewInit {
       this.saveDefaultSyncSetting();
       this.showAppWalkThroughScreen();
       this.checkAppUpdateAvailable();
-      this.requestAppPermissions();
+      // this.requestAppPermissions();
       this.makeEntryInSupportFolder();
       this.checkForTncUpdate();
       this.handleAuthErrors();
@@ -449,24 +449,24 @@ export class MyApp implements OnInit, AfterViewInit {
     }
   }
 
-  private async requestAppPermissions() {
-    return this.permission.checkPermissions(this.permissionList)
-      .mergeMap((statusMap: { [key: string]: AndroidPermissionsStatus }) => {
-        const toRequest: AndroidPermission[] = [];
+  // private async requestAppPermissions() {
+  //   return this.permission.checkPermissions(this.permissionList)
+  //     .mergeMap((statusMap: { [key: string]: AndroidPermissionsStatus }) => {
+  //       const toRequest: AndroidPermission[] = [];
 
-        for (const permission in statusMap) {
-          if (!statusMap[permission].hasPermission) {
-            toRequest.push(permission as AndroidPermission);
-          }
-        }
+  //       for (const permission in statusMap) {
+  //         if (!statusMap[permission].hasPermission) {
+  //           toRequest.push(permission as AndroidPermission);
+  //         }
+  //       }
 
-        if (!toRequest.length) {
-          return Observable.of(undefined);
-        }
+  //       if (!toRequest.length) {
+  //         return Observable.of(undefined);
+  //       }
 
-        return this.permission.requestPermissions(toRequest);
-      }).toPromise();
-  }
+  //       return this.permission.requestPermissions(toRequest);
+  //     }).toPromise();
+  // }
 
 
   private async makeEntryInSupportFolder() {

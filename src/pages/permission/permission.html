@@ -1,7 +1,7 @@
 <ion-content padding *ngIf="!changePermissionAccess">
   <p class="permission-title mt-0">{{'PERMISSION_REQUIRED_TITLE' | translate }}</p>
   <div class="permission-container">
-    <div *ngFor="let item of permissionList" class="item-row d-flex mb-16">
+    <div *ngFor="let item of permissionListDetails" class="item-row d-flex mb-16">
       <div class="icon-col pr-16">
         <ion-icon item-start name="{{item?.icon}}"></ion-icon>
       </div>
@@ -24,7 +24,7 @@
     <p class="permission-title" class="pl-16">{{'PERMISSION_EDIT_TITLE' | translate}}</p>
   </div>
   <div class="permission-container">
-    <div *ngFor="let item of permissionList" class="item-row mb-16 d-flex">
+    <div *ngFor="let item of permissionListDetails" class="item-row mb-16 d-flex">
       <div style="flex-grow:1000;" class="pl-16">
         <p class="title m-0 mb-8">{{item?.title}}</p>
         <p class="description">{{item?.description}}</p>
