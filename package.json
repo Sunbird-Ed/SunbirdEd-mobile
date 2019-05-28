@@ -15,7 +15,7 @@
     "build-rel": "ionic cordova build android --release --prod --device --generateSourceMap=false",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "test:ci": "jest --collectCoverage=true --coverageDirectory=coverage --coverageReporters=lcov"
+    "test:ci": "jest --ci --collectCoverage=true --coverageReporters=lcov --forceExit --detectOpenHandles --maxWorkers=10"
   },
   "config": {
     "ionic_source_map_type": "inline-source-map",
@@ -73,8 +73,8 @@
     "cordova-plugin-local-notification": "git+https://github.com/katzer/cordova-plugin-local-notifications.git#master",
     "cordova-plugin-media": "^5.0.2",
     "cordova-plugin-network-information": "2.0.1",
+    "cordova-plugin-openrap": "git+https://github.com/project-sunbird/cordova-plugin-openrap.git#release-1.15.0",
     "cordova-plugin-qr-scanner": "git+https://github.com/project-sunbird/cordova-plugin-qr-scanner.git",
-    "cordova-plugin-openrap": "git+https://github.com/project-sunbird/cordova-plugin-openrap.git",
     "cordova-plugin-screen-orientation": "3.0.1",
     "cordova-plugin-statusbar": "^2.4.2",
     "cordova-plugin-sunbirdsplash": "git+https://github.com/project-sunbird/cordova-plugin-sunbirdsplash.git",
@@ -172,7 +172,8 @@
       "cordova-plugin-buildconfig-reader": {},
       "cordova-plugin-advanced-http": {},
       "cordova-plugin-screen-orientation": {},
-      "cordova-plugin-statusbar": {}
+      "cordova-plugin-statusbar": {},
+      "cordova-plugin-openrap": {}
     },
     "platforms": []
   },
@@ -205,7 +206,6 @@
       "src/pages/user-and-groups/popover/popover.spec.ts",
       "src/pages/user-and-groups/user-and-groups.spec.ts",
       "src/pages/view-more-activity/view-more-activity.spec.ts",
-
       "src/pages/download-manager/downloads-tab/downloads-tab.spec.ts",
       "src/pages/profile-settings/profile-settings.spec.ts",
       "src/component/confirm-alert/confirm-alert.component.spec.ts",
