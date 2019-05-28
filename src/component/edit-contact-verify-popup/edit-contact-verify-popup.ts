@@ -88,6 +88,7 @@ export class EditContactVerifyPopupComponent {
       loader.present();
       this.profileService.generateOTP(req).toPromise()
         .then(() => {
+          this.description = this.commonUtilService.translateMessage('OTP_RESENT');
           loader.dismiss();
         })
         .catch(() => {
