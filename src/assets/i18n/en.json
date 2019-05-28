@@ -330,6 +330,7 @@
   "OPTION_PRIVACY_VIOLATION": "Data privacy violation",
   "OTHER_USERS": "Other Users",
   "OTP_PLACEHOLDER": "Enter OTP",
+  "OTP_RESENT": "OTP has been resent",
   "OVERLAY_INFO_TEXT_COMMON": "Sign in to access all the features ",
   "OVERLAY_INFO_TEXT_HOME": "Find tasks, popular and recommended courses, and peer discussions, all in one place",
   "OVERLAY_INFO_TEXT_TAKE_COURSE": "Courses are for registered users. Sign in to access the course.",
