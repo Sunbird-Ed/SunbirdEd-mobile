@@ -33,6 +33,7 @@ export enum PageId {
     SIGNUP = 'signup',
     ONBOARDING = 'onboarding',
     USER_TYPE_SELECTION = 'user-type-selection',
+    PERMISSION = 'permission',
     HOME = 'home',
     COURSES = 'courses',
     LIBRARY = 'library',

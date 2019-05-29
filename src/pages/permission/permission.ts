@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { CommonUtilService, AppGlobalService } from '@app/service';
+import { IonicPage, NavController, NavParams, Events } from 'ionic-angular';
+import { CommonUtilService, AppGlobalService, AppHeaderService } from '@app/service';
 import { PageId } from '../../service/telemetry-constants';
 import { SunbirdQRScanner } from '../qrscanner';
 import { ProfileSettingsPage } from '../profile-settings/profile-settings';
@@ -49,7 +49,9 @@ export class PermissionPage {
     public commonUtilService: CommonUtilService,
     private scannerService: SunbirdQRScanner,
     private permission: AndroidPermissionsService,
-    private appGlobalService: AppGlobalService) {
+    private appGlobalService: AppGlobalService,
+    private headerService: AppHeaderService,
+    private event: Events) {
   }
 
   ionViewDidLoad() {
@@ -60,6 +62,13 @@ export class PermissionPage {
     this.showScannerPage = Boolean(this.navParams.get('showScannerPage'));
     this.showProfileSettingPage = Boolean(this.navParams.get('showProfileSettingPage'));
     this.showTabsPage = Boolean(this.navParams.get('showTabsPage'));
+    this.headerService.showHeaderWithBackButton();
+
+    this.event.subscribe('event:showScanner', (data) => {
+      if (data.pageName === PageId.PERMISSION) {
+        this.scannerService.startScanner(PageId.PERMISSION, true);
+      }
+    });
   }
 
   grantAccess() {
@@ -68,13 +77,13 @@ export class PermissionPage {
       // Check if scannerpage is ON and user given permission to camera then open scanner page
       if (this.showScannerPage) {
         if (status && status.hasPermission) {
-          this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
+          this.scannerService.startScanner(PageId.PERMISSION, true);
         } else {
           this.permission.checkPermissions([AndroidPermission.CAMERA]).toPromise().then((cameraStatus) => {
             console.log("cameraStatus", cameraStatus);
-            
-            if (cameraStatus && cameraStatus.hasPermission) {
-              this.scannerService.startScanner(PageId.USER_TYPE_SELECTION, true);
+
+            if (cameraStatus && cameraStatus['android.permission.CAMERA'] && cameraStatus['android.permission.CAMERA'].hasPermission) {
+              this.scannerService.startScanner(PageId.PERMISSION, true);
             } else if (this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
               this.navCtrl.push(ProfileSettingsPage);
             } else {
@@ -92,8 +101,15 @@ export class PermissionPage {
   }
 
   skipAccess() {
-    if (this.showProfileSettingPage) {
+    if (this.showProfileSettingPage || this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
       this.navCtrl.push(ProfileSettingsPage);
+    } else if (this.showScannerPage) {
+      this.permission.checkPermissions([AndroidPermission.CAMERA]).toPromise().then((cameraStatus) => {
+        console.log("cameraStatus", cameraStatus);
+        if (cameraStatus && cameraStatus['android.permission.CAMERA'] && cameraStatus['android.permission.CAMERA'].hasPermission) {
+          this.scannerService.startScanner(PageId.PERMISSION, true);
+        }
+      });
     } else {
       this.navCtrl.push(TabsPage, {
         loginMode: 'guest'
