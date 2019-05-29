@@ -11,6 +11,7 @@ SUNBIRD_CORDOVA_COUNTER=0
 
 # Pass build branch as input
 buildBranch="$1"
+npm install
 
 file="./build_config"
 while IFS="=" read -r key value; do
@@ -25,22 +26,6 @@ while IFS="=" read -r key value; do
   esac
 done < "$file"
 
-git clone -b $buildBranch https://github.com/project-sunbird/genie-sdk-wrapper.git
-cd genie-sdk-wrapper
-rm package-lock.json
-npm install
-npm run build
-
-rm $(pwd)/dist/dependencies.json
-
-npm pack $(pwd)/dist
-
-
-cd ..
-npm install
-npm install $(pwd)/genie-sdk-wrapper/*.tgz --save
-
-rm -rf genie-sdk-wrapper
 
 for cordova_plugin in "${CORDOVA[@]}"
 do
@@ -49,13 +34,15 @@ done
 
 for cordova_plugin in "${SUNBIRD_CORDOVA[@]}"
 do
-  ionic cordova plugin add $cordova_plugin#$buildBranch
+  ionic cordova plugin add $cordova_plugin
 done
+
 
 rm -rf platforms
 
+#Temporary Workaround to generate build as webpack was complaining of Heap Space
+#need to inspect on webpack dependdencies at the earliest
+NODE_OPTIONS=--max-old-space-size=4096 ionic cordova platforms add android@7.0.0
 
-ionic cordova platforms add android@7.0.0
-
-ionic cordova build android --prod --release --buildConfig ./buildConfig/build.json
+NODE_OPTIONS=--max-old-space-size=4096 ionic cordova build android --prod --release --buildConfig ./buildConfig/build.json
 

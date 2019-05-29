@@ -1,8 +1,8 @@
+import { PlayerPageModule } from './../player/player.module';
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { ContentDetailsPage } from './content-details';
-import { FrameworkModule } from 'sunbird';
 import { IonicImageLoader } from 'ionic-image-loader';
 import { Ionic2RatingModule } from 'ionic2-rating';
 import { DirectivesModule } from '../../directives/directives.module';
@@ -10,10 +10,12 @@ import { PipesModule } from '../../pipes/pipes.module';
 import { ContentActionsComponent } from './../../component/content-actions/content-actions';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { ComponentsModule } from '../../component/components.module';
+import { FileSizePipe } from '@app/pipes/file-size/file-size';
 
 @NgModule({
   declarations: [
-    ContentDetailsPage, ContentActionsComponent
+    ContentDetailsPage,
+    ContentActionsComponent
   ],
   entryComponents: [
     ContentActionsComponent
@@ -21,15 +23,16 @@ import { ComponentsModule } from '../../component/components.module';
   imports: [
     IonicPageModule.forChild(ContentDetailsPage),
     TranslateModule.forChild(),
-    FrameworkModule,
     IonicImageLoader,
     DirectivesModule,
     Ionic2RatingModule,
     PipesModule,
-    ComponentsModule
+    ComponentsModule,
+    PlayerPageModule
   ],
   providers: [
-    SocialSharing
+    SocialSharing,
+    FileSizePipe
   ],
   exports: [
     ContentDetailsPage

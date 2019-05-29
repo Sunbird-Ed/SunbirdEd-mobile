@@ -3,7 +3,7 @@
     <ion-title *ngIf="!isNewUser">{{ 'EDIT_PROFILE' | translate }}</ion-title>
     <ion-title *ngIf="isNewUser">{{ 'CREATE_USER' | translate }}</ion-title>
   </ion-navbar>
-</ion-header>
+</ion-header> 
 
 <ion-content>
   <form [formGroup]="guestEditForm">
@@ -16,12 +16,12 @@
       <ion-row>
         <ion-item no-lines>
           <ion-label>{{ 'USER_TYPE_2' | translate | titlecase }}</ion-label>
-          <ion-radio item-left value="STUDENT"></ion-radio>
+          <ion-radio [value]="ProfileType.STUDENT" item-left></ion-radio>
         </ion-item>
 
         <ion-item no-lines>
           <ion-label>{{ 'USER_TYPE_1' | translate | titlecase }}</ion-label>
-          <ion-radio item-left value="TEACHER"></ion-radio>
+          <ion-radio [value]="ProfileType.TEACHER" item-left></ion-radio>
         </ion-item>
       </ion-row>
     </ion-list>

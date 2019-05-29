@@ -1414,5 +1414,51 @@ export const mockRes = {
       'offset': 0
     },
     'responseMessageId': 'f6109260-d2a8-11e8-8a94-859f0a619c07'
-  }
+  },
+  contentMock1: {
+    identifier: 'do_20868712689121'
+  },
+  enrolledCourses: [
+      {
+          contentId: 'do_230868712689121',
+          cProgress: 100,
+          batch: {
+              status: 1
+          }
+      },
+      {
+          contentId: 'do_20868712689121',
+          cProgress: 90,
+          batch: {
+              status: 2
+          }
+      }
+  ],
+  retiredCourses:  [
+        {
+            contentId: 'do_20868712689121',
+            cProgress: 90,
+            batch: {
+                status: 2
+            }
+        }
+    ],
+    openUpcomingBatchesResponse: {
+        result: {
+            content: [
+                {
+                    contentId: 'do_20868712689123123',
+                    cProgress: 0,
+                    batch: {
+                        status: 0
+                    },
+                }
+            ]
+        }
+    },
+    noOpenUpcomingBatchesResponse: {
+        result: {
+            content: []
+        }
+    }
 };

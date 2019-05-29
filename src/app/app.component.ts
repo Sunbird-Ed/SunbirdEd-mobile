@@ -1,396 +1,232 @@
-import {
-  AuthService,
-  BuildParamService,
-  ContainerService,
-  Environment,
-  InteractSubtype,
-  InteractType,
-  PageId,
-  PermissionService,
-  ProfileService,
-  ProfileType,
-  SharedPreferences,
-  TabsPage,
-  TelemetryService,
-  UserProfileService
-} from 'sunbird';
+import { Observable } from 'rxjs';
 import { ProfileSettingsPage } from './../pages/profile-settings/profile-settings';
-import { Component, NgZone, ViewChild } from '@angular/core';
-import { App, Events, Nav, Platform, PopoverController, ToastController, AlertController } from 'ionic-angular';
+import { AfterViewInit, Component, Inject, NgZone, ViewChild, OnInit, EventEmitter } from '@angular/core';
+import { App, Events, Nav, Platform, PopoverController, ToastController, ViewController, NavControllerBase } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, LOGIN_TEACHER_TABS } from './module.service';
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
 import { ImageLoaderConfig } from 'ionic-image-loader';
 import { TranslateService } from '@ngx-translate/core';
-import { SearchPage } from '../pages/search/search';
+import { SearchPage } from '@app/pages/search';
 import { CollectionDetailsPage } from '../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../pages/content-details/content-details';
-import { generateInteractTelemetry } from './telemetryutil';
 import { ContentType, EventTopics, GenericAppConfig, MimeType, PreferenceKey, ProfileConstants } from './app.constant';
-import { EnrolledCourseDetailsPage } from '../pages/enrolled-course-details/enrolled-course-details';
-import { FormAndFrameworkUtilService } from '../pages/profile/formandframeworkutil.service';
-import { AppGlobalService } from '../service/app-global.service';
-import { UserTypeSelectionPage } from '../pages/user-type-selection/user-type-selection';
-import { CommonUtilService } from '../service/common-util.service';
-import { TelemetryGeneratorService } from '../service/telemetry-generator.service';
-import { BroadcastComponent } from '../component/broadcast/broadcast';
+import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
+import { FormAndFrameworkUtilService, GuestProfilePage } from '@app/pages/profile';
+import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, UtilityService, AppHeaderService } from '@app/service';
+import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
 import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
 import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
-
-declare var chcp: any;
-
-const KEY_SUNBIRD_SUPPORT_FILE_PATH = 'sunbird_support_file_path';
+import {
+  AuthService,
+  EventNamespace,
+  EventsBusService,
+  OAuthSession,
+  ProfileService,
+  ProfileType,
+  SharedPreferences,
+  SunbirdSdk,
+  TelemetryAutoSyncUtil,
+  TelemetryService,
+} from 'sunbird-sdk';
+import { tap } from 'rxjs/operators';
+import { Environment, InteractSubtype, InteractType, PageId, ImpressionType } from '../service/telemetry-constants';
+import { TabsPage } from '@app/pages/tabs/tabs';
+import { ContainerService } from '@app/service/container.services';
+import { AndroidPermissionsService } from '../service/android-permissions/android-permissions.service';
+import { AndroidPermission, AndroidPermissionsStatus } from '@app/service/android-permissions/android-permission';
+import { SplashcreenTelemetryActionHandlerDelegate } from '@app/service/sunbird-splashscreen/splashcreen-telemetry-action-handler-delegate';
+import { SplashscreenImportActionHandlerDelegate } from '@app/service/sunbird-splashscreen/splashscreen-import-action-handler-delegate';
+import { OnboardingPage } from '@app/pages/onboarding/onboarding';
+import { SettingsPage } from '@app/pages/settings';
+import { ReportsPage } from '@app/pages/reports';
+import { UserAndGroupsPage } from '@app/pages/user-and-groups';
+import { LogoutHandlerService } from '@app/service/handlers/logout-handler.service';
+import { Network } from '@ionic-native/network';
+import { ResourcesPage } from '@app/pages/resources/resources';
+import { CoursesPage } from '@app/pages/courses/courses';
+import { ProfilePage } from '@app/pages/profile/profile';
+import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
+import { QrCodeResultPage } from '@app/pages/qr-code-result';
 
 @Component({
-  templateUrl: 'app.html'
+  templateUrl: 'app.html',
+  providers: [
+    SplashcreenTelemetryActionHandlerDelegate,
+    SplashscreenImportActionHandlerDelegate
+  ]
 })
-export class MyApp {
+export class MyApp implements OnInit, AfterViewInit {
   @ViewChild(Nav) nav;
   rootPage: any;
   public counter = 0;
+  headerConfig = {
+    showHeader: true,
+    showBurgerMenu: true,
+    actionButtons: ['search'],
+  };
+  public sideMenuEvent = new EventEmitter;
 
-  readonly permissionList = ['android.permission.CAMERA',
-    'android.permission.WRITE_EXTERNAL_STORAGE',
-    'android.permission.ACCESS_FINE_LOCATION',
-    'android.permission.RECORD_AUDIO'];
+  readonly permissionList = [
+    AndroidPermission.WRITE_EXTERNAL_STORAGE,
+    AndroidPermission.RECORD_AUDIO,
+    AndroidPermission.CAMERA];
+  private telemetryAutoSyncUtil: TelemetryAutoSyncUtil;
+
+  profile: any = {};
+
 
   constructor(
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
+    @Inject('AUTH_SERVICE') private authService: AuthService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     private platform: Platform,
-    statusBar: StatusBar,
+    private statusBar: StatusBar,
     private toastCtrl: ToastController,
-    private authService: AuthService,
     private containerService: ContainerService,
-    private permission: PermissionService,
+    private permission: AndroidPermissionsService,
     private imageLoaderConfig: ImageLoaderConfig,
-    public app: App,
-    public translate: TranslateService,
+    private app: App,
+    private translate: TranslateService,
     private events: Events,
     private zone: NgZone,
-    private telemetryService: TelemetryService,
-    private preference: SharedPreferences,
-    private userProfileService: UserProfileService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private event: Events,
-    private profileService: ProfileService,
-    private preferences: SharedPreferences,
-    private container: ContainerService,
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private buildParamService: BuildParamService,
-    public popoverCtrl: PopoverController,
-    private tncUpdateHandlerService: TncUpdateHandlerService
+    private popoverCtrl: PopoverController,
+    private tncUpdateHandlerService: TncUpdateHandlerService,
+    private utilityService: UtilityService,
+    private splashcreenTelemetryActionHandlerDelegate: SplashcreenTelemetryActionHandlerDelegate,
+    private splashscreenImportActionHandlerDelegate: SplashscreenImportActionHandlerDelegate,
+    private headerServie: AppHeaderService,
+    private logoutHandlerService: LogoutHandlerService,
+    private network: Network
   ) {
-
-    const that = this;
-
+    this.telemetryAutoSyncUtil = new TelemetryAutoSyncUtil(this.telemetryService);
     platform.ready().then(async () => {
-      this.registerDeeplinks();
-      this.openrapDiscovery();
       this.imageLoaderConfig.enableDebugMode();
       this.imageLoaderConfig.setMaximumCacheSize(100 * 1024 * 1024);
+      this.telemetryGeneratorService.genererateAppStartTelemetry(await utilityService.getDeviceSpec());
+      this.generateNetworkTelemetry();
+      this.autoSyncTelemetry();
       this.subscribeEvents();
+
+
+      this.registerDeeplinks();
+      // this.startOpenrapDiscovery();
       this.saveDefaultSyncSetting();
       this.showAppWalkThroughScreen();
-
-      // check if any new app version is available
-      this.checkForUpgrade();
-
-      this.permission.requestPermission(this.permissionList).then(() => {
-        this.makeEntryInSupportFolder();
-      }).catch(() => {
-      });
-      this.permission.hasPermission(this.permissionList).then(() => {
-        this.makeEntryInSupportFolder();
-      }).catch(() => {
-      });
-
-      this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
-        .then(val => {
-          if (val && val.length) {
-            this.translate.use(val);
-          }
-        });
-
-      await this.tncUpdateHandlerService.checkForTncUpdate();
-
-      that.authService.getSessionData((session) => {
-        if (session === null || session === 'null') {
-          this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
-            .then(val => {
-              if (val) {
-                if (val === ProfileType.TEACHER) {
-                  initTabs(this.containerService, GUEST_TEACHER_TABS);
-                } else if (val === ProfileType.STUDENT) {
-                  initTabs(this.containerService, GUEST_STUDENT_TABS);
-                } else if (val === 'student') {
-                  // This additional checks are added because previous users had user type stored
-                  // lower case and app would show blank screen due to mismatch in types
-                  this.preference.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT);
-                  initTabs(this.containerService, GUEST_STUDENT_TABS);
-                } else if (val === 'teacher') {
-                  this.preference.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
-                  initTabs(this.containerService, GUEST_TEACHER_TABS);
-                }
-                this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE)
-                  .then(response => {
-                    const display_cat_page = response;
-                    this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_SCAN_PAGE)
-                      .then(scanResponse => {
-                        const disp_profile_page = response;
-                        if (display_cat_page === 'false' && disp_profile_page === 'false') {
-                          this.nav.setRoot(TabsPage);
-                        } else {
-                          this.profileService.getCurrentUser().then((profile: any) => {
-                            profile = JSON.parse(profile);
-                            if (profile
-                              && profile.syllabus && profile.syllabus[0]
-                              && profile.board && profile.board.length
-                              && profile.grade && profile.grade.length
-                              && profile.medium && profile.medium.length) {
-                              this.appGlobalService.isProfileSettingsCompleted = true;
-                              this.nav.setRoot(TabsPage);
-                            } else {
-                              this.appGlobalService.isProfileSettingsCompleted = false;
-                              this.preference.getString(PreferenceKey.IS_ONBOARDING_COMPLETED)
-                                .then((result) => {
-                                  if (result === 'true') {
-                                    this.getProfileSettingConfig(true);
-                                  } else {
-                                    this.nav.insertPages(0, [{ page: LanguageSettingsPage }, { page: UserTypeSelectionPage }]);
-                                  }
-                                })
-                                .catch(error => {
-                                  this.getProfileSettingConfig();
-                                });
-                            }
-                          }).catch(error => { });
-                        }
-                      });
-                  });
-                // Check if User has filled all the required information of the on boarding preferences
-              } else {
-                this.appGlobalService.isProfileSettingsCompleted = false;
-                that.rootPage = LanguageSettingsPage;
-              }
-            });
-        } else {
-          this.profileService.getCurrentUser().then((profile: any) => {
-            profile = JSON.parse(profile);
-            if (profile
-              && profile.syllabus && profile.syllabus[0]
-              && profile.board && profile.board.length
-              && profile.grade && profile.grade.length
-              && profile.medium && profile.medium.length) {
-              initTabs(that.containerService, LOGIN_TEACHER_TABS);
-              const sessionObj = JSON.parse(session);
-              this.preference.getString('SHOW_WELCOME_TOAST')
-                .then(success => {
-                  if (success === 'true') {
-                    that.preference.putString('SHOW_WELCOME_TOAST', 'false');
-                    const req = {
-                      userId: sessionObj[ProfileConstants.USER_TOKEN],
-                      requiredFields: ProfileConstants.REQUIRED_FIELDS,
-                      refreshUserProfileDetails: true
-                    };
-                    that.userProfileService.getUserProfileDetails(req, res => {
-                      setTimeout(() => {
-                        this.commonUtilService
-                          .showToast(this.commonUtilService.translateMessage('WELCOME_BACK', JSON.parse(res).firstName));
-                      }, 2500);
-                    }, () => {
-                    });
-                  }
-                });
-
-              that.rootPage = TabsPage;
-            } else {
-              const sessionObj = JSON.parse(session);
-              const req = {
-                userId: sessionObj[ProfileConstants.USER_TOKEN],
-                requiredFields: ProfileConstants.REQUIRED_FIELDS,
-                refreshUserProfileDetails: true
-              };
-              that.userProfileService.getUserProfileDetails(req, res => {
-                const r = JSON.parse(res);
-                that.formAndFrameworkUtilService.updateLoggedInUser(r, profile)
-                  .then((value) => {
-                    if (value['status']) {
-                      this.nav.setRoot(TabsPage);
-                      initTabs(that.containerService, LOGIN_TEACHER_TABS);
-                      // that.rootPage = TabsPage;
-                    } else {
-                      that.nav.setRoot(CategoriesEditPage, { showOnlyMandatoryFields: true, profile: value['profile'] });
-                    }
-                  }).catch(() => {
-                    that.nav.setRoot(CategoriesEditPage, { showOnlyMandatoryFields: true });
-                  });
-              }, err => {
-                console.log('err', err);
-                that.nav.setRoot(CategoriesEditPage, { showOnlyMandatoryFields: true });
-              });
-            }
-          });
-
-        }
-
-        (<any>window).splashscreen.hide();
-      });
-
-
-      // Okay, so the platform is ready and our plugins are available.
-      // Here you can do any higher level native things you might need.
-      statusBar.styleDefault();
-
+      this.checkAppUpdateAvailable();
+      this.requestAppPermissions();
+      this.makeEntryInSupportFolder();
+      this.checkForTncUpdate();
+      this.handleAuthErrors();
+      await this.getSelectedLanguage();
+      await this.navigateToAppropriatePage();
+      this.handleSunbirdSplashScreenActions();
+      this.preferences.putString(PreferenceKey.CONTENT_CONTEXT, '').subscribe();
       window['thisRef'] = this;
-      // try {
-      //   this.fetchUpdate();
-      // } catch (error) {
-      //   console.log(error);
-      // }
-
+      this.statusBar.styleBlackTranslucent();
       this.handleBackButton();
     });
   }
 
   /**
-   * It will read profile settings configuration and navigates to appropriate page
-   * @param hideBackButton To hide the navigation back button in the profile settings page
-   */
-  getProfileSettingConfig(hideBackButton = false) {
-    this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE)
-      .then(response => {
-        if (response === 'true') {
-          this.nav.setRoot('ProfileSettingsPage', { hideBackButton: hideBackButton });
-        } else {
-          this.nav.setRoot(TabsPage);
-        }
-      })
-      .catch(error => {
-        this.nav.setRoot(TabsPage);
-      });
-  }
+	 * Angular life cycle hooks
+	 */
+  ngOnInit() {
+    this.headerServie.headerConfigEmitted$.subscribe(config => {
+      this.headerConfig = config;
+    });
 
-  private checkForUpgrade() {
-    this.formAndFrameworkUtilService.checkNewAppVersion()
-      .then(result => {
-        if (result !== undefined) {
-          console.log('Force Optional Upgrade - ' + JSON.stringify(result));
-          setTimeout(() => {
-            this.events.publish('force_optional_upgrade', { upgrade: result });
-          }, 5000);
-        }
-      })
-      .catch(error => {
-        console.log('Error - ' + error);
-      });
-  }
-
-  makeEntryInSupportFolder() {
-    (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
-      console.log('Result - ' + JSON.parse(result));
-      this.preference.putString(KEY_SUNBIRD_SUPPORT_FILE_PATH, JSON.parse(result));
-    }, (error) => {
-      console.log('Error - ' + error);
+    this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
+      const navObj: NavControllerBase = this.app.getActiveNavs()[0];
+        const activeView: ViewController = navObj.getActive();
+        const pageId: string = this.computePageId((<any>activeView).instance);
+      if (available) {
+        this.addNetworkTelemetry(InteractSubtype.INTERNET_CONNECTED, pageId);
+      } else {
+        this.addNetworkTelemetry(InteractSubtype.INTERNET_DISCONNECTED, pageId);
+      }
     });
   }
 
-  saveDefaultSyncSetting() {
-    this.preference.getString('sync_config')
-      .then(val => {
-        if (val === undefined || val === '' || val === null) {
-          this.preference.putString('sync_config', 'ALWAYS_ON');
-        }
-      });
+  addNetworkTelemetry(subtype: string, pageId: string) {
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+        subtype,
+        Environment.HOME,
+        pageId, undefined
+    );
+}
+  ngAfterViewInit(): void {
+    this.platform.resume.subscribe(() => {
+      this.telemetryGeneratorService.generateInterruptTelemetry('resume', '');
+      this.handleSunbirdSplashScreenActions();
+    });
+
+    this.platform.pause.subscribe(() => {
+      this.telemetryGeneratorService.generateInterruptTelemetry('background', '');
+    });
   }
+
 
   handleBackButton() {
     this.platform.registerBackButtonAction(() => {
 
-      const navObj = this.app.getActiveNavs()[0];
-      const currentPage = navObj.getActive().name;
+      let navObj = this.app.getRootNavs()[0];
+      let currentPage = navObj.getActive().name;
+      const activeView: ViewController = this.nav.getActive();
+      if (activeView != null && ((<any>activeView).instance instanceof TabsPage)) {
+        navObj = this.app.getActiveNavs()[0];
+        currentPage = navObj.getActive().name;
+      }
 
       if (navObj.canGoBack()) {
         return navObj.pop();
       } else {
-        this.commonUtilService.showExitPopUp(this.computePageId(currentPage), Environment.HOME, false);
+        this.commonUtilService.showExitPopUp(this.computePageId((<any>activeView).instance), Environment.HOME, false);
       }
     });
   }
 
-  computePageId(pageName: string): string {
+  generateNetworkTelemetry() {
+    const value = new Map();
+    value['network-type'] = this.network.type;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+      InteractSubtype.NETWORK_STATUS, Environment.HOME, PageId.SPLASH_SCREEN, undefined, value) ;
+  }
+  computePageId(page): string {
     let pageId = '';
-    switch (pageName) {
-      case 'ResourcesPage': {
-        pageId = PageId.LIBRARY;
-        break;
-      }
-      case 'CoursesPage': {
-        pageId = PageId.COURSES;
-        break;
-      }
-      case 'ProfilePage': {
-        pageId = PageId.PROFILE;
-        break;
-      }
-      case 'GuestProfilePage': {
-        pageId = PageId.GUEST_PROFILE;
-        break;
-      }
-    }
+    if (page instanceof ResourcesPage) {
+      pageId = PageId.LIBRARY;
+    } else if (page instanceof CoursesPage) {
+      pageId = PageId.COURSES;
+    } else if (page instanceof ProfilePage) {
+      pageId = PageId.PROFILE;
+    } else if (page instanceof GuestProfilePage) {
+      pageId = PageId.GUEST_PROFILE;
+    }  else if (page instanceof CollectionDetailsEtbPage) {
+      pageId = PageId.COLLECTION_DETAIL;
+  } else if (page instanceof ContentDetailsPage) {
+      pageId = PageId.CONTENT_DETAIL;
+  } else if (page instanceof QrCodeResultPage) {
+      pageId = PageId.DIAL_CODE_SCAN_RESULT;
+  } else if (page instanceof CollectionDetailsPage) {
+      pageId = PageId.COLLECTION_DETAIL;
+  }
     return pageId;
-  }
-
-  fetchUpdate() {
-    const options = {
-      'config-file': 'http://172.16.0.23:3000/updates/chcp.json'
-    };
-    chcp.fetchUpdate(this.updateCallback, options);
-  }
-  updateCallback(error) {
-    if (error) {
-      console.error(error);
-    } else {
-      console.log('Update is loaded...');
-      const confirm = window['thisRef'].alertCtrl.create({
-        title: 'Application Update',
-        message: 'Update available, do you want to apply it?',
-        buttons: [
-          { text: 'No' },
-          {
-            text: 'Yes',
-            handler: () => {
-              chcp.installUpdate(errorResponse => {
-                if (errorResponse) {
-                  console.error(errorResponse);
-                  window['thisRef'].alertCtrl.create({
-                    title: 'Update Download',
-                    subTitle: `Error ${errorResponse.code}`,
-                    buttons: ['OK']
-                  }).present();
-                } else {
-                  console.log('Update installed...');
-                }
-              });
-            }
-          }
-        ]
-      });
-      confirm.present();
-    }
-  }
-
-  /**
-   * Ionic life cycle hook
-   */
-  ionViewWillLeave(): void {
-    this.events.unsubscribe('tab.change');
   }
 
   subscribeEvents() {
     this.events.subscribe('tab.change', (data) => {
       this.zone.run(() => {
         this.generateInteractEvent(data);
+        // Added below code to generate Impression Before Interact for Library,Courses,Profile
+        this.generateImpressionEvent(data);
       });
     });
 
@@ -400,33 +236,36 @@ export class MyApp {
         let action;
         try {
           action = JSON.parse(response.data.action);
-        } catch (Error) { }
+        } catch (Error) {
+        }
         const values = new Map();
         values['openrapInfo'] = action;
         if (response && response.data.action && response.data.action === 'logout') {
-          this.authService.getSessionData((session) => {
+          this.authService.getSession().toPromise().then((session: OAuthSession) => {
             if (session) {
-              this.authService.endSession();
+              this.authService.resignSession().subscribe();
               (<any>window).splashscreen.clearPrefs();
             }
-            this.profileService.getCurrentUser().then((currentUser: any) => {
-              const guestProfile = JSON.parse(currentUser);
+            this.profileService.getActiveSessionProfile({
+              requiredFields: ProfileConstants.REQUIRED_FIELDS
+            }).toPromise()
+              .then((currentUser: any) => {
 
-              if (guestProfile.profileType === ProfileType.STUDENT) {
-                initTabs(this.container, GUEST_STUDENT_TABS);
-                this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT);
-              } else {
-                initTabs(this.container, GUEST_TEACHER_TABS);
-                this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
-              }
+                if (currentUser.profileType === ProfileType.STUDENT) {
+                  initTabs(this.containerService, GUEST_STUDENT_TABS);
+                  this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise().then();
+                } else {
+                  initTabs(this.containerService, GUEST_TEACHER_TABS);
+                  this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();
+                }
 
-              this.event.publish('refresh:profile');
-              this.event.publish(AppGlobalService.USER_INFO_UPDATED);
+                this.event.publish('refresh:profile');
+                this.event.publish(AppGlobalService.USER_INFO_UPDATED);
 
-              this.app.getRootNav().setRoot(TabsPage);
+                this.app.getRootNav().setRoot(TabsPage);
 
-            }).catch(() => {
-            });
+              }).catch(() => {
+              });
 
           });
         } else if (response && action && action.actionType === 'connected') {
@@ -460,23 +299,179 @@ export class MyApp {
     });
   }
 
-  generateInteractEvent(pageid: string) {
-    this.telemetryService.interact(generateInteractTelemetry(
-      InteractType.TOUCH,
-      InteractSubtype.TAB_CLICKED,
-      Environment.HOME,
-      pageid.toLowerCase(),
-      null,
-      undefined,
-      undefined
-    ));
+  getProfileSettingConfig(hideBackButton = false) {
+    this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE)
+      .then(response => {
+        if (response === 'true') {
+          this.nav.setRoot('ProfileSettingsPage', { hideBackButton: hideBackButton });
+        } else {
+          this.nav.setRoot(TabsPage);
+        }
+      })
+      .catch(error => {
+        this.nav.setRoot(TabsPage);
+      });
   }
 
-  registerDeeplinks() {
+  private async checkForTncUpdate() {
+    await this.tncUpdateHandlerService.checkForTncUpdate();
+  }
+
+  private async navigateToAppropriatePage() {
+    const session = await this.authService.getSession().toPromise();
+    console.log(`Platform Session`, session);
+    if (!session) {
+      console.log(`Success Platform Session`, session);
+      this.preferences.getString(PreferenceKey.SELECTED_USER_TYPE).toPromise()
+        .then(async (profileType: ProfileType | undefined) => {
+          if (!profileType) {
+            this.appGlobalService.isProfileSettingsCompleted = false;
+            this.rootPage = LanguageSettingsPage;
+            return;
+          }
+
+          switch (profileType.toLocaleLowerCase()) {
+            case ProfileType.TEACHER: {
+              await this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise();
+              initTabs(this.containerService, GUEST_TEACHER_TABS);
+              break;
+            }
+            case ProfileType.STUDENT: {
+              await this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise();
+              initTabs(this.containerService, GUEST_STUDENT_TABS);
+              break;
+            }
+          }
+
+          const display_cat_page: string = await this.utilityService
+            .getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE);
+
+          if (display_cat_page === 'false') {
+            await this.nav.setRoot(TabsPage);
+          } else {
+            const profile = await this.profileService.getActiveSessionProfile({ requiredFields: ProfileConstants.REQUIRED_FIELDS })
+              .toPromise();
+            if (
+              profile
+              && profile.syllabus && profile.syllabus[0]
+              && profile.board && profile.board.length
+              && profile.grade && profile.grade.length
+              && profile.medium && profile.medium.length
+            ) {
+              this.appGlobalService.isProfileSettingsCompleted = true;
+              await this.nav.setRoot(TabsPage);
+            } else {
+              this.appGlobalService.isProfileSettingsCompleted = false;
+              try {
+                if ((await this.preferences.getString(PreferenceKey.IS_ONBOARDING_COMPLETED).toPromise()) === 'true') {
+                  this.getProfileSettingConfig(true);
+                } else {
+                  await this.nav.insertPages(0, [{ page: LanguageSettingsPage }, { page: UserTypeSelectionPage }]);
+                }
+              } catch (e) {
+                this.getProfileSettingConfig();
+              }
+            }
+          }
+        });
+    } else {
+      console.log(`Failure Session`, session);
+      this.profileService.getActiveSessionProfile({
+        requiredFields: ProfileConstants.REQUIRED_FIELDS
+      }).toPromise()
+        .then(async (profile: any) => {
+          if (profile
+            && profile.syllabus && profile.syllabus[0]
+            && profile.board && profile.board.length
+            && profile.grade && profile.grade.length
+            && profile.medium && profile.medium.length) {
+
+            initTabs(this.containerService, LOGIN_TEACHER_TABS);
+
+            if ((await this.preferences.getString('SHOW_WELCOME_TOAST').toPromise()) === 'true') {
+              this.preferences.putString('SHOW_WELCOME_TOAST', 'false').toPromise().then();
+
+              const serverProfile = await this.profileService.getServerProfilesDetails({
+                userId: session.userToken,
+                requiredFields: ProfileConstants.REQUIRED_FIELDS,
+              }).toPromise();
+
+              this.commonUtilService
+                .showToast(this.commonUtilService.translateMessage('WELCOME_BACK', serverProfile.firstName));
+            }
+
+            this.rootPage = TabsPage;
+          } else {
+            const serverProfile = await this.profileService.getServerProfilesDetails({
+              userId: session.userToken,
+              requiredFields: ProfileConstants.REQUIRED_FIELDS,
+            }).toPromise();
+
+            this.formAndFrameworkUtilService.updateLoggedInUser(serverProfile, profile)
+              .then((value) => {
+                if (value['status']) {
+                  this.nav.setRoot(TabsPage);
+                  initTabs(this.containerService, LOGIN_TEACHER_TABS);
+                } else {
+                  this.nav.setRoot(CategoriesEditPage, {
+                    showOnlyMandatoryFields: true,
+                    profile: value['profile']
+                  });
+                }
+              });
+          }
+        });
+    }
+  }
+
+  private async getSelectedLanguage() {
+    const selectedLanguage = await this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise();
+    if (selectedLanguage) {
+      await this.translate.use(selectedLanguage).toPromise();
+    }
+  }
+
+  private async requestAppPermissions() {
+    return this.permission.checkPermissions(this.permissionList)
+      .mergeMap((statusMap: { [key: string]: AndroidPermissionsStatus }) => {
+        const toRequest: AndroidPermission[] = [];
+
+        for (const permission in statusMap) {
+          if (!statusMap[permission].hasPermission) {
+            toRequest.push(permission as AndroidPermission);
+          }
+        }
+
+        if (!toRequest.length) {
+          return Observable.of(undefined);
+        }
+
+        return this.permission.requestPermissions(toRequest);
+      }).toPromise();
+  }
+
+
+  private async makeEntryInSupportFolder() {
+    return new Promise((resolve => {
+      (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
+        this.preferences.putString(PreferenceKey.KEY_SUNBIRD_SUPPORT_FILE_PATH, result).toPromise().then();
+        resolve();
+      }, () => {
+      });
+    }));
+  }
+
+  private async saveDefaultSyncSetting() {
+    return this.preferences.getString('sync_config').toPromise()
+      .then(val => {
+        if (val === undefined || val === '' || val === null) {
+          this.preferences.putString('sync_config', 'ALWAYS_ON').toPromise().then();
+        }
+      });
+  }
+
+  private async registerDeeplinks() {
     (<any>window).splashscreen.onDeepLink(deepLinkResponse => {
-
-      console.log('Deeplink : ' + deepLinkResponse);
-
       setTimeout(() => {
         const response = deepLinkResponse;
 
@@ -498,64 +493,241 @@ export class MyApp {
             content: content
           });
         } else if (response.result) {
-          this.showContentDetails(response.result);
+          this.navigateToContentDetails(response.result);
         }
       }, 300);
     });
   }
 
-  showContentDetails(content) {
+  private generateInteractEvent(pageid: string) {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.TAB_CLICKED,
+      Environment.HOME,
+      pageid.toLowerCase(),
+      null,
+      undefined,
+      undefined
+    );
+  }
+  private generateImpressionEvent(pageid: string) {
+    pageid = pageid.toLowerCase();
+    const env = pageid.localeCompare(PageId.PROFILE) ? Environment.HOME : Environment.USER;
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, '',
+      pageid,
+      env);
+  }
+  private navigateToContentDetails(content) {
     if (content.contentData.contentType === ContentType.COURSE) {
-      console.log('Calling course details page');
       this.nav.push(EnrolledCourseDetailsPage, {
         content: content
       });
     } else if (content.mimeType === MimeType.COLLECTION) {
-      console.log('Calling collection details page');
-       this.nav.push(CollectionDetailsPage, {
+      this.nav.push(CollectionDetailsPage, {
         content: content
       });
     } else {
-      console.log('Calling content details page');
       this.nav.push(ContentDetailsPage, {
         content: content
       });
     }
   }
 
-  showAppWalkThroughScreen() {
-    this.preference.getString('show_app_walkthrough_screen')
-      .then(value => {
-        const val = (value === '') ? 'true' : 'false';
-        this.preference.putString('show_app_walkthrough_screen', val);
-      });
-    console.log('open rap discovery enabled', this.appGlobalService.OPEN_RAPDISCOVERY_ENABLED);
+  private async showAppWalkThroughScreen() {
+    const showAppWalkthrough = (await this.preferences.getString('show_app_walkthrough_screen').toPromise()) === '' ? 'true' : 'false';
+    await this.preferences.putString('show_app_walkthrough_screen', showAppWalkthrough).toPromise();
   }
 
-  showGreetingPopup() {
-    const popover = this.popoverCtrl.create(BroadcastComponent,
-      {
-        'greetings': 'Diwali Greetings',
-        'imageurl': 'https://t3.ftcdn.net/jpg/01/71/29/20/240_F_171292090_liVMi9liOzZaW0gjsmCIZzwVr2Qw7g4i.jpg',
-        'customButton': 'custom button',
-        'greetingText': 'this diwali may enlighten your dreams'
-      },
-      { cssClass: 'broadcast-popover' }
-    );
-    popover.present();
-  }
-
-  // TODO: this method will be used to communicate with the openrap device
-  openrapDiscovery() {
+  private async startOpenrapDiscovery(): Promise<undefined> {
     if (this.appGlobalService.OPEN_RAPDISCOVERY_ENABLED) {
-      console.log('openrap called', this.appGlobalService.OPEN_RAPDISCOVERY_ENABLED);
-      (<any>window).openrap.startDiscovery(
-        (success) => {
-          console.log(success);
-        }, (error) => {
-          console.log(error);
-        }
-      );
+      return Observable.create((observer) => {
+        (<any>window).openrap.startDiscovery(
+          (response: { ip: string, actionType: 'connected' | 'disconnected' }) => {
+            observer.next(response);
+          }, (e) => {
+            observer.error(e);
+          }
+        );
+      }).do((response: { ip?: string, actionType: 'connected' | 'disconnected' }) => {
+        SunbirdSdk.instance.updateContentServiceConfig({
+          host: response.actionType === 'connected' ? response.ip : undefined
+        });
+
+        SunbirdSdk.instance.updatePageServiceConfig({
+          host: response.actionType === 'connected' ? response.ip : undefined
+        });
+
+        SunbirdSdk.instance.updateTelemetryConfig({
+          host: response.actionType === 'connected' ? response.ip : undefined
+        });
+      }).toPromise();
     }
+  }
+
+  private async checkAppUpdateAvailable() {
+    return this.formAndFrameworkUtilService.checkNewAppVersion()
+      .then(result => {
+        if (result !== undefined) {
+          setTimeout(() => {
+            this.events.publish('force_optional_upgrade', { upgrade: result });
+          }, 5000);
+        }
+      }).catch(err => {
+        // console.log('checkNewAppVersion err', err, err instanceof NetworkError);
+      });
+  }
+
+  private async handleSunbirdSplashScreenActions(): Promise<undefined> {
+    const stringifiedActions = await new Promise<string>((resolve) => {
+      splashscreen.getActions((actionsTobeDone) => {
+        resolve(actionsTobeDone);
+      });
+    });
+
+    const actions: { type: string, payload: any }[] = JSON.parse(stringifiedActions);
+
+    for (const action of actions) {
+      switch (action.type) {
+        case 'TELEMETRY': {
+          await this.splashcreenTelemetryActionHandlerDelegate.onAction(action.type, action.payload).toPromise();
+          break;
+        }
+        case 'IMPORT': {
+          await this.splashscreenImportActionHandlerDelegate.onAction(action.type, action.payload).toPromise();
+          break;
+        }
+        default:
+          return;
+      }
+    }
+
+    splashscreen.markImportDone();
+    splashscreen.hide();
+  }
+
+  private autoSyncTelemetry() {
+    this.telemetryAutoSyncUtil.start(30 * 1000)
+      .mergeMap(() => {
+        return Observable.combineLatest(
+          this.platform.pause.pipe(tap(() => this.telemetryAutoSyncUtil.pause())),
+          this.platform.resume.pipe(tap(() => this.telemetryAutoSyncUtil.continue()))
+        );
+      })
+      .subscribe();
+  }
+
+  handleHeaderEvents($event) {
+    if ($event.name === 'back') {
+      // this.handleBackButton();
+      let navObj = this.app.getRootNavs()[0];
+      let activeView: ViewController = this.nav.getActive();
+      if (activeView != null && ((<any>activeView).instance instanceof TabsPage)) {
+        navObj = this.app.getActiveNavs()[0];
+        activeView = navObj.getActive();
+        // currentPage = navObj.getActive().name;
+      }
+      // if (currentPage === 'TabsPage') {
+      //   navObj = this.app.getActiveNavs()[0];
+      //   currentPage = navObj.getActive().name;
+      // }
+      if (((<any>activeView).instance instanceof UserTypeSelectionPage)
+        || ((<any>activeView).instance instanceof CollectionDetailsEtbPage)
+        || ((<any>activeView).instance instanceof EnrolledCourseDetailsPage)
+        || ((<any>activeView).instance instanceof OnboardingPage)
+        || ((<any>activeView).instance instanceof QrCodeResultPage)
+        || ((<any>activeView).instance instanceof CollectionDetailsPage)
+        || ((<any>activeView).instance instanceof CollectionDetailsEtbPage)
+        || ((<any>activeView).instance instanceof CollectionDetailsPage)
+        || ((<any>activeView).instance instanceof ContentDetailsPage)
+        || ((<any>activeView).instance instanceof OnboardingPage)
+        || ((<any>activeView).instance instanceof QrCodeResultPage)
+        ) {
+        this.headerServie.sidebarEvent($event);
+        return;
+      }
+      if (navObj.canGoBack()) {
+        return navObj.pop();
+      } else {
+        this.commonUtilService.showExitPopUp(this.computePageId((<any>activeView).instance), Environment.HOME, false);
+      }
+    } else {
+      this.headerServie.sidebarEvent($event);
+    }
+  }
+
+  menuItemAction(menuName) {
+    switch (menuName.menuItem) {
+      case 'USERS_AND_GROUPS':
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.USER_GROUP_CLICKED,
+          Environment.USER,
+          PageId.PROFILE
+        );
+        if (this.app.getRootNavs().length > 0) {
+          this.app.getRootNavs()[0].push(UserAndGroupsPage, { profile: this.profile });
+        }
+        break;
+
+      case 'REPORTS':
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.REPORTS_CLICKED,
+          Environment.USER,
+          PageId.PROFILE
+        );
+        if (this.app.getRootNavs().length > 0) {
+          this.app.getRootNavs()[0].push(ReportsPage, { profile: this.profile });
+        }
+        break;
+
+      case 'SETTINGS': {
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.SETTINGS_CLICKED,
+          Environment.USER,
+          PageId.PROFILE,
+          null,
+          undefined,
+          undefined
+        );
+        if (this.app.getRootNavs().length > 0) {
+          this.app.getRootNavs()[0].push(SettingsPage);
+        }
+        break;
+      }
+      case 'LANGUAGE': {
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.LANGUAGE_CLICKED,
+          Environment.USER,
+          PageId.PROFILE,
+          null,
+          undefined,
+          undefined
+        );
+        if (this.app.getRootNavs().length > 0) {
+          this.app.getRootNavs()[0].push(LanguageSettingsPage, {
+            isFromSettings: true
+          });
+        }
+        break;
+      }
+      case 'LOGOUT':
+        if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
+          this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
+        } else {
+          this.logoutHandlerService.onLogout();
+        }
+        break;
+
+    }
+  }
+
+  private handleAuthErrors() {
+    this.eventsBusService.events(EventNamespace.ERROR).take(1).subscribe(() => {
+      this.logoutHandlerService.onLogout();
+    });
   }
 }

@@ -47,8 +47,8 @@
         <h6 class="padding-top">
           <b>{{user?.handle}}</b>
         </h6>
-        <p *ngIf="user?.profileType === 'TEACHER'">{{'USER_TYPE_1' | translate | titlecase}}</p>
-        <p *ngIf="user?.profileType === 'STUDENT'">{{'USER_TYPE_2' | translate | titlecase}}</p>
+        <p *ngIf="user?.profileType === ProfileType.TEACHER">{{'USER_TYPE_1' | translate | titlecase}}</p>
+        <p *ngIf="user?.profileType === ProfileType.STUDENT">{{'USER_TYPE_2' | translate | titlecase}}</p>
       </ion-label>
       <ion-checkbox item-end mode="ios" checked="{{isUserSelected(user?.uid)}}" (click)="toggleUserSelected(i)"></ion-checkbox>
     </ion-item>

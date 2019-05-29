@@ -1,3 +1,6 @@
+import { SearchCardComponent } from './search-card/search-card';
+import { DetailCardComponent } from './detail-card/detail-card';
+import { NewCourseCardComponent } from './new-course-card/new-course-card';
 import { ContentRatingAlertComponent } from './content-rating-alert/content-rating-alert';
 import { TranslateModule } from '@ngx-translate/core';
 import { PipesModule } from './../pipes/pipes.module';
@@ -24,7 +27,15 @@ import { BookmarkComponent } from './bookmark/bookmark';
 import { UnenrollAlertComponent } from './unenroll-alert/unenroll-alert';
 import { EditContactVerifyPopupComponent } from './edit-contact-verify-popup/edit-contact-verify-popup';
 import { EditContactDetailsPopupComponent } from './edit-contact-details-popup/edit-contact-details-popup';
-import { CollectionChild } from './collection-child/collection-child';
+import { ViewAllCardComponent } from './view-all-card/view-all-card';
+import { TextbookCardComponent } from './textbook-card/textbook-card';
+import { CollectionChildComponent } from './collection-child/collection-child';
+import { ApplicationHeaderComponent } from './application-header/application-header';
+import { SbPopoverComponent } from './popups/sb-popover/sb-popover';
+import { SbDownloadPopupComponent } from './popups/sb-download-popup/sb-download-popup';
+import { SbGenericPopoverComponent } from './popups/sb-generic-popup/sb-generic-popover';
+import { SideMenuComponent } from './side-menu/side-menu';
+import { DirectivesModule } from '@app/directives/directives.module';
 
 @NgModule({
     declarations: [
@@ -35,7 +46,6 @@ import { CollectionChild } from './collection-child/collection-child';
         PBHorizontal,
         ConfirmAlertComponent,
         // ContentActionsComponent,
-        ReportIssuesComponent,
         ContentRatingAlertComponent,
         AssessmentDetailsComponent,
         ViewCreditsComponent,
@@ -46,7 +56,18 @@ import { CollectionChild } from './collection-child/collection-child';
         EditContactDetailsPopupComponent,
         EditContactVerifyPopupComponent,
         ResourceCard,
-        CollectionChild
+        NewCourseCardComponent,
+        ViewAllCardComponent,
+        DetailCardComponent,
+        SearchCardComponent,
+        TextbookCardComponent,
+        CollectionChildComponent,
+        ApplicationHeaderComponent,
+        SbPopoverComponent,
+        ReportIssuesComponent,
+        SbDownloadPopupComponent,
+        SbGenericPopoverComponent,
+        SideMenuComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -58,7 +79,7 @@ import { CollectionChild } from './collection-child/collection-child';
         NgxDatatableModule,
         IonicModule,
         IonicPageModule.forChild(ResourceCard),
-        IonicPageModule.forChild(CollectionChild)
+        DirectivesModule
     ],
     exports: [
         CourseCard,
@@ -67,29 +88,42 @@ import { CollectionChild } from './collection-child/collection-child';
         SignInCardComponent,
         PBHorizontal,
         ConfirmAlertComponent,
-        ReportIssuesComponent,
         ContentRatingAlertComponent,
         AssessmentDetailsComponent,
         ViewCreditsComponent,
         ProfileAvatarComponent,
         DialogPopupComponent,
+        ReportIssuesComponent,
         BookmarkComponent,
         UnenrollAlertComponent,
         EditContactDetailsPopupComponent,
         EditContactVerifyPopupComponent,
         ResourceCard,
-        CollectionChild
-        // ContentActionsComponent
+        NewCourseCardComponent,
+        ViewAllCardComponent,
+        DetailCardComponent,
+        SearchCardComponent,
+        TextbookCardComponent,
+        CollectionChildComponent,
+        ApplicationHeaderComponent,
+        SbPopoverComponent,
+        SbDownloadPopupComponent,
+        SbGenericPopoverComponent,
+        SideMenuComponent
+
     ],
     entryComponents: [
         ConfirmAlertComponent,
-        ReportIssuesComponent,
         ContentRatingAlertComponent,
         ViewCreditsComponent,
         DialogPopupComponent,
         UnenrollAlertComponent,
         EditContactDetailsPopupComponent,
-        EditContactVerifyPopupComponent
+        EditContactVerifyPopupComponent,
+        ApplicationHeaderComponent,
+        SbPopoverComponent,
+        SbDownloadPopupComponent,
+        SbGenericPopoverComponent
     ],
     providers: [
         FormAndFrameworkUtilService

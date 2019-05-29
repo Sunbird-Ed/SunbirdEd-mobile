@@ -1,32 +1,34 @@
+import {Events, IonicPage, NavController, NavParams} from 'ionic-angular';
+import {Component, Inject, NgZone, OnInit, Input} from '@angular/core';
 import {
-  IonicPage,
-  NavController,
-  NavParams,
-  Events
-} from 'ionic-angular';
-import {
-  Component,
-  NgZone,
-  OnInit
-} from '@angular/core';
-import {
+  Content,
+  ContentEventType,
+  ContentImportRequest,
+  ContentImportResponse,
+  ContentImportStatus,
+  ContentRequest,
+  ContentSearchCriteria,
+  ContentSearchResult,
   ContentService,
+  Course,
   CourseService,
-  PageId,
-  Environment,
-  ImpressionType,
-  LogLevel,
-  ContentFilterCriteria
-} from 'sunbird';
+  DownloadEventType,
+  DownloadProgress,
+  EventsBusEvent,
+  EventsBusService,
+  SearchType,
+  TelemetryObject
+} from 'sunbird-sdk';
 import * as _ from 'lodash';
-import {
-  ContentType,
-  ViewMore
-} from '../../app/app.constant';
-import { ContentDetailsPage } from '../content-details/content-details';
-import { CourseUtilService } from '../../service/course-util.service';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../service/common-util.service';
+import {ContentType, ViewMore, MimeType} from '../../app/app.constant';
+import {ContentDetailsPage} from '../content-details/content-details';
+import {CourseUtilService} from '../../service/course-util.service';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {CommonUtilService} from '../../service/common-util.service';
+import {Environment, ImpressionType, LogLevel, PageId, InteractType, InteractSubtype} from '../../service/telemetry-constants';
+import {Subscription} from 'rxjs';
+import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
+import { AppHeaderService } from '@app/service';
 
 @IonicPage()
 @Component({
@@ -37,23 +39,23 @@ import { CommonUtilService } from '../../service/common-util.service';
 export class ViewMoreActivityPage implements OnInit {
 
   /**
- * Contains search query
- */
+   * Contains search query
+   */
   searchQuery: any;
 
   /**
- * To hold search result
- */
+   * To hold search result
+   */
   searchList: any;
 
   /**
-* Contains tab bar element ref
-*/
+   * Contains tab bar element ref
+   */
   tabBarElement: any;
 
   /**
- * Flag to show / hide button
- */
+   * Flag to show / hide button
+   */
   loadMoreBtn = true;
 
   /**
@@ -67,26 +69,24 @@ export class ViewMoreActivityPage implements OnInit {
   downloadsOnlyToggle = false;
 
 
-
-
   /**
-	 * Offset
-	 */
+   * Offset
+   */
   offset = 0;
 
   /**
-	 * Contains search limit
-	 */
+   * Contains search limit
+   */
   searchLimit = 10;
 
   /**
-	 * Total search count
-	 */
+   * Total search count
+   */
   totalCount: number;
 
   /**
-	 * Load more flag
-	 */
+   * Load more flag
+   */
   isLoadMore = false;
 
   /**
@@ -95,18 +95,18 @@ export class ViewMoreActivityPage implements OnInit {
   localContentsCard = false;
 
   /**
-	 * Header title
-	 */
+   * Header title
+   */
   headerTitle: string;
 
   /**
-	 * Default page type
-	 */
+   * Default page type
+   */
   pageType = 'library';
 
   /**
-	 * To queue downloaded identifier
-	 */
+   * To queue downloaded identifier
+   */
   queuedIdentifiers: Array<any> = [];
 
   downloadPercentage = 0;
@@ -117,16 +117,45 @@ export class ViewMoreActivityPage implements OnInit {
   uid: any;
   audience: any;
   defaultImg: string;
+  private eventSubscription: Subscription;
+  // adding for ETBV2 integration, to show saved resources after recentlyViewed
+  savedResources: Array<any>;
+
+  enrolledCourses: any;
+
+  guestUser: any;
+
+  @Input() course: any;
+
+  /**
+   * Contains layout name
+   *
+   * @example layoutName = Inprogress / popular
+   */
+  @Input() layoutName: string;
+
+  @Input() pageName: string;
+
+  @Input() onProfile = false;
+
+  @Input() index: number;
+
+  @Input() sectionName: string;
+
+  @Input() env: string;
+
   constructor(
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private navCtrl: NavController,
     private navParams: NavParams,
     private events: Events,
     private ngZone: NgZone,
-    private contentService: ContentService,
-    private courseService: CourseService,
+    @Inject('EVENTS_BUS_SERVICE') private eventBusService: EventsBusService,
+    @Inject('COURSE_SERVICE') private courseService: CourseService,
     private courseUtilService: CourseUtilService,
     private commonUtilService: CommonUtilService,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private headerServie: AppHeaderService
   ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
@@ -134,18 +163,21 @@ export class ViewMoreActivityPage implements OnInit {
   }
 
   /**
-	 * Angular life cycle hooks
-	 */
+   * Angular life cycle hooks
+   */
   ngOnInit() {
     this.tabBarElement.style.display = 'none';
   }
 
   /**
-	 * Ionic default life cycle hook
-	 */
+   * Ionic default life cycle hook
+   */
   ionViewWillEnter(): void {
+    this.headerServie.showHeaderWithBackButton();
     this.tabBarElement.style.display = 'none';
     this.searchQuery = this.navParams.get('requestParams');
+    this.enrolledCourses = this.navParams.get('enrolledCourses');
+    this.guestUser = this.navParams.get('guestUser');
     this.showDownloadsOnlyToggle = this.navParams.get('showDownloadOnlyToggle');
     this.uid = this.navParams.get('uid');
     this.audience = this.navParams.get('audience');
@@ -157,13 +189,14 @@ export class ViewMoreActivityPage implements OnInit {
     }
   }
 
-  subscribeUtilityEvents() {
-    this.events.subscribe('savedResources:update', (res) => {
+  async subscribeUtilityEvents() {
+    await this.events.subscribe('savedResources:update', async (res) => {
       if (res && res.update) {
         if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_SAVED) {
           this.getLocalContents(false, this.downloadsOnlyToggle);
         } else if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED) {
-          this.getLocalContents(true, this.downloadsOnlyToggle);
+          await this.getLocalContents(true, this.downloadsOnlyToggle);
+          this.getLocalContents();
         }
       }
     });
@@ -175,74 +208,45 @@ export class ViewMoreActivityPage implements OnInit {
   }
 
   /**
-	 * Search content
-	 */
+   * Search content
+   */
   search() {
     const loader = this.commonUtilService.getLoader();
     loader.present();
-
-    this.contentService.getSearchCriteriaFromRequest(this.searchQuery)
-      .then((criteria: any) => {
-        const contentSearchCriteria = JSON.parse(criteria);
-        contentSearchCriteria.limit = 10;
-        contentSearchCriteria.offset = this.offset === 0 ? contentSearchCriteria.offset : this.offset;
-
-        this.contentService.searchContent(contentSearchCriteria, true, false, false)
-          .then((data: any) => {
-            data = JSON.parse(data);
-            this.ngZone.run(() => {
-              if (data.result && data.result.contentDataList) {
-                this.loadMoreBtn = data.result.contentDataList.length < this.searchLimit ? false : true;
-                if (this.isLoadMore) {
-                  _.forEach(data.result.contentDataList, (value) => {
-                    this.searchList.push(value);
-                  });
-                } else {
-                  this.searchList = data.result.contentDataList;
-                }
-              } else {
-                this.loadMoreBtn = false;
-              }
-              loader.dismiss();
-            });
-            this.generateImpressionEvent();
-            this.generateLogEvent(data.result);
-          })
-          .catch(() => {
-            console.error('Error: while fetching view more content');
-            loader.dismiss();
-          });
-      }).catch(() => {
+    const searchCriteria: ContentSearchCriteria = {
+      searchType: SearchType.FILTER
+    };
+    this.searchQuery.request['searchType'] = SearchType.FILTER;
+    this.searchQuery.request['offset'] = this.offset;
+    this.contentService.searchContent(searchCriteria, this.searchQuery).toPromise()
+      .then((data: ContentSearchResult) => {
+        this.ngZone.run(() => {
+          if (data && data.contentDataList) {
+            this.loadMoreBtn = data.contentDataList.length >= this.searchLimit;
+            if (this.isLoadMore) {
+              _.forEach(data.contentDataList, (value) => {
+                this.searchList.push(value);
+              });
+            } else {
+              this.searchList = data.contentDataList;
+            }
+          } else {
+            this.loadMoreBtn = false;
+          }
+          loader.dismiss();
+        });
+        this.generateImpressionEvent();
+        this.generateLogEvent(data);
+      })
+      .catch(() => {
         console.error('Error: while fetching view more content');
         loader.dismiss();
       });
   }
 
-  private generateImpressionEvent() {
-    this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.SEARCH, '',
-      PageId.VIEW_MORE,
-      Environment.HOME, '', '', '');
-  }
-
-  private generateLogEvent(searchResult) {
-    if (searchResult != null) {
-      const contentArray: Array<any> = searchResult.contentDataList;
-      const params = new Array<any>();
-      const paramsMap = new Map();
-      paramsMap['SearchResults'] = contentArray.length;
-      paramsMap['SearchCriteria'] = searchResult.request;
-      params.push(paramsMap);
-      this.telemetryGeneratorService.generateLogEvent(LogLevel.INFO,
-        PageId.VIEW_MORE,
-        Environment.HOME,
-        ImpressionType.SEARCH, params);
-    }
-  }
-
   /**
-	 * Load more result
-	 */
+   * Load more result
+   */
   loadMore() {
     this.isLoadMore = true;
     this.offset = this.offset + this.searchLimit;
@@ -256,7 +260,7 @@ export class ViewMoreActivityPage implements OnInit {
   /**
 	 * Mapper to call api based on page.Layout name
 	 */
-  mapper() {
+  async mapper() {
     const pageName = this.navParams.get('pageName');
     switch (pageName) {
       case ViewMore.PAGE_COURSE_ENROLLED:
@@ -281,17 +285,19 @@ export class ViewMoreActivityPage implements OnInit {
       case ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED:
         this.loadMoreBtn = false;
         this.localContentsCard = true;
-        this.getLocalContents(true);
+        await this.getLocalContents(true);
+        this.getLocalContents();
         break;
 
       default:
         this.search();
     }
+    console.log('search List =>', this.searchList);
   }
 
   /**
-	 * Get enrolled courses
-	 */
+   * Get enrolled courses
+   */
   getEnrolledCourse() {
     const loader = this.commonUtilService.getLoader();
     loader.present();
@@ -301,12 +307,13 @@ export class ViewMoreActivityPage implements OnInit {
       refreshEnrolledCourses: false,
       returnRefreshedEnrolledCourses: true
     };
-    this.courseService.getEnrolledCourses(option)
-      .then((data: any) => {
+    this.courseService.getEnrolledCourses(option).toPromise()
+      .then((data: Course[]) => {
         if (data) {
-          data = JSON.parse(data);
-          this.searchList = data.result.courses ? data.result.courses : [];
+          // data = JSON.parse(data);
+          this.searchList = data ? data : [];
           this.loadMoreBtn = false;
+          console.log('**2 searchList =>', this.searchList);
         }
         loader.dismiss();
       })
@@ -319,44 +326,57 @@ export class ViewMoreActivityPage implements OnInit {
   /**
 	 * Get local content
 	 */
-  getLocalContents(recentlyViewed?: boolean, downloaded?: boolean) {
+  async getLocalContents(recentlyViewed?: boolean, downloaded?: boolean) {
     const loader = this.commonUtilService.getLoader();
     loader.present();
 
-    const requestParams: ContentFilterCriteria = {
+    const requestParams: ContentRequest = {
       uid: this.uid,
       audience: this.audience,
       recentlyViewed: recentlyViewed,
-      downloadedOnly: downloaded
+      localOnly: downloaded,
+      contentTypes: recentlyViewed ? ContentType.FOR_RECENTLY_VIEWED : ContentType.FOR_LIBRARY_TAB,
+      limit: recentlyViewed ? 20 : 0
     };
-
-    if (recentlyViewed) {
-      requestParams.contentTypes = ContentType.FOR_RECENTLY_VIEWED;
-      requestParams.limit = 20;
-    } else {
-      requestParams.contentTypes = ContentType.FOR_LIBRARY_TAB;
-    }
-
-    this.contentService.getAllLocalContents(requestParams)
+    this.contentService.getContents(requestParams).toPromise()
       .then(data => {
         const contentData = [];
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
           if (value.contentData.appIcon) {
             if (value.contentData.appIcon.includes('http:') || value.contentData.appIcon.includes('https:')) {
-                if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-                        value.contentData.appIcon = value.contentData.appIcon;
-                  } else {
-                        value.contentData.appIcon = this.defaultImg;
-                  }
+              if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+                value.contentData.appIcon = value.contentData.appIcon;
+              } else {
+                value.contentData.appIcon = this.defaultImg;
+              }
             } else if (value.basePath) {
               value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
             }
           }
           contentData.push(value);
+          // if saved resources are available
         });
         this.ngZone.run(() => {
-          this.searchList = contentData;
+          if ((this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED) && recentlyViewed) {
+            this.searchList = contentData;
+          }
+          //
+          if ((this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED) && !recentlyViewed) {
+            this.savedResources = contentData;
+            for (let i = 0; i < this.searchList.length; i++) {
+              const index = this.savedResources.findIndex((el) => {
+                return el.identifier === this.searchList[i].identifier;
+              });
+
+              if (index !== -1) {
+                this.savedResources.splice(index, 1);
+              }
+            }
+            //  this.recentlyViewed.push(...this.savedResources);
+            this.searchList.push(...this.savedResources);
+          }
+          console.log('content data is =>', contentData);
           loader.dismiss();
           this.loadMoreBtn = false;
         });
@@ -368,12 +388,11 @@ export class ViewMoreActivityPage implements OnInit {
 
   getContentDetails(content) {
     const identifier = content.contentId || content.identifier;
-    this.contentService.getContentDetail({ contentId: identifier })
-      .then((data: any) => {
-        data = JSON.parse(data);
-        if (Boolean(data.result.isAvailableLocally)) {
+    this.contentService.getContentDetails({contentId: identifier}).toPromise()
+      .then((data: Content) => {
+        if (Boolean(data.isAvailableLocally)) {
           this.navCtrl.push(ContentDetailsPage, {
-            content: { identifier: content.lastReadContentId },
+            content: {identifier: content.lastReadContentId},
             depth: '1',
             contentState: {
               batchId: content.batchId ? content.batchId : '',
@@ -384,7 +403,7 @@ export class ViewMoreActivityPage implements OnInit {
             resumedCourseCardData: this.resumeContentData
           });
         } else {
-          this.subscribeGenieEvent();
+          this.subscribeSdkEvent();
           this.showOverlay = true;
           this.importContent([identifier], false);
         }
@@ -397,18 +416,17 @@ export class ViewMoreActivityPage implements OnInit {
 
   importContent(identifiers, isChild) {
     this.queuedIdentifiers.length = 0;
-    const option = {
-      contentImportMap: this.courseUtilService.getImportContentRequestBody(identifiers, isChild),
+    const option: ContentImportRequest = {
+      contentImportArray: this.courseUtilService.getImportContentRequestBody(identifiers, isChild),
       contentStatusArray: []
     };
 
-    this.contentService.importContent(option)
-      .then((data: any) => {
-        data = JSON.parse(data);
+    this.contentService.importContent(option).toPromise()
+      .then((data: ContentImportResponse[]) => {
         this.ngZone.run(() => {
-          if (data.result && data.result.length) {
-            _.forEach(data.result, (value) => {
-              if (value.status === 'ENQUEUED_FOR_DOWNLOAD') {
+          if (data && data.length) {
+            _.forEach(data, (value) => {
+              if (value.status === ContentImportStatus.ENQUEUED_FOR_DOWNLOAD) {
                 this.queuedIdentifiers.push(value.identifier);
               }
             });
@@ -428,18 +446,17 @@ export class ViewMoreActivityPage implements OnInit {
       });
   }
 
-  subscribeGenieEvent() {
-    this.events.subscribe('genie.event', (data) => {
+  subscribeSdkEvent() {
+    this.eventSubscription = this.eventBusService.events().subscribe((event: EventsBusEvent) => {
       this.ngZone.run(() => {
-        data = JSON.parse(data);
-        const res = data;
-        if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-          this.downloadPercentage = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
+        if (event.type === DownloadEventType.PROGRESS) {
+          const downloadEvent = event as DownloadProgress;
+          this.downloadPercentage = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
         }
-        if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport' && this.downloadPercentage === 100) {
+        if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED && this.downloadPercentage === 100) {
           this.showOverlay = false;
           this.navCtrl.push(ContentDetailsPage, {
-            content: { identifier: this.resumeContentData.lastReadContentId },
+            content: {identifier: this.resumeContentData.lastReadContentId},
             depth: '1',
             contentState: {
               batchId: this.resumeContentData.batchId ? this.resumeContentData.batchId : '',
@@ -451,12 +468,13 @@ export class ViewMoreActivityPage implements OnInit {
           });
         }
       });
-    });
+    }) as any;
   }
 
   cancelDownload() {
     this.ngZone.run(() => {
-      this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier).then(() => {
+      this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier)
+        .toPromise().then(() => {
         this.showOverlay = false;
       }).catch(() => {
         this.showOverlay = false;
@@ -464,28 +482,73 @@ export class ViewMoreActivityPage implements OnInit {
     });
   }
 
-  downloadsOnlyToggleChange(e) {
-    if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_SAVED) {
-      this.getLocalContents(false, this.downloadsOnlyToggle);
-    } else if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED) {
-      this.getLocalContents(true, this.downloadsOnlyToggle);
-    }
-  }
 
   showDisabled(resource) {
     return !resource.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable;
   }
 
   /**
-	 * Ionic life cycle hook
-	 */
-  ionViewCanLeave() {
+   * Ionic life cycle hook
+   */
+  ionViewWillLeave() {
     this.ngZone.run(() => {
-      this.events.unsubscribe('genie.event');
+      if (this.eventSubscription) {
+        this.eventSubscription.unsubscribe();
+      }
       this.tabBarElement.style.display = 'flex';
       this.isLoadMore = false;
-      this.pageType = this.pageType;
       this.showOverlay = false;
     });
   }
+
+  private generateImpressionEvent() {
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.SEARCH, '',
+      PageId.VIEW_MORE,
+      Environment.HOME, '', '', '');
+  }
+
+  private generateLogEvent(searchResult) {
+    if (searchResult != null) {
+      const contentArray: Array<any> = searchResult.contentDataList;
+      const params = new Array<any>();
+      const paramsMap = new Map();
+      paramsMap['SearchResults'] = contentArray.length;
+      paramsMap['SearchCriteria'] = searchResult.request;
+      params.push(paramsMap);
+      this.telemetryGeneratorService.generateLogEvent(LogLevel.INFO,
+        PageId.VIEW_MORE,
+        Environment.HOME,
+        ImpressionType.SEARCH, params);
+    }
+  }
+  navigateToDetailPage(content: any): boolean {
+    if (!content.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable) {
+      return false;
+    }
+    const identifier = content.contentId || content.identifier;
+    const type = this.telemetryGeneratorService.isCollection(content.mimeType) ? content.contentType : ContentType.RESOURCE;
+    const telemetryObject: TelemetryObject = new TelemetryObject(identifier, type, content.pkgVersion);
+
+    const values = new Map();
+    values['sectionName'] = this.sectionName;
+    values['positionClicked'] = this.index;
+
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.CONTENT_CLICKED,
+      this.env,
+      this.pageName ? this.pageName : this.layoutName,
+      telemetryObject,
+      values);
+    if (content.mimeType === MimeType.COLLECTION) {
+      this.navCtrl.push(CollectionDetailsEtbPage, {
+        content: content
+      });
+    } else {
+      this.navCtrl.push(ContentDetailsPage, {
+        content: content
+      });
+    }
+  }
+
 }

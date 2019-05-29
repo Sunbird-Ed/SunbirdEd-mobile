@@ -1,6 +1,11 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, Inject } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
-import { ReportService, ReportSummary, ImpressionType, PageId, Environment, DeviceInfoService } from 'sunbird';
+import {
+   SummarizerService,
+   SummaryRequest,
+   ReportSummary,
+   DeviceInfo
+} from 'sunbird-sdk';
 import { ReportAlert } from '../report-alert/report-alert';
 import { TranslateService } from '@ngx-translate/core';
 import { File } from '@ionic-native/file';
@@ -8,9 +13,16 @@ import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { AppVersion } from '@ionic-native/app-version';
-import { AppGlobalService } from '../../../service/app-global.service';
+import { AppGlobalService, UtilityService, AppHeaderService } from '@app/service';
 import { DatePipe } from '@angular/common';
 import { CommonUtilService } from '@app/service';
+import {
+  ImpressionType,
+  PageId,
+  Environment,
+  InteractType,
+  InteractSubtype,
+} from '../../../service/telemetry-constants';
 
 @IonicPage()
 @Component({
@@ -20,11 +32,11 @@ import { CommonUtilService } from '@app/service';
 export class UserReportPage {
   profile: any;
   downloadDirectory: string;
-  reportSummary: ReportSummary;
+  reportSummaryRequest: Partial<ReportSummary>;
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
-    private reportService: ReportService,
+    @Inject('SUMMARIZER_SERVICE') public summarizerService: SummarizerService,
     private transfer: FileTransfer,
     private translate: TranslateService,
     private file: File,
@@ -33,12 +45,15 @@ export class UserReportPage {
     private zone: NgZone,
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
-    private deviceInfoService: DeviceInfoService,
+    @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private commonUtilService: CommonUtilService) {
+    private commonUtilService: CommonUtilService,
+    private utilityService: UtilityService,
+    private headerService: AppHeaderService
+    ) {
 
     this.downloadDirectory = this.file.dataDirectory;
-    this.deviceInfoService.getDownloadDirectoryPath()
+    this.utilityService.getDownloadDirectoryPath()
       .then((response: any) => {
         this.downloadDirectory = response;
       })
@@ -70,7 +85,7 @@ export class UserReportPage {
   fileTransfer: FileTransferObject = this.transfer.create();
   formatTime(time: number): string {
     const minutes: any = '0' + Math.floor(time / 60);
-    const seconds: any = '0' + (time - minutes * 60);
+    const seconds: any = '0' + Math.round(time % 60);
     return minutes.substr(-2) + ':' + seconds.substr(-2);
   }
 
@@ -85,18 +100,17 @@ export class UserReportPage {
   }
 
   ionViewDidLoad() {
+    const header = this.headerService.getDefaultPageConfig();
+      header.showHeader = false;
+      this.headerService.updatePageConfig(header);
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
       PageId.REPORTS_USER_ASSESMENT_DETAILS,
       Environment.USER
     );
-    this.deviceInfoService.getDeviceID()
-      .then((res: any) => {
-        this.deviceId = res;
-      })
-      .catch((err: any) => {
-        console.error('Error', err);
-      });
+
+    this.deviceId = this.deviceInfo.getDeviceID();
+
     this.appVersion.getAppName()
       .then((appName: any) => {
         return appName;
@@ -112,15 +126,21 @@ export class UserReportPage {
 
     const that = this;
 
-    this.reportSummary = this.navParams.get('report');
-    this.contentName = this.reportSummary.name;
+    this.reportSummaryRequest = this.navParams.get('report');
+    this.contentName = this.reportSummaryRequest.name;
     this.handle =  this.navParams.get('handle');
+    const summaryRequest: SummaryRequest = {
+      qId: '',
+      uids: [this.reportSummaryRequest.uid],
+      contentId: this.reportSummaryRequest.contentId,
+      hierarchyData: null,
+  };
 
-    that.reportService.getDetailReport([this.reportSummary.uid], this.reportSummary.contentId)
-      .then(reportsMap => {
-        const data = reportsMap.get(this.reportSummary.uid);
-        const rows = data.reportDetailsList.map(row => {
-          this.response = data.reportDetailsList;
+    that.summarizerService.getLearnerAssessmentDetails(summaryRequest).toPromise()
+    .then(reportList => {
+      const data = reportList.get(this.reportSummaryRequest.uid);
+      const rows = data.reportDetailsList.map(row => {
+        this.response = data.reportDetailsList;
           return {
             'index': 'Q' + (('00' + row.qindex).slice(-3)),
             'result': row.score + '/' + row.maxScore,
@@ -142,11 +162,12 @@ export class UserReportPage {
           that.assessmentData = data;
           that.assessmentData['showPopup'] = true;
           that.assessmentData['popupCallback'] = ReportAlert;
+          that.assessmentData['totalQuestionsScore'] = that.reportSummaryRequest.totalQuestionsScore;
           this.totalScore = data.totalScore;
           this.maxTotalScore = data.maxTotalScore;
           this.totalTime = data.totalTime;
         });
-      })
+       })
       .catch(err => {
         loader.dismiss();
       });
@@ -168,8 +189,8 @@ export class UserReportPage {
     const contentstarttime = this.datePipe.transform(new Date(teams[0].timestamp), 'dd-MM-yyyy hh:mm:ss a');
     for (let m = 0; m < anzahlTeams; m++) {
       line += 'Device ID' + ',' + this.deviceId + '\n';
-      line += 'User name (User ID)' + ',' + this.handle + '(' + this.reportSummary.uid + ')' + '\n';
-      line += 'Content name (Content ID)' + ',' + this.reportSummary.name + '(' + this.reportSummary.contentId + ')' + '\n';
+      line += 'User name (User ID)' + ',' + this.handle + '(' + this.reportSummaryRequest.uid + ')' + '\n';
+      line += 'Content name (Content ID)' + ',' + this.reportSummaryRequest.name + '(' + this.reportSummaryRequest.contentId + ')' + '\n';
       line += 'Content started time' + ',' + contentstarttime + '\n';
       line += 'Total Time' + ',' + this.formatTime(this.totalTime) + '\n';
       line += 'Total Score' + ',' + ' ' + this.totalScore + '/' + this.maxTotalScore  + '\n';
@@ -194,6 +215,12 @@ export class UserReportPage {
   }
 
   importcsv(body) {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.DOWNLOAD_REPORT_CLICKED,
+      Environment.USER,
+      PageId.REPORTS_USER_ASSESMENT_DETAILS, undefined,
+      );
     this.exptime = new Date().getTime();
     const csv: any = this.convertToCSV(this.response);
     const combinefilename = this.deviceId + '_' + this.response[0].uid + '_' + this.response[0].contentId + '_' + this.exptime + '.csv';

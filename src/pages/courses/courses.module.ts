@@ -3,8 +3,6 @@ import { IonicPageModule } from 'ionic-angular';
 import { CoursesPage } from './courses';
 import { TranslateModule } from '@ngx-translate/core';
 // TODO: remove it before pushing the code
-import { GenieSDKServiceProvider } from 'sunbird';
-import { FrameworkModule } from 'sunbird';
 import { IonicImageLoader } from 'ionic-image-loader';
 import { ComponentsModule } from '../../component/components.module';
 import { Ionic2RatingModule } from 'ionic2-rating';
@@ -20,12 +18,11 @@ import { ResourcesPageModule } from '../resources/resources.module';
     TranslateModule.forChild(),
     ResourcesPageModule,
     ComponentsModule,
-    FrameworkModule,
     IonicImageLoader,
     DirectivesModule,
     Ionic2RatingModule
   ],
-  providers: [GenieSDKServiceProvider],
+  providers: [],
   exports: [
     CoursesPage,
   ]

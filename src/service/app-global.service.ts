@@ -1,59 +1,39 @@
-import { NgZone, OnDestroy } from '@angular/core';
-import { ProfileConstants, FrameworkCategory } from './../app/app.constant';
+import {Inject, Injectable, OnDestroy} from '@angular/core';
+import {Environment, InteractSubtype, InteractType, PageId} from './telemetry-constants';
+import {Events, PopoverController, PopoverOptions} from 'ionic-angular';
+import {UpgradePopover} from '../pages/upgrade/upgrade-popover';
+import {GenericAppConfig, PreferenceKey} from '../app/app.constant';
+import {TelemetryGeneratorService} from './telemetry-generator.service';
+import {
+  AuthService,
+  Course,
+  Framework,
+  FrameworkCategoryCodesGroup,
+  FrameworkDetailsRequest,
+  FrameworkService,
+  OAuthSession,
+  Profile,
+  ProfileService,
+  ProfileType,
+  SharedPreferences
+} from 'sunbird-sdk';
+import {UtilityService} from './utility-service';
+import {ProfileConstants} from '../app';
 
-import { Injectable } from '@angular/core';
-import {
-    Profile,
-    ProfileType,
-    AuthService,
-    SharedPreferences,
-    ProfileService,
-    BuildParamService,
-    PageId,
-    Environment,
-    InteractType,
-    InteractSubtype,
-    FrameworkDetailsRequest,
-    FrameworkService
-} from 'sunbird';
-import {
-    Events,
-    PopoverController,
-    PopoverOptions
-} from 'ionic-angular';
-import { UpgradePopover } from '../pages/upgrade/upgrade-popover';
-import {
-    GenericAppConfig,
-    PreferenceKey
-} from '../app/app.constant';
-import { TelemetryGeneratorService } from './telemetry-generator.service';
+declare const buildconfigreader;
 
 @Injectable()
 export class AppGlobalService implements OnDestroy {
-
-    constructor(
-        private event: Events,
-        private authService: AuthService,
-        private profile: ProfileService,
-        private preference: SharedPreferences,
-        private popoverCtrl: PopoverController,
-        private buildParamService: BuildParamService,
-        private framework: FrameworkService,
-        private telemetryGeneratorService: TelemetryGeneratorService
-    ) {
-
-        this.initValues();
-        this.listenForEvents();
-    }
-
     public static readonly USER_INFO_UPDATED = 'user-profile-changed';
     public static readonly PROFILE_OBJ_CHANGED = 'app-global:profile-obj-changed';
     public static isPlayerLaunched = false;
 
+    session: OAuthSession;
+
     /**
     * This property stores the courses enrolled by a user
     */
-    courseList: Array<any>;
+    courseList: Array<Course>;
 
     /**
     * This property stores the course filter configuration at the app level for a particular app session
@@ -76,7 +56,22 @@ export class AppGlobalService implements OnDestroy {
     guestProfileType: ProfileType;
     isProfileSettingsCompleted: boolean;
     isOnBoardingCompleted = false;
-    session: any;
+    selectedUser;
+
+    constructor(
+        @Inject('PROFILE_SERVICE') private profile: ProfileService,
+        @Inject('AUTH_SERVICE') private authService: AuthService,
+        @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
+        private event: Events,
+        private popoverCtrl: PopoverController,
+        private telemetryGeneratorService: TelemetryGeneratorService,
+        @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+        private utilityService: UtilityService
+    ) {
+
+        this.initValues();
+        this.listenForEvents();
+    }
     public averageTime = 0;
     public averageScore = 0;
     private frameworkData = [];
@@ -109,6 +104,14 @@ export class AppGlobalService implements OnDestroy {
 
     getSessionData(): any {
         return this.session;
+    }
+
+    getSelectedUser() {
+        return this.selectedUser;
+    }
+
+   setSelectedUser(selectedUser) {
+        this.selectedUser = selectedUser;
     }
 
     getNameForCodeInFramework(category, code) {
@@ -219,46 +222,23 @@ export class AppGlobalService implements OnDestroy {
     /**
      * @returns {string} UserId or empty string if not available
      */
-    getUserId(): string {
+    getUserId(): string | undefined {
         if (!this.session) {
-            this.authService.getSessionData((session) => {
-                if (session && session !== 'null') {
-                    return session[ProfileConstants.USER_TOKEN];
-                }
-
-                return this.session = '';
+          this.authService.getSession().toPromise()
+            .then((session) => {
+                this.session = session;
             });
         }
 
-        return this.session[ProfileConstants.USER_TOKEN];
-    }
+      if (this.session) {
+        return this.session.userToken;
+      }
 
-    private initValues() {
-        this.readConfig();
-        this.authService.getSessionData((session) => {
-            if (session === null || session === 'null') {
-                this.getGuestUserInfo();
-            } else {
-                this.guestProfileType = undefined;
-                this.isGuestUser = false;
-                this.session = JSON.parse(session);
-            }
-            this.getCurrentUserProfile();
-        });
-
-        this.preference.getString(PreferenceKey.IS_ONBOARDING_COMPLETED)
-            .then((result) => {
-                this.isOnBoardingCompleted = (result === 'true') ? true : false;
-            });
-    }
-
-    setOnBoardingCompleted() {
-        this.isOnBoardingCompleted = true;
-        this.preference.putString(PreferenceKey.IS_ONBOARDING_COMPLETED, 'true');
+      return undefined;
     }
 
     readConfig() {
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_CARDS)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_CARDS)
             .then(response => {
                 this.DISPLAY_ONBOARDING_CARDS = response === 'true' ? true : false;
             })
@@ -266,7 +246,7 @@ export class AppGlobalService implements OnDestroy {
                 this.DISPLAY_ONBOARDING_CARDS = false;
             });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE)
             .then(response => {
                 this.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE = response === 'true' ? true : false;
             })
@@ -274,7 +254,7 @@ export class AppGlobalService implements OnDestroy {
                 this.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE = false;
             });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_PAGE)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_PAGE)
             .then(response => {
                 this.DISPLAY_ONBOARDING_PAGE = response === 'true' ? true : false;
             })
@@ -282,7 +262,7 @@ export class AppGlobalService implements OnDestroy {
                 this.DISPLAY_ONBOARDING_PAGE = false;
             });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER)
             .then(response => {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER = response === 'true' ? true : false;
             })
@@ -290,7 +270,7 @@ export class AppGlobalService implements OnDestroy {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_COURSE_TAB_FOR_TEACHER = false;
             });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER)
             .then(response => {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER = response === 'true' ? true : false;
             })
@@ -298,7 +278,7 @@ export class AppGlobalService implements OnDestroy {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_TEACHER = false;
             });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER)
             .then(response => {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER = response === 'true' ? true : false;
             })
@@ -306,7 +286,7 @@ export class AppGlobalService implements OnDestroy {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_TEACHER = false;
             });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT)
             .then(response => {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT = response === 'true' ? true : false;
             })
@@ -314,21 +294,21 @@ export class AppGlobalService implements OnDestroy {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_LIBRARY_TAB_FOR_STUDENT = false;
             });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT)
             .then(response => {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = response === 'true' ? true : false;
             })
             .catch(error => {
                 this.DISPLAY_SIGNIN_FOOTER_CARD_IN_PROFILE_TAB_FOR_STUDENT = false;
             });
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.TRACK_USER_TELEMETRY)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.TRACK_USER_TELEMETRY)
             .then(response => {
                 this.TRACK_USER_TELEMETRY = response === 'true' ? true : false;
             })
             .catch(error => {
                 this.TRACK_USER_TELEMETRY = false;
             });
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.CONTENT_STREAMING_ENABLED)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.CONTENT_STREAMING_ENABLED)
             .then(response => {
                 this.CONTENT_STREAMING_ENABLED = response === 'true' ? true : false;
             })
@@ -336,40 +316,65 @@ export class AppGlobalService implements OnDestroy {
                 this.CONTENT_STREAMING_ENABLED = false;
             });
 
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_SCAN_PAGE)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_SCAN_PAGE)
             .then(response => {
                 this.DISPLAY_ONBOARDING_SCAN_PAGE = response === 'true' ? true : false;
             })
             .catch(error => {
                 this.DISPLAY_ONBOARDING_SCAN_PAGE = false;
             });
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE)
             .then(response => {
                 this.DISPLAY_ONBOARDING_CATEGORY_PAGE = response === 'true' ? true : false;
             })
             .catch(error => {
                 this.DISPLAY_ONBOARDING_CATEGORY_PAGE = false;
             });
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.OPEN_RAPDISCOVERY_ENABLED)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.OPEN_RAPDISCOVERY_ENABLED)
             .then(response => {
                 this.OPEN_RAPDISCOVERY_ENABLED = response === 'true' ? true : false;
             })
             .catch(error => {
                 this.OPEN_RAPDISCOVERY_ENABLED = false;
             });
-        this.buildParamService.getBuildConfigParam(GenericAppConfig.SUPPORT_EMAIL)
+        this.utilityService.getBuildConfigValue(GenericAppConfig.SUPPORT_EMAIL)
             .then(response => {
                 this.SUPPORT_EMAIL = response;
             })
-            .catch(error => {
+            .catch(() => {
                 this.SUPPORT_EMAIL = '';
             });
-         }
+    }
+
+    setOnBoardingCompleted() {
+        this.isOnBoardingCompleted = true;
+        this.preferences.putString(PreferenceKey.IS_ONBOARDING_COMPLETED, 'true').toPromise().then();
+    }
+
+    private initValues() {
+        this.readConfig();
+
+        this.authService.getSession().toPromise().then((session) => {
+            if (!session) {
+                this.getGuestUserInfo();
+            } else {
+                this.guestProfileType = undefined;
+                this.isGuestUser = false;
+                this.session = session;
+            }
+            this.getCurrentUserProfile();
+        });
+
+        this.preferences.getString(PreferenceKey.IS_ONBOARDING_COMPLETED).toPromise()
+            .then((result) => {
+                this.isOnBoardingCompleted = (result === 'true') ? true : false;
+            });
+    }
 
     private getCurrentUserProfile() {
-        this.profile.getCurrentUser()
+        this.profile.getActiveSessionProfile({requiredFields: ProfileConstants.REQUIRED_FIELDS}).toPromise()
             .then((response: any) => {
-                this.guestUserProfile = JSON.parse(response);
+                this.guestUserProfile = response;
                 if (this.guestUserProfile.syllabus && this.guestUserProfile.syllabus.length > 0) {
                     this.getFrameworkDetails(this.guestUserProfile.syllabus[0])
                         .then((categories) => {
@@ -378,7 +383,7 @@ export class AppGlobalService implements OnDestroy {
                             });
 
                             this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
-                        }).catch((error) => {
+                        }).catch(() => {
                             this.frameworkData = [];
                             this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
                         });
@@ -389,6 +394,7 @@ export class AppGlobalService implements OnDestroy {
                 }
             })
             .catch((error) => {
+                console.error(error);
                 this.guestUserProfile = undefined;
                 this.event.publish(AppGlobalService.PROFILE_OBJ_CHANGED);
             });
@@ -397,19 +403,13 @@ export class AppGlobalService implements OnDestroy {
     // Remove this method after refactoring formandframeworkutil.service
     private getFrameworkDetails(frameworkId: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            const req: FrameworkDetailsRequest = {
-                defaultFrameworkDetails: true,
-                categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
+            const frameworkDetailsRequest: FrameworkDetailsRequest = {
+                frameworkId: frameworkId || '',
+                requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
             };
-
-            if (frameworkId !== undefined && frameworkId.length) {
-                req.defaultFrameworkDetails = false;
-                req.frameworkId = frameworkId;
-            }
-
-            this.framework.getAllCategories(req)
-                .then(res => {
-                    resolve(res);
+            this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
+                .then((framework: Framework) => {
+                    resolve(framework.categories);
                 })
                 .catch(error => {
                     reject(error);
@@ -419,7 +419,7 @@ export class AppGlobalService implements OnDestroy {
 
     public getGuestUserInfo(): Promise<string> {
         return new Promise((resolve, reject) => {
-            this.preference.getString(PreferenceKey.SELECTED_USER_TYPE)
+            this.preferences.getString(PreferenceKey.SELECTED_USER_TYPE).toPromise()
                 .then(val => {
                     if (val) {
                         if (val === ProfileType.STUDENT) {
@@ -433,10 +433,10 @@ export class AppGlobalService implements OnDestroy {
                         }
                         this.isGuestUser = true;
                         resolve(this.guestProfileType);
-                    } else {
-                        reject('');
                     }
-                });
+                }).catch(() => {
+              reject()
+            });
         });
     }
 
@@ -455,7 +455,7 @@ export class AppGlobalService implements OnDestroy {
 
     }
 
-    openPopover(upgradeType: any) {
+  async openPopover(upgradeType: any) {
         let shouldDismissAlert = true;
 
         if (upgradeType.upgrade.type === 'force') {

@@ -183,7 +183,7 @@ page-profile {
 
     .scroll-content {
         background-color: #FAFAFA !important;
-        @include padding(0 !important);
+        // @include padding(0 !important);
     }
 
 
@@ -303,7 +303,7 @@ page-profile {
     }
     .school-recent {
         margin: 0 auto;
-        @include padding(0, 30px, 25px, 30px);
+        @include padding(0, 16px, 16px, 16px);
         text-align: center;
     }
 
@@ -315,7 +315,7 @@ page-profile {
         .phone{
           display: inline-block;
           border-radius: 25px;
-          @include padding(15px);
+          @include padding($base-block-space, $base-block-space*2);
           @include margin(null, null, 10px, null);
           background-color: #fff;
           color: #007AFF;
@@ -328,7 +328,7 @@ page-profile {
         .email{
             display: inline-block;
           border-radius: 25px;
-          padding: 15px;
+          @include padding($base-block-space, $base-block-space*2);
           background-color: #fff;
           color: #007AFF;
           border-bottom: 0.3px solid #196DAB;
@@ -496,3 +496,35 @@ page-profile {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.asPerStateRecord{
+    color: white;
+    font-size: 10px;
+    white-space:pre;
+    display:inline-block;
+    font-weight:bold;
+    background-color: black;
+    padding: 6px;
+    position: absolute;
+    right: 13px;
+    top: 22px;
+    
+}
+.isymbol{
+    position: relative;
+    top: 0;
+    line-height: 12px;
+    margin-left: 5px;
+}
+.info-icon{
+    vertical-align: sub;
+    margin-right: 13px;
+    font-size: 1.8em !important;
+    color: #a4a4a4;
+
+}
+.info-icon-text{
+    font-size: 10px;
+    text-align: center;
+}
+

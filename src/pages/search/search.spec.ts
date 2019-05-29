@@ -1,34 +1,27 @@
-import { mockRes } from '../search/search.spec.data';
+import {mockRes} from '../search/search.spec.data';
 import {
-    contentServiceMock,
-    pageAssembleServiceMock,
-    navParamsMock, navCtrlMock,
-    zoneMock, fileUtilMock,
-    eventsMock, appGlobalServiceMock,
-    platformMock, formAndFrameworkUtilServiceMock,
-    commonUtilServiceMock,
-    telemetryGeneratorServiceMock,
-    sharedPreferencesMock,
-    translateServiceMock
+  appGlobalServiceMock,
+  commonUtilServiceMock,
+  contentServiceMock,
+  eventsMock,
+  fileUtilMock,
+  formAndFrameworkUtilServiceMock,
+  navCtrlMock,
+  navParamsMock,
+  pageAssembleServiceMock,
+  platformMock,
+  sharedPreferencesMock,
+  telemetryGeneratorServiceMock,
+  translateServiceMock,
+  zoneMock
 } from '../../__tests__/mocks';
-import { SearchPage } from './search';
-import { ProfileType, PageId } from 'sunbird';
-import { FilterPage } from './filters/filter';
-import {
-    AudienceFilter,
-    ContentType,
-    MimeType
-} from '../../app/app.constant';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
-import { CollectionDetailsPage } from '../collection-details/collection-details';
-import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
-import { ContentDetailsPage } from '../content-details/content-details';
-import { doesNotThrow } from 'assert';
-import { empty } from 'rxjs/observable/empty';
-import { NetworkMock } from 'ionic-mocks';
-import { promise } from 'selenium-webdriver';
-import { DomRendererFactory2 } from '@angular/platform-browser/src/dom/dom_renderer';
-import { Navbar } from 'ionic-angular';
+import {SearchPage} from './search';
+import {ProfileType} from 'sunbird';
+import {FilterPage} from './filters/filter';
+import {AudienceFilter, ContentType, MimeType} from '../../app/app.constant';
+import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
+import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
+import {ContentDetailsPage} from '../content-details/content-details';
 
 describe.only('SearchPage', () => {
     let searchPage: SearchPage;
@@ -39,11 +32,30 @@ describe.only('SearchPage', () => {
         appGlobalServiceMock.isUserLoggedIn.mockResolvedValue(true);
         sharedPreferencesMock.getString.mockResolvedValue('SAMPLE');
 
-        searchPage = new SearchPage(contentServiceMock as any, pageAssembleServiceMock as any, navParamsMock as any,
-            navCtrlMock as any, zoneMock as any, eventsMock as any, fileUtilMock as any, eventsMock as any,
-            appGlobalServiceMock as any, platformMock as any, formAndFrameworkUtilServiceMock as any,
-            commonUtilServiceMock as any, telemetryGeneratorServiceMock as any,
-            sharedPreferencesMock as any, translateServiceMock as any);
+        searchPage = new SearchPage(
+            contentServiceMock as any,
+            pageAssembleServiceMock as any,
+            navParamsMock as any,
+            navCtrlMock as any,
+            zoneMock as any,
+            eventsMock as any,
+            fileUtilMock as any,
+            eventsMock as any,
+            appGlobalServiceMock as any,
+            platformMock as any,
+            formAndFrameworkUtilServiceMock as any,
+            commonUtilServiceMock as any,
+            telemetryGeneratorServiceMock as any,
+            sharedPreferencesMock as any,
+            translateServiceMock as any,
+            appHeaderSrvMock as any,
+            courseServiceMock as any,
+            popoverCtrlMock as any
+        );
+        searchPage.loader = {
+            present: jest.fn(),
+            dismiss: jest.fn()
+        };
 
         jest.resetAllMocks();
     });
@@ -126,11 +138,11 @@ describe.only('SearchPage', () => {
         // arrange
         contentServiceMock.getContentDetail.mockResolvedValue('SAMPLE_COLLECTION_ID');
         spyOn(searchPage, 'generateInteractEvent').and.stub();
-        spyOn(searchPage, 'showContentDetails').and.returnValue(jest.fn());
+        spyOn(searchPage, 'checkRetiredOpenBatch').and.stub();
         // act
         searchPage.openContent(undefined, { identifier: 'SAMPLE_ID' }, 0);
         // assert
-        expect(searchPage.showContentDetails).toHaveBeenCalled();
+        expect(searchPage.checkRetiredOpenBatch).toHaveBeenCalled();
     });
     it('should show filter page showFilter()', (done) => {
         // arrange
@@ -423,7 +435,7 @@ describe.only('SearchPage', () => {
         searchPage.getImportContentRequestBody(identifiers, true);
         // assert
     });
-    it('should update the download progress when download progress event comes subscribeGenieEvent() ', () => {
+  it('should update the download progress when download progress event comes subscribeSdkEvent() ', () => {
         // arrange
         // act
         searchPage.subscribeGenieEvent();
@@ -432,7 +444,7 @@ describe.only('SearchPage', () => {
         // assert
         expect(searchPage.loadingDisplayText).toBe('Loading content');
     });
-    it('should update the download progress when download progress event comes and its 100 subscribeGenieEvent() ', () => {
+  it('should update the download progress when download progress event comes and its 100 subscribeSdkEvent() ', () => {
         // arrange
         // (eventsMock.subscribe as any).mockReturnValue(Promise.resolve(JSON.stringify(mockRes.downloadProgressEventSample2)));
         // act
@@ -455,7 +467,7 @@ describe.only('SearchPage', () => {
         // assert
         expect(searchPage.loadingDisplayText).toBe('Loading content ');
     });
-    it('should  invoke showContentDetails subscribeGenieEvent() ', (done) => {
+  it('should  invoke showContentDetails subscribeSdkEvent() ', (done) => {
 
         spyOn(searchPage, 'showContentDetails').and.stub();
 
@@ -548,7 +560,7 @@ describe.only('SearchPage', () => {
         const data = mockRes.contentDetailsResponse;
         data.result.isAvailableLocally = false;
         (contentServiceMock.getContentDetail as any).mockResolvedValue(JSON.stringify(data));
-        spyOn(searchPage, 'subscribeGenieEvent').and.stub();
+      spyOn(searchPage, 'subscribeSdkEvent').and.stub();
         spyOn(searchPage, 'downloadParentContent').and.stub();
         // act
         searchPage.checkParent({ identifier: 'SAMPLE_ID' }, { identifier: 'SAMPLE_ID' });
@@ -602,5 +614,74 @@ describe.only('SearchPage', () => {
         searchPage.ionViewDidLoad();
         // assert
     });
+
+    it('#checkRetiredOpenBatch should call navigateToDetailPage()', () => {
+        const loader = {
+            present: jest.fn(),
+            dismiss: jest.fn()
+        };
+        commonUtilServiceMock.getLoader.mockReturnValue(loader);
+        spyOn(searchPage, 'showContentDetails').and.stub();
+        searchPage.checkRetiredOpenBatch({}, 'InProgress');
+        expect(searchPage.showContentDetails).toBeCalledWith({}, true);
+    });
+
+    it('#checkRetiredOpenBatch should call navigateToBatchListPopup()', () => {
+        const loader = {
+            present: jest.fn(),
+            dismiss: jest.fn()
+        };
+        commonUtilServiceMock.getLoader.mockReturnValue(loader);
+        searchPage.enrolledCourses = mockRes.enrolledCourses;
+        spyOn(searchPage, 'navigateToBatchListPopup').and.stub();
+        searchPage.checkRetiredOpenBatch(mockRes.contentMock1);
+        expect(searchPage.navigateToBatchListPopup).toBeCalledWith(mockRes.contentMock1, undefined, [mockRes.enrolledCourses[1]]);
+    });
+
+    it('#navigateToBatchListPopup should call should present the popup calling present()', (done) => {
+        commonUtilServiceMock.networkInfo = {
+            isNetworkAvailable: true
+        };
+        const popup = {
+            present: jest.fn(),
+            dismiss: jest.fn()
+        };
+        searchPage.guestUser = false;
+        popoverCtrlMock.create.mockReturnValue(popup);
+        courseServiceMock.getCourseBatches.mockResolvedValue(JSON.stringify(mockRes.openUpcomingBatchesResponse));
+
+        setTimeout(() => {
+            zoneMock.run.mock.calls[0][0].call();
+            expect(searchPage.batches.length).toBe(1);
+            expect(searchPage.loader.dismiss).toHaveBeenCalled();
+            expect(popup.present).toHaveBeenCalled();
+            done();
+        }, 0);
+        searchPage.navigateToBatchListPopup(mockRes.contentMock1);
+    });
+
+    it('#navigateToBatchListPopup should call navigateToDetailPage()', (done) => {
+        commonUtilServiceMock.networkInfo = {
+            isNetworkAvailable: true
+        };
+        const popup = {
+            present: jest.fn(),
+            dismiss: jest.fn()
+        };
+        searchPage.guestUser = false;
+        popoverCtrlMock.create.mockReturnValue(popup);
+        courseServiceMock.getCourseBatches.mockResolvedValue(JSON.stringify(mockRes.noOpenUpcomingBatchesResponse));
+        spyOn(searchPage, 'showContentDetails').and.stub();
+
+        setTimeout(() => {
+            zoneMock.run.mock.calls[0][0].call();
+            expect(searchPage.batches.length).toBe(0);
+            expect(searchPage.showContentDetails).toHaveBeenCalledWith(mockRes.contentMock1, true);
+            expect(searchPage.loader.dismiss).toHaveBeenCalled();
+            done();
+        }, 0);
+        searchPage.navigateToBatchListPopup(mockRes.contentMock1, null);
+    });
+
 });
 

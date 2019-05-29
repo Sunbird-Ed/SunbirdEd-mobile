@@ -87,7 +87,24 @@ export class FlagContent {
         'OPTION_OTHER'
     ];
 }
-
+export class BatchConstants {
+  public static readonly REQUIRED_FIELDS = [
+    'endDate',
+    'description',
+    'name',
+    'enrollmentType',
+    'hashTagId',
+    'startDate',
+    'courseId',
+    'status',
+    'createdBy',
+    'creatorFirstName',
+    'creatorLastName',
+    'identifier',
+    'id'
+  ];
+  // createdFor ,courseAdditionalInfo, participant, updatedDate, createdDate, courseCreator, mentors
+}
 export class ProfileConstants {
     public static readonly USER_TOKEN = 'userToken';
     public static readonly REQUIRED_FIELDS = [
@@ -116,6 +133,7 @@ export class EventTopics {
     public static readonly UNENROL_COURSE_SUCCESS = 'UNENROL_COURSE_SUCCESS';
     public static readonly COURSE_STATUS_UPDATED_SUCCESSFULLY = 'COURSE_STATUS_UPDATED_SUCCESSFULLY';
     public static readonly REFRESH_ENROLL_COURSE_LIST = 'REFRESH_ENROLL_COURSE_LIST';
+    public static readonly PLAYER_CLOSED = 'PLAYER_CLOSED';
 }
 
 export class ShareUrl {
@@ -128,19 +146,30 @@ export class MenuOverflow {
     public static readonly MENU_LOGIN = ['USERS_AND_GROUPS', 'REPORTS', 'SETTINGS', 'LOGOUT'];
 }
 
+export class SideMenu {
+    public static readonly MENU_GUEST = ['USERS_AND_GROUPS', 'REPORTS', 'LANGUAGE', 'SETTINGS'];
+    public static readonly MENU_LOGIN = ['USERS_AND_GROUPS', 'REPORTS', 'LANGUAGE', 'SETTINGS', 'LOGOUT'];
+}
+
 export class FormConstant {
     public static readonly DEFAULT_PAGE_COURSE_FILTER_PATH = 'data/form/pageassemble_course_filter.json';
     public static readonly DEFAULT_PAGE_LIBRARY_FILTER_PATH = 'data/form/pageassemble_library_filter.json';
 }
 
 export class PreferenceKey {
-    public static readonly SELECTED_LANGUAGE_CODE = 'selected_language_code';
-    public static readonly SELECTED_LANGUAGE = 'selected_language';
-    public static readonly SELECTED_USER_TYPE = 'selected_user_type';
-    public static readonly COURSE_IDENTIFIER = 'course_identifier';
-    public static readonly IS_ONBOARDING_COMPLETED = 'is_onboarding_settings_completed';
-    public static readonly IS_BOOKMARK_VIEWED = 'is_bookmark_viewed';
-    public static readonly CONTENT_CONTEXT = 'content_context';
+    public static readonly SELECTED_LANGUAGE_CODE = 'sunbirdselected_language_code';
+    public static readonly SELECTED_LANGUAGE = 'sunbirdselected_language';
+    public static readonly SELECTED_USER_TYPE = 'sunbirdselected_user_type';
+    public static readonly COURSE_IDENTIFIER = 'sunbirdcourse_identifier';
+    public static readonly IS_ONBOARDING_COMPLETED = 'sunbirdis_onboarding_settings_completed';
+    public static readonly IS_BOOKMARK_VIEWED = 'sunbirdis_bookmark_viewed';
+    public static readonly CONTENT_CONTEXT = 'sunbirdcontent_context';
+    public static readonly GUEST_USER_ID_BEFORE_LOGIN = 'sunbirdGUEST_USER_ID_BEFORE_LOGIN';
+    public static readonly KEY_SUNBIRD_SUPPORT_FILE_PATH = 'sunbirdsunbird_support_file_path';
+    public static readonly KEY_DATA_SYNC_TYPE = 'sunbirdsync_config';
+    public static readonly KEY_DATA_SYNC_TIME = 'sunbirddata_sync_time';
+    public static readonly APP_LOGO = 'app_logo';
+    public static readonly APP_NAME = 'app_name';
 }
 
 export class GenericAppConfig {
@@ -159,6 +188,8 @@ export class GenericAppConfig {
     public static readonly DISPLAY_ONBOARDING_CATEGORY_PAGE = 'DISPLAY_ONBOARDING_CATEGORY_PAGE';
     public static readonly OPEN_RAPDISCOVERY_ENABLED = 'OPEN_RAPDISCOVERY_ENABLED';
     public static readonly SUPPORT_EMAIL = 'SUPPORT_EMAIL';
+    public static readonly VERSION_NAME = 'VERSION_NAME';
+    public static readonly VERSION_CODE = 'VERSION_CODE';
 }
 
 export const appLanguages = [
@@ -261,4 +292,8 @@ export class FrameworkCategory {
         FrameworkCategory.GRADE_LEVEL,
         FrameworkCategory.SUBJECT
     ];
+}
+
+export class ContentConstants {
+    public static readonly DEFAULT_LICENSE = 'CC BY 4.0';
 }

@@ -2,13 +2,12 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { CollectionDetailsEtbPage } from './collection-details-etb';
 import { TranslateModule } from '@ngx-translate/core';
-import { GenieSDKServiceProvider } from 'sunbird';
-import { FrameworkModule } from 'sunbird';
 import { IonicImageLoader } from 'ionic-image-loader';
 import { Ionic2RatingModule } from 'ionic2-rating';
 import { ComponentsModule } from '../../component/components.module';
 import { DirectivesModule } from '../../directives/directives.module';
 import { PipesModule } from '../../pipes/pipes.module';
+import { FileSizePipe } from '@app/pipes/file-size/file-size';
 
 @NgModule({
   declarations: [
@@ -19,13 +18,12 @@ import { PipesModule } from '../../pipes/pipes.module';
     IonicPageModule.forChild(CollectionDetailsEtbPage),
     TranslateModule.forChild(),
     ComponentsModule,
-    FrameworkModule,
     IonicImageLoader,
     DirectivesModule,
     Ionic2RatingModule,
     PipesModule
   ],
-  providers: [GenieSDKServiceProvider],
+  providers: [],
   exports: [
     CollectionDetailsEtbPage
   ]

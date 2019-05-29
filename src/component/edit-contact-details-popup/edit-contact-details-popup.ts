@@ -1,12 +1,9 @@
-import { Component } from '@angular/core';
-import { NavParams } from 'ionic-angular/navigation/nav-params';
-import { Platform, ViewController, LoadingController } from 'ionic-angular';
-import {
-  UserProfileService, UpdateUserInfoRequest, UserExistRequest, GenerateOTPRequest
-} from 'sunbird';
+import { Component, Inject } from '@angular/core';
+import { LoadingController, Platform, ViewController, NavParams } from 'ionic-angular';
+import { GenerateOtpRequest, IsProfileAlreadyInUseRequest, ProfileService } from 'sunbird-sdk';
 import { ProfileConstants } from '@app/app';
 import { CommonUtilService } from '@app/service';
-import { Validators, FormControl, FormGroup, FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'edit-contact-details-popup',
@@ -25,8 +22,11 @@ export class EditContactDetailsPopupComponent {
   personEditForm: FormGroup;
   isRequired: Boolean = false;
 
-  constructor(private navParams: NavParams, public viewCtrl: ViewController, public platform: Platform,
-    private userProfileService: UserProfileService, private loadingCtrl: LoadingController,
+  constructor(private navParams: NavParams,
+    public viewCtrl: ViewController,
+    public platform: Platform,
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    private loadingCtrl: LoadingController,
     private commonUtilService: CommonUtilService,
     private fb: FormBuilder) {
     // this.phoneNumber = this.navParams.get('phoneNumber');
@@ -41,25 +41,25 @@ export class EditContactDetailsPopupComponent {
     }, 10);
     this.initEditForm();
   }
+
   initEditForm() {
     if (this.type === ProfileConstants.CONTACT_TYPE_EMAIL) {
       this.personEditForm = this.fb.group({
-        email: ['', Validators.compose([Validators.required, Validators.pattern('^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[a-z]{2,4}$')])],
+        email: ['', Validators.compose([Validators.required, Validators.pattern('^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[a-z]{2,}$')])],
       });
     } else {
       this.personEditForm = this.fb.group({
-        phone: ['', Validators.compose([Validators.required, Validators.pattern('^[0-9]+$')])],
+        phone: ['', Validators.compose([Validators.required, Validators.pattern('^[6-9]\\d{9}$')])],
       });
     }
   }
-
 
   validate() {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       const loader = this.getLoader();
       const formVal = this.personEditForm.value;
       loader.present();
-      let req: UserExistRequest;
+      let req: IsProfileAlreadyInUseRequest;
       if (this.type === ProfileConstants.CONTACT_TYPE_PHONE) {
         req = {
           key: formVal.phone,
@@ -72,28 +72,23 @@ export class EditContactDetailsPopupComponent {
         };
       }
 
-      this.userProfileService.isAlreadyInUse(req)
-        .then((res: any) => {
-          res = JSON.parse(res);
-          loader.dismiss();
-          if (res && res.result) {
-            const data = JSON.parse(res.result.response);
-            if (data.id === this.userId) {
-              this.viewCtrl.dismiss(false);
-            } else {
-              this.err = true;
-            }
+      this.profileService.isProfileAlreadyInUse(req).subscribe((success: any) => {
+        loader.dismiss();
+        if (success && success.response) {
+          if (success.response.id === this.userId) {
+            this.viewCtrl.dismiss(false);
+          } else {
+            this.err = true;
           }
-        })
-        .catch(err => {
-          err = JSON.parse(err);
-          loader.dismiss();
-          if (err.error === 'USER_NOT_FOUND') {
-            this.generateOTP();
-          } else if (err.error === 'INVALID_PHONE_NO_FORMAT') {
-            // TODO
-          }
-        });
+        }
+      }, (error) => {
+        loader.dismiss();
+        if (error.response.body.params.err === 'USER_NOT_FOUND') {
+          this.generateOTP();
+        } else if (error.response.body.params.err === 'INVALID_PHONE_FORMAT') {
+          // TODO
+        }
+      });
     } else {
       this.commonUtilService.showToast('INTERNET_CONNECTIVITY_NEEDED');
     }
@@ -106,7 +101,7 @@ export class EditContactDetailsPopupComponent {
   }
 
   generateOTP() {
-    let req: GenerateOTPRequest;
+    let req: GenerateOtpRequest;
     if (this.type === ProfileConstants.CONTACT_TYPE_PHONE) {
       req = {
         key: this.phone,
@@ -120,9 +115,8 @@ export class EditContactDetailsPopupComponent {
     }
     const loader = this.getLoader();
     loader.present();
-    this.userProfileService.generateOTP(req)
-      .then((res: any) => {
-        res = JSON.parse(res);
+    this.profileService.generateOTP(req).toPromise()
+      .then(() => {
         loader.dismiss();
         if (this.type === ProfileConstants.CONTACT_TYPE_PHONE) {
           this.viewCtrl.dismiss(true, this.phone);
@@ -130,11 +124,10 @@ export class EditContactDetailsPopupComponent {
           this.viewCtrl.dismiss(true, this.email);
         }
       })
-      .catch(err => {
-        err = JSON.parse(err);
+      .catch((err) => {
         loader.dismiss();
         this.viewCtrl.dismiss(false);
-        if (err.error === 'ERROR_RATE_LIMIT_EXCEEDED') {
+        if (err.hasOwnProperty(err) === 'ERROR_RATE_LIMIT_EXCEEDED') {
           this.commonUtilService.showToast('You have exceeded the maximum limit for OTP, Please try after some time');
         }
       });
@@ -150,4 +143,5 @@ export class EditContactDetailsPopupComponent {
   cancel() {
     this.viewCtrl.dismiss(false);
   }
+
 }

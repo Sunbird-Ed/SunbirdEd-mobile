@@ -1,27 +1,28 @@
-import {
-    Injectable
-} from '@angular/core';
-import {
-    FrameworkService,
-    CategoryRequest,
-    FrameworkDetailsRequest,
-    SharedPreferences,
-    FormRequest,
-    FormService,
-    Profile,
-    ProfileService,
-    SystemSettingRequest
-} from 'sunbird';
-import { AppGlobalService } from '../../service/app-global.service';
-import { AppVersion } from '@ionic-native/app-version';
-import {
-    FormConstant,
-    PreferenceKey,
-    FrameworkCategory
-} from '../../app/app.constant';
-import { TranslateService } from '@ngx-translate/core';
+import {Inject, Injectable} from '@angular/core';
+import {AppGlobalService} from '../../service/app-global.service';
+import {AppVersion} from '@ionic-native/app-version';
+import {PreferenceKey} from '../../app/app.constant';
+import {TranslateService} from '@ngx-translate/core';
 import * as _ from 'lodash';
-import { Events } from 'ionic-angular';
+import {Events} from 'ionic-angular';
+import {
+  CategoryTerm,
+  FormRequest,
+  FormService,
+  FrameworkService,
+  FrameworkCategoryCodesGroup,
+  FrameworkUtilService,
+  GetFrameworkCategoryTermsRequest,
+  GetSystemSettingsRequest,
+  OrganizationSearchCriteria,
+  Profile,
+  ProfileService,
+  SystemSettings,
+  SystemSettingsOrgIds,
+  SystemSettingsService,
+  SharedPreferences
+
+} from 'sunbird-sdk';
 
 @Injectable()
 export class FormAndFrameworkUtilService {
@@ -34,17 +35,19 @@ export class FormAndFrameworkUtilService {
     profile: Profile;
 
     constructor(
-        private framework: FrameworkService,
-        private preference: SharedPreferences,
-        private formService: FormService,
-        private appGlobalService: AppGlobalService,
-        private appVersion: AppVersion,
-        private translate: TranslateService,
-        private profileService: ProfileService,
-        private events: Events
+      @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+      @Inject('SYSTEM_SETTINGS_SERVICE') private systemSettingsService: SystemSettingsService,
+      @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
+      @Inject('FORM_SERVICE') private formService: FormService,
+      @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
+      @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+      private appGlobalService: AppGlobalService,
+      private appVersion: AppVersion,
+      private translate: TranslateService,
+      private events: Events
     ) {
         // Get language selected
-        this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+        this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
             .then(val => {
                 if (val && val.length) {
                     this.selectedLanguage = val;
@@ -92,6 +95,78 @@ export class FormAndFrameworkUtilService {
         });
     }
 
+  /**
+   * This method checks if the newer version of the available and respectively shows the dialog with relevant contents
+   */
+  checkNewAppVersion(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      console.log('checkNewAppVersion Called');
+
+      this.appVersion.getVersionCode()
+        .then((versionCode: any) => {
+          console.log('checkNewAppVersion Current app version - ' + versionCode);
+
+          let result: any;
+
+          // form api request
+          const req: FormRequest = {
+            type: 'app',
+            subType: 'install',
+            action: 'upgrade'
+          };
+          // form api call
+          this.formService.getForm(req).toPromise()
+            .then((res: any) => {
+              let fields: Array<any> = [];
+              let ranges: Array<any> = [];
+              let upgradeTypes: Array<any> = [];
+
+              if (res && res.form && res.form.data) {
+                fields = res.form.data.fields;
+
+                fields.forEach(element => {
+                  if (element.language === this.selectedLanguage) {
+                    if (element.range) {
+                      ranges = element.range;
+                    }
+
+                    if (element.upgradeTypes) {
+                      upgradeTypes = element.upgradeTypes;
+                    }
+                  }
+                });
+
+                if (ranges && ranges.length > 0 && upgradeTypes && upgradeTypes.length > 0) {
+                  let type: string;
+                  const forceType = 'force';
+
+                  ranges.forEach(element => {
+                    if (versionCode >= element.minVersionCode && versionCode <= element.maxVersionCode) {
+                      console.log('App needs a upgrade of type - ' + element.type);
+                      type = element.type;
+
+                      if (type === forceType) {
+                        return true; // this is to stop the foreach loop
+                      }
+                    }
+                  });
+
+                  upgradeTypes.forEach(upgradeElement => {
+                    if (type === upgradeElement.type) {
+                      result = upgradeElement;
+                    }
+                  });
+                }
+              }
+
+              resolve(result);
+            }).catch((error: any) => {
+            reject(error);
+          });
+        });
+    });
+  }
+
     /**
      * Network call to form api
      *
@@ -107,12 +182,11 @@ export class FormAndFrameworkUtilService {
             type: 'pageassemble',
             subType: 'course',
             action: 'filter_v2',
-            filePath: FormConstant.DEFAULT_PAGE_COURSE_FILTER_PATH
         };
         // form api call
-        this.formService.getForm(req).then((res: any) => {
-            const response: any = JSON.parse(res);
-            courseFilterConfig = response.result.fields;
+      this.formService.getForm(req).toPromise()
+        .then((res: any) => {
+          courseFilterConfig = res.form.data.fields;
             this.appGlobalService.setCourseFilterConfig(courseFilterConfig);
             resolve(courseFilterConfig);
         }).catch((error: any) => {
@@ -122,57 +196,29 @@ export class FormAndFrameworkUtilService {
     }
 
     /**
-     * Network call to form api
-     *
-     * @param libraryFilterConfig
-     * @param resolve
-     * @param reject
-     */
-    private invokeLibraryFilterConfigFormApi(libraryFilterConfig: Array<any>,
-        resolve: (value?: any) => void,
-        reject: (reason?: any) => void) {
-        const req: FormRequest = {
-            type: 'pageAssemble',
-            subType: 'library',
-            action: 'filter',
-            filePath: FormConstant.DEFAULT_PAGE_LIBRARY_FILTER_PATH
-        };
-        // form api call
-        this.formService.getForm(req).then((res: any) => {
-            const response: any = JSON.parse(res);
-            libraryFilterConfig = response.result.fields;
-            this.appGlobalService.setLibraryFilterConfig(libraryFilterConfig);
-            resolve(libraryFilterConfig);
-        }).catch((error: any) => {
-            console.log('Error - ' + error);
-            resolve(libraryFilterConfig);
-        });
-    }
-
-    /**
      * Get all categories using framework api
      */
-    getFrameworkDetails(frameworkId: string): Promise<any> {
-        return new Promise((resolve, reject) => {
-            const req: FrameworkDetailsRequest = {
-                defaultFrameworkDetails: true,
-                categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
-            };
+    // getFrameworkDetails(frameworkId: string): Promise<any> {
+    //     return new Promise((resolve, reject) => {
+    //         const req: FrameworkDetailsRequest = {
+    //             defaultFrameworkDetails: true,
+    //             categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
+    //         };
 
-            if (frameworkId !== undefined && frameworkId.length) {
-                req.defaultFrameworkDetails = false;
-                req.frameworkId = frameworkId;
-            }
+    //         if (frameworkId !== undefined && frameworkId.length) {
+    //             req.defaultFrameworkDetails = false;
+    //             req.frameworkId = frameworkId;
+    //         }
 
-            this.framework.getAllCategories(req)
-                .then(res => {
-                    resolve(res);
-                })
-                .catch(error => {
-                    reject(error);
-                });
-        });
-    }
+    //         this.framework.getAllCategories(req)
+    //             .then(res => {
+    //                 resolve(res);
+    //             })
+    //             .catch(error => {
+    //                 reject(error);
+    //             });
+    //     });
+    // }
 
     /**
      *
@@ -181,104 +227,58 @@ export class FormAndFrameworkUtilService {
      * @param req
      * @param frameworkId
      */
-    getCategoryData(req: CategoryRequest, frameworkId?: string): Promise<any> {
-        return new Promise((resolve, reject) => {
-            if (frameworkId !== undefined && frameworkId.length) {
-                req.frameworkId = frameworkId;
-            }
+    // getCategoryData(req: CategoryRequest, frameworkId?: string): Promise<any> {
+    //     return new Promise((resolve, reject) => {
+    //         if (frameworkId !== undefined && frameworkId.length) {
+    //             req.frameworkId = frameworkId;
+    //         }
 
-            const categoryList: Array<any> = [];
+    //         const categoryList: Array<any> = [];
 
-            this.framework.getCategoryData(req)
-                .then(res => {
-                    const category = JSON.parse(res);
-                    const resposneArray = category.terms;
-                    let value = {};
-                    resposneArray.forEach(element => {
+    //         this.framework.getCategoryData(req)
+    //             .then(res => {
+    //                 const category = JSON.parse(res);
+    //                 const resposneArray = category.terms;
+    //                 let value = {};
+    //                 resposneArray.forEach(element => {
 
-                        value = { 'name': element.name, 'code': element.code };
+    //                     value = { 'name': element.name, 'code': element.code };
 
-                        categoryList.push(value);
-                    });
+    //                     categoryList.push(value);
+    //                 });
 
-                    resolve(categoryList);
-                })
-                .catch(err => {
-                    reject(err);
-                });
-        });
-    }
+    //                 resolve(categoryList);
+    //             })
+    //             .catch(err => {
+    //                 reject(err);
+    //             });
+    //     });
+    // }
 
     /**
-     * This method checks if the newer version of the available and respectively shows the dialog with relevant contents
+     * Network call to form api
+     *
+     * @param libraryFilterConfig
+     * @param resolve
+     * @param reject
      */
-    checkNewAppVersion(): Promise<any> {
-        return new Promise((resolve, reject) => {
-            console.log('checkNewAppVersion Called');
-
-            this.appVersion.getVersionCode()
-                .then((versionCode: any) => {
-                    console.log('checkNewAppVersion Current app version - ' + versionCode);
-
-                    let result: any;
-
-                    // form api request
-                    const req: FormRequest = {
-                        type: 'app',
-                        subType: 'install',
-                        action: 'upgrade'
-                    };
-                    // form api call
-                    this.formService.getForm(req).then((res: any) => {
-                        const response: any = JSON.parse(res);
-
-                        let fields: Array<any> = [];
-                        let ranges: Array<any> = [];
-                        let upgradeTypes: Array<any> = [];
-
-                        if (response && response.result && response.result.fields) {
-                            fields = response.result.fields;
-
-                            fields.forEach(element => {
-                                if (element.language === this.selectedLanguage) {
-                                    if (element.range) {
-                                        ranges = element.range;
-                                    }
-
-                                    if (element.upgradeTypes) {
-                                        upgradeTypes = element.upgradeTypes;
-                                    }
-                                }
-                            });
-
-                            if (ranges && ranges.length > 0 && upgradeTypes && upgradeTypes.length > 0) {
-                                let type: string;
-                                const forceType = 'force';
-
-                                ranges.forEach(element => {
-                                    if (versionCode >= element.minVersionCode && versionCode <= element.maxVersionCode) {
-                                        console.log('App needs a upgrade of type - ' + element.type);
-                                        type = element.type;
-
-                                        if (type === forceType) {
-                                            return true; // this is to stop the foreach loop
-                                        }
-                                    }
-                                });
-
-                                upgradeTypes.forEach(upgradeElement => {
-                                    if (type === upgradeElement.type) {
-                                        result = upgradeElement;
-                                    }
-                                });
-                            }
-                        }
-
-                        resolve(result);
-                    }).catch((error: any) => {
-                        reject(error);
-                    });
-                });
+    private invokeLibraryFilterConfigFormApi(libraryFilterConfig: Array<any>,
+                                             resolve: (value?: any) => void,
+                                             reject: (reason?: any) => void) {
+      const req: FormRequest = {
+        type: 'pageAssemble',
+        subType: 'library',
+        action: 'filter',
+      };
+      // form api call
+      this.formService.getForm(req).toPromise()
+        .then((res: any) => {
+          libraryFilterConfig = res.form.data.fields;
+          this.appGlobalService.setLibraryFilterConfig(libraryFilterConfig);
+          resolve(libraryFilterConfig);
+        }).catch((error: any) => {
+        console.log('Error - ' + error);
+        resolve(libraryFilterConfig);
         });
     }
     /**
@@ -295,28 +295,29 @@ export class FormAndFrameworkUtilService {
                 medium: [],
                 subject: [],
                 syllabus: [],
-                gradeValueMap: {}
+                gradeValue: {}
             };
             if (profileRes.framework && Object.keys(profileRes.framework).length) {
                 const categoryKeysLen = Object.keys(profileRes.framework).length;
                 let keysLength = 0;
+                profile.syllabus = [profileRes.framework.id[0]];
                 for (const categoryKey in profileRes.framework) {
                     if (profileRes.framework[categoryKey].length) {
-                        const request: CategoryRequest = {
-                            selectedLanguage: this.translate.currentLang,
-                            currentCategory: categoryKey,
-                            frameworkId: profileRes.framework.id ? profileRes.framework.id[0] : undefined,
-                            categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
+                        const request: GetFrameworkCategoryTermsRequest = {
+                            currentCategoryCode: categoryKey,
+                            language: this.translate.currentLang,
+                            requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES,
+                            frameworkId: profileRes.framework.id ? profileRes.framework.id[0] : undefined
                         };
-                        this.getCategoryData(request)
-                            .then((categoryList) => {
+                        this.frameworkUtilService.getFrameworkCategoryTerms(request).toPromise()
+                            .then((categoryList: CategoryTerm[]) => {
                                 keysLength++;
                                 profileRes.framework[categoryKey].forEach(element => {
                                     if (categoryKey === 'gradeLevel') {
                                         const codeObj = _.find(categoryList, (category) => category.name === element);
                                         if (codeObj) {
                                             profile['grade'].push(codeObj.code);
-                                            profile['gradeValueMap'][codeObj.code] = element;
+                                            profile['gradeValue'][codeObj.code] = element;
                                         }
                                     } else {
                                         const codeObj = _.find(categoryList, (category) => category.name === element);
@@ -353,26 +354,28 @@ export class FormAndFrameworkUtilService {
 
     updateProfileInfo(profile, profileData) {
         return new Promise((resolve, reject) => {
-            const req: Profile = new Profile();
+            const req: Profile = {
+                syllabus: profile.syllabus,
+                board: profile.board,
+                grade: profile.grade,
+                medium: profile.medium,
+                subject: profile.subject,
+                gradeValue: profile.gradeValue,
+                uid: profileData.uid,
+                handle: profileData.uid,
+                profileType: profileData.profileType,
+                source: profileData.source,
+                createdAt: profileData.createdAt || this.formatDate()
+            };
             if (profile.board && profile.board.length > 1) {
                 profile.board.splice(1, profile.board.length);
             }
-            req.board = profile.board;
-            req.grade = profile.grade;
-            req.medium = profile.medium;
-            req.subject = profile.subject;
-            req.gradeValueMap = profile.gradeValueMap;
-            req.uid = profileData.uid;
-            req.handle = profileData.uid;
-            req.profileType = profileData.profileType;
-            req.source = profileData.source;
-            req.createdAt = profileData.createdAt || this.formatDate();
-            this.preference.getString('current_framework_id')
-                .then(value => {
-                    req.syllabus = [value];
-                    this.profileService.updateProfile(req)
+            // this.preference.getString('current_framework_id')
+                // .then(value => {
+                    // req.syllabus = [value];
+                    this.profileService.updateProfile(req).toPromise()
                         .then((res: any) => {
-                            const updateProfileRes = JSON.parse(res);
+                            const updateProfileRes = res;
                             this.events.publish('refresh:loggedInProfile');
                             if (updateProfileRes.board && updateProfileRes.grade && updateProfileRes.medium &&
                                 updateProfileRes.board.length && updateProfileRes.grade.length
@@ -387,7 +390,7 @@ export class FormAndFrameworkUtilService {
                             console.error('Err', err);
                             resolve({ status: false });
                         });
-                });
+                // });
         });
     }
 
@@ -401,54 +404,61 @@ export class FormAndFrameworkUtilService {
     }
 
     async getRootOrganizations() {
-        let rootOrganizations ;
+        let rootOrganizations;
         try {
             rootOrganizations = this.appGlobalService.getCachedRootOrganizations();
-                // if data not cached
-                if (rootOrganizations === undefined || rootOrganizations.length === 0) {
-                    rootOrganizations = await this.framework.getRootOrganizations();
-                    const organization = rootOrganizations.toString();
-                    rootOrganizations = JSON.parse(JSON.parse(organization).result.orgSearchResult).content;
-                    // cache the data
-                    this.appGlobalService.setRootOrganizations(rootOrganizations);
-                    return rootOrganizations ;
-                 } else {
-                        // return from cache
-                        return rootOrganizations;
+            // if data not cached
+            if (rootOrganizations === undefined || rootOrganizations.length === 0) {
+                const searchOrganizationReq: OrganizationSearchCriteria<{any}> = {
+                    filters: {
+                        isRootOrg: true
                     }
-            } catch (error) {
-            console.log(error);
+                };
+                rootOrganizations = await this.frameworkService.searchOrganization(searchOrganizationReq).toPromise();
+                console.log('rootOrganizations', rootOrganizations);
+                rootOrganizations = rootOrganizations.content;
+                // cache the data
+                this.appGlobalService.setRootOrganizations(rootOrganizations);
+                return rootOrganizations;
+            } else {
+                // return from cache
+                return rootOrganizations;
             }
-
-     }
-     async getCourseFrameworkId() {
-        let courseFrameworkId ;
-        try {
-            courseFrameworkId = this.appGlobalService.getCachedCourseFrameworkId();
-                // if data not cached
-                if (courseFrameworkId === undefined || courseFrameworkId.length === 0) {
-                    courseFrameworkId = await this.framework.getCourseFrameworkId();
-                    console.log('COURSE FrameWork Id', courseFrameworkId);
-                    // cache the data
-                    this.appGlobalService.setCourseFrameworkId(courseFrameworkId);
-                    return courseFrameworkId ;
-                 } else {
-                        // return from cache
-                        return courseFrameworkId;
-                    }
-            } catch (error) {
+        } catch (error) {
             console.log(error);
-            }
+        }
 
-     }
+    }
 
-     /**
-      *
-      */
-     async getCustodianOrgId() {
-        const systemSettingRequest: SystemSettingRequest = {
-            id: this.framework.SYSTEM_SETING_CUSTODIAN_ORG_ID
-        };
-        return await this.framework.getSystemSettingValue(systemSettingRequest);
-      }
+    async getCourseFrameworkId() {
+        return new Promise((resolve, reject) => {
+            const getSystemSettingsRequest: GetSystemSettingsRequest = {
+                id: SystemSettingsOrgIds.COURSE_FRAMEWORK_ID
+            };
+            this.systemSettingsService.getSystemSettings(getSystemSettingsRequest).toPromise()
+                .then((res: SystemSettings) => {
+                    resolve(res.value);
+                }).catch(err => {
+                    reject(err);
+                });
+        });
+
+    }
+
+    /**
+     *
+     */
+    async getCustodianOrgId() {
+        return new Promise((resolve, reject) => {
+            const getSystemSettingsRequest: GetSystemSettingsRequest = {
+                id: SystemSettingsOrgIds.CUSTODIAN_ORG_ID
+            };
+            this.systemSettingsService.getSystemSettings(getSystemSettingsRequest).toPromise()
+                .then((res: SystemSettings) => {
+                    resolve(res.value);
+                }).catch(err => {
+                    reject(err);
+                });
+        });
+    }
 }

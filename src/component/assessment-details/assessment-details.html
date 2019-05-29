@@ -6,7 +6,11 @@
       <p *ngIf="assessmentData?.fromUser">{{'SCORE' | translate}}</p>
       <div class="assessment-stats">
         <ion-icon name="stats"></ion-icon>
-        <span *ngIf="assessmentData?.totalScore.toString()">{{assessmentData?.totalScore}}<span *ngIf="assessmentData?.maxTotalScore"> / </span>{{assessmentData?.maxTotalScore}}</span><span *ngIf="!assessmentData?.totalScore.toString()">--</span>
+        <span *ngIf="assessmentData?.totalScore.toString()">{{assessmentData?.totalScore}}
+          <span *ngIf="assessmentData?.totalQuestionsScore"> / {{assessmentData?.totalQuestionsScore}} </span>
+          <span *ngIf="!assessmentData?.totalQuestionsScore && assessmentData.maxTotalScore"> / {{assessmentData?.maxTotalScore}}</span>
+        </span>
+        <span *ngIf="!assessmentData?.totalScore.toString()">--</span>
       </div>
     </div>
     <div class="assessment-time">

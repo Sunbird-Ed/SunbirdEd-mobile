@@ -1,0 +1,9 @@
+<!-- <application-header [headerConfig]="headerConfig" (headerEvents)="handleHeaderEvents($event);"></application-header> -->
+
+<!-- <ion-tabs (ionChange)="ionChange($event)" #myTabs selectedIndex="tabIndex"> -->
+<ion-tabs (ionChange)="ionChange($event)" #myTabs>
+  <ion-tab hide-tab-footer *ngFor="let tab of tabs; let i = index;" [ngClass]="{'disabled': tab.disabled}"
+    [root]="tab.root" tabTitle="{{tab.label | translate}}" [tabIcon]="tab.icon"
+    [tabsHideOnSubPages]="tab.tabsHideOnSubPages" [enabled]="!tab.disabled" (ionSelect)="customClick(tab,i)"></ion-tab>
+  <div class="shadow"></div>
+</ion-tabs>

@@ -1,28 +1,11 @@
-import {
-  Component,
-  NgZone,
-  OnInit
-} from '@angular/core';
-import {
-  CourseService,
-  AuthService,
-  CourseBatchesRequest,
-  CourseBatchStatus,
-  CourseEnrollmentType,
-  EnrollCourseRequest
-} from 'sunbird';
-import {
-  IonicPage,
-  NavController,
-  NavParams,
-  Events
-} from 'ionic-angular';
-import * as _ from 'lodash';
-import {
-  ProfileConstants,
-  EventTopics
-} from '../../app/app.constant';
-import { CommonUtilService } from '../../service/common-util.service';
+import { TelemetryGeneratorService } from './../../service/telemetry-generator.service';
+import {Component, Inject, NgZone, OnInit} from '@angular/core';
+import {AuthService, Batch, CourseService, EnrollCourseRequest, OAuthSession} from 'sunbird-sdk';
+import {Events, IonicPage, NavController, NavParams} from 'ionic-angular';
+import {EventTopics} from '../../app/app.constant';
+import {CommonUtilService} from '../../service/common-util.service';
+import { InteractType, InteractSubtype, Environment, PageId } from '@app/service/telemetry-constants';
+import { AppHeaderService } from '@app/service';
 
 /**
  * Generated class for the CourseBatchesPage page.
@@ -55,12 +38,12 @@ export class CourseBatchesPage implements OnInit {
   /**
    * Contains upcomming batches list
    */
-  upcommingBatches: Array<any> = [];
+  upcommingBatches: Array<Batch> = [];
 
   /**
    * Contains ongoing batches list
    */
-  ongoingBatches: Array<any> = [];
+  ongoingBatches: Array<Batch> = [];
 
   /**
    * Flag to check guest user
@@ -70,12 +53,17 @@ export class CourseBatchesPage implements OnInit {
   /**
    * Contains batches list
    */
-  public batches: Array<any>;
+  public batches: Array<Batch> = [];
 
   /**
    * Selected filter
    */
   selectedFilter: string;
+  headerConfig = {
+    showHeader: false,
+    showBurgerMenu: false,
+    actionButtons: []
+  };
 
   /**
    * Default method of class CourseBatchesComponent
@@ -87,17 +75,28 @@ export class CourseBatchesPage implements OnInit {
    * @param {AuthService} authService To get logged-in user data
    */
   constructor(
-    private courseService: CourseService,
+    @Inject('AUTH_SERVICE') private authService: AuthService,
+    @Inject('COURSE_SERVICE') private courseService: CourseService,
     private navCtrl: NavController,
     private navParams: NavParams,
     private zone: NgZone,
-    private authService: AuthService,
     private commonUtilService: CommonUtilService,
-    private events: Events
-  ) {  }
+    private events: Events,
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private headerService: AppHeaderService,
+  ) {
+  }
 
   ngOnInit(): void {
     this.getUserId();
+  }
+
+  ionViewWillEnter() {
+    this.headerConfig = this.headerService.getDefaultPageConfig();
+    this.headerConfig.actionButtons = [];
+    this.headerConfig.showHeader = false;
+    this.headerConfig.showBurgerMenu = false;
+    this.headerService.updatePageConfig(this.headerConfig);
   }
 
   /**
@@ -105,34 +104,41 @@ export class CourseBatchesPage implements OnInit {
    *
    * @param {any} item contains details of select batch
    */
-  enrollIntoBatch(item: any): void {
+  enrollIntoBatch(item: Batch): void {
     const enrollCourseRequest: EnrollCourseRequest = {
-      userId: this.userId,
-      courseId: item.courseId,
-      contentId: item.courseId,
       batchId: item.id,
+      courseId: item.courseId,
+      userId: this.userId,
+      contentId: item.courseId,
       batchStatus: item.status
     };
-    this.courseService.enrollCourse(enrollCourseRequest)
-      .then((data: any) => {
-        data = JSON.parse(data);
+    const loader = this.commonUtilService.getLoader();
+    loader.present();
+    const reqvalues = new Map();
+    reqvalues['enrollReq'] = enrollCourseRequest;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.ENROLL_CLICKED,
+        Environment.HOME,
+        PageId.COURSE_BATCHES, undefined,
+        reqvalues);
+
+    this.courseService.enrollCourse(enrollCourseRequest).toPromise()
+      .then((data: boolean) => {
         this.zone.run(() => {
-          console.log('You have successfully enrolled...');
           this.commonUtilService.showToast(this.commonUtilService.translateMessage('COURSE_ENROLLED'));
           this.events.publish(EventTopics.ENROL_COURSE_SUCCESS, {
             batchId: item.id,
             courseId: item.courseId
           });
+          loader.dismiss();
           this.navCtrl.pop();
         });
-      })
-      .catch((error: any) => {
-        console.log('error while enrolling into batch ==>', error);
+      }, (error) => {
         this.zone.run(() => {
-          error = JSON.parse(error);
-          if (error && error.error === 'CONNECTION_ERROR') {
+          if (error && error.code === 'NETWORK_ERROR') {
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NO_INTERNET_MESSAGE'));
-          } else if (error && error.error === 'USER_ALREADY_ENROLLED_COURSE') {
+          } else if (error && error.response
+            && error.response.body && error.response.body.params && error.response.body.params.err === 'USER_ALREADY_ENROLLED_COURSE') {
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('ALREADY_ENROLLED_COURSE'));
           }
         });
@@ -143,20 +149,22 @@ export class CourseBatchesPage implements OnInit {
    * Get logged-user id. User id is needed to enroll user into batch.
    */
   getUserId(): void {
-    this.authService.getSessionData((session) => {
-      if (session === undefined || session == null || session === 'null') {
-        console.log('session expired');
-        this.zone.run(() => { this.isGuestUser = true; });
+    this.authService.getSession().subscribe((session: OAuthSession) => {
+      if (!session) {
+        this.zone.run(() => {
+          this.isGuestUser = true;
+        });
       } else {
         this.zone.run(() => {
-          const sessionObj = JSON.parse(session);
           this.isGuestUser = false;
-          this.userId = sessionObj[ProfileConstants.USER_TOKEN];
+          this.userId = session.userToken;
           this.getBatchesByCourseId();
         });
       }
+    }, () => {
     });
   }
+
 
   /**
    * To get batches, passed from enrolled-course-details page via navParams

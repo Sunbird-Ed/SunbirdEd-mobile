@@ -1,0 +1,20 @@
+textbook-card {
+    .sb-card{
+        .img-container{
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+    .grade_ellipsis{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; 
+    }
+
+    .textbook-margin-4{
+        margin: 0 ($base-block-space/2);
+    }
+}
+

@@ -1,30 +1,34 @@
-<div class="P10 MT5"
-    *ngIf="childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && childData?.children">
-    {{childData?.contentData?.name}}
-</div>
-<ion-row *ngIf="childData?.contentData?.mimeType !== 'application/vnd.ekstep.content-collection'"
-    (click)="navigateToDetailsPage(childData, depth + '.' + (i + 1))">
-    <ion-col col-1>
-        <div>
-            <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle" class="play-icon"></ion-icon>
-        </div>
-    </ion-col>
-    <ion-col col-11>
-        <div [ngClass]="{'text-selected':childData?.isAvailableLocally,'text-unselected':!childData?.isAvailableLocally}">{{childData?.contentData?.name}}
-            <span>
-                <ion-icon class="checkmark-icon" name="checkmark-circle-outline" *ngIf="childData?.isAvailableLocally"></ion-icon>
+<div>
+    <div class="sb-topic-item"
+        *ngIf="childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && childData?.children">
+        {{childData?.contentData?.name}}
+    </div>
+
+    <div class="row sb-topic-item"
+        *ngIf="childData?.contentData?.mimeType !== 'application/vnd.ekstep.content-collection'"
+        (click)="navigateToDetailsPage(childData, depth + '.' + (i + 1))">
+        <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle"
+            [ngClass]="{'sb-accordian-grey-icon': !commonUtilService.networkInfo.isNetworkAvailable && !childData?.isAvailableLocally, 'sb-play-icon': commonUtilService.networkInfo.isNetworkAvailable || childData?.isAvailableLocally}">
+        </ion-icon> <!-- change condition to offline -->
+        <div
+            [ngClass]="{'sb-accordian-grey-text': !commonUtilService.networkInfo.isNetworkAvailable && !childData?.isAvailableLocally,
+            'sb-play-selected':childData?.isAvailableLocally,'sb-play-unselected':!childData?.isAvailableLocally}">
+            {{childData?.contentData?.name}}
+            <span *ngIf="childData?.isAvailableLocally">
+                <ion-icon class="sb-checkmark-icon" name="md-checkmark-circle"></ion-icon>
             </span>
         </div>
-    </ion-col>
-</ion-row>
-<div class="font-grey-text P10"
-    *ngIf="childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !childData?.children">
-    <span class="grey-icon-span">
-        <ion-icon ios="ios-alert" md="md-alert" class="grey-icon ML5"></ion-icon>
-    </span>
-    {{childData?.contentData?.name}}
-</div>
-<!-- <div *ngIf="childData?.children && childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection'" class="separator-line margin-10"></div> -->
-<div class="margin-10" *ngFor="let firstChildren of childData?.children; let j = index;">
-    <collection-child [childData]="firstChildren"></collection-child>
+    </div>
+
+    <div class="row sb-topic-item" (click)="showCommingSoonPopup(childData)"
+        *ngIf="childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !childData?.children">
+        <div class="sb-accordian-grey-text">{{childData?.contentData?.name}}</div>
+        <ion-icon ios="ios-alert" md="md-alert" class="sb-accordian-grey-icon"></ion-icon>
+    </div>
+
+    <!-- <div *ngIf="childData?.children && childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection'"
+        class="sb-separator-line ml8 mtb-8"></div> -->
+    <div class="ml8" *ngFor="let firstChildren of childData?.children; let j = index;">
+        <collection-child [childData]="firstChildren"></collection-child>
+    </div>
 </div>

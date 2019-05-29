@@ -1,29 +1,28 @@
-<ion-content>
-  <ion-grid padding>
-    <ion-row>
-      <ion-col col-10>
-        <div>
-          <p class="title heading1">{{ 'ENJOYED_THIS_CONTENT' | translate }}</p>
-          <p class="text-gray-color">{{ 'HELP_US_BY_RATING' |  translate:{'%s': content.name} }}</p>
-        </div>
-      </ion-col>
-      <ion-col col-2>
-        <div style="margin-top:5px" (click)="cancel()">
-          <img src="assets/imgs/ic_action_close.png" class="tool-icon" float-end />
-        </div>
-      </ion-col>
-    </ion-row>
-    <ion-row class="display-inline">
-      <rating [(ngModel)]="userRating" align-items-start readOnly="false" max="5" no-padding (ngModelChange)="rateContent($event)"></rating>
-      <ion-input *ngIf="showCommentBox" [(ngModel)]="comment" class="feedback" placeholder="{{ 'FEEDBACK_HINT' | translate }}"></ion-input>
-    </ion-row>
-  </ion-grid>
-</ion-content>
 
-<ion-footer>
-  <ion-row>
-    <ion-col col-12 text-center>
-      <button ion-button block [disabled]="!showCommentBox" (click)="submit()">{{ 'BTN_SUBMIT' | translate }}</button>
-    </ion-col>
-  </ion-row>
-</ion-footer>
+  <ion-header class="sb-popover-header">
+      <ion-toolbar class="sb-popover-toolbar">
+        <ion-title class="sb-popover-title">{{'RATE_THE_CONTENT' | translate}}
+            <ion-icon name="close" class="sb-modal-close" (click)="closePopover()"></ion-icon> </ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content no-padding class="sb-popover-container">
+        <div class="sb-popover-items">
+            <rating [(ngModel)]="userRating" (ngModelChange)="rateContent($event)"></rating>
+            <div class="sb-popover-content-details" *ngIf="userRating">
+              <div class="main-title">
+                <div class="meta-info">
+                 {{'RATED_STARS' | translate: {'%s': userRating} }}
+                </div>
+              </div>
+            </div>
+            <ion-input *ngIf="showCommentBox" [(ngModel)]="comment" placeholder="{{'FEEDBACK_HINT' | translate}}" style="border-bottom : 2px;"></ion-input>
+            <div *ngIf="showCommentBox" class="sb-line"></div>
+        </div>
+    </ion-content>
+    
+    <ion-footer>
+        <div class="sb-popover-footer">
+          <button ion-button class="sb-popover-action-btn popover-color" (click)="submit()">{{ 'BTN_SUBMIT' | translate }}</button>
+        </div>
+      </ion-footer>
+  

@@ -1,68 +1,72 @@
-import { Injectable } from '@angular/core';
-import {
-  AuthService,
-  UserProfileDetailsRequest,
-  UserProfileService
-} from 'sunbird';
-import { Modal, ModalController } from 'ionic-angular';
-import { TermsAndConditionsPage } from '@app/pages/terms-and-conditions/terms-and-conditions';
-import { ProfileConstants } from '@app/app';
-
-interface UserProfile {
-  tncAcceptedVersion: string;
-  tncAcceptedOn: string;
-  tncLatestVersion: string;
-  promptTnC: boolean;
-  tncLatestVersionUrl: string;
-  userId: string;
-}
+import {Inject, Injectable} from '@angular/core';
+import {Modal, ModalController} from 'ionic-angular';
+import {TermsAndConditionsPage} from '@app/pages/terms-and-conditions/terms-and-conditions';
+import {ProfileConstants} from '@app/app';
+import {AuthService, OAuthSession, ProfileService, ServerProfile, ServerProfileDetailsRequest} from 'sunbird-sdk';
 
 @Injectable()
 export class TncUpdateHandlerService {
   private modal?: Modal;
 
   constructor(
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     private modalCtrl: ModalController,
-    private userProfileService: UserProfileService,
-    private authService: AuthService
+    @Inject('AUTH_SERVICE') private authService: AuthService
   ) {
   }
 
   public async checkForTncUpdate(): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
-      this.authService.getSessionData((session) => {
-        if (!session || session === 'null') {
+      this.authService.getSession().toPromise().then((sessionData: OAuthSession) => {
+        if (!sessionData) {
           resolve(false);
           return;
         }
-
-        const sessionObj = JSON.parse(session);
-        const reqObj: UserProfileDetailsRequest = {
-          userId: sessionObj[ProfileConstants.USER_TOKEN],
-          requiredFields: ProfileConstants.REQUIRED_FIELDS,
-          returnRefreshedUserProfileDetails: true
+        const request: ServerProfileDetailsRequest = {
+          userId: sessionData.userToken,
+          requiredFields: ProfileConstants.REQUIRED_FIELDS
         };
-
-        this.userProfileService.getUserProfileDetails(reqObj, res => {
-          const userProfileDetails = JSON.parse(res);
-          if (!this.hasProfileTncUpdated(userProfileDetails)) {
-            resolve(false);
-            return;
-          }
-
-          this.presentTncPage({ userProfileDetails }).then(() => {
-            resolve(true);
-            return;
+        this.profileService.getServerProfilesDetails(request).toPromise()
+          .then((response) => {
+            if (!this.hasProfileTncUpdated(response)) {
+              resolve(false);
+              return;
+            }
+            this.presentTncPage({response}).then(() => {
+              resolve(true);
+              return;
+            }).catch(() => {
+              reject();
+            });
           });
-        }, (e) => {
-          reject(e);
-        });
       });
     });
   }
 
-  private hasProfileTncUpdated(user: UserProfile): boolean {
-    return !!(user.promptTnC && user.tncLatestVersion && user.tncLatestVersionUrl);
+  public async onAcceptTnc(user: ServerProfile): Promise<void> {
+    return new Promise<void>(((resolve, reject) => {
+      this.profileService.acceptTermsAndConditions({version: user.tncLatestVersion})
+        .toPromise()
+        .then(() => {
+          resolve();
+        }).catch(() => {
+        reject();
+      });
+    }))
+    .then(() => {
+      const reqObj = {
+        userId: user.userId,
+        requiredFields: ProfileConstants.REQUIRED_FIELDS,
+      };
+      return new Promise<void>(((resolve, reject) => {
+        this.profileService.getServerProfilesDetails(reqObj).toPromise()
+        .then( res => {
+            resolve();
+          }).catch(e => {
+            reject(e);
+          });
+      }));
+    });
   }
 
   private async presentTncPage(navParams: any): Promise<undefined> {
@@ -70,31 +74,8 @@ export class TncUpdateHandlerService {
     return this.modal.present();
   }
 
-  public async onAcceptTnc(user: UserProfile): Promise<void> {
-    return new Promise<void>(((resolve, reject) => {
-      this.userProfileService.acceptTermsAndConditions({
-        version: user.tncLatestVersion
-      }, () => {
-        resolve();
-      }, (e) => {
-        reject(e);
-      });
-    }))
-      .then(() => {
-        const reqObj: UserProfileDetailsRequest = {
-          userId: user.userId,
-          requiredFields: ProfileConstants.REQUIRED_FIELDS,
-          returnRefreshedUserProfileDetails: true
-        };
-        return new Promise<void>(((resolve, reject) => {
-          this.userProfileService.getUserProfileDetails(reqObj,
-            res => {
-              resolve();
-            }, (e) => {
-              reject(e);
-            });
-        }));
-      });
+  private hasProfileTncUpdated(user: ServerProfile): boolean {
+    return !!(user.promptTnC && user.tncLatestVersion && user.tncLatestVersionUrl);
   }
 
   public async dismissTncPage(): Promise<void> {

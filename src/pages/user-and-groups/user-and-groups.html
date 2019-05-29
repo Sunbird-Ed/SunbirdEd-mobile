@@ -30,12 +30,16 @@
               <ion-row class="bg-color-white">
                 <ion-col col-12 class="bg-color-white" (click)="selectUser(i,  profileDetails?.uid, profileDetails?.handle)">
                   <ion-item class="bg-color-white padding-left-0 rm-label-margin" no-padding>
-                    <h6 class="line-height-2 padding-left-2 elipsis" color="primary" [ngStyle]="{'color': currentUserId === user?.uid ? 'dodgerblue' : 'black'}">
-                      <b>{{profileDetails?.handle}}&nbsp;{{profileDetails?.lastName}}</b>
+                    <h6 [ngStyle]="{'color': currentUserId === profileDetails?.uid ? 'dodgerblue' : 'black'}"
+                        class="line-height-2 padding-left-2 elipsis" color="primary">
+                      <b
+                        *ngIf="profileDetails">{{profileDetails.serverProfile ? profileDetails.serverProfile.firstName : profileDetails.handle}}&nbsp;{{profileDetails.serverProfile?.lastName}}</b>
                     </h6>
                     <!-- <p>{{profileDetails?.grade}}</p> -->
-                    <p *ngIf="profileDetails?.profileType === 'TEACHER'">{{'USER_TYPE_1' | translate | titlecase}}</p>
-                    <p *ngIf="profileDetails?.profileType === 'STUDENT'">{{'USER_TYPE_2' | translate | titlecase}}</p>
+                    <p
+                      *ngIf="profileDetails?.profileType === ProfileType.TEACHER">{{'USER_TYPE_1' | translate | titlecase}}</p>
+                    <p
+                      *ngIf="profileDetails?.profileType === ProfileType.STUDENT">{{'USER_TYPE_2' | translate | titlecase}}</p>
                   </ion-item>
                 </ion-col>
                 <!-- <ion-col col-1 class="advanced-menu">
@@ -65,8 +69,10 @@
                       <b>{{user?.handle}}</b>
                     </h6>
                     <p>
-                      <span *ngIf="user?.profileType === 'TEACHER'">{{'USER_TYPE_1' | translate | titlecase}}</span>
-                      <span *ngIf="user?.profileType === 'STUDENT'">{{'USER_TYPE_2' | translate | titlecase}}</span>
+                      <span
+                        *ngIf="user?.profileType === ProfileType.TEACHER">{{'USER_TYPE_1' | translate | titlecase}}</span>
+                      <span
+                        *ngIf="user?.profileType === ProfileType.STUDENT">{{'USER_TYPE_2' | translate | titlecase}}</span>
                       <span *ngIf="user?.grade?.length">•</span> {{ getGradeNameFromCode(user) }}
                     </p>
                   </ion-item>

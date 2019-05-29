@@ -1,26 +1,30 @@
 import { CommonUtilService } from './../../../service/common-util.service';
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, Inject } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import {
+  TelemetrySyncStat,
+  TelemetryStat,
   TelemetryService,
-  SyncStat,
   SharedPreferences,
-  PageId,
-  Environment,
-  ImpressionType,
-  Impression,
-  InteractType,
-  InteractSubtype,
-  ShareUtil,
-  TelemetryStat
-} from 'sunbird';
+  TelemetryImpressionRequest,
+  TelemetryExportResponse,
+  TelemetryExportRequest
+} from 'sunbird-sdk';
 import { DataSyncType } from './datasynctype.enum';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { generateImpressionTelemetry, generateInteractTelemetry } from '../../../app/telemetryutil';
+import { TelemetryGeneratorService, AppHeaderService } from '@app/service';
+import { PreferenceKey } from '@app/app';
+import {
+  PageId,
+  Environment,
+  ImpressionType,
+  InteractType,
+  InteractSubtype,
+} from '../../../service/telemetry-constants';
 
-const KEY_DATA_SYNC_TYPE = 'sync_config';
-const KEY_DATA_SYNC_TIME = 'data_sync_time';
+declare const cordova;
+
 
 class CMap {
   [key: string]: any
@@ -28,7 +32,6 @@ class CMap {
 @Component({
   selector: 'page-datasync',
   templateUrl: 'datasync.html',
-  providers: [TelemetryService]
 })
 export class DatasyncPage {
   dataSyncType: DataSyncType;
@@ -41,12 +44,12 @@ export class DatasyncPage {
     public zone: NgZone,
     public navCtrl: NavController,
     public navParams: NavParams,
-    private telemetryService: TelemetryService,
-    private preference: SharedPreferences,
-    private translate: TranslateService,
-    private shareUtil: ShareUtil,
+    @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
     private social: SocialSharing,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    private headerService: AppHeaderService
   ) { }
 
   init() {
@@ -55,7 +58,7 @@ export class DatasyncPage {
     this.getLastSyncTime();
 
     // check what sync option is selected
-    that.preference.getString(KEY_DATA_SYNC_TYPE)
+    that.preferences.getString(PreferenceKey.KEY_DATA_SYNC_TYPE).toPromise()
       .then(val => {
         if (Boolean(val)) {
           if (val === 'OFF') {
@@ -73,32 +76,42 @@ export class DatasyncPage {
 
   ionViewDidLoad() {
     this.init();
-    const impression = new Impression();
-    impression.type = ImpressionType.VIEW;
-    impression.pageId = PageId.SETTINGS_DATASYNC;
-    impression.env = Environment.SETTINGS;
-    this.telemetryService.impression(generateImpressionTelemetry(
+    const telemetryImpressionRequest = new TelemetryImpressionRequest();
+    telemetryImpressionRequest.type = ImpressionType.VIEW;
+    telemetryImpressionRequest.pageId = PageId.SETTINGS_DATASYNC;
+    telemetryImpressionRequest.env = Environment.SETTINGS;
+    this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
       PageId.SETTINGS_DATASYNC,
       Environment.SETTINGS, '', '', '',
       undefined,
       undefined
-    ));
+    );
   }
 
   onSelected() {
     /*istanbul ignore else */
     if (this.dataSyncType !== undefined) {
-      this.preference.putString(KEY_DATA_SYNC_TYPE, this.dataSyncType);
+    this.generateSyncTypeInteractTelemetry(this.dataSyncType);
+      this.preferences.putString(PreferenceKey.KEY_DATA_SYNC_TYPE, this.dataSyncType).toPromise().then();
     }
   }
-
+  generateSyncTypeInteractTelemetry(dataSyncType: string) {
+    const value = new Map();
+      value['dataSyncType'] = dataSyncType;
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        InteractSubtype.DATA_SYNC_TYPE,
+        Environment.SETTINGS,
+        PageId.SETTINGS_DATASYNC,
+        undefined,
+        value
+    );
+  }
   getLastSyncTime() {
-    this.telemetryService.getTelemetryStat().then((response: any) => {
+    this.telemetryService.getTelemetryStat().subscribe((syncStat: TelemetryStat) => {
       const that = this;
       that.zone.run(() => {
-        const syncStat: TelemetryStat = JSON.parse(response).result;
-
         if (syncStat.lastSyncTime !== 0) {
           const milliseconds = Number(syncStat.lastSyncTime);
 
@@ -112,16 +125,19 @@ export class DatasyncPage {
           that.latestSync = this.lastSyncedTimeString + ' ' + dateAndTime;
         }
       });
-    }) .catch(() => {
+    }, (err) => {
     });
   }
 
   shareTelemetry() {
     const loader = this.commonUtilService.getLoader();
     loader.present();
-    this.shareUtil.exportTelemetry(path => {
+    const telemetryExportRequest: TelemetryExportRequest = {
+      destinationFolder: cordova.file.externalDataDirectory
+    };
+    this.telemetryService.exportTelemetry(telemetryExportRequest).subscribe((data:  TelemetryExportResponse) => {
       loader.dismiss();
-      this.social.share('', '', 'file://' + path, '');
+      this.social.share('', '', 'file://' + data.exportedFilePath, '');
     }, () => {
       loader.dismiss();
       this.commonUtilService.showToast('SHARE_TELEMETRY_FAILED');
@@ -133,12 +149,11 @@ export class DatasyncPage {
     const loader = this.commonUtilService.getLoader();
     loader.present();
     this.generateInteractEvent(InteractType.TOUCH, InteractSubtype.MANUALSYNC_INITIATED, null);
-    this.telemetryService.sync()
-      .then((response: any) => {
+    this.telemetryService.sync(true)
+      .subscribe((syncStat: TelemetrySyncStat) => {
 
         that.zone.run(() => {
-          const syncStat: SyncStat = response.result;
-          this.generateInteractEvent(InteractType.OTHER, InteractSubtype.MANUALSYNC_SUCCESS, syncStat.syncedFileSize.toString());
+          this.generateInteractEvent(InteractType.OTHER, InteractSubtype.MANUALSYNC_SUCCESS, syncStat.syncedFileSize);
           const milliseconds = Number(syncStat.syncTime);
 
           // get date
@@ -152,13 +167,12 @@ export class DatasyncPage {
           that.latestSync = this.lastSyncedTimeString + ' ' + dateAndTime;
 
           // store the latest sync time
-          this.preference.putString(KEY_DATA_SYNC_TIME, dateAndTime);
+          this.preferences.putString(PreferenceKey.KEY_DATA_SYNC_TIME, dateAndTime).toPromise().then();
 
           loader.dismiss();
           this.commonUtilService.showToast('DATA_SYNC_SUCCESSFUL');
         });
-      })
-      .catch((error) => {
+      }, (error) => {
         loader.dismiss();
         this.commonUtilService.showToast('DATA_SYNC_FAILURE');
         console.error('Telemetry Data Sync Error: ' + error);
@@ -184,20 +198,21 @@ export class DatasyncPage {
 
 
 
-  generateInteractEvent(interactType: string, subtype: string, size: string) {
+  generateInteractEvent(interactType: string, subtype: string, size: number) {
     /*istanbul ignore else */
     if (size != null) {
-      const valuesMap = new CMap();
-      valuesMap['SizeOfFileInKB'] = size;
-      this.telemetryService.interact(generateInteractTelemetry(
+      this.telemetryGeneratorService.generateInteractTelemetry(
         interactType,
         subtype,
         Environment.SETTINGS,
         PageId.SETTINGS_DATASYNC,
-        valuesMap,
+        undefined,
+        {
+          SizeOfFileInKB: (size / 1000) + ''
+        },
         undefined,
         undefined
-      ));
+      );
     }
   }
 }

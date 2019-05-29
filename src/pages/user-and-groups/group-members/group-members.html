@@ -40,8 +40,8 @@
           <b>{{user?.handle}}</b>
         </h6>
         <p>
-          <span *ngIf="user?.profileType === 'TEACHER'">{{'USER_TYPE_1' | translate | titlecase}}</span>
-          <span *ngIf="user?.profileType === 'STUDENT'">{{'USER_TYPE_2' | translate | titlecase}}</span>
+          <span *ngIf="user?.profileType === ProfileType.TEACHER">{{'USER_TYPE_1' | translate | titlecase}}</span>
+          <span *ngIf="user?.profileType === ProfileType.STUDENT">{{'USER_TYPE_2' | translate | titlecase}}</span>
           <span *ngIf="user?.grade?.length">•</span> {{ getGradeNameFromCode(user) }}</p>
       </ion-label>
       <ion-checkbox item-end mode="ios" checked="{{isUserSelected(i)}}" (click)="toggleSelect(i)"></ion-checkbox>

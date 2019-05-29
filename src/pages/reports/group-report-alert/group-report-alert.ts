@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { NavParams, ViewController, Platform, NavController, IonicApp, LoadingController } from 'ionic-angular';
-import { ReportService, ChildContentRequest } from 'sunbird';
+import {SummarizerService, SummaryRequest, ReportSummary} from 'sunbird-sdk';
 import {TranslateService} from '@ngx-translate/core';
 
 @Component({
@@ -10,6 +10,7 @@ import {TranslateService} from '@ngx-translate/core';
 export class GroupReportAlert {
   unregisterBackButton: any;
   callback: QRAlertCallBack;
+  reportSummary: ReportSummary;
   report = 'users';
   fromUserColumns = [{
     name: this.translateMessage('FIRST_NAME'),
@@ -31,7 +32,7 @@ export class GroupReportAlert {
     private loading: LoadingController,
     private platform: Platform,
     private ionicApp: IonicApp,
-    private reportService: ReportService,
+    @Inject('SUMMARIZER_SERVICE') public summarizerService: SummarizerService,
     private translate: TranslateService) {
     this.report = 'questions';
     this.callback = navParams.get('callback');
@@ -43,26 +44,25 @@ export class GroupReportAlert {
       const loader = this.loading.create({
         spinner: 'crescent'
       });
-      const params = {
+      const  summaryRequest:  SummaryRequest = {
+        qId: this.assessment['qid'],
         uids: this.assessment['uids'],
-        contentId: this.assessment['content_id'],
-        hierarchyData: null,
-        qId: this.assessment['qid']
+        contentId: this.assessment['contentId'],
+        hierarchyData: null
       };
       const that = this;
-      this.reportService.getDetailsPerQuestion(params).then((data: any) => {
-        data = JSON.parse(data);
+      this.summarizerService.getDetailsPerQuestion(summaryRequest).toPromise()
+      .then((data: any) => {
         if (data.length > 0) {
           data.forEach(assessment => {
             assessment.time = that.convertTotalTime(assessment.time);
             assessment.name = that.assessment['users'].get(assessment.uid);
-            assessment.res = assessment.result + '/' + assessment.maxScore;
+            assessment.res = assessment.result + '/' + assessment.max_score;
           });
           that.fromUserAssessment['uiRows'] = data;
         }
-      }) .catch((error: any) => {
-        const data = JSON.parse(error);
-        console.log('Error received', data);
+      }) .catch((error) => {
+        console.log('Error received', error);
         loader.dismiss();
       });
     }

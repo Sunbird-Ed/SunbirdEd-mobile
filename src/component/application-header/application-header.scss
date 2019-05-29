@@ -1,0 +1,14 @@
+ application-header {
+    .sb-pt-6{
+        padding-top: 6px;
+    }
+    ion-menu{
+        .header-md::after{
+            opacity: 0.2 !important;
+        }
+    }
+
+    .sb-header-toolbar{
+        padding: 0 $base-block-space !important;
+    }
+}

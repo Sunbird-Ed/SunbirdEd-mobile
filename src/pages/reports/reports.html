@@ -22,8 +22,8 @@
         <ion-list class="item-background radius" *ngSwitchCase="'users'" padding>
             <ion-item class="bgColor" (click)="goToUserReportList(currentUser?.uid,currentUser?.handle)" margin-bottom no-lines>
                 <h6><b>{{currentUser?.handle}}</b></h6>
-                <p *ngIf="currentUser?.profileType === 'TEACHER'">{{'USER_TYPE_1' | translate | titlecase}}</p>
-                <p *ngIf="currentUser?.profileType === 'STUDENT'">{{'USER_TYPE_2' | translate | titlecase}}</p>
+              <p *ngIf="currentUser?.profileType === ProfileType.TEACHER">{{'USER_TYPE_1' | translate | titlecase}}</p>
+              <p *ngIf="currentUser?.profileType === ProfileType.STUDENT">{{'USER_TYPE_2' | translate | titlecase}}</p>
                 <ion-icon name="ios-arrow-forward" item-end></ion-icon>
             </ion-item>
             <ion-item no-padding *ngIf="users?.length > 0" margin-bottom no-lines>
@@ -31,8 +31,8 @@
             </ion-item>
             <ion-item class="bgColor" (click)="goToUserReportList(user?.uid,user?.handle)" margin-bottom no-lines *ngFor="let user of otherUsers;let i=index">
                 <h6><b>{{user?.handle}}</b></h6>
-                <p *ngIf="user?.profileType === 'TEACHER'">{{'USER_TYPE_1' | translate | titlecase}}</p>
-                <p *ngIf="user?.profileType === 'STUDENT'">{{'USER_TYPE_2' | translate | titlecase}}</p>
+              <p *ngIf="user?.profileType === ProfileType.TEACHER">{{'USER_TYPE_1' | translate | titlecase}}</p>
+              <p *ngIf="user?.profileType === ProfileType.STUDENT">{{'USER_TYPE_2' | translate | titlecase}}</p>
                 <ion-icon name="ios-arrow-forward" item-end></ion-icon>
             </ion-item>
         </ion-list>

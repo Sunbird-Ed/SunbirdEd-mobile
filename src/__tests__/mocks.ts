@@ -50,6 +50,7 @@ import { LogoutHandlerService } from '@app/service/handlers/logout-handler.servi
 import { DomSanitizer } from '@angular/platform-browser';
 import { ImageLoader } from 'ionic-image-loader';
 import { Network } from '@ionic-native/network';
+import { AppHeaderService } from '@app/service';
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
 };
@@ -137,6 +138,7 @@ export const commonUtilServiceMock = createSpyObj<CommonUtilService>([
   'showContentComingSoonAlert',
   'toLocaleUpperCase',
   'showExitPopUp',
+  'arrayToString',
   'isRTL'
 ]);
 
@@ -404,4 +406,6 @@ export const generateOTPRequestMock = createSpyObj<GenerateOTPRequest>([
 ]);
 
 export const networkMock = createSpyObj<Network>([]);
+
+export const appHeaderSrvMock = createSpyObj<AppHeaderService>([]);
 

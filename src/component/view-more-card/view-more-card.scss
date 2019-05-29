@@ -96,12 +96,12 @@ view-more-card {
         width: auto;
         height: auto;
       }
-    .image-align{
-        @include border-radius(5px, 0, 0, 5px);
-        background-color: #979797 !important;
-        padding: 0 !important;
+    // .image-align{
+    //     @include border-radius(5px, 0, 0, 5px);
+    //     background-color: #979797 !important;
+    //     padding: 0 !important;
 
-    }
+    // }
     .custom-btn{
         white-space: normal; 
         overflow: hidden;

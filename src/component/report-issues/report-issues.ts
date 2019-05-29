@@ -1,31 +1,12 @@
-import {
-  ContentService,
-  InteractType,
-  InteractSubtype,
-  PageId,
-  Environment
-} from 'sunbird';
-import {
-  Component
-} from '@angular/core';
-import {
-  NavParams,
-  ViewController,
-  Platform
-} from 'ionic-angular';
-import {
-  FormBuilder,
-  FormGroup,
-  FormArray
-} from '@angular/forms';
+import {Component} from '@angular/core';
+import {NavParams, Platform, ViewController} from 'ionic-angular';
+import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import * as _ from 'lodash';
-import {
-  ProfileConstants,
-  FlagContent
-} from '../../app/app.constant';
-import { AppGlobalService } from '../../service/app-global.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import {FlagContent, ProfileConstants} from '../../app/app.constant';
+import {AppGlobalService} from '../../service/app-global.service';
+import {CommonUtilService} from '../../service/common-util.service';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {Environment, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
 
 @Component({
   selector: 'report-issues',
@@ -51,7 +32,6 @@ export class ReportIssuesComponent {
     private fb: FormBuilder,
     private platform: Platform,
     private viewCtrl: ViewController,
-    private contentService: ContentService,
     private navParams: NavParams,
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
@@ -132,19 +112,19 @@ export class ReportIssuesComponent {
         Environment.HOME,
         PageId.CONTENT_DETAIL, undefined, paramsMap);
 
-      this.contentService.flagContent(option).then(() => {
-        const flagContentParamsMap = new Map();
-        flagContentParamsMap['contentType'] = this.content.contentType;
-        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.FLAG_SUCCESS,
-          Environment.HOME, PageId.CONTENT_DETAIL, undefined, flagContentParamsMap);
-        this.viewCtrl.dismiss('flag.success');
-        this.commonUtilService.showToast('CONTENT_FLAGGED_MSG');
-      })
-        .catch((data: any) => {
-          console.log('error:', data);
-          this.viewCtrl.dismiss();
-          this.commonUtilService.showToast('CONTENT_FLAG_FAIL');
-        });
+      // this.contentService.flagContent(option).then(() => {
+      //   const flagContentParamsMap = new Map();
+      //   flagContentParamsMap['contentType'] = this.content.contentType;
+      //   this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.FLAG_SUCCESS,
+      //     Environment.HOME, PageId.CONTENT_DETAIL, undefined, flagContentParamsMap);
+      //   this.viewCtrl.dismiss('flag.success');
+      //   this.commonUtilService.showToast('CONTENT_FLAGGED_MSG');
+      // })
+      //   .catch((data: any) => {
+      //     console.log('error:', data);
+      //     this.viewCtrl.dismiss();
+      //     this.commonUtilService.showToast('CONTENT_FLAG_FAIL');
+      //   });
     }
   }
 

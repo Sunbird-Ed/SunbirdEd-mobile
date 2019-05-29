@@ -13,5 +13,47 @@ page-content-details {
     
     .scroll-content { 
         margin-bottom: 0px !important;
+    } 
+    .btn-progress-highlight{
+        left: 0px;
+        background: $primary-800;
+        height: 5px;
+        position: absolute;
+        border-radius: inherit;
+        border: 0px;
     }
+
+    .btn-popover-progress-container{
+        position: relative;
+        border-radius: 33px;
+        display: inline-block;
+        background: $primary-200;
+        height: 5px;
+        width: 56px;
+    }
+    .sb-back-transparent{
+     width: 50px;
+     min-height: 50px;
+     background: transparent;
+    }
+
+    .content-btn-padding{
+        padding: $sb-modal-actions-padding !important;
+    }
+
 }
+.sb-dt-content.sb-dt-content-main
+{
+    display: grid;
+    grid-gap: 8px;
+    grid-template-columns: auto;
+}
+
+.disable-ripple ion-button-effect {
+    display: none;
+}
+
+.disable-ripple {
+    pointer-events: none;
+}
+

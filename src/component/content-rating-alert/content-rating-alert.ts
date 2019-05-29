@@ -1,32 +1,26 @@
+import {Component, Inject, NgZone} from '@angular/core';
+import {NavParams, Platform, ToastController, ViewController} from 'ionic-angular';
+import {TranslateService} from '@ngx-translate/core';
+import {TelemetryGeneratorService} from '@app/service';
+import {ProfileConstants} from '../../app/app.constant';
+import {AppGlobalService} from '../../service/app-global.service';
+import {CommonUtilService} from '../../service/common-util.service';
 import {
-  Component,
-  NgZone
-} from '@angular/core';
+  Content,
+  ContentFeedback,
+  ContentFeedbackService,
+  TelemetryLogRequest,
+  TelemetryService
+} from 'sunbird-sdk';
 import {
-  NavParams,
-  ViewController,
-  Platform,
-  ToastController
-} from 'ionic-angular';
-import {
-  ContentService,
-  TelemetryService,
-  InteractType,
-  InteractSubtype,
   Environment,
-  ImpressionType,
   ImpressionSubtype,
-  Log,
-  LogLevel
-} from 'sunbird';
-import { TranslateService } from '@ngx-translate/core';
-import {
-  generateImpressionTelemetry,
-  generateInteractTelemetry
-} from '../../app/telemetryutil';
-import { ProfileConstants } from '../../app/app.constant';
-import { AppGlobalService } from '../../service/app-global.service';
-import { CommonUtilService } from '../../service/common-util.service';
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  LogLevel,
+  LogType
+} from '../../service/telemetry-constants';
 
 @Component({
   selector: 'content-rating-alert',
@@ -39,7 +33,7 @@ export class ContentRatingAlertComponent {
   comment = '';
   backButtonFunc = undefined;
   ratingCount: any;
-  content: any;
+  content: Content;
   showCommentBox = false;
   private pageId = '';
   userRating = 0;
@@ -50,19 +44,27 @@ export class ContentRatingAlertComponent {
    *
    * @param navParams
    * @param viewCtrl
-   * @param authService
+   * @param platform
+   * @param translate
+   * @param toastCtrl
+   * @param ngZone
    * @param contentService
+   * @param telemetryService
+   * @param telemetryGeneratorService
+   * @param appGlobalService
+   * @param commonUtilService
    */
   constructor(private navParams: NavParams,
-    private viewCtrl: ViewController,
-    private platform: Platform,
-    private translate: TranslateService,
-    private toastCtrl: ToastController,
-    private ngZone: NgZone,
-    private contentService: ContentService,
-    private telemetryService: TelemetryService,
-    private appGlobalService: AppGlobalService,
-    private commonUtilService: CommonUtilService) {
+              private viewCtrl: ViewController,
+              private platform: Platform,
+              private translate: TranslateService,
+              private toastCtrl: ToastController,
+              private ngZone: NgZone,
+              @Inject('CONTENT_FEEDBACK_SERVICE') private contentService: ContentFeedbackService,
+              @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
+              private telemetryGeneratorService: TelemetryGeneratorService,
+              private appGlobalService: AppGlobalService,
+              private commonUtilService: CommonUtilService) {
     this.getUserId();
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.viewCtrl.dismiss();
@@ -89,26 +91,30 @@ export class ContentRatingAlertComponent {
   }
 
   ionViewWillEnter() {
-    this.telemetryService.impression(generateImpressionTelemetry(
+     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW,
       ImpressionSubtype.RATING_POPUP,
       this.pageId,
       Environment.HOME, '', '', '',
       undefined,
       undefined
-    ));
+    );
 
-    const log = new Log();
+    const log = new TelemetryLogRequest();
     log.level = LogLevel.INFO;
     log.message = this.pageId;
     log.env = Environment.HOME;
-    log.type = ImpressionType.VIEW;
+    log.type = LogType.NOTIFICATION;
     const params = new Array<any>();
     const paramsMap = new Map();
     paramsMap['PopupType'] = this.popupType;
     params.push(paramsMap);
     log.params = params;
-    this.telemetryService.log(log);
+    this.telemetryService.log(log).subscribe((val) => {
+      console.log(val);
+    }, err => {
+      console.log(err);
+    });
   }
 
   /**
@@ -135,26 +141,30 @@ export class ContentRatingAlertComponent {
     this.showCommentBox = false;
     this.viewCtrl.dismiss();
   }
+  closePopover() {
+    this.showCommentBox = false;
+    this.viewCtrl.dismiss();
+  }
 
   submit() {
-    const option = {
+    const option: ContentFeedback = {
       contentId: this.content.identifier,
       rating: this.ratingCount,
       comments: this.comment,
-      contentVersion: this.content.versionKey
+      contentVersion: this.content.contentData.versionKey
     };
     this.viewCtrl.dismiss();
     const paramsMap = new Map();
     paramsMap['Ratings'] = this.ratingCount;
     paramsMap['Comment'] = this.comment;
-    this.telemetryService.interact(generateInteractTelemetry(
+    this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.RATING_SUBMITTED,
       Environment.HOME,
-      this.pageId, paramsMap,
+      this.pageId, undefined, paramsMap,
       undefined,
       undefined
-    ));
+    );
 
     const viewDismissData = {
       rating: this.ratingCount,
@@ -162,18 +172,17 @@ export class ContentRatingAlertComponent {
       message: ''
     };
 
-    this.contentService.sendFeedback(option).then((res: any) => {
+    this.contentService.sendFeedback(option).subscribe((res) => {
       console.log('success:', res);
       viewDismissData.message = 'rating.success';
       this.viewCtrl.dismiss(viewDismissData);
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('THANK_FOR_RATING'));
-    })
-      .catch((data: any) => {
-        console.log('error:', data);
-        viewDismissData.message = 'rating.error';
-        // TODO: ask anil to show error message(s)
-        this.viewCtrl.dismiss(viewDismissData);
-      });
+    }, (data) => {
+      console.log('error:', data);
+      viewDismissData.message = 'rating.error';
+      // TODO: ask anil to show error message(s)
+      this.viewCtrl.dismiss(viewDismissData);
+    });
   }
 
   showMessage(msg) {

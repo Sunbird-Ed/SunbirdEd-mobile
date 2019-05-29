@@ -1,8 +1,6 @@
-<!-- Generated template for the CourseDetailComponent component -->
-<ion-header>
+<!-- <ion-header>
 	<ion-navbar>
 		<ion-title>
-			<!-- <ion-icon md="md-share" float-right></ion-icon> -->
 		</ion-title>
 		<ion-buttons end *ngIf="!isDepthChild">
 			<button ion-button icon-only (click)="share()">
@@ -13,21 +11,24 @@
 			</button>
 		</ion-buttons>
 	</ion-navbar>
-</ion-header>
+</ion-header> -->
 <!-- Page body -->
 <ion-content padding [ngClass]="{'content-with-footer': (showDownloadBtn && !isDepthChild)}">
 	<div class="content-details-holder" *ngIf="contentDetail">
-		<h6 class="font-size-20">{{(contentDetail?.name && contentDetail?.name?.length > 25) ? (contentDetail?.name |
-			slice:0:25) + '...' : (contentDetail?.name)
+    <h6
+      class="font-size-20">{{(contentDetail?.contentData.name && contentDetail?.contentData.name?.length > 25) ? (contentDetail?.contentData.name |
+      slice:0:25) + '...' : (contentDetail?.contentData.name)
 			}}
 		</h6>
 		<!-- Owner and download info -->
 		<ion-grid class="padding-0">
-			<div *ngIf="contentDetail?.creator || contentDetail?.owner">
+      <div *ngIf="contentDetail?.contentData.creator || contentDetail?.contentData.owner">
 				<span class="text-gray-color">{{ 'CONTENT_CREATED_BY' | translate }}</span>
-				<span class="content-meta-title">{{ contentDetail?.creator || contentDetail?.owner }}</span>
+        <span
+          class="content-meta-title">{{ contentDetail?.contentData.creator || contentDetail?.contentData.owner }}</span>
 			</div>
-			<ion-row class="padding-top-10 credits" (click)="viewCredits()" *ngIf="contentDetail?.creators || contentDetail?.attributions || contentDetail?.contributors">
+      <ion-row class="padding-top-10 credits" (click)="viewCredits()"
+               *ngIf="contentDetail?.contentData.creators || contentDetail?.contentData.attributions || contentDetail?.contentData.contributors">
 				{{ 'CREDITS' | translate }}
 			</ion-row>
 			<ion-row class="padding-top-10">
@@ -35,20 +36,23 @@
 					<div class="size_txt padding-bottom-5" no-margin>
 						<span class="content-size">{{ contentDetail?.contentType }} </span>
 						<!--  TODO: show 0 if not available-->
-						<span *ngIf="contentDetail?.size" class="content-size">[{{ contentDetail?.size | fileSize }}] &lrm;</span>
+            <span *ngIf="contentDetail?.contentData.size"
+                  class="content-size">[{{ contentDetail?.contentData.size | fileSize }}] &lrm;</span>
 					</div>
 					<ion-row>
 						<div class="col-2">
-							<rating align-items-start (click)="rateContent();" [(ngModel)]="contentDetail.me_averageRating" readOnly="true"
-							 max="5" no-padding></rating>
+              <rating align-items-start (click)="rateContent();"
+                      [(ngModel)]="contentDetail.contentData.me_averageRating" readOnly="true"
+                      max="5" no-padding></rating>
 						</div>
 						<div class="text-gray-color col-1">
-							&nbsp;({{ contentDetail?.me_totalRatings ? contentDetail?.me_totalRatings : 0 }})
+              &nbsp;({{ contentDetail?.contentData.me_totalRatings ? contentDetail?.contentData.me_totalRatings : 0 }})
 						</div>
 					</ion-row>
 				</ion-col>
-				<ion-col offset-2 *ngIf="contentDetail?.me_totalDownloads">
-					<div class="padding-bottom-5 text-align-end content-meta-title">{{ contentDetail?.me_totalDownloads }}</div>
+        <ion-col offset-2 *ngIf="contentDetail?.contentData.me_totalDownloads">
+          <div
+            class="padding-bottom-5 text-align-end content-meta-title">{{ contentDetail?.contentData.me_totalDownloads }}</div>
 					<div float-right class="text-gray-color">{{ 'DOWNLOADS' | translate }}</div>
 				</ion-col>
 			</ion-row>
@@ -56,36 +60,38 @@
 		<br />
 
 		<!-- Read more / less -->
-		<div class="about-section" *ngIf="contentDetail?.description || contentDetail?.gradeLevel || contentDetail?.subject || contentDetail?.board">
+    <div class="about-section"
+         *ngIf="contentDetail?.contentData.description || contentDetail?.contentData.gradeLevel || contentDetail?.contentData.subject || contentDetail?.contentData.board">
 			<h6 class="padding-10 background-gray font-size-20">{{ 'ABOUT' | translate }}</h6>
 			<p *ngIf="!showMoreFlag" class="text-gray-color">
-				{{ (contentDetail?.description?.length > 100) ? (contentDetail?.description | slice:0:10)
+        {{ (contentDetail?.contentData.description?.length > 100) ? (contentDetail?.contentData.description | slice:0:10)
 				+ '...'
-				: (contentDetail?.description) }} </p>
+        : (contentDetail?.contentData.description) }} </p>
 			<div class="course-details" *ngIf="showMoreFlag">
-				<p *ngIf="contentDetail?.description?.length" class="text-gray-color">
-					{{ contentDetail?.description }}
+        <p *ngIf="contentDetail?.contentData.description?.length" class="text-gray-color">
+          {{ contentDetail?.contentData.description }}
 				</p>
-				<div *ngIf="contentDetail?.gradeLevel?.length" margin-top>
+        <div *ngIf="contentDetail?.contentData.gradeLevel?.length" margin-top>
 					<div class="content-meta-title" text-uppercase>{{ 'CLASS' | translate }}</div>
-					<span class="text-gray-color">{{contentDetail?.gradeLevel}}</span>
+          <span class="text-gray-color">{{contentDetail?.contentData.gradeLevel}}</span>
 				</div>
-				<div *ngIf="contentDetail?.subject" margin-top>
+        <div *ngIf="contentDetail?.contentData.subject" margin-top>
 					<div class="content-meta-title" text-uppercase>{{ 'SUBJECT' | translate }}</div>
-					<span class="text-gray-color">{{contentDetail?.subject}}</span>
+          <span class="text-gray-color">{{contentDetail?.contentData.subject | csa}}</span>
 				</div>
-				<div *ngIf="contentDetail?.board" margin-top>
+        <div *ngIf="contentDetail?.contentData.board" margin-top>
 					<div class="content-meta-title" text-uppercase>{{ 'BOARD' | translate }}</div>
-					<span class="text-gray-color">{{contentDetail?.board}}</span>
+          <span class="text-gray-color">{{contentDetail?.contentData.board}}</span>
 				</div>
 				<div *ngIf="contentDetail?.medium" margin-top>
 					<div class="content-meta-title">{{ 'MEDIUM' | translate }}</div>
-					<span class="text-gray-color">{{contentDetail?.medium}}</span>
+          <span class="text-gray-color">{{contentDetail?.contentData.medium | csa}}</span>
 				</div>
 			</div>
 
-			<div class="read-more" *ngIf="contentDetail?.description?.length > 100 || contentDetail?.gradeLevel || contentDetail?.subject"
-			 (click)="showMoreFlag = !showMoreFlag">
+      <div class="read-more"
+           *ngIf="contentDetail?.contentData.description?.length > 100 || contentDetail?.contentData.gradeLevel || contentDetail?.contentData.subject"
+           (click)="showMoreFlag = !showMoreFlag">
 				<div *ngIf="showMoreFlag" class="padding-top-10">
 					<ion-grid no-padding>
 						<ion-row>
@@ -116,9 +122,9 @@
 		<!-- Course structure section -->
 		<div class="structure-section" margin-top>
 			<h6 class="padding-10 background-gray font-size-20">{{ 'STRUCTURE' | translate }}</h6>
-			<div padding-top *ngIf="contentDetail?.contentTypesCount" class="content-structure">
-				<span *ngFor="let structure of objectKeys(contentDetail?.contentTypesCount);let last = last;">
-					{{contentDetail.contentTypesCount[structure] + ' ' + structure}} {{last ? '' : ' |' }}
+      <div padding-top *ngIf="contentDetail?.contentData.contentTypesCount" class="content-structure">
+				<span *ngFor="let structure of objectKeys(contentDetail?.contentData.contentTypesCount);let last = last;">
+					{{contentDetail.contentData.contentTypesCount[structure] + ' ' + structure}} {{last ? '' : ' |' }}
 				</span>
 			</div>
 			<div *ngIf="fromCoursesPage && !isAlreadyEnrolled">
@@ -179,11 +185,11 @@
 			<!-- End import content -->
 		</div>
 		<br />
-		<div class="license-section padding-10 background-gray" *ngIf="contentDetail?.license">
+    <div class="license-section padding-10 background-gray" *ngIf="contentDetail?.contentData.license">
 			<div class="row" *ngIf="showLicense">
-				<span *ngIf="contentDetail?.license">
+				<span *ngIf="contentDetail?.contentData.license">
 					<div class="size_txt content-meta-title">{{ 'LICENSE' | translate }}</div>
-					<div class="margin-top-5 text-gray-color">{{ contentDetail?.license }}</div>
+					<div class="margin-top-5 text-gray-color">{{ contentDetail?.contentData.license }}</div>
 				</span>
 			</div>
 			<span class="read-more text-gray-color">
@@ -207,15 +213,16 @@
 			'DOWNLOAD_ALL_CONTENT' | translate }} ({{(downloadSize | fileSize)
 			}})
 		</button>
-		<button *ngIf="isDownloadStarted" ion-button block outline [ngStyle]="{'background': '-webkit-linear-gradient(left, #DBECFF '  +(currentCount/queuedIdentifiers.length)*100+ '%, white 0%)'}">
-			{{ 'DOWNLOADING_2' | translate }}... {{ currentCount }} / {{ queuedIdentifiers?.length }}
-		</button>
+    <button *ngIf="isDownloadStarted" ion-button block outline
+            [ngStyle]="{'background': '-webkit-linear-gradient(left, #DBECFF '  +(currentCount/queuedIdentifiers.length)*100+ '%, white 0%)'}">
+      {{ 'DOWNLOADING_2' | translate }}... {{ currentCount }} / {{ queuedIdentifiers?.length }}
+    </button>
 	</ion-toolbar>
 </ion-footer>
 
 <ion-backdrop class="loading-backdrop" *ngIf="showLoading && !isDownloadStarted" text-center>
 	<div class="backdrop-container">
-		<ion-label>{{ 'LOADING_CONTENTS' | translate: {'%s': downloadProgress ? downloadProgress : 0} }}</ion-label>
+    <ion-label>{{ 'LOADING_CONTENTS' | translate: {'%s': downloadProgress ? downloadProgress : 0} }}</ion-label>
 		<pb-horizontal [progress]="downloadProgress" isOnBoardCard="false"></pb-horizontal>
 	</div>
 

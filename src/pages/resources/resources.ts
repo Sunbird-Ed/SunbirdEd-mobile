@@ -1,46 +1,20 @@
 import { Search } from './../../app/app.constant';
-import {
-  Component,
-  NgZone,
-  OnInit,
-  AfterViewInit
-} from '@angular/core';
-import {
-  ContentService,
-  ImpressionType,
-  PageId,
-  Environment,
-  InteractType,
-  InteractSubtype,
-  SharedPreferences,
-  ContentFilterCriteria,
-  ProfileType,
-  FrameworkService,
-  CategoryRequest,
-  ContentSearchCriteria,
-  TelemetryObject
-} from 'sunbird';
-import {
-  NavController,
-  Events
-} from 'ionic-angular';
+import { AfterViewInit, Component, Inject, NgZone, OnInit, ViewChild } from '@angular/core';
+import { Events, NavController, ToastController, MenuController, Scroll, Tabs } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
 import { Map } from '../../app/telemetryutil';
 import {
-  ContentType,
   AudienceFilter,
-  PreferenceKey,
+  CardSectionName,
   ContentCard,
-  ViewMore,
-  FrameworkCategory,
-  CardSectionName
+  ContentType,
+  PreferenceKey,
+  ViewMore
 } from '../../app/app.constant';
-import {
-  PageFilterCallback
-} from '../page-filter/page.filter';
+import { PageFilterCallback } from '../page-filter/page.filter';
 import { AppGlobalService } from '../../service/app-global.service';
 import Driver from 'driver.js';
 import { AppVersion } from '@ionic-native/app-version';
@@ -49,15 +23,34 @@ import { TelemetryGeneratorService } from '../../service/telemetry-generator.ser
 import { CommonUtilService } from '../../service/common-util.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Network } from '@ionic-native/network';
-import {
-  trigger,
-  state,
-  style,
-  animate,
-  transition,
-  group,
-} from '@angular/animations';
+import { animate, group, state, style, transition, trigger } from '@angular/animations';
 import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
+import {
+  CategoryTerm,
+  ContentEventType,
+  ContentRequest,
+  ContentSearchCriteria,
+  ContentService,
+  EventsBusEvent,
+  EventsBusService,
+  FrameworkCategoryCode,
+  FrameworkCategoryCodesGroup,
+  FrameworkUtilService,
+  GetFrameworkCategoryTermsRequest,
+  Profile,
+  ProfileService,
+  ProfileType,
+  SearchType,
+  SharedPreferences,
+  TelemetryObject
+} from 'sunbird-sdk';
+import { Environment, ImpressionType, InteractSubtype, InteractType, PageId } from '../../service/telemetry-constants';
+import { PlayerPage } from '../player/player';
+import { Subscription } from 'rxjs';
+import { ProfileConstants } from '../../app';
+import { AppHeaderService } from '@app/service';
+import { GuestProfilePage } from '../profile';
+import { ProfilePage } from '../profile/profile';
 
 @Component({
   selector: 'page-resources',
@@ -101,7 +94,6 @@ import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-d
   ]
 })
 export class ResourcesPage implements OnInit, AfterViewInit {
-
   pageLoadedSuccess = false;
   storyAndWorksheets: Array<any>;
   selectedValue: Array<string> = [];
@@ -114,8 +106,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   showLoader = false;
 
   /**
-	 * Flag to show latest and popular course loader
-	 */
+   * Flag to show latest and popular course loader
+   */
   searchApiLoader = true;
   isOnBoardingCardCompleted = false;
   public source = PageId.LIBRARY;
@@ -124,13 +116,16 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   filterIcon = './assets/imgs/ic_action_filter.png';
   selectedLanguage = 'en';
   audienceFilter = [];
-  profile: any;
+  profile: Profile;
   appLabel: string;
   mode = 'soft';
   isFilterApplied = false;
   pageFilterCallBack: PageFilterCallback;
-  getGroupByPageReq: ContentSearchCriteria = {};
+  getGroupByPageReq: ContentSearchCriteria = {
+    searchType: SearchType.SEARCH
+  };
 
+  layoutName = 'textbook';
   layoutPopular = ContentCard.LAYOUT_POPULAR;
   layoutSavedContent = ContentCard.LAYOUT_SAVED_CONTENT;
   savedResourcesSection = CardSectionName.SECTION_SAVED_RESOURCES;
@@ -141,23 +136,37 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   currentGrade: any;
   currentMedium: string;
   defaultImg: string;
+  isUpgradePopoverShown = false;
+
   refresh: boolean;
+  private eventSubscription: Subscription;
+
+  toast: any;
+  networkSubscription: Subscription;
+  headerObservable: any;
+  scrollEventRemover: any;
   constructor(
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     public navCtrl: NavController,
     private ngZone: NgZone,
-    private contentService: ContentService,
     private qrScanner: SunbirdQRScanner,
     private events: Events,
-    private preference: SharedPreferences,
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
-    private frameworkService: FrameworkService,
     private translate: TranslateService,
-    private network: Network
+    private network: Network,
+    private tabs: Tabs,
+    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    public toastController: ToastController,
+    public menuCtrl: MenuController,
+    private headerServie: AppHeaderService
   ) {
-    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+    this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
       .then(val => {
         if (val && val.length) {
           this.selectedLanguage = val;
@@ -170,12 +179,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       });
     this.defaultImg = 'assets/imgs/ic_launcher.png';
     this.generateNetworkType();
-  }
 
+  }
   subscribeUtilityEvents() {
+    this.profileService.getActiveSessionProfile({ requiredFields: ProfileConstants.REQUIRED_FIELDS }).subscribe((profile: Profile) => {
+      this.profile = profile;
+    });
     this.events.subscribe('savedResources:update', (res) => {
       if (res && res.update) {
-        this.setSavedContent();
         this.loadRecentlyViewedContent();
       }
     });
@@ -192,38 +203,42 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     });
 
     this.events.subscribe(AppGlobalService.PROFILE_OBJ_CHANGED, () => {
-      this.swipeDownToRefresh();
+      this.swipeDownToRefresh(false,true);
     });
 
     // Event for optional and forceful upgrade
-    this.events.subscribe('force_optional_upgrade', (upgrade) => {
-      if (upgrade) {
-        this.appGlobalService.openPopover(upgrade);
+    this.events.subscribe('force_optional_upgrade', async (upgrade) => {
+      if (upgrade && !this.isUpgradePopoverShown) {
+        await this.appGlobalService.openPopover(upgrade);
+        this.isUpgradePopoverShown = true;
       }
     });
 
     this.events.subscribe('tab.change', (data) => {
-      this.ngZone.run(() => {
-        if (data === 'LIBRARY') {
-          if (this.appliedFilter) {
-            this.filterIcon = './assets/imgs/ic_action_filter.png';
-            this.resourceFilter = undefined;
-            this.appliedFilter = undefined;
-            this.isFilterApplied = false;
-            this.getPopularContent();
-          }
+      // this.ngZone.run(() => {
+      if (data === 'LIBRARY') {
+        if (this.appliedFilter) {
+          this.filterIcon = './assets/imgs/ic_action_filter.png';
+          this.resourceFilter = undefined;
+          this.appliedFilter = undefined;
+          this.isFilterApplied = false;
+          this.getPopularContent();
         }
-      });
+      } else if (data === '') {
+        this.qrScanner.startScanner(PageId.LIBRARY);
+      }
+      // });
     });
 
   }
 
   /**
-	 * Angular life cycle hooks
-	 */
+   * Angular life cycle hooks
+   */
   ngOnInit() {
     this.getCurrentUser();
   }
+
 
   generateNetworkType() {
     const values = new Map();
@@ -241,12 +256,24 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewWillLeave(): void {
-    this.events.unsubscribe('genie.event');
+    if (this.eventSubscription) {
+      this.eventSubscription.unsubscribe();
+    }
+    this.events.unsubscribe('update_header');
+    this.events.unsubscribe('onboarding-card:completed');
+    this.headerObservable.unsubscribe();
+    if (this.networkSubscription) {
+      this.networkSubscription.unsubscribe();
+      if (this.toast) {
+        this.toast.dismiss();
+        this.toast = undefined;
+      }
+    }
   }
 
   /**
-	 * It will fetch the guest user profile details
-	 */
+   * It will fetch the guest user profile details
+   */
   getCurrentUser(): void {
     this.guestUser = !this.appGlobalService.isUserLoggedIn();
     const profileType = this.appGlobalService.getGuestUserType();
@@ -265,9 +292,23 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     }
 
     this.profile = this.appGlobalService.getCurrentUser();
-    this.setSavedContent();
     this.loadRecentlyViewedContent();
   }
+
+  // goToUserAndGroups() {
+  //   this.navCtrl.push(UserAndGroupsPage);
+  // }
+  // goToReports() {
+  //   this.navCtrl.push(ReportsPage);
+  // }
+  // goToLanguageSettings() {
+  //   this.navCtrl.push(LanguageSettingsPage, {
+  //     mainPage: true
+  //   });
+  // }
+  // goToSettings() {
+  //   this.navCtrl.push(SettingsPage);
+  // }
 
   navigateToViewMoreContentsPage(section: string) {
     const values = new Map();
@@ -300,10 +341,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   /**
-	 * Navigate to search page
-	 *
-	 * @param {string} queryParams search query params
-	 */
+   * Navigate to search page
+   *
+   * @param {string} queryParams search query params
+   */
   navigateToViewMoreContentsPageWithParams(queryParams, headerTitle): void {
     const values = new Map();
     values['SectionName'] = headerTitle;
@@ -326,18 +367,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   /**
 	 * Get saved content
 	 */
-  setSavedContent() {
-    // this.localResources = [];
-    console.log('in setSavedContent');
-    // if(this.isOnBoardingCardCompleted || !this.guestUser){
-    // console.log('in setSavedContent isOnBoardingCardCompleted');
+  async setSavedContent() {
     this.showLoader = true;
-    const requestParams: ContentFilterCriteria = {
+    const requestParams: ContentRequest = {
       uid: this.profile ? this.profile.uid : undefined,
       contentTypes: ContentType.FOR_LIBRARY_TAB,
       audience: this.audienceFilter
     };
-    this.contentService.getAllLocalContents(requestParams)
+    await this.contentService.getContents(requestParams).toPromise()
       .then(data => {
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
@@ -356,7 +393,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         });
         this.ngZone.run(() => {
           this.localResources = data;
-          this.showLoader = false;
         });
       })
       .catch(() => {
@@ -370,16 +406,18 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   /**
 	 * Load/get recently viewed content
 	 */
-  loadRecentlyViewedContent() {
+  async loadRecentlyViewedContent() {
+    this.recentlyViewedResources = [];
     this.showLoader = true;
-    const requestParams: ContentFilterCriteria = {
+    const requestParams: ContentRequest = {
       uid: this.profile ? this.profile.uid : undefined,
       contentTypes: ContentType.FOR_RECENTLY_VIEWED,
       audience: this.audienceFilter,
       recentlyViewed: true,
       limit: 20
     };
-    this.contentService.getAllLocalContents(requestParams)
+    await this.setSavedContent();
+    this.contentService.getContents(requestParams).toPromise()
       .then(data => {
         _.forEach(data, (value) => {
           value.contentData.lastUpdatedOn = value.lastUpdatedTime;
@@ -396,7 +434,27 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           }
         });
         this.ngZone.run(() => {
-          this.recentlyViewedResources = data;
+          // merge downloadedResources after recently viewed, which are not yet viewed
+          if ((data && data.length) && (this.localResources && this.localResources.length)) {
+            // remove if same content is downloaded and viewed.
+            for (let i = 0; i < data.length; i++) {
+              const index = this.localResources.findIndex((el) => {
+                return el.identifier === data[i].identifier;
+              });
+
+              if (index !== -1) {
+                this.localResources.splice(index, 1);
+              }
+            }
+            data.push(...this.localResources);
+            this.recentlyViewedResources = data;
+          } else {
+            if (!(data && data.length) && (this.localResources && this.localResources.length)) {
+              this.recentlyViewedResources = this.localResources;
+            } else if ((data && data.length) && !(this.localResources && this.localResources.length)) {
+              this.recentlyViewedResources = data;
+            }
+          }
           this.showLoader = false;
         });
       })
@@ -408,9 +466,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   /**
-	 * Get popular content
-	 */
-  getPopularContent(isAfterLanguageChange = false, contentSearchCriteria?: ContentSearchCriteria) {
+   * Get popular content
+   */
+  getPopularContent(isAfterLanguageChange = false, contentSearchCriteria?: ContentSearchCriteria,avoidRefreshList = false) {
     // if (this.isOnBoardingCardCompleted || !this.guestUser) {
     this.storyAndWorksheets = [];
     this.searchApiLoader = true;
@@ -418,10 +476,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     const that = this;
 
     if (!contentSearchCriteria) {
-      const criteria = new ContentSearchCriteria();
-      criteria.mode = 'hard';
-
-      contentSearchCriteria = criteria;
+      contentSearchCriteria = {
+        mode: 'hard'
+      };
     }
 
     this.mode = contentSearchCriteria.mode;
@@ -455,10 +512,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.getGroupByPageReq.mode = 'hard';
     this.getGroupByPageReq.facets = Search.FACETS_ETB;
     this.getGroupByPageReq.contentTypes = [ContentType.TEXTBOOK];
-    this.getGroupByPage(isAfterLanguageChange);
+    this.getGroupByPage(isAfterLanguageChange,avoidRefreshList);
   }
 
-  getGroupByPage(isAfterLanguageChange = false) {
+  getGroupByPage(isAfterLanguageChange = false,avoidRefreshList = false) {
     this.storyAndWorksheets = [];
     if (!this.refresh) {
       this.searchApiLoader = true;
@@ -468,15 +525,15 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     const reqvalues = new Map();
     reqvalues['pageReq'] = this.getGroupByPageReq;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-        InteractSubtype.RESOURCE_PAGE_REQUEST,
-        Environment.HOME,
-        this.source, undefined,
-        reqvalues);
-    this.contentService.getGroupByPage(this.getGroupByPageReq, this.guestUser)
+      InteractSubtype.RESOURCE_PAGE_REQUEST,
+      Environment.HOME,
+      this.source, undefined,
+      reqvalues);
+    this.contentService.searchContentGroupedByPageSection(this.getGroupByPageReq).toPromise()
       .then((response: any) => {
         this.ngZone.run(() => {
           // TODO Temporary code - should be fixed at backend
-          const sections = JSON.parse(response.sections);
+          const sections = response.sections;
           const newSections = [];
           sections.forEach(element => {
             // element.display = JSON.parse(element.display);
@@ -492,13 +549,34 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             newSections.push(element);
           });
           // END OF TEMPORARY CODE
-
-          this.storyAndWorksheets = newSections;
+          if (this.profile.subject && this.profile.subject.length) {
+            this.storyAndWorksheets = this.orderBySubject([...newSections]);
+          } else {
+            this.storyAndWorksheets = newSections;
+          }
           const sectionInfo = {};
           for (let i = 0; i < this.storyAndWorksheets.length; i++) {
-             const sectionName = this.storyAndWorksheets[i].name,
-                  count = this.storyAndWorksheets[i].contents.length;
-                  sectionInfo[sectionName] = count;
+            const sectionName = this.storyAndWorksheets[i].name,
+              count = this.storyAndWorksheets[i].contents.length;
+
+              for (let k = 0, len = this.storyAndWorksheets[i].contents.length; k < len; k++) {
+                  const content = this.storyAndWorksheets[i].contents[k];
+                  if (content.appIcon) {
+                    if (content.appIcon.includes('http:') || content.appIcon.includes('https:')) {
+                      if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+                        content.appIcon = content.appIcon;
+                      } else {
+                        content.appIcon = this.defaultImg;
+                      }
+                    } else if (content.basePath) {
+                      content.appIcon = content.basePath + '/' + content.appIcon;
+                    }
+                  }
+              }
+
+            // check if locally available
+            this.markLocallyAvailableTextBook();
+            sectionInfo[sectionName] = count;
           }
 
           const resvalues = new Map();
@@ -513,7 +591,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.searchApiLoader = false;
           // this.noInternetConnection = false;
           this.generateExtraInfoTelemetry(newSections.length);
-          this.checkEmptySearchResult(isAfterLanguageChange);
+          // this.checkEmptySearchResult(isAfterLanguageChange);
+          if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable) {
+            if (this.tabs.getSelected().tabTitle === 'LIBRARY‌' && !avoidRefreshList) {
+              this.commonUtilService.showToast(
+                this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
+                  `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
+            }
+          }
         });
       })
       .catch(error => {
@@ -523,11 +608,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.searchApiLoader = false;
           if (error === 'CONNECTION_ERROR') {
           } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
-            if (!isAfterLanguageChange) { this.commonUtilService.showToast('ERROR_FETCHING_DATA'); }
-          } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable) {
+            if (!isAfterLanguageChange) {
+              this.commonUtilService.showToast('ERROR_FETCHING_DATA');
+            }
+          } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable  && !avoidRefreshList) {
             this.commonUtilService.showToast(
               this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
-              `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
+                `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
           }
           const errvalues = new Map();
           errvalues['isNetworkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
@@ -538,6 +625,37 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             errvalues);
         });
       });
+  }
+
+  orderBySubject(searchResults: any[]) {
+    let selectedSubject: string[];
+    const filteredSubject: string[] = [];
+    selectedSubject = this.applyProfileFilter(this.profile.subject, selectedSubject, 'subject');
+    for (let i = 0; i < selectedSubject.length; i++) {
+      const index = searchResults.findIndex((el) => {
+        return el.name.toLowerCase().trim() === selectedSubject[i].toLowerCase().trim();
+      });
+      if (index !== -1) {
+        filteredSubject.push(searchResults.splice(index, 1)[0]);
+      }
+    }
+    filteredSubject.push(...searchResults);
+    return filteredSubject;
+  }
+  markLocallyAvailableTextBook() {
+    if (!this.recentlyViewedResources || !this.storyAndWorksheets) {
+      return;
+    }
+    for (let i = 0; i < this.recentlyViewedResources.length; i++) {
+      for (let j = 0; j < this.storyAndWorksheets.length; j++) {
+        for (let k = 0; k < this.storyAndWorksheets[j].contents.length; k++) {
+          if (this.recentlyViewedResources[i].isAvailableLocally &&
+            this.recentlyViewedResources[i].identifier === this.storyAndWorksheets[j].contents[k].identifier) {
+            this.storyAndWorksheets[j].contents[k].isAvailableLocally = true;
+          }
+        }
+      }
+    }
   }
   generateExtraInfoTelemetry(sectionsCount) {
     const values = new Map();
@@ -590,12 +708,11 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewDidLoad() {
-    this.generateImpressionEvent();
     this.appGlobalService.generateConfigInteractEvent(PageId.LIBRARY, this.isOnBoardingCardCompleted);
   }
 
   ionViewDidEnter() {
-    this.preference.getString('show_app_walkthrough_screen')
+    this.preferences.getString('show_app_walkthrough_screen').toPromise()
       .then(value => {
         if (value === 'true') {
           const driver = new Driver({
@@ -623,12 +740,20 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             element.appendChild(img);
           }, 100);
           this.telemetryGeneratorService.generatePageViewTelemetry(PageId.ONBOARDING_QR_SHOWCASE, Environment.ONBOARDING, PageId.LIBRARY);
-          this.preference.putString('show_app_walkthrough_screen', 'false');
+          this.preferences.putString('show_app_walkthrough_screen', 'false').toPromise().then();
         }
       });
   }
 
   ionViewWillEnter() {
+    this.events.subscribe('update_header', (data) => {
+      this.headerServie.showHeaderWithHomeButton(['search']);
+    });
+    this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
+    this.headerServie.showHeaderWithHomeButton(['search']);
+
     this.getCategoryData();
 
     this.getCurrentUser();
@@ -636,24 +761,48 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     if (!this.pageLoadedSuccess) {
       this.getPopularContent();
     }
-    this.subscribeGenieEvents();
-  }
-
-  subscribeGenieEvents() {
-    this.events.subscribe('genie.event', (data) => {
-      const res = JSON.parse(data);
-      if (res.data && res.data.status === 'IMPORT_COMPLETED' && res.type === 'contentImport') {
-        this.setSavedContent();
-        this.loadRecentlyViewedContent();
+    this.subscribeSdkEvent();
+    this.networkSubscription = this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
+      if (available) {
+        if (this.toast) {
+          this.toast.dismiss();
+          this.toast = undefined;
+        }
+      } else {
+        this.presentToastForOffline('NO_INTERNET_TITLE');
       }
     });
   }
 
+  // Offline Toast
+  async presentToastForOffline(msg: string) {
+    this.toast = await this.toastController.create({
+      duration: 3000,
+      message: this.commonUtilService.translateMessage(msg),
+      showCloseButton: true,
+      position: 'top',
+      closeButtonText: '',
+      cssClass: 'toastHeader'
+    });
+    this.toast.present();
+    this.toast.onDidDismiss(() => {
+      this.toast = undefined;
+    });
+  }
+
+  subscribeSdkEvent() {
+    this.eventSubscription = this.eventsBusService.events().subscribe((event: EventsBusEvent) => {
+      if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
+        this.loadRecentlyViewedContent();
+      }
+    }) as any;
+  }
+
   /**
-	 *
-	 * @param refresher
-	 */
-  swipeDownToRefresh(refresher?) {
+   *
+   * @param refresher
+   */
+  swipeDownToRefresh(refresher?,avoidRefreshList?) {
     this.refresh = true;
     this.storyAndWorksheets = [];
 
@@ -664,17 +813,11 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.telemetryGeneratorService.generatePullToRefreshTelemetry(PageId.LIBRARY, Environment.HOME);
       this.getGroupByPage();
     } else {
-          this.getPopularContent();
-         }
+      this.getPopularContent(false,null,avoidRefreshList);
+    }
 
   }
 
-  generateImpressionEvent() {
-    this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.VIEW, '',
-      PageId.LIBRARY,
-      Environment.HOME);
-  }
 
   scanQRCode() {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
@@ -692,38 +835,42 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       PageId.LIBRARY);
     this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
   }
+  onProfileClick() {
+    const currentProfile = (this.appGlobalService.isGuestUser) ? GuestProfilePage : ProfilePage;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      'profile-button-clicked',
+      Environment.HOME,
+      PageId.LIBRARY);
+    this.navCtrl.push(currentProfile, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
+  }
 
   getCategoryData() {
-    console.log('this.appGlobalService.getCurrentUser()', this.appGlobalService.getCurrentUser());
     const syllabus: Array<string> = this.appGlobalService.getCurrentUser().syllabus;
     const frameworkId = (syllabus && syllabus.length > 0) ? syllabus[0] : undefined;
-    const categories: Array<string> = FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES;
+    const categories: Array<FrameworkCategoryCode> = FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES;
     this.getMediumData(frameworkId, categories);
     this.getGradeLevelData(frameworkId, categories);
   }
 
   getMediumData(frameworkId, categories): any {
-    const req: CategoryRequest = {
-      currentCategory: FrameworkCategory.MEDIUM,
-      frameworkId: frameworkId,
-      selectedLanguage: this.translate.currentLang,
-      categories: categories
+    const req: GetFrameworkCategoryTermsRequest = {
+      currentCategoryCode: FrameworkCategoryCode.MEDIUM,
+      language: this.translate.currentLang,
+      requiredCategories: categories,
+      frameworkId: frameworkId
     };
-    this.frameworkService.getCategoryData(req)
-      .then(res => {
-        const category = JSON.parse(res);
-        this.categoryMediums = category.terms;
+    this.frameworkUtilService.getFrameworkCategoryTerms(req).toPromise()
+      .then((res: CategoryTerm[]) => {
+        this.categoryMediums = res;
         this.arrangeMediumsByUserData(this.categoryMediums.map(a => ({ ...a })));
       })
-      .catch(err => {
-        console.log('Something went wrong!');
+      .catch(() => {
       });
   }
 
 
   findWithAttr(array, attr, value) {
     for (let i = 0; i < array.length; i += 1) {
-      console.log(array[i][attr]);
       if (array[i][attr].toLowerCase() === value.toLowerCase()) {
         return i;
       }
@@ -732,7 +879,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   arrangeMediumsByUserData(categoryMediumsParam) {
-    console.log('categoryMediums ========', categoryMediumsParam);
     if (this.appGlobalService.getCurrentUser() &&
       this.appGlobalService.getCurrentUser().medium &&
       this.appGlobalService.getCurrentUser().medium.length) {
@@ -755,16 +901,15 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   getGradeLevelData(frameworkId, categories): any {
-    const req: CategoryRequest = {
-      currentCategory: FrameworkCategory.GRADE_LEVEL,
-      frameworkId: frameworkId,
-      selectedLanguage: this.translate.currentLang,
-      categories: categories
+    const req: GetFrameworkCategoryTermsRequest = {
+      currentCategoryCode: FrameworkCategoryCode.GRADE_LEVEL,
+      language: this.translate.currentLang,
+      requiredCategories: categories,
+      frameworkId: frameworkId
     };
-    this.frameworkService.getCategoryData(req)
-      .then(res => {
-        const category = JSON.parse(res);
-        this.categoryGradeLevels = category.terms;
+    this.frameworkUtilService.getFrameworkCategoryTerms(req).toPromise()
+      .then((res: CategoryTerm[]) => {
+        this.categoryGradeLevels = res;
         for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
           if (this.getGroupByPageReq.grade[0] === this.categoryGradeLevels[i].name) {
             this.classClick(i);
@@ -772,9 +917,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         }
       })
       .catch(err => {
-        console.log('Something went wrong!');
       });
   }
+
   checkEmptySearchResult(isAfterLanguageChange = false) {
     const flags = [];
     _.forEach(this.storyAndWorksheets, (value, key) => {
@@ -785,7 +930,11 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
     if (flags.length && _.includes(flags, true)) {
     } else {
-      if (!isAfterLanguageChange) { this.commonUtilService.showToast('NO_CONTENTS_FOUND'); }
+      if (!isAfterLanguageChange) {
+        if (this.tabs.getSelected().tabTitle === 'LIBRARY‌') {
+          this.commonUtilService.showToast('NO_CONTENTS_FOUND');
+        }
+      }
     }
   }
 
@@ -795,21 +944,50 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.showWarning = false;
     }, 3000);
   }
+
   checkNetworkStatus(showRefresh = false) {
     if (this.commonUtilService.networkInfo.isNetworkAvailable && showRefresh) {
       this.swipeDownToRefresh();
     }
   }
 
+
   showDisabled(resource) {
     return !resource.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable;
   }
 
-  classClick(index) {
+  generateClassInteractTelemetry(currentClass: string, previousClass: string) {
+    const values = new Map();
+    values['currentSelected'] = currentClass;
+    values['previousSelected'] = previousClass;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.CLASS_CLICKED,
+      Environment.HOME,
+      PageId.LIBRARY,
+      undefined,
+      values);
+  }
+
+  generateMediumInteractTelemetry(currentMedium: string, previousMedium: string) {
+    const values = new Map();
+    values['currentSelected'] = currentMedium;
+    values['previousSelected'] = previousMedium;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.MEDIUM_CLICKED,
+      Environment.HOME,
+      PageId.LIBRARY,
+      undefined,
+      values);
+  }
+
+  classClick(index, isClassClicked?: boolean) {
+    if (isClassClicked) {
+      this.generateClassInteractTelemetry(this.categoryGradeLevels[index].name, this.getGroupByPageReq.grade[0]);
+    }
     this.getGroupByPageReq.grade = [this.categoryGradeLevels[index].name];
     // [grade.name];
     if ((this.currentGrade) && (this.currentGrade.name !== this.categoryGradeLevels[index].name)) {
-      this.getGroupByPage();
+      this.getGroupByPage(false,!isClassClicked);
     }
     for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
       if (i === index) {
@@ -820,12 +998,24 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         this.categoryGradeLevels[i].selected = '';
       }
     }
-    document.getElementById('gradeScroll').scrollTo({ top: 0, left: index * 60, behavior: 'smooth' });
+    let el: HTMLElement | null = document.getElementById('class' + index);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'start' });
+    } else {
+      setTimeout(() => {
+        el = document.getElementById('class' + index);
+        el.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'start' });
+      }, 1000);
+    }
   }
-  mediumClick(mediumName: string) {
+
+  mediumClick(mediumName: string, isMediumClicked?: boolean) {
+    if (isMediumClicked) {
+      this.generateMediumInteractTelemetry(mediumName, this.getGroupByPageReq.medium[0]);
+    }
     this.getGroupByPageReq.medium = [mediumName];
     if (this.currentMedium !== mediumName) {
-      this.getGroupByPage();
+      this.getGroupByPage(false,!isMediumClicked);
     }
 
     for (let i = 0, len = this.categoryMediums.length; i < len; i++) {
@@ -840,24 +1030,61 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   navigateToDetailPage(item, index, sectionName) {
     const identifier = item.contentId || item.identifier;
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.type = item.contentType;
-
-    telemetryObject.id = identifier;
+    let telemetryObject: TelemetryObject;
+    telemetryObject = new TelemetryObject(identifier, item.contentType, undefined);
 
     const values = new Map();
     values['sectionName'] = sectionName;
     values['positionClicked'] = index;
-    console.log('telemetryObject ', telemetryObject);
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.CONTENT_CLICKED,
       'home',
       'library',
       telemetryObject,
       values);
+    if (this.commonUtilService.networkInfo.isNetworkAvailable || item.isAvailableLocally) {
+      this.navCtrl.push(CollectionDetailsEtbPage, {
+        content: item
+      });
+    } else {
+    this.presentToastForOffline('OFFLINE_WARNING_ETBUI_1');
+    }
+  }
 
-    this.navCtrl.push(CollectionDetailsEtbPage, {
-      content: item
-    });
+  launchContent() {
+    this.navCtrl.push(PlayerPage);
+  }
+
+  handleHeaderEvents($event) {
+    console.log('inside handleHeaderEvents', $event);
+    switch ($event.name) {
+      case 'search': this.search();
+        break;
+    }
+  }
+
+  toggleMenu() {
+    this.menuCtrl.toggle();
+  }
+
+  logScrollEnd(event) {
+    // Added Telemetry on reaching Vertical Scroll End
+    if (event.scrollElement.scrollHeight <= event.scrollElement.scrollTop + event.scrollElement.offsetHeight) {
+      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.SCROLL,
+        InteractSubtype.BOOK_LIST_END_REACHED,
+        Environment.HOME,
+        this.source, undefined,
+      );
+    }
+  }
+  onScroll(event) {
+    // Added Telemetry on reaching Horizontal Scroll End
+    if (event.target.scrollWidth <= event.target.scrollLeft + event.target.offsetWidth) {
+      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.SCROLL,
+        InteractSubtype.RECENTLY_VIEWED_END_REACHED,
+        Environment.HOME,
+        this.source, undefined,
+      );
+    }
   }
 }

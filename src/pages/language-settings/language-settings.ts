@@ -1,28 +1,14 @@
-import {
-  Component,
-  NgZone
-} from '@angular/core';
-import {
-  IonicPage,
-  NavController,
-  NavParams,
-  Events,
-  Platform
-} from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
-import {
-  SharedPreferences,
-  ImpressionType,
-  PageId,
-  Environment,
-  InteractType,
-  InteractSubtype
-} from 'sunbird';
+import {Component, Inject, NgZone} from '@angular/core';
+import {Events, IonicPage, NavController, NavParams, Platform} from 'ionic-angular';
+import {TranslateService} from '@ngx-translate/core';
+import {SharedPreferences} from 'sunbird-sdk';
+import {appLanguages, Map, PreferenceKey} from '@app/app';
+import {AppGlobalService, CommonUtilService, TelemetryGeneratorService, AppHeaderService} from '@app/service';
+import {OnboardingPage} from '@app/pages/onboarding/onboarding';
+import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
+import { ResourcesPage } from '../resources/resources';
 
-import { appLanguages, PreferenceKey, Map } from '@app/app';
-import { CommonUtilService, AppGlobalService, TelemetryGeneratorService } from '@app/service';
-import { OnboardingPage } from '@app/pages/onboarding/onboarding';
-import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
 
 @IonicPage()
 @Component({
@@ -40,20 +26,25 @@ export class LanguageSettingsPage {
   selectedLanguage: any = {};
   btnColor = '#55acee';
   unregisterBackButton = undefined;
+  mainPage: Boolean = false;
+  headerConfig: any;
 
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public translateService: TranslateService,
-    private preferences: SharedPreferences,
     private events: Events,
     private zone: NgZone,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private platform: Platform,
     private appGlobalService: AppGlobalService,
-    private commonUtilService: CommonUtilService
-  ) { }
+    private commonUtilService: CommonUtilService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    private headerServie: AppHeaderService
+  ) {
+    this.mainPage = this.navParams.get('mainPage');
+   }
 
   ionViewDidLoad() {
     this.isFromSettings = this.navParams.get('isFromSettings');
@@ -87,6 +78,13 @@ export class LanguageSettingsPage {
 
   ionViewWillEnter() {
     this.selectedLanguage = {};
+    if (!this.isFromSettings) {
+      this.headerServie.hideHeader();
+    } else if (this.mainPage) {
+      this.headerServie.showHeaderWithBackButton();
+    } else {
+      this.headerServie.showHeaderWithBackButton();
+    }
     this.init();
   }
 
@@ -110,13 +108,12 @@ export class LanguageSettingsPage {
     this.languages = appLanguages;
 
     this.zone.run(() => {
-      this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+      this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
         .then(val => {
           if (Boolean(val)) {
             this.previousLanguage = val;
             this.language = val;
           } else {
-            console.error('Language not set');
             // this.getDeviceLanguage();
             this.previousLanguage = undefined;
 
@@ -124,6 +121,9 @@ export class LanguageSettingsPage {
         });
     });
 
+  }
+  goToResources() {
+     this.navCtrl.setRoot(ResourcesPage);
   }
 
   /*   getDeviceLanguage() {
@@ -133,7 +133,6 @@ export class LanguageSettingsPage {
           this.defaultDeviceLang = res.value.split("-")[0];
           let lang = this.languages.find(i => i.code === this.defaultDeviceLang);
           if (lang != undefined && lang != null) {
-            console.log("Language chosen - " + lang.code)
             lang.isApplied = true;
             this.language = lang.code;
           } else {
@@ -201,8 +200,8 @@ export class LanguageSettingsPage {
       this.generateLanguageSuccessInteractEvent(this.previousLanguage, this.language);
       if (this.language) {
         this.selectedLanguage = this.languages.find(i => i.code === this.language);
-        this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE_CODE, this.selectedLanguage.code);
-        this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE, this.selectedLanguage.label);
+        this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE_CODE, this.selectedLanguage.code).toPromise();
+        this.preferences.putString(PreferenceKey.SELECTED_LANGUAGE, this.selectedLanguage.label).toPromise();
         this.translateService.use(this.language);
       }
       this.events.publish('onAfterLanguageChange:update', {

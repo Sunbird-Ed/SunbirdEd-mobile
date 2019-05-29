@@ -1,70 +1,56 @@
-import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity';
-import {
-  Component,
-  NgZone,
-  OnInit
-} from '@angular/core';
-import {
-  NavController,
-  PopoverController,
-  Events
-} from 'ionic-angular';
-import { AppVersion } from '@ionic-native/app-version';
-import { IonicPage } from 'ionic-angular';
-import {
-  SharedPreferences,
-  CourseService,
-  PageAssembleService,
-  PageAssembleCriteria,
-  ImpressionType,
-  PageId,
-  Environment,
-  ContentService,
-  ProfileType,
-  PageAssembleFilter,
-  InteractType,
-  InteractSubtype
-} from 'sunbird';
-import {
-  QRResultCallback,
-  SunbirdQRScanner
-} from '../qrscanner/sunbirdqrscanner.service';
-import { SearchPage } from '../search/search';
-import { ContentDetailsPage } from '../content-details/content-details';
+import {ViewMoreActivityPage} from './../view-more-activity/view-more-activity';
+import {Component, Inject, NgZone, OnInit, AfterViewInit} from '@angular/core';
+import {Events, IonicPage, NavController, ToastController, PopoverController, MenuController, Tabs} from 'ionic-angular';
+import {AppVersion} from '@ionic-native/app-version';
+import {QRResultCallback, SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
+import {SearchPage} from '../search/search';
+import {ContentDetailsPage} from '../content-details/content-details';
 import * as _ from 'lodash';
-import {
-  ProfileConstants,
-  EventTopics,
-  PreferenceKey,
-  ContentType,
-  PageName,
-  ContentCard,
-  ViewMore
-} from '../../app/app.constant';
-import {
-  PageFilterCallback,
-  PageFilter
-} from '../page-filter/page.filter';
-import { Network } from '@ionic-native/network';
-import { AppGlobalService } from '../../service/app-global.service';
+import {ContentCard, ContentType, EventTopics, PreferenceKey, ProfileConstants, ViewMore} from '../../app/app.constant';
+import {PageFilter, PageFilterCallback} from '../page-filter/page.filter';
+import {Network} from '@ionic-native/network';
+import {AppGlobalService} from '../../service/app-global.service';
 import Driver from 'driver.js';
-import { CourseUtilService } from '../../service/course-util.service';
-import { updateFilterInSearchQuery } from '../../util/filter.util';
-import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import {CourseUtilService} from '../../service/course-util.service';
+import {updateFilterInSearchQuery} from '../../util/filter.util';
+import {FormAndFrameworkUtilService} from '../profile/formandframeworkutil.service';
+import {CommonUtilService} from '../../service/common-util.service';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {
+  Content,
+  ContentEventType,
+  ContentImportRequest,
+  ContentImportResponse,
+  ContentImportStatus,
+  ContentService,
+  Course,
+  CourseService,
+  DownloadEventType,
+  DownloadProgress,
+  EventsBusEvent,
+  EventsBusService,
+  FetchEnrolledCourseRequest,
+  PageAssembleCriteria,
+  PageAssembleService,
+  PageName,
+  ProfileType,
+  SharedPreferences
+} from 'sunbird-sdk';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
+import {Subscription} from 'rxjs';
+import { AppHeaderService } from '@app/service';
 
 @IonicPage()
 @Component({
   selector: 'page-courses',
   templateUrl: 'courses.html'
 })
-export class CoursesPage implements OnInit {
+export class CoursesPage implements OnInit, AfterViewInit {
 
   /**
    * Contains enrolled course
    */
-  enrolledCourses: Array<any>;
+  enrolledCourses: Array<Course> = [];
 
   /**
    * Contains popular and latest courses ist
@@ -93,6 +79,7 @@ export class CoursesPage implements OnInit {
   showWarning = false;
   isOnBoardingCardCompleted = false;
   onBoardingProgress = 0;
+  toast: any;
   selectedLanguage = 'en';
   appLabel: string;
   courseFilter: any;
@@ -100,7 +87,7 @@ export class CoursesPage implements OnInit {
   filterIcon = './assets/imgs/ic_action_filter.png';
   profile: any;
   isVisible = false;
-  inProgressSection = 'In-Progress Course';
+  inProgressSection = 'courses-in-progress';
 
   /**
    * To queue downloaded identifier
@@ -110,39 +97,60 @@ export class CoursesPage implements OnInit {
   showOverlay = false;
   resumeContentData: any;
   tabBarElement: any;
-  private mode = 'soft';
   isFilterApplied = false;
   callback: QRResultCallback;
   pageFilterCallBack: PageFilterCallback;
+  isUpgradePopoverShown = false;
+  private mode = 'soft';
+  private eventSubscription: Subscription;
+  headerObservable: any;
 
   /**
    * Default method of class CoursesPage
    *
+   * @param appVersion
    * @param {NavController} navCtrl To navigate user from one page to another
    * @param {CourseService} courseService Service to get enrolled courses
    * @param {PageAssembleService} pageService Service to get latest and popular courses
    * @param {NgZone} ngZone To bind data
+   * @param qrScanner
+   * @param popCtrl
+   * @param events
+   * @param eventBusService
+   * @param contentService
+   * @param appGlobalService
+   * @param courseUtilService
+   * @param formAndFrameworkUtilService
+   * @param commonUtilService
+   * @param telemetryGeneratorService
+   * @param network
+   * @param preferences
    */
   constructor(
     private appVersion: AppVersion,
     private navCtrl: NavController,
-    private courseService: CourseService,
-    private pageService: PageAssembleService,
+    @Inject('COURSE_SERVICE') private courseService: CourseService,
     private ngZone: NgZone,
     private qrScanner: SunbirdQRScanner,
     private popCtrl: PopoverController,
     private events: Events,
-    private contentService: ContentService,
-    private preference: SharedPreferences,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private appGlobalService: AppGlobalService,
     private courseUtilService: CourseUtilService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private network: Network
+    private network: Network,
+    private tabs: Tabs,
+    @Inject('EVENTS_BUS_SERVICE') private eventBusService: EventsBusService,
+    @Inject('PAGE_ASSEMBLE_SERVICE') private pageService: PageAssembleService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    public menuCtrl: MenuController,
+    public toastController: ToastController,
+    private headerServie: AppHeaderService
   ) {
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
-    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+    this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
       .then(val => {
         if (val && val.length) {
           this.selectedLanguage = val;
@@ -160,27 +168,35 @@ export class CoursesPage implements OnInit {
   }
 
   /**
- * Angular life cycle hooks
- */
+   * Angular life cycle hooks
+   */
   ngOnInit() {
     this.getCourseTabData();
   }
+  ngAfterViewInit() {
+
+  }
+
   ionViewDidEnter() {
     this.isVisible = true;
   }
+
   ionViewWillEnter() {
+    this.events.subscribe('update_header', (data) => {
+      this.headerServie.showHeaderWithHomeButton(['search', 'filter']);
+    });
+    this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
     this.getEnrolledCourses();
+    this.headerServie.showHeaderWithHomeButton(['search', 'filter']);
 
   }
+
   ionViewDidLoad() {
-    this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.VIEW, '',
-      PageId.COURSES,
-      Environment.HOME
-    );
 
     this.appGlobalService.generateConfigInteractEvent(PageId.COURSES, this.isOnBoardingCardCompleted);
-    this.preference.getString('show_app_walkthrough_screen')
+    this.preferences.getString('show_app_walkthrough_screen').toPromise()
       .then(value => {
         if (value === 'true') {
           const driver = new Driver({
@@ -208,7 +224,7 @@ export class CoursesPage implements OnInit {
             element.appendChild(img);
           }, 100);
           this.telemetryGeneratorService.generatePageViewTelemetry(PageId.ONBOARDING_QR_SHOWCASE, Environment.ONBOARDING, PageId.COURSES);
-          this.preference.putString('show_app_walkthrough_screen', 'false');
+          this.preferences.putString('show_app_walkthrough_screen', 'false').toPromise().then();
         }
       });
     this.events.subscribe('event:showScanner', (data) => {
@@ -218,16 +234,14 @@ export class CoursesPage implements OnInit {
     });
   }
 
-  ionViewCanLeave() {
+  ionViewWillLeave() {
+    this.headerObservable.unsubscribe();
+    this.events.unsubscribe('update_header');
+    // this.tabBarElement.style.display = 'flex';
     this.ngZone.run(() => {
-      this.events.unsubscribe('genie.event');
-    });
-  }
-
-  ionViewWillLeave(): void {
-    this.tabBarElement.style.display = 'flex';
-    this.ngZone.run(() => {
-      this.events.unsubscribe('genie.event');
+      if (this.eventSubscription) {
+        this.eventSubscription.unsubscribe();
+      }
       this.isVisible = false;
       this.showOverlay = false;
       this.downloadPercentage = 0;
@@ -242,11 +256,13 @@ export class CoursesPage implements OnInit {
       PageId.LIBRARY
     );
   }
+
   subscribeUtilityEvents() {
     // Event for optional and forceful upgrade
-    this.events.subscribe('force_optional_upgrade', (upgrade) => {
-      if (upgrade) {
-        this.appGlobalService.openPopover(upgrade);
+    this.events.subscribe('force_optional_upgrade', async (upgrade) => {
+      if (upgrade && !this.isUpgradePopoverShown) {
+        await this.appGlobalService.openPopover(upgrade);
+        this.isUpgradePopoverShown = true;
       }
     });
 
@@ -275,7 +291,7 @@ export class CoursesPage implements OnInit {
 
     this.events.subscribe(EventTopics.ENROL_COURSE_SUCCESS, (res) => {
       if (res && res.batchId) {
-        this.getEnrolledCourses(false, false);
+        this.getEnrolledCourses(false, true);
       }
     });
 
@@ -312,21 +328,17 @@ export class CoursesPage implements OnInit {
   getEnrolledCourses(refreshEnrolledCourses: boolean = true, returnRefreshedCourses: boolean = false): void {
     this.spinner(true);
 
-    const option = {
+    const option: FetchEnrolledCourseRequest = {
       userId: this.userId,
-      refreshEnrolledCourses: refreshEnrolledCourses,
-      returnRefreshedEnrolledCourses: returnRefreshedCourses
+      returnFreshCourses: returnRefreshedCourses
     };
-    this.courseService.getEnrolledCourses(option)
-      .then((enrolledCourses: any) => {
+    this.courseService.getEnrolledCourses(option).toPromise()
+      .then((enrolledCourses) => {
         if (enrolledCourses) {
-          enrolledCourses = JSON.parse(enrolledCourses);
           this.ngZone.run(() => {
-            this.enrolledCourses = enrolledCourses.result.courses ? enrolledCourses.result.courses : [];
-            // maintain the list of courses that are enrolled, and store them in appglobal
+            this.enrolledCourses = enrolledCourses ? enrolledCourses : [];
             if (this.enrolledCourses.length > 0) {
-              const courseList: Array<any> = [];
-
+              const courseList: Array<Course> = [];
               for (const course of this.enrolledCourses) {
                 courseList.push(course);
               }
@@ -337,9 +349,7 @@ export class CoursesPage implements OnInit {
             this.spinner(false);
           });
         }
-      })
-      .catch((error: any) => {
-        console.log('error while loading enrolled courses', error);
+      }, (err) => {
         this.spinner(false);
       });
   }
@@ -352,8 +362,11 @@ export class CoursesPage implements OnInit {
   getPopularAndLatestCourses(hardRefresh = false, pageAssembleCriteria?: PageAssembleCriteria): void {
     this.pageApiLoader = true;
     if (pageAssembleCriteria === undefined) {
-      const criteria = new PageAssembleCriteria();
-      criteria.name = PageName.COURSE;
+      const criteria: PageAssembleCriteria = {
+        name: PageName.COURSE,
+        filters: {},
+        source: 'app'
+      };
       criteria.mode = 'soft';
 
       if (this.appliedFilter) {
@@ -375,9 +388,6 @@ export class CoursesPage implements OnInit {
     this.mode = pageAssembleCriteria.mode;
 
     if (this.profile && !this.isFilterApplied) {
-      if (!pageAssembleCriteria.filters) {
-        pageAssembleCriteria.filters = new PageAssembleFilter();
-      }
 
       if (this.profile.board && this.profile.board.length) {
         pageAssembleCriteria.filters.board = this.applyProfileFilter(this.profile.board, pageAssembleCriteria.filters.board, 'board');
@@ -398,34 +408,33 @@ export class CoursesPage implements OnInit {
       }
     }
 
-    pageAssembleCriteria.hardRefresh = hardRefresh;
+    // pageAssembleCriteria.hardRefresh = hardRefresh;
 
-    this.pageService.getPageAssemble(pageAssembleCriteria).then((res: any) => {
-      res = JSON.parse(res);
-      this.ngZone.run(() => {
-        const sections = JSON.parse(res.sections);
-        const newSections = [];
-        sections.forEach(element => {
-          element.display = JSON.parse(element.display);
-          if (element.display.name) {
-            if (_.has(element.display.name, this.selectedLanguage)) {
-              const langs = [];
-              _.forEach(element.display.name, (value, key) => {
-                langs[key] = value;
-              });
-              element.name = langs[this.selectedLanguage];
+    this.pageService.getPageAssemble(pageAssembleCriteria).toPromise()
+      .then((res: any) => {
+        this.ngZone.run(() => {
+          const sections = res.sections;
+          const newSections = [];
+          sections.forEach(element => {
+            element.display = JSON.parse(element.display);
+            if (element.display.name) {
+              if (_.has(element.display.name, this.selectedLanguage)) {
+                const langs = [];
+                _.forEach(element.display.name, (value, key) => {
+                  langs[key] = value;
+                });
+                element.name = langs[this.selectedLanguage];
+              }
             }
-          }
-          newSections.push(element);
-        });
+            newSections.push(element);
+          });
 
-        this.popularAndLatestCourses = newSections;
-        this.pageApiLoader = !this.pageApiLoader;
-        this.generateExtraInfoTelemetry(newSections.length);
-        this.checkEmptySearchResult();
-      });
-    }).catch((error: string) => {
-      console.log('Page assmble error', error);
+          this.popularAndLatestCourses = newSections;
+          this.pageApiLoader = !this.pageApiLoader;
+          this.generateExtraInfoTelemetry(newSections.length);
+          this.checkEmptySearchResult();
+        });
+      }).catch((error: string) => {
       this.ngZone.run(() => {
         this.pageApiLoader = false;
         if (error === 'CONNECTION_ERROR') {
@@ -511,7 +520,7 @@ export class CoursesPage implements OnInit {
         this.profile = this.appGlobalService.getCurrentUser();
         const sessionObj = this.appGlobalService.getSessionData();
         this.userId = sessionObj[ProfileConstants.USER_TOKEN];
-        this.getEnrolledCourses();
+        this.getEnrolledCourses(false, true);
         resolve();
       }
     });
@@ -536,8 +545,7 @@ export class CoursesPage implements OnInit {
       .then(() => {
         this.getPopularAndLatestCourses(true);
       })
-      .catch(error => {
-        console.log('Error while Fetching Data', error);
+      .catch(() => {
         this.getPopularAndLatestCourses(true);
       });
   }
@@ -559,7 +567,17 @@ export class CoursesPage implements OnInit {
   }
 
   search() {
-    this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_COURSE_TAB, source: PageId.COURSES });
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.SEARCH_BUTTON_CLICKED,
+      Environment.HOME,
+      PageId.COURSES);
+    this.navCtrl.push(SearchPage, {
+      contentType: ContentType.FOR_COURSE_TAB,
+      source: PageId.COURSES,
+      enrolledCourses: this.enrolledCourses,
+      guestUser: this.guestUser,
+      userId: this.userId
+    });
   }
 
   showFilter() {
@@ -572,8 +590,10 @@ export class CoursesPage implements OnInit {
     this.pageFilterCallBack = {
       applyFilter(filter, appliedFilter) {
         that.ngZone.run(() => {
-          const criteria = new PageAssembleCriteria();
-          criteria.name = PageName.COURSE;
+          const criteria: PageAssembleCriteria = {
+            name: PageName.COURSE,
+            source: 'app'
+          };
           criteria.filters = filter;
           that.courseFilter = appliedFilter;
           that.appliedFilter = filter;
@@ -626,14 +646,27 @@ export class CoursesPage implements OnInit {
         filterOptions['filter'] = data;
         this.showFilterPage(filterOptions);
       }).catch(() => {
-        console.error('Error Occurred!');
       });
     }
 
   }
+  async presentToastForOffline(msg: string) {
+    this.toast = await this.toastController.create({
+      duration: 3000,
+      message: this.commonUtilService.translateMessage(msg),
+      showCloseButton: true,
+      position: 'top',
+      closeButtonText: '',
+      cssClass: 'toastHeader'
+    });
+    this.toast.present();
+    this.toast.onDidDismiss(() => {
+      this.toast = undefined;
+    });
+  }
 
   showFilterPage(filterOptions) {
-    this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' }).present();
+    this.popCtrl.create(PageFilter, filterOptions, {cssClass: 'resource-filter'}).present();
   }
 
   checkEmptySearchResult(isAfterLanguageChange = false) {
@@ -647,7 +680,9 @@ export class CoursesPage implements OnInit {
     if (flags.length && _.includes(flags, true)) {
     } else {
       if (!isAfterLanguageChange) {
-        this.commonUtilService.showToast('NO_CONTENTS_FOUND', this.isVisible);
+        if (this.tabs.getSelected().tabTitle === 'COURSES‌') {
+          this.commonUtilService.showToast('NO_CONTENTS_FOUND', this.isVisible);
+        }
       }
     }
   }
@@ -667,25 +702,29 @@ export class CoursesPage implements OnInit {
 
   getContentDetails(content) {
     const identifier = content.contentId || content.identifier;
-    this.contentService.getContentDetail({ contentId: identifier })
-      .then((data: any) => {
-        data = JSON.parse(data);
-        if (data && data.result && data.result.isAvailableLocally) {
+    this.contentService.getContentDetails({contentId: identifier}).toPromise()
+      .then((data: Content) => {
+        if (data && data.isAvailableLocally) {
           this.showOverlay = false;
           this.navigateToContentDetailsPage(content);
         } else {
-          this.subscribeGenieEvent();
+          this.subscribeSdkEvent();
           this.showOverlay = true;
           this.importContent([identifier], false);
         }
       })
-      .catch((error: any) => {
-        console.log(error);
+      .catch(() => {
         this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
       });
   }
 
   navigateToViewMoreContentsPage(showEnrolledCourses: boolean, searchQuery?: any, headerTitle?: string) {
+    if(this.commonUtilService.networkInfo.isNetworkAvailable) {
+      
+    } else {
+      //this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
+      this.presentToastForOffline('NO_INTERNET_TITLE');return;
+    }
     let params;
     let title;
     if (showEnrolledCourses) {
@@ -702,7 +741,9 @@ export class CoursesPage implements OnInit {
       params = {
         headerTitle: headerTitle,
         pageName: ViewMore.PAGE_COURSE_POPULAR,
-        requestParams: searchQuery
+        requestParams: searchQuery,
+        enrolledCourses: this.enrolledCourses,
+        guestUser: this.guestUser
       };
     }
     const values = new Map();
@@ -718,7 +759,7 @@ export class CoursesPage implements OnInit {
   navigateToContentDetailsPage(content) {
     const identifier = content.contentId || content.identifier;
     this.navCtrl.push(ContentDetailsPage, {
-      content: { identifier: content.lastReadContentId },
+      content: {identifier: content.lastReadContentId},
       depth: '1',
       contentState: {
         batchId: content.batchId ? content.batchId : '',
@@ -731,20 +772,19 @@ export class CoursesPage implements OnInit {
   }
 
   importContent(identifiers, isChild) {
-    const option = {
-      contentImportMap: this.courseUtilService.getImportContentRequestBody(identifiers, isChild),
+    const option: ContentImportRequest = {
+      contentImportArray: this.courseUtilService.getImportContentRequestBody(identifiers, isChild),
       contentStatusArray: []
     };
 
-    this.contentService.importContent(option)
-      .then((data: any) => {
-        data = JSON.parse(data);
+    this.contentService.importContent(option).toPromise()
+      .then((data: ContentImportResponse[]) => {
         this.ngZone.run(() => {
           this.tabBarElement.style.display = 'none';
-          if (data.result && data.result.length) {
-            const importStatus = data.result[0];
+          if (data && data.length) {
+            const importStatus = data[0];
 
-            if (importStatus.status !== 'ENQUEUED_FOR_DOWNLOAD') {
+            if (importStatus.status !== ContentImportStatus.ENQUEUED_FOR_DOWNLOAD) {
               this.removeOverlayAndShowError();
             }
           }
@@ -767,36 +807,47 @@ export class CoursesPage implements OnInit {
     this.showOverlay = false;
   }
 
-  subscribeGenieEvent() {
-    this.events.subscribe('genie.event', (data) => {
+  subscribeSdkEvent() {
+    this.eventSubscription = this.eventBusService.events().subscribe((event: EventsBusEvent) => {
       this.ngZone.run(() => {
-        const res = JSON.parse(data);
-        if (res.type === 'downloadProgress'
-          && res.data.downloadProgress) {
-          this.downloadPercentage = res.data.downloadProgress === -1 ? 0 : res.data.downloadProgress;
+        if (event.type === DownloadEventType.PROGRESS) {
+          const downloadEvent = event as DownloadProgress;
+          this.downloadPercentage = downloadEvent.payload.progress === -1 ? 0 : downloadEvent.payload.progress;
         }
 
-        if (res.data
-          && res.data.status === 'IMPORT_COMPLETED'
-          && res.type === 'contentImport'
-          && this.downloadPercentage === 100) {
+        if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED && this.downloadPercentage === 100) {
           this.showOverlay = false;
           this.navigateToContentDetailsPage(this.resumeContentData);
         }
       });
-    });
+    }) as any;
   }
 
   cancelDownload() {
     this.ngZone.run(() => {
-      this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier).then(() => {
-        this.tabBarElement.style.display = 'flex';
-        this.showOverlay = false;
-      }).catch(() => {
+      this.contentService.cancelDownload(this.resumeContentData.contentId ||
+        this.resumeContentData.identifier).toPromise()
+        .then(() => {
+          this.tabBarElement.style.display = 'flex';
+          this.showOverlay = false;
+        }).catch(() => {
         this.tabBarElement.style.display = 'flex';
         this.showOverlay = false;
       });
     });
+  }
+
+  handleHeaderEvents($event) {
+    switch ($event.name) {
+      case 'search': this.search();
+                    break;
+      case 'filter': this.showFilter();
+                      break;
+    }
+  }
+
+  toggleMenu() {
+    this.menuCtrl.toggle();
   }
 
 }

@@ -1,13 +1,23 @@
-import { CollectionDetailsPage } from './../../pages/collection-details/collection-details';
+import { BatchConstants } from '@app/app/app.constant';
 import { CollectionDetailsEtbPage } from './../../pages/collection-details-etb/collection-details-etb';
 import { ContentDetailsPage } from './../../pages/content-details/content-details';
 import { EnrolledCourseDetailsPage } from './../../pages/enrolled-course-details/enrolled-course-details';
 
-import { Input, NgZone, OnInit } from '@angular/core';
-import { Component } from '@angular/core';
-import { NavController, NavParams, Events } from 'ionic-angular';
-import { ContentType, MimeType } from '../../app/app.constant';
+import { Component, Input, NgZone, OnInit, Inject } from '@angular/core';
+import { Events, NavController, NavParams, PopoverController } from 'ionic-angular';
+import { ContentType, MimeType, ContentCard } from '../../app/app.constant';
 import { CourseUtilService } from '../../service/course-util.service';
+import { CommonUtilService, TelemetryGeneratorService, AppGlobalService } from '@app/service';
+import { EnrollmentDetailsPage } from '@app/pages/enrolled-course-details/enrollment-details/enrollment-details';
+import {
+  CourseBatchesRequest,
+  CourseEnrollmentType,
+  CourseBatchStatus,
+  CourseService,
+  FetchEnrolledCourseRequest,
+  Course
+} from 'sunbird-sdk';
+import { Environment, PageId, InteractType } from '../../service/telemetry-constants';
 
 /**
  * Generated class for the ViewMoreActivityListComponent component.
@@ -36,6 +46,12 @@ export class ViewMoreCardComponent implements OnInit {
    */
   @Input() cardDisabled = false;
 
+  @Input() enrolledCourses: any;
+
+  @Input() guestUser: any;
+
+  @Input() userId: any;
+
   /**
    * Contains default image path.
    *
@@ -47,6 +63,8 @@ export class ViewMoreCardComponent implements OnInit {
    * checks wheather batch is expired or not
    */
   batchExp: Boolean = false;
+  batches: any;
+  loader: any;
 
   /**
    * Default method of cass SearchListComponent
@@ -59,19 +77,115 @@ export class ViewMoreCardComponent implements OnInit {
     public navParams: NavParams,
     private zone: NgZone,
     public courseUtilService: CourseUtilService,
-    public events: Events) {
+    public events: Events,
+    private commonUtilService: CommonUtilService,
+    @Inject('COURSE_SERVICE') private courseService: CourseService,
+    private popoverCtrl: PopoverController,
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private appGlobalService: AppGlobalService
+  ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
 
+  checkRetiredOpenBatch(content: any, layoutName?: string): void {
+    this.loader = this.commonUtilService.getLoader();
+    this.loader.present();
+    let anyOpenBatch: Boolean = false;
+    this.enrolledCourses = this.enrolledCourses || [];
+    let retiredBatches: Array<any> = [];
+    if (layoutName !== ContentCard.LAYOUT_INPROGRESS) {
+      retiredBatches = this.enrolledCourses.filter((element) => {
+        if (element.contentId === content.identifier && element.batch.status === 1 && element.cProgress !== 100) {
+          anyOpenBatch = true;
+          content.batch = element.batch;
+        }
+        if (element.contentId === content.identifier && element.batch.status === 2 && element.cProgress !== 100) {
+          return element;
+        }
+      });
+    }
+    if (anyOpenBatch || !retiredBatches.length) {
+      // open the batch directly
+      this.navigateToDetailsPage(content, layoutName);
+    } else if (retiredBatches.length) {
+      this.navigateToBatchListPopup(content, layoutName, retiredBatches);
+    }
+  }
+
+  navigateToBatchListPopup(content: any, layoutName?: string, retiredBatched?: any): void {
+    const courseBatchesRequest: CourseBatchesRequest = {
+      filters: {
+        courseId: layoutName === ContentCard.LAYOUT_INPROGRESS ? content.contentId : content.identifier,
+        enrollmentType: CourseEnrollmentType.OPEN,
+        status: [CourseBatchStatus.NOT_STARTED, CourseBatchStatus.IN_PROGRESS]
+      },
+      fields: BatchConstants.REQUIRED_FIELDS
+    };
+    const reqvalues = new Map();
+    reqvalues['enrollReq'] = courseBatchesRequest;
+
+    if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+      if (!this.guestUser) {
+        // loader.present();
+        this.courseService.getCourseBatches(courseBatchesRequest).toPromise()
+          .then((data: any) => {
+            this.zone.run(() => {
+              this.batches = data;
+              if (this.batches.length) {
+                this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+                  'showing-enrolled-ongoing-batch-popup',
+                  Environment.HOME,
+                  PageId.CONTENT_DETAIL, undefined,
+                  reqvalues);
+                this.loader.dismiss();
+                const popover = this.popoverCtrl.create(EnrollmentDetailsPage,
+                  {
+                    upcommingBatches: this.batches,
+                    retiredBatched: retiredBatched,
+                    courseId: content.identifier
+                  },
+                  { cssClass: 'enrollement-popover' }
+                );
+                popover.onDidDismiss(enrolled => {
+                  if (enrolled) {
+                    this.getEnrolledCourses();
+                  }
+                });
+                // this.navCtrl.push(EnrollmentDetailsPage, {
+                //   ongoingBatches: ongoingBatches,
+                //   upcommingBatches: upcommingBatches
+                // });
+              } else {
+                this.loader.dismiss();
+                this.navigateToDetailsPage(content, layoutName);
+                // this.commonUtilService.showToast('NO_BATCHES_AVAILABLE');
+              }
+            });
+          })
+          .catch((error: any) => {
+            console.log('error while fetching course batches ==>', error);
+          });
+      } else {
+        // this.navCtrl.push(CourseBatchesPage);
+      }
+    } else {
+      this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
+    }
+  }
+
+
   navigateToDetailsPage(content: any, layoutName) {
     this.zone.run(() => {
+      if (this.loader) {
+        this.loader.dismiss();
+      }
       if (layoutName === 'enrolledCourse' || content.contentType === ContentType.COURSE) {
         this.navCtrl.push(EnrolledCourseDetailsPage, {
           content: content
         });
       } else if (content.mimeType === MimeType.COLLECTION) {
         // this.navCtrl.push(CollectionDetailsPage, {
-          this.navCtrl.push(CollectionDetailsEtbPage, {
+        this.navCtrl.push(CollectionDetailsEtbPage, {
           content: content
         });
       } else {
@@ -109,4 +223,38 @@ export class ViewMoreCardComponent implements OnInit {
       this.batchExp = false;
     }
   }
+
+    /**
+   * To get enrolled course(s) of logged-in user.
+   *
+   * It internally calls course handler of genie sdk
+   */
+  getEnrolledCourses(refreshEnrolledCourses: boolean = true, returnRefreshedCourses: boolean = false): void {
+
+    const option: FetchEnrolledCourseRequest = {
+      userId: this.userId,
+      returnFreshCourses: returnRefreshedCourses
+    };
+    this.courseService.getEnrolledCourses(option).toPromise()
+      .then((enrolledCourses) => {
+        if (enrolledCourses) {
+          this.zone.run(() => {
+            this.enrolledCourses = enrolledCourses ? enrolledCourses : [];
+            if (this.enrolledCourses.length > 0) {
+              const courseList: Array<Course> = [];
+              for (const course of this.enrolledCourses) {
+                courseList.push(course);
+              }
+
+              this.appGlobalService.setEnrolledCourseList(courseList);
+            }
+
+            // this.showLoader = false;
+          });
+        }
+      }, (err) => {
+        // this.showLoader = false;
+      });
+  }
+
 }

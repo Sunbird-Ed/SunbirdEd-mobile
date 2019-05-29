@@ -12,21 +12,11 @@
 * Ionic Version - 3.20.0
 * Android SDK
 
-#### Build **sunbird** module
-* git clone https://github.com/project-sunbird/genie-sdk-wrapper.git
-* go to **genie-sdk-wrapper** directory
-* `npm i`
-* `npm run build`
-* It generates dist folder.
-* Go to dist folder
-* `npm pack .`
-* it should create a npm module in tarball zip format.
 
-#### Setup sunbird-mobile
+#### Setup SunbirdEd-mobile
 * git clone the repo.
 * rename **sunbird.properties.example** file to **sunbird.properties** and put all the valid credentials and api endpoint.
 * go to project folder and run **npm i**
-* install *sunbird* package built on the earlier step - `npm run <path_to_sunbird_tgz_file>`
 * run `ionic cordova platform add android`
 * the above will add an android platform and add all the plugins to that.
 * check you have an attached device with `adb devices` command

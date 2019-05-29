@@ -1,8 +1,8 @@
-<ion-header>
+<!-- <ion-header>
   <ion-navbar>
     <ion-title>{{'EDIT_PERSONAL_DETAILS' | translate}}</ion-title>
   </ion-navbar>
-</ion-header>
+</ion-header> -->
 
 <ion-content padding-vertical>
   <form [formGroup]="profileEditForm">
@@ -10,7 +10,7 @@
       <ion-label stacked class="label-font">
         {{'NAME' | translate}}
         <span ion-text color="danger">&nbsp;*</span>
-        <div class="error" *ngIf="!profileEditForm.controls.name.valid && profileEditForm.controls.name.dirty">
+        <div class="error" *ngIf="profileEditForm.controls.name.dirty && profileEditForm.controls.name.errors?.required">
           {{'ERROR_NAME_INVALID' | translate}}</div>
       </ion-label>
       <ion-input class="form-control" #name formControlName="name" placeholder="{{ 'NAME_HINT' | translate }}"

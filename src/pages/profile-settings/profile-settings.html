@@ -1,6 +1,6 @@
-<ion-header *ngIf="!hideBackButton">
+<!-- <ion-header *ngIf="!hideBackButton">
 	<ion-navbar></ion-navbar>
-</ion-header>
+</ion-header> -->
 
 <ion-content>
 	<div class="fill-in-style msg-size">
@@ -9,7 +9,7 @@
 	<form novalidate [formGroup]="userForm" class="form-position">
 
 		<ion-item>
-			<ion-label floating class="label-font">{{'BOARD_OPTION_TEXT' | translate }}</ion-label>
+			<ion-label floating class="label-font text-uppercase">{{'BOARD_OPTION_TEXT' | translate }}</ion-label>
 			<ion-select multiple="false" #boardSelect text-capitalize formControlName="syllabus" [selectOptions]="boardOptions" (ionChange)="resetForm(0, true)"
 			 okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
 				<ion-option *ngFor="let eachSyllabus of syllabusList" value="{{eachSyllabus?.code}}">{{eachSyllabus?.name}}&lrm;</ion-option>
@@ -17,7 +17,7 @@
 		</ion-item>
 
 		<ion-item>
-			<ion-label floating class="label-font">{{'MEDIUM_OPTION_TEXT' | translate }}</ion-label>
+			<ion-label floating class="label-font text-uppercase">{{'MEDIUM_OPTION_TEXT' | translate }}</ion-label>
 			<ion-select formControlName="medium" #mediumSelect multiple="true" text-capitalize [selectOptions]="mediumOptions" (ionChange)="resetForm(2, false)"
 			 okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}" [disabled]="!(userForm.value.boards != '')">
 				<ion-option *ngFor="let medium of mediumList" text-capitalize value="{{medium?.code}}">{{medium?.name}}</ion-option>
@@ -25,7 +25,7 @@
 		</ion-item>
 
 		<ion-item>
-			<ion-label floating class="label-font">{{'GRADE_OPTION_TEXT' | translate }}</ion-label>
+			<ion-label floating class="label-font text-uppercase">{{'GRADE_OPTION_TEXT' | translate }}</ion-label>
 			<ion-select multiple="true" #gradeSelect text-capitalize [selectOptions]="classOptions" formControlName="grades" okText="{{'BTN_SUBMIT' | translate}}"
 			 cancelText="{{'CANCEL' | translate}}" [disabled]="!(userForm.value.medium != '')" (ionChange)="enableSubmit()">
 				<ion-option *ngFor="let grade of gradeList" text-capitalize value="{{grade?.code}}">{{grade?.name}}</ion-option>
@@ -34,7 +34,7 @@
 
 	</form>
 
-	<ion-footer padding no-border>
+	<ion-footer padding no-border [ngClass]="{'padding-bottom-if-header': hideBackButton}">
 		<button class="arrow-icon" [ngStyle]="{'background-color': btnColor}" [disabled]="userForm.invalid" ion-button
 		 icon-end block (click)="onSubmit()">
 			{{ 'BTN_SUBMIT' | translate }}

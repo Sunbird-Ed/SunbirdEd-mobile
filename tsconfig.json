@@ -22,11 +22,14 @@
     }
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "./typings/*.d.ts",
+    "./content-player/**/*.ts"
   ],
   "exclude": [
     "node_modules",
     "src/**/*.spec.ts",
+    "src/**/*.spec.data.ts",
     "src/**/__tests__/*.ts"
   ],
   "compileOnSave": false,

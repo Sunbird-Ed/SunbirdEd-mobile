@@ -1,28 +1,25 @@
-import { ResourcesPage } from './resources';
+import {ResourcesPage} from './resources';
 import {
-    navCtrlMock,
-    zoneMock,
-    contentServiceMock,
-    sunbirdQRScannerMock,
-    popoverCtrlMock,
-    eventsMock,
-    sharedPreferencesMock,
-    appGlobalServiceMock,
-    appVersionMock,
-    formAndFrameworkUtilServiceMock,
-    telemetryGeneratorServiceMock,
-    commonUtilServiceMock,
-    frameworkServiceMock,
-    transferMock,
-    translateServiceMock,
-    networkMock
+  appGlobalServiceMock,
+  appVersionMock,
+  commonUtilServiceMock,
+  contentServiceMock,
+  eventsMock,
+  frameworkServiceMock,
+  navCtrlMock,
+  networkMock,
+  sharedPreferencesMock,
+  sunbirdQRScannerMock,
+  telemetryGeneratorServiceMock,
+  translateServiceMock,
+  zoneMock
 } from '../../__tests__/mocks';
-import { mockRes } from './resources.spec.data';
-import { ProfileType, PageAssembleFilter, PageId } from 'sunbird';
-import { AudienceFilter, CardSectionName, ViewMore, ContentType } from '../../app/app.constant';
-import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
-import { SearchPage } from '../search/search';
-import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
+import {mockRes} from './resources.spec.data';
+import {PageId, ProfileType} from 'sunbird';
+import {AudienceFilter, CardSectionName, ContentType, ViewMore} from '../../app/app.constant';
+import {ViewMoreActivityPage} from '../view-more-activity/view-more-activity';
+import {SearchPage} from '../search/search';
+import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
 
 describe('ResourcesPage test cases', () => {
     let resource: ResourcesPage;
@@ -461,30 +458,30 @@ describe('ResourcesPage test cases', () => {
 
     it('#ionViewWillEnter should call all methods and audienceFilter deifined', () => {
         spyOn(resource, 'getPopularContent').and.stub();
-        spyOn(resource, 'subscribeGenieEvents').and.stub();
+      spyOn(resource, 'subscribeSdkEvent').and.stub();
         spyOn(resource, 'getCategoryData').and.stub();
         appGlobalServiceMock.isUserLoggedIn.mockReturnValue(true);
         resource.ionViewWillEnter();
         expect(appGlobalServiceMock.getCurrentUser).toBeCalled();
         expect(resource.getPopularContent).toBeCalled();
-        expect(resource.subscribeGenieEvents).toBeCalled();
+      expect(resource.subscribeSdkEvent).toBeCalled();
         expect(resource.getCategoryData).toBeCalled();
         expect(resource.audienceFilter).toBe(AudienceFilter.LOGGED_IN_USER);
     });
 
     it('#ionViewWillEnter should call this.getCurrentUser and other and audienceFilter undeifined', () => {
         spyOn(resource, 'getCurrentUser').and.stub();
-        spyOn(resource, 'subscribeGenieEvents').and.stub();
+      spyOn(resource, 'subscribeSdkEvent').and.stub();
         spyOn(resource, 'getCategoryData').and.stub();
         resource.pageLoadedSuccess = true;
         appGlobalServiceMock.isUserLoggedIn.mockReturnValue(false);
         resource.ionViewWillEnter();
         expect(resource.getCurrentUser).toBeCalled();
-        expect(resource.subscribeGenieEvents).toBeCalled();
+      expect(resource.subscribeSdkEvent).toBeCalled();
         expect(resource.getCategoryData).toBeCalled();
     });
 
-    it('#subscribeGenieEvents should ', () => {
+  it('#subscribeSdkEvent should ', () => {
         const data = {
             data: {
                 status: 'IMPORT_COMPLETED'
@@ -493,7 +490,7 @@ describe('ResourcesPage test cases', () => {
         };
         spyOn(resource, 'setSavedContent').and.stub();
         spyOn(resource, 'loadRecentlyViewedContent').and.stub();
-        resource.subscribeGenieEvents();
+    resource.subscribeSdkEvent();
         eventsMock.subscribe.mock.calls[0][1].call(resource, JSON.stringify(data));
         expect(eventsMock.subscribe).toBeCalledWith('genie.event', expect.any(Function));
         expect(resource.setSavedContent).toBeCalled();

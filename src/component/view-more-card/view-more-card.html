@@ -1,11 +1,11 @@
 <ion-grid [ngClass]="{'grid-disabled': cardDisabled}">
   <ion-row class="row-border">
-    <ion-col class="image-align" (click)="navigateToDetailsPage(content, type)">
+    <ion-col class="image-align" (click)="checkRetiredOpenBatch(content, type)">
       <img class="app-icon" src="{{ content.courseLogoUrl || content?.appIcon || defaultImg }}" />
     </ion-col>
     <ion-col col-8 no-padding>
       <pb-horizontal *ngIf="content.cProgress" [progress]="content.cProgress" class="course-progress" [ngClass]="{'blurbackground': batchExp}"></pb-horizontal>
-      <ion-row style="padding: 5px;">
+      <ion-row style="padding: 5px; height: 50%;">
         <ion-col col-12>
           <h6 class="meta-name" text-wrap *ngIf="content.name && content.name.length">{{(content.name.length > 20) ? (content.name | slice:0:20) + '...' : (content.name)}}</h6>
           <h6 class="meta-name" text-wrap *ngIf="content.courseName && content.courseName.length">{{(content.courseName.length > 22) ? (content.courseName | slice:0:22) + '...' : (content.courseName)}}</h6>
@@ -14,7 +14,7 @@
       </ion-row>
       <ion-row [ngSwitch]="type" style="overflow: hidden;padding: 5px;">
         <!--  Enrolled courses -->
-        <ion-col col-8 *ngSwitchCase="'enrolledCourse'" col-sm>
+        <ion-col col-8 *ngSwitchCase="'enrolledCourse'" col-sm style="padding-top: 10px;">
           <span class="content-size1"> {{ 'COURSE_PROGRESS_COMPLETED' | translate: {'%s': content.cProgress? content.cProgress : 0} }}</span>
           <!-- <div class="content-meta">
             <span class="content-size1">{{ 'ERROR_DURATION_NOT_AVAILABLE' | translate | slice:0:14 }}...</span>
@@ -31,7 +31,7 @@
           </div>
         </ion-col>
         <!-- Popular course layout -->
-        <ion-col col-8 *ngSwitchCase="'popularCourses'" col-sm>
+        <ion-col col-8 *ngSwitchCase="'popularCourses'" col-sm style="padding-top: 10px;">
           <span class="content-size1" *ngIf="content.size">{{ 'FILE_SIZE' | translate: {'%s': content.size | fileSize | slice:0:07} }}</span>
           <br/>
           <!-- <div class="content-meta">

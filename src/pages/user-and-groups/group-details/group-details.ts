@@ -1,58 +1,52 @@
 import { CommonUtilService } from './../../../service/common-util.service';
 import { TranslateService } from '@ngx-translate/core';
+import { Component, Inject, NgZone, ViewChild } from '@angular/core';
 import {
-  Component,
-  NgZone,
-  ViewChild
-} from '@angular/core';
-import {
+  AlertController,
+  App,
+  Content,
+  Events,
   IonicPage,
+  LoadingController,
   NavController,
   NavParams,
-  LoadingController,
-  Content
+  PopoverController,
+  ToastController
 } from 'ionic-angular';
 import { PopoverPage } from '../popover/popover';
-import { PopoverController } from 'ionic-angular';
 import { GroupDetailNavPopoverPage } from '../group-detail-nav-popover/group-detail-nav-popover';
 import { CreateGroupPage } from '../create-group/create-group';
-import { AlertController } from 'ionic-angular';
 import { AddOrRemoveGroupUserPage } from '../add-or-remove-group-user/add-or-remove-group-user';
 import {
-  Profile,
-  ProfileRequest,
-  GroupService,
-  ProfileService,
+  AuthService,
+  GetAllProfileRequest,
   Group,
-  OAuthService,
+  GroupService,
+  Profile,
+  ProfileService,
+  ProfilesToGroupRequest,
   ProfileType,
-  TabsPage,
-  ContainerService,
   SharedPreferences,
-  AddUpdateProfilesRequest,
-  InteractType,
-  InteractSubtype,
-  Environment,
-  PageId,
-  TelemetryObject,
-  ObjectType,
-  AuthService
-} from 'sunbird';
-import { Events } from 'ionic-angular';
+  TelemetryObject
+} from 'sunbird-sdk';
 import { AppGlobalService } from '../../../service/app-global.service';
 import {
-  initTabs,
   GUEST_STUDENT_SWITCH_TABS,
-  GUEST_TEACHER_SWITCH_TABS,
   GUEST_STUDENT_TABS,
-  GUEST_TEACHER_TABS
+  GUEST_TEACHER_SWITCH_TABS,
+  GUEST_TEACHER_TABS,
+  initTabs
 } from '../../../app/module.service';
-import { App } from 'ionic-angular';
 import { GuestEditProfilePage } from '../../profile/guest-edit.profile/guest-edit.profile';
-import { ToastController } from 'ionic-angular';
 import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import { Map } from '../../../app/telemetryutil';
 import { PreferenceKey } from '../../../app/app.constant';
+import { Environment, InteractSubtype, InteractType, ObjectType, PageId } from '../../../service/telemetry-constants';
+import { ContainerService } from '@app/service/container.services';
+import { TabsPage } from '@app/pages/tabs/tabs';
+import { AppHeaderService } from '@app/service';
+import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
+
 @IonicPage()
 @Component({
   selector: 'page-group-member',
@@ -69,29 +63,29 @@ export class GroupDetailsPage {
   userUids = [];
   isNoUsers = false;
   playConfig: any;
-
+  ProfileType = ProfileType;
   isCurrentGroupActive = false;
 
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
-    private groupService: GroupService,
-    private profileService: ProfileService,
+    @Inject('GROUP_SERVICE') private groupService: GroupService,
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     private zone: NgZone,
     private translate: TranslateService,
     private popOverCtrl: PopoverController,
     private alertCtrl: AlertController,
-    private oauth: OAuthService,
     private container: ContainerService,
-    private preferences: SharedPreferences,
     private app: App,
     private event: Events,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private authService: AuthService,
+    @Inject('AUTH_SERVICE') private authService: AuthService,
     private appGlobalService: AppGlobalService,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    private headerService: AppHeaderService
   ) {
     this.group = this.navParams.get('groupInfo');
     this.currentUserId = this.navParams.get('currentUserId');
@@ -106,6 +100,9 @@ export class GroupDetailsPage {
   }
 
   ionViewWillEnter() {
+    const header = this.headerService.getDefaultPageConfig();
+    header.showHeader = false;
+    this.headerService.updatePageConfig(header);
     this.getAllProfile();
   }
   resizeContent() {
@@ -115,28 +112,29 @@ export class GroupDetailsPage {
   getAllProfile() {
     const loader = this.getLoader();
     loader.present();
-    const profileRequest: ProfileRequest = {
+    const profileRequest: GetAllProfileRequest = {
       local: true,
       groupId: this.group.gid
     };
 
     this.zone.run(() => {
-      this.profileService.getAllUserProfile(profileRequest).then((profiles) => {
-        this.zone.run(() => {
-          if (profiles && profiles.length) {
-            this.userList = JSON.parse(profiles);
-            this.userList.forEach((item) => {
-              this.userUids.push(item.uid);
-            });
-            this.isNoUsers = (this.userList.length) ? false : true;
-            loader.dismiss();
-          }
-          console.log('UserList', JSON.parse(profiles));
+      this.profileService.getAllProfiles(profileRequest)
+        .map((profiles) => profiles.filter((profile) => !!profile.handle))
+        .toPromise()
+        .then((profiles) => {
+          this.zone.run(() => {
+            if (profiles && profiles.length) {
+              this.userList = profiles;
+              this.userList.forEach((item) => {
+                this.userUids.push(item.uid);
+              });
+              this.isNoUsers = (this.userList.length) ? false : true;
+              loader.dismiss();
+            }
+          });
+        }).catch(() => {
+          loader.dismiss();
         });
-      }).catch((error) => {
-        loader.dismiss();
-        console.log('Something went wrong while fetching user list', error);
-      });
     });
   }
 
@@ -150,8 +148,8 @@ export class GroupDetailsPage {
   }
 
   /**
-  * Shows Prompt for switch Account
-  */
+   * Shows Prompt for switch Account
+   */
   switchAccountConfirmBox() {
     // Generate Switch User click event
     this.telemetryGeneratorService.generateInteractTelemetry(
@@ -176,9 +174,8 @@ export class GroupDetailsPage {
     valuesMap['to'] = toUser;
     valuesMap['gid'] = this.group.gid;
 
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = selectedUser.uid;
-    telemetryObject.type = Environment.USER;
+    let telemetryObject: TelemetryObject;
+    telemetryObject = new TelemetryObject(selectedUser.uid, Environment.USER, undefined);
 
     // Generate Switch user initiate interact event
     this.telemetryGeneratorService.generateInteractTelemetry(
@@ -191,32 +188,60 @@ export class GroupDetailsPage {
     );
 
 
-    const alert = this.alertCtrl.create({
-      title: this.translateMessage('SWITCH_ACCOUNT_CONFIRMATION'),
-      mode: 'wp',
-      message: this.translateMessage('SIGNED_OUT_ACCOUNT_MESSAGE'),
-      cssClass: 'confirm-alert',
-      buttons: [
+    // const alert = this.alertCtrl.create({
+    //   title: this.translateMessage('SWITCH_ACCOUNT_CONFIRMATION'),
+    //   mode: 'wp',
+    //   message: this.translateMessage('SIGNED_OUT_ACCOUNT_MESSAGE'),
+    //   cssClass: 'confirm-alert',
+    //   buttons: [
+    //     {
+    //       text: this.translateMessage('CANCEL'),
+    //       role: 'cancel',
+    //       cssClass: 'alert-btn-cancel',
+    //       handler: () => {
+    //         console.log('Cancel clicked' + selectedUser);
+    //       }
+    //     },
+    //     {
+    //       text: this.translateMessage('OKAY'),
+    //       cssClass: 'alert-btn-delete',
+    //       handler: () => {
+    //         this.logOut(selectedUser, false);
+    //       }
+    //     }
+    //   ]
+    // });
+
+    const confirm = this.popOverCtrl.create(SbGenericPopoverComponent, {
+      sbPopoverHeading: this.translateMessage('SWITCH_ACCOUNT_CONFIRMATION'),
+      sbPopoverMainTitle: this.translateMessage('SIGNED_OUT_ACCOUNT_MESSAGE'),
+      actionsButtons: [
         {
-          text: this.translateMessage('CANCEL'),
-          role: 'cancel',
-          cssClass: 'alert-btn-cancel',
-          handler: () => {
-            console.log('Cancel clicked' + selectedUser);
-          }
+          btntext: this.translateMessage('CANCEL'),
+          btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
         },
         {
-          text: this.translateMessage('OKAY'),
-          cssClass: 'alert-btn-delete',
-          handler: () => {
-            this.logOut(selectedUser, false);
-          }
+          btntext: this.translateMessage('OKAY'),
+          btnClass: 'popover-color'
         }
-      ]
+      ],
+      icon: null
+    }, {
+        cssClass: 'sb-popover info',
+      });
+    confirm.onDidDismiss((leftBtnClicked: any) => {
+      if (leftBtnClicked == null) {
+        return;
+      }
+      if (!leftBtnClicked) {
+        this.logOut(selectedUser, false);
+      }
     });
 
     if (this.appGlobalService.isUserLoggedIn()) {
-      alert.present();
+      confirm.present({
+        ev: event
+      });
     } else {
       this.setAsCurrentUser(selectedUser, false);
     }
@@ -244,9 +269,8 @@ export class GroupDetailsPage {
 
 
   logOut(selectedUser: any, isBeingPlayed: boolean) {
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = this.profileDetails.id;
-    telemetryObject.type = Environment.USER;
+    const telemetryObject = new TelemetryObject(this.profileDetails.id, Environment.USER, undefined);
+
 
     // Generate Logout initiate event
     this.telemetryGeneratorService.generateInteractTelemetry(
@@ -257,17 +281,17 @@ export class GroupDetailsPage {
       telemetryObject
     );
     if (isBeingPlayed) {
-      this.authService.endSession();
+      this.authService.resignSession().subscribe();
       (<any>window).splashscreen.clearPrefs();
       this.setAsCurrentUser(selectedUser, true);
     } else {
       if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-        this.oauth.doLogOut().then(() => {
+        this.authService.resignSession().toPromise().then(() => {
           (<any>window).splashscreen.clearPrefs();
           this.setAsCurrentUser(selectedUser, false);
         });
       } else {
-        this.authService.endSession();
+        this.authService.resignSession().subscribe();
         (<any>window).splashscreen.clearPrefs();
         this.setAsCurrentUser(selectedUser, false);
       }
@@ -284,10 +308,8 @@ export class GroupDetailsPage {
   }
 
   presentPopoverNav(myEvent) {
-    console.log('clicked nav popover');
     const popover = this.popOverCtrl.create(GroupDetailNavPopoverPage, {
       goToEditGroup: () => {
-        console.log('go to edit group');
         this.navCtrl.push(CreateGroupPage, {
           groupInfo: this.group
         });
@@ -340,7 +362,6 @@ export class GroupDetailsPage {
         popover.dismiss();
       },
       delete: () => {
-        console.log('in delete');
         this.userDeleteGroupConfirmBox(index);
         popover.dismiss();
 
@@ -357,37 +378,63 @@ export class GroupDetailsPage {
 
   /** Delete alert box */
   deleteGroupConfirmBox() {
-    const alert = this.alertCtrl.create({
-      title: this.translateMessage('GROUP_DELETE_CONFIRM', this.group.name),
-      mode: 'wp',
-      message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
-      cssClass: 'confirm-alert',
-      buttons: [
+    // const alert = this.alertCtrl.create({
+    //   title: this.translateMessage('GROUP_DELETE_CONFIRM', this.group.name),
+    //   mode: 'wp',
+    //   message: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
+    //   cssClass: 'confirm-alert',
+    //   buttons: [
+    //     {
+    //       text: this.translateMessage('CANCEL'),
+    //       role: 'cancel',
+    //       cssClass: 'alert-btn-cancel',
+    //       handler: () => {
+    //         console.log('Cancel clicked');
+    //       }
+    //     },
+    //     {
+    //       text: this.translateMessage('YES'),
+    //       cssClass: 'alert-btn-delete',
+    //       handler: () => {
+    //         this.deleteGroup();
+    //       }
+    //     }
+    //   ]
+    // });
+    // alert.present();
+
+    const confirm = this.popOverCtrl.create(SbGenericPopoverComponent, {
+      sbPopoverHeading: this.translateMessage('GROUP_DELETE_CONFIRM', this.group.name),
+      sbPopoverMainTitle: this.translateMessage('GROUP_DELETE_CONFIRM_MESSAGE'),
+      actionsButtons: [
         {
-          text: this.translateMessage('CANCEL'),
-          role: 'cancel',
-          cssClass: 'alert-btn-cancel',
-          handler: () => {
-            console.log('Cancel clicked');
-          }
+          btntext: this.translateMessage('CANCEL'),
+          btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
         },
         {
-          text: this.translateMessage('YES'),
-          cssClass: 'alert-btn-delete',
-          handler: () => {
-            this.deleteGroup();
-          }
+          btntext: this.translateMessage('YES'),
+          btnClass: 'popover-color'
         }
-      ]
+      ],
+      icon: null
+    }, {
+        cssClass: 'sb-popover info',
+      });
+    confirm.present({
+      ev: event
     });
-    alert.present();
+    confirm.onDidDismiss((leftBtnClicked: any) => {
+      if (leftBtnClicked == null) {
+        return;
+      }
+      if (!leftBtnClicked) {
+        this.deleteGroup();
+      }
+    });
   }
 
   deleteGroup() {
-    console.log(this.group.gid);
-    const telemetryObject: TelemetryObject = new TelemetryObject();
-    telemetryObject.id = this.group.gid;
-    telemetryObject.type = ObjectType.GROUP;
+    const telemetryObject = new TelemetryObject(this.group.gid, ObjectType.GROUP, undefined);
 
     // Generate Delete group event
     this.telemetryGeneratorService.generateInteractTelemetry(
@@ -397,42 +444,69 @@ export class GroupDetailsPage {
       PageId.GROUP_DETAIL,
       telemetryObject
     );
-    this.groupService.deleteGroup(this.group.gid).then((sucess) => {
-      console.log(sucess);
+    this.groupService.deleteGroup(this.group.gid).subscribe(() => {
       this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
 
-    }).catch((error) => {
-      console.log(error);
+    }, (error) => {
     });
   }
 
   /* delete confirm box for user */
   /** Delete alert box */
   userDeleteGroupConfirmBox(index) {
-    const alert = this.alertCtrl.create({
-      title: this.translateMessage('USER_DELETE_CONFIRM_MESSAGE_FROM_GROUP', this.userList[index].handle),
-      mode: 'wp',
-      message: this.translateMessage('USER_DELETE_CONFIRM_SECOND_MESSAGE'),
-      cssClass: 'confirm-alert',
-      buttons: [
+    // const alert = this.alertCtrl.create({
+    //   title: this.translateMessage('USER_DELETE_CONFIRM_MESSAGE_FROM_GROUP', this.userList[index].handle),
+    //   mode: 'wp',
+    //   message: this.translateMessage('USER_DELETE_CONFIRM_SECOND_MESSAGE'),
+    //   cssClass: 'confirm-alert',
+    //   buttons: [
+    //     {
+    //       text: this.translateMessage('CANCEL'),
+    //       role: 'cancel',
+    //       cssClass: 'alert-btn-cancel',
+    //       handler: () => {
+    //         console.log('Cancel clicked');
+    //       }
+    //     },
+    //     {
+    //       text: this.translateMessage('YES'),
+    //       cssClass: 'alert-btn-delete',
+    //       handler: () => {
+    //         this.deleteUsersinGroup(index);
+    //       }
+    //     }
+    //   ]
+    // });
+    // alert.present();
+
+    const confirm = this.popOverCtrl.create(SbGenericPopoverComponent, {
+      sbPopoverHeading: this.translateMessage('USER_DELETE_CONFIRM_MESSAGE_FROM_GROUP', this.userList[index].handle),
+      sbPopoverMainTitle: this.translateMessage('USER_DELETE_CONFIRM_SECOND_MESSAGE'),
+      actionsButtons: [
         {
-          text: this.translateMessage('CANCEL'),
-          role: 'cancel',
-          cssClass: 'alert-btn-cancel',
-          handler: () => {
-            console.log('Cancel clicked');
-          }
+          btntext: this.translateMessage('CANCEL'),
+          btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
         },
         {
-          text: this.translateMessage('YES'),
-          cssClass: 'alert-btn-delete',
-          handler: () => {
-            this.deleteUsersinGroup(index);
-          }
-        }
-      ]
+          btntext: this.translateMessage('YES'),
+          btnClass: 'popover-color'
+        },
+      ],
+      icon: null
+    }, {
+        cssClass: 'sb-popover info',
+      });
+    confirm.present({
+      ev: event
     });
-    alert.present();
+    confirm.onDidDismiss((leftBtnClicked: any) => {
+      if (leftBtnClicked == null) {
+        return;
+      }
+      if (!leftBtnClicked) {
+        this.deleteUsersinGroup(index);
+      }
+    });
   }
 
   deleteUsersinGroup(index: number) {
@@ -444,29 +518,26 @@ export class GroupDetailsPage {
 
       }
     });
-    const req: AddUpdateProfilesRequest = {
+    const req: ProfilesToGroupRequest = {
       groupId: this.group.gid,
       uidList: this.userUids
     };
 
-    this.groupService.addUpdateProfilesToGroup(req).then(
-      (success) => {
-        console.log('success', success);
+    this.groupService.addProfilesToGroup(req).subscribe(
+      () => {
         this.userList.splice(userListIndex, 1);
         this.isNoUsers = (this.userList.length) ? false : true;
-      }
-    ).catch(error => {
+      }, error => {
 
-    });
-    console.log('request is', req);
+      });
   }
 
   /**
-  * Used to Translate message to current Language
-  * @param {string} messageConst Message Constant to be translated
-  * @param {string} field Field to be place in language string
-  * @returns {string} field Translated Message
-  */
+   * Used to Translate message to current Language
+   * @param {string} messageConst Message Constant to be translated
+   * @param {string} field Field to be place in language string
+   * @returns {string} field Translated Message
+   */
   translateMessage(messageConst: string, field?: string): string {
     let translatedMsg = '';
     this.translate.get(messageConst, { '%s': field }).subscribe(
@@ -481,8 +552,8 @@ export class GroupDetailsPage {
     if (data.grade && data.grade.length > 0) {
       const gradeName = [];
       data.grade.forEach(code => {
-        if (data.gradeValueMap && data.gradeValueMap[code]) {
-          gradeName.push(data.gradeValueMap[code]);
+        if (data['gradeValue'] && data['gradeValue'][code]) {
+          gradeName.push(data['gradeValue'][code]);
         }
       });
 
@@ -496,43 +567,6 @@ export class GroupDetailsPage {
     return '';
   }
 
-  private setAsCurrentUser(selectedUser, isBeingPlayed: boolean) {
-    this.groupService.setCurrentGroup(this.group.gid)
-      .then(val => {
-        console.log('Value : ' + val);
-        this.profileService.setCurrentUser(selectedUser.uid) .then((success) => {
-          if (isBeingPlayed) {
-            this.event.publish('playConfig', this.playConfig);
-            this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
-          }
-          if (selectedUser.profileType === ProfileType.STUDENT) {
-            initTabs(this.container, isBeingPlayed ? GUEST_STUDENT_TABS : GUEST_STUDENT_SWITCH_TABS);
-            this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT);
-          } else {
-            initTabs(this.container, isBeingPlayed ? GUEST_TEACHER_TABS : GUEST_TEACHER_SWITCH_TABS);
-            this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
-          }
-
-          this.event.publish('refresh:profile');
-          this.event.publish(AppGlobalService.USER_INFO_UPDATED);
-
-          this.app.getRootNav().setRoot(TabsPage);
-
-          const toast = this.toastCtrl.create({
-            message: this.translateMessage('SWITCHING_TO', selectedUser.handle),
-            duration: 2000,
-            position: 'bottom'
-          });
-          toast.present();
-
-        }) .catch((error) => {
-          console.log('Error ' + error);
-        });
-      }).catch(error => {
-        console.log('Error : ' + error);
-      });
-  }
-
   navigateToAddUser() {
     this.navCtrl.push(GuestEditProfilePage, {
       isNewUser: true
@@ -544,5 +578,48 @@ export class GroupDetailsPage {
       duration: 30000,
       spinner: 'crescent'
     });
+  }
+
+  private setAsCurrentUser(selectedUser, isBeingPlayed: boolean) {
+    this.groupService.setActiveSessionForGroup(this.group.gid)
+      .subscribe(() => {
+        this.profileService.setActiveSessionForProfile(selectedUser.uid).toPromise()
+          .then(() => {
+            if (isBeingPlayed) {
+              this.playConfig['selectedUser'] = selectedUser;
+              if (selectedUser.profileType === ProfileType.STUDENT) {
+                this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise().then();
+              } else {
+                this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();
+              }
+              this.event.publish('playConfig', this.playConfig);
+              this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
+            } else {
+              if (selectedUser.profileType === ProfileType.STUDENT) {
+                initTabs(this.container, isBeingPlayed ? GUEST_STUDENT_TABS : GUEST_STUDENT_SWITCH_TABS);
+                this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise().then();
+              } else {
+                initTabs(this.container, isBeingPlayed ? GUEST_TEACHER_TABS : GUEST_TEACHER_SWITCH_TABS);
+                this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();
+              }
+
+              this.event.publish('refresh:profile');
+              this.event.publish(AppGlobalService.USER_INFO_UPDATED);
+
+              this.app.getRootNav().setRoot(TabsPage);
+
+              const toast = this.toastCtrl.create({
+                message: this.translateMessage('SWITCHING_TO', selectedUser.handle),
+                duration: 2000,
+                position: 'bottom'
+              });
+              toast.present();
+            }
+
+
+          }, () => {
+          });
+      }, () => {
+      });
   }
 }

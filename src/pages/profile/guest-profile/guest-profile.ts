@@ -1,47 +1,34 @@
-import { TranslateService } from '@ngx-translate/core';
-import { Component } from '@angular/core';
-import {
-  NavController,
-  PopoverController,
-  Events
-} from 'ionic-angular';
+import {TranslateService} from '@ngx-translate/core';
+import {Component, Inject, OnInit, AfterViewInit} from '@angular/core';
+import {Events, NavController, PopoverController} from 'ionic-angular';
 import * as _ from 'lodash';
+import {GuestEditProfilePage, OverflowMenuComponent} from '@app/pages/profile';
+import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
+import {AppGlobalService, CommonUtilService, TelemetryGeneratorService, AppHeaderService} from '@app/service';
+import {MenuOverflow, PreferenceKey} from '@app/app';
 import {
-  ProfileService,
-  SharedPreferences,
-  ProfileType,
-  ImpressionType,
-  PageId,
-  Environment,
-  SuggestedFrameworkRequest,
+  Framework,
+  FrameworkCategoryCodesGroup,
+  FrameworkDetailsRequest,
   FrameworkService,
-} from 'sunbird';
-import {
-  GuestEditProfilePage,
-  OverflowMenuComponent,
-  FormAndFrameworkUtilService
-} from '@app/pages/profile';
-import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
-import {
-  AppGlobalService,
-  TelemetryGeneratorService,
-  CommonUtilService
-} from '@app/service';
-import {
-  MenuOverflow,
-  PreferenceKey,
-  FrameworkCategory
-} from '@app/app';
+  FrameworkUtilService,
+  GetSuggestedFrameworksRequest,
+  ProfileService,
+  ProfileType,
+  SharedPreferences
+} from 'sunbird-sdk';
+import {PageId, Environment} from '../../../service/telemetry-constants';
+import {ProfileConstants} from '../../../app';
 
 @Component({
   selector: 'page-guest-profile',
   templateUrl: 'guest-profile.html',
 })
 
-export class GuestProfilePage {
+export class GuestProfilePage implements OnInit, AfterViewInit {
 
   imageUri = 'assets/imgs/ic_profile_default.png';
-
+  ProfileType = ProfileType;
   showSignInCard = false;
   isNetworkAvailable: boolean;
   showWarning = false;
@@ -54,24 +41,29 @@ export class GuestProfilePage {
   syllabus = '';
   selectedLanguage: string;
   loader: any;
+  headerObservable: any;
+
+
+  isUpgradePopoverShown = false;
 
   constructor(
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     private navCtrl: NavController,
     private popoverCtrl: PopoverController,
-    private profileService: ProfileService,
     private events: Events,
-    private preference: SharedPreferences,
     private commonUtilService: CommonUtilService,
     private appGlobalService: AppGlobalService,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private framework: FrameworkService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
+    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    private headerServie: AppHeaderService
   ) {
 
 
     // language code
-    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE)
+    this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
       .then(val => {
         if (val && val.length) {
           this.selectedLanguage = val;
@@ -79,9 +71,10 @@ export class GuestProfilePage {
       });
 
     // Event for optional and forceful upgrade
-    this.events.subscribe('force_optional_upgrade', (upgrade) => {
-      if (upgrade) {
-        this.appGlobalService.openPopover(upgrade);
+    this.events.subscribe('force_optional_upgrade', async (upgrade) => {
+      if (upgrade && !this.isUpgradePopoverShown) {
+        await this.appGlobalService.openPopover(upgrade);
+        this.isUpgradePopoverShown = true;
       }
     });
 
@@ -102,13 +95,34 @@ export class GuestProfilePage {
   }
 
   ionViewDidLoad() {
-    this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.VIEW, '',
-      PageId.GUEST_PROFILE,
-      Environment.HOME
-    );
 
     this.appGlobalService.generateConfigInteractEvent(PageId.GUEST_PROFILE);
+  }
+
+  /**
+	 * Angular life cycle hooks
+	 */
+  ngOnInit() {
+
+  }
+
+  ionViewWillEnter() {
+    this.events.subscribe('update_header', (data) => {
+      this.headerServie.showHeaderWithHomeButton();
+    });
+    this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
+    this.headerServie.showHeaderWithHomeButton();
+  }
+
+  ngAfterViewInit() {
+
+  }
+
+  ionViewWillLeave(): void {
+    this.headerObservable.unsubscribe();
+    this.events.unsubscribe('update_header');
   }
 
   refreshProfileData(refresher: any = false, showLoader: boolean = true) {
@@ -117,23 +131,25 @@ export class GuestProfilePage {
     if (showLoader) {
       this.loader.present();
     }
-
-    this.profileService.getCurrentUser().then((res: any) => {
-      this.profile = JSON.parse(res);
-      this.getSyllabusDetails();
-      setTimeout(() => {
-        if (refresher) { refresher.complete(); }
-      }, 500);
-    })
-      .catch((err: any) => {
+    if (refresher) {
+      this.telemetryGeneratorService.generatePullToRefreshTelemetry(PageId.GUEST_PROFILE, Environment.HOME);
+    }
+    this.profileService.getActiveSessionProfile({requiredFields: ProfileConstants.REQUIRED_FIELDS}).toPromise()
+      .then((res: any) => {
+        this.profile = res;
+        this.getSyllabusDetails();
+        setTimeout(() => {
+          if (refresher) { refresher.complete(); }
+        }, 500);
+      })
+      .catch(() => {
         this.loader.dismiss();
-        console.error('Error', err);
       });
   }
 
   editGuestProfile() {
     this.navCtrl.push(GuestEditProfilePage, {
-      profile: JSON.parse(JSON.stringify(this.profile)),
+      profile: this.profile,
       isCurrentUser: true
     });
   }
@@ -161,13 +177,13 @@ export class GuestProfilePage {
   getSyllabusDetails() {
     let selectedFrameworkId = '';
 
-    const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
-      isGuestUser: true,
-      selectedLanguage: this.translate.currentLang,
-      categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
+
+    const getSuggestedFrameworksRequest: GetSuggestedFrameworksRequest = {
+      language: this.translate.currentLang,
+      requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
     };
-    this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
-      .then((result) => {
+    this.frameworkUtilService.getActiveChannelSuggestedFrameworkList(getSuggestedFrameworksRequest).toPromise()
+      .then((result: Framework[]) => {
         if (result && result !== undefined && result.length > 0) {
 
           result.forEach(element => {
@@ -192,9 +208,13 @@ export class GuestProfilePage {
   }
 
   getFrameworkDetails(frameworkId?: string): void {
-    this.formAndFrameworkUtilService.getFrameworkDetails(frameworkId)
-      .then(catagories => {
-        this.categories = catagories;
+    const frameworkDetailsRequest: FrameworkDetailsRequest = {
+      frameworkId: this.profile.syllabus[0] || '',
+      requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
+    };
+    this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
+      .then((framework: Framework) => {
+        this.categories = framework.categories;
 
         if (this.profile.board && this.profile.board.length) {
           this.boards = this.getFieldDisplayValues(this.profile.board, 0);
@@ -236,6 +256,10 @@ export class GuestProfilePage {
 
   buttonClick(isNetAvailable?) {
     this.showNetworkWarning();
+  }
+
+  handleHeaderEvents($event) {
+    // Handle any click on headers
   }
 
 }

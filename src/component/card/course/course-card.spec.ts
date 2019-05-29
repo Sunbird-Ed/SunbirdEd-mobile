@@ -6,12 +6,17 @@ import {
     courseUtilServiceMock,
     eventsMock,
     telemetryGeneratorServiceMock,
-    sharedPreferencesMock
+    sharedPreferencesMock,
+    popoverCtrlMock,
+    commonUtilServiceMock,
+    courseServiceMock,
+    zoneMock
 } from '../../../__tests__/mocks';
 
 import { EnrolledCourseDetailsPage } from '../../../pages/enrolled-course-details/enrolled-course-details';
 import { CollectionDetailsPage } from '../../../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../../../pages/content-details/content-details';
+import { doesNotThrow } from 'assert';
 
 describe('course-card component', () => {
     let courseCard: CourseCard;
@@ -21,8 +26,16 @@ describe('course-card component', () => {
             courseUtilServiceMock as any,
             eventsMock as any,
             telemetryGeneratorServiceMock as any,
-            sharedPreferencesMock as any
+            sharedPreferencesMock as any,
+            popoverCtrlMock as any,
+            commonUtilServiceMock as any,
+            courseServiceMock as any,
+            zoneMock as any
         );
+        courseCard.loader = {
+            present: jest.fn(),
+            dismiss: jest.fn()
+        };
         jest.resetAllMocks();
     });
     it('should ctreate a valid instance of PageFilter', () => {
@@ -127,7 +140,6 @@ describe('course-card component', () => {
         // act
         courseCard.navigateToDetailPage(content, 'InProgress');
 
-        expect(courseCard.saveContentContext).toHaveBeenCalledWith(content);
         expect(navCtrlMock.push(EnrolledCourseDetailsPage, expect.objectContaining({
             content: content
         })));
@@ -160,5 +172,72 @@ describe('course-card component', () => {
         })));
     });
 
+    it('#checkRetiredOpenBatch should call navigateToDetailPage()', () => {
+        const loader = {
+            present: jest.fn(),
+            dismiss: jest.fn()
+        };
+        commonUtilServiceMock.getLoader.mockReturnValue(loader);
+        spyOn(courseCard, 'navigateToDetailPage').and.stub();
+        courseCard.checkRetiredOpenBatch({}, 'InProgress');
+        expect(courseCard.navigateToDetailPage).toBeCalledWith({}, 'InProgress');
+    });
+
+    it('#checkRetiredOpenBatch should call navigateToBatchListPopup()', () => {
+        const loader = {
+            present: jest.fn(),
+            dismiss: jest.fn()
+        };
+        commonUtilServiceMock.getLoader.mockReturnValue(loader);
+        courseCard.enrolledCourses = mockRes.enrolledCourses;
+        spyOn(courseCard, 'navigateToBatchListPopup').and.stub();
+        courseCard.checkRetiredOpenBatch(mockRes.contentMock1);
+        expect(courseCard.navigateToBatchListPopup).toBeCalledWith(mockRes.contentMock1, undefined, [mockRes.enrolledCourses[1]]);
+    });
+
+    it('#navigateToBatchListPopup should call should present the popup calling present()', (done) => {
+        commonUtilServiceMock.networkInfo = {
+            isNetworkAvailable: true
+        };
+        const popup = {
+            present: jest.fn(),
+            dismiss: jest.fn()
+        };
+        courseCard.guestUser = false;
+        popoverCtrlMock.create.mockReturnValue(popup);
+        courseServiceMock.getCourseBatches.mockResolvedValue(JSON.stringify(mockRes.openUpcomingBatchesResponse));
+
+        setTimeout(() => {
+            zoneMock.run.mock.calls[0][0].call();
+            expect(courseCard.batches.length).toBe(1);
+            expect(courseCard.loader.dismiss).toHaveBeenCalled();
+            expect(popup.present).toHaveBeenCalled();
+            done();
+        }, 0);
+        courseCard.navigateToBatchListPopup(mockRes.contentMock1);
+    });
+
+    it('#navigateToBatchListPopup should call navigateToDetailPage()', (done) => {
+        commonUtilServiceMock.networkInfo = {
+            isNetworkAvailable: true
+        };
+        const popup = {
+            present: jest.fn(),
+            dismiss: jest.fn()
+        };
+        courseCard.guestUser = false;
+        popoverCtrlMock.create.mockReturnValue(popup);
+        courseServiceMock.getCourseBatches.mockResolvedValue(JSON.stringify(mockRes.noOpenUpcomingBatchesResponse));
+        spyOn(courseCard, 'navigateToDetailPage').and.stub();
+
+        setTimeout(() => {
+            zoneMock.run.mock.calls[0][0].call();
+            expect(courseCard.batches.length).toBe(0);
+            expect(courseCard.navigateToDetailPage).toHaveBeenCalledWith(mockRes.contentMock1, null);
+            expect(courseCard.loader.dismiss).toHaveBeenCalled();
+            done();
+        }, 0);
+        courseCard.navigateToBatchListPopup(mockRes.contentMock1, null);
+    });
 
 });

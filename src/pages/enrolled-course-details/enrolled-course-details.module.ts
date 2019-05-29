@@ -3,8 +3,6 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { EnrolledCourseDetailsPage } from './enrolled-course-details';
 import { TranslateModule } from '@ngx-translate/core';
-import { GenieSDKServiceProvider } from 'sunbird';
-import { FrameworkModule } from 'sunbird';
 import { IonicImageLoader } from 'ionic-image-loader';
 import { Ionic2RatingModule } from 'ionic2-rating';
 import { ComponentsModule } from './../../component/components.module';
@@ -21,7 +19,6 @@ import { EnrollmentDetailsPageModule } from './enrollment-details/enrollment-det
     TranslateModule.forChild(),
     CourseBatchesPageModule,
     ComponentsModule,
-    FrameworkModule,
     IonicImageLoader,
     DirectivesModule,
     Ionic2RatingModule,
@@ -29,7 +26,6 @@ import { EnrollmentDetailsPageModule } from './enrollment-details/enrollment-det
     EnrollmentDetailsPageModule
   ],
   providers: [
-    GenieSDKServiceProvider
   ],
   exports: [
     EnrolledCourseDetailsPage

@@ -1,57 +1,56 @@
-import { AlertController } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
-import { Component } from '@angular/core';
 import {
+  AlertController,
   App,
+  Events,
+  IonicApp,
+  LoadingController,
   NavController,
   NavParams,
-  Events,
-  LoadingController,
-  IonicApp,
-  Platform
+  Platform,
+  PopoverController
 } from 'ionic-angular';
-import {
-  FormBuilder,
-  FormGroup
-} from '@angular/forms';
+import {TranslateService} from '@ngx-translate/core';
+import {Component, Inject} from '@angular/core';
+import {FormBuilder, FormGroup} from '@angular/forms';
 import * as _ from 'lodash';
 import {
-  CategoryRequest,
-  ProfileService,
+  CategoryTerm,
+  Framework,
+  FrameworkCategoryCodesGroup,
+  FrameworkDetailsRequest,
+  FrameworkService,
+  FrameworkUtilService,
+  GetFrameworkCategoryTermsRequest,
+  GetSuggestedFrameworksRequest,
   Profile,
-  SharedPreferences,
-  UserSource,
-  InteractType,
-  InteractSubtype,
-  Environment,
-  PageId,
-  ImpressionType,
-  ObjectType,
+  ProfileService,
+  ProfileSource,
   ProfileType,
-  ContainerService,
-  TabsPage,
-  SuggestedFrameworkRequest,
-  FrameworkService
-} from 'sunbird';
-import { FormAndFrameworkUtilService } from '../formandframeworkutil.service';
-import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
+  SharedPreferences
+} from 'sunbird-sdk';
+import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
+import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs} from '../../../app/module.service';
+import {AppGlobalService} from '../../../service/app-global.service';
+import {CommonUtilService} from '../../../service/common-util.service';
+import {PreferenceKey} from '../../../app/app.constant';
 import {
-  initTabs,
-  GUEST_STUDENT_TABS,
-  GUEST_TEACHER_TABS
-} from '../../../app/module.service';
-import { AppGlobalService } from '../../../service/app-global.service';
-import { CommonUtilService } from '../../../service/common-util.service';
-import {
-  PreferenceKey,
-  FrameworkCategory
-} from '../../../app/app.constant';
-
+  Environment,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  ObjectType,
+  PageId,
+} from '../../../service/telemetry-constants';
+import { ContainerService } from '../../../service/container.services';
+import { TabsPage } from '@app/pages/tabs/tabs';
+import { AppHeaderService } from '@app/service';
+import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 @Component({
   selector: 'page-guest-edit.profile',
   templateUrl: 'guest-edit.profile.html'
 })
 export class GuestEditProfilePage {
+  ProfileType = ProfileType;
   guestEditForm: FormGroup;
   profile: any = {};
   categories: Array<any> = [];
@@ -103,30 +102,31 @@ export class GuestEditProfilePage {
     private fb: FormBuilder,
     private navParams: NavParams,
     private loadingCtrl: LoadingController,
-    private profileService: ProfileService,
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     private translate: TranslateService,
     private events: Events,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private platform: Platform,
     private ionicApp: IonicApp,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private container: ContainerService,
     private app: App,
     private appGlobalService: AppGlobalService,
-    private preferences: SharedPreferences,
     private commonUtilService: CommonUtilService,
     private alertCtrl: AlertController,
-    private framework: FrameworkService
+    @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
+    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    private popoverCtrl: PopoverController,
+    private headerService: AppHeaderService
   ) {
     this.isNewUser = Boolean(this.navParams.get('isNewUser'));
     this.isCurrentUser = Boolean(this.navParams.get('isCurrentUser'));
-    this.previousProfileType = this.profile.profileType;
     if (this.isNewUser) {
       this.profile = this.navParams.get('lastCreatedProfile') || {};
       this.isEditData = false;
       this.guestEditForm = this.fb.group({
         name: [''],
-        profileType: [this.profile.profileType || 'STUDENT'],
+        profileType: [this.profile.profileType || ProfileType.STUDENT],
         syllabus: [this.profile.syllabus && this.profile.syllabus[0] || []],
         boards: [this.profile.board || []],
         medium: [this.profile.medium || []],
@@ -135,10 +135,10 @@ export class GuestEditProfilePage {
       });
 
     } else {
-      this.profile = this.navParams.get('profile') || {};
+      this.profile = (JSON.parse(JSON.stringify(this.navParams.get('profile')))) || {};
       this.guestEditForm = this.fb.group({
         name: [this.profile.handle || ''],
-        profileType: [this.profile.profileType || 'STUDENT'],
+        profileType: [this.profile.profileType || ProfileType.STUDENT],
         syllabus: [this.profile.syllabus && this.profile.syllabus[0] || []],
         boards: [this.profile.board || []],
         medium: [this.profile.medium || []],
@@ -146,6 +146,7 @@ export class GuestEditProfilePage {
         subjects: [this.profile.subject || []]
       });
     }
+    this.previousProfileType = this.profile.profileType;
     this.profileForTelemetry = this.profile;
   }
 
@@ -170,10 +171,13 @@ export class GuestEditProfilePage {
   }
 
   ionViewWillEnter() {
+    const header = this.headerService.getDefaultPageConfig();
+    header.showHeader = false;
+    this.headerService.updatePageConfig(header);
     this.getSyllabusDetails();
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.dismissPopup();
-    }, 11);
+    }, 10);
   }
 
   ionViewWillLeave() {
@@ -182,7 +186,7 @@ export class GuestEditProfilePage {
   // shows auto fill alert on load
   showAutoFillAlert() {
     this.isEditData = true;
-    const alert = this.alertCtrl.create({
+    /*const alert = this.alertCtrl.create({
       title: this.commonUtilService.translateMessage('PREVIOUS_USER_SETTINGS'),
       mode: 'wp',
       cssClass: 'confirm-alert',
@@ -200,7 +204,7 @@ export class GuestEditProfilePage {
               grades: [[]],
               subjects: [[]]
             });
-            this.guestEditForm.controls['profileType'].setValue('STUDENT');
+            this.guestEditForm.controls['profileType'].setValue(ProfileType.STUDENT);
 
           }
         },
@@ -213,7 +217,42 @@ export class GuestEditProfilePage {
         }
       ]
     });
-    alert.present();
+    alert.present();*/
+    const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
+      sbPopoverHeading: this.commonUtilService.translateMessage('ALERT'),
+      sbPopoverMainTitle: this.commonUtilService.translateMessage('PREVIOUS_USER_SETTINGS'),
+      actionsButtons: [
+        {
+          btntext: this.commonUtilService.translateMessage('CANCEL'),
+          btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+        }, {
+          btntext: this.commonUtilService.translateMessage('OKAY'),
+          btnClass: 'popover-color'
+        }
+      ],
+      icon: null
+    }, {
+      cssClass: 'sb-popover',
+    });
+      confirm.present({
+        ev: event
+      });
+      confirm.onDidDismiss((leftBtnClicked: any) => {
+        if (leftBtnClicked == null) {
+          return;
+        }
+        if (leftBtnClicked) {
+          this.guestEditForm.patchValue({
+            name: undefined,
+            syllabus: undefined,
+            boards: [[]],
+            medium: [[]],
+            grades: [[]],
+            subjects: [[]]
+          });
+          this.guestEditForm.controls['profileType'].setValue(this.ProfileType.STUDENT);
+        }
+      });
   }
 
   onProfileTypeChange() {
@@ -244,13 +283,12 @@ export class GuestEditProfilePage {
   getSyllabusDetails() {
     this.loader = this.getLoader();
     this.loader.present();
-    const suggestedFrameworkRequest: SuggestedFrameworkRequest = {
-      isGuestUser: true,
-      selectedLanguage: this.translate.currentLang,
-      categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
+    const getSuggestedFrameworksRequest: GetSuggestedFrameworksRequest = {
+      language: this.translate.currentLang,
+      requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
     };
-    this.framework.getSuggestedFrameworkList(suggestedFrameworkRequest)
-      .then((result) => {
+    this.frameworkUtilService.getActiveChannelSuggestedFrameworkList(getSuggestedFrameworksRequest).toPromise()
+      .then((result: Framework[]) => {
         if (result && result !== undefined && result.length > 0) {
           result.forEach(element => {
             // renaming the fields to text, value and checked
@@ -259,11 +297,15 @@ export class GuestEditProfilePage {
           });
 
           if (this.profile && this.profile.syllabus && this.profile.syllabus[0] !== undefined) {
-            this.formAndFrameworkUtilService.getFrameworkDetails(this.profile.syllabus[0])
-              .then(catagories => {
+            const frameworkDetailsRequest: FrameworkDetailsRequest = {
+              frameworkId:  this.profile.syllabus[0],
+              requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
+            };
+            this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
+              .then((framework: Framework) => {
                 this.isFormValid = true;
                 // loader.dismiss();
-                this.categories = catagories;
+                this.categories = framework.categories;
 
                 this.resetForm(0, false);
 
@@ -288,9 +330,9 @@ export class GuestEditProfilePage {
    * @param {string} currentCategory - request Parameter passing to the framework API
    * @param {string} list - Local variable name to hold the list data
    */
-  getCategoryData(req: CategoryRequest, list): void {
-    this.formAndFrameworkUtilService.getCategoryData(req, this.frameworkId).
-      then((result) => {
+  getCategoryData(req: GetFrameworkCategoryTermsRequest, list): void {
+    this.frameworkUtilService.getFrameworkCategoryTerms(req).toPromise()
+    .then((result: CategoryTerm[]) => {
 
         if (this.loader !== undefined) {
           this.loader.dismiss();
@@ -298,7 +340,7 @@ export class GuestEditProfilePage {
 
         this[list] = result;
 
-        if (req.currentCategory === 'board') {
+        if (req.currentCategoryCode === 'board') {
           const boardName = this.syllabusList.find(framework => this.frameworkId === framework.code);
           if (boardName) {
             const boardCode = result.find(board => boardName.name === board.name);
@@ -338,18 +380,24 @@ export class GuestEditProfilePage {
     if (index === 0) {
       this[currentField] = this.syllabusList;
     } else if (index === 1) {
-      this.frameworkId = prevSelectedValue[0];
+      // this.frameworkId = prevSelectedValue[0];
+      this.frameworkId = prevSelectedValue ? (Array.isArray(prevSelectedValue[0]) ? prevSelectedValue[0][0] : prevSelectedValue[0] ) : '';
       if (this.frameworkId.length !== 0) {
-        this.formAndFrameworkUtilService.getFrameworkDetails(this.frameworkId)
-          .then(catagories => {
-            this.categories = catagories;
+        const frameworkDetailsRequest: FrameworkDetailsRequest = {
+          frameworkId:  this.frameworkId,
+          requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
+        };
+        this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
+          .then((framework: Framework) => {
+            this.categories = framework.categories;
 
             this.isFormValid = true;
             // loader.dismiss();
-            const request: CategoryRequest = {
-              currentCategory: this.categories[0].code,
-              selectedLanguage: this.translate.currentLang,
-              categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
+            const request: GetFrameworkCategoryTermsRequest = {
+              currentCategoryCode: this.categories[0].code,
+              language: this.translate.currentLang,
+              requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES,
+              frameworkId: this.frameworkId
             };
             this.getCategoryData(request, currentField);
           }).catch(() => {
@@ -359,12 +407,13 @@ export class GuestEditProfilePage {
       }
 
     } else {
-      const request: CategoryRequest = {
-        currentCategory: this.categories[index - 1].code,
-        prevCategory: this.categories[index - 2].code,
-        selectedCode: prevSelectedValue,
-        selectedLanguage: this.translate.currentLang,
-        categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
+      const request: GetFrameworkCategoryTermsRequest = {
+        currentCategoryCode: this.categories[index - 1].code,
+        prevCategoryCode: this.categories[index - 2].code,
+        selectedTermsCodes: prevSelectedValue,
+        language: this.translate.currentLang,
+        requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES,
+        frameworkId: this.frameworkId
       };
       this.getCategoryData(request, currentField);
     }
@@ -523,7 +572,7 @@ export class GuestEditProfilePage {
    * This will submit edit form.
    */
   submitEditForm(formVal, loader): void {
-    const req: Profile = new Profile();
+    const req =  <Profile>{};
     req.board = formVal.boards;
     req.grade = formVal.grades;
     req.subject = formVal.subjects;
@@ -539,10 +588,10 @@ export class GuestEditProfilePage {
       formVal.grades.forEach(gradeCode => {
         for (let i = 0; i < this.gradeList.length; i++) {
           if (this.gradeList[i].code === gradeCode) {
-            if (!req.gradeValueMap) {
-              req.gradeValueMap = {};
+            if (!req.gradeValue) {
+              req.gradeValue = {};
             }
-            req.gradeValueMap[this.gradeList[i].code] = this.gradeList[i].name;
+            req.gradeValue[this.gradeList[i].code] = this.gradeList[i].name;
             break;
           }
         }
@@ -550,7 +599,7 @@ export class GuestEditProfilePage {
     }
 
     this.profileService.updateProfile(req)
-      .then((res: any) => {
+      .subscribe((res: any) => {
         if (this.isCurrentUser) {
           this.publishProfileEvents(formVal);
         }
@@ -563,11 +612,9 @@ export class GuestEditProfilePage {
           PageId.EDIT_USER
         );
         this.navCtrl.pop();
-      })
-      .catch((err: any) => {
+      }, (err: any) => {
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
-        console.log('Err', err);
       });
   }
 
@@ -583,10 +630,10 @@ export class GuestEditProfilePage {
 
     if (this.previousProfileType && this.previousProfileType !== formVal.profileType) {
       if (formVal.profileType === ProfileType.STUDENT) {
-        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT);
+        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise().then();
         initTabs(this.container, GUEST_STUDENT_TABS);
       } else {
-        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER);
+        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();
         initTabs(this.container, GUEST_TEACHER_TABS);
       }
 
@@ -598,38 +645,37 @@ export class GuestEditProfilePage {
    * It will submit new user form
    */
   submitNewUserForm(formVal, loader): void {
-    const req: Profile = new Profile();
+    const req =  <Profile>{};
     req.board = formVal.boards;
     req.grade = formVal.grades;
     req.subject = formVal.subjects;
     req.medium = formVal.medium;
     req.handle = formVal.name.trim();
     req.profileType = formVal.profileType;
-    req.source = UserSource.LOCAL;
+    req.source = ProfileSource.LOCAL;
     req.syllabus = (!formVal.syllabus.length) ? [] : [formVal.syllabus];
 
     if (formVal.grades && formVal.grades.length > 0) {
       formVal.grades.forEach(gradeCode => {
         for (let i = 0; i < this.gradeList.length; i++) {
           if (this.gradeList[i].code === gradeCode) {
-            if (!req.gradeValueMap) {
-              req.gradeValueMap = {};
+            if (!req.gradeValue) {
+              req.gradeValue = {};
             }
-            req.gradeValueMap[this.gradeList[i].code] = this.gradeList[i].name;
+            req.gradeValue[this.gradeList[i].code] = this.gradeList[i].name;
             break;
           }
         }
       });
     }
 
-    this.profileService.createProfile(req).then((res: any) => {
+    this.profileService.createProfile(req, req.source).subscribe((res: any) => {
       loader.dismiss();
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('USER_CREATED_SUCCESSFULLY'));
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.OTHER, InteractSubtype.CREATE_USER_SUCCESS, Environment.USER, PageId.CREATE_USER);
       this.navCtrl.pop();
-    })
-      .catch((err: any) => {
+    }, (err: any) => {
         loader.dismiss();
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('FILL_THE_MANDATORY_FIELDS'));
       });
