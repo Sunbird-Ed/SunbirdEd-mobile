@@ -225,7 +225,7 @@ export class SearchPage implements  OnDestroy {
     }
 
     if (this.appGlobalService.isGuestUser) {
-      if (this.source === PageId.USER_TYPE_SELECTION && this.appGlobalService.isOnBoardingCompleted) {
+      if (this.source === PageId.PERMISSION && this.appGlobalService.isOnBoardingCompleted) {
         if (this.appGlobalService.isProfileSettingsCompleted || !this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
           this.navCtrl.setRoot(TabsPage, {
             loginMode: 'guest'

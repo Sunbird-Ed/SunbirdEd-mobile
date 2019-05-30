@@ -520,5 +520,17 @@
   "WHAT_WENT_WRONG": "What went wrong?",
   "YES": "Yes",
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
-  "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "You are not connected to the internet"
+  "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "You are not connected to the internet",
+  "PERMISSION_REQUIRED_TITLE": "{{%s}} requires access to the following permissions so we can provide an effective experience for you:",
+  "CAMERA": "Camera",
+  "CAMERA_PERMISSION_DESCRIPTION": "Camera access is needed for scanning of {{%s}} QR codes",
+  "FILE_MANAGER": "File Manager",
+  "FILE_MANAGER_PERMISSION_DESCRIPTION": "Storage access is needed for downloading of files and moving content to SD cards",
+  "MICROPHONE": "Microphone",
+  "MICROPHONE_PERMISSION_DESCRIPTION": "Microphone access will be used only in content where you can 'record' your voice. This is used to improve pronunciation of words",
+  "GRANT_ACCESS": "Grant Access",
+  "NOT_NOW": "Not Now",
+  "PERMISSION_EDIT_TITLE": "Permission required for effective use of {{%s}}",
+  "PERMISSION": "Permission"
+
 }

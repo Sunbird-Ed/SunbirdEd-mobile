@@ -41,8 +41,6 @@ import { tap } from 'rxjs/operators';
 import { Environment, InteractSubtype, InteractType, PageId, ImpressionType } from '../service/telemetry-constants';
 import { TabsPage } from '@app/pages/tabs/tabs';
 import { ContainerService } from '@app/service/container.services';
-import { AndroidPermissionsService } from '../service/android-permissions/android-permissions.service';
-import { AndroidPermission, AndroidPermissionsStatus } from '@app/service/android-permissions/android-permission';
 import { SplashcreenTelemetryActionHandlerDelegate } from '@app/service/sunbird-splashscreen/splashcreen-telemetry-action-handler-delegate';
 import { SplashscreenImportActionHandlerDelegate } from '@app/service/sunbird-splashscreen/splashscreen-import-action-handler-delegate';
 import { OnboardingPage } from '@app/pages/onboarding/onboarding';
@@ -78,11 +76,6 @@ export class MyApp implements OnInit, AfterViewInit {
     actionButtons: ['search'],
   };
   public sideMenuEvent = new EventEmitter;
-
-  readonly permissionList = [
-    AndroidPermission.WRITE_EXTERNAL_STORAGE,
-    AndroidPermission.RECORD_AUDIO,
-    AndroidPermission.CAMERA];
   private telemetryAutoSyncUtil: TelemetryAutoSyncUtil;
 
   profile: any = {};
@@ -99,7 +92,6 @@ export class MyApp implements OnInit, AfterViewInit {
     private statusBar: StatusBar,
     private toastCtrl: ToastController,
     private containerService: ContainerService,
-    private permission: AndroidPermissionsService,
     private imageLoaderConfig: ImageLoaderConfig,
     private app: App,
     private translate: TranslateService,
@@ -137,7 +129,6 @@ export class MyApp implements OnInit, AfterViewInit {
       this.saveDefaultSyncSetting();
       this.showAppWalkThroughScreen();
       this.checkAppUpdateAvailable();
-      this.requestAppPermissions();
       this.makeEntryInSupportFolder();
       this.checkForTncUpdate();
       this.handleAuthErrors();
@@ -448,26 +439,6 @@ export class MyApp implements OnInit, AfterViewInit {
       await this.translate.use(selectedLanguage).toPromise();
     }
   }
-
-  private async requestAppPermissions() {
-    return this.permission.checkPermissions(this.permissionList)
-      .mergeMap((statusMap: { [key: string]: AndroidPermissionsStatus }) => {
-        const toRequest: AndroidPermission[] = [];
-
-        for (const permission in statusMap) {
-          if (!statusMap[permission].hasPermission) {
-            toRequest.push(permission as AndroidPermission);
-          }
-        }
-
-        if (!toRequest.length) {
-          return Observable.of(undefined);
-        }
-
-        return this.permission.requestPermissions(toRequest);
-      }).toPromise();
-  }
-
 
   private async makeEntryInSupportFolder() {
     return new Promise((resolve => {

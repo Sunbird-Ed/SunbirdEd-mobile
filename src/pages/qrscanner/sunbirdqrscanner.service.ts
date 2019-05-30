@@ -205,7 +205,7 @@ export class SunbirdQRScanner {
   }
 
   showInvalidCodeAlert() {
-    if (this.source !== 'user-type-selection') {
+    if (this.source !== 'permission') {
       this.commonUtil.afterOnBoardQRErrorAlert('INVALID_QR', 'UNKNOWN_QR');
       return;
     }
