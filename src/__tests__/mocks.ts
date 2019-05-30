@@ -288,7 +288,8 @@ export const formAndFrameworkUtilServiceMock = createSpyObj<FormAndFrameworkUtil
   'getCategoryData',
   'getCourseFrameworkId',
   'getRootOrganizations',
-  'getCustodianOrgId'
+  'getCustodianOrgId',
+  'getConsumptionFaqsUrl'
 ]);
 
 export const loadingControllerMock = createSpyObj<LoadingController>([
