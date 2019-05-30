@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Events } from 'ionic-angular';
-import { CommonUtilService, AppGlobalService, AppHeaderService } from '@app/service';
-import { PageId } from '../../service/telemetry-constants';
+import { CommonUtilService, AppGlobalService, AppHeaderService, TelemetryGeneratorService } from '@app/service';
+import { PageId, Environment, InteractType, InteractSubtype } from '../../service/telemetry-constants';
 import { SunbirdQRScanner } from '../qrscanner';
 import { ProfileSettingsPage } from '../profile-settings/profile-settings';
 import { TabsPage } from '../tabs/tabs';
@@ -43,6 +43,8 @@ export class PermissionPage {
   showScannerPage = false;
   showProfileSettingPage = false;
   showTabsPage = false;
+  headerObservable: any;
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -51,7 +53,8 @@ export class PermissionPage {
     private permission: AndroidPermissionsService,
     private appGlobalService: AppGlobalService,
     private headerService: AppHeaderService,
-    private event: Events) {
+    private event: Events,
+    private telemetryGeneratorService: TelemetryGeneratorService) {
   }
 
   ionViewDidLoad() {
@@ -69,9 +72,14 @@ export class PermissionPage {
         this.scannerService.startScanner(PageId.PERMISSION, true);
       }
     });
+
+    this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
   }
 
   grantAccess() {
+    this.generateInteractEvent(true);
     // If user given camera access and the showScannerPage is ON
     this.requestAppPermissions().then((status) => {
       // Check if scannerpage is ON and user given permission to camera then open scanner page
@@ -101,6 +109,7 @@ export class PermissionPage {
   }
 
   skipAccess() {
+    this.generateInteractEvent(false);
     if (this.showProfileSettingPage || this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
       this.navCtrl.push(ProfileSettingsPage);
     } else if (this.showScannerPage) {
@@ -155,4 +164,21 @@ export class PermissionPage {
       }).toPromise();
   }
 
+  handleHeaderEvents($event) {
+    if ($event.name === 'back') {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.PERMISSION, Environment.ONBOARDING, true);
+    }
+  }
+
+  generateInteractEvent(permissionAllowed: boolean) {
+    const values = new Map();
+    values['permissionAllowed'] = permissionAllowed;
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      (permissionAllowed) ? InteractSubtype.GRANT_ACCESS_CLICKED : InteractSubtype.SKIP_CLICKED,
+      Environment.ONBOARDING,
+      PageId.PERMISSION,
+      undefined,
+      values);
+  }
 }

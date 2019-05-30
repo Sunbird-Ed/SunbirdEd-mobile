@@ -145,6 +145,7 @@ export enum InteractSubtype {
     LOGOUT_SUCCESS = 'logout-success',
     BROWSE_AS_GUEST_CLICKED = 'browse-as-guest-clicked',
     CONTINUE_CLICKED = 'continue-clicked',
+    GRANT_ACCESS_CLICKED = 'grant-access-clicked',
     TAB_CLICKED = 'tab-clicked',
     SECTION_VIEWED = 'section-viewed',
     CONTENT_CLICKED = 'content-clicked',
