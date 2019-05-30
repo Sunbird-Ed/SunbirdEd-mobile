@@ -939,7 +939,6 @@ export class EnrolledCourseDetailsPage implements OnInit {
    * @param {string} identifier
    */
   resumeContent(identifier): void {
-    this.showResumeBtn = false;
     this.navCtrl.push(ContentDetailsPage, {
       content: { identifier: identifier },
       depth: '1', // Needed to handle some UI elements.
@@ -951,6 +950,15 @@ export class EnrolledCourseDetailsPage implements OnInit {
       isChildContent: true,
       resumedCourseCardData: this.courseCardData
     });
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.RESUME_CLICKED,
+      Environment.HOME,
+      PageId.COURSE_DETAIL,
+      undefined,
+      undefined,
+      undefined,
+      this.corRelationList
+      );
   }
 
 
