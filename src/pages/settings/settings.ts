@@ -19,6 +19,7 @@ import {
   TelemetryImpressionRequest,
   Profile
 } from 'sunbird-sdk';
+import { PermissionPage } from '../permission/permission';
 
 declare const cordova;
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
@@ -129,5 +130,9 @@ export class SettingsPage {
       undefined,
       undefined
     );
+  }
+
+  showPermissionPage() {
+    this.navCtrl.push(PermissionPage);
   }
 }

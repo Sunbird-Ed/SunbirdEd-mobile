@@ -172,7 +172,7 @@ export class CommonUtilService implements OnDestroy {
      * @param {string} source Page from alert got called
      */
     showContentComingSoonAlert(source) {
-        if (source !== 'user-type-selection') {
+        if (source !== 'permission') {
             this.afterOnBoardQRErrorAlert('ERROR_CONTENT_NOT_FOUND', 'CONTENT_IS_BEING_ADDED');
             return;
         }
