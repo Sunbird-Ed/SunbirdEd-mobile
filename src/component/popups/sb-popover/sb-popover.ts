@@ -74,7 +74,7 @@ export class SbPopoverComponent {
   ionViewWillEnter(): void {
     this.events.subscribe('deletedContentList:changed', (data) => {
       this.ngZone.run(() => {
-      this.sbPopoverMainTitle = data.deletedContentsInfo.deletedCount + '/' + data.deletedContentsInfo.totalCount;
+        this.sbPopoverMainTitle = data.deletedContentsInfo.deletedCount + '/' + data.deletedContentsInfo.totalCount;
       });
     });
   }
