@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { ContentActionsComponent } from '@app/component';
 import {
   NavParams,
@@ -44,7 +44,7 @@ export class SbPopoverComponent {
 
 
   constructor(public viewCtrl: ViewController, public navParams: NavParams,
-    private platform: Platform, private events: Events) {
+    private platform: Platform, private events: Events, private ngZone: NgZone) {
     this.content = this.navParams.get('content');
     this.actionsButtons = this.navParams.get('actionsButtons');
     this.icon = this.navParams.get('icon');
@@ -73,7 +73,9 @@ export class SbPopoverComponent {
 
   ionViewWillEnter(): void {
     this.events.subscribe('deletedContentList:changed', (data) => {
+      this.ngZone.run(() => {
       this.sbPopoverMainTitle = data.deletedContentsInfo.deletedCount + '/' + data.deletedContentsInfo.totalCount;
+      });
     });
   }
 
