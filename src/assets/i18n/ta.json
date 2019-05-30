@@ -223,7 +223,7 @@
   "GROUP_MEMBER_ADD_SUCCESS": "உறுப்பினர்கலை வெற்றிகரமாக சேர்க்கப்பட்டது",
   "GROUP_MEMBER_DELETE_SUCCESS": "குழு உறுப்பினர்கள் வெற்றிகரமாக நீக்கப்பட்டனர்",
   "GROUP_NAME": "குழு பெயர்",
-  "HABIT_REMINDER_NOTIFICATION_MESSAGE": "இன்று {{%s}} இல் புதியவற்றைக் கற்றுக்கொள்ளுங்கள்!",
+  "HABIT_REMINDER_NOTIFICATION_MESSAGE": "இன்று {{%grade}} ({{%medium}}) இல் புதியவற்றைக் கற்றுக்கொள்ளுங்கள்!",
   "HELP": "உதவி",
   "HELP_US_BY_RATING": "இந்தப் பாடத்திற்கு உங்கள் மதிப்பைப் பதிவுசெய்க",
   "HIDE": "மறை ",

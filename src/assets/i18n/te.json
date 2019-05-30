@@ -161,7 +161,7 @@
   "EDIT_PROFILE": "ప్రొఫైల్ మార్చు",
   "EMAIL_EDIT_SUCCESS": "ఈమెయిల్ ఐడి విజయవంతంగా నవీకరించబడింది",
   "EMAIL_PLACEHOLDER": "ఇమెయిల్ ఐడిని నమోదు చేయండి",
-  "EMPTY_LIBRARY_TEXTBOOK_FILTER": "{{%s}} కోసం పుస్తకాలు కనుగొనబడలేదు",
+  "EMPTY_LIBRARY_TEXTBOOK_FILTER": "{{%grade}} ({{%medium}}) కోసం పుస్తకాలు కనుగొనబడలేదు",
   "EMPTY_SEARCH_RESULTS": "మీరు వెతికినవి దొరకలేదు",
   "ENDORSE": "ఆమోదించండి",
   "ENJOYED_THIS_CONTENT": "ఈ కంటెంటు నచ్చిందా ?",

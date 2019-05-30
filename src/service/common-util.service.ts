@@ -95,9 +95,27 @@ export class CommonUtilService implements OnDestroy {
      * @param {string} messageConst - Message Constant to be translated
      * @returns {string} translatedMsg - Translated Message
      */
-    translateMessage(messageConst: string, field?: string): string {
+    translateMessage(messageConst: string, field?: string | Map<string, string>): string {
         let translatedMsg = '';
-        this.translate.get(messageConst, { '%s': field }).subscribe(
+        let replaceObject: any = '';
+
+        if (typeof(field) === 'string') {
+            replaceObject = { '%s': field };
+        } else if (typeof(field) === 'object') {
+            replaceObject = field;
+        }
+
+        this.translate.get(messageConst, replaceObject).subscribe(
+            (value: any) => {
+                translatedMsg = value;
+            }
+        );
+        return translatedMsg;
+    }
+
+    translateMessages(messageConst: string, fields?: any): string {
+        let translatedMsg = '';
+        this.translate.get(messageConst, fields).subscribe(
             (value: any) => {
                 translatedMsg = value;
             }
