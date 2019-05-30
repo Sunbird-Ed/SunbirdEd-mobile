@@ -10,6 +10,10 @@
       <p class="settings-item-style">{{ 'DATA_SYNC_SUB' | translate }}</p>
     </ion-item>
 
+    <ion-item (click)="showPermissionPage()" detail-push mode="ios">
+      <h2>{{'PERMISSION' | translate}}</h2>
+    </ion-item>
+
     <ion-item (click)="shareApp()" detail-push mode="ios">
       <h2>{{ shareAppLabel }}</h2>
     </ion-item>
