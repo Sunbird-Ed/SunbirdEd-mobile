@@ -149,13 +149,13 @@ export class ContentRatingAlertComponent {
   submit() {
     const option: ContentFeedback = {
       contentId: this.content.identifier,
-      rating: this.ratingCount,
+      rating:  this.ratingCount ? this.ratingCount : this.userRating,
       comments: this.comment,
       contentVersion: this.content.contentData.versionKey
     };
     this.viewCtrl.dismiss();
     const paramsMap = new Map();
-    paramsMap['Ratings'] = this.ratingCount;
+    paramsMap['Ratings'] =  this.ratingCount ? this.ratingCount : this.userRating;
     paramsMap['Comment'] = this.comment;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
@@ -175,6 +175,8 @@ export class ContentRatingAlertComponent {
     this.contentService.sendFeedback(option).subscribe((res) => {
       console.log('success:', res);
       viewDismissData.message = 'rating.success';
+      viewDismissData.rating = this.ratingCount ? this.ratingCount : this.userRating;
+      viewDismissData.comment = this.comment;
       this.viewCtrl.dismiss(viewDismissData);
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('THANK_FOR_RATING'));
     }, (data) => {

@@ -26,6 +26,7 @@ import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
 import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
 import {
   AuthService,
+  ErrorEventType,
   EventNamespace,
   EventsBusService,
   OAuthSession,
@@ -132,7 +133,7 @@ export class MyApp implements OnInit, AfterViewInit {
 
 
       this.registerDeeplinks();
-      // this.startOpenrapDiscovery();
+      this.startOpenrapDiscovery();
       this.saveDefaultSyncSetting();
       this.showAppWalkThroughScreen();
       this.checkAppUpdateAvailable();
@@ -567,6 +568,13 @@ export class MyApp implements OnInit, AfterViewInit {
           }
         );
       }).do((response: { ip?: string, actionType: 'connected' | 'disconnected' }) => {
+        const values = new Map();
+        values['openrapInfo'] = response;
+        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+          response.actionType === 'connected' ? 'openrap-device-connected' : 'openrap-device-disconnected',
+          Environment.HOME,
+          Environment.HOME, undefined,
+          values);
         SunbirdSdk.instance.updateContentServiceConfig({
           host: response.actionType === 'connected' ? response.ip : undefined
         });
@@ -761,8 +769,10 @@ export class MyApp implements OnInit, AfterViewInit {
   }
 
   private handleAuthErrors() {
-    this.eventsBusService.events(EventNamespace.ERROR).take(1).subscribe(() => {
-      this.logoutHandlerService.onLogout();
-    });
+    this.eventsBusService.events(EventNamespace.ERROR)
+      .filter((e) => e.type === ErrorEventType.AUTH_TOKEN_REFRESH_ERROR)
+      .take(1).subscribe(() => {
+        this.logoutHandlerService.onLogout();
+      });
   }
 }
