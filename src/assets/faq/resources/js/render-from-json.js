@@ -12,11 +12,18 @@ $( document ).ready(function() {
     console.log(jsonUrl);
     $.getJSON(jsonUrl, function(data) {
         var html ='';
-        html += '<div class="help-header">'
+        var dirAttribute;
+        if(selectedLang === 'ur'){
+          dirAttribute = 'dir = "' + 'rtl' + '"'
+        } else {
+          dirAttribute = 'dir = "' + 'ltr' + '"'
+        }
+
+        html += '<div class="help-header" ' + dirAttribute + '>'
             +'<h4>'+data.constants.help+'</h4>'
             +'<p>'+data.constants.faqMsg+'</p>'
             +'</div>'
-            +'<div class="info-msg">'
+            +'<div class="info-msg" ' + dirAttribute + '>'
             +'<p>'+data.constants.resolveMsg+'</p>'
             +'</div>'
         $('#header').replaceWith(html);
