@@ -1,26 +1,9 @@
-<!-- <ion-header>
-	<ion-navbar>
-		<ion-title>
-		</ion-title>
-		<ion-buttons end *ngIf="!isDepthChild">
-			<button ion-button icon-only (click)="share()">
-				<ion-icon md="md-share" float-right></ion-icon>
-			</button>
-			<button ion-button icon-only *ngIf="course?.isAvailableLocally" (click)="showOverflowMenu($event)" style="font-size: 1.8rem;">
-				<ion-icon md="md-more" float-end></ion-icon>
-			</button>
-		</ion-buttons>
-	</ion-navbar>
-	<pb-horizontal *ngIf="course?.progress" [progress]="course?.progress" class="course-progress" [ngClass]="{'blurbackground': batchExp}"></pb-horizontal>
-</ion-header> -->
-
 <ion-content padding [ngClass]="{'content-with-footer': (((courseCardData && courseCardData?.batchId) && ( showResumeBtn || childrenData && childrenData?.length || downloadIdentifiers && downloadIdentifiers?.length && !isDownloadStarted )) || (courseCardData && !courseCardData?.batchId && course && course?.createdBy !== userId))}">
 	<pb-horizontal *ngIf="course?.progress" [progress]="course?.progress" class="course-progress" [ngClass]="{'blurbackground': batchExp}"></pb-horizontal>
 	<div class="content-details-holder" *ngIf="course">
 		<ion-grid class="padding-0">
 			<h6>{{course.name}}</h6>
 			<div *ngIf="course?.creator || course?.owner">
-				<!--style="padding-top: 0px;" -->
 				<span class="text-gray-color">{{ 'CONTENT_CREATED_BY' | translate }}</span>
 				<span class="content-meta-title">{{ course?.creator || course?.owner }}</span>
 			</div>

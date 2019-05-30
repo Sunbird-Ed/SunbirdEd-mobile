@@ -9,7 +9,8 @@ import { domSanitizerMock,
          appGlobalServiceMock,
          formAndFrameworkUtilServiceMock,
          headerServiceMock,
-         telemetryServiceMock} from './../../__tests__/mocks';
+         telemetryServiceMock,
+         platformMock} from './../../__tests__/mocks';
 import { FaqPage } from './faq';
 import { mockRes } from '../course-batches/course-batches.spec.data';
 import {
@@ -43,7 +44,9 @@ describe.only('FaqPage', () => {
             commonUtilServiceMock as any,
             appGlobalServiceMock as any,
             headerServiceMock as any,
-            formAndFrameworkUtilServiceMock as any);
+            formAndFrameworkUtilServiceMock as any,
+            platformMock as any,
+            navCtrlMock as any);
 });
 
 
@@ -90,12 +93,21 @@ describe('ionViewWillEnter()', () => {
     beforeEach(() => {
         jest.resetAllMocks();
         loadingControllerMock.create.mockReturnValue(loading);
+        headerServiceMock.headerEventEmitted$ = Observable.from([]) as any;
+        platformMock.registerBackButtonAction.mockReturnValue(jest.fn());
+
     });
     headerServiceMock.showHeaderWithBackButton.mockReturnValue('');
 it('should show loadingSpinner on page load', async () => {
     // arrange
+    formAndFrameworkUtilServiceMock.
+    getConsumptionFaqsUrl.mockResolvedValue('https://ntpstagingall.blob.core.windows.net/public/faq/reportIssue.html');
+    commonUtilServiceMock.networkInfo = {
+        isNetworkAvailable: true
+    } as any;
     appVersionMock.getAppName.mockResolvedValue('appName');
     sharedPreferencesMock.getString.mockReturnValue(Observable.of('English'));
+
     // act
     await faqPage.ionViewWillEnter();
 
@@ -124,6 +136,7 @@ it('receiveMessage should call sendMessage on event initiate-email-clicked', () 
         grade: ['10']
     });
     appGlobalServiceMock.getSelectedBoardMediumGrade.mockReturnValue('Tamil, English, 10');
+    commonUtilServiceMock.translateMessage.mockReturnValue('Ticket summary');
     spyOn(faqPage, 'generateInteractTelemetry').and.stub();
     spyOn(faqPage, 'sendMessage' ).and.stub();
     // act

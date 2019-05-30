@@ -244,7 +244,8 @@ export const telemetryGeneratorServiceMock = createSpyObj<TelemetryGeneratorServ
   'generateBackClickedTelemetry',
   'generateLogEvent',
   'generateExtraInfoTelemetry',
-  'readLessorReadMore'
+  'readLessorReadMore',
+  'isCollection'
 ]);
 
 export const courseUtilServiceMock = createSpyObj<CourseUtilService>([
@@ -287,7 +288,8 @@ export const formAndFrameworkUtilServiceMock = createSpyObj<FormAndFrameworkUtil
   'getCategoryData',
   'getCourseFrameworkId',
   'getRootOrganizations',
-  'getCustodianOrgId'
+  'getCustodianOrgId',
+  'getConsumptionFaqsUrl'
 ]);
 
 export const loadingControllerMock = createSpyObj<LoadingController>([
