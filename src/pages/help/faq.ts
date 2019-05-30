@@ -54,7 +54,7 @@ export class FaqPage {
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private platform: Platform,
     private navCtrl: NavController
-    ) {
+  ) {
     this.messageListener = (event) => {
       this.receiveMessage(event);
     };
@@ -96,10 +96,10 @@ export class FaqPage {
         })[0].code;
       });
 
-    await this.formAndFrameworkUtilService.getConsumptionFaqsUrl().then( (url: string) => {
+    await this.formAndFrameworkUtilService.getConsumptionFaqsUrl().then((url: string) => {
       if (this.selectedLanguage && this.commonUtilService.networkInfo.isNetworkAvailable) {
-          url += '?selectedlang=' + this.selectedLanguage + '&randomid=' + Math.random();
-          this.faq.url = url;
+        url += '?selectedlang=' + this.selectedLanguage + '&randomid=' + Math.random();
+        this.faq.url = url;
       }
     });
     this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
@@ -108,7 +108,9 @@ export class FaqPage {
   private handleHeaderEvents($event) {
     switch ($event.name) {
       case 'back':
-        this.handleBackButton();
+          setTimeout(() => {
+            this.handleBackButton();
+          }, 100);
         break;
     }
   }
@@ -117,25 +119,27 @@ export class FaqPage {
       this.handleBackButton();
     }, 10);
   }
+
   handleBackButton() {
     const length = this.iframe.nativeElement.contentWindow.location.href.split('/').length;
     if (this.iframe.nativeElement.contentWindow.location.href.split('/')[length - 1].startsWith('consumption') ||
-        this.iframe.nativeElement.contentWindow.history.length === 1) {
+      this.iframe.nativeElement.contentWindow.history.length === 1) {
       this.navCtrl.pop();
       this.backButtonFunc();
     } else {
       this.iframe.nativeElement.contentWindow.history.go(-1);
     }
   }
+
   onLoad() {
     const element = document.getElementsByTagName('iframe')[0];
     if (element) {
-      if (element.contentDocument.documentElement.getElementsByTagName('body')[0].innerHTML.length !== 0 && this.loading ) {
-          this.loading.dismissAll();
+      if (element.contentDocument.documentElement.getElementsByTagName('body')[0].innerHTML.length !== 0 && this.loading) {
+        this.loading.dismissAll();
       }
       if (element.contentDocument.documentElement.getElementsByTagName('body').length === 0 ||
-          element['contentWindow'].location.href.startsWith('chrome-error:')
-          ) {
+        element['contentWindow'].location.href.startsWith('chrome-error:')
+      ) {
         this.onError();
       }
     }
@@ -180,8 +184,8 @@ export class FaqPage {
       ticketSummary = '.<br> <br> <b>' + this.commonUtilService.translateMessage('MORE_DETAILS') + '</b> <br> <br>';
     }
     const userDetails: string = 'From: ' + userProfile.profileType[0].toUpperCase() + userProfile.profileType.slice(1) + ', ' +
-                                  this.appGlobalService.getSelectedBoardMediumGrade() +
-                                  ticketSummary;
+      this.appGlobalService.getSelectedBoardMediumGrade() +
+      ticketSummary;
     return userDetails;
   }
   generateInteractTelemetry(interactSubtype, values) {

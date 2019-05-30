@@ -83,7 +83,9 @@ export class DownloadsTabPage {
                         PageId.SINGLE_DELETE_CONFIRMATION_POPUP);
                     break;
                 case null:
-                    this.unSelectAllContents();
+                    if (identifier) {
+                        this.unSelectAllContents();
+                    }
                     this.telemetryGeneratorService.generateInteractTelemetry(
                         InteractType.TOUCH,
                         InteractSubtype.OUTSIDE_POPUP_AREA_CLICKED,
