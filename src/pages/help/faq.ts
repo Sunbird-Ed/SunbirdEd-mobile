@@ -53,8 +53,7 @@ export class FaqPage {
     private headerService: AppHeaderService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private platform: Platform,
-    private navCtrl: NavController,
-    private headerServie: AppHeaderService,
+    private navCtrl: NavController
     ) {
     this.messageListener = (event) => {
       this.receiveMessage(event);
@@ -85,7 +84,7 @@ export class FaqPage {
         this.appName = appName;
       });
     await this.createAndPresentLoadingSpinner();
-    this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
+    this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
     this.registerDeviceBackButton();
