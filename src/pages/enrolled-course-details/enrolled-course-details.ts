@@ -1166,6 +1166,15 @@ export class EnrolledCourseDetailsPage implements OnInit {
    * Get executed when user click on start button
    */
   startContent() {
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.START_CLICKED,
+      Environment.HOME,
+      PageId.COURSE_DETAIL,
+      undefined,
+      undefined,
+      undefined,
+      this.corRelationList
+    );
     if (this.startData && this.startData.length && !this.isBatchNotStarted) {
       this.firstChild = this.loadFirstChildren(this.childContentsData);
       this.navigateToChildrenDetailsPage(this.firstChild, 1);

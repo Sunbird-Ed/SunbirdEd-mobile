@@ -271,7 +271,8 @@ export enum InteractSubtype {
     RATE_LATER_CLICKED = 'rate-later-clicked',
     PLAY_STORE_BUTTON_CLICKED = 'play-store-button-clicked',
     HELP_SECTION_CLICKED = 'help-section-clicked',
-    APP_RATING_APPEARED = 'app-rating-appeared'
+    APP_RATING_APPEARED = 'app-rating-appeared',
+    START_CLICKED = 'start-clicked'
 }
 
 export enum ActionButtonType {
