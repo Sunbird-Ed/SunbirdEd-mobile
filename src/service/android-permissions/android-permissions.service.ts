@@ -31,6 +31,7 @@ export class AndroidPermissionsService {
     return Observable.defer(() => {
       return new Promise<AndroidPermissionsStatus>((resolve, reject) => {
         cordova.plugins.permissions.requestPermissions(permissions, (status: AndroidPermissionsStatus) => {
+          // console.log('requestPermissions ', cordova.plugins.permissions.shouldShowRequestPermissionRationale());
           resolve(status);
         }, (err) => {
           reject(err);

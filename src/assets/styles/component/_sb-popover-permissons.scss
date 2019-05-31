@@ -2,17 +2,15 @@
    
     .sb-popover-items{
         overflow: hidden;
+        padding: 16px !important;
+        padding-top: 32px !important;
     }
     .icon-container{
         float: left;
-         width: 20%;
+        padding-right: 16px;
     }
 
-    .sb-popover-container .sb-popover-items .icon-container img{
-        height: 20px;
-        width: 25px;
-    }
-
+    
     .sb-popover-container .sb-popover-content-details {
         text-align: left;
         float: left;
