@@ -26,11 +26,14 @@ page-permission {
         text-align: end;
       }
       .title {
-        font-size: 1.6rem;
-        font-weight: 600;
+        font-size: 14px;
+        color: #333333;
+        font-weight: bold;
+        line-height: 19px;
       }
       .description {
-        margin: 0;
+        line-height: 19px;
+        font-size: 14px;
         color: $gray-400;
       }
     }
