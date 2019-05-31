@@ -10,15 +10,8 @@
       <p class="settings-item-style">{{ 'DATA_SYNC_SUB' | translate }}</p>
     </ion-item>
 
-    <!-- <ion-item>
-      <h2>{{ 'SETTINGS_SCREEN.DEVICE_TAG' | translate }}</h2>
-      <p class="settings-item-style">{{ 'SETTINGS_SCREEN.ADD_REMOVE_DEVICE_TAGS' | translate }}</p>
-      <ion-icon name="ios-arrow-forward" item-end></ion-icon>
-    </ion-item> -->
-
-    <ion-item (click)="sendMessage()" detail-push mode="ios">
-      <h2>{{ 'SUPPORT' | translate }}</h2>
-      <p class="settings-item-style">{{ 'SUPPORT_MESSAGE' | translate }}</p>
+    <ion-item (click)="showPermissionPage()" detail-push mode="ios">
+      <h2>{{'PERMISSION' | translate}}</h2>
     </ion-item>
 
     <ion-item (click)="shareApp()" detail-push mode="ios">

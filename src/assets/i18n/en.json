@@ -162,7 +162,7 @@
   "EMAIL_EDIT_SUCCESS": "Email ID updated successfully",
   "EMAIL_PLACEHOLDER": "Enter Email ID",
   "EMAIL_UPDATE_SUCCESS": "Email updated successfully",
-  "EMPTY_LIBRARY_TEXTBOOK_FILTER": "No books found for {{%s}}",
+  "EMPTY_LIBRARY_TEXTBOOK_FILTER": "No books found for {{%grade}} ({{%medium}})",
   "EMPTY_SEARCH_RESULTS": "No Search Results Found",
   "ENDORSE": "Endorse",
   "ENJOYED_THIS_CONTENT": "Enjoyed this content?",
@@ -523,5 +523,17 @@
   "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "You are not connected to the internet",
   "TRANSFER_CONTENT": "Transfer Content to SD Card?",
   "CONTENT_TRANSFER_TO_SDCARD": "All Contents will be transferred to SD Card",
-  "MOVE": "Move"
+  "MOVE": "Move",
+  "PERMISSION_REQUIRED_TITLE": "{{%s}} requires access to the following permissions so we can provide an effective experience for you:",
+  "CAMERA": "Camera",
+  "CAMERA_PERMISSION_DESCRIPTION": "Camera access is needed for scanning of {{%s}} QR codes",
+  "FILE_MANAGER": "File Manager",
+  "FILE_MANAGER_PERMISSION_DESCRIPTION": "Storage access is needed for downloading of files and moving content to SD cards",
+  "MICROPHONE": "Microphone",
+  "MICROPHONE_PERMISSION_DESCRIPTION": "Microphone access will be used only in content where you can 'record' your voice. This is used to improve pronunciation of words",
+  "GRANT_ACCESS": "Grant Access",
+  "NOT_NOW": "Not Now",
+  "PERMISSION_EDIT_TITLE": "Permission required for effective use of {{%s}}",
+  "PERMISSION": "Permission"
+
 }

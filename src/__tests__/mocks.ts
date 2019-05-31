@@ -12,8 +12,9 @@ import {
   GenerateOtpRequest,
   GroupService,
   DownloadService,
-  EventsBusService} from 'sunbird-sdk';
-
+  EventsBusService,
+  PlayerService} from 'sunbird-sdk';
+import { CanvasPlayerService } from '../pages/player/canvas-player.service';
 import {
   App,
   Events,
@@ -52,6 +53,7 @@ import { Network } from '@ionic-native/network';
 import { AppHeaderService } from '@app/service';
 import {ContainerService} from "@app/service/container.services";
 import {UtilityService} from "@app/service";
+import { FileSizePipe } from '../pipes/file-size/file-size';
 
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
@@ -208,10 +210,13 @@ export const shareUtilMock = createSpyObj<UtilityService>([
 ]);
 
 export const buildParamServiceMock = createSpyObj<UtilityService>([
-  'getBuildConfigValue'
+  'getBuildConfigValue',
+  'getDeviceAPILevel',
+  'checkAppAvailability'
 ]);
 export const headerServiceMock = createSpyObj<AppHeaderService>([
-  'showHeaderWithBackButton'
+  'showHeaderWithBackButton',
+  'hideHeader'
 ]);
 export const appGlobalServiceMock = createSpyObj<AppGlobalService>([
   'isUserLoggedIn',
@@ -244,7 +249,8 @@ export const telemetryGeneratorServiceMock = createSpyObj<TelemetryGeneratorServ
   'generateBackClickedTelemetry',
   'generateLogEvent',
   'generateExtraInfoTelemetry',
-  'readLessorReadMore'
+  'readLessorReadMore',
+  'isCollection'
 ]);
 
 export const courseUtilServiceMock = createSpyObj<CourseUtilService>([
@@ -287,7 +293,8 @@ export const formAndFrameworkUtilServiceMock = createSpyObj<FormAndFrameworkUtil
   'getCategoryData',
   'getCourseFrameworkId',
   'getRootOrganizations',
-  'getCustodianOrgId'
+  'getCustodianOrgId',
+  'getConsumptionFaqsUrl'
 ]);
 
 export const loadingControllerMock = createSpyObj<LoadingController>([
@@ -422,7 +429,9 @@ export const appHeaderServiceMock = createSpyObj<AppHeaderService>([
   'getDefaultPageConfig',
   'updatePageConfig',
   'unsubscribe',
-  'showHeaderWithHomeButton'
+  'showHeaderWithHomeButton',
+  'showHeaderWithBackButton',
+  'hideHeader'
 ]);
 
 export const utilityServiceMock = createSpyObj<UtilityService>([
@@ -443,4 +452,13 @@ export const eventBusServiceMock = createSpyObj<EventsBusService>([
   'events',
   'getContentDownloadProgress',
   'unsubscribe'
+]);
+export const playerServiceMock = createSpyObj<PlayerService>([
+  'getPlayerConfig'
+]);
+export const canvasPlayerServiceMock = createSpyObj<CanvasPlayerService>([
+
+]);
+export const fileSizePipeMock = createSpyObj<FileSizePipe>([
+
 ]);

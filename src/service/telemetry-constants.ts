@@ -33,6 +33,7 @@ export enum PageId {
     SIGNUP = 'signup',
     ONBOARDING = 'onboarding',
     USER_TYPE_SELECTION = 'user-type-selection',
+    PERMISSION = 'permission',
     HOME = 'home',
     COURSES = 'courses',
     LIBRARY = 'library',
@@ -144,6 +145,7 @@ export enum InteractSubtype {
     LOGOUT_SUCCESS = 'logout-success',
     BROWSE_AS_GUEST_CLICKED = 'browse-as-guest-clicked',
     CONTINUE_CLICKED = 'continue-clicked',
+    GRANT_ACCESS_CLICKED = 'grant-access-clicked',
     TAB_CLICKED = 'tab-clicked',
     SECTION_VIEWED = 'section-viewed',
     CONTENT_CLICKED = 'content-clicked',
@@ -269,7 +271,8 @@ export enum InteractSubtype {
     RATE_LATER_CLICKED = 'rate-later-clicked',
     PLAY_STORE_BUTTON_CLICKED = 'play-store-button-clicked',
     HELP_SECTION_CLICKED = 'help-section-clicked',
-    APP_RATING_APPEARED = 'app-rating-appeared'
+    APP_RATING_APPEARED = 'app-rating-appeared',
+    START_CLICKED = 'start-clicked'
 }
 
 export enum ActionButtonType {

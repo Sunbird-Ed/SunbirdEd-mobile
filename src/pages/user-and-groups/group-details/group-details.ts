@@ -1,18 +1,8 @@
 import { CommonUtilService } from './../../../service/common-util.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Component, Inject, NgZone, ViewChild } from '@angular/core';
-import {
-  AlertController,
-  App,
-  Content,
-  Events,
-  IonicPage,
-  LoadingController,
-  NavController,
-  NavParams,
-  PopoverController,
-  ToastController
-} from 'ionic-angular';
+import { AlertController, App, Content, Events, IonicPage, LoadingController, NavController, NavParams, PopoverController,
+   ToastController } from 'ionic-angular';
 import { PopoverPage } from '../popover/popover';
 import { GroupDetailNavPopoverPage } from '../group-detail-nav-popover/group-detail-nav-popover';
 import { CreateGroupPage } from '../create-group/create-group';
@@ -121,13 +111,13 @@ export class GroupDetailsPage {
         .toPromise()
         .then((profiles) => {
           this.zone.run(() => {
+            loader.dismiss();
             if (profiles && profiles.length) {
               this.userList = profiles;
               this.userList.forEach((item) => {
                 this.userUids.push(item.uid);
               });
               this.isNoUsers = (this.userList.length) ? false : true;
-              loader.dismiss();
             }
           });
         }).catch(() => {

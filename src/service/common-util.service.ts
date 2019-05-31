@@ -95,9 +95,17 @@ export class CommonUtilService implements OnDestroy {
      * @param {string} messageConst - Message Constant to be translated
      * @returns {string} translatedMsg - Translated Message
      */
-    translateMessage(messageConst: string, field?: string): string {
+    translateMessage(messageConst: string, fields?: string | any): string {
         let translatedMsg = '';
-        this.translate.get(messageConst, { '%s': field }).subscribe(
+        let replaceObject: any = '';
+
+        if (typeof(fields) === 'string') {
+            replaceObject = { '%s': fields };
+        } else if (typeof(fields) === 'object') {
+            replaceObject = fields;
+        }
+
+        this.translate.get(messageConst, replaceObject).subscribe(
             (value: any) => {
                 translatedMsg = value;
             }
@@ -172,7 +180,7 @@ export class CommonUtilService implements OnDestroy {
      * @param {string} source Page from alert got called
      */
     showContentComingSoonAlert(source) {
-        if (source !== 'user-type-selection') {
+        if (source !== 'permission') {
             this.afterOnBoardQRErrorAlert('ERROR_CONTENT_NOT_FOUND', 'CONTENT_IS_BEING_ADDED');
             return;
         }

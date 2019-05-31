@@ -1,15 +1,6 @@
 import {CommonUtilService} from './../../service/common-util.service';
 import {Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
-import {
-  AlertController,
-  Events,
-  IonicPage,
-  Navbar,
-  NavController,
-  NavParams,
-  Platform,
-  PopoverController
-} from 'ionic-angular';
+import { AlertController, Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController } from 'ionic-angular';
 import {ContentDetailsPage} from '../content-details/content-details';
 import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
 import {ContentType, MimeType} from '../../app/app.constant';
@@ -518,7 +509,7 @@ export class QrCodeResultPage implements OnDestroy {
           let isProfileUpdated = false;
           res.forEach(element => {
             // checking whether content data framework Id exists/valid in syllabus list
-            if (data.framework === element.identifier) {
+            if (data.framework === element.identifier || data.board.indexOf(element.name) !== -1) {
               isProfileUpdated = true;
               const frameworkDetailsRequest: FrameworkDetailsRequest = {
                 frameworkId: data.framework,
