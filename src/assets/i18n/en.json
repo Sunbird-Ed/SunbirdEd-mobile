@@ -162,7 +162,7 @@
   "EMAIL_EDIT_SUCCESS": "Email ID updated successfully",
   "EMAIL_PLACEHOLDER": "Enter Email ID",
   "EMAIL_UPDATE_SUCCESS": "Email updated successfully",
-  "EMPTY_LIBRARY_TEXTBOOK_FILTER": "No books found for {{%s}}",
+  "EMPTY_LIBRARY_TEXTBOOK_FILTER": "No books found for {{%grade}} ({{%medium}})",
   "EMPTY_SEARCH_RESULTS": "No Search Results Found",
   "ENDORSE": "Endorse",
   "ENJOYED_THIS_CONTENT": "Enjoyed this content?",

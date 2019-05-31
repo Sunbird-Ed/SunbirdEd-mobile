@@ -621,7 +621,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable  && !avoidRefreshList) {
             this.commonUtilService.showToast(
               this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
-                `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
+              { '%grade': this.getGroupByPageReq.grade,
+              '%medium': `${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')}` }));
           }
           const errvalues = new Map();
           errvalues['isNetworkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
