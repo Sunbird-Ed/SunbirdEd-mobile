@@ -520,5 +520,8 @@
   "WHAT_WENT_WRONG": "What went wrong?",
   "YES": "Yes",
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
-  "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "You are not connected to the internet"
+  "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "You are not connected to the internet",
+  "TRANSFER_CONTENT": "Transfer Content to SD Card?",
+  "CONTENT_TRANSFER_TO_SDCARD": "All Contents will be transferred to SD Card",
+  "MOVE": "Move"
 }

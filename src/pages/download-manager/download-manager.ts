@@ -24,6 +24,7 @@ import {
 import { SbPopoverComponent } from '@app/component';
 import { ActiveDownloadsPage } from '../active-downloads/active-downloads';
 import { PageId, InteractType, Environment, InteractSubtype } from '@app/service/telemetry-constants';
+import { StorageSettingsPage } from '../storage-settings/storage-settings';
 
 /**
  * Generated class for the DownloadManagerPage page.
@@ -74,13 +75,13 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
 
   ionViewWillEnter() {
     this.events.subscribe('update_header', () => {
-      this.headerServie.showHeaderWithHomeButton(['download']);
+      this.headerServie.showHeaderWithHomeButton(['download', 'settings']);
     });
     this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
 
-    this.headerServie.showHeaderWithHomeButton(['download']);
+    this.headerServie.showHeaderWithHomeButton(['download', 'settings']);
     this.getAppStorageInfo();
     this.getDownloadedContents();
   }
@@ -307,6 +308,9 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
       case 'download':
         this.redirectToActivedownloads();
         break;
+      case 'settings':
+        this.redirectToSettings();
+        break;
     }
   }
 
@@ -317,6 +321,9 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
       Environment.DOWNLOADS,
       PageId.DOWNLOADS);
     this.navCtrl.push(ActiveDownloadsPage);
+  }
+  private redirectToSettings() {
+    this.navCtrl.push(StorageSettingsPage);
   }
 
 }
