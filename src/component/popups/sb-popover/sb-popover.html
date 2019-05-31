@@ -1,7 +1,7 @@
 <ion-header class="sb-popover-header">
   <ion-toolbar class="sb-popover-toolbar">
     <ion-title class="sb-popover-title">{{sbPopoverHeading}}
-        <ion-icon name="close" class="sb-modal-close" (click)="closePopover()"></ion-icon> </ion-title>
+      <ion-icon *ngIf="isNotShowCloseIcon" name="close" class="sb-modal-close" (click)="closePopover()"></ion-icon> </ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -9,6 +9,9 @@
     <div class="sb-popover-items">
         <div class="icon-container" *ngIf="icon">
           <ion-icon ios="{{icon?.ios}}" md="{{icon?.md}}"></ion-icon>
+        </div>
+        <div class="icon-container" *ngIf="img">
+          <img src="{{img?.path}}"/>
         </div>
 
         <div class="sb-popover-content-details" *ngIf="sbPopoverMainTitle || metaInfo || sbPopoverContent">
