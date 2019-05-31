@@ -193,9 +193,7 @@ export class ContentDetailsPage {
     private network: Network,
     public toastController: ToastController,
     private fileSizePipe: FileSizePipe,
-    private headerServie: AppHeaderService,
     private translate: TranslateService,
-    private viewCtrl: ViewController,
     private headerService: AppHeaderService,
     private appRatingService: AppRatingService
   ) {
@@ -253,7 +251,7 @@ export class ContentDetailsPage {
     this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
-    this.headerServie.hideHeader();
+    this.headerService.hideHeader();
     this.cardData = this.navParams.get('content');
     this.isChildContent = this.navParams.get('isChildContent');
     this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');
@@ -1146,7 +1144,7 @@ export class ContentDetailsPage {
         this.corRelationList);
     }
 
-    if (!AppGlobalService.isPlayerLaunched && this.userCount > 1 && this.network.type !== '2g') {
+    if (!AppGlobalService.isPlayerLaunched && this.userCount > 2 && this.network.type !== '2g') {
       this.openPlayAsPopup(isStreaming);
       // alert.present();
     } else if (this.network.type === '2g' && !this.contentDownloadable[this.content.identifier]) {
@@ -1173,15 +1171,13 @@ export class ContentDetailsPage {
       }, {
           cssClass: 'sb-popover warning',
         });
-      popover.present({
-        ev: event
-      });
+      popover.present();
       popover.onDidDismiss((leftBtnClicked: any) => {
         if (leftBtnClicked == null) {
           return;
         }
         if (leftBtnClicked) {
-          if (!AppGlobalService.isPlayerLaunched && this.userCount > 1) {
+          if (!AppGlobalService.isPlayerLaunched && this.userCount > 2) {
             this.openPlayAsPopup(isStreaming);
           } else {
             this.playContent(isStreaming);
@@ -1220,6 +1216,7 @@ export class ContentDetailsPage {
   openPlayAsPopup(isStreaming) {
     const profile = this.appGlobalService.getCurrentUser();
     this.isUsrGrpAlrtOpen = true;
+   // if (profile.board.length > 1) {
     const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
       sbPopoverHeading: this.commonUtilService.translateMessage('PLAY_AS'),
       sbPopoverMainTitle: profile.handle,
