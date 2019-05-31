@@ -162,7 +162,7 @@
   "EMAIL_EDIT_SUCCESS": "ಮೊಬೈಲ್ ಸಂಖ್ಯೆಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ನವೀಕರಿಸಲಾಯಿತು",
   "EMAIL_PLACEHOLDER": "ಇಮೇಲ್ ID ನಮೂದಿಸು",
   "EMAIL_UPDATE_SUCCESS": "ಮೊಬೈಲ್ ಸಂಖ್ಯೆಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ನವೀಕರಿಸಲಾಗಿದೆ",
-  "EMPTY_LIBRARY_TEXTBOOK_FILTER": "{{%s}}ಗೆ ಯಾವುದೇ ಪಠ್ಯ ಪುಸ್ತಕಗಳು ಕಾಣುತ್ತಿಲ್ಲ",
+  "EMPTY_LIBRARY_TEXTBOOK_FILTER": "{{%grade}} ({{%medium}})ಗೆ ಯಾವುದೇ ಪಠ್ಯ ಪುಸ್ತಕಗಳು ಕಾಣುತ್ತಿಲ್ಲ",
   "EMPTY_SEARCH_RESULTS": "ನೀವು ಹುಡುಕಿದ್ದು ಲಭ್ಯವಿಲ್ಲ.",
   "ENDORSE": "ಅನುಮೋದಿಸಿ",
   "ENJOYED_THIS_CONTENT": "ಈ ಕಂಟೆಂಟ್ ಇಷ್ಟವಾಯಿತೇ? ",

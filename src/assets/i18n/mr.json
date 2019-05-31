@@ -162,7 +162,7 @@
   "EMAIL_EDIT_SUCCESS": "ई-मेल ID यशस्वीरित्या अपडेट केला आहे ",
   "EMAIL_PLACEHOLDER": "ई-मेल आयडी टाका ",
   "EMAIL_UPDATE_SUCCESS": "ई-मेल यशस्वीरित्या अपडेट केला आहे",
-  "EMPTY_LIBRARY_TEXTBOOK_FILTER": "{{%s}} साठी कोणतीही पुस्तके आढळली नाहीत",
+  "EMPTY_LIBRARY_TEXTBOOK_FILTER": "{{%grade}} ({{%medium}}) साठी कोणतीही पुस्तके आढळली नाहीत",
   "EMPTY_SEARCH_RESULTS": "ह्याच्याशी संबंधित माहिती मिळाली नाही",
   "ENDORSE": "मान्यता ",
   "ENJOYED_THIS_CONTENT": "आवडलं का?",

@@ -162,7 +162,7 @@
   "EMAIL_EDIT_SUCCESS": "ای میل آئی ڈی کامیابی سے اپ ڈیٹ کیا گیا",
   "EMAIL_PLACEHOLDER": "ای میل آئی ڈی درج کریں",
   "EMAIL_UPDATE_SUCCESS": "ای میل کامیابی سے اپ ڈیٹ کیا گیا۔",
-  "EMPTY_LIBRARY_TEXTBOOK_FILTER": "{{%s}} کے لئے کوئی کتاب نہیں ملی",
+  "EMPTY_LIBRARY_TEXTBOOK_FILTER": "({{%medium}}) {{%grade}} کے لئے کوئی کتاب نہیں ملی",
   "EMPTY_SEARCH_RESULTS": "اس تلاش کا کوئی نتیجہ نہیں ملا ",
   "ENDORSE": "تصديق کرنا",
   "ENJOYED_THIS_CONTENT": "  اس مواد کا لطف اٹھایا؟",

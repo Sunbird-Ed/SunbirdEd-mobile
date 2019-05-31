@@ -162,7 +162,7 @@
   "EMAIL_EDIT_SUCCESS": "ईमेल सफलतापूर्वक अद्यतित किया गया",
   "EMAIL_PLACEHOLDER": "ईमेल संपादित करें",
   "EMAIL_UPDATE_SUCCESS": "ईमेल सफलतापूर्वक अद्यतित किया गया",
-  "EMPTY_LIBRARY_TEXTBOOK_FILTER": "{{%s}} के लिए कोई पुस्तक नहीं है",
+  "EMPTY_LIBRARY_TEXTBOOK_FILTER": "{{%grade}} ({{%medium}}) के लिए कोई पुस्तक नहीं है",
   "EMPTY_SEARCH_RESULTS": "कोई खोज परिणाम नहीं मिला",
   "ENDORSE": "परान्कित कीजिये",
   "ENJOYED_THIS_CONTENT": "इस पाठ्यक्रम का आनंद लिया",
