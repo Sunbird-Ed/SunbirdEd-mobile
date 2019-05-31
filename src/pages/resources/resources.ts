@@ -620,7 +620,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             }
           } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable  && !avoidRefreshList) {
             this.commonUtilService.showToast(
-              this.commonUtilService.translateMessages('EMPTY_LIBRARY_TEXTBOOK_FILTER',
+              this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
               { '%grade': this.getGroupByPageReq.grade,
               '%medium': `${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')}` }));
           }
