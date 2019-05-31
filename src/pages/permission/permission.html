@@ -3,7 +3,7 @@
   <div class="permission-container">
     <div *ngFor="let item of permissionListDetails" class="item-row d-flex mb-16">
       <div class="icon-col pr-16">
-        <ion-icon item-start name="{{item?.icon}}"></ion-icon>
+        <img src="{{item?.path}}"/>
       </div>
       <div class="pl-16">
         <p class="title m-0 mb-8">{{item?.title}}</p>

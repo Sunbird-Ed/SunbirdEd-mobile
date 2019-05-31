@@ -16,22 +16,22 @@ import { AppVersion } from '@ionic-native/app-version';
   templateUrl: 'permission.html',
 })
 export class PermissionPage {
-  
-  appName = "";
+
+  appName = '';
   permissionListDetails = [
     {
       title: this.commonUtilService.translateMessage('CAMERA'),
-      icon: 'camera',
+      path: './assets/imgs/ic_photo_camera.png',
       description: this.commonUtilService.translateMessage('CAMERA_PERMISSION_DESCRIPTION', this.appName)
     },
     {
       title: this.commonUtilService.translateMessage('FILE_MANAGER'),
-      icon: 'folder-open',
+      path: './assets/imgs/ic_folder_open.png',
       description: this.commonUtilService.translateMessage('FILE_MANAGER_PERMISSION_DESCRIPTION')
     },
     {
       title: this.commonUtilService.translateMessage('MICROPHONE'),
-      icon: 'mic',
+      path: './assets/imgs/ic_keyboard_voice.png',
       description: this.commonUtilService.translateMessage('MICROPHONE_PERMISSION_DESCRIPTION')
     }
   ];
