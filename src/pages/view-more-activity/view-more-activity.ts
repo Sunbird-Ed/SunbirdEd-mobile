@@ -193,10 +193,10 @@ export class ViewMoreActivityPage implements OnInit {
     await this.events.subscribe('savedResources:update', async (res) => {
       if (res && res.update) {
         if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_SAVED) {
-          this.getLocalContents(false, this.downloadsOnlyToggle);
+          this.getLocalContents(false, this.downloadsOnlyToggle, true);
         } else if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED) {
-          await this.getLocalContents(true, this.downloadsOnlyToggle);
-          this.getLocalContents();
+          await this.getLocalContents(true, this.downloadsOnlyToggle, true);
+          this.getLocalContents(undefined, undefined, true);
         }
       }
     });
@@ -326,10 +326,11 @@ export class ViewMoreActivityPage implements OnInit {
   /**
 	 * Get local content
 	 */
-  async getLocalContents(recentlyViewed?: boolean, downloaded?: boolean) {
+  async getLocalContents(recentlyViewed?: boolean, downloaded?: boolean, hideLoaderFlag?: boolean) {
     const loader = this.commonUtilService.getLoader();
-    loader.present();
-
+    if (!hideLoaderFlag) {
+      loader.present();
+    }
     const requestParams: ContentRequest = {
       uid: this.uid,
       audience: this.audience,
@@ -377,12 +378,16 @@ export class ViewMoreActivityPage implements OnInit {
             this.searchList.push(...this.savedResources);
           }
           console.log('content data is =>', contentData);
-          loader.dismiss();
+          if (!hideLoaderFlag) {
+            loader.dismiss();
+          }
           this.loadMoreBtn = false;
         });
       })
       .catch(() => {
-        loader.dismiss();
+        if (!hideLoaderFlag) {
+          loader.dismiss();
+        }
       });
   }
 
