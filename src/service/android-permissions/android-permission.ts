@@ -6,5 +6,6 @@ export enum AndroidPermission {
 }
 
 export interface AndroidPermissionsStatus {
-  hasPermission: boolean;
+  hasPermission?: boolean;
+  isPermissionAlwaysDenied?: boolean;
 }

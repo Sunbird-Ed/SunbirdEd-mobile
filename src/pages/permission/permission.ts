@@ -199,13 +199,15 @@ export class PermissionPage {
 
   stateChange(event: any) {
     console.log(event);
-    cordova.plugins.settings.open('application_details', () => {
+    cordova.plugins.diagnostic.switchToSettings('application_details', () => {
       console.log('opened settings');
   },
-  () => {
-      console.log('failed to open settings');
+  (err) => {
+      console.log('failed to open settings' + err);
   }
 );
+
+
 }
 
 }
