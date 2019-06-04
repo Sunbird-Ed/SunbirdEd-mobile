@@ -4,7 +4,7 @@ import { AppHeaderService, CommonUtilService, TelemetryGeneratorService } from '
 import { Observable, Subscription } from 'rxjs';
 import { SbPopoverComponent } from '@app/component';
 import { SbGenericPopoverComponent } from 'component/popups/sb-generic-popup/sb-generic-popover';
-
+import {StorageService} from 'sunbird-sdk';
 /**
  * Generated class for the StorageSettingsPage page.
  *
@@ -30,7 +30,8 @@ export class StorageSettingsPage implements OnInit {
   };
 
   constructor(public navCtrl: NavController, public navParams: NavParams ,  private commonUtilService: CommonUtilService,
-     private headerService: AppHeaderService, private popoverCtrl: PopoverController ) {
+     private headerService: AppHeaderService, private popoverCtrl: PopoverController,
+      @Inject('STORAGE_SERVICE') private storageService: StorageService ) {
   }
 
   ionViewDidLoad() {
