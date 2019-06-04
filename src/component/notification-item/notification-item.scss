@@ -1,0 +1,54 @@
+notification-item {
+  .notification-item-container {
+    .date-time {
+      color: #979797;
+      font-family: "Noto Sans";
+      font-size: 12px;
+      line-height: 20px;
+    }
+    .title {
+      width: 100%;
+      color: #024f9d;
+      font-family: "Noto Sans";
+      font-size: 14px;
+      font-weight: bold;
+      letter-spacing: -0.4px;
+      line-height: 20px;
+    }
+    .description {
+      height: 20px;
+      width: 312px;
+      color: #666666;
+      font-family: ".SF NS Display";
+      font-size: 12px;
+      letter-spacing: -0.34px;
+      line-height: 20px;
+      margin: 0;
+    }
+
+    .sb-accordian-arrow {
+      font-size: 24px;
+      line-height: 20px;
+    }
+    .arrow-up {
+      transform: rotate(180deg);
+    }
+  }
+  .update-container {
+    white-space: normal;
+    padding: 8px;
+    border-radius: 4px;
+    background-color: #efefef;
+    .note-title {
+      font-weight: 600;
+      font-size: 1.2rem;
+    }
+  }
+
+  .expand-button {
+    float: right;
+    width: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+  }
+}

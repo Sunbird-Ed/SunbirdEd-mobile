@@ -531,6 +531,10 @@
   "GRANT_ACCESS": "Grant Access",
   "NOT_NOW": "Not Now",
   "PERMISSION_EDIT_TITLE": "Permission required for effective use of {{%s}}",
-  "PERMISSION": "Permission"
+  "PERMISSION": "Permission",
+  "NOTIFICATION": "Notification",
+  "NEW_NOTIFICATIONS": "{{%s}} New Notifications(s)",
+  "CLEAR": "Clear",
+  "WHATS_NEW": "Whats New"
 
 }

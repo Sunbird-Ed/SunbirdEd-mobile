@@ -1,8 +1,8 @@
 import { ActiveDownloadsPage } from '@app/pages/active-downloads/active-downloads';
-import {Search} from './../../app/app.constant';
-import {AfterViewInit, Component, Inject, NgZone, OnInit, ViewChild} from '@angular/core';
-import {Events, NavController, ToastController, MenuController, Scroll, Tabs} from 'ionic-angular';
-import {Content as ContentView} from 'ionic-angular';
+import { Search } from './../../app/app.constant';
+import { AfterViewInit, Component, Inject, NgZone, OnInit, ViewChild } from '@angular/core';
+import { Events, NavController, ToastController, MenuController, Scroll, Tabs } from 'ionic-angular';
+import { Content as ContentView } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
@@ -53,6 +53,7 @@ import { ProfileConstants } from '../../app';
 import { AppHeaderService } from '@app/service';
 import { GuestProfilePage } from '../profile';
 import { ProfilePage } from '../profile/profile';
+import { NotificationsPage } from '../notifications/notifications';
 
 @Component({
   selector: 'page-resources',
@@ -471,7 +472,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   /**
    * Get popular content
    */
-  getPopularContent(isAfterLanguageChange = false, contentSearchCriteria?: ContentSearchCriteria,avoidRefreshList = false) {
+  getPopularContent(isAfterLanguageChange = false, contentSearchCriteria?: ContentSearchCriteria, avoidRefreshList = false) {
     // if (this.isOnBoardingCardCompleted || !this.guestUser) {
     this.storyAndWorksheets = [];
     this.searchApiLoader = true;
@@ -520,8 +521,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   getGroupByPage(isAfterLanguageChange = false, avoidRefreshList = false) {
     const selectedBoardMediumGrade = this.getGroupByPageReq.board[0] + ', ' +
-                                     this.getGroupByPageReq.medium[0] + ' Medium, ' +
-                                     this.getGroupByPageReq.grade[0] ;
+      this.getGroupByPageReq.medium[0] + ' Medium, ' +
+      this.getGroupByPageReq.grade[0];
     this.appGlobalService.setSelectedBoardMediumGrade(selectedBoardMediumGrade);
     this.storyAndWorksheets = [];
     if (!this.refresh) {
@@ -566,20 +567,20 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             const sectionName = this.storyAndWorksheets[i].name,
               count = this.storyAndWorksheets[i].contents.length;
 
-              for (let k = 0, len = this.storyAndWorksheets[i].contents.length; k < len; k++) {
-                  const content = this.storyAndWorksheets[i].contents[k];
-                  if (content.appIcon) {
-                    if (content.appIcon.includes('http:') || content.appIcon.includes('https:')) {
-                      if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-                        content.appIcon = content.appIcon;
-                      } else {
-                        content.appIcon = this.defaultImg;
-                      }
-                    } else if (content.basePath) {
-                      content.appIcon = content.basePath + '/' + content.appIcon;
-                    }
+            for (let k = 0, len = this.storyAndWorksheets[i].contents.length; k < len; k++) {
+              const content = this.storyAndWorksheets[i].contents[k];
+              if (content.appIcon) {
+                if (content.appIcon.includes('http:') || content.appIcon.includes('https:')) {
+                  if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+                    content.appIcon = content.appIcon;
+                  } else {
+                    content.appIcon = this.defaultImg;
                   }
+                } else if (content.basePath) {
+                  content.appIcon = content.basePath + '/' + content.appIcon;
+                }
               }
+            }
 
             // check if locally available
             this.markLocallyAvailableTextBook();
@@ -618,11 +619,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             if (!isAfterLanguageChange) {
               this.commonUtilService.showToast('ERROR_FETCHING_DATA');
             }
-          } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable  && !avoidRefreshList) {
+          } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable && !avoidRefreshList) {
             this.commonUtilService.showToast(
               this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
-              { '%grade': this.getGroupByPageReq.grade,
-              '%medium': `${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')}` }));
+                {
+                  '%grade': this.getGroupByPageReq.grade,
+                  '%medium': `${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')}`
+                }));
           }
           const errvalues = new Map();
           errvalues['isNetworkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
@@ -756,12 +759,12 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   ionViewWillEnter() {
     this.events.subscribe('update_header', (data) => {
-      this.headerServie.showHeaderWithHomeButton(['search', 'download']);
+      this.headerServie.showHeaderWithHomeButton(['search', 'download', 'notification']);
     });
     this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
-    this.headerServie.showHeaderWithHomeButton(['search', 'download']);
+    this.headerServie.showHeaderWithHomeButton(['search', 'download', 'notification']);
 
     this.getCategoryData();
 
@@ -784,8 +787,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   // Offline Toast
-  async presentToastForOffline(msg: string) {
-    this.toast = await this.toastController.create({
+  presentToastForOffline(msg: string) {
+    this.toast = this.toastController.create({
       duration: 3000,
       message: this.commonUtilService.translateMessage(msg),
       showCloseButton: true,
@@ -811,7 +814,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
    *
    * @param refresher
    */
-  swipeDownToRefresh(refresher?,avoidRefreshList?) {
+  swipeDownToRefresh(refresher?, avoidRefreshList?) {
     this.refresh = true;
     this.storyAndWorksheets = [];
 
@@ -993,7 +996,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.getGroupByPageReq.grade = [this.categoryGradeLevels[index].name];
     // [grade.name];
     if ((this.currentGrade) && (this.currentGrade.name !== this.categoryGradeLevels[index].name)) {
-      this.getGroupByPage(false,!isClassClicked);
+      this.getGroupByPage(false, !isClassClicked);
     }
     for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
       if (i === index) {
@@ -1053,7 +1056,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         content: item
       });
     } else {
-    this.presentToastForOffline('OFFLINE_WARNING_ETBUI_1');
+      this.presentToastForOffline('OFFLINE_WARNING_ETBUI_1');
     }
   }
 
@@ -1067,8 +1070,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       case 'search': this.search();
         break;
       case 'download': this.redirectToActivedownloads();
-      break;
-
+        break;
+      case 'notification': this.redirectToNotifications();
+        break;
+      default: console.warn('Use Proper Event name');
     }
   }
 
@@ -1079,6 +1084,15 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       Environment.HOME,
       PageId.LIBRARY);
     this.navCtrl.push(ActiveDownloadsPage);
+  }
+
+  redirectToNotifications() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.NOTIFICATION_CLICKED,
+      Environment.HOME,
+      PageId.LIBRARY);
+    this.navCtrl.push(NotificationsPage);
   }
 
   toggleMenu() {
