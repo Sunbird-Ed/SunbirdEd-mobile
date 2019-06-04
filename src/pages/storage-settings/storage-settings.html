@@ -5,8 +5,8 @@
       <ion-grid no-padding>
         <ion-row>
           <ion-col class="ad-pt-4">
-            <div class="download-page-heading"><b>Storage Settings</b></div>
-            <div class="download-page-info">Choose where to save the data </div>
+            <div class="download-page-heading"><b>{{'STORAGE_SETTINGS' | translate}}</b></div>
+            <div class="download-page-info">{{'CHOOSE_STORAGE_TO_SAVE' | translate}} </div>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -14,7 +14,7 @@
 </div>
 <div class="sb-dw-manager o-hide">
   <div class="pull-left">  
-    <span class="storage-info">Storage</span>
+    <span class="storage-info">{{'STORAGE' | translate}}</span>
   </div>
   </div>
 <div radio-group [(ngModel)]="storageType" (ionChange)="getStorageType($event)">
@@ -26,8 +26,8 @@
       <img src="./assets/imgs/Phone.png">
     </div>
       <div class="sb-card-details">
-        <div class="title">Phone(16 GB)</div>
-        <div class="info">Free Space : 8 GB</div>
+        <div class="title"> {{'PHONE_SPACE' | translate}}</div>
+        <div class="info">{{'FREE_SPACE' | translate}}</div>
     </div>
   </div>
   <div class="sb-storage-container">
@@ -38,8 +38,8 @@
         <img src="./assets/imgs/SD_card.png">
       </div>
         <div class="sb-card-details">
-          <div class="title">SD Card(32 GB)</div>
-          <div class="info">Free Space : 8 GB</div>
+          <div class="title">{{'SD_CARD_SPACE' | translate}}</div>
+          <div class="info">{{'FREE_SPACE' | translate}}</div>
       </div>
     </div>
   </div>
