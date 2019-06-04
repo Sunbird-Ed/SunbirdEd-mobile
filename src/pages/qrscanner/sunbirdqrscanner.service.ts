@@ -25,6 +25,7 @@ import { TabsPage } from '../tabs/tabs';
 import { AndroidPermissionsService } from '@app/service/android-permissions/android-permissions.service';
 import { AndroidPermissionsStatus, AndroidPermission } from '@app/service/android-permissions/android-permission';
 import { SbPopoverComponent } from '@app/component';
+// import { PermissionPage } from '../permission/permission';
 
 @Injectable()
 export class SunbirdQRScanner {
@@ -139,7 +140,7 @@ export class SunbirdQRScanner {
     toast.onWillDismiss((_null, role) => {
       switch (role) {
         case 'close':
-          console.log('Button clicked');
+        this.app.getActiveNavs()[0].push('PermissionPage', { changePermissionAccess: true });
           break;
         case 'backdrop':
           console.log('Duration timeout');
@@ -161,15 +162,19 @@ export class SunbirdQRScanner {
         {
           btntext: this.commonUtilService.translateMessage('NOT_NOW'),
           btnClass: 'popover-button-cancel',
-          handler: () => {
-            this.noClicked();
-          },
         },
         {
           btntext: this.commonUtilService.translateMessage('ALLOW'),
-          btnClass: 'popover-button-allow'
+          btnClass: 'popover-button-allow',
         }
       ],
+      handler: (whichBtnClicked: string) => {
+        if (whichBtnClicked =  this.commonUtilService.translateMessage('NOT_NOW')) {
+            this.showSettingErrorToast();
+        } else {
+          this.startScanner(this.source, this.showButton);
+        }
+      },
       img: {
         path : './assets/imgs/ic_photo_camera.png',
       },
@@ -179,9 +184,20 @@ export class SunbirdQRScanner {
       });
 
     confirm.present();
-  }
-  noClicked() {
-    console.log('no clicked');
+    confirm.onWillDismiss((_null, role) => {
+      console.log('role', role);
+      switch (role) {
+        case 'close':
+          console.log('Button clicked');
+          break;
+        case 'backdrop':
+          console.log('Duration timeout');
+          break;
+        case 'custom':
+          console.log('toast.dismiss(\'custom\'); called');
+          break;
+      }
+    });
   }
   public stopScanner() {
     // Unregister back button listner

@@ -87,7 +87,10 @@ export class SbPopoverComponent {
   closePopover() {
     this.viewCtrl.dismiss();
   }
-  deleteContent(candelete: boolean = false) {
+  deleteContent(candelete: boolean = false, whichbtnClicked?) {
     this.viewCtrl.dismiss(candelete);
+    if (this.navParams.get('handler')) {
+      this.navParams.get('handler')(whichbtnClicked);
+    }
   }
 }
