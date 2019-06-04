@@ -26,7 +26,9 @@ import {TermsAndConditionsPageModule} from '@app/pages/terms-and-conditions/term
 import { ContainerService, TabOptions } from '../service/container.services';
 import {DownloadManagerPageModule } from '../pages/download-manager/download-manager.module';
 import {DownloadManagerPage } from '../pages/download-manager/download-manager';
-import { ActiveDownloadsPageModule } from '../pages/active-downloads/active-downloads.module';
+import {ActiveDownloadsPageModule} from '../pages/active-downloads/active-downloads.module';
+import {StorageSettingsPageModule} from '../pages/storage-settings/storage-settings.module';
+// import {CourseSearchPageModule} from '../pages/course-search/course-search.module';
 
 
 // const HOME_TAB = { root: HomePage, icon: "home", label: "HOME_BNAV", index: 0, tabsHideOnSubPages: true };
@@ -180,5 +182,7 @@ export const PluginModules = [
   QrCodeResultPageModule,
   TermsAndConditionsPageModule,
   DownloadManagerPageModule,
-  ActiveDownloadsPageModule
+  ActiveDownloadsPageModule,
+  StorageSettingsPageModule
+//   CourseSearchPageModule
 ];
