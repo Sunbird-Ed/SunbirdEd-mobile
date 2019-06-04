@@ -15,7 +15,7 @@
     "build-rel": "ionic cordova build android --release --prod --device --generateSourceMap=false",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "test:ci": "jest --collectCoverage=true --coverageDirectory=coverage --coverageReporters=lcov"
+    "test:ci": "jest --ci --collectCoverage=true --coverageReporters=lcov --forceExit --detectOpenHandles --maxWorkers=10"
   },
   "config": {
     "ionic_source_map_type": "inline-source-map",
@@ -205,7 +205,6 @@
       "src/pages/user-and-groups/popover/popover.spec.ts",
       "src/pages/user-and-groups/user-and-groups.spec.ts",
       "src/pages/view-more-activity/view-more-activity.spec.ts",
-
       "src/pages/download-manager/downloads-tab/downloads-tab.spec.ts",
       "src/pages/profile-settings/profile-settings.spec.ts",
       "src/component/confirm-alert/confirm-alert.component.spec.ts",
