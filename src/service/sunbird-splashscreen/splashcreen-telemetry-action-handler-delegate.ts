@@ -28,6 +28,8 @@ export class SplashcreenTelemetryActionHandlerDelegate implements SplashscreenAc
         return this.telemetryService.interact({
           env: Environment.HOME,
           type: InteractType.OTHER,
+          pageId:'splash',
+          id:'splash',
           subType: 'splash',
           valueMap: {
             ...payload.extraInfo!
