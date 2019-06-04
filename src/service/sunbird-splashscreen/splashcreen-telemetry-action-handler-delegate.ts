@@ -2,7 +2,7 @@ import {SplashscreenActionHandlerDelegate} from "./splashscreen-action-handler-d
 import {Observable} from "rxjs";
 import {Inject, Injectable} from "@angular/core";
 import {TelemetryService, InteractType} from "sunbird-sdk";
-import {Environment} from "@app/service/telemetry-constants";
+import {Environment, ImpressionType} from "@app/service/telemetry-constants";
 
 interface TelemetryActionPayload {
   eid: 'IMPRESSION' | 'INTERACT',
@@ -21,6 +21,7 @@ export class SplashcreenTelemetryActionHandlerDelegate implements SplashscreenAc
       case 'IMPRESSION': {
         return this.telemetryService.impression({
           env: Environment.HOME,
+          type: ImpressionType.VIEW,
           pageId: 'splash'
         }).mapTo(undefined);
       }
