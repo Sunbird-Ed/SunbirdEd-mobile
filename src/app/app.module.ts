@@ -36,6 +36,7 @@ import {ContainerService} from '@app/service/container.services';
 import {DirectivesModule} from '@app/directives/directives.module';
 import {ComingSoonMessageService} from '@app/service/coming-soon-message.service';
 import { NotificationService } from '@app/service/notification.service';
+import {CourseSearchPage} from '@app/pages/course-search/course-search';
 
 export const translateHttpLoaderFactory = (httpClient: HttpClient) => {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
@@ -100,6 +101,9 @@ export function formService() {
 }
 export function downloadService() {
   return SunbirdSdk.instance.downloadService;
+}
+export function storageService() {
+  return SunbirdSdk.instance.storageService;
 }
 export function sdkDriverFactory() {
   return [{
@@ -171,6 +175,9 @@ export function sdkDriverFactory() {
   }, {
     provide: 'DOWNLOAD_SERVICE',
     useFactory: downloadService
+  }, {
+    provide: 'STORAGE_SERVICE',
+    useFactory: storageService
   }
   ];
 }
@@ -193,7 +200,7 @@ export const sunbirdSdkFactory =
           debugMode: false
         },
         apiConfig: {
-          debugMode: false,
+          debugMode: true,
           host: buildConfigValues['BASE_URL'],
           user_authentication: {
             redirectUrl: buildConfigValues['OAUTH_REDIRECT_URL'],
