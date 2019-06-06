@@ -58,8 +58,6 @@
   "BTN_VISIT_HELP_SECTION": "सहायता केंद्र देखिये",
   "BY_QUESTIONS": "प्रश्नों का",
   "BY_USERS": "उपयोगकर्ताओं द्वारा",
-  "CAMERA_PERMISSION_DENIED": "कैमरा अनुमति अस्वीकृत",
-  "CAMERA_PERMISSION_SETTINGS": "अनुमति देने के लिए - सेटिंग खोलें, {{%s}} ऐप का चयन करें और कैमरे के निशान पर दबाएं ",
   "CANCEL": "रद्द  करें",
   "CANCEL_ALL": "सभी रद्द करें",
   "CANCEL_ALL_DOWNLOAD_MESSAGE": "डाउनलोड रद्ध करने पर इस डाउनलोड सत्र की सभी फाइल निष्काषित हो जायेंगी",
