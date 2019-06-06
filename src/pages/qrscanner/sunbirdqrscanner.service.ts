@@ -23,7 +23,7 @@ import {
 import { ContainerService } from '@app/service/container.services';
 import { TabsPage } from '../tabs/tabs';
 import { AndroidPermissionsService } from '@app/service/android-permissions/android-permissions.service';
-import { AndroidPermissionsStatus, AndroidPermission } from '@app/service/android-permissions/android-permission';
+import { AndroidPermissionsStatus, AndroidPermission, PermissionAskedEnum } from '@app/service/android-permissions/android-permission';
 import { SbPopoverComponent } from '@app/component';
 // import { PermissionPage } from '../permission/permission';
 
@@ -117,9 +117,18 @@ export class SunbirdQRScanner {
                 case cordova.plugins.diagnostic.permissionStatus.NOT_REQUESTED:
                 case cordova.plugins.diagnostic.permissionStatus.DENIED_ALWAYS:
                     // call popover
-                    observer.next({ isPermissionAlwaysDenied: true } as AndroidPermissionsStatus);
-                    observer.complete();
-                    return;
+                    this.appGlobalService.getIsPermissionAsked(PermissionAskedEnum.isCameraAsked).toPromise()
+                    .then((isPemissionAsked: boolean) => {
+                      if (!isPemissionAsked) {
+                        observer.next({ hasPermission: false } as AndroidPermissionsStatus);
+                        observer.complete();
+                        return;
+                      }
+                      observer.next({ isPermissionAlwaysDenied: true } as AndroidPermissionsStatus);
+                      observer.complete();
+                      return;
+                    });
+                    break;
                 case cordova.plugins.diagnostic.permissionStatus.DENIED:
                     // call popover
                     observer.next({ hasPermission: false } as AndroidPermissionsStatus);
@@ -160,7 +169,8 @@ export class SunbirdQRScanner {
       cssClass: 'permissionSettingToast',
       showCloseButton: true,
       closeButtonText: this.commonUtilService.translateMessage('SETTINGS'),
-      position: 'bottom'
+      position: 'bottom',
+      duration: 3000
     });
 
     toast.present();
@@ -199,6 +209,7 @@ export class SunbirdQRScanner {
         if (whichBtnClicked ===  this.commonUtilService.translateMessage('NOT_NOW')) {
             this.showSettingErrorToast();
         } else {
+          this.appGlobalService.setIsPermissionAsked(PermissionAskedEnum.isCameraAsked, true);
           this.permission.requestPermissions(this.permissionList).subscribe( (status: AndroidPermissionsStatus) => {
             if (status && status.hasPermission) {
               this.startScanner(this.source, this.showButton);

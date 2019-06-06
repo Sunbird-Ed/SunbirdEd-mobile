@@ -6,7 +6,7 @@ import { SunbirdQRScanner } from '../qrscanner';
 import { ProfileSettingsPage } from '../profile-settings/profile-settings';
 import { TabsPage } from '../tabs/tabs';
 import { AndroidPermissionsService } from '@app/service/android-permissions/android-permissions.service';
-import { AndroidPermission, AndroidPermissionsStatus } from '@app/service/android-permissions/android-permission';
+import { AndroidPermission, AndroidPermissionsStatus, PermissionAskedEnum } from '@app/service/android-permissions/android-permission';
 import { Observable } from 'rxjs';
 import { AppVersion } from '@ionic-native/app-version';
 
@@ -95,6 +95,9 @@ export class PermissionPage {
     }
 
     grantAccess() {
+      this.appGlobalService.setIsPermissionAsked(PermissionAskedEnum.isCameraAsked, true);
+      this.appGlobalService.setIsPermissionAsked(PermissionAskedEnum.isRecordAudioAsked, true);
+      this.appGlobalService.setIsPermissionAsked(PermissionAskedEnum.isStorageAsked, true);
       this.generateInteractEvent(true);
       // If user given camera access and the showScannerPage is ON
       this.requestAppPermissions().then((status) => {
@@ -199,6 +202,7 @@ export class PermissionPage {
 
   stateChange(event: any) {
     console.log(event);
+    this.navCtrl.pop();
     cordova.plugins.diagnostic.switchToSettings('application_details', () => {
       console.log('opened settings');
   },

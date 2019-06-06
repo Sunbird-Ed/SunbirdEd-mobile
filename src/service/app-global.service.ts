@@ -19,6 +19,8 @@ import {
 } from 'sunbird-sdk';
 import {UtilityService} from './utility-service';
 import {ProfileConstants} from '../app';
+import { Observable, Observer } from 'rxjs';
+import { PermissionAsked } from './android-permissions/android-permission';
 
 declare const buildconfigreader;
 
@@ -58,6 +60,11 @@ export class AppGlobalService implements OnDestroy {
     isOnBoardingCompleted = false;
     selectedUser;
     selectedBoardMediumGrade: string;
+    isPermissionAsked: PermissionAsked =  {
+          isCameraAsked: false,
+          isStorageAsked: false,
+          isRecordAudioAsked: false,
+    };
 
     constructor(
         @Inject('PROFILE_SERVICE') private profile: ProfileService,
@@ -593,5 +600,42 @@ export class AppGlobalService implements OnDestroy {
 
     getSelectedBoardMediumGrade(): string {
         return this.selectedBoardMediumGrade;
+    }
+
+    getIsPermissionAsked(key: string): Observable<boolean> {
+        return Observable.create((observer: Observer<boolean>) => {
+
+        this.preferences.getString(PreferenceKey.APP_PERMISSION_ASKED).subscribe(
+            (permissionAsked: string | undefined) => {
+                console.log('get permission logged', permissionAsked);
+               if (!permissionAsked) {
+                this.preferences.putString(PreferenceKey.APP_PERMISSION_ASKED, JSON.stringify(this.isPermissionAsked)).toPromise().then();
+                observer.next(false);
+                observer.complete();
+                return;
+               } else {
+                   observer.next(JSON.parse(permissionAsked)[key]);
+                   observer.complete();
+                   return;
+               }
+           });
+        });
+    }
+
+    setIsPermissionAsked(key: string, value: boolean): void {
+
+        this.preferences.getString(PreferenceKey.APP_PERMISSION_ASKED).subscribe(
+            (permissionAsked: string | undefined) => {
+                console.log('set permission logged', permissionAsked);
+                if (!permissionAsked) {
+                this.preferences.putString(PreferenceKey.APP_PERMISSION_ASKED, JSON.stringify(this.isPermissionAsked)).toPromise().then();
+                return;
+                } else {
+                    permissionAsked = JSON.parse(permissionAsked);
+                    permissionAsked[key] = value;
+                    this.preferences.putString(PreferenceKey.APP_PERMISSION_ASKED, JSON.stringify(permissionAsked)).toPromise().then();
+                    return;
+                }
+            });
     }
 }
