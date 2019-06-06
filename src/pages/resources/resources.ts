@@ -190,7 +190,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     });
     this.events.subscribe('savedResources:update', (res) => {
       if (res && res.update) {
-        this.loadRecentlyViewedContent();
+        this.loadRecentlyViewedContent(true);
       }
     });
     this.events.subscribe('event:showScanner', (data) => {
@@ -409,9 +409,11 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   /**
 	 * Load/get recently viewed content
 	 */
-  async loadRecentlyViewedContent() {
+  async loadRecentlyViewedContent(hideLoaderFlag?: boolean) {
     this.recentlyViewedResources = [];
-    this.showLoader = true;
+    if (!hideLoaderFlag) {
+      this.showLoader = true;
+    }
     const requestParams: ContentRequest = {
       uid: this.profile ? this.profile.uid : undefined,
       contentTypes: ContentType.FOR_RECENTLY_VIEWED,
@@ -458,12 +460,16 @@ export class ResourcesPage implements OnInit, AfterViewInit {
               this.recentlyViewedResources = data;
             }
           }
-          this.showLoader = false;
+          if (!hideLoaderFlag) {
+            this.showLoader = false;
+          }
         });
       })
       .catch(() => {
         this.ngZone.run(() => {
-          this.showLoader = false;
+          if (!hideLoaderFlag) {
+            this.showLoader = false;
+          }
         });
       });
   }
@@ -621,7 +627,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable  && !avoidRefreshList) {
             this.commonUtilService.showToast(
               this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
-                `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
+              { '%grade': this.getGroupByPageReq.grade,
+              '%medium': `${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')}` }));
           }
           const errvalues = new Map();
           errvalues['isNetworkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';

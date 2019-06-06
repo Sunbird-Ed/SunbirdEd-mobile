@@ -41,10 +41,13 @@ export class SbPopoverComponent {
   showFlagMenu = true;
   public objRollup: Rollup;
   private corRelationList: Array<CorrelationData>;
-
+  isNotShowCloseIcon: boolean;
+  img: any;
 
   constructor(public viewCtrl: ViewController, public navParams: NavParams,
     private platform: Platform, private events: Events, private ngZone: NgZone) {
+    this.img = this.navParams.get('img');
+    this.isNotShowCloseIcon = this.navParams.get('isNotShowCloseIcon') ? true : false;
     this.content = this.navParams.get('content');
     this.actionsButtons = this.navParams.get('actionsButtons');
     this.icon = this.navParams.get('icon');
