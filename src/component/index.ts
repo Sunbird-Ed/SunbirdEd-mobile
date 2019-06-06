@@ -7,7 +7,6 @@ export * from './content-actions/content-actions';
 export * from './content-rating-alert/content-rating-alert';
 export * from './pbhorizontal/pb-horizontal';
 export * from './profile-avatar/profile-avatar';
-export * from './report-issues/report-issues';
 export * from './sign-in-card/sign-in-card';
 export * from './view-credits/view-credits';
 export * from './view-more-card/view-more-card';
