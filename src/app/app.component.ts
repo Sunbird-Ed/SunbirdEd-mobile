@@ -57,6 +57,7 @@ import { QrCodeResultPage } from '@app/pages/qr-code-result';
 import { FaqPage } from '@app/pages/help/faq';
 import { NotificationService } from '@app/service/notification.service';
 import {SplaschreenDeeplinkActionHandlerDelegate} from '@app/service/sunbird-splashscreen/splaschreen-deeplink-action-handler-delegate';
+import {CourseSearchPage} from '@app/pages/course-search/course-search';
 
 @Component({
   templateUrl: 'app.html',
