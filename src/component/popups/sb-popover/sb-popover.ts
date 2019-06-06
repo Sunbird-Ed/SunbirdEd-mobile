@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { ContentActionsComponent } from '@app/component';
 import {
   NavParams,
@@ -45,7 +45,7 @@ export class SbPopoverComponent {
   img: any;
 
   constructor(public viewCtrl: ViewController, public navParams: NavParams,
-    private platform: Platform, private events: Events) {
+    private platform: Platform, private events: Events, private ngZone: NgZone) {
     this.img = this.navParams.get('img');
     this.isNotShowCloseIcon = this.navParams.get('isNotShowCloseIcon') ? true : false;
     this.content = this.navParams.get('content');
@@ -62,7 +62,7 @@ export class SbPopoverComponent {
     this.pageName = this.navParams.get('pageName');
     this.objRollup = this.navParams.get('objRollup');
     this.corRelationList = this.navParams.get('corRelationList');
-    
+
     if (this.navParams.get('isChild')) {
       this.isChild = true;
     }
@@ -76,7 +76,9 @@ export class SbPopoverComponent {
 
   ionViewWillEnter(): void {
     this.events.subscribe('deletedContentList:changed', (data) => {
-      this.sbPopoverMainTitle = data.deletedContentsInfo.deletedCount + '/' + data.deletedContentsInfo.totalCount;
+      this.ngZone.run(() => {
+        this.sbPopoverMainTitle = data.deletedContentsInfo.deletedCount + '/' + data.deletedContentsInfo.totalCount;
+      });
     });
   }
 
