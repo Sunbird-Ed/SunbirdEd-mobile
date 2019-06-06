@@ -10,28 +10,15 @@ import { IonicModule, Platform, ToastController, Nav } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import {
-  AuthService,
-  ContainerService,
-  PermissionService,
-  TelemetryService,
-  SharedPreferences,
+  AuthService, ContainerService, PermissionService, TelemetryService, SharedPreferences,
 } from 'sunbird';
 import { ImageLoaderConfig } from 'ionic-image-loader';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { MyApp } from './app.component';
 import {
-  PlatformMock,
-  StatusBarMock,
-  SplashScreenMock,
-  AuthServiceMock,
-  ContainerServiceMock,
-  PermissionServiceMock,
-  ImageLoaderConfigMock,
-  TranslateLoaderMock,
-  TelemetryServiceMock,
-  CourseUtilServiceMock,
-  AppGlobalServiceMock,
-  AppVersionMock,
+  PlatformMock, StatusBarMock, SplashScreenMock, AuthServiceMock,
+  ContainerServiceMock, PermissionServiceMock, ImageLoaderConfigMock, TranslateLoaderMock,
+  TelemetryServiceMock, CourseUtilServiceMock, AppGlobalServiceMock, AppVersionMock,
   FormAndFrameworkUtilServiceMock
 } from '../../test-config/mocks-ionic';
 import { CourseUtilService } from '../service/course-util.service';
@@ -82,7 +69,7 @@ describe('MyApp Component', () => {
         SharedPreferences,
         { provide: ToastController, useClass: ToastControllerMock },
         { provide: App, useClass: AppMock },
-        { provide: NavControllerBase, useClass: NavControllerBaseMock}
+        { provide: NavControllerBase, useClass: NavControllerBaseMock }
       ],
     });
   }));
@@ -95,7 +82,6 @@ describe('MyApp Component', () => {
     spyOn(MyApp.prototype, 'registerDeeplinks');
     spyOn(MyApp.prototype, 'subscribeEvents');
     spyOn(MyApp.prototype, 'saveDefaultSyncSetting').and.callThrough();
-    spyOn(MyApp.prototype, 'showAppWalkThroughScreen');
 
     spyOn(MyApp.prototype, 'makeEntryInSupportFolder').and.callThrough();
     fixture = TestBed.createComponent(MyApp);
@@ -182,22 +168,6 @@ describe('MyApp Component', () => {
         comp.makeEntryInSupportFolder();
       });
     });
-    xit('should get value to show app walkthrough screen and save it if not found', (done) => {
-      const platform: Platform = TestBed.get(Platform);
-      const preferenceStub = TestBed.get(SharedPreferences);
-      platform.ready().then((res) => {
-        expect(MyApp.prototype.showAppWalkThroughScreen).toHaveBeenCalled();
-        spyOn(preferenceStub, 'getString').and.callFake((title, callback) => {
-          return callback('');
-        });
-        spyOn(preferenceStub, 'putString');
-        comp.showAppWalkThroughScreen();
-        expect(comp.showAppWalkThroughScreen).toHaveBeenCalled();
-        expect(preferenceStub.getString).toHaveBeenCalled();
-        expect(preferenceStub.putString).toHaveBeenCalledWith('show_app_walkthrough_screen', 'true');
-        done();
-      });
-    });
   });
 
   describe('generateInteractEvent', () => {
@@ -211,7 +181,6 @@ describe('MyApp Component', () => {
       expect(telemetryServiceStub.interact).toHaveBeenCalled();
     });
   });
-
 
   describe('handleBackButton', () => {
     it('should call handleBackButton, when user is on one of the child page and can go back to home page', () => {
@@ -232,6 +201,7 @@ describe('MyApp Component', () => {
       expect(platformStub.registerBackButtonAction).toHaveBeenCalled();
       expect(navControllerStub.getActive.name).toEqual('CHILD_PAGE_TO_HOME_PAGE');
     });
+
     it('should call handleBackButton, when user is on home page and cannot go back', () => {
       const platformStub = TestBed.get(Platform);
       const app = TestBed.get(App);
@@ -252,6 +222,7 @@ describe('MyApp Component', () => {
         // expect(comp.counter).toEqual(0);
       }, 1500);
     });
+
     it('should call handleBackButton, and should exit app if pressed back button twice', () => {
       const platformStub = TestBed.get(Platform);
       const app = TestBed.get(App);

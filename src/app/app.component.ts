@@ -1,5 +1,4 @@
 import { Observable } from 'rxjs';
-import { ProfileSettingsPage } from './../pages/profile-settings/profile-settings';
 import { AfterViewInit, Component, Inject, NgZone, ViewChild, OnInit, EventEmitter } from '@angular/core';
 import { App, Events, Nav, Platform, PopoverController, ToastController, ViewController, NavControllerBase } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
@@ -14,28 +13,14 @@ import { ContentType, EventTopics, GenericAppConfig, MimeType, PreferenceKey, Pr
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { FormAndFrameworkUtilService, GuestProfilePage } from '@app/pages/profile';
 import {
-  AppGlobalService,
-  CommonUtilService,
-  TelemetryGeneratorService,
-  UtilityService,
-  AppHeaderService,
-  AppRatingService
+  AppGlobalService, CommonUtilService, TelemetryGeneratorService, UtilityService, AppHeaderService, AppRatingService
 } from '@app/service';
 import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
 import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
 import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
 import {
-  AuthService,
-  ErrorEventType,
-  EventNamespace,
-  EventsBusService,
-  OAuthSession,
-  ProfileService,
-  ProfileType,
-  SharedPreferences,
-  SunbirdSdk,
-  TelemetryAutoSyncUtil,
-  TelemetryService,
+  AuthService, ErrorEventType, EventNamespace, EventsBusService, OAuthSession, ProfileService, ProfileType,
+  SharedPreferences, SunbirdSdk, TelemetryAutoSyncUtil, TelemetryService
 } from 'sunbird-sdk';
 import { tap } from 'rxjs/operators';
 import { Environment, InteractSubtype, InteractType, PageId, ImpressionType } from '../service/telemetry-constants';
@@ -56,7 +41,7 @@ import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/coll
 import { QrCodeResultPage } from '@app/pages/qr-code-result';
 import { FaqPage } from '@app/pages/help/faq';
 import { NotificationService } from '@app/service/notification.service';
-import {SplaschreenDeeplinkActionHandlerDelegate} from '@app/service/sunbird-splashscreen/splaschreen-deeplink-action-handler-delegate';
+import { SplaschreenDeeplinkActionHandlerDelegate } from '@app/service/sunbird-splashscreen/splaschreen-deeplink-action-handler-delegate';
 
 @Component({
   templateUrl: 'app.html',
@@ -123,11 +108,9 @@ export class MyApp implements OnInit, AfterViewInit {
       this.autoSyncTelemetry();
       this.subscribeEvents();
 
-
       this.registerDeeplinks();
       this.startOpenrapDiscovery();
       this.saveDefaultSyncSetting();
-      this.showAppWalkThroughScreen();
       this.checkAppUpdateAvailable();
       this.makeEntryInSupportFolder();
       this.checkForTncUpdate();
@@ -153,8 +136,8 @@ export class MyApp implements OnInit, AfterViewInit {
 
     this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
       const navObj: NavControllerBase = this.app.getActiveNavs()[0];
-        const activeView: ViewController = navObj.getActive();
-        const pageId: string = this.computePageId((<any>activeView).instance);
+      const activeView: ViewController = navObj.getActive();
+      const pageId: string = this.computePageId((<any>activeView).instance);
       if (available) {
         this.addNetworkTelemetry(InteractSubtype.INTERNET_CONNECTED, pageId);
       } else {
@@ -166,11 +149,11 @@ export class MyApp implements OnInit, AfterViewInit {
 
   addNetworkTelemetry(subtype: string, pageId: string) {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-        subtype,
-        Environment.HOME,
-        pageId, undefined
+      subtype,
+      Environment.HOME,
+      pageId, undefined
     );
-}
+  }
   ngAfterViewInit(): void {
     this.platform.resume.subscribe(() => {
       this.telemetryGeneratorService.generateInterruptTelemetry('resume', '');
@@ -206,7 +189,7 @@ export class MyApp implements OnInit, AfterViewInit {
     const value = new Map();
     value['network-type'] = this.network.type;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-      InteractSubtype.NETWORK_STATUS, Environment.HOME, PageId.SPLASH_SCREEN, undefined, value) ;
+      InteractSubtype.NETWORK_STATUS, Environment.HOME, PageId.SPLASH_SCREEN, undefined, value);
   }
   computePageId(page): string {
     let pageId = '';
@@ -218,15 +201,15 @@ export class MyApp implements OnInit, AfterViewInit {
       pageId = PageId.PROFILE;
     } else if (page instanceof GuestProfilePage) {
       pageId = PageId.GUEST_PROFILE;
-    }  else if (page instanceof CollectionDetailsEtbPage) {
+    } else if (page instanceof CollectionDetailsEtbPage) {
       pageId = PageId.COLLECTION_DETAIL;
-  } else if (page instanceof ContentDetailsPage) {
+    } else if (page instanceof ContentDetailsPage) {
       pageId = PageId.CONTENT_DETAIL;
-  } else if (page instanceof QrCodeResultPage) {
+    } else if (page instanceof QrCodeResultPage) {
       pageId = PageId.DIAL_CODE_SCAN_RESULT;
-  } else if (page instanceof CollectionDetailsPage) {
+    } else if (page instanceof CollectionDetailsPage) {
       pageId = PageId.COLLECTION_DETAIL;
-  }
+    }
     return pageId;
   }
 
@@ -499,6 +482,7 @@ export class MyApp implements OnInit, AfterViewInit {
       undefined
     );
   }
+
   private generateImpressionEvent(pageid: string) {
     pageid = pageid.toLowerCase();
     const env = pageid.localeCompare(PageId.PROFILE) ? Environment.HOME : Environment.USER;
@@ -507,6 +491,7 @@ export class MyApp implements OnInit, AfterViewInit {
       pageid,
       env);
   }
+
   private navigateToContentDetails(content) {
     if (content.contentData.contentType === ContentType.COURSE) {
       this.nav.push(EnrolledCourseDetailsPage, {
@@ -521,11 +506,6 @@ export class MyApp implements OnInit, AfterViewInit {
         content: content
       });
     }
-  }
-
-  private async showAppWalkThroughScreen() {
-    const showAppWalkthrough = (await this.preferences.getString('show_app_walkthrough_screen').toPromise()) === '' ? 'true' : 'false';
-    await this.preferences.putString('show_app_walkthrough_screen', showAppWalkthrough).toPromise();
   }
 
   private async startOpenrapDiscovery(): Promise<undefined> {
@@ -639,7 +619,7 @@ export class MyApp implements OnInit, AfterViewInit {
         || ((<any>activeView).instance instanceof OnboardingPage)
         || ((<any>activeView).instance instanceof QrCodeResultPage)
         || ((<any>activeView).instance instanceof FaqPage)
-        ) {
+      ) {
         this.headerServie.sidebarEvent($event);
         return;
       }

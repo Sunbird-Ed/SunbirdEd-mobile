@@ -17,6 +17,7 @@ import {
   Mode,
   PageId,
 } from '../../service/telemetry-constants';
+import { CourseSearchPage } from '../course-search/course-search';
 
 @Injectable()
 export class QRScannerResultHandler {
@@ -111,7 +112,8 @@ export class QRScannerResultHandler {
 
   navigateToDetailsPage(content, corRelationList) {
     if (content.contentData.contentType === ContentType.COURSE) {
-      this.app.getActiveNavs()[0].push(EnrolledCourseDetailsPage, {
+      // this.app.getActiveNavs()[0].push(EnrolledCourseDetailsPage, {
+        this.app.getActiveNavs()[0].push(CourseSearchPage, {
         content: content,
         corRelation: corRelationList,
         source: this.source,

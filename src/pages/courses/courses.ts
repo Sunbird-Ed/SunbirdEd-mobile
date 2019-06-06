@@ -1,44 +1,28 @@
 import { ActiveDownloadsPage } from '@app/pages/active-downloads/active-downloads';
-import {ViewMoreActivityPage} from './../view-more-activity/view-more-activity';
-import {Component, Inject, NgZone, OnInit, AfterViewInit} from '@angular/core';
-import {Events, IonicPage, NavController, ToastController, PopoverController, MenuController, Tabs} from 'ionic-angular';
-import {AppVersion} from '@ionic-native/app-version';
-import {QRResultCallback, SunbirdQRScanner} from '../qrscanner/sunbirdqrscanner.service';
-import {SearchPage} from '../search/search';
-import {ContentDetailsPage} from '../content-details/content-details';
+import { ViewMoreActivityPage } from './../view-more-activity/view-more-activity';
+import { Component, Inject, NgZone, OnInit, AfterViewInit } from '@angular/core';
+import { Events, IonicPage, NavController, ToastController, PopoverController, MenuController, Tabs } from 'ionic-angular';
+import { AppVersion } from '@ionic-native/app-version';
+import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
+import { SearchPage } from '../search/search';
+import { ContentDetailsPage } from '../content-details/content-details';
 import * as _ from 'lodash';
-import {ContentCard, ContentType, EventTopics, PreferenceKey, ProfileConstants, ViewMore} from '../../app/app.constant';
-import {PageFilter, PageFilterCallback} from '../page-filter/page.filter';
-import {Network} from '@ionic-native/network';
-import {AppGlobalService} from '../../service/app-global.service';
-import Driver from 'driver.js';
-import {CourseUtilService} from '../../service/course-util.service';
-import {updateFilterInSearchQuery} from '../../util/filter.util';
-import {FormAndFrameworkUtilService} from '../profile/formandframeworkutil.service';
-import {CommonUtilService} from '../../service/common-util.service';
-import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import { ContentCard, ContentType, EventTopics, PreferenceKey, ProfileConstants, ViewMore } from '../../app/app.constant';
+import { PageFilter, PageFilterCallback } from '../page-filter/page.filter';
+import { Network } from '@ionic-native/network';
+import { AppGlobalService } from '../../service/app-global.service';
+import { CourseUtilService } from '../../service/course-util.service';
+import { updateFilterInSearchQuery } from '../../util/filter.util';
+import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
+import { CommonUtilService } from '../../service/common-util.service';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import {
-  Content,
-  ContentEventType,
-  ContentImportRequest,
-  ContentImportResponse,
-  ContentImportStatus,
-  ContentService,
-  Course,
-  CourseService,
-  DownloadEventType,
-  DownloadProgress,
-  EventsBusEvent,
-  EventsBusService,
-  FetchEnrolledCourseRequest,
-  PageAssembleCriteria,
-  PageAssembleService,
-  PageName,
-  ProfileType,
-  SharedPreferences
+  Content, ContentEventType, ContentImportRequest, ContentImportResponse, ContentImportStatus, ContentService, Course,
+  CourseService, DownloadEventType, DownloadProgress, EventsBusEvent, EventsBusService, FetchEnrolledCourseRequest,
+  PageAssembleCriteria, PageAssembleService, PageName, ProfileType, SharedPreferences
 } from 'sunbird-sdk';
-import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
-import {Subscription} from 'rxjs';
+import { Environment, InteractSubtype, InteractType, PageId } from '../../service/telemetry-constants';
+import { Subscription } from 'rxjs';
 import { AppHeaderService } from '@app/service';
 
 @IonicPage()
@@ -196,37 +180,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
   ionViewDidLoad() {
 
     this.appGlobalService.generateConfigInteractEvent(PageId.COURSES, this.isOnBoardingCardCompleted);
-    this.preferences.getString('show_app_walkthrough_screen').toPromise()
-      .then(value => {
-        if (value === 'true') {
-          const driver = new Driver({
-            allowClose: true,
-            closeBtnText: this.commonUtilService.translateMessage('DONE'),
-            showButtons: true,
-          });
 
-          setTimeout(() => {
-            driver.highlight({
-              element: '#qrIcon',
-              popover: {
-                title: this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE'),
-                description: '<img src=\'assets/imgs/ic_scanqrdemo.png\' /><p>' +
-                  this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + '</p>',
-                showButtons: true,         // Do not show control buttons in footer
-                closeBtnText: this.commonUtilService.translateMessage('DONE'),
-              }
-            });
-
-            const element = document.getElementById('driver-highlighted-element-stage');
-            const img = document.createElement('img');
-            img.src = 'assets/imgs/ic_scan.png';
-            img.id = 'qr_scanner';
-            element.appendChild(img);
-          }, 100);
-          this.telemetryGeneratorService.generatePageViewTelemetry(PageId.ONBOARDING_QR_SHOWCASE, Environment.ONBOARDING, PageId.COURSES);
-          this.preferences.putString('show_app_walkthrough_screen', 'false').toPromise().then();
-        }
-      });
     this.events.subscribe('event:showScanner', (data) => {
       if (data.pageName === PageId.COURSES) {
         this.qrScanner.startScanner(PageId.COURSES, false);
@@ -435,15 +389,15 @@ export class CoursesPage implements OnInit, AfterViewInit {
           this.checkEmptySearchResult();
         });
       }).catch((error: string) => {
-      this.ngZone.run(() => {
-        this.pageApiLoader = false;
-        if (error === 'CONNECTION_ERROR') {
-          this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
-        } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
-          this.commonUtilService.showToast('ERROR_FETCHING_DATA');
-        }
+        this.ngZone.run(() => {
+          this.pageApiLoader = false;
+          if (error === 'CONNECTION_ERROR') {
+            this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
+          } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
+            this.commonUtilService.showToast('ERROR_FETCHING_DATA');
+          }
+        });
       });
-    });
   }
 
   generateExtraInfoTelemetry(sectionsCount) {
@@ -666,7 +620,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
   }
 
   showFilterPage(filterOptions) {
-    this.popCtrl.create(PageFilter, filterOptions, {cssClass: 'resource-filter'}).present();
+    this.popCtrl.create(PageFilter, filterOptions, { cssClass: 'resource-filter' }).present();
   }
 
   checkEmptySearchResult(isAfterLanguageChange = false) {
@@ -699,7 +653,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
 
   getContentDetails(content) {
     const identifier = content.contentId || content.identifier;
-    this.contentService.getContentDetails({contentId: identifier}).toPromise()
+    this.contentService.getContentDetails({ contentId: identifier }).toPromise()
       .then((data: Content) => {
         if (data && data.isAvailableLocally) {
           this.showOverlay = false;
@@ -716,11 +670,10 @@ export class CoursesPage implements OnInit, AfterViewInit {
   }
 
   navigateToViewMoreContentsPage(showEnrolledCourses: boolean, searchQuery?: any, headerTitle?: string) {
-    if(this.commonUtilService.networkInfo.isNetworkAvailable) {
-      
+    if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+
     } else {
-      //this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
-      this.presentToastForOffline('NO_INTERNET_TITLE');return;
+      this.presentToastForOffline('NO_INTERNET_TITLE'); return;
     }
     let params;
     let title;
@@ -756,7 +709,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
   navigateToContentDetailsPage(content) {
     const identifier = content.contentId || content.identifier;
     this.navCtrl.push(ContentDetailsPage, {
-      content: {identifier: content.lastReadContentId},
+      content: { identifier: content.lastReadContentId },
       depth: '1',
       contentState: {
         batchId: content.batchId ? content.batchId : '',
@@ -829,20 +782,20 @@ export class CoursesPage implements OnInit, AfterViewInit {
           this.tabBarElement.style.display = 'flex';
           this.showOverlay = false;
         }).catch(() => {
-        this.tabBarElement.style.display = 'flex';
-        this.showOverlay = false;
-      });
+          this.tabBarElement.style.display = 'flex';
+          this.showOverlay = false;
+        });
     });
   }
 
   handleHeaderEvents($event) {
     switch ($event.name) {
       case 'search': this.search();
-                    break;
+        break;
       case 'filter': this.showFilter();
-                      break;
+        break;
       case 'download': this.redirectToActivedownloads();
-      break;
+        break;
     }
   }
 
