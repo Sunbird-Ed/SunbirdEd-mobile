@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ItemSliding } from 'ionic-angular';
-import { AppHeaderService } from '@app/service';
-
+import { AppHeaderService, CommonUtilService } from '@app/service';
 
 @IonicPage()
 @Component({
@@ -25,7 +24,8 @@ export class NotificationsPage {
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    private headerService: AppHeaderService
+    private headerService: AppHeaderService,
+    private commonUtilService: CommonUtilService
   ) {
     this.headerService.hideHeader();
   }

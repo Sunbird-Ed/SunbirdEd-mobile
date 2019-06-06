@@ -1,11 +1,9 @@
 <div class="notification-item-container">
-  <p class="date-time"><img src="./assets/imgs/oval.svg" style="margin-right: 6px;" alt="oval">{{ itemData?.time }}</p>
+  <p class="date-time"><img src="./assets/imgs/oval.svg" class="mr-6" alt="oval">{{ itemData?.time }}</p>
 
   <div class="title" (click)="toggleExpand()" [ngClass]="{'sb-accordian-header':itemData?.updateNotes}">
     {{itemData?.title}}
     <span class="expand-button" *ngIf="itemData?.updateNotes">
-      <!-- <ion-icon *ngIf="!isExpanded" name="arrow-dropdown" class="sb-accordian-arrow"></ion-icon>
-      <ion-icon *ngIf="isExpanded" name="arrow-dropup" class="sb-accordian-arrow"></ion-icon> -->
       <img *ngIf="!isExpanded" src="./assets/imgs/arrow-down.svg" class="sb-accordian-arrow" alt="oval">
       <img *ngIf="isExpanded" src="./assets/imgs/arrow-down.svg" class="sb-accordian-arrow arrow-up" alt="oval">
     </span>
@@ -17,7 +15,9 @@
 
   <div class="update-container" *ngIf="itemData?.updateNotes && isExpanded">
     <h3 class="note-title">{{ 'WHATS_NEW' | translate }}</h3>
-    <p class="note" *ngFor="let note of itemData?.updateNotes">*&nbsp;{{ note }}</p>
+    <p class="note" *ngFor="let note of itemData?.updateNotes">*&nbsp; &nbsp;{{ note }}</p>
   </div>
 
+  <hr *ngIf="itemData?.updateNotes">
+  <div *ngIf="itemData?.updateNotes" class="update-now-btn">{{'UPDATE_APP_BTN_ACTION_YES' | translate}}</div>
 </div>

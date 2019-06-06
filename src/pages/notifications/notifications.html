@@ -8,15 +8,15 @@
       <div class="sb-view-all-title">
         <span class="page-heading">{{ 'NOTIFICATION' | translate }}</span>
         <span class="clear-btn" (click)="clearNotifications()">{{'CLEAR' | translate}}</span>
-        <span class="page-info">{{'NEW_NOTIFICATIONS' | translate:{'%s': '4'} }}</span>
+        <span class="page-info">{{'NEW_NOTIFICATIONS' | translate:{'%s': '4'} }}&lrm;</span>
       </div>
     </div>
   </div>
 
 
   <!-- Shows various types of notifications with sliding delete buttons-->
-  <ion-list *ngIf="notificationList?.length">
-    <ion-item-sliding style="background-color: #f2f7f7; padding-bottom: 8px;"
+  <ion-list *ngIf="notificationList?.length && commonUtilService?.networkInfo?.isNetworkAvailable">
+    <ion-item-sliding style="background-color: #d9e5f0; padding-bottom: 8px;"
       *ngFor="let item of notificationList;let index = index" #slidingItem>
       <ion-item no-lines>
         <notification-item [itemData]="item"></notification-item>
@@ -29,9 +29,20 @@
     </ion-item-sliding>
   </ion-list>
 
-  <div class="no-notification" *ngIf="!notificationList.length">
-    <img src="./assets/imgs/no_notification.svg" alt="delete" />
+  <div class="oval-wrapper" *ngIf="!notificationList.length && commonUtilService?.networkInfo?.isNetworkAvailable">
+    <div class="oval">
+      <img src="./assets/imgs/no_notification.svg" alt="delete" />
+    </div>
     <h4>{{'MSG_NO_NEW_NOTIFICATION' | translate}}</h4>
   </div>
+
+  <div class="oval-wrapper" *ngIf="!commonUtilService?.networkInfo?.isNetworkAvailable">
+    <div class="oval">
+      <img src="./assets/imgs/outline-cloud_off.svg" alt="No Network Available" />
+    </div>
+    <h4>{{'NO_INTERNET_TITLE' | translate}}</h4>
+    <p>{{'CONNECT_TO_INTERNET_SUGGESTION' | translate}}</p>
+  </div>
+
 
 </ion-content>

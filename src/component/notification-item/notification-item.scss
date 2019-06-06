@@ -1,14 +1,14 @@
 notification-item {
   .notification-item-container {
     .date-time {
-      color: #979797;
+      color: $gray-200;
       font-family: "Noto Sans";
       font-size: 12px;
       line-height: 20px;
     }
     .title {
       width: 100%;
-      color: #024f9d;
+      color: $blue;
       font-family: "Noto Sans";
       font-size: 14px;
       font-weight: bold;
@@ -17,8 +17,7 @@ notification-item {
     }
     .description {
       height: 20px;
-      width: 312px;
-      color: #666666;
+      color: $gray-400;
       font-family: ".SF NS Display";
       font-size: 12px;
       letter-spacing: -0.34px;
@@ -33,22 +32,42 @@ notification-item {
     .arrow-up {
       transform: rotate(180deg);
     }
-  }
-  .update-container {
-    white-space: normal;
-    padding: 8px;
-    border-radius: 4px;
-    background-color: #efefef;
-    .note-title {
-      font-weight: 600;
-      font-size: 1.2rem;
-    }
-  }
 
-  .expand-button {
-    float: right;
-    width: 1.5rem;
-    text-align: center;
-    cursor: pointer;
+    .update-container {
+      white-space: normal;
+      padding: 8px;
+      border-radius: 2px;
+      background-color: #f1f1f1;
+      .note-title {
+        font-weight: 600;
+        font-size: 1.2rem;
+      }
+    }
+
+    .expand-button {
+      @include float(end);
+      width: 1.5rem;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .update-now-btn {
+      height: 20px;
+      color: $blue;
+      font-family: "Noto Sans";
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: -0.34px;
+      line-height: 20px;
+    }
+
+    .mr-6 {
+      @include ltr() {
+        margin-right: 6px;
+      }
+      @include rtl() {
+        margin-left: 6px;
+      }
+    }
   }
 }
