@@ -15,7 +15,6 @@ import { IonicImageLoader } from 'ionic-image-loader';
 import { SignInCardComponent } from './sign-in-card/sign-in-card';
 import { PBHorizontal } from './pbhorizontal/pb-horizontal';
 import { ConfirmAlertComponent } from './confirm-alert/confirm-alert';
-import { ReportIssuesComponent } from './report-issues/report-issues';
 import { FormAndFrameworkUtilService } from '../pages/profile/formandframeworkutil.service';
 import { AssessmentDetailsComponent } from './assessment-details/assessment-details';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
@@ -67,7 +66,6 @@ import { NotificationItemComponent } from './notification-item/notification-item
         CollectionChildComponent,
         ApplicationHeaderComponent,
         SbPopoverComponent,
-        ReportIssuesComponent,
         SbDownloadPopupComponent,
         SbGenericPopoverComponent,
         SideMenuComponent,
@@ -99,7 +97,6 @@ import { NotificationItemComponent } from './notification-item/notification-item
         ViewCreditsComponent,
         ProfileAvatarComponent,
         DialogPopupComponent,
-        ReportIssuesComponent,
         BookmarkComponent,
         UnenrollAlertComponent,
         EditContactDetailsPopupComponent,
