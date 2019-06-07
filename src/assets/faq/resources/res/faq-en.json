@@ -6,7 +6,7 @@
         },
         {
             "topic": "I have an Android 4.4 device, I cannot play content on it",
-            "description": "DIKSHA mobile app is not compatible with Android 4.4, hence you cannot play some content on your device"
+            "description": "Android version 4.4 does not support html5 and thus all content cannot be played. To play content on a device with Android version 4.4, try the following:\n<ul>\n<li>Update the Android version to the latest, preferably to a version greater than 5.1</li>\n<li>Update the DIKSHA mobile app to the latest version</li>\n</ul>\nThe app prompts to download and install Crosswalk when playing content on Android 4.4.version. Using Crosswalk enables playing most content on Android 4.4 version\n\n"
         },
         {
             "topic": "I cannot  see my board, medium, class and subject",
@@ -39,6 +39,10 @@
         {
             "topic": "I want to get the DIKSHA app on iOS or desktop",
             "description": "You can visit https://www.diksha.gov.in/explore/ using your browser on iOS or desktop devices to view DIKSHA content. We are currently working on a desktop application for offline use that is expected to be ready later this year"
+        },
+        {
+            "topic": "I want to know the status of my course completion",
+            "description": "Once you have successfully completed taking a course, the course name  will be displayed under the Trainings Attended section of your profile page"
         }
     ],
     "constants": {

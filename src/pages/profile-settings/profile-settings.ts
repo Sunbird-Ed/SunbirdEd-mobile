@@ -111,7 +111,9 @@ export class ProfileSettingsPage {
 
   ionViewDidLoad() {
     if (Boolean(this.navParams.get('stopScanner'))) {
-      this.scanner.stopScanner();
+      setTimeout(() => {
+        this.scanner.stopScanner();
+      }, 500);
     }
   }
 

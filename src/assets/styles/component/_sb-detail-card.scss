@@ -108,8 +108,11 @@
           @include margin(null, 0, null, null);
         }
         .button-md,.button-ios{
-          width:72px;
-          height:72px;
+          width: auto;
+          height: 72px;
+          margin-right: $base-block-space;
+          min-width: 72px;
+          max-width: 112px;
         }
         .sb-btn-tile {
           .button-inner {

@@ -512,6 +512,7 @@ export class QrCodeResultPage implements OnDestroy {
         language: this.translate.currentLang,
         requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
       };
+      // Auto update the profile if that board/framework is listed in custodian framework list.
       this.frameworkUtilService.getActiveChannelSuggestedFrameworkList(getSuggestedFrameworksRequest).toPromise()
         .then((res: Framework[]) => {
           let isProfileUpdated = false;
