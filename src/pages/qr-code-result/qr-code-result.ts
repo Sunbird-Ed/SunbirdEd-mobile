@@ -1,15 +1,6 @@
 import {CommonUtilService} from './../../service/common-util.service';
 import {Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
-import {
-  AlertController,
-  Events,
-  IonicPage,
-  Navbar,
-  NavController,
-  NavParams,
-  Platform,
-  PopoverController
-} from 'ionic-angular';
+import { AlertController, Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController } from 'ionic-angular';
 import {ContentDetailsPage} from '../content-details/content-details';
 import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
 import {ContentType, MimeType} from '../../app/app.constant';
@@ -309,6 +300,11 @@ export class QrCodeResultPage implements OnDestroy {
     request.streaming = true;
     AppGlobalService.isPlayerLaunched = true;
     this.openPlayer(content, request);
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.PLAY_ONLINE,
+      !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : this.appGlobalService.getEnvironmentForTelemetry(),
+      PageId.DIAL_CODE_SCAN_RESULT);
   }
 
   playOnline(content) {
@@ -333,7 +329,7 @@ export class QrCodeResultPage implements OnDestroy {
     } else {
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.TOUCH,
-        Boolean(content.isAvailableLocally) ? InteractSubtype.PLAY_CLICKED : InteractSubtype.DOWNLOAD_PLAY_CLICKED,
+        Boolean(content.isAvailableLocally) ? InteractSubtype.PLAY_FROM_DEVICE : InteractSubtype.DOWNLOAD_PLAY_CLICKED,
         !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
         PageId.DIAL_CODE_SCAN_RESULT);
       this.navCtrl.push(ContentDetailsPage, {
