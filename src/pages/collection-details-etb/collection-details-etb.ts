@@ -779,6 +779,12 @@ export class CollectionDetailsEtbPage implements OnInit {
             this.getContentsSize(data.children || []);
           }
           this.showChildrenLoader = false;
+          this.telemetryGeneratorService.generateInteractTelemetry(
+            InteractType.OTHER,
+            InteractSubtype.IMPORT_COMPLETED,
+            Environment.HOME,
+            PageId.COLLECTION_DETAIL
+          );
         });
       })
       .catch(() => {

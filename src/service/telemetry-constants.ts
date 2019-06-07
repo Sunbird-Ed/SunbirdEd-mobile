@@ -273,7 +273,8 @@ export enum InteractSubtype {
     APP_RATING_APPEARED = 'app-rating-appeared',
     USER_TYPE_SELECTED = 'user-type-selected',
     QR_CODE_INVALID = 'qr-code-invalid',
-    QR_CODE_COMINGSOON = 'qr-code-comingsoon'
+    QR_CODE_COMINGSOON = 'qr-code-comingsoon',
+    IMPORT_COMPLETED = 'import-completed'
 }
 
 export enum ActionButtonType {
