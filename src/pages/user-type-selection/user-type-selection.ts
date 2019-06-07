@@ -141,7 +141,7 @@ export class UserTypeSelectionPage {
       }
     });
     const values = new Map();
-    values['UserType'] = this.selectedUserType;
+    values['userType'] = this.selectedUserType;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.USER_TYPE_SELECTED,
