@@ -1,3 +1,4 @@
+import { AppGlobalService } from './../../service/app-global.service';
 
 import { Component, ViewChild, Inject, OnInit } from '@angular/core';
 import { ContainerService } from '../../service/container.services';
@@ -25,7 +26,8 @@ export class TabsPage {
     private container: ContainerService,
     private events: Events,
     public toastCtrl: ToastController,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private appGlobalService: AppGlobalService
   ) {}
 
   ionViewWillEnter() {
@@ -49,7 +51,7 @@ export class TabsPage {
     // if active tab is other than scanner tab i.e, = tab 2
     if (tab.index !== 2) {
       this.tabs.forEach((tabTo, index) => {
-
+      this.appGlobalService.currentPageId = tab.tabTitle;
         if (tabTo.isSelected === true) {
           tabTo.isSelected = false;
         }

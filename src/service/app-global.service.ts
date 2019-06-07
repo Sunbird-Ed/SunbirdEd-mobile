@@ -59,6 +59,8 @@ export class AppGlobalService implements OnDestroy {
     selectedUser;
     selectedBoardMediumGrade: string;
 
+    currentPageId: string;
+
     constructor(
         @Inject('PROFILE_SERVICE') private profile: ProfileService,
         @Inject('AUTH_SERVICE') private authService: AuthService,

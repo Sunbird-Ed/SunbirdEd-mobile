@@ -228,11 +228,19 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.getPopularContent();
         }
       } else if (data === '') {
-        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-          InteractSubtype.QRCodeScanClicked,
-          Environment.HOME,
-          PageId.LIBRARY);
-        this.qrScanner.startScanner(PageId.LIBRARY);
+        let pageId = PageId.LIBRARY;
+        if (this.appGlobalService.currentPageId) {
+          if (this.appGlobalService.currentPageId.toLowerCase() === 'library') {
+            pageId = PageId.LIBRARY;
+          } else if (this.appGlobalService.currentPageId.toLowerCase() === 'courses') {
+            pageId = PageId.COURSES;
+          } else if (this.appGlobalService.currentPageId.toLowerCase() === 'profile') {
+            pageId = PageId.GUEST_PROFILE;
+          } else if (this.appGlobalService.currentPageId.toLowerCase() === 'downloads') {
+            pageId = PageId.DOWNLOADS;
+          }
+        }
+        this.qrScanner.startScanner(pageId);
       }
       // });
     });
@@ -588,6 +596,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             // check if locally available
             this.markLocallyAvailableTextBook();
             sectionInfo[sectionName] = count;
+            sectionInfo['board'] = this.getGroupByPageReq.board[0];
+            sectionInfo['medium'] = this.getGroupByPageReq.medium[0];
+            sectionInfo['grade'] = this.getGroupByPageReq.grade[0];
           }
 
           const resvalues = new Map();
