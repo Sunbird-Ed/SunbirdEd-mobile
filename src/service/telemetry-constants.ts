@@ -125,7 +125,8 @@ export enum ImpressionSubtype {
     RATING_POPUP = 'rating-popup',
     QR_CODE_VALID = 'qr-code-valid',
     INVALID_QR_CODE = 'invalid-qr-code',
-    APP_RATING_POPUP = 'app-rating-popup'
+    APP_RATING_POPUP = 'app-rating-popup',
+    PERMISSION_POPUP = 'permission-popup'
 }
 export enum InteractType {
     TOUCH = 'TOUCH',
@@ -269,7 +270,8 @@ export enum InteractSubtype {
     RATE_LATER_CLICKED = 'rate-later-clicked',
     PLAY_STORE_BUTTON_CLICKED = 'play-store-button-clicked',
     HELP_SECTION_CLICKED = 'help-section-clicked',
-    APP_RATING_APPEARED = 'app-rating-appeared'
+    APP_RATING_APPEARED = 'app-rating-appeared',
+    USER_TYPE_SELECTED = 'user-type-selected'
 }
 
 export enum ActionButtonType {

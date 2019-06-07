@@ -140,6 +140,16 @@ export class UserTypeSelectionPage {
         this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, this.selectedUserType).toPromise().then();
       }
     });
+    const values = new Map();
+    values['UserType'] = this.selectedUserType;
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.USER_TYPE_SELECTED,
+      Environment.HOME,
+      PageId.USER_TYPE_SELECTION,
+      undefined,
+      values
+    );
   }
 
   continue() {
