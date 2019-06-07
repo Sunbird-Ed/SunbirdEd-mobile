@@ -38,7 +38,14 @@ import {
   TelemetryService,
 } from 'sunbird-sdk';
 import { tap } from 'rxjs/operators';
-import { Environment, InteractSubtype, InteractType, PageId, ImpressionType } from '../service/telemetry-constants';
+import {
+  Environment,
+  InteractSubtype,
+  InteractType,
+  PageId,
+  ImpressionType,
+  ImpressionSubtype
+} from '../service/telemetry-constants';
 import { TabsPage } from '@app/pages/tabs/tabs';
 import { ContainerService } from '@app/service/container.services';
 import { AndroidPermissionsService } from '../service/android-permissions/android-permissions.service';
@@ -87,7 +94,6 @@ export class MyApp implements OnInit, AfterViewInit {
 
   profile: any = {};
   selectedLanguage: string;
-
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
@@ -455,6 +461,11 @@ export class MyApp implements OnInit, AfterViewInit {
         const toRequest: AndroidPermission[] = [];
 
         for (const permission in statusMap) {
+          this.telemetryGeneratorService.generateImpressionTelemetry(
+            ImpressionType.VIEW,
+            ImpressionSubtype.PERMISSION_POPUP,
+            '', Environment.ONBOARDING
+          );
           if (!statusMap[permission].hasPermission) {
             toRequest.push(permission as AndroidPermission);
           }

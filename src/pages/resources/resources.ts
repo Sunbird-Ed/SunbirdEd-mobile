@@ -228,6 +228,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.getPopularContent();
         }
       } else if (data === '') {
+        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+          InteractSubtype.QRCodeScanClicked,
+          Environment.HOME,
+          PageId.LIBRARY);
         this.qrScanner.startScanner(PageId.LIBRARY);
       }
       // });
@@ -826,16 +830,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   }
 
-
-  scanQRCode() {
-    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-      InteractSubtype.QRCodeScanClicked,
-      Environment.HOME,
-      PageId.LIBRARY);
-    this.qrScanner.startScanner(PageId.LIBRARY);
-  }
-
-
   search() {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.SEARCH_BUTTON_CLICKED,
@@ -1039,7 +1033,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     telemetryObject = new TelemetryObject(identifier, item.contentType, undefined);
 
     const values = new Map();
-    values['sectionName'] = sectionName;
+    values['sectionName'] = item.subject;
     values['positionClicked'] = index;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.CONTENT_CLICKED,
