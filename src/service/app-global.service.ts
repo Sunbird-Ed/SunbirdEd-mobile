@@ -555,19 +555,19 @@ export class AppGlobalService implements OnDestroy {
     }
 
     getEnvironmentForTelemetry() {
-        let pageId = PageId.LIBRARY;
+        let env = Environment.LIBRARY;
         if (this.currentPageId) {
           if (this.currentPageId.toLowerCase() === 'library') {
-            pageId = PageId.LIBRARY;
+            env = Environment.LIBRARY;
           } else if (this.currentPageId.toLowerCase() === 'courses') {
-            pageId = PageId.COURSES;
+            env = Environment.COURSE;
           } else if (this.currentPageId.toLowerCase() === 'profile') {
-            pageId = PageId.GUEST_PROFILE;
+            env = Environment.USER;
           } else if (this.currentPageId.toLowerCase() === 'downloads') {
-            pageId = PageId.DOWNLOADS;
+            env = Environment.DOWNLOADS;
           }
         }
-        return pageId;
+        return env;
     }
 
     setAverageTime(time) {
