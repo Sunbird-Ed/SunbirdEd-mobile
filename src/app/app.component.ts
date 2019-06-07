@@ -464,9 +464,7 @@ export class MyApp implements OnInit, AfterViewInit {
           this.telemetryGeneratorService.generateImpressionTelemetry(
             ImpressionType.VIEW,
             ImpressionSubtype.PERMISSION_POPUP,
-            '', Environment.ONBOARDING,
-            '','','',
-            undefined,undefined
+            '', Environment.ONBOARDING
           );
           if (!statusMap[permission].hasPermission) {
             toRequest.push(permission as AndroidPermission);
