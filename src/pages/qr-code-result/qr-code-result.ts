@@ -316,7 +316,7 @@ export class QrCodeResultPage implements OnDestroy {
     this.openPlayer(content, request);
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
-      content.isAvailableLocally ? InteractSubtype.PLAY_FROM_DEVICE ? InteractSubtype.PLAY_ONLINE,
+      content.isAvailableLocally ? InteractSubtype.PLAY_FROM_DEVICE : InteractSubtype.PLAY_ONLINE,
       !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : this.appGlobalService.getEnvironmentForTelemetry(),
       PageId.DIAL_CODE_SCAN_RESULT);
   }
