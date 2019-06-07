@@ -182,7 +182,7 @@ export class QrCodeResultPage implements OnDestroy {
   ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(ImpressionType.VIEW, '',
       PageId.DIAL_CODE_SCAN_RESULT,
-      !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME);
+      !this.appGlobalService.isProfileSettingsCompleted ? Environment.ONBOARDING : this.appGlobalService.getEnvironmentForTelemetry());
 
     this.navBar.backButtonClick = () => {
       this.handleBackButton(InteractSubtype.NAV_BACK_CLICKED);
@@ -379,6 +379,8 @@ export class QrCodeResultPage implements OnDestroy {
           this.events.publish('refresh:profile');
         }
         this.appGlobalService.guestUserProfile = res;
+        this.telemetryGeneratorService.generateProfilePopulatedTelemetry(PageId.DIAL_CODE_SCAN_RESULT,
+          req, 'auto');
       })
       .catch(() => {
       });
@@ -608,8 +610,6 @@ export class QrCodeResultPage implements OnDestroy {
               return;
             }
           });
-          this.telemetryGeneratorService.generateProfilePopulatedTelemetry(PageId.DIAL_CODE_SCAN_RESULT,
-            data.framework, Boolean(isProfileUpdated) ? 'auto' : 'na');
         })
         .catch((err) => {
           if (err instanceof NetworkError) {

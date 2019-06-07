@@ -228,11 +228,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.getPopularContent();
         }
       } else if (data === '') {
-        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-          InteractSubtype.QRCodeScanClicked,
-          Environment.HOME,
-          PageId.LIBRARY);
-        this.qrScanner.startScanner(PageId.LIBRARY);
+        this.qrScanner.startScanner(this.appGlobalService.getEnvironmentForTelemetry());
       }
       // });
     });
@@ -588,6 +584,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             // check if locally available
             this.markLocallyAvailableTextBook();
             sectionInfo[sectionName] = count;
+            sectionInfo['board'] = this.getGroupByPageReq.board[0];
+            sectionInfo['medium'] = this.getGroupByPageReq.medium[0];
+            sectionInfo['grade'] = this.getGroupByPageReq.grade[0];
           }
 
           const resvalues = new Map();
