@@ -255,7 +255,7 @@ export class TelemetryGeneratorService {
             corRelationList);
     }
 
-    generateProfilePopulatedTelemetry(pageId, profile, mode) {
+    generateProfilePopulatedTelemetry(pageId, profile, mode, env?) {
         const values = new Map();
         values['board'] = profile.board[0];
         values['medium'] = profile.medium;
@@ -264,7 +264,7 @@ export class TelemetryGeneratorService {
         this.generateInteractTelemetry(
             InteractType.OTHER,
             InteractSubtype.PROFILE_ATTRIBUTE_POPULATION,
-            Environment.HOME,
+            env ? env : Environment.HOME,
             pageId,
             undefined,
             values);
