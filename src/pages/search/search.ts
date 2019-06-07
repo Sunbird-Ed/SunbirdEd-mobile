@@ -257,8 +257,20 @@ export class SearchPage implements  OnDestroy {
 
 
   openCollection(collection) {
-    // TODO: Add mimeType check
-    // this.navCtrl.push(EnrolledCourseDetailsPage, {'content': collection})
+    const identifier = collection.identifier;
+    let telemetryObject: TelemetryObject;
+    const objectType = this.telemetryGeneratorService.isCollection(collection.mimeType) ? collection.contentType : ContentType.RESOURCE;
+    telemetryObject = new TelemetryObject(identifier, objectType, undefined);
+    const values = new Map();
+    values['root'] = true;
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.CONTENT_CLICKED,
+      !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
+      PageId.DIAL_SEARCH,
+      telemetryObject,
+      values,
+      undefined,
+      this.corRelationList);
     this.showContentDetails(collection, true);
   }
 
@@ -661,13 +673,16 @@ export class SearchPage implements  OnDestroy {
     const values = new Map();
     values['SearchPhrase'] = this.searchKeywords;
     values['PositionClicked'] = index;
-
+    values['source'] = this.source;
+    if (this.isDialCodeSearch) {
+      values['root'] = false;
+    }
     const telemetryObject = new TelemetryObject(identifier, contentType, pkgVersion);
 
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.CONTENT_CLICKED,
-      Environment.HOME,
-      this.source,
+      !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
+      this.isDialCodeSearch ? PageId.DIAL_SEARCH : this.source,
       telemetryObject,
       values,
       undefined,
@@ -930,6 +945,15 @@ export class SearchPage implements  OnDestroy {
           if (data && data.length && this.isDownloadStarted) {
             _.forEach(data, (value) => {
               if (value.status === ContentImportStatus.ENQUEUED_FOR_DOWNLOAD) {
+                this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+                  InteractSubtype.LOADING_SPINE,
+                  this.source === PageId.USER_TYPE_SELECTION ? Environment.ONBOARDING : Environment.HOME,
+                  PageId.DIAL_SEARCH,
+                  undefined,
+                  undefined,
+                  undefined,
+                  this.corRelationList
+                  );
                 this.queuedIdentifiers.push(value.identifier);
               }
             });
@@ -980,6 +1004,15 @@ export class SearchPage implements  OnDestroy {
               }
               if (this.queuedIdentifiers.length === this.currentCount) {
                 this.showLoading = false;
+                this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+                  InteractSubtype.LOADING_SPINE_COMPLETED,
+                  this.source === PageId.USER_TYPE_SELECTION ? Environment.ONBOARDING : Environment.HOME,
+                  PageId.DIAL_SEARCH,
+                  undefined,
+                  undefined,
+                  undefined,
+                  this.corRelationList
+                  );
                 this.showContentDetails(this.childContent);
                 this.events.publish('savedResources:update', {
                   update: true
