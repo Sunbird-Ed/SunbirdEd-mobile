@@ -522,7 +522,7 @@ export class AppGlobalService implements OnDestroy {
         }
     }
 
-    generateAttributeChangeTelemetry(oldAttribute, newAttribute) {
+    generateAttributeChangeTelemetry(oldAttribute, newAttribute, pageId) {
         if (this.TRACK_USER_TELEMETRY) {
             const values = new Map();
             values['oldValue'] = oldAttribute;
@@ -531,7 +531,7 @@ export class AppGlobalService implements OnDestroy {
             this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
                 InteractSubtype.PROFILE_ATTRIBUTE_CHANGED,
                 Environment.USER,
-                PageId.GUEST_PROFILE,
+                pageId,
                 undefined,
                 values);
         }

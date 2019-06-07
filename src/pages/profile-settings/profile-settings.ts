@@ -344,13 +344,14 @@ export class ProfileSettingsPage {
           this.loader = this.commonUtilService.getLoader();
           this.loader.present();
         }
-        oldAttribute.board = this.profileForTelemetry.board ? this.profileForTelemetry.board : '';
+        oldAttribute.board = this.profileForTelemetry.board &&  this.profileForTelemetry.board.length ? this.profileForTelemetry.board : '';
         newAttribute.board = this.userForm.value.syllabus ? this.userForm.value.syllabus : '';
         if (!_.isEqual(oldAttribute, newAttribute)) {
-          this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute);
+          this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute, PageId.ONBOARDING_PROFILE_PREFERENCES);
         }
         this.profileForTelemetry.board = this.userForm.value.syllabus;
         this.checkPrevValue(1, 'boardList', [this.userForm.value.syllabus]);
+        document.querySelectorAll('[ion-button=alert-button]')[0].setAttribute('disabled', 'false');
         break;
 
       case 1:
@@ -370,7 +371,7 @@ export class ProfileSettingsPage {
         oldAttribute.medium = this.profileForTelemetry.medium ? this.profileForTelemetry.medium : '';
         newAttribute.medium = this.userForm.value.medium ? this.userForm.value.medium : '';
         if (!_.isEqual(oldAttribute, newAttribute)) {
-          this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute);
+          this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute, PageId.ONBOARDING_PROFILE_PREFERENCES);
         }
         this.profileForTelemetry.medium = this.userForm.value.medium;
         this.checkPrevValue(3, 'gradeList', this.userForm.value.medium);
@@ -389,7 +390,7 @@ export class ProfileSettingsPage {
     oldAttribute.class = this.profileForTelemetry.grade ? this.profileForTelemetry.grade : '';
     newAttribute.class = this.userForm.value.grades ? this.userForm.value.grades : '';
     if (!_.isEqual(oldAttribute, newAttribute)) {
-      this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute);
+      this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute, PageId.ONBOARDING_PROFILE_PREFERENCES);
     }
     this.profileForTelemetry.grade = this.userForm.value.grades;
   }
@@ -518,7 +519,7 @@ export class ProfileSettingsPage {
         this.events.publish('refresh:profile');
         this.appGlobalService.guestUserProfile = res;
         this.appGlobalService.setOnBoardingCompleted();
-        this.telemetryGeneratorService.generateProfilePopulatedTelemetry(PageId.DIAL_CODE_SCAN_RESULT, req.syllabus[0], 'manual');
+        this.telemetryGeneratorService.generateProfilePopulatedTelemetry(PageId.ONBOARDING_PROFILE_PREFERENCES, req, 'manual');
         if (this.navParams.get('isChangeRoleRequest')) {
           this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, req.profileType).toPromise().then();
         }

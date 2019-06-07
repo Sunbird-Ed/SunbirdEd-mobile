@@ -846,7 +846,7 @@ export class SearchPage implements  OnDestroy {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.OTHER,
       InteractSubtype.DIAL_SEARCH_RESULT_FOUND,
-      Environment.HOME,
+      this.source ? this.source : Environment.HOME,
       PageId.SEARCH,
       undefined,
       values
