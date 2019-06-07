@@ -205,6 +205,12 @@ export class SunbirdQRScanner {
   }
 
   showInvalidCodeAlert() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.OTHER,
+      InteractSubtype.QR_CODE_INVALID,
+      Environment.HOME,
+      this.source
+    );
     if (this.source !== 'user-type-selection') {
       this.commonUtil.afterOnBoardQRErrorAlert('INVALID_QR', 'UNKNOWN_QR');
       return;
@@ -243,12 +249,6 @@ export class SunbirdQRScanner {
       });
 
     popUp.present();
-    this.telemetryGeneratorService.generateInteractTelemetry(
-      InteractType.OTHER,
-      InteractSubtype.QR_SCAN_INVALID,
-      Environment.HOME,
-      PageId.LIBRARY
-    )
   }
 }
 
