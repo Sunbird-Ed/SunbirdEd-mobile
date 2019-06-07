@@ -179,7 +179,7 @@ export class SunbirdQRScanner {
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW,
       ImpressionSubtype.QRCodeScanInitiate,
-      source === PageId.USER_TYPE_SELECTION ? PageId.USER_TYPE_SELECTION : PageId.LIBRARY,
+      source,
       source === PageId.ONBOARDING_PROFILE_PREFERENCES ? Environment.ONBOARDING : Environment.HOME);
   }
 
@@ -243,6 +243,12 @@ export class SunbirdQRScanner {
       });
 
     popUp.present();
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.OTHER,
+      InteractSubtype.QR_SCAN_INVALID,
+      Environment.HOME,
+      PageId.LIBRARY
+    )
   }
 }
 
