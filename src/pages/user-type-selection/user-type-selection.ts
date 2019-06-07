@@ -141,7 +141,7 @@ export class UserTypeSelectionPage {
       }
     });
     const values = new Map();
-    values['userType'] = this.selectedUserType;
+    values['userType'] = (this.selectedUserType).toUpperCase();
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.USER_TYPE_SELECTED,
@@ -271,7 +271,7 @@ export class UserTypeSelectionPage {
 
   generateInteractEvent(userType) {
     const values = new Map();
-    values['UserType'] = userType;
+    values['userType'] = (userType).toUpperCase();
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.CONTINUE_CLICKED,
