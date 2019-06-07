@@ -1085,7 +1085,7 @@ export class ContentDetailsPage {
         });
         const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
         this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-          InteractSubtype.UPDATE_INITIATE ? this.isUpdateAvail : InteractSubtype.DOWNLOAD_INITIATE,
+          this.isUpdateAvail ? InteractSubtype.UPDATE_INITIATE : InteractSubtype.DOWNLOAD_INITIATE,
           Environment.HOME,
           PageId.CONTENT_DETAIL,
           telemetryObject,
