@@ -2,7 +2,7 @@ import { GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs } from './../../app/mo
 import { CommonUtilService } from './../../service/common-util.service';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import {App, NavController, Platform, Popover, PopoverController, ViewController} from 'ionic-angular';
+import {App, Platform, Popover, PopoverController} from 'ionic-angular';
 import { QRAlertCallBack, QRScannerAlert } from './qrscanner_alert';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { QRScannerResultHandler } from './qrscanresulthandler.service';

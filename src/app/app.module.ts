@@ -259,7 +259,7 @@ export const sunbirdSdkFactory =
           telemetryApiPath: '/api/data/v1',
           deviceRegisterHost: buildConfigValues['DEVICE_REGISTER_BASE_URL'],
           telemetrySyncBandwidth: 200,
-          telemetrySyncThreshold: 10,
+          telemetrySyncThreshold: 300,
           telemetryLogMinAllowedOffset: 86400000
         },
         sharedPreferencesConfig: {
