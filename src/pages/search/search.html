@@ -38,14 +38,7 @@
                 {{ (content.name && content.name.length > 30) ? (content.name | slice:0:30) + '...' : (content.name) }}
               </h3>
               <p>
-                <span>{{ content.contentType }}</span>
                 <span *ngIf="content.size"> • {{ content.size | fileSize: 0}}</span>
-              </p>
-              <p>
-                <span *ngIf="content.gradeLevel && content.gradeLevel.length">
-                  {{ content?.gradeLevel[0] }}
-                </span>
-                <span *ngIf="content.subject"> • {{ content?.subject}}</span>
               </p>
             </ion-item>
             <div *ngIf="!last" class="inner-divider"></div>
