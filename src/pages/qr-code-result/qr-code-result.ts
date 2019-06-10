@@ -174,7 +174,7 @@ export class QrCodeResultPage implements OnDestroy {
   ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(ImpressionType.VIEW, '',
       PageId.DIAL_CODE_SCAN_RESULT,
-      !this.appGlobalService.isProfileSettingsCompleted ? Environment.ONBOARDING : this.appGlobalService.getEnvironmentForTelemetry());
+      !this.appGlobalService.isProfileSettingsCompleted ? Environment.ONBOARDING : this.appGlobalService.getPageIdForTelemetry());
     this.navBar.backButtonClick = () => {
       this.handleBackButton(InteractSubtype.NAV_BACK_CLICKED);
     };
@@ -317,8 +317,12 @@ export class QrCodeResultPage implements OnDestroy {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       content.isAvailableLocally ? InteractSubtype.PLAY_FROM_DEVICE : InteractSubtype.PLAY_ONLINE,
-      !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : this.appGlobalService.getEnvironmentForTelemetry(),
-      PageId.DIAL_CODE_SCAN_RESULT);
+      !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : this.appGlobalService.getPageIdForTelemetry(),
+      PageId.DIAL_CODE_SCAN_RESULT,
+      telemetryObject,
+      undefined,
+      undefined,
+      this.corRelationList);
   }
 
   playOnline(content) {

@@ -179,7 +179,7 @@ export class SunbirdQRScanner {
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW,
       ImpressionSubtype.QRCodeScanInitiate,
-      source === 'user' ? 'profile' : source,
+      source,
       source === PageId.ONBOARDING_PROFILE_PREFERENCES ? Environment.ONBOARDING : Environment.HOME);
   }
 

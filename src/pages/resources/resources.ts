@@ -228,7 +228,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.getPopularContent();
         }
       } else if (data === '') {
-        this.qrScanner.startScanner(this.appGlobalService.getEnvironmentForTelemetry());
+        this.qrScanner.startScanner(this.appGlobalService.getPageIdForTelemetry());
       }
       // });
     });
