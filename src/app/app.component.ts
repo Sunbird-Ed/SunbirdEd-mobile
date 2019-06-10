@@ -459,13 +459,17 @@ export class MyApp implements OnInit, AfterViewInit {
     return this.permission.checkPermissions(this.permissionList)
       .mergeMap((statusMap: { [key: string]: AndroidPermissionsStatus }) => {
         const toRequest: AndroidPermission[] = [];
-
+        const values = new Map();
+        values['permission-list'] = this.permissionList;
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.OTHER,
+          InteractSubtype.PERMISSION_POPUP,
+          Environment.HOME,
+          PageId.ONBOARDING_LANGUAGE_SETTING,
+          undefined,
+          values
+        );
         for (const permission in statusMap) {
-          this.telemetryGeneratorService.generateImpressionTelemetry(
-            ImpressionType.VIEW,
-            ImpressionSubtype.PERMISSION_POPUP,
-            '', Environment.ONBOARDING
-          );
           if (!statusMap[permission].hasPermission) {
             toRequest.push(permission as AndroidPermission);
           }
