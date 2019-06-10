@@ -100,17 +100,22 @@ export class FaqPage {
       if (this.selectedLanguage && this.commonUtilService.networkInfo.isNetworkAvailable) {
         url += '?selectedlang=' + this.selectedLanguage + '&randomid=' + Math.random();
         this.faq.url = url;
+      } else  {
+        this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
+
       }
+    }).catch((error) => {
+      console.log('In error', error);
+      this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
     });
-    this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
   }
 
   private handleHeaderEvents($event) {
     switch ($event.name) {
       case 'back':
-          setTimeout(() => {
-            this.handleBackButton();
-          }, 100);
+        setTimeout(() => {
+          this.handleBackButton();
+        }, 100);
         break;
     }
   }

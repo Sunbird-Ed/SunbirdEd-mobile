@@ -34,6 +34,7 @@ import { ProfileConstants } from '../../app';
 import { AppHeaderService } from '@app/service';
 import { GuestProfilePage } from '../profile';
 import { ProfilePage } from '../profile/profile';
+import { NotificationsPage } from '../notifications/notifications';
 
 @Component({
   selector: 'page-resources',
@@ -714,12 +715,12 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   ionViewWillEnter() {
     this.events.subscribe('update_header', (data) => {
-      this.headerServie.showHeaderWithHomeButton(['search', 'download']);
+      this.headerServie.showHeaderWithHomeButton(['search', 'download', 'notification']);
     });
     this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
-    this.headerServie.showHeaderWithHomeButton(['search', 'download']);
+    this.headerServie.showHeaderWithHomeButton(['search', 'download', 'notification']);
 
     this.getCategoryData();
 
@@ -742,8 +743,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   // Offline Toast
-  async presentToastForOffline(msg: string) {
-    this.toast = await this.toastController.create({
+  presentToastForOffline(msg: string) {
+    this.toast = this.toastController.create({
       duration: 3000,
       message: this.commonUtilService.translateMessage(msg),
       showCloseButton: true,
@@ -1026,7 +1027,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         break;
       case 'download': this.redirectToActivedownloads();
         break;
-
+      case 'notification': this.redirectToNotifications();
+        break;
+      default: console.warn('Use Proper Event name');
     }
   }
 
@@ -1037,6 +1040,15 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       Environment.HOME,
       PageId.LIBRARY);
     this.navCtrl.push(ActiveDownloadsPage);
+  }
+
+  redirectToNotifications() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.NOTIFICATION_CLICKED,
+      Environment.HOME,
+      PageId.LIBRARY);
+    this.navCtrl.push(NotificationsPage);
   }
 
   toggleMenu() {
