@@ -272,7 +272,8 @@ export enum InteractSubtype {
     PLAY_STORE_BUTTON_CLICKED = 'play-store-button-clicked',
     HELP_SECTION_CLICKED = 'help-section-clicked',
     APP_RATING_APPEARED = 'app-rating-appeared',
-    START_CLICKED = 'start-clicked'
+    START_CLICKED = 'start-clicked',
+    UTM_INFO = 'utm_info'
 }
 
 export enum ActionButtonType {

@@ -123,6 +123,7 @@ export class MyApp implements OnInit, AfterViewInit {
       this.statusBar.styleBlackTranslucent();
       this.handleBackButton();
       this.appRatingService.checkInitialDate();
+      this.getUtmParameter();
     });
   }
 
@@ -724,6 +725,28 @@ export class MyApp implements OnInit, AfterViewInit {
       .filter((e) => e.type === ErrorEventType.AUTH_TOKEN_REFRESH_ERROR)
       .take(1).subscribe(() => {
         this.logoutHandlerService.onLogout();
+      });
+  }
+  getUtmParameter() {
+    this.utilityService.getUtmInfo().then(response => {
+      if (response) {
+        const utmTelemetry = new Map();
+        utmTelemetry['utm_data'] = response;
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.OTHER,
+          InteractSubtype.UTM_INFO,
+          Environment.HOME,
+          PageId.HOME,
+          undefined,
+          utmTelemetry,
+          undefined,
+          undefined
+        );
+        this.utilityService.clearUtmInfo();
+      }
+    })
+      .catch(error => {
+        console.log('Error is', error);
       });
   }
 }
