@@ -302,9 +302,9 @@ export class CoursesPage implements OnInit, AfterViewInit {
       }
     });
 
-    this.events.subscribe('tab.change', (data) => {
+    this.events.subscribe('tab.change', (data: string) => {
       this.ngZone.run(() => {
-        if (data === 'COURSES') {
+        if (data.trim().toUpperCase() === 'COURSES') {
           if (this.appliedFilter) {
             this.filterIcon = './assets/imgs/ic_action_filter.png';
             this.courseFilter = undefined;

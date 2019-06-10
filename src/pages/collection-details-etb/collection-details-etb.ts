@@ -386,12 +386,27 @@ export class CollectionDetailsEtbPage implements OnInit {
   }
 
   // toggle the card
-  toggleGroup(group) {
+  toggleGroup(group, content) {
+    let isCollapsed = true;
     if (this.isGroupShown(group)) {
+      isCollapsed = false;
       this.shownGroup = null;
     } else {
       this.shownGroup = group;
     }
+    const values = new Map();
+    values['isCollapsed'] = isCollapsed;
+    const telemetryObject = new TelemetryObject(content.identifier, ContentType.TEXTBOOK_UNIT, content.contentData.pkgVersion);
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.UNIT_CLICKED,
+      Environment.HOME,
+      PageId.COLLECTION_DETAIL,
+      telemetryObject,
+      values,
+      undefined,
+      this.corRelationList
+    );
   }
 
   // to check whether the card is toggled or not
