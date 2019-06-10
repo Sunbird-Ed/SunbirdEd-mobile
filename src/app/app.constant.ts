@@ -35,7 +35,8 @@ export class ContentType {
     ];
     public static readonly FOR_DIAL_CODE_SEARCH = [
         ContentType.TEXTBOOK,
-        ContentType.TEXTBOOK_UNIT
+        ContentType.TEXTBOOK_UNIT,
+        ContentType.COURSE
     ];
     public static readonly FOR_RECENTLY_VIEWED = [
         ContentType.STORY,
