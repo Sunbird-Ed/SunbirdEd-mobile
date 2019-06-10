@@ -809,11 +809,12 @@ export class ContentDetailsPage {
     values['isUpdateAvailable'] = this.isUpdateAvail;
     values['isDownloaded'] = this.contentDownloadable[this.content.identifier];
     values['autoAfterDownload'] = this.downloadAndPlay ? true : false;
+    const contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;
 
     const telemetryObject = new TelemetryObject(
       this.content.identifier,
-      this.content.contentType,
-      this.content.contentData.pkgVersion
+      this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType,
+      this.content.contentData.pkgVersion,
     );
 
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
