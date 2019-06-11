@@ -116,8 +116,8 @@ export class MyApp implements OnInit, AfterViewInit {
   ) {
     this.telemetryAutoSyncUtil = new TelemetryAutoSyncUtil(this.telemetryService);
     platform.ready().then(async () => {
-      this.fcmTokenWatcher();
-      this.receiveNotification();
+      // this.fcmTokenWatcher(); // Notification related
+      // this.receiveNotification();
       this.imageLoaderConfig.enableDebugMode();
       this.imageLoaderConfig.setMaximumCacheSize(100 * 1024 * 1024);
       this.telemetryGeneratorService.genererateAppStartTelemetry(await utilityService.getDeviceSpec());
@@ -148,47 +148,47 @@ export class MyApp implements OnInit, AfterViewInit {
   /* Generates new FCM Token if not available
    * if available then on token refresh updates FCM token
    */
-  fcmTokenWatcher() {
-    if (!this.preferences.getString('fcm_token')) {
-      FCMPlugin.getToken((token) => {
-        this.preferences.putString('fcm_token', token);
-      });
-    } else {
-      FCMPlugin.onTokenRefresh((token) => {
-        this.preferences.putString('fcm_token', token);
-      });
-    }
+//   fcmTokenWatcher() {
+//     if (!this.preferences.getString('fcm_token')) {
+//       FCMPlugin.getToken((token) => {
+//         this.preferences.putString('fcm_token', token);
+//       });
+//     } else {
+//       FCMPlugin.onTokenRefresh((token) => {
+//         this.preferences.putString('fcm_token', token);
+//       });
+//     }
 
-  }
+//   }
 
 
 
   /* Notification data will be received in data variable
    * can take action on data variable
    */
-  receiveNotification () {
-    FCMPlugin.onNotification((data) => {
-      console.log('Notificationdata');
-      console.log(data);
-      alert(data);
+//   receiveNotification () {
+//     FCMPlugin.onNotification((data) => {
+//       console.log('Notificationdata');
+//       console.log(data);
+//       alert(data);
 
-        if (data.wasTapped) {
-          // Notification was received on device tray and tapped by the user.
-          alert( JSON.stringify(data) );
-        } else {
-          // Notification was received in foreground. Maybe the user needs to be notified.
-          alert( JSON.stringify(data) );
-        }
-    },
-    (sucess) => {
-      console.log('Notification Sucess Callback');
-      console.log(sucess);
-    },
-    (err) => {
-      console.log('Notification Error Callback');
-      console.log(err);
-    });
-  }
+//         if (data.wasTapped) {
+//           // Notification was received on device tray and tapped by the user.
+//           alert( JSON.stringify(data) );
+//         } else {
+//           // Notification was received in foreground. Maybe the user needs to be notified.
+//           alert( JSON.stringify(data) );
+//         }
+//     },
+//     (sucess) => {
+//       console.log('Notification Sucess Callback');
+//       console.log(sucess);
+//     },
+//     (err) => {
+//       console.log('Notification Error Callback');
+//       console.log(err);
+//     });
+//   }
 
   /**
 	 * Angular life cycle hooks
