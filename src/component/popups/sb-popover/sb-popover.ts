@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {ChangeDetectorRef, Component, NgZone} from '@angular/core';
 import { ContentActionsComponent } from '@app/component';
 import {
   NavParams,
@@ -11,6 +11,7 @@ import { TelemetryGeneratorService } from '../../../service/telemetry-generator.
 import { TranslateService } from '@ngx-translate/core';
 import { ProfileConstants } from '../../../app/app.constant';
 import { Rollup, CorrelationData, ContentService, AuthService } from 'sunbird-sdk';
+import {Observable, Subscription} from "rxjs";
 
 /**
  * Generated class for the PopupsComponent component.
@@ -23,7 +24,6 @@ import { Rollup, CorrelationData, ContentService, AuthService } from 'sunbird-sd
   templateUrl: 'sb-popover.html'
 })
 export class SbPopoverComponent {
-
   sbPopoverHeading: any;
   sbPopoverMainTitle: any;
   sbPopoverContent: any;
@@ -41,10 +41,16 @@ export class SbPopoverComponent {
   showFlagMenu = true;
   public objRollup: Rollup;
   private corRelationList: Array<CorrelationData>;
+  private sbPopoverDynamicMainTitle$?: Observable<string>;
+  private sbPopoverDynamicMainTitleSubscription?: Subscription;
 
 
-  constructor(public viewCtrl: ViewController, public navParams: NavParams,
-    private platform: Platform, private events: Events) {
+  constructor(
+    public viewCtrl: ViewController,
+    public navParams: NavParams,
+    private platform: Platform,
+    private ngZone: NgZone
+  ) {
     this.content = this.navParams.get('content');
     this.actionsButtons = this.navParams.get('actionsButtons');
     this.icon = this.navParams.get('icon');
@@ -59,9 +65,20 @@ export class SbPopoverComponent {
     this.pageName = this.navParams.get('pageName');
     this.objRollup = this.navParams.get('objRollup');
     this.corRelationList = this.navParams.get('corRelationList');
+    this.sbPopoverDynamicMainTitle$ = this.navParams.get('sbPopoverDynamicMainTitle');
 
     if (this.navParams.get('isChild')) {
       this.isChild = true;
+    }
+
+    if (this.sbPopoverDynamicMainTitle$) {
+      this.sbPopoverDynamicMainTitleSubscription = this.sbPopoverDynamicMainTitle$
+        .do((v) => {
+          this.ngZone.run(() => {
+            this.sbPopoverMainTitle = v;
+          });
+        })
+        .subscribe();
     }
 
     this.contentId = (this.content && this.content.identifier) ? this.content.identifier : '';
@@ -71,14 +88,10 @@ export class SbPopoverComponent {
     }, 20);
   }
 
-  ionViewWillEnter(): void {
-    this.events.subscribe('deletedContentList:changed', (data) => {
-      this.sbPopoverMainTitle = data.deletedContentsInfo.deletedCount + '/' + data.deletedContentsInfo.totalCount;
-    });
-  }
-
   ionViewWillLeave(): void {
-    this.events.unsubscribe('deletedContentList:changed');
+    if (this.sbPopoverDynamicMainTitleSubscription) {
+      this.sbPopoverDynamicMainTitleSubscription.unsubscribe();
+    }
   }
 
   closePopover() {
