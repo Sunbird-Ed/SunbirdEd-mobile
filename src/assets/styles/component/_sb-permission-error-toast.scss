@@ -7,12 +7,15 @@
         line-height: 16px;
     }
     .toast-button:before{
-        font-family: "Ionicons";
+        content: url('../assets/imgs/ic_settings_error.png');
         margin-top: -6px;
-        margin-left: -48px;
+        margin-left: -55px;
         z-index: 999;
         position: absolute;
-        content: url('../assets/imgs/ic_settings_error.png');
+        transform: scale(.7);
+        
+        height: 14px;
+        width: 14px;
       }
       .button-inner{
         font-size: 12px;

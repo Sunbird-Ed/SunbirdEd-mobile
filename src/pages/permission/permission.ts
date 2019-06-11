@@ -67,9 +67,6 @@ export class PermissionPage {
     this.appVersion.getAppName()
       .then((appName: any) => this.appName = appName);
     }
-    ionViewDidLoad() {
-      console.log('ionViewDidLoad PermissionPage');
-    }
 
     async ionViewWillEnter() {
       await this.permission.checkPermissions(this.permissionList).subscribe((res: { [key: string]: AndroidPermissionsStatus }) => {
@@ -200,8 +197,8 @@ export class PermissionPage {
       values);
   }
 
-  stateChange(event: any) {
-    console.log(event);
+  stateChange(event, item) {
+    console.log(item);
     this.navCtrl.pop();
     cordova.plugins.diagnostic.switchToSettings('application_details', () => {
       console.log('opened settings');
