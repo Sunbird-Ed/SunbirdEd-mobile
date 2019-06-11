@@ -177,14 +177,18 @@ export class SunbirdQRScanner {
     toast.onWillDismiss((_null, role) => {
       switch (role) {
         case 'close':
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.SETTINGS_CLICKED,
+          Environment.ONBOARDING,
+          PageId.QRCodeScanner);
         this.app.getActiveNavs()[0].push('PermissionPage', { changePermissionAccess: true });
           break;
         case 'backdrop':
           console.log('Duration timeout');
           break;
-        case 'custom':
-          console.log('toast.dismiss(\'custom\'); called');
-          break;
+        default:
+          console.log('toast dismissed');
       }
     });
     toast.onDidDismiss(() => {
@@ -207,8 +211,18 @@ export class SunbirdQRScanner {
       ],
       handler: (whichBtnClicked: string) => {
         if (whichBtnClicked ===  this.commonUtilService.translateMessage('NOT_NOW')) {
+          this.telemetryGeneratorService.generateInteractTelemetry(
+            InteractType.TOUCH,
+            InteractSubtype.PERMISSION_POPOVER_NOT_NOW_CLICKED,
+            Environment.ONBOARDING,
+            PageId.QRCodeScanner);
             this.showSettingErrorToast();
         } else {
+          this.telemetryGeneratorService.generateInteractTelemetry(
+            InteractType.TOUCH,
+            InteractSubtype.PERMISSION_POPOVER_ALLOW_CLICKED,
+            Environment.ONBOARDING,
+            PageId.QRCodeScanner);
           this.appGlobalService.setIsPermissionAsked(PermissionAskedEnum.isCameraAsked, true);
           this.permission.requestPermissions(this.permissionList).subscribe( (status: AndroidPermissionsStatus) => {
             if (status && status.hasPermission) {
