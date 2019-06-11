@@ -58,8 +58,6 @@ import { FaqPage } from '@app/pages/help/faq';
 import { NotificationService } from '@app/service/notification.service';
 import {SplaschreenDeeplinkActionHandlerDelegate} from '@app/service/sunbird-splashscreen/splaschreen-deeplink-action-handler-delegate';
 
-declare var FCMPlugin: any;
-
 @Component({
   templateUrl: 'app.html',
   providers: [
