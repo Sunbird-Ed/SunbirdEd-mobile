@@ -16,29 +16,29 @@
       <span class="storage-info">Storage</span>
     </div>
   </div>
-  <div radio-group [ngModel]="" (ionChange)="showShouldTransferContentsPopup($event.value === StorageDestination.INTERNAL_STORAGE ? StorageDestination.EXTERNAL_STORAGE: StorageDestination.INTERNAL_STORAGE)">
-    <div class="sb-storage-container">
+  <div radio-group (ionChange)="showShouldTransferContentsPopup($event.value === StorageDestination.INTERNAL_STORAGE ? StorageDestination.EXTERNAL_STORAGE: StorageDestination.INTERNAL_STORAGE)">
+    <div class="sb-storage-container">        
       <div class="radio-container">
-        <ion-radio [checked]="(getStorageDestination() | async) === StorageDestination.INTERNAL_STORAGE"></ion-radio>
+        <ion-radio [checked]="(storageDestination$ | async) === StorageDestination.INTERNAL_STORAGE"></ion-radio>
       </div>
       <div class="iconSize">
         <img src="./assets/imgs/Phone.png">
       </div>
       <div class="sb-card-details">
-        <div class="title">Phone(16 GB)</div>
-        <div class="info">Free Space : 8 GB</div>
+        <div class="title">Phone({{totalInternalMemorySize}})</div>
+        <div class="info">Free Space : {{availableInternalMemorySize | fileSize}}</div>
       </div>
     </div>
-    <div class="sb-storage-container">
+    <div class="sb-storage-container" *ngIf="isExternalMemoryAvailable" >
       <div class="radio-container">
-        <ion-radio [checked]="(getStorageDestination() | async) === StorageDestination.EXTERNAL_STORAGE"></ion-radio>
+        <ion-radio [checked]="(storageDestination$ | async) === StorageDestination.EXTERNAL_STORAGE"></ion-radio>
       </div>
       <div class="iconSize">
         <img src="./assets/imgs/SD_card.png">
       </div>
       <div class="sb-card-details">
-        <div class="title">SD Card(32 GB)</div>
-        <div class="info">Free Space : 8 GB</div>
+        <div class="title">SD Card({{totalExternalMemorySize}})</div>
+        <div class="info">Free Space : {{availableExternalMemorySize | fileSize}}</div>
       </div>
     </div>
   </div>

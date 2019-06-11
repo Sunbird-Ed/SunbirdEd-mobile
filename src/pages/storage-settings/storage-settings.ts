@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnInit, ChangeDetectorRef, ChangeDetectionStrategy} from '@angular/core';
 import {IonicPage, NavController, NavParams, PopoverController} from 'ionic-angular';
 import {AppHeaderService, CommonUtilService} from '@app/service';
 import {Observable, Subscription} from 'rxjs';
@@ -18,6 +18,7 @@ import {SbPopoverComponent} from "@app/component";
 @Component({
   selector: 'page-storage-settings',
   templateUrl: 'storage-settings.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
   private _storageVolumes: StorageVolume[] = [];
@@ -29,21 +30,22 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
   };
 
   public StorageDestination = StorageDestination;
+  public storageDestination$: Observable<StorageDestination>;
 
   get isExternalMemoryAvailable(): boolean {
     return !!this._storageVolumes.find((volume) => volume.storageDestination === StorageDestination.EXTERNAL_STORAGE);
   }
 
-  get totalExternalMemorySize(): number {
+  get totalExternalMemorySize(): string {
     return this._storageVolumes
       .find((volume) => volume.storageDestination === StorageDestination.EXTERNAL_STORAGE)!
       .info.totalSize
   }
 
-  get totalInternalMemorySize(): number {
-    return this._storageVolumes
-      .find((volume) => volume.storageDestination === StorageDestination.INTERNAL_STORAGE)!
-      .info.totalSize
+  get totalInternalMemorySize(): string {
+    const internalVolume = this._storageVolumes
+      .find((volume) => volume.storageDestination === StorageDestination.INTERNAL_STORAGE);
+    return internalVolume ? internalVolume.info.totalSize : '0 Kb';
   }
 
   get availableExternalMemorySize(): number {
@@ -53,9 +55,9 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
   }
 
   get availableInternalMemorySize(): number {
-    return this._storageVolumes
-      .find((volume) => volume.storageDestination === StorageDestination.INTERNAL_STORAGE)!
-      .info.availableSize
+    const internalVolume = this._storageVolumes
+      .find((volume) => volume.storageDestination === StorageDestination.INTERNAL_STORAGE);
+    return internalVolume ? internalVolume.info.availableSize : 0;
   }
 
   constructor(
@@ -64,19 +66,17 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     private commonUtilService: CommonUtilService,
     private headerService: AppHeaderService,
     private popoverCtrl: PopoverController,
+    private changeDetectionRef: ChangeDetectorRef,
     @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     @Inject('STORAGE_SERVICE') private storageService: StorageService,
     @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
     @Inject('CONTENT_SERVICE') private contentService: ContentService) {
+      this.storageDestination$ =  this.storageService.getStorageDestination();
   }
 
   ngOnInit() {
     this.initAppHeader();
     this.fetchStorageVolumes();
-  }
-
-  getStorageDestination(): Observable<StorageDestination> {
-    return this.storageService.getStorageDestination() as any;
   }
 
   async showShouldTransferContentsPopup(storageDestination: StorageDestination): Promise<void> {
@@ -124,7 +124,11 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
   }
 
   private fetchStorageVolumes() {
-    this.deviceInfo.getStorageVolumes().subscribe((v) => this._storageVolumes = v);
+    this.deviceInfo.getStorageVolumes().subscribe((v) => {
+     this._storageVolumes = v;
+     console.log(this._storageVolumes);
+     // this.changeDetectionRef.detectChanges();
+     });
   }
 
   private async showTransferContentsPopup(): Promise<undefined> {

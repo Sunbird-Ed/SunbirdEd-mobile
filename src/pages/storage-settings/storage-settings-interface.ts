@@ -9,15 +9,15 @@ export interface StorageSettingsInterface extends OnInit {
 
   isExternalMemoryAvailable: boolean;
 
-  totalExternalMemorySize: number;
+  totalExternalMemorySize: string;
 
-  totalInternalMemorySize: number;
+  totalInternalMemorySize: string;
 
   availableExternalMemorySize: number;
 
   availableInternalMemorySize: number;
 
-  getStorageDestination(): Observable<StorageDestination>;
+  storageDestination$: Observable<StorageDestination>;
 
   showShouldTransferContentsPopup(StorageDestination): Promise<void>;
 }
