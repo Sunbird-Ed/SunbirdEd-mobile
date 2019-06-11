@@ -197,8 +197,13 @@ export class PermissionPage {
       values);
   }
 
-  stateChange(event, item) {
-    console.log(item);
+  stateChange(event) {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.APP_PERMISSION_SETTING_CLICKED,
+      Environment.ONBOARDING,
+      PageId.PERMISSION
+      );
     this.navCtrl.pop();
     cordova.plugins.diagnostic.switchToSettings('application_details', () => {
       console.log('opened settings');
