@@ -101,6 +101,9 @@ export function formService() {
 export function downloadService() {
   return SunbirdSdk.instance.downloadService;
 }
+export function storageService() {
+  return SunbirdSdk.instance.storageService;
+}
 export function sdkDriverFactory() {
   return [{
     provide: 'SDK_CONFIG',
@@ -171,6 +174,9 @@ export function sdkDriverFactory() {
   }, {
     provide: 'DOWNLOAD_SERVICE',
     useFactory: downloadService
+  }, {
+    provide: 'STORAGE_SERVICE',
+    useFactory: storageService
   }
   ];
 }
