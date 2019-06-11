@@ -25,4 +25,8 @@ export class NotificationItemComponent {
     this.isExpanded = !this.isExpanded;
   }
 
+  handleDeepLink() {
+    console.log("handleDeepLink");
+  }
+
 }

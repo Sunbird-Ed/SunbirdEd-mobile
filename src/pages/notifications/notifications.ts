@@ -11,15 +11,43 @@ export class NotificationsPage {
 
   showNewNotificationCount = true;
   notificationList = [
-    { title: 'First Notification', description: 'Your instructor will allow access when the course is ready.', time: 'Thu 10 Jan 20:27' },
     {
-      title: 'Second Notification', description: 'Second Notification Description', time: 'Thu 10 Jan 20:27', size: '5.34 MB',
-      updateNotes: ['Introducing Wizard Tiers. Upgrade to a higher tier to enjoy added benefits.',
-        'Now Notification land at the Notification center. Look for the bell icon on the homepage.'
-      ]
+      id: 121,
+      type: 1,
+      displayTime: "1560250228",
+      expiry: "1560250228",
+      actionData: {
+        actionType: "courseUpdate",
+        title: "Update Sunbird Application",
+        richText: "Blah Blah Blah",
+        deepLink: "https://google-play"
+      }
     },
-    { title: 'Third Notification', description: 'Third Notification Description', time: 'Thu 10 Jan 20:27' },
-    { title: 'Fourth Notification', description: 'Fourth Notification Description', time: 'Thu 10 Jan 20:27' },
+    {
+      id: 121,
+      type: 1,
+      displayTime: "1560250228",
+      expiry: "1560250228",
+      actionData: {
+        actionType: "updateApp",
+        title: "Update Sunbird Application",
+        richText: `<div><ul><li>Put the downloaded file 'GoogleService-Info.plist' in the Cordova project root folder.</li><li>It's highly recommended to use REST API to send push notifications because Firebase console does not have all the functionalities. Pay attention to the payload example in order to use the plugin properly.</li><li>howLoaderOnConfirm is no longer necessary. Your button will automatically show a loding animation when its closeModal parameter is set to false.</li></ul></div>`,
+        ctaText: "Update App",
+        deepLink: "https://google-play"
+      },
+    },
+    {
+      id: 122,
+      type: 1,
+      displayTime: "1560250228",
+      expiry: "1560250228",
+      actionData: {
+        actionType: "courseBatch",
+        title: "Course Batch Added",
+        richText: "",
+        deepLink: ""
+      }
+    }
   ];
   constructor(
     public navCtrl: NavController,

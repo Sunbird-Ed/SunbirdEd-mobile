@@ -1,23 +1,24 @@
-<div class="notification-item-container">
-  <p class="date-time"><img src="./assets/imgs/oval.svg" class="mr-6" alt="oval">{{ itemData?.time }}</p>
+<div class="notification-item-container" (click)="!itemData?.actionData?.ctaText ? handleDeepLink() : ''">
+  <p class="date-time"><img src="./assets/imgs/oval.svg" class="mr-6"
+      alt="oval">{{ itemData?.displayTime * 1000 | date:'E, d MMMM h:mm'}}</p>
 
-  <div class="title" (click)="toggleExpand()" [ngClass]="{'sb-accordian-header':itemData?.updateNotes}">
-    {{itemData?.title}}
-    <span class="expand-button" *ngIf="itemData?.updateNotes">
-      <img *ngIf="!isExpanded" src="./assets/imgs/arrow-down.svg" class="sb-accordian-arrow" alt="oval">
-      <img *ngIf="isExpanded" src="./assets/imgs/arrow-down.svg" class="sb-accordian-arrow arrow-up" alt="oval">
+  <div class="title" (click)="toggleExpand()"
+    [ngClass]="{'sb-accordian-header':itemData?.actionData?.actionType === 'updateApp' && itemData?.actionData?.richText}"
+    [style.color]=" itemData?.actionData?.richText === '' ? '#666666' : '#024f9d'">
+    {{itemData?.actionData?.title}}
+    <span class="expand-button" *ngIf="itemData?.actionData?.actionType === 'updateApp'">
+      <img *ngIf="!isExpanded" src="./assets/imgs/arrow-down.svg" class="sb-accordian-arrow" alt="arrow-down">
+      <img *ngIf="isExpanded" src="./assets/imgs/arrow-down.svg" class="sb-accordian-arrow arrow-up" alt="arrow-up">
     </span>
   </div>
 
-  <p *ngIf="itemData?.size">{{itemData?.size}}</p>
+  <div class="description" *ngIf="itemData?.actionData?.actionType !== 'updateApp' && itemData?.actionData?.richText">
+    {{itemData?.actionData?.richText}}</div>
 
-  <div class="description" *ngIf="itemData?.description">{{itemData?.description}}</div>
+  <div class="update-container pl-16" *ngIf="itemData?.actionData?.actionType === 'updateApp'&& isExpanded"
+    [innerHTML]="itemData?.actionData?.richText"></div>
 
-  <div class="update-container" *ngIf="itemData?.updateNotes && isExpanded">
-    <h3 class="note-title">{{ 'WHATS_NEW' | translate }}</h3>
-    <p class="note" *ngFor="let note of itemData?.updateNotes">*&nbsp; &nbsp;{{ note }}</p>
-  </div>
-
-  <hr *ngIf="itemData?.updateNotes">
-  <div *ngIf="itemData?.updateNotes" class="update-now-btn">{{'UPDATE_APP_BTN_ACTION_YES' | translate}}</div>
+  <hr *ngIf="itemData?.actionData?.ctaText">
+  <div *ngIf="itemData?.actionData?.ctaText" (click)="handleDeepLink()" class="update-now-btn">
+    {{itemData?.actionData?.ctaText}}</div>
 </div>
