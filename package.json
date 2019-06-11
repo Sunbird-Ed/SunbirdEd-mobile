@@ -83,6 +83,7 @@
     "cordova-plugin-x-socialsharing": "5.4.3",
     "cordova-sqlite-storage": "^2.3.2",
     "cordova-zip-plugin": "git+https://github.com/swayangjit/jjdltc-cordova-plugin-zip.git",
+    "cordova.plugins.diagnostic": "^4.0.12",
     "crypto-js": "^3.1.9-1",
     "driver.js": "^0.5.2",
     "es6-promise-plugin": "^4.2.2",
@@ -172,7 +173,10 @@
       "cordova-plugin-buildconfig-reader": {},
       "cordova-plugin-advanced-http": {},
       "cordova-plugin-screen-orientation": {},
-      "cordova-plugin-statusbar": {}
+      "cordova-plugin-statusbar": {},
+      "cordova.plugins.diagnostic": {
+       "ANDROID_SUPPORT_VERSION": "27.+"
+     }
     },
     "platforms": []
   },
