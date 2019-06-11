@@ -43,7 +43,8 @@ export class SbPopoverComponent {
   private corRelationList: Array<CorrelationData>;
   private sbPopoverDynamicMainTitle$?: Observable<string>;
   private sbPopoverDynamicMainTitleSubscription?: Subscription;
-
+  private sbPopoverDynamicContent$?: Observable<string>;
+  private sbPopoverDynamicContentSubscription?: Subscription;
 
   constructor(
     public viewCtrl: ViewController,
@@ -65,7 +66,11 @@ export class SbPopoverComponent {
     this.pageName = this.navParams.get('pageName');
     this.objRollup = this.navParams.get('objRollup');
     this.corRelationList = this.navParams.get('corRelationList');
+
+    // Dynamic
     this.sbPopoverDynamicMainTitle$ = this.navParams.get('sbPopoverDynamicMainTitle');
+    this.sbPopoverDynamicContent$ = this.navParams.get('sbPopoverDynamicContent');
+
 
     if (this.navParams.get('isChild')) {
       this.isChild = true;
@@ -81,6 +86,16 @@ export class SbPopoverComponent {
         .subscribe();
     }
 
+    if (this.sbPopoverDynamicContent$) {
+      this.sbPopoverDynamicContentSubscription = this.sbPopoverDynamicContent$
+        .do((v) => {
+          this.ngZone.run(() => {
+            this.sbPopoverContent = v;
+          });
+        })
+        .subscribe();
+    }
+
     this.contentId = (this.content && this.content.identifier) ? this.content.identifier : '';
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.viewCtrl.dismiss();
@@ -91,6 +106,10 @@ export class SbPopoverComponent {
   ionViewWillLeave(): void {
     if (this.sbPopoverDynamicMainTitleSubscription) {
       this.sbPopoverDynamicMainTitleSubscription.unsubscribe();
+    }
+
+    if (this.sbPopoverDynamicContentSubscription) {
+      this.sbPopoverDynamicContentSubscription.unsubscribe();
     }
   }
 

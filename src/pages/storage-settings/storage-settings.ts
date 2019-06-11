@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit, ChangeDetectorRef, ChangeDetectionStrategy} from '@angular/core';
-import {IonicPage, NavController, NavParams, PopoverController} from 'ionic-angular';
+import {IonicPage, NavController, NavParams, PopoverController, Popover} from 'ionic-angular';
 import {AppHeaderService, CommonUtilService} from '@app/service';
-import {Observable, Subscription} from 'rxjs';
+import {Observable, Subscription, BehaviorSubject} from 'rxjs';
 import {
   ContentService,
   DeviceInfo,
@@ -13,6 +13,7 @@ import {
 } from 'sunbird-sdk';
 import {StorageSettingsInterface} from "@app/pages/storage-settings/storage-settings-interface";
 import {SbPopoverComponent} from "@app/component";
+import {FileSizePipe} from '../../pipes/file-size/file-size';
 
 @IonicPage()
 @Component({
@@ -31,6 +32,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
 
   public StorageDestination = StorageDestination;
   public storageDestination$: Observable<StorageDestination>;
+  public spaceTakenBySunbird$: Observable<number>;
 
   get isExternalMemoryAvailable(): boolean {
     return !!this._storageVolumes.find((volume) => volume.storageDestination === StorageDestination.EXTERNAL_STORAGE);
@@ -66,12 +68,15 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     private commonUtilService: CommonUtilService,
     private headerService: AppHeaderService,
     private popoverCtrl: PopoverController,
-    private changeDetectionRef: ChangeDetectorRef,
+    private fileSizePipe: FileSizePipe,
     @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     @Inject('STORAGE_SERVICE') private storageService: StorageService,
     @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
     @Inject('CONTENT_SERVICE') private contentService: ContentService) {
-      this.storageDestination$ =  this.storageService.getStorageDestination();
+      this.storageDestination$ =  this.storageService.getStorageDestination() as any;
+      this.spaceTakenBySunbird$ = this.contentService
+        .getContentSpaceUsageSummary({ paths: [cordova.file.externalDataDirectory] })
+        .map((summary) => summary[0].sizeOnDevice) as any;
   }
 
   ngOnInit() {
@@ -80,6 +85,8 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
   }
 
   async showShouldTransferContentsPopup(storageDestination: StorageDestination): Promise<void> {
+    const spaceTakenBySunbird = await this.spaceTakenBySunbird$.toPromise();
+
     const confirm = this.popoverCtrl.create(SbPopoverComponent, {
       sbPopoverHeading: this.commonUtilService.translateMessage('TRANSFER_CONTENT'),
       sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_TRANSFER_TO_SDCARD'),
@@ -90,7 +97,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
         },
       ],
       icon: null,
-      metaInfo: 'Total Size : 1.5GB',
+      metaInfo: 'Total Size : ' + this.fileSizePipe.transform(spaceTakenBySunbird),
     }, {
       cssClass: 'sb-popover dw-active-downloads-popover',
     });
@@ -132,15 +139,21 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
   }
 
   private async showTransferContentsPopup(): Promise<undefined> {
+    let confirmCancel: Popover;
+
     const transferStatus$ = this.eventsBusService
       .events(EventNamespace.STORAGE)
       .takeWhile(e => e.type === StorageEventType.TRANSFER_COMPLETED)
       .filter(e => e.type === StorageEventType.TRANSFER_PROGRESS)
-      .map((e) => (e as StorageTransferProgress).payload.progress.transferSize / (e as StorageTransferProgress).payload.progress.totalSize);
+      .finally(() => confirmCancel.dismiss());
 
-    const confirmCancel = this.popoverCtrl.create(SbPopoverComponent, {
+    confirmCancel = this.popoverCtrl.create(SbPopoverComponent, {
       sbPopoverHeading: 'Transferring files',
-      sbPopoverDynamicMainTitle: transferStatus$,
+      sbPopoverDynamicMainTitle: transferStatus$
+        .map((e) => {
+          return ((e as StorageTransferProgress).payload.progress.transferSize /
+          (e as StorageTransferProgress).payload.progress.totalSize) + '%';
+        }),
       actionsButtons: [
         {
           btntext: 'Cancel',
@@ -149,7 +162,11 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
       ],
       icon: null,
       metaInfo: 'Transferring Content to SD Card',
-      sbPopoverContent: '15GB / 20 GB'
+      sbPopoverDynamicContent: transferStatus$
+        .map((e) => {
+          return this.fileSizePipe.transform((e as StorageTransferProgress).payload.progress.transferSize) + '/'
+            + this.fileSizePipe.transform((e as StorageTransferProgress).payload.progress.totalSize);
+        })
     }, {
       cssClass: 'sb-popover dw-active-downloads-popover',
     });

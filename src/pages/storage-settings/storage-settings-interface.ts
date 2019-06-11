@@ -19,5 +19,7 @@ export interface StorageSettingsInterface extends OnInit {
 
   storageDestination$: Observable<StorageDestination>;
 
+  spaceTakenBySunbird$: Observable<number>;
+
   showShouldTransferContentsPopup(StorageDestination): Promise<void>;
 }
