@@ -37,6 +37,7 @@ import { SideMenuComponent } from './side-menu/side-menu';
 import { DirectivesModule } from '@app/directives/directives.module';
 import { AppRatingAlertComponent } from './app-rating-alert/app-rating-alert';
 import { SbNoNetworkPopupComponent } from './popups/sb-no-network-popup/sb-no-network-popup';
+import { NotificationItemComponent } from './notification-item/notification-item';
 
 @NgModule({
     declarations: [
@@ -69,7 +70,8 @@ import { SbNoNetworkPopupComponent } from './popups/sb-no-network-popup/sb-no-ne
         SbGenericPopoverComponent,
         SideMenuComponent,
         AppRatingAlertComponent,
-        SbNoNetworkPopupComponent
+        SbNoNetworkPopupComponent,
+        NotificationItemComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -112,7 +114,8 @@ import { SbNoNetworkPopupComponent } from './popups/sb-no-network-popup/sb-no-ne
         SbGenericPopoverComponent,
         SideMenuComponent,
         AppRatingAlertComponent,
-        SbNoNetworkPopupComponent
+        SbNoNetworkPopupComponent,
+        NotificationItemComponent
     ],
     entryComponents: [
         ConfirmAlertComponent,

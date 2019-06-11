@@ -1,14 +1,14 @@
 <ion-header>
   <ion-navbar>
-    <ion-input type="search" *ngIf= "!dialCode" #searchInput dir="{{commonUtilService.getAppDirection()}}" placeholder="Search"
-      [(ngModel)]="searchKeywords" (keyup.enter)="handleSearch()"></ion-input>
-    <ion-buttons end *ngIf= "!dialCode">
+    <ion-input type="search" *ngIf="!dialCode" #searchInput dir="{{commonUtilService.getAppDirection()}}"
+      placeholder="Search" [(ngModel)]="searchKeywords" (keyup.enter)="handleSearch()"></ion-input>
+    <ion-buttons end *ngIf="!dialCode">
       <button ion-button (click)="showFilter()" *ngIf="filterIcon">
         <ion-icon name="options" float-end class="search-bar-icons"></ion-icon>
       </button>
       <button ion-button icon-only (click)="handleSearch()">
-				<ion-icon name="search" class="search-bar-icons"></ion-icon>
-			</button>
+        <ion-icon name="search" class="search-bar-icons"></ion-icon>
+      </button>
     </ion-buttons>
   </ion-navbar>
 </ion-header>
@@ -21,8 +21,35 @@
   </div>
   <!-- Testing here  -->
   <ion-list no-lines *ngIf="displayDialCodeResult" class="collection-list">
-      <div *ngFor="let resultlist of displayDialCodeResult">
+    <div *ngFor="let resultlist of displayDialCodeResult">
+
+      <!-- Course -->
+      <div
+        *ngIf="resultlist && resultlist.isCourse && resultlist.dialCodeContentResult && resultlist.dialCodeContentResult.length">
+        <h4 class="dial-section-header">Courses</h4>
+        <ion-list no-lines *ngIf="resultlist.dialCodeContentResult && resultlist.dialCodeContentResult.length">
+          <ion-list *ngFor="let content of resultlist.dialCodeContentResult; let i = index; let last = last"
+            class="content-list">
+            <ion-item padding-start (click)="openContent(undefined, content,index)">
+              <ion-avatar item-start>
+                <img src="{{ defaultAppIcon }}" width="24px" height="24px">
+              </ion-avatar>
+              <h3>
+                {{ (content.name && content.name.length > 30) ? (content.name | slice:0:30) + '...' : (content.name) }}
+              </h3>
+              <p>
+                <span *ngIf="content.size"> • {{ content.size | fileSize: 0}}</span>
+              </p>
+            </ion-item>
+            <div *ngIf="!last" class="inner-divider"></div>
+          </ion-list>
+        </ion-list>
+      </div>
+
+      <div *ngIf="resultlist && !resultlist.isCourse">
         <h4 class="dial-section-header">{{resultlist.name}}</h4>
+
+        <!-- Collection List -->
         <div ion-item no-margin *ngFor="let result of resultlist.dialCodeResult" no-padding>
           <div no-lines class="collection-header" margin-start>
             <div class="collection-name">
@@ -33,7 +60,8 @@
             </button>
           </div>
           <div *ngIf="result && result.content && result.content.length">
-            <ion-list no-padding *ngFor="let content of result.content let i = index; let last = last" class="content-list">
+            <ion-list no-padding *ngFor="let content of result.content let i = index; let last = last"
+              class="content-list">
               <ion-item (click)="openContent(result, content,index)">
                 <ion-avatar item-start>
                   <img src="{{ defaultAppIcon }}" width="24px" height="24px">
@@ -51,14 +79,18 @@
           </div>
           <div class="divider"></div>
         </div>
-        
+
+        <!-- Content List -->
         <ion-list no-lines *ngIf="resultlist.dialCodeContentResult && resultlist.dialCodeContentResult.length">
-          <ion-list *ngFor="let content of resultlist.dialCodeContentResult; let i = index; let last = last" class="content-list">
+          <ion-list *ngFor="let content of resultlist.dialCodeContentResult; let i = index; let last = last"
+            class="content-list">
             <ion-item padding-start (click)="openContent(undefined, content,index)">
               <ion-avatar item-start>
                 <img src="{{ defaultAppIcon }}" width="24px" height="24px">
               </ion-avatar>
-              <h3> {{ (content.name && content.name.length > 30) ? (content.name | slice:0:30) + '...' : (content.name) }}</h3>
+              <h3>
+                {{ (content.name && content.name.length > 30) ? (content.name | slice:0:30) + '...' : (content.name) }}
+              </h3>
               <p>
                 <span>{{ content.contentType }}</span>
                 <span *ngIf="content.size"> • {{ content.size | fileSize: 0}}</span>
@@ -74,31 +106,31 @@
           </ion-list>
         </ion-list>
       </div>
-    </ion-list>
-  
+    </div>
+  </ion-list>
+
   <!-- Testing here -->
 
   <div *ngIf="dialCodeContentResult && dialCodeContentResult.length">
     <div class="sb-card-container sb-card-textbook-container">
-      <textbook-card class="tb-border-btm" *ngFor="let content of dialCodeContentResult; let i = index; let last = last" (click)="openContent(content, content,i)"
-        [content]="content" [layoutName]='search'></textbook-card>
+      <textbook-card class="tb-border-btm" *ngFor="let content of dialCodeContentResult; let i = index; let last = last"
+        (click)="openContent(content, content,i)" [content]="content" [layoutName]='search'></textbook-card>
     </div>
   </div>
 
 
   <div *ngIf="searchContentResult && searchContentResult.length">
-      <div class="sb-view-all-container">
-          <div class="sb-view-all-items sb-search-items">
-            <div class="sb-card-result sb-card-details">
-                <div class="sb-card-result-content"> {{'SHOW_RESULTS'|translate: {'%s': searchKeywords} }}</div>
-                <div class="sb-card-res-count">{{searchContentResult.length}} {{'RESULTS'|translate}}</div>
-            </div>
-          </div>
+    <div class="sb-view-all-container">
+      <div class="sb-view-all-items sb-search-items">
+        <div class="sb-card-result sb-card-details">
+          <div class="sb-card-result-content"> {{'SHOW_RESULTS'|translate: {'%s': searchKeywords} }}</div>
+          <div class="sb-card-res-count">{{searchContentResult.length}} {{'RESULTS'|translate}}</div>
         </div>
+      </div>
+    </div>
     <div class="sb-card-container sb-card-textbook-container">
-      <textbook-card class="tb-border-btm" *ngFor="let content of searchContentResult; let i = index; let last = last"  (click)="openContent(undefined, content,i)"
-       [content]="content"
-        [layoutName]="search"></textbook-card>
+      <textbook-card class="tb-border-btm" *ngFor="let content of searchContentResult; let i = index; let last = last"
+        (click)="openContent(undefined, content,i)" [content]="content" [layoutName]="search"></textbook-card>
     </div>
   </div>
   <div class="empty-search-result" *ngIf="!showLoader && showEmptyMessage" text-center padding-top>
