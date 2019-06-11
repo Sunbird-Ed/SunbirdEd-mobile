@@ -26,24 +26,35 @@
       <!-- Course -->
       <div
         *ngIf="resultlist && resultlist.isCourse && resultlist.dialCodeContentResult && resultlist.dialCodeContentResult.length">
-        <h4 class="dial-section-header">Courses</h4>
-        <ion-list no-lines *ngIf="resultlist.dialCodeContentResult && resultlist.dialCodeContentResult.length">
-          <ion-list *ngFor="let content of resultlist.dialCodeContentResult; let i = index; let last = last"
-            class="content-list">
-            <ion-item padding-start (click)="openContent(undefined, content,index)">
-              <ion-avatar item-start>
-                <img src="{{ defaultAppIcon }}" width="24px" height="24px">
-              </ion-avatar>
-              <h3>
-                {{ (content.name && content.name.length > 30) ? (content.name | slice:0:30) + '...' : (content.name) }}
-              </h3>
-              <p>
-                <span *ngIf="content.size"> • {{ content.size | fileSize: 0}}</span>
-              </p>
-            </ion-item>
-            <div *ngIf="!last" class="inner-divider"></div>
-          </ion-list>
-        </ion-list>
+        <div class="sb-textbook-container">
+          <div class="sb-textbook-items">
+            <div class="sb-textbook-title-container">
+              <span class="textbook-icon">
+                <ion-icon ios="ios-albums" md="md-albums"></ion-icon>
+              </span>
+              <span class="textbook-title">
+                Courses
+              </span>
+            </div>
+            <!-- Card style -->
+            <div class="sb-card-container sb-card-textbook-container">
+                <div class="sb-card" *ngFor="let content of resultlist.dialCodeContentResult; let i = index; let last = last" (click)="openContent(undefined, content,index)">
+                  <div class="img-container" style="display: flex;
+                  justify-content: center;
+                  flex-direction: column;
+                  text-align: center;">
+                    <img src="{{ content?.courseLogoUrl || content?.appIcon || defaultAppIcon }}">
+                  </div>
+                  <div class="sb-card-details">
+                    <div class="title">{{ (content.name && content.name.length > 30) ? (content.name | slice:0:30) + '...' : (content.name) }} </div>
+                    <div class="grade_ellipsis">
+                      <span class="info subject">{{ content.size | fileSize: 0}}</span>
+                    </div>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div *ngIf="resultlist && !resultlist.isCourse">

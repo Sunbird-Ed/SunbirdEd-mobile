@@ -273,6 +273,11 @@ export class SearchPage implements OnDestroy {
 
     if (content.contentType === ContentType.COURSE) {
       this.navCtrl.push(EnrolledCourseDetailsPage, params);
+      if (this.isSingleContent) {
+        this.isSingleContent = false;
+        const view = this.navCtrl.getActive();
+        this.navCtrl.removeView(view);
+      }
     } else if (content.mimeType === MimeType.COLLECTION) {
       if (this.isDialCodeSearch && !isRootContent) {
         params.isCreateNavigationStack = true;
