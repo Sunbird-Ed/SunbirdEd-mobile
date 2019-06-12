@@ -37,6 +37,8 @@ import {DirectivesModule} from '@app/directives/directives.module';
 import {ComingSoonMessageService} from '@app/service/coming-soon-message.service';
 import { NotificationService } from '@app/service/notification.service';
 import {CourseSearchPage} from '@app/pages/course-search/course-search';
+import { CrashAnalyticsErrorLogger } from '@app/service/crash-analytics/crash-analytics-error-logger';
+import { ActivePageService } from '@app/service/active-page/active-page-service';
 
 export const translateHttpLoaderFactory = (httpClient: HttpClient) => {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
@@ -349,8 +351,10 @@ export const sunbirdSdkFactory =
     AndroidPermissionsService,
     ComingSoonMessageService,
     NotificationService,
+    ActivePageService,
     ...sunbirdSdkServicesProvidersFactory(),
     { provide: ErrorHandler, useClass: IonicErrorHandler },
+    { provide: ErrorHandler, useClass: CrashAnalyticsErrorLogger },
     { provide: APP_INITIALIZER, useFactory: sunbirdSdkFactory, deps: [], multi: true }
   ],
   exports: [

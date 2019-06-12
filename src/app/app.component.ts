@@ -42,6 +42,7 @@ import { QrCodeResultPage } from '@app/pages/qr-code-result';
 import { FaqPage } from '@app/pages/help/faq';
 import { NotificationService } from '@app/service/notification.service';
 import { SplaschreenDeeplinkActionHandlerDelegate } from '@app/service/sunbird-splashscreen/splaschreen-deeplink-action-handler-delegate';
+import { ActivePageService } from '@app/service/active-page/active-page-service';
 
 @Component({
   templateUrl: 'app.html',
@@ -97,7 +98,8 @@ export class MyApp implements OnInit, AfterViewInit {
     private logoutHandlerService: LogoutHandlerService,
     private network: Network,
     private appRatingService: AppRatingService,
-    private notificationSrc: NotificationService
+    private notificationSrc: NotificationService,
+    private activePageService: ActivePageService,
   ) {
     this.telemetryAutoSyncUtil = new TelemetryAutoSyncUtil(this.telemetryService);
     platform.ready().then(async () => {
@@ -185,7 +187,7 @@ export class MyApp implements OnInit, AfterViewInit {
     this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
       const navObj: NavControllerBase = this.app.getActiveNavs()[0];
       const activeView: ViewController = navObj.getActive();
-      const pageId: string = this.computePageId((<any>activeView).instance);
+      const pageId: string = this.activePageService.computePageId((<any>activeView).instance);
       if (available) {
         this.addNetworkTelemetry(InteractSubtype.INTERNET_CONNECTED, pageId);
       } else {
@@ -213,7 +215,6 @@ export class MyApp implements OnInit, AfterViewInit {
     });
   }
 
-
   handleBackButton() {
     this.platform.registerBackButtonAction(() => {
 
@@ -228,7 +229,7 @@ export class MyApp implements OnInit, AfterViewInit {
       if (navObj.canGoBack()) {
         return navObj.pop();
       } else {
-        this.commonUtilService.showExitPopUp(this.computePageId((<any>activeView).instance), Environment.HOME, false);
+        this.commonUtilService.showExitPopUp(this.activePageService.computePageId((<any>activeView).instance), Environment.HOME, false);
       }
     });
   }
@@ -238,27 +239,6 @@ export class MyApp implements OnInit, AfterViewInit {
     value['network-type'] = this.network.type;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
       InteractSubtype.NETWORK_STATUS, Environment.HOME, PageId.SPLASH_SCREEN, undefined, value);
-  }
-  computePageId(page): string {
-    let pageId = '';
-    if (page instanceof ResourcesPage) {
-      pageId = PageId.LIBRARY;
-    } else if (page instanceof CoursesPage) {
-      pageId = PageId.COURSES;
-    } else if (page instanceof ProfilePage) {
-      pageId = PageId.PROFILE;
-    } else if (page instanceof GuestProfilePage) {
-      pageId = PageId.GUEST_PROFILE;
-    } else if (page instanceof CollectionDetailsEtbPage) {
-      pageId = PageId.COLLECTION_DETAIL;
-    } else if (page instanceof ContentDetailsPage) {
-      pageId = PageId.CONTENT_DETAIL;
-    } else if (page instanceof QrCodeResultPage) {
-      pageId = PageId.DIAL_CODE_SCAN_RESULT;
-    } else if (page instanceof CollectionDetailsPage) {
-      pageId = PageId.COLLECTION_DETAIL;
-    }
-    return pageId;
   }
 
   subscribeEvents() {
@@ -674,7 +654,7 @@ export class MyApp implements OnInit, AfterViewInit {
       if (navObj.canGoBack()) {
         return navObj.pop();
       } else {
-        this.commonUtilService.showExitPopUp(this.computePageId((<any>activeView).instance), Environment.HOME, false);
+        this.commonUtilService.showExitPopUp(this.activePageService.computePageId((<any>activeView).instance), Environment.HOME, false);
       }
     } else {
       this.headerServie.sidebarEvent($event);
