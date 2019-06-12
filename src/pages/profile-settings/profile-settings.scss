@@ -1,5 +1,10 @@
 @import"../../assets/styles/variables";
 page-profile-settings {
+    
+    .scroll-content{
+        padding-bottom: 53px;
+    }
+
     .form-position {
         margin-top: 10px;
     }
@@ -32,9 +37,9 @@ page-profile-settings {
         min-height: 5.5rem !important;
     }
 
-    .item-select .label-md {
-        color: map-get($colors, black);
-    }
+    // .item-select .label-md {
+    //     color: map-get($colors, black);
+    // }
 
     .arrow-icon {
         @include padding(null, null, null, 2.8em !important);
@@ -57,7 +62,7 @@ page-profile-settings {
             opacity: 1;
         }
     }
-
+    
     .padding-bottom-if-header{
        padding-bottom: 80px !important;
     }
@@ -141,13 +146,66 @@ page-profile-settings {
         
     }
 
-    // .item-label-stacked ion-select{
-    //     border: 1px solid #006DE5;
-    // }
-    // .item-md.item-block .item-inner{
-    //     border-bottom: none;
-    // }
-    // .item-select .label-md {
-    //     color: #006DE5;
-    // }
+    .item-label-stacked ion-select{
+        border: 1px solid #006DE5;
+        margin-top: 8px;
+        .select-icon{
+            .select-icon-inner{
+                border: solid blue;
+                border-width: 0 1px 1px 0;
+                display: inline-block;
+                padding: 3px;
+                transform: rotate(45deg);
+            }
+        }
+    }
+    .item-md.item-block .item-inner{
+        border-bottom: none;
+    }
+    .item-select .label-md {
+        color: #006DE5;
+    }
+
+
+    .item-label-stacked.item-select-disabled {
+        .label-md {
+            color: #CCCCCC;
+        }
+        ion-select {
+            border-color: #CCCCCC;
+            .select-icon{
+                .select-icon-inner{
+                    border-color: #CCCCCC;
+                }
+            }
+        }
+    }
+
+    .item-label-stacked.input-has-value.item-input-has-value {
+        .label-md {
+            color: $gray-800;
+        }
+        ion-select{
+            border-color: $gray-300;
+            .select-text {
+                padding-left: 10px;
+                font-weight: bold;
+                color: $gray-800;
+            }
+            .select-icon{
+                .select-icon-inner{
+                    border-color: $gray-800;
+                }
+            }
+        } 
+    }
+
+
+
+
+
+
+
+
+
 }
