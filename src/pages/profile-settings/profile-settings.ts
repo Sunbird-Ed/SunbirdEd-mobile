@@ -564,5 +564,14 @@ export class ProfileSettingsPage {
       PageId.ONBOARDING_PROFILE_PREFERENCES,
       Environment.ONBOARDING);
   }
+
+  openQRScanner() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.QRCodeScanClicked,
+      PageId.ONBOARDING_PROFILE_PREFERENCES,
+      Environment.ONBOARDING);
+    this.scanner.startScanner(PageId.ONBOARDING_PROFILE_PREFERENCES, false);
+  }
 }
 
