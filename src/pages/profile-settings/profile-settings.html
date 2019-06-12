@@ -3,13 +3,36 @@
 </ion-header> -->
 
 <ion-content>
+	<div class="qr-container">
+		<div class="qr-content">
+			<div class="qr-img pull-left">
+				<img src="assets/imgs/qr_sample.png" alt="" width="50px" height="50px">
+				<div class="qr-text">
+					<span>ABC123</span>
+				</div>
+			</div>
+			<div class="qr-instruction-container pull-left">
+				<div class="qr-instruction" >
+					<span class="title">Have a DIKSHA QR Code?</span>
+					<span class="sub-titile">this can be found in some of your text books. Use for instant access to content</span>
+				</div>
+			</div>
+		</div>
+		<div class="qr-btn-container">
+			<div class="qr-btn" (click)="openQRScanner()">
+				<img src="assets/imgs/ic_qr_scanner.png" alt="">
+				<span>Tap to scan</span>
+			</div>
+		</div>
+		<span class="or-circle">or</span>	
+	</div>
 	<div class="fill-in-style msg-size">
 		{{'FILL_IN' | translate}}
 	</div>
 	<form novalidate [formGroup]="userForm" class="form-position">
 
 		<ion-item>
-			<ion-label floating class="label-font text-uppercase">{{'BOARD_OPTION_TEXT' | translate }}</ion-label>
+			<ion-label stacked class="label-font text-uppercase">{{'BOARD_OPTION_TEXT' | translate }}</ion-label>
 			<ion-select multiple="false" #boardSelect text-capitalize formControlName="syllabus" [selectOptions]="boardOptions" (ionChange)="resetForm(0, true)"
 			 okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}">
 				<ion-option *ngFor="let eachSyllabus of syllabusList" value="{{eachSyllabus?.code}}">{{eachSyllabus?.name}}&lrm;</ion-option>
@@ -17,7 +40,7 @@
 		</ion-item>
 
 		<ion-item>
-			<ion-label floating class="label-font text-uppercase">{{'MEDIUM_OPTION_TEXT' | translate }}</ion-label>
+			<ion-label stacked class="label-font text-uppercase">{{'MEDIUM_OPTION_TEXT' | translate }}</ion-label>
 			<ion-select formControlName="medium" #mediumSelect multiple="true" text-capitalize [selectOptions]="mediumOptions" (ionChange)="resetForm(2, false)"
 			 okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}" [disabled]="!(userForm.value.boards != '')">
 				<ion-option *ngFor="let medium of mediumList" text-capitalize value="{{medium?.code}}">{{medium?.name}}</ion-option>
@@ -25,7 +48,7 @@
 		</ion-item>
 
 		<ion-item>
-			<ion-label floating class="label-font text-uppercase">{{'GRADE_OPTION_TEXT' | translate }}</ion-label>
+			<ion-label stacked class="label-font text-uppercase">{{'GRADE_OPTION_TEXT' | translate }}</ion-label>
 			<ion-select multiple="true" #gradeSelect text-capitalize [selectOptions]="classOptions" formControlName="grades" okText="{{'BTN_SUBMIT' | translate}}"
 			 cancelText="{{'CANCEL' | translate}}" [disabled]="!(userForm.value.medium != '')" (ionChange)="enableSubmit()">
 				<ion-option *ngFor="let grade of gradeList" text-capitalize value="{{grade?.code}}">{{grade?.name}}</ion-option>

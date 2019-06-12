@@ -255,7 +255,7 @@ export class UserTypeSelectionPage {
             console.error('Error=');
           });
       } else {
-        this.navCtrl.push(ProfileSettingsPage);
+        this.navCtrl.push(ProfileSettingsPage, {hideBackButton: true});
       }
     } else {
       this.profile.profileType = this.selectedUserType;
