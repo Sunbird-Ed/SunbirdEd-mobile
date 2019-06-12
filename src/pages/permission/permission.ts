@@ -104,8 +104,6 @@ export class PermissionPage {
             this.scannerService.startScanner(PageId.PERMISSION, true);
           } else {
             this.permission.checkPermissions([AndroidPermission.CAMERA]).toPromise().then((cameraStatus) => {
-              console.log('cameraStatus', cameraStatus);
-
               if (cameraStatus && cameraStatus[ AndroidPermission.CAMERA] && cameraStatus[AndroidPermission.CAMERA].hasPermission) {
                 this.scannerService.startScanner(PageId.PERMISSION, true);
               } else if (this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
@@ -130,7 +128,6 @@ export class PermissionPage {
         this.navCtrl.push(ProfileSettingsPage);
       } else if (this.showScannerPage) {
         this.permission.checkPermissions([AndroidPermission.CAMERA]).toPromise().then((cameraStatus) => {
-          console.log('cameraStatus', cameraStatus);
           if (cameraStatus && cameraStatus[AndroidPermission.CAMERA] && cameraStatus[AndroidPermission.CAMERA].hasPermission) {
             this.scannerService.startScanner(PageId.PERMISSION, true);
           }
@@ -155,25 +152,6 @@ export class PermissionPage {
 
         if (!toRequest.length) {
           return Observable.of(undefined);
-        }
-
-        return this.permission.requestPermissions(toRequest);
-      }).toPromise();
-  }
-
-  checkPermission(requiredPermissionList): Promise<any> {
-    return this.permission.checkPermissions(requiredPermissionList)
-      .mergeMap((statusMap: { [key: string]: AndroidPermissionsStatus }) => {
-        const toRequest: AndroidPermission[] = [];
-
-        for (const permission in statusMap) {
-          if (!statusMap[permission].hasPermission) {
-            toRequest.push(permission as AndroidPermission);
-          }
-        }
-
-        if (!toRequest.length) {
-          return Observable.of({ hasPermission: true });
         }
         return this.permission.requestPermissions(toRequest);
       }).toPromise();

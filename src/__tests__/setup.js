@@ -6,6 +6,9 @@ global.cordova = {
                 getScheduledIds: () => {},
                 schedule: () => {}
             }
+        },
+        diagnostic: {
+            switchToSettings: () => {}
         }
     },
     file: {

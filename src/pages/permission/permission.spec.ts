@@ -13,7 +13,7 @@ import { AndroidPermission } from '../../service/android-permissions/android-per
 import { Observable } from 'rxjs';
 import { ProfileSettingsPage } from '../profile-settings/profile-settings';
 import { TabsPage } from '../tabs/tabs';
-
+declare const cordova;
 describe('PageFilter component', () => {
     let pagePermission: PermissionPage;
     const permissionList = [
@@ -132,10 +132,126 @@ describe('PageFilter component', () => {
              expect(permissionServiceMock.checkPermissions).toHaveBeenCalledWith(permissionList);
          });
 
-        // it('scannerpage is Off and  profileSetting page config is Off, it should show TabsPage', () => {
-        //     pagePermission.ionViewWillEnter();
-        //     expect(permissionServiceMock.checkPermissions).toHaveBeenCalledWith(permissionList);
-        // });
+        it('scannerpage is Off,camera permission is false and profileSetting page config is true, it should show ProfilePage', (done) => {
+             // arrange
+             pagePermission.showScannerPage = true;
+             permissionServiceMock.requestPermissions.mockResolvedValue({hasPermission: false});
+             appGlobalServiceMock.setIsPermissionAsked.mockReturnValue('');
+            (appGlobalServiceMock.DISPLAY_ONBOARDING_CATEGORY_PAGE as any) = true;
+             // act
+             pagePermission.grantAccess();
+             setTimeout(() => {
+                 // assert
+               expect(navCtrlMock.push).toHaveBeenCalledWith(ProfileSettingsPage);
+                 done();
+             }, 0);
+             expect(permissionServiceMock.checkPermissions).toHaveBeenCalledWith(permissionList);
+         });
+
+    it('scannerpage is Off,camera permission is false and profileSetting page config is false, it should show TabsPage', (done) => {
+            // arrange
+            pagePermission.showScannerPage = true;
+            permissionServiceMock.requestPermissions.mockResolvedValue({hasPermission: false});
+            appGlobalServiceMock.setIsPermissionAsked.mockReturnValue('');
+           (appGlobalServiceMock.DISPLAY_ONBOARDING_CATEGORY_PAGE as any) = false;
+            // act
+            pagePermission.grantAccess();
+            setTimeout(() => {
+                // assert
+              expect(navCtrlMock.push).toHaveBeenCalledWith(TabsPage, { loginMode: 'guest' });
+                done();
+            }, 0);
+            expect(permissionServiceMock.checkPermissions).toHaveBeenCalledWith(permissionList);
+        });
 
     });
+
+    describe('skipAccess()', () => {
+        it('should show profile setting page if showProfileSettingPage is true ', () => {
+            // arrange
+            pagePermission.showProfileSettingPage = true;
+
+            // act
+            pagePermission.skipAccess();
+
+            // assert
+            expect(navCtrlMock.push).toHaveBeenCalledWith(ProfileSettingsPage);
+        });
+
+        it('should show profile setting page if profileSetting page config is true ', () => {
+            // arrange
+           (appGlobalServiceMock.DISPLAY_ONBOARDING_CATEGORY_PAGE as any) = true;
+            // act
+            pagePermission.skipAccess();
+
+            // assert
+            expect(navCtrlMock.push).toHaveBeenCalledWith(ProfileSettingsPage);
+        });
+
+        // tslint:disable-next-line:max-line-length
+        it('should start scanner if showProfileSettingPage and profile config is false, showScannerPage and camera permission is true ', (done) => {
+            // arrange
+            jest.resetAllMocks();
+            pagePermission.showProfileSettingPage = false;
+            (appGlobalServiceMock.DISPLAY_ONBOARDING_CATEGORY_PAGE as any) = false;
+            pagePermission.showScannerPage = true;
+            permissionServiceMock.checkPermissions.mockReturnValue(Observable.of({
+                'android.permission.CAMERA': {hasPermission: true},
+                'android.permission.RECORD_AUDIO': {hasPermission: false},
+                'android.permission.WRITE_EXTERNAL_STORAGE': {hasPermission: false} }
+                ));
+            // act
+            pagePermission.skipAccess();
+
+            // assert
+            setTimeout(() => {
+                expect(sunbirdQRScannerMock.startScanner).toHaveBeenCalled();
+                done();
+            }, 0);
+        });
+
+        it('should show tabs if showProfileSettingPage and profile config and showScannerPage is false ', () => {
+            // arrange
+            jest.resetAllMocks();
+            pagePermission.showProfileSettingPage = false;
+            (appGlobalServiceMock.DISPLAY_ONBOARDING_CATEGORY_PAGE as any) = false;
+            pagePermission.showScannerPage = false;
+            permissionServiceMock.checkPermissions.mockReturnValue(Observable.of({
+                'android.permission.CAMERA': {hasPermission: true},
+                'android.permission.RECORD_AUDIO': {hasPermission: false},
+                'android.permission.WRITE_EXTERNAL_STORAGE': {hasPermission: false} }
+                ));
+            // act
+            pagePermission.skipAccess();
+
+            // assert
+            expect(navCtrlMock.push).toHaveBeenCalledWith(TabsPage, { loginMode: 'guest' });
+        });
+    });
+        it(' stateChange() should call check switchToSettings', (done) => {
+            // arrange
+            spyOn(cordova.plugins.diagnostic, 'switchToSettings').and.callFake((arg1, cb1, cb2) => cb1());
+            pagePermission.stateChange('');
+            setTimeout(() => {
+            expect(cordova.plugins.diagnostic.switchToSettings).toHaveBeenCalled();
+            done();
+            }, 0);
+        });
+
+        it('generateInteractEvent() should generate Interact Telemetry', () => {
+            // arrange
+            // act
+            pagePermission.generateInteractEvent(true);
+            // assert
+            expect(telemetryGeneratorServiceMock.generateInteractTelemetry).toHaveBeenCalled();
+        });
+
+        it('handleHeaderEvents() should generate generateBackClickedTelemetry', () => {
+            // arrange
+            // act
+            pagePermission.handleHeaderEvents({name: 'back'});
+            // assert
+            expect(telemetryGeneratorServiceMock.generateBackClickedTelemetry).toHaveBeenCalled();
+        });
+
 });
