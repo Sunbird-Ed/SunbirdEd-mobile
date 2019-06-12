@@ -139,4 +139,5 @@
   <plugin name="cordova.plugins.diagnostic" spec="^4.0.12">
        <variable name="ANDROID_SUPPORT_VERSION" value="27.+" />
    </plugin>
+  <plugin name="cordova-plugin-fcm-with-dependecy-updated" spec="https://github.com/swayangjit/cordova-plugin-fcm-with-dependecy-updated.git" />
 </widget>
