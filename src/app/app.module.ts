@@ -37,6 +37,8 @@ import {DirectivesModule} from '@app/directives/directives.module';
 import {ComingSoonMessageService} from '@app/service/coming-soon-message.service';
 import { NotificationService } from '@app/service/notification.service';
 import {CourseSearchPage} from '@app/pages/course-search/course-search';
+import { CrashAnalyticsErrorLogger } from '@app/service/crash-analytics/crash-analytics-error-logger';
+import { ActivePageService } from '@app/service/active-page/active-page-service';
 
 export const translateHttpLoaderFactory = (httpClient: HttpClient) => {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
@@ -104,6 +106,9 @@ export function downloadService() {
 }
 export function storageService() {
   return SunbirdSdk.instance.storageService;
+}
+export function notificationService() {
+  return SunbirdSdk.instance.notificationService;
 }
 export function sdkDriverFactory() {
   return [{
@@ -178,9 +183,12 @@ export function sdkDriverFactory() {
   }, {
     provide: 'STORAGE_SERVICE',
     useFactory: storageService
+  }, {
+    provide: 'NOTIFICATION_SERVICE',
+    useFactory: notificationService
   }
   ];
-}
+  }
 
 export const sunbirdSdkServicesProvidersFactory: () => Provider[] = sdkDriverFactory;
 
@@ -349,8 +357,10 @@ export const sunbirdSdkFactory =
     AndroidPermissionsService,
     ComingSoonMessageService,
     NotificationService,
+    ActivePageService,
     ...sunbirdSdkServicesProvidersFactory(),
     { provide: ErrorHandler, useClass: IonicErrorHandler },
+    { provide: ErrorHandler, useClass: CrashAnalyticsErrorLogger },
     { provide: APP_INITIALIZER, useFactory: sunbirdSdkFactory, deps: [], multi: true }
   ],
   exports: [
