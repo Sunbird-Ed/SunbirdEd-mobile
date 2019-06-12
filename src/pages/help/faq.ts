@@ -100,6 +100,7 @@ export class FaqPage {
       if (this.selectedLanguage && this.commonUtilService.networkInfo.isNetworkAvailable) {
         url += '?selectedlang=' + this.selectedLanguage + '&randomid=' + Math.random();
         this.faq.url = url;
+        this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
       } else  {
         this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
 
