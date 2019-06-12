@@ -63,6 +63,7 @@
     "cordova-plugin-console": "1.1.0",
     "cordova-plugin-customconfigparameters": "^3.0.0",
     "cordova-plugin-device": "1.1.7",
+    "cordova-plugin-fcm-with-dependecy-updated": "git+https://github.com/swayangjit/cordova-plugin-fcm-with-dependecy-updated.git",
     "cordova-plugin-file": "6.0.1",
     "cordova-plugin-file-opener2": "^2.0.19",
     "cordova-plugin-file-support": "git+https://github.com/project-sunbird/cordova-plugin-file-support.git",
@@ -176,7 +177,8 @@
       "cordova-plugin-statusbar": {},
       "cordova.plugins.diagnostic": {
        "ANDROID_SUPPORT_VERSION": "27.+"
-     }
+     },
+      "cordova-plugin-fcm-with-dependecy-updated": {}
     },
     "platforms": []
   },
