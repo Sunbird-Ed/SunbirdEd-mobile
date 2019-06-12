@@ -522,7 +522,6 @@
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
   "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "You are not connected to the internet",
   "TAP_SCAN": "Tap to scan {{%s}} QR Code",
-  "GOT_IT": "GOT IT",
-  "COACH_SCREEN": "by Scanning QR code, you will be",
-  "COACH_SCREEN_SECOND_LINE": "redirected to the content"
+  "GOT_IT": "Got it",
+  "COACH_SCREEN": "by Scanning QR code, you will be redirected to the content"
 }

@@ -280,8 +280,8 @@ export enum InteractSubtype {
     QR_SCAN_INVALID = 'qr-scan-invalid',
     UNIT_CLICKED = 'unit-clicked',
     PERMISSION_POPUP = 'permission-popup',
-    QR_SCAN_BACKDROP_CLICKED = 'qr-scan-walkthrough-backdrop-clicked',
-    QR_SCAN_WALKTHROUGH_BACKDROP_BUTTON_CLICKED = 'qr-scan-walkthrough-backdrop-button-clicked'
+    WALKTHROUGH_BACKDROP_CLICKED = 'walkthrough-backdrop-clicked',
+    WALKTHROUGH_CONFIRMATION_CLICKED = 'walkthrough-confirmation-clicked'
 }
 
 export enum ActionButtonType {

@@ -799,7 +799,7 @@ export class MyApp implements OnInit, AfterViewInit {
   private qrWalkthroughBackdropClicked() {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
-      InteractSubtype.QR_SCAN_BACKDROP_CLICKED,
+      InteractSubtype.WALKTHROUGH_BACKDROP_CLICKED,
       Environment.ONBOARDING,
       PageId.LIBRARY,
     );
@@ -807,7 +807,7 @@ export class MyApp implements OnInit, AfterViewInit {
   private onConfirmationClicked() {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
-      InteractSubtype.QR_SCAN_WALKTHROUGH_BACKDROP_BUTTON_CLICKED,
+      InteractSubtype.WALKTHROUGH_CONFIRMATION_CLICKED,
       Environment.ONBOARDING,
       PageId.LIBRARY
     );
