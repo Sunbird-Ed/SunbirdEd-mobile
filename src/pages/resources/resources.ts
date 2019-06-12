@@ -32,8 +32,6 @@ import { PlayerPage } from '../player/player';
 import { Subscription } from 'rxjs';
 import { ProfileConstants } from '../../app';
 import { AppHeaderService } from '@app/service';
-import { GuestProfilePage } from '../profile';
-import { ProfilePage } from '../profile/profile';
 import { NotificationsPage } from '../notifications/notifications';
 
 @Component({
@@ -83,7 +81,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   selectedValue: Array<string> = [];
   guestUser = false;
   showSignInCard = false;
-  localResources: Array<any>;
   recentlyViewedResources: Array<any>;
   userId: string;
   showLoader = false;
@@ -166,6 +163,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.generateNetworkType();
 
   }
+
   subscribeUtilityEvents() {
     this.profileService.getActiveSessionProfile({ requiredFields: ProfileConstants.REQUIRED_FIELDS }).subscribe((profile: Profile) => {
       this.profile = profile;
@@ -214,7 +212,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       }
       // });
     });
-
   }
 
   /**
@@ -223,7 +220,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   ngOnInit() {
     this.getCurrentUser();
   }
-
 
   generateNetworkType() {
     const values = new Map();
@@ -280,21 +276,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.loadRecentlyViewedContent();
   }
 
-  // goToUserAndGroups() {
-  //   this.navCtrl.push(UserAndGroupsPage);
-  // }
-  // goToReports() {
-  //   this.navCtrl.push(ReportsPage);
-  // }
-  // goToLanguageSettings() {
-  //   this.navCtrl.push(LanguageSettingsPage, {
-  //     mainPage: true
-  //   });
-  // }
-  // goToSettings() {
-  //   this.navCtrl.push(SettingsPage);
-  // }
-
   navigateToViewMoreContentsPage(section: string) {
     const values = new Map();
     let headerTitle;
@@ -326,69 +307,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   /**
-   * Navigate to search page
-   *
-   * @param {string} queryParams search query params
-   */
-  navigateToViewMoreContentsPageWithParams(queryParams, headerTitle): void {
-    const values = new Map();
-    values['SectionName'] = headerTitle;
-    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-      InteractSubtype.VIEWALL_CLICKED,
-      Environment.HOME,
-      this.source,
-      undefined,
-      values);
-
-    queryParams = updateFilterInSearchQuery(queryParams, this.appliedFilter, this.profile, this.mode,
-      this.isFilterApplied, this.appGlobalService);
-
-    this.navCtrl.push(ViewMoreActivityPage, {
-      requestParams: queryParams,
-      headerTitle: headerTitle
-    });
-  }
-
-  /**
-	 * Get saved content
-	 */
-  async setSavedContent() {
-    this.showLoader = true;
-    const requestParams: ContentRequest = {
-      uid: this.profile ? this.profile.uid : undefined,
-      contentTypes: ContentType.FOR_LIBRARY_TAB,
-      audience: this.audienceFilter
-    };
-    await this.contentService.getContents(requestParams).toPromise()
-      .then(data => {
-        _.forEach(data, (value) => {
-          value.contentData.lastUpdatedOn = value.lastUpdatedTime;
-          if (value.contentData.appIcon) {
-            if (value.contentData.appIcon.includes('http:') || value.contentData.appIcon.includes('https:')) {
-              if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-                value.contentData.appIcon = value.contentData.appIcon;
-              } else {
-                value.contentData.appIcon = this.defaultImg;
-              }
-            } else if (value.basePath) {
-              value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
-            }
-          }
-
-        });
-        this.ngZone.run(() => {
-          this.localResources = data;
-        });
-      })
-      .catch(() => {
-        this.ngZone.run(() => {
-          this.showLoader = false;
-        });
-      });
-    // }
-  }
-
-  /**
 	 * Load/get recently viewed content
 	 */
   async loadRecentlyViewedContent(hideLoaderFlag?: boolean) {
@@ -403,7 +321,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       recentlyViewed: true,
       limit: 20
     };
-    await this.setSavedContent();
+
     this.contentService.getContents(requestParams).toPromise()
       .then(data => {
         _.forEach(data, (value) => {
@@ -421,27 +339,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           }
         });
         this.ngZone.run(() => {
-          // merge downloadedResources after recently viewed, which are not yet viewed
-          if ((data && data.length) && (this.localResources && this.localResources.length)) {
-            // remove if same content is downloaded and viewed.
-            for (let i = 0; i < data.length; i++) {
-              const index = this.localResources.findIndex((el) => {
-                return el.identifier === data[i].identifier;
-              });
-
-              if (index !== -1) {
-                this.localResources.splice(index, 1);
-              }
-            }
-            data.push(...this.localResources);
-            this.recentlyViewedResources = data;
-          } else {
-            if (!(data && data.length) && (this.localResources && this.localResources.length)) {
-              this.recentlyViewedResources = this.localResources;
-            } else if ((data && data.length) && !(this.localResources && this.localResources.length)) {
-              this.recentlyViewedResources = data;
-            }
-          }
+          this.recentlyViewedResources = data;
           if (!hideLoaderFlag) {
             this.showLoader = false;
           }
@@ -657,7 +555,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
   generateExtraInfoTelemetry(sectionsCount) {
     const values = new Map();
-    values['savedItemVisible'] = (this.localResources && this.localResources.length) ? 'Y' : 'N';
     values['pageSectionCount'] = sectionsCount;
     values['networkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
     this.telemetryGeneratorService.generateExtraInfoTelemetry(
@@ -783,9 +680,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     } else {
       this.getPopularContent(false, null, avoidRefreshList);
     }
-
   }
-
 
   scanQRCode() {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
@@ -795,21 +690,12 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.qrScanner.startScanner(PageId.LIBRARY);
   }
 
-
   search() {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.SEARCH_BUTTON_CLICKED,
       Environment.HOME,
       PageId.LIBRARY);
     this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
-  }
-  onProfileClick() {
-    const currentProfile = (this.appGlobalService.isGuestUser) ? GuestProfilePage : ProfilePage;
-    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-      'profile-button-clicked',
-      Environment.HOME,
-      PageId.LIBRARY);
-    this.navCtrl.push(currentProfile, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
   }
 
   getCategoryData() {

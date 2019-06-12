@@ -210,7 +210,7 @@ export class FaqPage {
       server: true
     };
     const contentRequest: ContentRequest = {
-      contentTypes: ContentType.FOR_LIBRARY_TAB,
+      contentTypes: ContentType.FOR_DOWNLOADED_TAB,
       audience: AudienceFilter.GUEST_TEACHER
     };
     const getUserCount = await this.profileService.getAllProfiles(allUserProfileRequest).map((profile) => profile.length).toPromise();

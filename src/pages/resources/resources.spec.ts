@@ -183,55 +183,6 @@ describe('ResourcesPage test cases', () => {
         });
     });
 
-    it('#navigateToViewMoreContentPageWithParams should navigate to ViewMoreList page with search params if filter is not applied', () => {
-        resource.navigateToViewMoreContentsPageWithParams(JSON.stringify(mockRes.queryParams), 'Popular Books');
-        const values = new Map();
-        values['SectionName'] = 'Popular Books';
-        expect(navCtrlMock.push).toHaveBeenCalledWith(ViewMoreActivityPage, {
-            requestParams: JSON.stringify(mockRes.queryParams),
-            headerTitle: 'Popular Books'
-        });
-    });
-
-    it('#navigateToViewMoreContentPageWithParams should navigate to ViewMoreList page with search params if filter is applied', () => {
-        resource.appliedFilter = mockRes.appliedFilterBooks;
-        resource.profile = mockRes.profile;
-        resource.isFilterApplied = true;
-        resource.mode = 'hard';
-        resource.navigateToViewMoreContentsPageWithParams(JSON.stringify(mockRes.queryParams), 'Popular Books');
-        const values = new Map();
-        values['SectionName'] = 'Popular Books';
-        expect(navCtrlMock.push).toHaveBeenCalledWith(ViewMoreActivityPage, {
-            requestParams: JSON.stringify(mockRes.queryParamsAfterFilter),
-            headerTitle: 'Popular Books'
-        });
-    });
-
-    it('#setSavedContent should call getAllLocalContents API() successfully', (done) => {
-        resource.profile = mockRes.profile;
-        spyOn(resource, 'setSavedContent').and.callThrough();
-        contentServiceMock.getAllLocalContents.mockResolvedValue(mockRes.getAllLocalContentsResponse);
-
-        resource.setSavedContent();
-        setTimeout(() => {
-            zoneMock.run.mock.calls[0][0].call();
-            expect(resource.localResources).toEqual(mockRes.getAllLocalContentsResponse);
-            expect(resource.showLoader).toBe(false);
-            done();
-        }, 0);
-    });
-
-    it('#setSavedContent should handle error situation came from getAllLocalContents API()', (done) => {
-        spyOn(resource, 'setSavedContent').and.stub();
-        contentServiceMock.getAllLocalContents.mockRejectedValue(false);
-        resource.setSavedContent();
-        setTimeout(() => {
-            expect(resource.localResources).toBeUndefined();
-            expect(resource.showLoader).toBe(false);
-            done();
-        }, 0);
-    });
-
     it('#loadRecentlyViewedContent should set recentlyViwedResources and showLoader', (done) => {
         contentServiceMock.getAllLocalContents.mockResolvedValue(mockRes.getAllLocalContentsResponse);
         resource.loadRecentlyViewedContent();
