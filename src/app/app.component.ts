@@ -19,8 +19,19 @@ import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
 import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
 import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
 import {
-  AuthService, ErrorEventType, EventNamespace, EventsBusService, OAuthSession, ProfileService, ProfileType,
-  SharedPreferences, SunbirdSdk, TelemetryAutoSyncUtil, TelemetryService
+  AuthService,
+  ErrorEventType,
+  EventNamespace,
+  EventsBusService,
+  OAuthSession,
+  ProfileService,
+  ProfileType,
+  SharedPreferences,
+  SunbirdSdk,
+  TelemetryAutoSyncUtil,
+  TelemetryService,
+  ContentDetailRequest,
+  NotificationService
 } from 'sunbird-sdk';
 import { tap } from 'rxjs/operators';
 import { Environment, InteractSubtype, InteractType, PageId, ImpressionType } from '../service/telemetry-constants';
@@ -40,8 +51,10 @@ import { ProfilePage } from '@app/pages/profile/profile';
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
 import { QrCodeResultPage } from '@app/pages/qr-code-result';
 import { FaqPage } from '@app/pages/help/faq';
-import { NotificationService } from '@app/service/notification.service';
+import { NotificationService as localNotification } from '@app/service/notification.service';
 import { SplaschreenDeeplinkActionHandlerDelegate } from '@app/service/sunbird-splashscreen/splaschreen-deeplink-action-handler-delegate';
+import { ActivePageService } from '@app/service/active-page/active-page-service';
+import { notificationService } from './app.module';
 
 @Component({
   templateUrl: 'app.html',
@@ -73,6 +86,7 @@ export class MyApp implements OnInit, AfterViewInit {
     @Inject('AUTH_SERVICE') private authService: AuthService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
+    @Inject('NOTIFICATION_SERVICE') private notificationServices: NotificationService,
     private platform: Platform,
     private statusBar: StatusBar,
     private toastCtrl: ToastController,
@@ -97,7 +111,8 @@ export class MyApp implements OnInit, AfterViewInit {
     private logoutHandlerService: LogoutHandlerService,
     private network: Network,
     private appRatingService: AppRatingService,
-    private notificationSrc: NotificationService
+    private activePageService: ActivePageService,
+    private notificationSrc: localNotification
   ) {
     this.telemetryAutoSyncUtil = new TelemetryAutoSyncUtil(this.telemetryService);
     platform.ready().then(async () => {
@@ -132,47 +147,69 @@ export class MyApp implements OnInit, AfterViewInit {
   /* Generates new FCM Token if not available
    * if available then on token refresh updates FCM token
    */
-//   fcmTokenWatcher() {
-//     if (!this.preferences.getString('fcm_token')) {
-//       FCMPlugin.getToken((token) => {
-//         this.preferences.putString('fcm_token', token);
-//       });
-//     } else {
-//       FCMPlugin.onTokenRefresh((token) => {
-//         this.preferences.putString('fcm_token', token);
-//       });
-//     }
+  fcmTokenWatcher() {
+    if (!this.preferences.getString('fcm_token')) {
+      FCMPlugin.getToken((token) => {
+        this.preferences.putString('fcm_token', token);
+      });
+    } else {
+      FCMPlugin.onTokenRefresh((token) => {
+        this.preferences.putString('fcm_token', token);
+      });
+    }
 
-//   }
+  }
 
+  handleNotification(data) {
+  switch (data.actionData.actionType) {
+    case 'updateApp':
+      console.log('updateApp');
+      break;
+    case 'contentUpdate':
+      console.log('contentUpdate');
+      break;
+    case 'bookUpdate':
+      console.log('bookUpdate');
+      break;
+    default:
+      console.log('Default Called');
+      break;
+  }
+
+    // const req: ContentDetailRequest = {
+    //   contentId: data.actionData.identifier,
+    //   attachFeedback: true,
+    //   attachContentAccess: true,
+    //   emitUpdateIfAny: true
+    // };
+    // this.contentService.getContentDetails(req).toPromise()
+    //   .then((data: Content) => {});
+  }
 
 
   /* Notification data will be received in data variable
    * can take action on data variable
    */
-//   receiveNotification () {
-//     FCMPlugin.onNotification((data) => {
-//       console.log('Notificationdata');
-//       console.log(data);
-//       alert(data);
-
-//         if (data.wasTapped) {
-//           // Notification was received on device tray and tapped by the user.
-//           alert( JSON.stringify(data) );
-//         } else {
-//           // Notification was received in foreground. Maybe the user needs to be notified.
-//           alert( JSON.stringify(data) );
-//         }
-//     },
-//     (sucess) => {
-//       console.log('Notification Sucess Callback');
-//       console.log(sucess);
-//     },
-//     (err) => {
-//       console.log('Notification Error Callback');
-//       console.log(err);
-//     });
-//   }
+  receiveNotification () {
+    FCMPlugin.onNotification((data) => {
+      console.log('Notificationdata');
+      console.log(data);
+      this.notificationServices.addNotification(data).subscribe();
+        if (data.wasTapped) {
+          // Notification was received on device tray and tapped by the user.
+        } else {
+          // Notification was received in foreground. Maybe the user needs to be notified.
+        }
+    },
+    (sucess) => {
+      console.log('Notification Sucess Callback');
+      console.log(sucess);
+    },
+    (err) => {
+      console.log('Notification Error Callback');
+      console.log(err);
+    });
+  }
 
   /**
 	 * Angular life cycle hooks
@@ -185,7 +222,7 @@ export class MyApp implements OnInit, AfterViewInit {
     this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
       const navObj: NavControllerBase = this.app.getActiveNavs()[0];
       const activeView: ViewController = navObj.getActive();
-      const pageId: string = this.computePageId((<any>activeView).instance);
+      const pageId: string = this.activePageService.computePageId((<any>activeView).instance);
       if (available) {
         this.addNetworkTelemetry(InteractSubtype.INTERNET_CONNECTED, pageId);
       } else {
@@ -213,7 +250,6 @@ export class MyApp implements OnInit, AfterViewInit {
     });
   }
 
-
   handleBackButton() {
     this.platform.registerBackButtonAction(() => {
 
@@ -228,7 +264,7 @@ export class MyApp implements OnInit, AfterViewInit {
       if (navObj.canGoBack()) {
         return navObj.pop();
       } else {
-        this.commonUtilService.showExitPopUp(this.computePageId((<any>activeView).instance), Environment.HOME, false);
+        this.commonUtilService.showExitPopUp(this.activePageService.computePageId((<any>activeView).instance), Environment.HOME, false);
       }
     });
   }
@@ -238,27 +274,6 @@ export class MyApp implements OnInit, AfterViewInit {
     value['network-type'] = this.network.type;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
       InteractSubtype.NETWORK_STATUS, Environment.HOME, PageId.SPLASH_SCREEN, undefined, value);
-  }
-  computePageId(page): string {
-    let pageId = '';
-    if (page instanceof ResourcesPage) {
-      pageId = PageId.LIBRARY;
-    } else if (page instanceof CoursesPage) {
-      pageId = PageId.COURSES;
-    } else if (page instanceof ProfilePage) {
-      pageId = PageId.PROFILE;
-    } else if (page instanceof GuestProfilePage) {
-      pageId = PageId.GUEST_PROFILE;
-    } else if (page instanceof CollectionDetailsEtbPage) {
-      pageId = PageId.COLLECTION_DETAIL;
-    } else if (page instanceof ContentDetailsPage) {
-      pageId = PageId.CONTENT_DETAIL;
-    } else if (page instanceof QrCodeResultPage) {
-      pageId = PageId.DIAL_CODE_SCAN_RESULT;
-    } else if (page instanceof CollectionDetailsPage) {
-      pageId = PageId.COLLECTION_DETAIL;
-    }
-    return pageId;
   }
 
   subscribeEvents() {
@@ -674,7 +689,7 @@ export class MyApp implements OnInit, AfterViewInit {
       if (navObj.canGoBack()) {
         return navObj.pop();
       } else {
-        this.commonUtilService.showExitPopUp(this.computePageId((<any>activeView).instance), Environment.HOME, false);
+        this.commonUtilService.showExitPopUp(this.activePageService.computePageId((<any>activeView).instance), Environment.HOME, false);
       }
     } else {
       this.headerServie.sidebarEvent($event);

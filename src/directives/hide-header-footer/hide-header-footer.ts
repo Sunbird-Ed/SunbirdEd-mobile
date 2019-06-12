@@ -24,7 +24,7 @@ export class HideHeaderFooterDirective {
   constructor(private elemRef: ElementRef, private renderer: Renderer2, public event: Events) {}
 
   onContentScroll(event: ScrollEvent) {
-    if (event.scrollTop <= 58) {
+    if (event && event.scrollTop <= 58) {
       return;
     }
 
