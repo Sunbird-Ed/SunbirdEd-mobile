@@ -1,2 +1,27 @@
 <application-header [headerConfig]="headerConfig" (headerEvents)="handleHeaderEvents($event);" (sideMenuItemEvent)="menuItemAction($event)"></application-header>
 <ion-nav [root]="rootPage" [ngClass]="{'need-header-space':headerConfig?.showHeader, '':!headerConfig?.showHeader}"></ion-nav>
+<ion-backdrop id="backdrop"
+              (click)="$event.preventDefault(); $event.stopPropagation(); qrWalkthroughBackdropClicked(); showWalkthroughBackDrop = false"
+              [hidden]="!showWalkthroughBackDrop">
+  <ion-grid style="height: 100%" class="gridClass ion-text-center">
+    <ion-row style="height: 100%" align-items-end>
+      <ion-col style="padding-bottom: 7em; text-align: center">
+        <ion-row>
+          <ion-col>
+              <ion-row><div class="ion-text-center W100" style="font-size: 19px">{{'TAP_SCAN' | translate: {'%s': appName} }}</div></ion-row>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col style="padding-left: 50px; padding-right: 70px">
+            <ion-row><div class="ion-text-center W100">{{'COACH_SCREEN' | translate}}</div></ion-row>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <button ion-button round outline id="buttonColors" (click)="onConfirmationClicked()">{{'GOT_IT' | translate}}</button>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-backdrop>

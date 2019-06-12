@@ -85,6 +85,7 @@ export class MyApp implements OnInit, AfterViewInit {
     actionButtons: ['search'],
   };
   public sideMenuEvent = new EventEmitter;
+  public showWalkthroughBackDrop = false;
 
   readonly permissionList = [
     AndroidPermission.WRITE_EXTERNAL_STORAGE,
@@ -94,7 +95,7 @@ export class MyApp implements OnInit, AfterViewInit {
 
   profile: any = {};
   selectedLanguage: string;
-
+  appName: string;
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
@@ -246,6 +247,10 @@ export class MyApp implements OnInit, AfterViewInit {
   }
 
   subscribeEvents() {
+    this.events.subscribe('show-qr-walkthrough', (data) => {
+      this.showWalkthroughBackDrop = data.showWalkthroughBackDrop;
+      this.appName = (data.appName).toUpperCase();
+    });
     this.events.subscribe('tab.change', (data) => {
       this.zone.run(() => {
         this.generateInteractEvent(data);
@@ -790,5 +795,21 @@ export class MyApp implements OnInit, AfterViewInit {
       .take(1).subscribe(() => {
         this.logoutHandlerService.onLogout();
       });
+  }
+  private qrWalkthroughBackdropClicked() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.WALKTHROUGH_BACKDROP_CLICKED,
+      Environment.ONBOARDING,
+      PageId.LIBRARY,
+    );
+  }
+  private onConfirmationClicked() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.WALKTHROUGH_CONFIRMATION_CLICKED,
+      Environment.ONBOARDING,
+      PageId.LIBRARY
+    );
   }
 }

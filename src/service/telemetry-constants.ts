@@ -127,6 +127,7 @@ export enum ImpressionSubtype {
     QR_CODE_VALID = 'qr-code-valid',
     INVALID_QR_CODE = 'invalid-qr-code',
     APP_RATING_POPUP = 'app-rating-popup',
+    QR_SCAN_WALKTHROUGH = 'qr-scan-walkthrough'
 }
 export enum InteractType {
     TOUCH = 'TOUCH',
@@ -278,7 +279,9 @@ export enum InteractSubtype {
     IMPORT_COMPLETED = 'import-completed',
     QR_SCAN_INVALID = 'qr-scan-invalid',
     UNIT_CLICKED = 'unit-clicked',
-    PERMISSION_POPUP = 'permission-popup'
+    PERMISSION_POPUP = 'permission-popup',
+    WALKTHROUGH_BACKDROP_CLICKED = 'walkthrough-backdrop-clicked',
+    WALKTHROUGH_CONFIRMATION_CLICKED = 'walkthrough-confirmation-clicked'
 }
 
 export enum ActionButtonType {

@@ -23,11 +23,12 @@ import {
   ProfileType,
   SharedPreferences
 } from 'sunbird-sdk';
-import {Environment, InteractSubtype, InteractType, PageId, ImpressionType} from '../../service/telemetry-constants';
+import {Environment, InteractSubtype, InteractType, PageId, ImpressionType, ImpressionSubtype} from '../../service/telemetry-constants';
 import {ContainerService} from '../../service/container.services';
 import {TabsPage} from '@app/pages/tabs/tabs';
 import {ProfileConstants} from '../../app';
 import { AppHeaderService } from '@app/service';
+import {AppVersion} from "@ionic-native/app-version";
 
 @IonicPage()
 @Component({
@@ -96,7 +97,8 @@ export class ProfileSettingsPage {
     @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
     @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
-    private headerServie: AppHeaderService
+    private headerService: AppHeaderService,
+    private appVersion: AppVersion
   ) {
     this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
       .then(val => {
@@ -125,9 +127,9 @@ export class ProfileSettingsPage {
   ionViewWillEnter() {
     this.hideBackButton = Boolean(this.navParams.get('hideBackButton'));
     if (!this.hideBackButton) {
-      this.headerServie.hideHeader();
+      this.headerService.hideHeader();
     } else {
-      this.headerServie.showHeaderWithBackButton();
+      this.headerService.showHeaderWithBackButton();
     }
     if (this.navParams.get('isCreateNavigationStack')) {
       this.navCtrl.insertPages(0, [{page: 'LanguageSettingsPage'}, {page: 'UserTypeSelectionPage'}]);
@@ -522,7 +524,15 @@ export class ProfileSettingsPage {
         } else if (req.profileType === ProfileType.STUDENT) {
           initTabs(this.container, GUEST_STUDENT_TABS);
         }
-
+        this.appVersion.getAppName().then((appName) => {
+          this.events.publish('show-qr-walkthrough' , {showWalkthroughBackDrop: true, appName: appName});
+        });
+        this.telemetryGeneratorService.generateImpressionTelemetry(
+          ImpressionType.VIEW,
+          ImpressionSubtype.QR_SCAN_WALKTHROUGH,
+          PageId.LIBRARY,
+          Environment.ONBOARDING
+        );
         this.events.publish('refresh:profile');
         this.appGlobalService.guestUserProfile = res;
         this.commonUtilService.showToast('PROFILE_UPDATE_SUCCESS');
