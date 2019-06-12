@@ -249,7 +249,7 @@ export class MyApp implements OnInit, AfterViewInit {
   subscribeEvents() {
     this.events.subscribe('show-qr-walkthrough', (data) => {
       this.showWalkthroughBackDrop = data.showWalkthroughBackDrop;
-      this.appName = (data.appName).toUpperCase();
+      this.appName = data.appName;
     });
     this.events.subscribe('tab.change', (data) => {
       this.zone.run(() => {

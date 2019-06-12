@@ -59,7 +59,7 @@ export class ProfileSettingsPage {
   selectedLanguage = 'en';
   profileForTelemetry: any = {};
   hideBackButton = true;
-
+  appName: string;
   // syllabusOptions = {
   //   title: this.commonUtilService.translateMessage('SYLLABUS').toLocaleUpperCase(),
   //   cssClass: 'select-box'
@@ -122,6 +122,9 @@ export class ProfileSettingsPage {
       PageId.ONBOARDING_PROFILE_PREFERENCES,
       Environment.ONBOARDING
     );
+    this.appVersion.getAppName().then((appName) => {
+      this.appName = (appName).toUpperCase();
+    });
   }
 
   ionViewWillEnter() {
@@ -524,9 +527,7 @@ export class ProfileSettingsPage {
         } else if (req.profileType === ProfileType.STUDENT) {
           initTabs(this.container, GUEST_STUDENT_TABS);
         }
-        this.appVersion.getAppName().then((appName) => {
-          this.events.publish('show-qr-walkthrough' , {showWalkthroughBackDrop: true, appName: appName});
-        });
+        this.events.publish('show-qr-walkthrough' , {showWalkthroughBackDrop: true, appName: this.appName});
         this.telemetryGeneratorService.generateImpressionTelemetry(
           ImpressionType.VIEW,
           ImpressionSubtype.QR_SCAN_WALKTHROUGH,
