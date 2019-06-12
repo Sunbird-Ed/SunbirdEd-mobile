@@ -796,7 +796,7 @@ export class MyApp implements OnInit, AfterViewInit {
         this.logoutHandlerService.onLogout();
       });
   }
-  private walkThroughAcknowledgement() {
+  private qrWalkthroughBackdropClicked() {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.QR_SCAN_BACKDROP_CLICKED,
@@ -804,7 +804,7 @@ export class MyApp implements OnInit, AfterViewInit {
       PageId.LIBRARY,
     );
   }
-  private walkThroughButton() {
+  private onConfirmationClicked() {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.QR_SCAN_WALKTHROUGH_BACKDROP_BUTTON_CLICKED,

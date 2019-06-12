@@ -1,7 +1,7 @@
 <application-header [headerConfig]="headerConfig" (headerEvents)="handleHeaderEvents($event);" (sideMenuItemEvent)="menuItemAction($event)"></application-header>
 <ion-nav [root]="rootPage" [ngClass]="{'need-header-space':headerConfig?.showHeader, '':!headerConfig?.showHeader}"></ion-nav>
 <ion-backdrop id="backdrop"
-              (click)="$event.preventDefault(); $event.stopPropagation(); walkThroughAcknowledgement(); showWalkthroughBackDrop = false"
+              (click)="$event.preventDefault(); $event.stopPropagation(); qrWalkthroughBackdropClicked(); showWalkthroughBackDrop = false"
               [hidden]="!showWalkthroughBackDrop">
   <ion-grid style="height: 100%" class="gridClass ion-text-center">
     <ion-row style="height: 100%" align-items-end>
@@ -21,7 +21,7 @@
           </ion-col>
         <ion-row>
           <ion-col>
-            <button ion-button round outline id="buttonColors" (click)="walkThroughButton()">{{'GOT_IT' | translate}}</button>
+            <button ion-button round outline id="buttonColors" (click)="onConfirmationClicked()">{{'GOT_IT' | translate}}</button>
           </ion-col>
         </ion-row>
       </ion-col>
