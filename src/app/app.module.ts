@@ -107,6 +107,9 @@ export function downloadService() {
 export function storageService() {
   return SunbirdSdk.instance.storageService;
 }
+export function notificationService() {
+  return SunbirdSdk.instance.notificationService;
+}
 export function sdkDriverFactory() {
   return [{
     provide: 'SDK_CONFIG',
@@ -180,9 +183,12 @@ export function sdkDriverFactory() {
   }, {
     provide: 'STORAGE_SERVICE',
     useFactory: storageService
+  }, {
+    provide: 'NOTIFICATION_SERVICE',
+    useFactory: notificationService
   }
   ];
-}
+  }
 
 export const sunbirdSdkServicesProvidersFactory: () => Provider[] = sdkDriverFactory;
 

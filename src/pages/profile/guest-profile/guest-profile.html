@@ -38,7 +38,7 @@
         </ion-col>
         <ion-col class="font-size-14rem page-content" col-6 text-end>
           <div *ngIf="profile?.syllabus?.length && profile?.board?.length">
-            <div class="ellipsis text-align">{{boards}}</div>
+            <div class="ellipsis text-align">{{boards}} &lrm;</div>
             <ion-icon class="icon-align" float="end" name="md-create" color="primary" (click)="editGuestProfile()"></ion-icon>
           </div>
           <div *ngIf="!profile.syllabus?.length || !profile?.board?.length" (click)="editGuestProfile()" class="vertical-align">{{'ADD' | translate}}</div>
