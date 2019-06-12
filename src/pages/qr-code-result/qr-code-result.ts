@@ -36,7 +36,8 @@ import {
   NetworkError,
   PlayerService,
   Profile,
-  ProfileService
+  ProfileService,
+  TelemetryObject
 } from 'sunbird-sdk';
 import {Subscription} from 'rxjs';
 import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
@@ -173,8 +174,7 @@ export class QrCodeResultPage implements OnDestroy {
   ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(ImpressionType.VIEW, '',
       PageId.DIAL_CODE_SCAN_RESULT,
-      !this.appGlobalService.isProfileSettingsCompleted ? Environment.ONBOARDING : this.appGlobalService.getEnvironmentForTelemetry());
-
+      !this.appGlobalService.isProfileSettingsCompleted ? Environment.ONBOARDING : this.appGlobalService.getPageIdForTelemetry());
     this.navBar.backButtonClick = () => {
       this.handleBackButton(InteractSubtype.NAV_BACK_CLICKED);
     };
@@ -299,15 +299,43 @@ export class QrCodeResultPage implements OnDestroy {
     const request: any = {};
     request.streaming = true;
     AppGlobalService.isPlayerLaunched = true;
+    const values = new Map();
+    values['isStreaming'] =  request.streaming;
+    const identifier = content.identifier;
+    let telemetryObject: TelemetryObject;
+    const objectType = this.telemetryGeneratorService.isCollection(content.mimeType) ? content.contentType : ContentType.RESOURCE;
+    telemetryObject = new TelemetryObject(identifier, objectType, undefined);
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.CONTENT_PLAY,
+      !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
+      PageId.DIAL_CODE_SCAN_RESULT,
+      telemetryObject,
+      values,
+      undefined,
+      this.corRelationList);
     this.openPlayer(content, request);
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
-      InteractSubtype.PLAY_ONLINE,
-      !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : this.appGlobalService.getEnvironmentForTelemetry(),
-      PageId.DIAL_CODE_SCAN_RESULT);
+      content.isAvailableLocally ? InteractSubtype.PLAY_FROM_DEVICE : InteractSubtype.PLAY_ONLINE,
+      !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : this.appGlobalService.getPageIdForTelemetry(),
+      PageId.DIAL_CODE_SCAN_RESULT,
+      telemetryObject,
+      undefined,
+      undefined,
+      this.corRelationList);
   }
 
   playOnline(content) {
+    const identifier = content.identifier;
+    let telemetryObject: TelemetryObject;
+    const objectType = this.telemetryGeneratorService.isCollection(content.mimeType) ? content.contentType : ContentType.RESOURCE;
+    telemetryObject = new TelemetryObject(identifier, objectType, undefined);
+
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.CONTENT_CLICKED,
+      !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
+      PageId.DIAL_CODE_SCAN_RESULT,
+      telemetryObject);
     if (content.contentData.streamingUrl && !content.isAvailableLocally) {
       this.playContent(content);
     } else {

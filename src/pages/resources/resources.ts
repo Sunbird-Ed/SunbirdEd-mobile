@@ -217,9 +217,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       }
     });
 
-    this.events.subscribe('tab.change', (data) => {
+    this.events.subscribe('tab.change', (data: string) => {
       // this.ngZone.run(() => {
-      if (data === 'LIBRARY') {
+      if (data.trim().toUpperCase() === 'LIBRARY') {
         if (this.appliedFilter) {
           this.filterIcon = './assets/imgs/ic_action_filter.png';
           this.resourceFilter = undefined;
@@ -228,7 +228,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.getPopularContent();
         }
       } else if (data === '') {
-        this.qrScanner.startScanner(this.appGlobalService.getEnvironmentForTelemetry());
+        this.qrScanner.startScanner(this.appGlobalService.getPageIdForTelemetry());
       }
       // });
     });
@@ -606,7 +606,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             if (this.tabs.getSelected().tabTitle === 'LIBRARY‌' && !avoidRefreshList) {
               this.commonUtilService.showToast(
                 this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
-                  `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
+                `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
             }
           }
         });
@@ -984,8 +984,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     }
     this.getGroupByPageReq.grade = [this.categoryGradeLevels[index].name];
     // [grade.name];
-    if ((this.currentGrade) && (this.currentGrade.name !== this.categoryGradeLevels[index].name)) {
-      this.getGroupByPage(false,!isClassClicked);
+    if ((this.currentGrade) && (this.currentGrade.name !== this.categoryGradeLevels[index].name) && isClassClicked) {
+      this.getGroupByPage(false, !isClassClicked);
     }
     for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
       if (i === index) {
@@ -1012,7 +1012,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.generateMediumInteractTelemetry(mediumName, this.getGroupByPageReq.medium[0]);
     }
     this.getGroupByPageReq.medium = [mediumName];
-    if (this.currentMedium !== mediumName) {
+    if (this.currentMedium !== mediumName && isMediumClicked) {
       this.getGroupByPage(false, !isMediumClicked);
     }
 

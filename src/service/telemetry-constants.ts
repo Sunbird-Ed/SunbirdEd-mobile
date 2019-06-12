@@ -98,7 +98,8 @@ export enum PageId {
     BULK_DELETE_CONFIRMATION_POPUP = 'bulk-delete-confirmation-popup',
     ACTIVE_DOWNLOADS = 'active-downloads',
     SINGLE_CANCEL_CONFIRMATION_POPUP = 'single-cancel-confirmation-popup',
-    BULK_CANCEL_CONFIRMATION_POPUP = 'bulk-cancel-confirmation-popup'
+    BULK_CANCEL_CONFIRMATION_POPUP = 'bulk-cancel-confirmation-popup',
+    DIAL_SEARCH = 'dial-book-result'
 }
 export enum LogType {
     NOTIFICATION = 'notification'
@@ -126,7 +127,6 @@ export enum ImpressionSubtype {
     QR_CODE_VALID = 'qr-code-valid',
     INVALID_QR_CODE = 'invalid-qr-code',
     APP_RATING_POPUP = 'app-rating-popup',
-    PERMISSION_POPUP = 'permission-popup'
 }
 export enum InteractType {
     TOUCH = 'TOUCH',
@@ -233,6 +233,7 @@ export enum InteractSubtype {
     DELETE_CLICKED = 'delete-clicked',
     DIAL_SEARCH_RESULT_FOUND = 'dial-code-search-result-found',
     LOADING_SPINE = 'loading-spine',
+    LOADING_SPINE_COMPLETED = 'loading-spine-completed',
     DOWNLOAD_ALL_CLICKED = 'download-all-clicked',
     CANCEL_CLICKED = 'cancel-clicked',
     CLOSE_CLICKED = 'close-clicked',
@@ -272,7 +273,12 @@ export enum InteractSubtype {
     HELP_SECTION_CLICKED = 'help-section-clicked',
     APP_RATING_APPEARED = 'app-rating-appeared',
     USER_TYPE_SELECTED = 'user-type-selected',
-    QR_SCAN_INVALID = 'qr-scan-invalid'
+    QR_CODE_INVALID = 'qr-code-invalid',
+    QR_CODE_COMINGSOON = 'qr-code-comingsoon',
+    IMPORT_COMPLETED = 'import-completed',
+    QR_SCAN_INVALID = 'qr-scan-invalid',
+    UNIT_CLICKED = 'unit-clicked',
+    PERMISSION_POPUP = 'permission-popup'
 }
 
 export enum ActionButtonType {
@@ -282,6 +288,7 @@ export enum ActionButtonType {
 
 export enum CorReleationDataType {
     COURSE_BATCH = 'CourseBatch',
+    FTUE = 'Ftue',
 }
 
 

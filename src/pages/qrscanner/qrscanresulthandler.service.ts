@@ -1,13 +1,13 @@
-import {Inject, Injectable} from '@angular/core';
-import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
-import {Content, ContentDetailRequest, ContentService, CorrelationData, TelemetryObject,} from 'sunbird-sdk';
-import {SearchPage} from '../search/search';
-import {ContentType, MimeType} from '../../app/app.constant';
-import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
-import {ContentDetailsPage} from '../content-details/content-details';
-import {CollectionDetailsPage} from '../collection-details/collection-details';
-import {CommonUtilService} from '../../service/common-util.service';
-import {App} from 'ionic-angular';
+import { Inject, Injectable } from '@angular/core';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { Content, ContentDetailRequest, ContentService, CorrelationData, TelemetryObject, } from 'sunbird-sdk';
+import { SearchPage } from '../search/search';
+import { ContentType, MimeType } from '../../app/app.constant';
+import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
+import { ContentDetailsPage } from '../content-details/content-details';
+import { CollectionDetailsPage } from '../collection-details/collection-details';
+import { CommonUtilService } from '../../service/common-util.service';
+import { App } from 'ionic-angular';
 import {
   Environment,
   ImpressionSubtype,
@@ -16,7 +16,9 @@ import {
   InteractType,
   Mode,
   PageId,
+  CorReleationDataType,
 } from '../../service/telemetry-constants';
+import { AppGlobalService } from '@app/service';
 
 @Injectable()
 export class QRScannerResultHandler {
@@ -27,7 +29,8 @@ export class QRScannerResultHandler {
     private app: App,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private commonUtilService: CommonUtilService,
-    private telemetryGeneratorService: TelemetryGeneratorService) {
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private appgloabalService: AppGlobalService) {
   }
 
   isDialCode(scannedData: string): boolean {
@@ -47,6 +50,7 @@ export class QRScannerResultHandler {
   }
 
   handleDialCode(source: string, scannedData: string) {
+    console.log('appglobal', source);
     this.source = source;
     const results = scannedData.split('/');
     const dialCode = results[results.length - 1];
@@ -79,19 +83,19 @@ export class QRScannerResultHandler {
           Environment.HOME,
         );
       }).catch(() => {
-      if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
-        this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
-      } else {
-        this.commonUtilService.showToast('UNKNOWN_QR');
-        this.telemetryGeneratorService.generateImpressionTelemetry(
-          ImpressionType.SEARCH, '',
-          ImpressionSubtype.INVALID_QR_CODE,
-          InteractType.OTHER,
-          PageId.QRCodeScanner,
-          Environment.HOME,
-        );
-      }
-    });
+        if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
+          this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
+        } else {
+          this.commonUtilService.showToast('UNKNOWN_QR');
+          this.telemetryGeneratorService.generateImpressionTelemetry(
+            ImpressionType.SEARCH, '',
+            ImpressionSubtype.INVALID_QR_CODE,
+            InteractType.OTHER,
+            PageId.QRCodeScanner,
+            Environment.HOME,
+          );
+        }
+      });
   }
 
   handleInvalidQRCode(source: string, scannedData: string) {
@@ -106,6 +110,10 @@ export class QRScannerResultHandler {
     corRelation.id = identifier;
     corRelation.type = type;
     corRelationList.push(corRelation);
+    const corRelationftue: CorrelationData = new CorrelationData();
+    corRelationftue.type = CorReleationDataType.FTUE;
+    corRelationftue.id = this.source === PageId.USER_TYPE_SELECTION ? 'true' : 'false';
+    corRelationList.push(corRelationftue);
     return corRelationList;
   }
 
