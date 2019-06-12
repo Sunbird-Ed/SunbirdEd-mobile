@@ -1,8 +1,7 @@
 
-import { Component, ViewChild, Inject, OnInit } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ContainerService } from '../../service/container.services';
 import { Tabs, Tab, Events, ToastController } from 'ionic-angular';
-import { TelemetryGeneratorService } from '@app/service';
 
 @Component({
   selector: 'page-tabs',
@@ -13,20 +12,24 @@ export class TabsPage {
   configData: any;
 
   @ViewChild('myTabs') tabRef: Tabs;
+
   tabIndex = 0;
+
   tabs = [];
+
   headerConfig = {
-    showHeader : true,
+    showHeader: true,
     showBurgerMenu: true,
     actionButtons: ['search', 'filter'],
   };
+
   selectedLanguage: string;
+
   constructor(
     private container: ContainerService,
     private events: Events,
-    public toastCtrl: ToastController,
-    private telemetryGeneratorService: TelemetryGeneratorService
-  ) {}
+    public toastCtrl: ToastController
+  ) { }
 
   ionViewWillEnter() {
     this.tabs = this.container.getAllTabs();
@@ -38,6 +41,7 @@ export class TabsPage {
         tabIndex = index;
       }
     });
+
     this.events.publish('update_header', { index: tabIndex });
     // Raise an Event
     setTimeout(() => {
@@ -49,15 +53,16 @@ export class TabsPage {
     // if active tab is other than scanner tab i.e, = tab 2
     if (tab.index !== 2) {
       this.tabs.forEach((tabTo, index) => {
-
         if (tabTo.isSelected === true) {
           tabTo.isSelected = false;
         }
+
         if (index === tab.index) {
           tabTo.isSelected = true;
         }
       });
     }
+
     this.events.publish('tab.change', tab.tabTitle);
   }
 
@@ -74,6 +79,7 @@ export class TabsPage {
       });
       toast.present();
     }
+
     if (tab.disabled && !tab.availableLater) {
       const toast = this.toastCtrl.create({
         message: 'Available for teachers only',

@@ -1,4 +1,6 @@
 export const mockRes = {
+    sampleCourse:
+        { 'identifier': 'SAMPLE_ID', 'batchId': '1234', 'isAvailableLocally': true, 'contentTypesCount': '1' },
     contentDetailsResponse: {
         'message': 'successful',
         'result': {'isUpdateAvailable': 'true',

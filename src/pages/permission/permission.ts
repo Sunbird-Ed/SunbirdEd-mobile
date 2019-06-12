@@ -6,9 +6,11 @@ import { SunbirdQRScanner } from '../qrscanner';
 import { ProfileSettingsPage } from '../profile-settings/profile-settings';
 import { TabsPage } from '../tabs/tabs';
 import { AndroidPermissionsService } from '@app/service/android-permissions/android-permissions.service';
-import { AndroidPermission, AndroidPermissionsStatus } from '@app/service/android-permissions/android-permission';
+import { AndroidPermission, AndroidPermissionsStatus, PermissionAskedEnum } from '@app/service/android-permissions/android-permission';
 import { Observable } from 'rxjs';
 import { AppVersion } from '@ionic-native/app-version';
+
+declare const cordova;
 
 @IonicPage()
 @Component({
@@ -16,23 +18,27 @@ import { AppVersion } from '@ionic-native/app-version';
   templateUrl: 'permission.html',
 })
 export class PermissionPage {
-  
-  appName = "";
+
+  appName = '';
+
   permissionListDetails = [
     {
       title: this.commonUtilService.translateMessage('CAMERA'),
-      icon: 'camera',
-      description: this.commonUtilService.translateMessage('CAMERA_PERMISSION_DESCRIPTION', this.appName)
+      path: './assets/imgs/ic_photo_camera.png',
+      description: this.commonUtilService.translateMessage('CAMERA_PERMISSION_DESCRIPTION', this.appName),
+      permission : false
     },
     {
       title: this.commonUtilService.translateMessage('FILE_MANAGER'),
-      icon: 'folder-open',
-      description: this.commonUtilService.translateMessage('FILE_MANAGER_PERMISSION_DESCRIPTION')
+      path: './assets/imgs/ic_folder_open.png',
+      description: this.commonUtilService.translateMessage('FILE_MANAGER_PERMISSION_DESCRIPTION'),
+      permission : false
     },
     {
       title: this.commonUtilService.translateMessage('MICROPHONE'),
-      icon: 'mic',
-      description: this.commonUtilService.translateMessage('MICROPHONE_PERMISSION_DESCRIPTION')
+      path: './assets/imgs/ic_keyboard_voice.png',
+      description: this.commonUtilService.translateMessage('MICROPHONE_PERMISSION_DESCRIPTION'),
+      permission : false
     }
   ];
 
@@ -61,11 +67,14 @@ export class PermissionPage {
     this.appVersion.getAppName()
       .then((appName: any) => this.appName = appName);
     }
-    ionViewDidLoad() {
-      console.log('ionViewDidLoad PermissionPage');
-    }
 
-    ionViewWillEnter() {
+    async ionViewWillEnter() {
+      await this.permission.checkPermissions(this.permissionList).subscribe((res: { [key: string]: AndroidPermissionsStatus }) => {
+      this.permissionListDetails[0].permission = res[AndroidPermission.CAMERA].hasPermission;
+      this.permissionListDetails[1].permission = res[AndroidPermission.WRITE_EXTERNAL_STORAGE].hasPermission;
+      this.permissionListDetails[2].permission = res[AndroidPermission.RECORD_AUDIO].hasPermission;
+                                        });
+      this.changePermissionAccess = Boolean(this.navParams.get('changePermissionAccess'));
       this.showScannerPage = Boolean(this.navParams.get('showScannerPage'));
       this.showProfileSettingPage = Boolean(this.navParams.get('showProfileSettingPage'));
       this.showTabsPage = Boolean(this.navParams.get('showTabsPage'));
@@ -83,6 +92,9 @@ export class PermissionPage {
     }
 
     grantAccess() {
+      this.appGlobalService.setIsPermissionAsked(PermissionAskedEnum.isCameraAsked, true);
+      this.appGlobalService.setIsPermissionAsked(PermissionAskedEnum.isRecordAudioAsked, true);
+      this.appGlobalService.setIsPermissionAsked(PermissionAskedEnum.isStorageAsked, true);
       this.generateInteractEvent(true);
       // If user given camera access and the showScannerPage is ON
       this.requestAppPermissions().then((status) => {
@@ -92,9 +104,9 @@ export class PermissionPage {
             this.scannerService.startScanner(PageId.PERMISSION, true);
           } else {
             this.permission.checkPermissions([AndroidPermission.CAMERA]).toPromise().then((cameraStatus) => {
-              console.log("cameraStatus", cameraStatus);
+              console.log('cameraStatus', cameraStatus);
 
-              if (cameraStatus && cameraStatus['android.permission.CAMERA'] && cameraStatus['android.permission.CAMERA'].hasPermission) {
+              if (cameraStatus && cameraStatus[ AndroidPermission.CAMERA] && cameraStatus[AndroidPermission.CAMERA].hasPermission) {
                 this.scannerService.startScanner(PageId.PERMISSION, true);
               } else if (this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
                 this.navCtrl.push(ProfileSettingsPage);
@@ -118,8 +130,8 @@ export class PermissionPage {
         this.navCtrl.push(ProfileSettingsPage);
       } else if (this.showScannerPage) {
         this.permission.checkPermissions([AndroidPermission.CAMERA]).toPromise().then((cameraStatus) => {
-          console.log("cameraStatus", cameraStatus);
-          if (cameraStatus && cameraStatus['android.permission.CAMERA'] && cameraStatus['android.permission.CAMERA'].hasPermission) {
+          console.log('cameraStatus', cameraStatus);
+          if (cameraStatus && cameraStatus[AndroidPermission.CAMERA] && cameraStatus[AndroidPermission.CAMERA].hasPermission) {
             this.scannerService.startScanner(PageId.PERMISSION, true);
           }
         });
@@ -163,7 +175,6 @@ export class PermissionPage {
         if (!toRequest.length) {
           return Observable.of({ hasPermission: true });
         }
-
         return this.permission.requestPermissions(toRequest);
       }).toPromise();
   }
@@ -185,4 +196,24 @@ export class PermissionPage {
       undefined,
       values);
   }
+
+  stateChange(event) {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.APP_PERMISSION_SETTING_CLICKED,
+      Environment.ONBOARDING,
+      PageId.PERMISSION
+      );
+    this.navCtrl.pop();
+    cordova.plugins.diagnostic.switchToSettings('application_details', () => {
+      console.log('opened settings');
+  },
+  (err) => {
+      console.log('failed to open settings' + err);
+  }
+);
+
+
+}
+
 }

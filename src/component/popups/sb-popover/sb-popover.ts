@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { ContentActionsComponent } from '@app/component';
 import {
   NavParams,
@@ -41,10 +41,13 @@ export class SbPopoverComponent {
   showFlagMenu = true;
   public objRollup: Rollup;
   private corRelationList: Array<CorrelationData>;
-
+  isNotShowCloseIcon: boolean;
+  img: any;
 
   constructor(public viewCtrl: ViewController, public navParams: NavParams,
-    private platform: Platform, private events: Events) {
+    private platform: Platform, private events: Events, private ngZone: NgZone) {
+    this.img = this.navParams.get('img');
+    this.isNotShowCloseIcon = this.navParams.get('isNotShowCloseIcon') ? true : false;
     this.content = this.navParams.get('content');
     this.actionsButtons = this.navParams.get('actionsButtons');
     this.icon = this.navParams.get('icon');
@@ -73,7 +76,9 @@ export class SbPopoverComponent {
 
   ionViewWillEnter(): void {
     this.events.subscribe('deletedContentList:changed', (data) => {
-      this.sbPopoverMainTitle = data.deletedContentsInfo.deletedCount + '/' + data.deletedContentsInfo.totalCount;
+      this.ngZone.run(() => {
+        this.sbPopoverMainTitle = data.deletedContentsInfo.deletedCount + '/' + data.deletedContentsInfo.totalCount;
+      });
     });
   }
 
@@ -84,7 +89,10 @@ export class SbPopoverComponent {
   closePopover() {
     this.viewCtrl.dismiss();
   }
-  deleteContent(candelete: boolean = false) {
+  deleteContent(candelete: boolean = false, whichbtnClicked?) {
     this.viewCtrl.dismiss(candelete);
+    if (this.navParams.get('handler')) {
+      this.navParams.get('handler')(whichbtnClicked);
+    }
   }
 }

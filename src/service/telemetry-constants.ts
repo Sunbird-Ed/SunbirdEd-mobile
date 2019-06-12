@@ -146,6 +146,7 @@ export enum InteractSubtype {
     BROWSE_AS_GUEST_CLICKED = 'browse-as-guest-clicked',
     CONTINUE_CLICKED = 'continue-clicked',
     GRANT_ACCESS_CLICKED = 'grant-access-clicked',
+    APP_PERMISSION_SETTING_CLICKED = 'app-permission-setting-clicked',
     TAB_CLICKED = 'tab-clicked',
     SECTION_VIEWED = 'section-viewed',
     CONTENT_CLICKED = 'content-clicked',
@@ -170,6 +171,8 @@ export enum InteractSubtype {
     ANNOUNCEMENT_CLICKED = 'announcement-clicked',
     SIGNIN_OVERLAY_CLICKED = 'signin-overlay-clicked',
     SETTINGS_CLICKED = 'settings-clicked',
+    PERMISSION_POPOVER_NOT_NOW_CLICKED = 'permission-popover-not-now-clicked',
+    PERMISSION_POPOVER_ALLOW_CLICKED = 'permission-popover-allow-clicked',
     LANGUAGE_CLICKED = 'language-clicked',
     HELP_CLICKED = 'help-clicked',
     DATA_SYNC_CLICKED = 'data-sync-clicked',
@@ -272,7 +275,8 @@ export enum InteractSubtype {
     PLAY_STORE_BUTTON_CLICKED = 'play-store-button-clicked',
     HELP_SECTION_CLICKED = 'help-section-clicked',
     APP_RATING_APPEARED = 'app-rating-appeared',
-    START_CLICKED = 'start-clicked'
+    START_CLICKED = 'start-clicked',
+    UTM_INFO = 'utm_info'
 }
 
 export enum ActionButtonType {

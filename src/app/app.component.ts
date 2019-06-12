@@ -1,5 +1,4 @@
 import { Observable } from 'rxjs';
-import { ProfileSettingsPage } from './../pages/profile-settings/profile-settings';
 import { AfterViewInit, Component, Inject, NgZone, ViewChild, OnInit, EventEmitter } from '@angular/core';
 import { App, Events, Nav, Platform, PopoverController, ToastController, ViewController, NavControllerBase } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
@@ -14,28 +13,14 @@ import { ContentType, EventTopics, GenericAppConfig, MimeType, PreferenceKey, Pr
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { FormAndFrameworkUtilService, GuestProfilePage } from '@app/pages/profile';
 import {
-  AppGlobalService,
-  CommonUtilService,
-  TelemetryGeneratorService,
-  UtilityService,
-  AppHeaderService,
-  AppRatingService
+  AppGlobalService, CommonUtilService, TelemetryGeneratorService, UtilityService, AppHeaderService, AppRatingService
 } from '@app/service';
 import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
 import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
 import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
 import {
-  AuthService,
-  ErrorEventType,
-  EventNamespace,
-  EventsBusService,
-  OAuthSession,
-  ProfileService,
-  ProfileType,
-  SharedPreferences,
-  SunbirdSdk,
-  TelemetryAutoSyncUtil,
-  TelemetryService,
+  AuthService, ErrorEventType, EventNamespace, EventsBusService, OAuthSession, ProfileService, ProfileType,
+  SharedPreferences, SunbirdSdk, TelemetryAutoSyncUtil, TelemetryService
 } from 'sunbird-sdk';
 import { tap } from 'rxjs/operators';
 import { Environment, InteractSubtype, InteractType, PageId, ImpressionType } from '../service/telemetry-constants';
@@ -56,7 +41,8 @@ import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/coll
 import { QrCodeResultPage } from '@app/pages/qr-code-result';
 import { FaqPage } from '@app/pages/help/faq';
 import { NotificationService } from '@app/service/notification.service';
-import {SplaschreenDeeplinkActionHandlerDelegate} from '@app/service/sunbird-splashscreen/splaschreen-deeplink-action-handler-delegate';
+import { SplaschreenDeeplinkActionHandlerDelegate } from '@app/service/sunbird-splashscreen/splaschreen-deeplink-action-handler-delegate';
+import { ActivePageService } from '@app/service/active-page/active-page-service';
 
 @Component({
   templateUrl: 'app.html',
@@ -112,12 +98,13 @@ export class MyApp implements OnInit, AfterViewInit {
     private logoutHandlerService: LogoutHandlerService,
     private network: Network,
     private appRatingService: AppRatingService,
-    private notificationSrc: NotificationService
+    private notificationSrc: NotificationService,
+    private activePageService: ActivePageService,
   ) {
     this.telemetryAutoSyncUtil = new TelemetryAutoSyncUtil(this.telemetryService);
     platform.ready().then(async () => {
-      this.fcmTokenWatcher();
-      this.receiveNotification();
+      // this.fcmTokenWatcher(); // Notification related
+      // this.receiveNotification();
       this.imageLoaderConfig.enableDebugMode();
       this.imageLoaderConfig.setMaximumCacheSize(100 * 1024 * 1024);
       this.telemetryGeneratorService.genererateAppStartTelemetry(await utilityService.getDeviceSpec());
@@ -125,11 +112,9 @@ export class MyApp implements OnInit, AfterViewInit {
       this.autoSyncTelemetry();
       this.subscribeEvents();
 
-
       this.registerDeeplinks();
       this.startOpenrapDiscovery();
       this.saveDefaultSyncSetting();
-      this.showAppWalkThroughScreen();
       this.checkAppUpdateAvailable();
       this.makeEntryInSupportFolder();
       this.checkForTncUpdate();
@@ -142,53 +127,54 @@ export class MyApp implements OnInit, AfterViewInit {
       this.statusBar.styleBlackTranslucent();
       this.handleBackButton();
       this.appRatingService.checkInitialDate();
+      this.getUtmParameter();
     });
   }
 
   /* Generates new FCM Token if not available
    * if available then on token refresh updates FCM token
    */
-  fcmTokenWatcher() {
-    if (!this.preferences.getString('fcm_token')) {
-      FCMPlugin.getToken((token) => {
-        this.preferences.putString('fcm_token', token);
-      });
-    } else {
-      FCMPlugin.onTokenRefresh((token) => {
-        this.preferences.putString('fcm_token', token);
-      });
-    }
+//   fcmTokenWatcher() {
+//     if (!this.preferences.getString('fcm_token')) {
+//       FCMPlugin.getToken((token) => {
+//         this.preferences.putString('fcm_token', token);
+//       });
+//     } else {
+//       FCMPlugin.onTokenRefresh((token) => {
+//         this.preferences.putString('fcm_token', token);
+//       });
+//     }
 
-  }
+//   }
 
 
 
   /* Notification data will be received in data variable
    * can take action on data variable
    */
-  receiveNotification () {
-    FCMPlugin.onNotification((data) => {
-      console.log('Notificationdata');
-      console.log(data);
-      alert(data);
+//   receiveNotification () {
+//     FCMPlugin.onNotification((data) => {
+//       console.log('Notificationdata');
+//       console.log(data);
+//       alert(data);
 
-        if (data.wasTapped) {
-          // Notification was received on device tray and tapped by the user.
-          alert( JSON.stringify(data) );
-        } else {
-          // Notification was received in foreground. Maybe the user needs to be notified.
-          alert( JSON.stringify(data) );
-        }
-    },
-    (sucess) => {
-      console.log('Notification Sucess Callback');
-      console.log(sucess);
-    },
-    (err) => {
-      console.log('Notification Error Callback');
-      console.log(err);
-    });
-  }
+//         if (data.wasTapped) {
+//           // Notification was received on device tray and tapped by the user.
+//           alert( JSON.stringify(data) );
+//         } else {
+//           // Notification was received in foreground. Maybe the user needs to be notified.
+//           alert( JSON.stringify(data) );
+//         }
+//     },
+//     (sucess) => {
+//       console.log('Notification Sucess Callback');
+//       console.log(sucess);
+//     },
+//     (err) => {
+//       console.log('Notification Error Callback');
+//       console.log(err);
+//     });
+//   }
 
   /**
 	 * Angular life cycle hooks
@@ -200,8 +186,8 @@ export class MyApp implements OnInit, AfterViewInit {
 
     this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
       const navObj: NavControllerBase = this.app.getActiveNavs()[0];
-        const activeView: ViewController = navObj.getActive();
-        const pageId: string = this.computePageId((<any>activeView).instance);
+      const activeView: ViewController = navObj.getActive();
+      const pageId: string = this.activePageService.computePageId((<any>activeView).instance);
       if (available) {
         this.addNetworkTelemetry(InteractSubtype.INTERNET_CONNECTED, pageId);
       } else {
@@ -213,11 +199,11 @@ export class MyApp implements OnInit, AfterViewInit {
 
   addNetworkTelemetry(subtype: string, pageId: string) {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-        subtype,
-        Environment.HOME,
-        pageId, undefined
+      subtype,
+      Environment.HOME,
+      pageId, undefined
     );
-}
+  }
   ngAfterViewInit(): void {
     this.platform.resume.subscribe(() => {
       this.telemetryGeneratorService.generateInterruptTelemetry('resume', '');
@@ -228,7 +214,6 @@ export class MyApp implements OnInit, AfterViewInit {
       this.telemetryGeneratorService.generateInterruptTelemetry('background', '');
     });
   }
-
 
   handleBackButton() {
     this.platform.registerBackButtonAction(() => {
@@ -244,7 +229,7 @@ export class MyApp implements OnInit, AfterViewInit {
       if (navObj.canGoBack()) {
         return navObj.pop();
       } else {
-        this.commonUtilService.showExitPopUp(this.computePageId((<any>activeView).instance), Environment.HOME, false);
+        this.commonUtilService.showExitPopUp(this.activePageService.computePageId((<any>activeView).instance), Environment.HOME, false);
       }
     });
   }
@@ -253,28 +238,7 @@ export class MyApp implements OnInit, AfterViewInit {
     const value = new Map();
     value['network-type'] = this.network.type;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-      InteractSubtype.NETWORK_STATUS, Environment.HOME, PageId.SPLASH_SCREEN, undefined, value) ;
-  }
-  computePageId(page): string {
-    let pageId = '';
-    if (page instanceof ResourcesPage) {
-      pageId = PageId.LIBRARY;
-    } else if (page instanceof CoursesPage) {
-      pageId = PageId.COURSES;
-    } else if (page instanceof ProfilePage) {
-      pageId = PageId.PROFILE;
-    } else if (page instanceof GuestProfilePage) {
-      pageId = PageId.GUEST_PROFILE;
-    }  else if (page instanceof CollectionDetailsEtbPage) {
-      pageId = PageId.COLLECTION_DETAIL;
-  } else if (page instanceof ContentDetailsPage) {
-      pageId = PageId.CONTENT_DETAIL;
-  } else if (page instanceof QrCodeResultPage) {
-      pageId = PageId.DIAL_CODE_SCAN_RESULT;
-  } else if (page instanceof CollectionDetailsPage) {
-      pageId = PageId.COLLECTION_DETAIL;
-  }
-    return pageId;
+      InteractSubtype.NETWORK_STATUS, Environment.HOME, PageId.SPLASH_SCREEN, undefined, value);
   }
 
   subscribeEvents() {
@@ -546,6 +510,7 @@ export class MyApp implements OnInit, AfterViewInit {
       undefined
     );
   }
+
   private generateImpressionEvent(pageid: string) {
     pageid = pageid.toLowerCase();
     const env = pageid.localeCompare(PageId.PROFILE) ? Environment.HOME : Environment.USER;
@@ -554,6 +519,7 @@ export class MyApp implements OnInit, AfterViewInit {
       pageid,
       env);
   }
+
   private navigateToContentDetails(content) {
     if (content.contentData.contentType === ContentType.COURSE) {
       this.nav.push(EnrolledCourseDetailsPage, {
@@ -568,11 +534,6 @@ export class MyApp implements OnInit, AfterViewInit {
         content: content
       });
     }
-  }
-
-  private async showAppWalkThroughScreen() {
-    const showAppWalkthrough = (await this.preferences.getString('show_app_walkthrough_screen').toPromise()) === '' ? 'true' : 'false';
-    await this.preferences.putString('show_app_walkthrough_screen', showAppWalkthrough).toPromise();
   }
 
   private async startOpenrapDiscovery(): Promise<undefined> {
@@ -686,14 +647,14 @@ export class MyApp implements OnInit, AfterViewInit {
         || ((<any>activeView).instance instanceof OnboardingPage)
         || ((<any>activeView).instance instanceof QrCodeResultPage)
         || ((<any>activeView).instance instanceof FaqPage)
-        ) {
+      ) {
         this.headerServie.sidebarEvent($event);
         return;
       }
       if (navObj.canGoBack()) {
         return navObj.pop();
       } else {
-        this.commonUtilService.showExitPopUp(this.computePageId((<any>activeView).instance), Environment.HOME, false);
+        this.commonUtilService.showExitPopUp(this.activePageService.computePageId((<any>activeView).instance), Environment.HOME, false);
       }
     } else {
       this.headerServie.sidebarEvent($event);
@@ -791,6 +752,28 @@ export class MyApp implements OnInit, AfterViewInit {
       .filter((e) => e.type === ErrorEventType.AUTH_TOKEN_REFRESH_ERROR)
       .take(1).subscribe(() => {
         this.logoutHandlerService.onLogout();
+      });
+  }
+  getUtmParameter() {
+    this.utilityService.getUtmInfo().then(response => {
+      if (response) {
+        const utmTelemetry = new Map();
+        utmTelemetry['utm_data'] = response;
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.OTHER,
+          InteractSubtype.UTM_INFO,
+          Environment.HOME,
+          PageId.HOME,
+          undefined,
+          utmTelemetry,
+          undefined,
+          undefined
+        );
+        this.utilityService.clearUtmInfo();
+      }
+    })
+      .catch(error => {
+        console.log('Error is', error);
       });
   }
 }

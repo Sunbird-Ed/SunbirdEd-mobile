@@ -3,7 +3,7 @@
   <div class="permission-container">
     <div *ngFor="let item of permissionListDetails" class="item-row d-flex mb-16">
       <div class="icon-col pr-16">
-        <ion-icon item-start name="{{item?.icon}}"></ion-icon>
+        <img src="{{item?.path}}"/>
       </div>
       <div class="pl-16">
         <p class="title m-0 mb-8">{{item?.title}}</p>
@@ -24,13 +24,13 @@
     <p class="permission-title" class="pl-16">{{'PERMISSION_EDIT_TITLE' | translate:{'%s': appName} }}</p>
   </div>
   <div class="permission-container">
-    <div *ngFor="let item of permissionListDetails" class="item-row mb-16 d-flex">
+    <div *ngFor="let item of permissionListDetails" class="item-row mb-16 d-flex" (click)= "stateChange($event)">
       <div style="flex-grow:1000;" class="pl-16">
         <p class="title m-0 mb-8">{{item?.title}}</p>
         <p class="description">{{item?.description}}</p>
       </div>
-      <div class="toggle-col">
-        <ion-toggle class="pt-0" color="secondary" value="foo" checked="true"></ion-toggle>
+      <div class="toggle-col" >
+        <ion-toggle class="pt-0" color="secondary" [(ngModel)]="item.permission" (ionChange)= "stateChange($event)"></ion-toggle>
       </div>
     </div>
   </div>

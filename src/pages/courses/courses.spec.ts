@@ -1,28 +1,16 @@
-import {CoursesPage} from './courses';
-import {Environment, ImpressionType, PageAssembleCriteria, PageAssembleFilter, PageId, ProfileType} from 'sunbird';
-import {mockRes as CourseBatchesMock} from '@app/pages/course-batches/course-batches.spec.data';
-import {mockRes as CourseMock} from '../courses/courses.spec.data';
+import { CoursesPage } from './courses';
+import { PageAssembleCriteria, PageAssembleFilter, PageId, ProfileType } from 'sunbird';
+import { mockRes as CourseBatchesMock } from '@app/pages/course-batches/course-batches.spec.data';
+import { mockRes as CourseMock } from '../courses/courses.spec.data';
 import {
-  appGlobalServiceMock,
-  appVersionMock,
-  commonUtilServiceMock,
-  contentServiceMock,
-  courseServiceMock,
-  courseUtilServiceMock,
-  eventsMock,
-  formAndFrameworkUtilServiceMock,
-  navCtrlMock,
-  pageAssembleServiceMock,
-  popoverCtrlMock,
-  sharedPreferencesMock,
-  sunbirdQRScannerMock,
-  telemetryGeneratorServiceMock,
-  zoneMock
+  appGlobalServiceMock, appVersionMock, commonUtilServiceMock, contentServiceMock, courseServiceMock,
+  courseUtilServiceMock, eventsMock, formAndFrameworkUtilServiceMock, navCtrlMock, pageAssembleServiceMock,
+  popoverCtrlMock, sharedPreferencesMock, sunbirdQRScannerMock, telemetryGeneratorServiceMock, zoneMock
 } from '@app/__tests__/mocks';
-import {ContentType} from '@app/app';
-import {SearchPage} from '@app/pages/search';
-import {ViewMoreActivityPage} from '@app/pages/view-more-activity';
-import {networkMock} from '../../__tests__/mocks';
+import { ContentType } from '@app/app';
+import { SearchPage } from '@app/pages/search';
+import { ViewMoreActivityPage } from '@app/pages/view-more-activity';
+import { networkMock } from '../../__tests__/mocks';
 
 describe('CoursesPage', () => {
   let coursesPage: CoursesPage;
@@ -63,24 +51,6 @@ describe('CoursesPage', () => {
       expect(coursesPage).toBeTruthy();
       expect(coursesPage.selectedLanguage = 'SAMPLE_LANGUAGE');
       expect(coursesPage.appLabel = 'SAMPLE_APP_NAME');
-      done();
-    }, 0);
-  });
-
-  it('should should show highLighter on app start for fresh install', (done) => {
-    // arrange
-    sharedPreferencesMock.getString.mockResolvedValue('true');
-
-    // act
-    coursesPage.ionViewDidLoad();
-
-    // assert
-    setTimeout(() => {
-      expect(telemetryGeneratorServiceMock.generateImpressionTelemetry).toHaveBeenCalledWith(ImpressionType.VIEW, '',
-        PageId.COURSES,
-        Environment.HOME);
-      expect(appGlobalServiceMock.generateConfigInteractEvent).toHaveBeenCalledWith(PageId.COURSES, false);
-      expect(sharedPreferencesMock.putString).toHaveBeenCalledWith('show_app_walkthrough_screen', 'false');
       done();
     }, 0);
   });
@@ -141,7 +111,7 @@ describe('CoursesPage', () => {
   it('should invoke getEnrolledCourses when enrollcourse event is fired', () => {
     // arrange
     spyOn(coursesPage, 'getEnrolledCourses').and.stub();
-    const data = { batchId: '213123123'};
+    const data = { batchId: '213123123' };
 
     // act
     coursesPage.subscribeUtilityEvents();

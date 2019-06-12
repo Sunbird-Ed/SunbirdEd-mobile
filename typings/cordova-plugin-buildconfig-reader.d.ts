@@ -8,4 +8,10 @@ declare var buildconfigreader: {
 
   rm: (directoryPath: string, direcoryToBeSkipped: string, success:
     (callbackUrl: boolean) => void, error: (error: boolean) => void) => void;
+
+  getUtmInfo: (success:
+    (callbackUrl: any) => void, error: (error: string) => void) => void;
+
+  clearUtmInfo: (success:
+    (callbackUrl: any) => void, error: (error: string) => void) => void;
 };

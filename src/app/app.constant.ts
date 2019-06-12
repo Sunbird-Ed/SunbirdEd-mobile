@@ -35,7 +35,8 @@ export class ContentType {
     ];
     public static readonly FOR_DIAL_CODE_SEARCH = [
         ContentType.TEXTBOOK,
-        ContentType.TEXTBOOK_UNIT
+        ContentType.TEXTBOOK_UNIT,
+        ContentType.COURSE
     ];
     public static readonly FOR_RECENTLY_VIEWED = [
         ContentType.STORY,
@@ -70,21 +71,6 @@ export class Search {
         'medium',
         'contentType',
         'channel'
-    ];
-}
-
-export class FlagContent {
-    public static readonly FLAG_REASONS_VALUE = [
-        'Copyright Violation',
-        'Inappropriate Content',
-        'Privacy Violation',
-        'Other'
-    ];
-    public static readonly FLAG_REASONS_LABLE = [
-        'OPTION_COPYRIGHT_VIOLATION',
-        'OPTION_INAPPROPRIATE_CONTENT',
-        'OPTION_PRIVACY_VIOLATION',
-        'OPTION_OTHER'
     ];
 }
 
@@ -176,6 +162,7 @@ export class PreferenceKey {
     public static readonly APP_RATING_DATE = 'app_rating_date';
     public static readonly APP_RATE_LATER_CLICKED = 'app_rate_later_clicked';
     public static readonly APP_RATING_POPUP_APPEARED = 'app_rating_popup_appeared';
+    public static readonly APP_PERMISSION_ASKED = 'app_permission_asked';
 }
 
 export class GenericAppConfig {
