@@ -194,14 +194,11 @@ export class MyApp implements OnInit, AfterViewInit {
     FCMPlugin.onNotification((data) => {
       console.log('Notificationdata');
       console.log(data);
-      alert(data);
       this.notificationServices.addNotification(data).subscribe();
         if (data.wasTapped) {
           // Notification was received on device tray and tapped by the user.
-          alert( JSON.stringify(data) );
         } else {
           // Notification was received in foreground. Maybe the user needs to be notified.
-          alert( JSON.stringify(data) );
         }
     },
     (sucess) => {
