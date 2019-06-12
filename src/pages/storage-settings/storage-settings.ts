@@ -106,7 +106,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
 
     confirm.onDidDismiss(async (shouldTransfer: boolean) => {
       if (shouldTransfer) {
-        this.storageService.transferContents({ storageDestination, contents: [] }).subscribe();
+        this.storageService.transferContents({ storageDestination, contents: [{ identifier: 0 }, { identifier: 1 }, { identifier: 3 }] as any }).subscribe();
         await this.showTransferContentsPopup();
       }
     });
@@ -140,19 +140,21 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
 
   private async showTransferContentsPopup(): Promise<undefined> {
     let confirmCancel: Popover;
+    const totalTransferSize = await this.spaceTakenBySunbird$.toPromise();
 
-    const transferStatus$ = this.eventsBusService
+    const transferredSize$ = this.eventsBusService
       .events(EventNamespace.STORAGE)
-      .takeWhile(e => e.type === StorageEventType.TRANSFER_COMPLETED)
+      .takeWhile(e => e.type !== StorageEventType.TRANSFER_COMPLETED)
       .filter(e => e.type === StorageEventType.TRANSFER_PROGRESS)
+      .scan((acc: number, e: StorageTransferProgress) => acc += e.payload.progress.transferSize, 0)
       .finally(() => confirmCancel.dismiss());
 
     confirmCancel = this.popoverCtrl.create(SbPopoverComponent, {
       sbPopoverHeading: 'Transferring files',
-      sbPopoverDynamicMainTitle: transferStatus$
-        .map((e) => {
-          return ((e as StorageTransferProgress).payload.progress.transferSize /
-          (e as StorageTransferProgress).payload.progress.totalSize) + '%';
+      sbPopoverDynamicMainTitle: transferredSize$
+        .startWith(0)
+        .map((transferredSize) => {
+          return Math.round((transferredSize / totalTransferSize) * 100) + '%';
         }),
       actionsButtons: [
         {
@@ -162,31 +164,22 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
       ],
       icon: null,
       metaInfo: 'Transferring Content to SD Card',
-      sbPopoverDynamicContent: transferStatus$
-        .map((e) => {
-          return this.fileSizePipe.transform((e as StorageTransferProgress).payload.progress.transferSize) + '/'
-            + this.fileSizePipe.transform((e as StorageTransferProgress).payload.progress.totalSize);
+      sbPopoverDynamicContent: transferredSize$
+        .startWith(0)
+        .map((transferredSize) => {
+          return this.fileSizePipe.transform(transferredSize) + '/'
+            + this.fileSizePipe.transform(totalTransferSize);
         })
     }, {
       cssClass: 'sb-popover dw-active-downloads-popover',
     });
 
     await confirmCancel.present();
-
-    // confirmCancel.onDidDismiss(async (shouldCancel: boolean) => {
-    //   if (shouldCancel) {
-    //     const cancel = this.popoverCtrl.create(SbPopoverComponent, {
-    //       sbPopoverHeading: 'Transfer Stopped',
-    //       sbPopoverMainTitle: '75%',
-    //       actionsButtons: [],
-    //       icon: null,
-    //       metaInfo: 'Cancelling in Progress..',
-    //     }, {
-    //       cssClass: 'sb-popover dw-active-downloads-popover',
-    //     });
-    //     cancel.present();
-    //   }
-    // });
+    confirmCancel.onDidDismiss(async (shouldCancel: boolean) => {
+      if (shouldCancel) {
+        this.storageService.cancelTransfer().toPromise();
+      }
+    });
 
     return;
   }
