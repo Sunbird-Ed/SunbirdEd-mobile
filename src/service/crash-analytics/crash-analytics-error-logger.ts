@@ -38,7 +38,7 @@ export class CrashAnalyticsErrorLogger implements ErrorHandler {
             stackTace = error.stack.slice(0, 250); // 250 characters limited for Telemetry purpose.
         }
 
-        if (this.app && this.activePageService) {
+        if (this.app && this.activePageService && this.app.getActiveNavs()[0] && this.app.getActiveNavs()[0].getActive) {
             const navObj: NavControllerBase = this.app.getActiveNavs()[0];
             const activeView: ViewController = navObj.getActive();
             errorPageId = this.activePageService.computePageId((<any>activeView).instance);
