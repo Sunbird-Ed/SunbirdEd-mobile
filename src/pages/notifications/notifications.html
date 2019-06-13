@@ -3,12 +3,12 @@
 </ion-header>
 <ion-content overflow-scroll="true">
   <!-- Shows Notification Count with Clear Button -->
-  <div class="sb-view-all-container" *ngIf="showNewNotificationCount">
+  <div class="sb-view-all-container" *ngIf="notificationList?.length">
     <div class="sb-view-all-items">
       <div class="sb-view-all-title">
         <span class="page-heading">{{ 'NOTIFICATION' | translate }}</span>
-        <span class="clear-btn" (click)="clearNotifications()">{{'CLEAR' | translate}}</span>
-        <span class="page-info">{{'NEW_NOTIFICATIONS' | translate:{'%s': '4'} }}&lrm;</span>
+        <span class="clear-btn" (click)="clearAllNotifications()">{{'CLEAR' | translate}}</span>
+        <span class="page-info">{{'NEW_NOTIFICATIONS' | translate:{'%s': newNotificationCount} }}&lrm;</span>
       </div>
     </div>
   </div>
@@ -16,16 +16,21 @@
 
   <!-- Shows various types of notifications with sliding delete buttons-->
   <ion-list *ngIf="notificationList?.length && commonUtilService?.networkInfo?.isNetworkAvailable">
-    <ion-item-sliding style="background-color: #d9e5f0; padding-bottom: 8px;"
+    <ion-item-sliding style="margin-bottom: 8px;"
       *ngFor="let item of notificationList;let index = index" #slidingItem>
       <ion-item no-lines>
-        <notification-item [itemData]="item"></notification-item>
+        <notification-item (notificationClick)="updateNotificationCount($event);" [itemData]="item"></notification-item>
       </ion-item>
-      <ion-item-options>
+      <ion-item-options side="left">
         <button ion-button color="danger" (click)="removeNotification(slidingItem, index)">
           <img src="./assets/imgs/noun_delete.svg" alt="delete" />
         </button>
       </ion-item-options>
+      <ion-item-options side="right">
+          <button ion-button color="danger" (click)="removeNotification(slidingItem, index)">
+            <img src="./assets/imgs/noun_delete.svg" alt="delete" />
+          </button>
+        </ion-item-options>
     </ion-item-sliding>
   </ion-list>
 
@@ -36,13 +41,13 @@
     <h4>{{'MSG_NO_NEW_NOTIFICATION' | translate}}</h4>
   </div>
 
-  <div class="oval-wrapper" *ngIf="!commonUtilService?.networkInfo?.isNetworkAvailable">
+  <!-- <div class="oval-wrapper" *ngIf="!commonUtilService?.networkInfo?.isNetworkAvailable">
     <div class="oval">
       <img src="./assets/imgs/outline-cloud_off.svg" alt="No Network Available" />
     </div>
     <h4>{{'NO_INTERNET_TITLE' | translate}}</h4>
     <p>{{'CONNECT_TO_INTERNET_SUGGESTION' | translate}}</p>
-  </div>
+  </div> -->
 
 
 </ion-content>

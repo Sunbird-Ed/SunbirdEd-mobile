@@ -16,7 +16,6 @@ notification-item {
       line-height: 20px;
     }
     .description {
-      height: 20px;
       color: $gray-400;
       font-family: ".SF NS Display";
       font-size: 12px;
@@ -35,13 +34,12 @@ notification-item {
 
     .update-container {
       white-space: normal;
-      padding: 8px;
       border-radius: 2px;
-      background-color: #f1f1f1;
-      .note-title {
-        font-weight: 600;
-        font-size: 1.2rem;
-      }
+      background-color: #F1F1F1;
+      font-family: "Noto Sans";
+      font-size: 12px;
+      line-height: 20px;
+      margin-top: 8px; 
     }
 
     .expand-button {
@@ -67,6 +65,14 @@ notification-item {
       }
       @include rtl() {
         margin-left: 6px;
+      }
+    }
+    .pl-16 {
+      @include ltr() {
+        padding-left: 16px;
+      }
+      @include rtl() {
+        padding-right: 16px;
       }
     }
   }

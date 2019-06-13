@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ItemSliding } from 'ionic-angular';
+import { Component, Inject } from '@angular/core';
+import { IonicPage, NavController, NavParams, ItemSliding, Events } from 'ionic-angular';
+import { NotificationService, NotificationStatus } from 'sunbird-sdk';
+
 import { AppHeaderService, CommonUtilService } from '@app/service';
+
 
 @IonicPage()
 @Component({
@@ -9,37 +12,65 @@ import { AppHeaderService, CommonUtilService } from '@app/service';
 })
 export class NotificationsPage {
 
-  showNewNotificationCount = true;
-  notificationList = [
-    { title: 'First Notification', description: 'Your instructor will allow access when the course is ready.', time: 'Thu 10 Jan 20:27' },
-    {
-      title: 'Second Notification', description: 'Second Notification Description', time: 'Thu 10 Jan 20:27', size: '5.34 MB',
-      updateNotes: ['Introducing Wizard Tiers. Upgrade to a higher tier to enjoy added benefits.',
-        'Now Notification land at the Notification center. Look for the bell icon on the homepage.'
-      ]
-    },
-    { title: 'Third Notification', description: 'Third Notification Description', time: 'Thu 10 Jan 20:27' },
-    { title: 'Fourth Notification', description: 'Fourth Notification Description', time: 'Thu 10 Jan 20:27' },
-  ];
+  notificationList = [];
+  newNotificationCount: number = 0;
+  showClearNotificationButton: boolean;
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     private headerService: AppHeaderService,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    @Inject('NOTIFICATION_SERVICE') private notificationService: NotificationService,
+    private events: Events
   ) {
     this.headerService.hideHeader();
+  }
+
+  ionViewWillEnter() {
+    this.getNotifications();
+    this.events.subscribe('notification:received', () => {
+      this.getNotifications();
+    });
+  }
+
+
+  getNotifications() {
+    this.notificationService.getAllNotifications({ notificationStatus: NotificationStatus.ALL }).subscribe((notificationList: any) => {
+      this.newNotificationCount = 0;
+      this.newNotificationCount = notificationList.filter(item => !item.isRead).length;
+      this.notificationList = notificationList;
+    });
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad NotificationsPage');
   }
 
-  clearNotifications() {
-    this.showNewNotificationCount = false;
+  clearAllNotifications() {
+    this.notificationService.deleteNotification().subscribe((status) => {
+      this.notificationList = [];
+      this.newNotificationCount = 0;
+      this.events.publish('notification-status:update', { isUnreadNotifications: false });
+    });
   }
 
   removeNotification(slidingItem: ItemSliding, index?: number) {
-    this.notificationList.splice(index, 1);
+    this.notificationService.deleteNotification(this.notificationList[index].id).subscribe((status) => {
+      if (!this.notificationList[index].isRead) {
+        this.updateNotificationCount();
+      }
+      this.notificationList.splice(index, 1);
+    });
+  }
+
+  updateNotificationCount(event?) {
+    if (this.newNotificationCount > 0) {
+      if (this.newNotificationCount === 1) {
+        this.events.publish('notification-status:update', { isUnreadNotifications: false });
+      }
+      this.newNotificationCount--;
+    }
   }
 
 }
