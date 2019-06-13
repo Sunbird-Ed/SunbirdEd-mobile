@@ -70,18 +70,15 @@ page-profile-settings {
     .qr-container{
         padding: 10px 20px 0px 20px;
         background-color: $light-grey;
-        // position: relative;
         border-bottom: 2px solid $gray-200;
         .qr-content{
             @include clearfix;
             .qr-img{
-                width: 30%;
                 border-right: 2px solid $gray-100;
                 text-align: right;
                 padding-right: 10px;
                 .qr-img-container{
                     width: 50px;
-                    float: right;
                     img{
                         display: block;
                     } 
@@ -97,7 +94,7 @@ page-profile-settings {
                 }
             }
             .qr-instruction-container{
-                width: 70%;
+                max-width: 70%;
                 padding-left: 10px; 
                 .qr-instruction{
                     .title{
