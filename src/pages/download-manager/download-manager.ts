@@ -127,7 +127,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     }];
     const requestParams: ContentRequest = {
       uid: profile.uid,
-      contentTypes: ContentType.FOR_LIBRARY_TAB,
+      contentTypes: ContentType.FOR_DOWNLOADED_TAB,
       audience: [],
       sortCriteria: this.sortCriteria || defaultSortCriteria
     };

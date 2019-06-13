@@ -1,3 +1,4 @@
+import { AndroidPermissionsService } from '@app/service/android-permissions/android-permissions.service';
 import {FileTransfer} from '@ionic-native/file-transfer';
 import {
   AuthService,
@@ -235,7 +236,8 @@ export const appGlobalServiceMock = createSpyObj<AppGlobalService>([
   'getUserId',
   'getGuestUserInfo',
   'getEnrolledCourseList',
-  'getSelectedBoardMediumGrade'
+  'getSelectedBoardMediumGrade',
+  'setIsPermissionAsked'
 ]);
 
 export const telemetryGeneratorServiceMock = createSpyObj<TelemetryGeneratorService>([
@@ -461,4 +463,9 @@ export const canvasPlayerServiceMock = createSpyObj<CanvasPlayerService>([
 ]);
 export const fileSizePipeMock = createSpyObj<FileSizePipe>([
 
+]);
+
+export const permissionServiceMock = createSpyObj<AndroidPermissionsService>([
+  'checkPermissions',
+  'requestPermissions'
 ]);

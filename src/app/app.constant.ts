@@ -10,6 +10,10 @@ export class ContentType {
     public static readonly TEXTBOOK_UNIT = 'TextBookUnit';
     public static readonly LESSON_PLAN_UNIT = 'LessonPlanUnit';
     public static readonly COURSE_UNIT = 'CourseUnit';
+    public static readonly FOCUS_SPOT = 'FocusSpot';
+    public static readonly LEARNING_OUTCOME_DEFINITION = 'LearningOutcomeDefinition';
+    public static readonly PRACTICE_QUESTION_SET = 'PracticeQuestionSet';
+    public static readonly CURIOSITY_QUESTIONS = 'CuriosityQuestions';
 
     public static readonly FOR_COURSE_TAB = [
         ContentType.COURSE
@@ -21,7 +25,26 @@ export class ContentType {
         ContentType.RESOURCE,
         ContentType.COLLECTION,
         ContentType.TEXTBOOK,
-        ContentType.LESSON_PLAN
+        ContentType.LESSON_PLAN,
+        ContentType.FOCUS_SPOT,
+        ContentType.LEARNING_OUTCOME_DEFINITION,
+        ContentType.PRACTICE_QUESTION_SET,
+        ContentType.CURIOSITY_QUESTIONS
+    ];
+    // TODO: not need to pass content types, by default all the content types should display
+    public static readonly FOR_DOWNLOADED_TAB = [
+        ContentType.STORY,
+        ContentType.WORKSHEET,
+        ContentType.GAME,
+        ContentType.RESOURCE,
+        ContentType.COLLECTION,
+        ContentType.TEXTBOOK,
+        ContentType.LESSON_PLAN,
+        ContentType.COURSE,
+        ContentType.FOCUS_SPOT,
+        ContentType.LEARNING_OUTCOME_DEFINITION,
+        ContentType.PRACTICE_QUESTION_SET,
+        ContentType.CURIOSITY_QUESTIONS
     ];
     public static readonly FOR_PROFILE_TAB = [
         ContentType.STORY,
@@ -31,18 +54,28 @@ export class ContentType {
         ContentType.COLLECTION,
         ContentType.TEXTBOOK,
         ContentType.LESSON_PLAN,
-        ContentType.COURSE
+        ContentType.COURSE,
+        ContentType.FOCUS_SPOT,
+        ContentType.LEARNING_OUTCOME_DEFINITION,
+        ContentType.PRACTICE_QUESTION_SET,
+        ContentType.CURIOSITY_QUESTIONS
     ];
     public static readonly FOR_DIAL_CODE_SEARCH = [
         ContentType.TEXTBOOK,
         ContentType.TEXTBOOK_UNIT,
         ContentType.COURSE
     ];
+    // Other than mimeType collection. ContentType need not to pass recently viewded.
     public static readonly FOR_RECENTLY_VIEWED = [
         ContentType.STORY,
         ContentType.WORKSHEET,
         ContentType.GAME,
-        ContentType.RESOURCE
+        ContentType.RESOURCE,
+        ContentType.LESSON_PLAN,
+        ContentType.FOCUS_SPOT,
+        ContentType.LEARNING_OUTCOME_DEFINITION,
+        ContentType.PRACTICE_QUESTION_SET,
+        ContentType.CURIOSITY_QUESTIONS
     ];
 }
 
