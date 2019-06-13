@@ -1,41 +1,49 @@
- application-header {
-   .z-index-0{
-     z-index: 0;
-   }
-    .sb-pt-6{
-        padding-top: 6px;
+application-header {
+  .z-index-0 {
+    z-index: 0;
+  }
+  .sb-pt-6 {
+    padding-top: 6px;
+  }
+  ion-menu {
+    .header-md::after {
+      opacity: 0.2 !important;
     }
-    ion-menu{
-        .header-md::after{
-            opacity: 0.2 !important;
-        }
+  }
+
+  .sb-header-toolbar {
+    padding: 0 $base-block-space !important;
+  }
+
+  .dw-icon {
+    width: 20px;
+  }
+
+  .active-download-icon {
+    margin-right: 10px;
+  }
+
+  @keyframes jump-animation {
+    0% {
+      transform: translateY(-20px);
     }
-
-    .sb-header-toolbar{
-        padding: 0 $base-block-space !important;
+    50% {
+      transform: translateY(0px);
     }
-
-    .dw-icon{
-        width: 20px;
+    100% {
+      transform: translateY(20px);
     }
+  }
 
-    .active-download-icon{
-      margin-right: 10px;
+  .active-downloads-icon.downloading #arrow {
+    animation: jump-animation 1.5s ease-in-out infinite;
+  }
+
+  .sb-header-btn-group {
+    button {
+      &:not(:last-child) {
+        @include margin(0, 8px, 0, 0);
+      }
     }
-
-   @keyframes jump-animation {
-     0% {
-       transform: translateY(-20px);
-     }
-     50% {
-       transform: translateY(0px);
-     }
-     100% {
-       transform: translateY(20px);
-     }
-   }
-
-   .active-downloads-icon.downloading #arrow {
-     animation: jump-animation 1.5s ease-in-out infinite;
-   }
+  }
 }
