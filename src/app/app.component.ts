@@ -1,5 +1,4 @@
 import { Observable } from 'rxjs';
-import { ProfileSettingsPage } from './../pages/profile-settings/profile-settings';
 import { AfterViewInit, Component, Inject, NgZone, ViewChild, OnInit, EventEmitter } from '@angular/core';
 import { App, Events, Nav, Platform, PopoverController, ToastController, ViewController, NavControllerBase } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
@@ -689,6 +688,7 @@ export class MyApp implements OnInit, AfterViewInit {
         || ((<any>activeView).instance instanceof OnboardingPage)
         || ((<any>activeView).instance instanceof QrCodeResultPage)
         || ((<any>activeView).instance instanceof FaqPage)
+        || ((<any>activeView).instance['pageId'] === 'ProfileSettingsPage')
         ) {
         this.headerServie.sidebarEvent($event);
         return;

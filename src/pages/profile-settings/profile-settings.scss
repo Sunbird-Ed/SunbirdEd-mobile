@@ -77,22 +77,28 @@ page-profile-settings {
             .qr-img{
                 width: 30%;
                 border-right: 2px solid $gray-100;
-                img{
-                    display: block;
-                } 
-                .qr-text{
-                    text-align: center;
+                text-align: right;
+                padding-right: 10px;
+                .qr-img-container{
                     width: 50px;
-                    background: #fff;
-                    span{
-                        font-weight: bold;
-                        font-size: 10px;
+                    float: right;
+                    img{
+                        display: block;
+                    } 
+                    .qr-text{
+                        text-align: center;
+                        width: 50px;
+                        background: #fff;
+                        span{
+                            font-weight: bold;
+                            font-size: 10px;
+                        }
                     }
                 }
             }
             .qr-instruction-container{
                 width: 70%;
-                padding-left: 15px; 
+                padding-left: 10px; 
                 .qr-instruction{
                     .title{
                         display: block;
@@ -100,7 +106,7 @@ page-profile-settings {
                     }
                     .sub-titile{
                         display: block;
-                        font-size: 10px;
+                        font-size: 12px;
                     }
                     
                 }
@@ -135,7 +141,7 @@ page-profile-settings {
             border-radius: 15px;
             position: relative;
             top: 15px;
-            background-color: $gray-400;
+            background-color: $gray-800;
             text-align: center;
             color: #fff;
             font-size: 16px;
@@ -149,14 +155,19 @@ page-profile-settings {
     .item-label-stacked ion-select{
         border: 1px solid #006DE5;
         margin-top: 8px;
+        padding-right: 15px !important;
         .select-icon{
             .select-icon-inner{
                 border: solid blue;
-                border-width: 0 1px 1px 0;
+                border-width: 0 2px 2px 0;
                 display: inline-block;
-                padding: 3px;
+                padding: 4px;
                 transform: rotate(45deg);
             }
+        }
+        .select-placeholder{
+            color: #006DE5;
+            padding-left: 10px;
         }
     }
     .item-md.item-block .item-inner{
@@ -178,6 +189,10 @@ page-profile-settings {
                     border-color: #CCCCCC;
                 }
             }
+            .select-placeholder{
+                color: #CCCCCC;
+            }
+           
         }
     }
 
