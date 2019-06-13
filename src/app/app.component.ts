@@ -804,7 +804,9 @@ export class MyApp implements OnInit, AfterViewInit {
       PageId.LIBRARY,
     );
   }
-  private onConfirmationClicked() {
+  private onConfirmationClicked(event) {
+    event.stopPropagation();
+    this.showWalkthroughBackDrop = false;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.WALKTHROUGH_CONFIRMATION_CLICKED,

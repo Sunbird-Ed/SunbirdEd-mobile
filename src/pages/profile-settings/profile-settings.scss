@@ -163,6 +163,8 @@ page-profile-settings {
                 display: inline-block;
                 padding: 4px;
                 transform: rotate(45deg);
+                animation: dropDown 5s linear infinite;
+                animation-duration: 0.9s;
             }
         }
         .select-placeholder{
@@ -187,6 +189,7 @@ page-profile-settings {
             .select-icon{
                 .select-icon-inner{
                     border-color: #CCCCCC;
+                    animation: none;
                 }
             }
             .select-placeholder{
@@ -210,9 +213,14 @@ page-profile-settings {
             .select-icon{
                 .select-icon-inner{
                     border-color: $gray-800;
+                    animation: none;
                 }
             }
         } 
     }
-
+  @keyframes dropDown {
+    0% {top: 0;}
+    50% {top: 10px;}
+    100% {top: 0;}
+  }
 }
