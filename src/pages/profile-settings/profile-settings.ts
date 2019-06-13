@@ -36,6 +36,8 @@ import {AppVersion} from "@ionic-native/app-version";
   templateUrl: 'profile-settings.html',
 })
 export class ProfileSettingsPage {
+  public pageId = 'ProfileSettingsPage';
+
   @ViewChild('boardSelect') boardSelect: Select;
   @ViewChild('mediumSelect') mediumSelect: Select;
   @ViewChild('gradeSelect') gradeSelect: Select;
@@ -60,6 +62,7 @@ export class ProfileSettingsPage {
   profileForTelemetry: any = {};
   hideBackButton = true;
   appName: string;
+  headerObservable: any;
   // syllabusOptions = {
   //   title: this.commonUtilService.translateMessage('SYLLABUS').toLocaleUpperCase(),
   //   cssClass: 'select-box'
@@ -128,6 +131,9 @@ export class ProfileSettingsPage {
   }
 
   ionViewWillEnter() {
+    this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
     this.hideBackButton = Boolean(this.navParams.get('hideBackButton'));
     if (!this.hideBackButton) {
       this.headerService.hideHeader();
@@ -141,6 +147,7 @@ export class ProfileSettingsPage {
   }
 
   ionViewWillLeave() {
+    this.headerObservable.unsubscribe();
     this.unregisterBackButton();
   }
 
@@ -563,17 +570,23 @@ export class ProfileSettingsPage {
       const navObj = this.app.getActiveNavs()[0];
 
       if (navObj.canGoBack()) {
+        this.telemetryGeneratorService.generateBackClickedTelemetry(
+          PageId.ONBOARDING_PROFILE_PREFERENCES, Environment.ONBOARDING, false);
         this.dismissPopup();
       } else {
         this.commonUtilService.showExitPopUp(PageId.ONBOARDING_PROFILE_PREFERENCES, Environment.ONBOARDING, false);
-
       }
       this.unregisterBackButton();
     }, 11);
-    this.telemetryGeneratorService.generateInteractTelemetry(
-      InteractType.TOUCH, InteractSubtype.DEVICE_BACK_CLICKED,
-      PageId.ONBOARDING_PROFILE_PREFERENCES,
-      Environment.ONBOARDING);
+  }
+
+  handleHeaderEvents($event) {
+    switch ($event.name) {
+      case 'back':  this.telemetryGeneratorService.generateBackClickedTelemetry(
+                    PageId.ONBOARDING_PROFILE_PREFERENCES, Environment.ONBOARDING, true);
+                    this.dismissPopup();
+                    break;
+    }
   }
 
   openQRScanner() {
