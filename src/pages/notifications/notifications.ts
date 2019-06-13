@@ -1,8 +1,10 @@
-import { Component, Inject } from '@angular/core';
-import { IonicPage, NavController, NavParams, ItemSliding, Events } from 'ionic-angular';
+import { Component, Inject, ViewChild } from '@angular/core';
+import { IonicPage, NavController, NavParams, ItemSliding, Events, Navbar } from 'ionic-angular';
 import { NotificationService, NotificationStatus } from 'sunbird-sdk';
 
-import { AppHeaderService, CommonUtilService } from '@app/service';
+import { AppHeaderService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
+import { InteractType, Environment, PageId, InteractSubtype, ImpressionType } from '@app/service/telemetry-constants';
+import { Platform } from 'ionic-angular/platform/platform';
 
 
 @IonicPage()
@@ -15,6 +17,8 @@ export class NotificationsPage {
   notificationList = [];
   newNotificationCount: number = 0;
   showClearNotificationButton: boolean;
+  unregisterBackButton: any;
+  @ViewChild(Navbar) navBar: Navbar;
 
   constructor(
     public navCtrl: NavController,
@@ -22,7 +26,9 @@ export class NotificationsPage {
     private headerService: AppHeaderService,
     private commonUtilService: CommonUtilService,
     @Inject('NOTIFICATION_SERVICE') private notificationService: NotificationService,
-    private events: Events
+    private events: Events,
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private platform: Platform
   ) {
     this.headerService.hideHeader();
   }
@@ -32,6 +38,10 @@ export class NotificationsPage {
     this.events.subscribe('notification:received', () => {
       this.getNotifications();
     });
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.NOTIFICATION, Environment.NOTIFICATION, false);
+      this.navCtrl.pop();
+    }, 11);
   }
 
 
@@ -44,7 +54,15 @@ export class NotificationsPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad NotificationsPage');
+    this.navBar.backButtonClick = () => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.NOTIFICATION, Environment.NOTIFICATION, true);
+      this.navCtrl.pop();
+    };
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, '',
+      PageId.NOTIFICATION,
+      Environment.NOTIFICATION, '', '', ''
+    );
   }
 
   clearAllNotifications() {
@@ -53,9 +71,18 @@ export class NotificationsPage {
       this.newNotificationCount = 0;
       this.events.publish('notification-status:update', { isUnreadNotifications: false });
     });
+
+    const valuesMap = new Map();
+    valuesMap['clearAllNotifications'] = true;
+    this.generateClickInteractEvent(valuesMap, InteractSubtype.CLEAR_NOTIFICATIONS_CLICKED);
   }
 
-  removeNotification(slidingItem: ItemSliding, index?: number) {
+  removeNotification(slidingItem: ItemSliding, index: number, swipeDirection: string) {
+    const valuesMap = new Map();
+    valuesMap['deleteNotificationId'] = this.notificationList[index].id;
+    valuesMap['swipeDirection'] = swipeDirection;
+    this.generateClickInteractEvent(valuesMap, InteractSubtype.CLEAR_NOTIFICATIONS_CLICKED);
+
     this.notificationService.deleteNotification(this.notificationList[index].id).subscribe((status) => {
       if (!this.notificationList[index].isRead) {
         this.updateNotificationCount();
@@ -73,4 +100,25 @@ export class NotificationsPage {
     }
   }
 
+  handleTelemetry(event) {
+    console.log("Event", event);
+    this.generateClickInteractEvent(event.valuesMap, event.interactSubType);
+  }
+
+  generateClickInteractEvent(valuesMap, interactSubType) {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      interactSubType,
+      Environment.NOTIFICATION,
+      PageId.NOTIFICATION,
+      undefined,
+      valuesMap
+    );
+  }
+
+  ionViewWillLeave() {
+    if (this.unregisterBackButton) {
+      this.unregisterBackButton();
+    }
+  }
 }
