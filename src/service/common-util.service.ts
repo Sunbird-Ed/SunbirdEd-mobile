@@ -175,8 +175,8 @@ export class CommonUtilService implements OnDestroy {
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.OTHER,
         InteractSubtype.QR_CODE_COMINGSOON,
-        Environment.HOME,
-        PageId.LIBRARY,
+        source === PageId.ONBOARDING_PROFILE_PREFERENCES ? Environment.ONBOARDING : Environment.HOME,
+        source
       );
         if (source !== 'user-type-selection') {
             this.afterOnBoardQRErrorAlert('ERROR_CONTENT_NOT_FOUND', 'CONTENT_IS_BEING_ADDED');

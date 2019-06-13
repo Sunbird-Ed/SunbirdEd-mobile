@@ -208,7 +208,7 @@ export class SunbirdQRScanner {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.OTHER,
       InteractSubtype.QR_CODE_INVALID,
-      Environment.HOME,
+      this.source === PageId.ONBOARDING_PROFILE_PREFERENCES ? Environment.ONBOARDING : Environment.HOME,
       this.source
     );
     if (this.source !== 'user-type-selection') {
