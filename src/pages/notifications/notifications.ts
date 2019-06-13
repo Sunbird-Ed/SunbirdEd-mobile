@@ -39,7 +39,7 @@ export class NotificationsPage {
       this.getNotifications();
     });
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      this.generateBackButtonTelemetry(InteractSubtype.DEVICE_BACK_CLICKED);
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.NOTIFICATION, Environment.NOTIFICATION, false);
       this.navCtrl.pop();
     }, 11);
   }
@@ -55,7 +55,7 @@ export class NotificationsPage {
 
   ionViewDidLoad() {
     this.navBar.backButtonClick = () => {
-      this.generateBackButtonTelemetry(InteractSubtype.NAV_BACK_CLICKED);
+      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.NOTIFICATION, Environment.NOTIFICATION, true);
       this.navCtrl.pop();
     };
     this.telemetryGeneratorService.generateImpressionTelemetry(
@@ -113,15 +113,6 @@ export class NotificationsPage {
       PageId.NOTIFICATION,
       undefined,
       valuesMap
-    );
-  }
-
-  generateBackButtonTelemetry(interactSubType) {
-    this.telemetryGeneratorService.generateInteractTelemetry(
-      InteractType.TOUCH,
-      interactSubType,
-      Environment.NOTIFICATION,
-      PageId.NOTIFICATION
     );
   }
 
