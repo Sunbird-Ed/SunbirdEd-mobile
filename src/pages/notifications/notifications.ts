@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ItemSliding } from 'ionic-angular';
+import { Component, Inject } from '@angular/core';
+import { IonicPage, NavController, NavParams, ItemSliding, Events } from 'ionic-angular';
 import { AppHeaderService, CommonUtilService } from '@app/service';
+
+import { NotificationService, NotificationStatus } from 'sunbird-sdk';
 
 @IonicPage()
 @Component({
@@ -10,64 +12,69 @@ import { AppHeaderService, CommonUtilService } from '@app/service';
 export class NotificationsPage {
 
   showNewNotificationCount = true;
-  notificationList = [
-    {
-      id: 121,
-      type: 1,
-      displayTime: "1560250228",
-      expiry: "1560250228",
-      actionData: {
-        actionType: "courseUpdate",
-        title: "Update Sunbird Application",
-        richText: "Blah Blah Blah",
-        deepLink: "https://google-play"
-      }
-    },
-    {
-      id: 121,
-      type: 1,
-      displayTime: "1560250228",
-      expiry: "1560250228",
-      actionData: {
-        actionType: "updateApp",
-        title: "Update Sunbird Application",
-        richText: `<div><ul><li>Put the downloaded file 'GoogleService-Info.plist' in the Cordova project root folder.</li><li>It's highly recommended to use REST API to send push notifications because Firebase console does not have all the functionalities. Pay attention to the payload example in order to use the plugin properly.</li><li>howLoaderOnConfirm is no longer necessary. Your button will automatically show a loding animation when its closeModal parameter is set to false.</li></ul></div>`,
-        ctaText: "Update App",
-        deepLink: "https://google-play"
-      },
-    },
-    {
-      id: 122,
-      type: 1,
-      displayTime: "1560250228",
-      expiry: "1560250228",
-      actionData: {
-        actionType: "courseBatch",
-        title: "Course Batch Added",
-        richText: "",
-        deepLink: ""
-      }
-    }
-  ];
+  notificationList = [];
+  newNotificationCount: number = 0;
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     private headerService: AppHeaderService,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    @Inject('NOTIFICATION_SERVICE') private notificationService: NotificationService,
+    private events: Events
   ) {
     this.headerService.hideHeader();
+  }
+
+  ionViewWillEnter() {
+    this.getNotifications();
+    this.events.subscribe('notification:received', () => {
+      this.getNotifications();
+    });
+  }
+
+
+  getNotifications() {
+    this.notificationService.getAllNotifications({ notificationStatus: NotificationStatus.ALL }).subscribe((notificationList: any) => {
+      this.newNotificationCount = 0;
+      notificationList.forEach((item) => {
+        if (!item.isRead) {
+          this.newNotificationCount++;
+        }
+      });
+
+      this.notificationList = notificationList;
+    });
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad NotificationsPage');
   }
 
-  clearNotifications() {
+  clearAllNotifications() {
     this.showNewNotificationCount = false;
+    this.notificationService.deleteNotification().subscribe((status) => {
+      this.notificationList = [];
+      this.newNotificationCount = 0;
+
+      this.events.publish('notification-status:update', { isUnreadNotifications: false });
+
+    });
   }
 
   removeNotification(slidingItem: ItemSliding, index?: number) {
-    this.notificationList.splice(index, 1);
+    this.notificationService.deleteNotification(this.notificationList[index].id).subscribe((status) => {
+      if (!this.notificationList[index].isRead) {
+        this.updateNotificationCount();
+      }
+      this.notificationList.splice(index, 1);
+    });
+  }
+
+  updateNotificationCount(event?) {
+    if(this.newNotificationCount === 1) {
+      this.events.publish('notification-status:update', { isUnreadNotifications: false });
+    }
+    this.newNotificationCount--;
   }
 
 }

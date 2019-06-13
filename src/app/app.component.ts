@@ -116,8 +116,8 @@ export class MyApp implements OnInit, AfterViewInit {
   ) {
     this.telemetryAutoSyncUtil = new TelemetryAutoSyncUtil(this.telemetryService);
     platform.ready().then(async () => {
-      // this.fcmTokenWatcher(); // Notification related
-      // this.receiveNotification();
+      this.fcmTokenWatcher(); // Notification related
+      this.receiveNotification();
       this.imageLoaderConfig.enableDebugMode();
       this.imageLoaderConfig.setMaximumCacheSize(100 * 1024 * 1024);
       this.telemetryGeneratorService.genererateAppStartTelemetry(await utilityService.getDeviceSpec());
@@ -161,20 +161,20 @@ export class MyApp implements OnInit, AfterViewInit {
   }
 
   handleNotification(data) {
-  switch (data.actionData.actionType) {
-    case 'updateApp':
-      console.log('updateApp');
-      break;
-    case 'contentUpdate':
-      console.log('contentUpdate');
-      break;
-    case 'bookUpdate':
-      console.log('bookUpdate');
-      break;
-    default:
-      console.log('Default Called');
-      break;
-  }
+    switch (data.actionData.actionType) {
+      case 'updateApp':
+        console.log('updateApp');
+        break;
+      case 'contentUpdate':
+        console.log('contentUpdate');
+        break;
+      case 'bookUpdate':
+        console.log('bookUpdate');
+        break;
+      default:
+        console.log('Default Called');
+        break;
+    }
 
     // const req: ContentDetailRequest = {
     //   contentId: data.actionData.identifier,
@@ -190,25 +190,31 @@ export class MyApp implements OnInit, AfterViewInit {
   /* Notification data will be received in data variable
    * can take action on data variable
    */
-  receiveNotification () {
+  receiveNotification() {
     FCMPlugin.onNotification((data) => {
       console.log('Notificationdata');
       console.log(data);
-      this.notificationServices.addNotification(data).subscribe();
-        if (data.wasTapped) {
-          // Notification was received on device tray and tapped by the user.
-        } else {
-          // Notification was received in foreground. Maybe the user needs to be notified.
-        }
+      
+      if (data.wasTapped) {
+        // Notification was received on device tray and tapped by the user.
+      } else {
+        // Notification was received in foreground. Maybe the user needs to be notified.
+      }
+      data['isRead'] = data.wasTapped? 1: 0;
+      data['actionData']  = JSON.parse(data['actionData']);
+      this.notificationServices.addNotification(data).subscribe((status) => {
+        this.events.publish('notification:received');
+        this.events.publish('notification-status:update', { isUnreadNotifications: true });
+      });
     },
-    (sucess) => {
-      console.log('Notification Sucess Callback');
-      console.log(sucess);
-    },
-    (err) => {
-      console.log('Notification Error Callback');
-      console.log(err);
-    });
+      (sucess) => {
+        console.log('Notification Sucess Callback');
+        console.log(sucess);
+      },
+      (err) => {
+        console.log('Notification Error Callback');
+        console.log(err);
+      });
   }
 
   /**

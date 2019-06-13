@@ -1,6 +1,7 @@
 <div class="notification-item-container" (click)="!itemData?.actionData?.ctaText ? handleDeepLink() : ''">
-  <p class="date-time"><img src="./assets/imgs/oval.svg" class="mr-6"
-      alt="oval">{{ itemData?.displayTime * 1000 | date:'E, d MMMM h:mm'}}</p>
+  <p class="date-time">
+    <img *ngIf="!itemData?.isRead" src="./assets/imgs/oval.svg" class="mr-6" alt="oval">{{ itemData?.displayTime * 1000 | date:'E, d MMMM h:mm'}}
+  </p>
 
   <div class="title" (click)="toggleExpand()"
     [ngClass]="{'sb-accordian-header':itemData?.actionData?.actionType === 'updateApp' && itemData?.actionData?.richText}"
