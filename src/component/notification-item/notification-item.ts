@@ -10,7 +10,6 @@ export class NotificationItemComponent {
   @Output() notificationClick = new EventEmitter();
   @Input('itemData') itemData;
   constructor(@Inject('NOTIFICATION_SERVICE') private notificationService: NotificationService) {
-    console.log('Hello NotificationItemComponent Component');
   }
 
   toggleExpand() {

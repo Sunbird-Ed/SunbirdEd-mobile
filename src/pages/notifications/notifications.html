@@ -3,7 +3,7 @@
 </ion-header>
 <ion-content overflow-scroll="true">
   <!-- Shows Notification Count with Clear Button -->
-  <div class="sb-view-all-container" *ngIf="newNotificationCount">
+  <div class="sb-view-all-container" *ngIf="notificationList?.length">
     <div class="sb-view-all-items">
       <div class="sb-view-all-title">
         <span class="page-heading">{{ 'NOTIFICATION' | translate }}</span>

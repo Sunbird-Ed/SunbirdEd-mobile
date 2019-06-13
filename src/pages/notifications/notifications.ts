@@ -1,8 +1,9 @@
 import { Component, Inject } from '@angular/core';
 import { IonicPage, NavController, NavParams, ItemSliding, Events } from 'ionic-angular';
+import { NotificationService, NotificationStatus } from 'sunbird-sdk';
+
 import { AppHeaderService, CommonUtilService } from '@app/service';
 
-import { NotificationService, NotificationStatus } from 'sunbird-sdk';
 
 @IonicPage()
 @Component({
@@ -11,9 +12,10 @@ import { NotificationService, NotificationStatus } from 'sunbird-sdk';
 })
 export class NotificationsPage {
 
-  showNewNotificationCount = true;
   notificationList = [];
   newNotificationCount: number = 0;
+  showClearNotificationButton: boolean;
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -36,12 +38,7 @@ export class NotificationsPage {
   getNotifications() {
     this.notificationService.getAllNotifications({ notificationStatus: NotificationStatus.ALL }).subscribe((notificationList: any) => {
       this.newNotificationCount = 0;
-      notificationList.forEach((item) => {
-        if (!item.isRead) {
-          this.newNotificationCount++;
-        }
-      });
-
+      this.newNotificationCount = notificationList.filter(item => !item.isRead).length;
       this.notificationList = notificationList;
     });
   }
@@ -51,13 +48,10 @@ export class NotificationsPage {
   }
 
   clearAllNotifications() {
-    this.showNewNotificationCount = false;
     this.notificationService.deleteNotification().subscribe((status) => {
       this.notificationList = [];
       this.newNotificationCount = 0;
-
       this.events.publish('notification-status:update', { isUnreadNotifications: false });
-
     });
   }
 
@@ -71,10 +65,12 @@ export class NotificationsPage {
   }
 
   updateNotificationCount(event?) {
-    if(this.newNotificationCount === 1) {
-      this.events.publish('notification-status:update', { isUnreadNotifications: false });
+    if (this.newNotificationCount > 0) {
+      if (this.newNotificationCount === 1) {
+        this.events.publish('notification-status:update', { isUnreadNotifications: false });
+      }
+      this.newNotificationCount--;
     }
-    this.newNotificationCount--;
   }
 
 }
