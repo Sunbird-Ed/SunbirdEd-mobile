@@ -276,7 +276,10 @@ export enum InteractSubtype {
     HELP_SECTION_CLICKED = 'help-section-clicked',
     APP_RATING_APPEARED = 'app-rating-appeared',
     START_CLICKED = 'start-clicked',
-    UTM_INFO = 'utm_info'
+    UTM_INFO = 'utm_info',
+    CLEAR_NOTIFICATIONS_CLICKED = 'clear-all-notifications-clicked',
+    NOTIFICATION_READ = 'notification-read',
+    NOTIFICATION_DESCRIPTION_TOGGLE_EXPAND = 'notification-description-toggle-expand'
 }
 
 export enum ActionButtonType {

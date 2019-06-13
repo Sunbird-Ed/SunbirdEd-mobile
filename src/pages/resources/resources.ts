@@ -929,11 +929,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   redirectToNotifications() {
+    const valuesMap = new Map();
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.NOTIFICATION_CLICKED,
       Environment.HOME,
-      PageId.LIBRARY);
+      PageId.LIBRARY,
+      undefined,
+      valuesMap);
     this.navCtrl.push(NotificationsPage);
   }
 
