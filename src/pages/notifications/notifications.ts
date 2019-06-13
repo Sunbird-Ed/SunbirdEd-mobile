@@ -60,8 +60,8 @@ export class NotificationsPage {
     };
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
-      PageId.NOTIFICATION_LIST,
-      Environment.LIBRARY, '', '', ''
+      PageId.NOTIFICATION,
+      Environment.NOTIFICATION, '', '', ''
     );
   }
 
@@ -79,7 +79,7 @@ export class NotificationsPage {
 
   removeNotification(slidingItem: ItemSliding, index: number, swipeDirection: string) {
     const valuesMap = new Map();
-    valuesMap['deleteNotificationID'] = this.notificationList[index].id;
+    valuesMap['deleteNotificationId'] = this.notificationList[index].id;
     valuesMap['swipeDirection'] = swipeDirection;
     this.generateClickInteractEvent(valuesMap, InteractSubtype.CLEAR_NOTIFICATIONS_CLICKED);
 
@@ -109,8 +109,8 @@ export class NotificationsPage {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       interactSubType,
-      Environment.LIBRARY,
-      PageId.NOTIFICATION_LIST,
+      Environment.NOTIFICATION,
+      PageId.NOTIFICATION,
       undefined,
       valuesMap
     );
@@ -120,8 +120,8 @@ export class NotificationsPage {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       interactSubType,
-      Environment.LIBRARY,
-      PageId.NOTIFICATION_LIST,
+      Environment.NOTIFICATION,
+      PageId.NOTIFICATION
     );
   }
 

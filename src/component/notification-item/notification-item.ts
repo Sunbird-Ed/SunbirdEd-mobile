@@ -25,10 +25,9 @@ export class NotificationItemComponent {
 
   handleDeepLink() {
     const valuesMap = new Map();
-    valuesMap['notificationRead'] = this.itemData.id;
     valuesMap['notificationBody'] = this.itemData.actionData;
     if (this.itemData.actionData.deepLink.length) {
-      valuesMap['notificationDeepLink'] = this.itemData.actionData.deepLink.length;
+      valuesMap['notificationDeepLink'] = this.itemData.actionData.deepLink;
     }
     this.generateNotification.emit({ valuesMap: valuesMap, interactSubType: InteractSubtype.NOTIFICATION_READ });
 

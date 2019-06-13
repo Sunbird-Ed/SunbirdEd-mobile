@@ -5,7 +5,8 @@ export enum Environment {
     DOWNLOADS = 'downloads',
     USER = 'user',
     SETTINGS = 'settings',
-    ONBOARDING = 'onboarding'
+    ONBOARDING = 'onboarding',
+    NOTIFICATION = 'notification'
 }
 
 export enum ErrorCode {
@@ -99,7 +100,8 @@ export enum PageId {
     BULK_DELETE_CONFIRMATION_POPUP = 'bulk-delete-confirmation-popup',
     ACTIVE_DOWNLOADS = 'active-downloads',
     SINGLE_CANCEL_CONFIRMATION_POPUP = 'single-cancel-confirmation-popup',
-    BULK_CANCEL_CONFIRMATION_POPUP = 'bulk-cancel-confirmation-popup'
+    BULK_CANCEL_CONFIRMATION_POPUP = 'bulk-cancel-confirmation-popup',
+    NOTIFICATION = 'notification'
 }
 export enum LogType {
     NOTIFICATION = 'notification'
