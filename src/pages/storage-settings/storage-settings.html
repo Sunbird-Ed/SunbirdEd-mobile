@@ -4,7 +4,8 @@
       <ion-grid no-padding>
         <ion-row>
           <ion-col class="ad-pt-4">
-            <div class="download-page-heading"><b>Storage Settings</b></div>
+            <div (tap)="showShouldTransferContentsPopup(StorageDestination.EXTERNAL_STORAGE)"
+                 class="download-page-heading"><b>Storage Settings</b></div>
             <div class="download-page-info">Choose where to save the data</div>
           </ion-col>
         </ion-row>

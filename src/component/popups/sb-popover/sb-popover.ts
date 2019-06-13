@@ -1,16 +1,6 @@
-import {ChangeDetectorRef, Component, NgZone} from '@angular/core';
-import { ContentActionsComponent } from '@app/component';
-import {
-  NavParams,
-  ViewController,
-  ToastController,
-  Events,
-  Platform
-} from 'ionic-angular';
-import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import { TranslateService } from '@ngx-translate/core';
-import { ProfileConstants } from '../../../app/app.constant';
-import { Rollup, CorrelationData, ContentService, AuthService } from 'sunbird-sdk';
+import {Component, NgZone, OnDestroy} from '@angular/core';
+import {NavParams, Platform, ViewController} from 'ionic-angular';
+import {CorrelationData, Rollup} from 'sunbird-sdk';
 import {Observable, Subscription} from "rxjs";
 
 /**
@@ -23,7 +13,7 @@ import {Observable, Subscription} from "rxjs";
   selector: 'sb-popover',
   templateUrl: 'sb-popover.html'
 })
-export class SbPopoverComponent {
+export class SbPopoverComponent implements OnDestroy {
   sbPopoverHeading: any;
   sbPopoverMainTitle: any;
   sbPopoverContent: any;
@@ -103,7 +93,7 @@ export class SbPopoverComponent {
     }, 20);
   }
 
-  ionViewWillLeave(): void {
+  ngOnDestroy(): void {
     if (this.sbPopoverDynamicMainTitleSubscription) {
       this.sbPopoverDynamicMainTitleSubscription.unsubscribe();
     }

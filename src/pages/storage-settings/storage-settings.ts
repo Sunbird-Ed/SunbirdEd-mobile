@@ -1,20 +1,22 @@
-import {Component, Inject, OnInit, ChangeDetectorRef, ChangeDetectionStrategy} from '@angular/core';
-import {IonicPage, NavController, NavParams, PopoverController, Popover} from 'ionic-angular';
+import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
+import {IonicPage, NavController, NavParams, Popover, PopoverController} from 'ionic-angular';
 import {AppHeaderService, CommonUtilService} from '@app/service';
-import {Observable, Subscription, BehaviorSubject} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {
   ContentService,
   DeviceInfo,
   EventNamespace,
   EventsBusService,
-  StorageDestination, StorageEventType,
-  StorageService, StorageTransferProgress,
+  StorageDestination,
+  StorageEventType,
+  StorageService,
+  StorageTransferProgress,
   StorageVolume
 } from 'sunbird-sdk';
 import {StorageSettingsInterface} from "@app/pages/storage-settings/storage-settings-interface";
 import {SbPopoverComponent} from "@app/component";
-import {FileSizePipe} from '../../pipes/file-size/file-size';
-import {SbGenericPopoverComponent} from '../../component/popups/sb-generic-popup/sb-generic-popover';
+import {FileSizePipe} from '@app/pipes/file-size/file-size';
+import {SbGenericPopoverComponent} from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 
 @IonicPage()
 @Component({
@@ -107,7 +109,11 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
 
     confirm.onDidDismiss(async (shouldTransfer: boolean) => {
       if (shouldTransfer) {
-        this.storageService.transferContents({ storageDestination, contents: [{ identifier: 0 }, { identifier: 1 }, { identifier: 3 }] as any }).subscribe();
+        this.storageService.transferContents({
+          storageDestination,
+          contents: [{identifier: 0}, {identifier: 1}, {identifier: 3}] as any
+        })
+          .subscribe();
         await this.showTransferContentsPopup();
       }
     });
@@ -150,7 +156,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
       .do((e) => {
         switch (e.type) {
           case StorageEventType.TRANSFER_FAILED:
-            this.showRetryTransferPopup(confirmCancel);
+            this.showRetryTransferPopup();
             break;
           case StorageEventType.TRANSFER_FAILED_DUPLICATE_CONTENT:
             this.showDuplicateContentPopup();
@@ -163,10 +169,11 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
       .events(EventNamespace.STORAGE)
       .takeWhile(e => e.type !== StorageEventType.TRANSFER_COMPLETED)
       .filter(e => e.type === StorageEventType.TRANSFER_PROGRESS)
-      .scan((acc: number, e: StorageTransferProgress) => acc += e.payload.progress.transferSize, 0)
-      .finally(() => {console.log('in Finally');
-      confirmCancel.dismiss();
-    });
+      .scan((acc: number, e: StorageTransferProgress) => acc += e.payload.progress.transferSize, 0);
+
+    transferredSize$
+      .finally(() => confirmCancel.dismiss())
+      .subscribe();
 
     confirmCancel = this.popoverCtrl.create(SbPopoverComponent, {
       sbPopoverHeading: 'Transferring files',
@@ -203,7 +210,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     return;
   }
 
-  private async showRetryTransferPopup(previousPopover): Promise<undefined> {
+  private async showRetryTransferPopup(): Promise<undefined> {
     const confirmCont = this.popoverCtrl.create(SbGenericPopoverComponent, {
       sbPopoverHeading: 'Transferring files',
       sbPopoverMainTitle: 'Unable to move the content in the destination folder: {content_folder_name}',
@@ -227,7 +234,6 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
       if (canCancel) {
        return this.storageService.cancelTransfer().toPromise();
       }
-      previousPopover.present();
       return this.storageService.retryCurrentTransfer().toPromise();
     });
 
