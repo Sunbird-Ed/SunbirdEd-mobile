@@ -46,7 +46,14 @@ import {
   SharedPreferences,
   TelemetryObject
 } from 'sunbird-sdk';
-import { Environment, InteractSubtype, InteractType, PageId } from '../../service/telemetry-constants';
+import {
+  Environment,
+  ImpressionSubtype,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  PageId
+} from '../../service/telemetry-constants';
 import { PlayerPage } from '../player/player';
 import { Subscription } from 'rxjs';
 import { ProfileConstants } from '../../app';
@@ -723,6 +730,19 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   ionViewDidEnter() {
     this.scrollToTop();
+    this.preferences.getString('show_app_walkthrough_screen').toPromise()
+      .then((value) => {
+        if(value === 'true') {
+          this.events.publish('show-qr-walkthrough' , {showWalkthroughBackDrop: true, appName: this.appLabel});
+          this.telemetryGeneratorService.generateImpressionTelemetry(
+            ImpressionType.VIEW,
+            ImpressionSubtype.QR_SCAN_WALKTHROUGH,
+            PageId.LIBRARY,
+            Environment.ONBOARDING
+          );
+        }
+      });
+    this.preferences.putString('show_app_walkthrough_screen', 'false').toPromise().then();
   }
 
   ionViewWillEnter() {

@@ -534,13 +534,6 @@ export class ProfileSettingsPage {
         } else if (req.profileType === ProfileType.STUDENT) {
           initTabs(this.container, GUEST_STUDENT_TABS);
         }
-        this.events.publish('show-qr-walkthrough' , {showWalkthroughBackDrop: true, appName: this.appName});
-        this.telemetryGeneratorService.generateImpressionTelemetry(
-          ImpressionType.VIEW,
-          ImpressionSubtype.QR_SCAN_WALKTHROUGH,
-          PageId.LIBRARY,
-          Environment.ONBOARDING
-        );
         this.events.publish('refresh:profile');
         this.appGlobalService.guestUserProfile = res;
         this.commonUtilService.showToast('PROFILE_UPDATE_SUCCESS');
