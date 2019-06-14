@@ -1,3 +1,5 @@
+require('reflect-metadata');
+
 global.cordova = {
     plugins: {
         notification: {
