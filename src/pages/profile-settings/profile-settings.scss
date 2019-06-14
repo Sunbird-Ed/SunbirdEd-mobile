@@ -94,7 +94,7 @@ page-profile-settings {
                 }
             }
             .qr-instruction-container{
-                max-width: 70%;
+                width: calc(100% - 65px);
                 padding-left: 10px; 
                 .qr-instruction{
                     .title{
