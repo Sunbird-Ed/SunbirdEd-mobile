@@ -525,7 +525,7 @@
   "GOT_IT": "Got it",
   "COACH_SCREEN": "by Scanning QR code, you will be redirected to the content",
   "APP_QR_CODE" : "Have a {{%s}} QR Code?",
-  "QR_CODE_DETAILS": "this can be found in some of your text books. Use for instant access to content",
+  "QR_CODE_DETAILS": "This can be found in some of your text books. Use for instant access to content",
   "SCAN_TAP": "Tap to scan",
   "OR": "or"
 }
