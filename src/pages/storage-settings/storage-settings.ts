@@ -272,10 +272,11 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
   }
 
   private async showSuccessTransferPopup(): Promise<undefined> {
+    const spaceTakenBySunbird = await this.spaceTakenBySunbird$.toPromise();
     const successTransferPopup = this.popoverCtrl.create(SbPopoverComponent, {
       sbPopoverHeading: this.commonUtilService.translateMessage('CONTENT_SUCCESSFULLY_TRANSFERRED_TO') + 'SD Card',
       // sbPopoverMainTitle: 'Space used by Diksha Content : 15 GB',
-      metaInfo:  this.commonUtilService.translateMessage('SPACE_USED_BY_DIKSHA') + '2.5 GB',
+      metaInfo:  this.commonUtilService.translateMessage('SPACE_USED_BY_DIKSHA') + spaceTakenBySunbird,
       sbPopoverContent: this.commonUtilService.translateMessage('SPACE_AVAILABLE_ON_SDCARD') +
       this.fileSizePipe.transform(this.availableExternalMemorySize),
       actionsButtons: [
