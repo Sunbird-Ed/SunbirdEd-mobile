@@ -89,10 +89,14 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
 
   async showShouldTransferContentsPopup(storageDestination: StorageDestination): Promise<void> {
     const spaceTakenBySunbird = await this.spaceTakenBySunbird$.toPromise();
+    console.log('StorageDestination', storageDestination);
 
-    const confirm = this.popoverCtrl.create(SbPopoverComponent, {
-      sbPopoverHeading: this.commonUtilService.translateMessage('TRANSFER_CONTENT'),
-      sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_TRANSFER_TO_SDCARD'),
+    const transferContentPopup = this.popoverCtrl.create(SbPopoverComponent, {
+      sbPopoverHeading: StorageDestination.INTERNAL_STORAGE ? this.commonUtilService.translateMessage('TRANSFER_CONTENT_TO_SDCARD') :
+       this.commonUtilService.translateMessage('TRANSFER_CONTENT_TO_PHONE'),
+      sbPopoverMainTitle: StorageDestination.INTERNAL_STORAGE ?
+      this.commonUtilService.translateMessage('SUCCESSFUL_CONTENT_TRANSFER_TO_SDCARD') :
+      this.commonUtilService.translateMessage('SUCCESSFUL_CONTENT_TRANSFER_TO_PHONE') ,
       actionsButtons: [
         {
           btntext: this.commonUtilService.translateMessage('MOVE'),
@@ -105,16 +109,16 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
         cssClass: 'sb-popover dw-active-downloads-popover',
       });
 
-    confirm.present();
+      transferContentPopup.present();
 
-    confirm.onDidDismiss(async (shouldTransfer: boolean) => {
+      transferContentPopup.onDidDismiss(async (shouldTransfer: boolean) => {
       if (shouldTransfer) {
         this.storageService.transferContents({
           storageDestination,
           contents: [{identifier: 0}, {identifier: 1}, {identifier: 3}] as any
-        })
+        }).finally(() => { this.showSuccessTransferPopup(); })
           .subscribe();
-        await this.showTransferContentsPopup();
+        await this.showTransferContentsPopup(transferContentPopup);
       }
     });
   }
@@ -145,18 +149,18 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     });
   }
 
-  private async showTransferContentsPopup(): Promise<undefined> {
-    let confirmCancel: Popover;
+  private async showTransferContentsPopup(prevPopup: Popover): Promise<undefined> {
+    let transferringContentPopup: Popover;
     const totalTransferSize = await this.spaceTakenBySunbird$.toPromise();
 
-    this.eventsBusService
+    const eventBusSubscription = this.eventsBusService
       .events(EventNamespace.STORAGE)
       .takeWhile(e => e.type !== StorageEventType.TRANSFER_COMPLETED)
       .filter(e => e.type === StorageEventType.TRANSFER_FAILED || e.type === StorageEventType.TRANSFER_FAILED_DUPLICATE_CONTENT)
       .do((e) => {
         switch (e.type) {
           case StorageEventType.TRANSFER_FAILED:
-            this.showRetryTransferPopup();
+            this.showRetryTransferPopup(transferringContentPopup);
             break;
           case StorageEventType.TRANSFER_FAILED_DUPLICATE_CONTENT:
             this.showDuplicateContentPopup();
@@ -172,11 +176,11 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
       .scan((acc: number, e: StorageTransferProgress) => acc += e.payload.progress.transferSize, 0);
 
     transferredSize$
-      .finally(() => confirmCancel.dismiss())
+      .finally(() => transferringContentPopup.dismiss())
       .subscribe();
 
-    confirmCancel = this.popoverCtrl.create(SbPopoverComponent, {
-      sbPopoverHeading: 'Transferring files',
+    transferringContentPopup = this.popoverCtrl.create(SbPopoverComponent, {
+      sbPopoverHeading: this.commonUtilService.translateMessage('TRANSFERRING_FILES'),
       sbPopoverDynamicMainTitle: transferredSize$
         .startWith(0)
         .map((transferredSize) => {
@@ -189,7 +193,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
         },
       ],
       icon: null,
-      metaInfo: 'Transferring Content to SD Card',
+      metaInfo: this.commonUtilService.translateMessage('TRANSFERRING_CONTENT_TO_DESTINATION'),
       sbPopoverDynamicContent: transferredSize$
         .startWith(0)
         .map((transferredSize) => {
@@ -200,8 +204,10 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
         cssClass: 'sb-popover dw-active-downloads-popover',
       });
 
-    await confirmCancel.present();
-    confirmCancel.onDidDismiss(async (shouldCancel: boolean) => {
+    await transferringContentPopup.present();
+    transferringContentPopup.onDidDismiss(async (shouldCancel: boolean) => {
+      eventBusSubscription.unsubscribe();
+
       if (shouldCancel) {
         return this.storageService.cancelTransfer().toPromise();
       }
@@ -210,14 +216,14 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     return;
   }
 
-  private async showRetryTransferPopup(): Promise<undefined> {
-    const confirmCont = this.popoverCtrl.create(SbGenericPopoverComponent, {
-      sbPopoverHeading: 'Transferring files',
-      sbPopoverMainTitle: 'Unable to move the content in the destination folder: {content_folder_name}',
+  private async showRetryTransferPopup(prevPopup: Popover): Promise<undefined> {
+    const retryTransferPopup = this.popoverCtrl.create(SbGenericPopoverComponent, {
+      sbPopoverHeading: this.commonUtilService.translateMessage('TRANSFERRING_FILES'),
+      sbPopoverMainTitle: this.commonUtilService.translateMessage('UNABLE_TO_MOVE_CONTENT') + ' {content_folder_name}',
       actionsButtons: [
         {
-          btntext: 'undo',
-          // btnClass: 'popover-color warning'
+          btntext: 'Undo',
+          btnClass: 'sb-btn sb-btn-sm sb-btn-outline-info'
         },
         {
           btntext: 'Retry',
@@ -228,10 +234,11 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     }, {
         cssClass: 'sb-popover warning dw-active-downloads-popover',
       });
-    confirmCont.present();
+      retryTransferPopup.present();
 
-    confirmCont.onDidDismiss(async (canCancel: any) => {
+      retryTransferPopup.onDidDismiss(async (canCancel: any) => {
       if (canCancel) {
+        prevPopup.dismiss();
        return this.storageService.cancelTransfer().toPromise();
       }
       return this.storageService.retryCurrentTransfer().toPromise();
@@ -240,9 +247,9 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     return undefined;
   }
   private async showDuplicateContentPopup(): Promise<undefined> {
-    const confirmContinue = this.popoverCtrl.create(SbPopoverComponent, {
-      sbPopoverHeading: 'Transferring files',
-      sbPopoverMainTitle: 'Content exists in the Destination folder. Move to the destination folder anyway?',
+    const duplicateContentPopup = this.popoverCtrl.create(SbPopoverComponent, {
+      sbPopoverHeading: this.commonUtilService.translateMessage('TRANSFERRING_FILES'),
+      sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_ALREADY_EXISTS'),
       actionsButtons: [
         {
           btntext: 'Continue',
@@ -254,13 +261,39 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
         cssClass: 'sb-popover warning dw-active-downloads-popover',
       });
 
-    confirmContinue.present();
-    confirmContinue.onDidDismiss(async (canCancel: any) => {
+      duplicateContentPopup.present();
+      duplicateContentPopup.onDidDismiss(async (canCancel: any) => {
       if (canCancel) {
-
+        return this.storageService.retryCurrentTransfer().toPromise();
       }
     });
 
+    return undefined;
+  }
+
+  private async showSuccessTransferPopup(): Promise<undefined> {
+    const successTransferPopup = this.popoverCtrl.create(SbPopoverComponent, {
+      sbPopoverHeading: this.commonUtilService.translateMessage('CONTENT_SUCCESSFULLY_TRANSFERRED_TO') + 'SD Card',
+      // sbPopoverMainTitle: 'Space used by Diksha Content : 15 GB',
+      metaInfo:  this.commonUtilService.translateMessage('SPACE_USED_BY_DIKSHA') + '2.5 GB',
+      sbPopoverContent: this.commonUtilService.translateMessage('SPACE_AVAILABLE_ON_SDCARD') +
+      this.fileSizePipe.transform(this.availableExternalMemorySize),
+      actionsButtons: [
+        {
+          btntext: 'OK',
+          btnClass: 'popover-color'
+        },
+      ],
+      icon: null,
+    }, {
+        cssClass: 'sb-popover dw-active-downloads-popover',
+      });
+    successTransferPopup.present();
+    successTransferPopup.onDidDismiss(async (canCancel: any) => {
+      if (canCancel) {
+        successTransferPopup.dismiss();
+      }
+    });
     return undefined;
   }
 }

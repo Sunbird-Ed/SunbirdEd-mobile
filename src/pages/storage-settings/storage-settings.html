@@ -4,9 +4,8 @@
       <ion-grid no-padding>
         <ion-row>
           <ion-col class="ad-pt-4">
-            <div (tap)="showShouldTransferContentsPopup(StorageDestination.EXTERNAL_STORAGE)"
-                 class="download-page-heading"><b>Storage Settings</b></div>
-            <div class="download-page-info">Choose where to save the data</div>
+            <div class="download-page-heading"><b>{{'STORAGE_SETTINGS' | translate}}</b></div>
+            <div class="download-page-info">{{'CHOOSE_WHERE_TO_SAVE_DATA' | translate}}</div>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -14,7 +13,7 @@
   </div>
   <div class="sb-dw-manager o-hide">
     <div class="pull-left">
-      <span class="storage-info">Storage</span>
+      <span class="storage-info">{{'STORAGE' | translate}}</span>
     </div>
   </div>
   <div radio-group (ionChange)="showShouldTransferContentsPopup($event.value === StorageDestination.INTERNAL_STORAGE ? StorageDestination.EXTERNAL_STORAGE: StorageDestination.INTERNAL_STORAGE)">
@@ -26,20 +25,22 @@
         <img src="./assets/imgs/Phone.png">
       </div>
       <div class="sb-card-details">
-        <div class="title">Phone({{totalInternalMemorySize}})</div>
-        <div class="info">Free Space : {{availableInternalMemorySize | fileSize}}</div>
+        <div class="title">{{'PHONE' | translate}}({{totalInternalMemorySize}})</div>
+        <div class="info">{{'FREE_SPACE' | translate}} {{availableInternalMemorySize | fileSize}}</div>
       </div>
     </div>
-    <div class="sb-storage-container" *ngIf="isExternalMemoryAvailable" >
+    <div class="sb-storage-container">
       <div class="radio-container">
-        <ion-radio [checked]="(storageDestination$ | async) === StorageDestination.EXTERNAL_STORAGE"></ion-radio>
+        <ion-radio [checked]="(storageDestination$ | async) === StorageDestination.EXTERNAL_STORAGE" [disabled] = "!isExternalMemoryAvailable"></ion-radio>
       </div>
       <div class="iconSize">
         <img src="./assets/imgs/SD_card.png">
       </div>
       <div class="sb-card-details">
-        <div class="title">SD Card({{totalExternalMemorySize}})</div>
-        <div class="info">Free Space : {{availableExternalMemorySize | fileSize}}</div>
+        <div class="title" *ngIf="isExternalMemoryAvailable">{{'SD_CARD' | translate}}({{totalExternalMemorySize}})</div>
+        <div class="title" *ngIf="!isExternalMemoryAvailable">{{'SD_CARD' | translate}} : -- </div>
+        <div class="info" *ngIf="isExternalMemoryAvailable">{{'FREE_SPACE' | translate}} : {{availableExternalMemorySize | fileSize}}</div>
+        <div class="info" *ngIf="!isExternalMemoryAvailable">{{'FREE_SPACE' | translate}} :  -- </div>
       </div>
     </div>
   </div>

@@ -522,7 +522,6 @@
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
   "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "You are not connected to the internet",
   "TRANSFER_CONTENT": "Transfer Content to SD Card?",
-  "CONTENT_TRANSFER_TO_SDCARD": "All Contents will be transferred to SD Card",
   "MOVE": "Move",
   "PERMISSION_REQUIRED_TITLE": "{{%s}} requires access to the following permissions so we can provide an effective experience for you:",
   "CAMERA": "Camera",
@@ -534,6 +533,24 @@
   "GRANT_ACCESS": "Grant Access",
   "NOT_NOW": "Not Now",
   "PERMISSION_EDIT_TITLE": "Permission required for effective use of {{%s}}",
-  "PERMISSION": "Permission"
+  "PERMISSION": "Permission",
+  "TRANSFER_CONTENT_TO_SDCARD" : "Transfer Content to SD card",
+  "TRANSFER_CONTENT_TO_PHONE": "Transfer Content to Phone",
+  "TOTAL_SIZE": "Total Size : ",
+  "TRANSFERRING_FILES": "Transferring files",
+  "CONTENT_SUCCESSFULLY_TRANSFERRED_TO": "Content Successfully transferred to ",
+  "STORAGE_SETTINGS": "Storage Settings",
+  "CHOOSE_WHERE_TO_SAVE_DATA": "Choose where to save Data",
+  "STORAGE": "Storage",
+  "FREE_SPACE": "Free Space :",
+  "PHONE": "Phone",
+  "SD_CARD": "SD Card",
+  "SPACE_AVAILABLE_ON_SDCARD": "Space available on SD Card: ",
+  "SPACE_USED_BY_DIKSHA": "Space used by Diksha Content :",
+  "UNABLE_TO_MOVE_CONTENT": "Unable to move the content in the destination folder:",
+  "CONTENT_ALREADY_EXISTS" : "Content exists in the Destination folder. Move to the destination folder anyway?",
+  "TRANSFERRING_CONTENT_TO_DESTINATION": "Transferring Content to SD Card",
+  "SUCCESSFUL_CONTENT_TRANSFER_TO_SDCARD": "All Contents will be transferred to SD Card",
+  "SUCCESSFUL_CONTENT_TRANSFER_TO_PHONE": "All Contents will be transferred to Phone"
 
 }
