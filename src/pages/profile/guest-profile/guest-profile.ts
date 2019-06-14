@@ -244,9 +244,10 @@ export class GuestProfilePage implements OnInit, AfterViewInit {
    *
    */
   goToRoles() {
-    this.navCtrl.push(UserTypeSelectionPage, {
+    this.navCtrl.push(GuestEditProfilePage, {
       profile: this.profile,
-      isChangeRoleRequest: true
+      isChangeRoleRequest: true,
+      isCurrentUser: true
     });
   }
 
