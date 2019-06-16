@@ -100,17 +100,23 @@ export class FaqPage {
       if (this.selectedLanguage && this.commonUtilService.networkInfo.isNetworkAvailable) {
         url += '?selectedlang=' + this.selectedLanguage + '&randomid=' + Math.random();
         this.faq.url = url;
+        this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
+      } else  {
+        this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
+
       }
+    }).catch((error) => {
+      console.log('In error', error);
+      this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
     });
-    this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
   }
 
   private handleHeaderEvents($event) {
     switch ($event.name) {
       case 'back':
-          setTimeout(() => {
-            this.handleBackButton();
-          }, 100);
+        setTimeout(() => {
+          this.handleBackButton();
+        }, 100);
         break;
     }
   }
@@ -205,7 +211,7 @@ export class FaqPage {
       server: true
     };
     const contentRequest: ContentRequest = {
-      contentTypes: ContentType.FOR_LIBRARY_TAB,
+      contentTypes: ContentType.FOR_DOWNLOADED_TAB,
       audience: AudienceFilter.GUEST_TEACHER
     };
     const getUserCount = await this.profileService.getAllProfiles(allUserProfileRequest).map((profile) => profile.length).toPromise();

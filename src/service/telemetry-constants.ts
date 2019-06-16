@@ -5,7 +5,8 @@ export enum Environment {
     DOWNLOADS = 'downloads',
     USER = 'user',
     SETTINGS = 'settings',
-    ONBOARDING = 'onboarding'
+    ONBOARDING = 'onboarding',
+    NOTIFICATION = 'notification'
 }
 
 export enum ErrorCode {
@@ -99,7 +100,9 @@ export enum PageId {
     BULK_DELETE_CONFIRMATION_POPUP = 'bulk-delete-confirmation-popup',
     ACTIVE_DOWNLOADS = 'active-downloads',
     SINGLE_CANCEL_CONFIRMATION_POPUP = 'single-cancel-confirmation-popup',
-    BULK_CANCEL_CONFIRMATION_POPUP = 'bulk-cancel-confirmation-popup'
+    BULK_CANCEL_CONFIRMATION_POPUP = 'bulk-cancel-confirmation-popup',
+    NOTIFICATION = 'notification',
+    SPLASH = 'splash'
 }
 export enum LogType {
     NOTIFICATION = 'notification'
@@ -146,6 +149,7 @@ export enum InteractSubtype {
     BROWSE_AS_GUEST_CLICKED = 'browse-as-guest-clicked',
     CONTINUE_CLICKED = 'continue-clicked',
     GRANT_ACCESS_CLICKED = 'grant-access-clicked',
+    APP_PERMISSION_SETTING_CLICKED = 'app-permission-setting-clicked',
     TAB_CLICKED = 'tab-clicked',
     SECTION_VIEWED = 'section-viewed',
     CONTENT_CLICKED = 'content-clicked',
@@ -170,6 +174,8 @@ export enum InteractSubtype {
     ANNOUNCEMENT_CLICKED = 'announcement-clicked',
     SIGNIN_OVERLAY_CLICKED = 'signin-overlay-clicked',
     SETTINGS_CLICKED = 'settings-clicked',
+    PERMISSION_POPOVER_NOT_NOW_CLICKED = 'permission-popover-not-now-clicked',
+    PERMISSION_POPOVER_ALLOW_CLICKED = 'permission-popover-allow-clicked',
     LANGUAGE_CLICKED = 'language-clicked',
     HELP_CLICKED = 'help-clicked',
     DATA_SYNC_CLICKED = 'data-sync-clicked',
@@ -272,7 +278,13 @@ export enum InteractSubtype {
     PLAY_STORE_BUTTON_CLICKED = 'play-store-button-clicked',
     HELP_SECTION_CLICKED = 'help-section-clicked',
     APP_RATING_APPEARED = 'app-rating-appeared',
-    START_CLICKED = 'start-clicked'
+    START_CLICKED = 'start-clicked',
+    UTM_INFO = 'utm-info',
+    CLEAR_NOTIFICATIONS_CLICKED = 'clear-all-notifications-clicked',
+    NOTIFICATION_READ = 'notification-read',
+    NOTIFICATION_DESCRIPTION_TOGGLE_EXPAND = 'notification-description-toggle-expand',
+    OPENRAP_DEVICE_CONNECTED = 'openrap-device-connected',
+    OPENRAP_DEVICE_DISCONNECTED = 'openrap-device-disconnected',
 }
 
 export enum ActionButtonType {

@@ -1,65 +1,33 @@
 import { BatchConstants } from './../../app/app.constant';
-import {Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
-import {Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, Loading} from 'ionic-angular';
-import {Content as ContentView} from 'ionic-angular';
+import { Component, Inject, NgZone, OnDestroy, ViewChild } from '@angular/core';
+import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, Loading } from 'ionic-angular';
+import { Content as ContentView } from 'ionic-angular';
 import {
-  CachedItemRequestSourceFrom,
-  Content,
-  ContentDetailRequest,
-  ContentEventType,
-  ContentImport,
-  ContentImportRequest,
-  ContentImportResponse,
-  ContentImportStatus,
-  ContentSearchCriteria,
-  ContentSearchResult,
-  ContentService,
-  CorrelationData,
-  DownloadEventType,
-  DownloadProgress,
-  EventsBusEvent,
-  EventsBusService,
-  PageAssembleCriteria,
-  PageAssembleFilter,
-  PageAssembleService,
-  PageName,
-  ProfileType,
-  SearchType,
-  SharedPreferences,
-  TelemetryObject,
-  NetworkError,
-  CourseService,
-  CourseBatchesRequest,
-  CourseEnrollmentType,
-  CourseBatchStatus,
-  Course,
-  Batch,
+  CachedItemRequestSourceFrom, Content, ContentDetailRequest, ContentEventType, ContentImport, ContentImportRequest,
+  ContentImportResponse, ContentImportStatus, ContentSearchCriteria, ContentSearchResult, ContentService,
+  CorrelationData, DownloadEventType, DownloadProgress, EventsBusEvent, EventsBusService, PageAssembleCriteria,
+  PageAssembleFilter, PageAssembleService, PageName, ProfileType, SearchType, SharedPreferences, TelemetryObject,
+  NetworkError, CourseService, CourseBatchesRequest, CourseEnrollmentType, CourseBatchStatus, Course, Batch,
   FetchEnrolledCourseRequest
 } from 'sunbird-sdk';
-import {FilterPage} from './filters/filter';
-import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
-import {ContentDetailsPage} from '../content-details/content-details';
-import {Map} from '../../app/telemetryutil';
+import { FilterPage } from './filters/filter';
+import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
+import { ContentDetailsPage } from '../content-details/content-details';
+import { Map } from '../../app/telemetryutil';
 import * as _ from 'lodash';
-import {AudienceFilter, ContentType, MimeType, Search, ContentCard} from '../../app/app.constant';
-import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
-import {AppGlobalService} from '../../service/app-global.service';
-import {FormAndFrameworkUtilService} from '../profile/formandframeworkutil.service';
-import {CommonUtilService} from '../../service/common-util.service';
-import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
-import {QrCodeResultPage} from '../qr-code-result/qr-code-result';
-import {TranslateService} from '@ngx-translate/core';
-import {Subscription} from 'rxjs';
+import { AudienceFilter, ContentType, MimeType, Search, ContentCard } from '../../app/app.constant';
+import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
+import { AppGlobalService } from '../../service/app-global.service';
+import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
+import { CommonUtilService } from '../../service/common-util.service';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { QrCodeResultPage } from '../qr-code-result/qr-code-result';
+import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 import {
-  Environment,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  LogLevel,
-  Mode,
-  PageId
+  Environment, ImpressionType, InteractSubtype, InteractType, LogLevel, Mode, PageId
 } from '../../service/telemetry-constants';
-import {TabsPage} from '@app/pages/tabs/tabs';
+import { TabsPage } from '@app/pages/tabs/tabs';
 import { AppHeaderService } from '@app/service';
 import { EnrollmentDetailsPage } from '../enrolled-course-details/enrollment-details/enrollment-details';
 
@@ -70,7 +38,7 @@ declare const cordova;
   selector: 'page-search',
   templateUrl: './search.html'
 })
-export class SearchPage implements  OnDestroy {
+export class SearchPage implements OnDestroy {
 
   showLoading: boolean;
   downloadProgress: any;
@@ -198,13 +166,13 @@ export class SearchPage implements  OnDestroy {
     if (this.backButtonFunc) {
       this.backButtonFunc();
     }
-    if  (this.eventSubscription)  {
+    if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
     }
   }
 
   ngOnDestroy() {
-    if  (this.eventSubscription)  {
+    if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
     }
   }
@@ -231,7 +199,7 @@ export class SearchPage implements  OnDestroy {
             loginMode: 'guest'
           });
         } else {
-          this.navCtrl.setRoot('ProfileSettingsPage', {isCreateNavigationStack: false, hideBackButton: true});
+          this.navCtrl.setRoot('ProfileSettingsPage', { isCreateNavigationStack: false, hideBackButton: true });
         }
       } else {
         this.popCurrentPage();
@@ -305,6 +273,11 @@ export class SearchPage implements  OnDestroy {
 
     if (content.contentType === ContentType.COURSE) {
       this.navCtrl.push(EnrolledCourseDetailsPage, params);
+      if (this.isSingleContent) {
+        this.isSingleContent = false;
+        const view = this.navCtrl.getActive();
+        this.navCtrl.removeView(view);
+      }
     } else if (content.mimeType === MimeType.COLLECTION) {
       if (this.isDialCodeSearch && !isRootContent) {
         params.isCreateNavigationStack = true;
@@ -340,7 +313,7 @@ export class SearchPage implements  OnDestroy {
           }
         });
       });
-      this.navCtrl.push(FilterPage, {filterCriteria: this.responseData.filterCriteria});
+      this.navCtrl.push(FilterPage, { filterCriteria: this.responseData.filterCriteria });
     });
   }
 
@@ -375,10 +348,10 @@ export class SearchPage implements  OnDestroy {
           this.showLoader = false;
         });
       }).catch(() => {
-      this.zone.run(() => {
-        this.showLoader = false;
+        this.zone.run(() => {
+          this.showLoader = false;
+        });
       });
-    });
   }
 
   handleSearch() {
@@ -450,13 +423,13 @@ export class SearchPage implements  OnDestroy {
           this.showLoader = false;
         });
       }).catch(() => {
-      this.zone.run(() => {
-        this.showLoader = false;
-        if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
-          this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
-        }
+        this.zone.run(() => {
+          this.showLoader = false;
+          if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
+            this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
+          }
+        });
       });
-    });
   }
 
   applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey?: string) {
@@ -501,12 +474,12 @@ export class SearchPage implements  OnDestroy {
   checkRetiredOpenBatch(content: any, layoutName?: string): void {
     this.loader = this.commonUtilService.getLoader();
     this.loader.present();
-    this.loader.onDidDismiss(() => {this.loader = undefined; });
+    this.loader.onDidDismiss(() => { this.loader = undefined; });
     let retiredBatches: Array<any> = [];
     let anyOpenBatch: Boolean = false;
     this.enrolledCourses = this.enrolledCourses || [];
     if (layoutName !== ContentCard.LAYOUT_INPROGRESS) {
-      retiredBatches = this.enrolledCourses.filter((element) =>  {
+      retiredBatches = this.enrolledCourses.filter((element) => {
         if (element.contentId === content.identifier && element.batch.status === 1 && element.cProgress !== 100) {
           anyOpenBatch = true;
           content.batch = element.batch;
@@ -621,18 +594,19 @@ export class SearchPage implements  OnDestroy {
     }
 
     // Page API START
-    const pagetAssemblefilter: PageAssembleFilter = {};
-    pagetAssemblefilter.dialcodes = this.dialCode;
+    const pageAssemblefilter: PageAssembleFilter = {};
+    pageAssemblefilter.dialcodes = this.dialCode;
+    pageAssemblefilter.contentType = this.contentType;
 
     const pageAssembleCriteria: PageAssembleCriteria = {
       name: PageName.DIAL_CODE,
-      filters: pagetAssemblefilter,
+      filters: pageAssemblefilter,
       source: 'app',
       from: CachedItemRequestSourceFrom.SERVER
     };
     // pageAssembleCriteria.hardRefresh = true;
 
-    this.pageService.getPageAssemble(pageAssembleCriteria, ).toPromise()
+    this.pageService.getPageAssemble(pageAssembleCriteria).toPromise()
       .then((res: any) => {
         this.zone.run(() => {
           const sections = res.sections;
@@ -644,16 +618,16 @@ export class SearchPage implements  OnDestroy {
           this.showLoader = false;
         });
       }).catch(error => {
-      this.zone.run(() => {
-        this.showLoader = false;
-        if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
-          this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
-        } else {
-          this.commonUtilService.showToast('SOMETHING_WENT_WRONG');
-          this.navCtrl.pop();
-        }
+        this.zone.run(() => {
+          this.showLoader = false;
+          if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
+            this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
+          } else {
+            this.commonUtilService.showToast('SOMETHING_WENT_WRONG');
+            this.navCtrl.pop();
+          }
+        });
       });
-    });
     // Page API END
   }
 
@@ -696,9 +670,16 @@ export class SearchPage implements  OnDestroy {
       const contentArray: Array<any> = searchResult.contents;
       const addedContent = new Array<any>();
       const dialCodeResultObj = {
+        isCourse: false,
         dialCodeResult: [],
         dialCodeContentResult: []
       };
+      const dialCodeCourseResultObj = {
+        isCourse: true,
+        dialCodeResult: [],
+        dialCodeContentResult: []
+      };
+
       // Handle localization
       if (searchResult.display) {
         dialCodeResultObj['name'] = this.commonUtilService.getTranslatedValue(searchResult.display, searchResult.name);
@@ -730,15 +711,24 @@ export class SearchPage implements  OnDestroy {
 
       if (!isAllContentMappedToCollection && contentArray && contentArray.length > 1) {
         const dialCodeContentResult = [];
+        const dialCodeContentCourseResult = []; // content type course
         contentArray.forEach((content) => {
-          if (addedContent.indexOf(content.identifier) < 0) {
+          if (content.contentType === ContentType.COURSE) {
+            dialCodeContentCourseResult.push(content);
+          } else if (addedContent.indexOf(content.identifier) < 0) {
             dialCodeContentResult.push(content);
           }
         });
-        dialCodeResultObj.dialCodeContentResult = dialCodeContentResult;
-        displayDialCodeResult.push(dialCodeResultObj);
-      }
 
+        if (dialCodeContentResult.length) {
+          dialCodeResultObj.dialCodeContentResult = dialCodeContentResult;
+          displayDialCodeResult.push(dialCodeResultObj);
+        }
+        if (dialCodeContentCourseResult.length) {
+          dialCodeCourseResultObj.dialCodeContentResult = dialCodeContentCourseResult;
+          displayDialCodeResult.push(dialCodeCourseResultObj);
+        }
+      }
 
       let isParentCheckStarted = false;
       if (dialCodeResultObj.dialCodeResult.length === 1 && dialCodeResultObj.dialCodeResult[0].content.length === 1
@@ -756,6 +746,7 @@ export class SearchPage implements  OnDestroy {
         // return;
       }
     });
+
     this.displayDialCodeResult = displayDialCodeResult;
     if (this.displayDialCodeResult.length === 0 && !this.isSingleContent) {
       this.navCtrl.pop();
@@ -903,7 +894,7 @@ export class SearchPage implements  OnDestroy {
             this.showContentDetails(child);
           });
         }
-      }).catch ((err) => {
+      }).catch((err) => {
         if (err instanceof NetworkError) {
           this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
         }
@@ -973,18 +964,18 @@ export class SearchPage implements  OnDestroy {
         }
 
         // if (event.payload && event.payload.status === 'IMPORT_COMPLETED' && event.type === 'contentImport') {
-          if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
-            if (this.queuedIdentifiers.length && this.isDownloadStarted) {
-              if (_.includes(this.queuedIdentifiers, event.payload.contentId)) {
-                this.currentCount++;
-              }
-              if (this.queuedIdentifiers.length === this.currentCount) {
-                this.showLoading = false;
-                this.showContentDetails(this.childContent);
-                this.events.publish('savedResources:update', {
-                  update: true
-                });
-              }
+        if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
+          if (this.queuedIdentifiers.length && this.isDownloadStarted) {
+            if (_.includes(this.queuedIdentifiers, event.payload.contentId)) {
+              this.currentCount++;
+            }
+            if (this.queuedIdentifiers.length === this.currentCount) {
+              this.showLoading = false;
+              this.showContentDetails(this.childContent);
+              this.events.publish('savedResources:update', {
+                update: true
+              });
+            }
           } else {
             this.events.publish('savedResources:update', {
               update: true

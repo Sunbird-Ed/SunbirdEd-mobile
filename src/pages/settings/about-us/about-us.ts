@@ -9,12 +9,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { AppGlobalService, TelemetryGeneratorService, UtilityService, AppHeaderService } from '@app/service';
 import { Environment, ImpressionType, InteractSubtype, InteractType, PageId } from '../../../service/telemetry-constants';
 import {
-  ContentRequest,
-  ContentService,
-  DeviceInfo,
-  GetAllProfileRequest,
-  ProfileService,
-  SharedPreferences
+  ContentRequest, ContentService, DeviceInfo, GetAllProfileRequest, ProfileService, SharedPreferences
 } from 'sunbird-sdk';
 import { AudienceFilter, ContentType } from '@app/app';
 
@@ -88,12 +83,12 @@ export class AboutUsPage {
       server: true
     };
     const contentRequest: ContentRequest = {
-      contentTypes: ContentType.FOR_LIBRARY_TAB,
+      contentTypes: ContentType.FOR_DOWNLOADED_TAB,
       audience: AudienceFilter.GUEST_TEACHER
     };
     const getUserCount = await this.profileService.getAllProfiles(allUserProfileRequest).map((profile) => profile.length).toPromise();
     const getLocalContentCount = await this.contentService.getContents(contentRequest)
-    .map((contentCount) => contentCount.length).toPromise();
+      .map((contentCount) => contentCount.length).toPromise();
 
     (<any>window).supportfile.shareSunbirdConfigurations(getUserCount, getLocalContentCount, (result) => {
       const loader = this.commonUtilService.getLoader();

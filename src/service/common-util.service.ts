@@ -99,10 +99,10 @@ export class CommonUtilService implements OnDestroy {
         let translatedMsg = '';
         let replaceObject: any = '';
 
-        if (typeof(fields) === 'string') {
-            replaceObject = { '%s': fields };
-        } else if (typeof(fields) === 'object') {
+        if (typeof(fields) === 'object') {
             replaceObject = fields;
+        } else {
+            replaceObject = { '%s': fields };
         }
 
         this.translate.get(messageConst, replaceObject).subscribe(

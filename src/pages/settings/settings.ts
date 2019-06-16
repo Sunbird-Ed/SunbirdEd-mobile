@@ -133,6 +133,6 @@ export class SettingsPage {
   }
 
   showPermissionPage() {
-    this.navCtrl.push(PermissionPage);
+    this.navCtrl.push(PermissionPage, { changePermissionAccess: true } ) ;
   }
 }

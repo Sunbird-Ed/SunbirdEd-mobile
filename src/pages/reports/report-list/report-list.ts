@@ -1,16 +1,11 @@
-import {Component, Inject, NgZone} from '@angular/core';
-import {LoadingController, NavController, NavParams} from 'ionic-angular';
-import {GroupReportListPage} from '../group-report-list/group-report-list';
-import {LearnerAssessmentSummary, ReportSummary, SummarizerService, SummaryRequest, TelemetryObject} from 'sunbird-sdk';
-import {UserReportPage} from '../user-report/user-report';
-import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
+import { Component, Inject, NgZone } from '@angular/core';
+import { LoadingController, NavController, NavParams } from 'ionic-angular';
+import { GroupReportListPage } from '../group-report-list/group-report-list';
+import { LearnerAssessmentSummary, ReportSummary, SummarizerService, SummaryRequest, TelemetryObject } from 'sunbird-sdk';
+import { UserReportPage } from '../user-report/user-report';
+import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
 import {
-  Environment,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  ObjectType,
-  PageId
+    Environment, ImpressionType, InteractSubtype, InteractType, ObjectType, PageId
 } from '../../../service/telemetry-constants';
 import { AppHeaderService } from '@app/service';
 
@@ -29,6 +24,7 @@ export class ReportListPage {
     handle: string;
     assessment: {};
     reportSummary: ReportSummary;
+
     constructor(private navCtrl: NavController,
         private navParams: NavParams,
         private loading: LoadingController,
@@ -57,14 +53,6 @@ export class ReportListPage {
         });
         loader.present();
 
-
-      // const requestParams: SummarizerContentFilterCriteria = {
-      //   contentTypes: ContentType.FOR_LIBRARY_TAB,
-      //   uids: this.uids,
-      //   attachContentAccess: true,
-      //   attachFeedback: true
-      // };
-
         const summaryRequest: SummaryRequest = {
             qId: '',
             uids: this.uids,
@@ -82,9 +70,7 @@ export class ReportListPage {
                 console.log('getsummary error :', err);
                 loader.dismiss();
             });
-
     }
-
 
     formatTime(time: number): string {
         const mm = Math.floor(time / 60);

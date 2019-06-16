@@ -52,7 +52,7 @@
         </button>
         <button ion-button icon-only *ngIf="headerConfig?.actionButtons?.indexOf('notification') >=0"
           (click)="emitEvent($event, 'notification');" class="active-download-icon">
-          <ion-icon name="notifications-outline"></ion-icon>
+          <img height="25" width="25" [src]="isUnreadNotification ? './assets/imgs/notification.svg' : './assets/imgs/disabled_notification.svg'" alt="notification" />
         </button>
         <button ion-button icon-only *ngIf="headerConfig?.actionButtons?.indexOf('search') >=0"
           (click)="emitEvent($event, 'search');">

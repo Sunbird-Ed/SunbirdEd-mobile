@@ -1,12 +1,12 @@
-import {ChangeDetectorRef, Component, EventEmitter, Inject, Input, OnInit, Output, OnDestroy} from '@angular/core';
-import {App, Events, MenuController, Platform} from 'ionic-angular';
-import {AppGlobalService, UtilityService, CommonUtilService} from '@app/service';
-import {DownloadService, SharedPreferences} from 'sunbird-sdk';
-import {GenericAppConfig, PreferenceKey} from '../../app/app.constant';
-import {AppVersion} from '@ionic-native/app-version';
+import { ChangeDetectorRef, Component, EventEmitter, Inject, Input, OnInit, Output, OnDestroy, NgZone } from '@angular/core';
+import { App, Events, MenuController, Platform } from 'ionic-angular';
+import { AppGlobalService, UtilityService, CommonUtilService } from '@app/service';
+import { DownloadService, SharedPreferences, NotificationService as PushNotificationService, NotificationStatus } from 'sunbird-sdk';
+import { GenericAppConfig, PreferenceKey } from '../../app/app.constant';
+import { AppVersion } from '@ionic-native/app-version';
 import { NotificationService } from '@app/service/notification.service';
 import { Subscription } from 'rxjs';
-import {TranslateService} from "@ngx-translate/core";
+import { TranslateService } from "@ngx-translate/core";
 
 declare const cordova;
 
@@ -28,14 +28,16 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
   decreaseZindex = false;
   isRtl: boolean;
   isLoggedIn = false;
-  showDownloadAnimation: Boolean = false;
+  showDownloadAnimation: boolean = false;
   networkSubscription: Subscription;
+  isUnreadNotification: boolean = false;
 
   constructor(
     public menuCtrl: MenuController,
     private commonUtilService: CommonUtilService,
     @Inject('SHARED_PREFERENCES') private preference: SharedPreferences,
     @Inject('DOWNLOAD_SERVICE') private downloadService: DownloadService,
+    @Inject('NOTIFICATION_SERVICE') private pushNotificationService: PushNotificationService,
     private events: Events,
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
@@ -44,7 +46,7 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
     private app: App,
     private notification: NotificationService,
     private translate: TranslateService,
-    private platform : Platform
+    private platform: Platform
   ) {
     this.setLanguageValue();
     this.events.subscribe('onAfterLanguageChange:update', (res) => {
@@ -52,6 +54,7 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
         this.setLanguageValue();
       }
     });
+    this.getUnreadNotifications();
   }
 
   ngOnInit() {
@@ -63,10 +66,14 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
     this.events.subscribe('app-global:profile-obj-changed', () => {
       this.setAppLogo();
     });
+
+    this.events.subscribe('notification-status:update', (eventData) => {
+      this.isUnreadNotification = eventData.isUnreadNotifications;
+    });
     this.translate.onLangChange.subscribe((params) => {
-      if(params.lang == 'ur' && !this.platform.isRTL) {
+      if (params.lang == 'ur' && !this.platform.isRTL) {
         this.isRtl = true;
-      } else if(this.platform.isRTL) {
+      } else if (this.platform.isRTL) {
         this.isRtl = false;
       }
     });
@@ -78,7 +85,7 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
     });
     this.listenDownloads();
     this.networkSubscription = this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
-        this.setAppLogo();
+      this.setAppLogo();
     });
   }
 
@@ -105,10 +112,10 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
         this.selectedLanguage = value;
       });
     this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
-    .then(langCode => {
-      console.log('Language code: ', langCode);
-      this.notification.setupLocalNotification(langCode);
-    });
+      .then(langCode => {
+        console.log('Language code: ', langCode);
+        this.notification.setupLocalNotification(langCode);
+      });
   }
 
   listenDownloads() {
@@ -129,7 +136,7 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
       this.isLoggedIn = true;
       this.preference.getString('app_logo').toPromise().then(value => {
         if (value) {
-          this.appLogo =  this.commonUtilService.networkInfo.isNetworkAvailable ? value : './assets/imgs/ic_launcher.png';
+          this.appLogo = this.commonUtilService.networkInfo.isNetworkAvailable ? value : './assets/imgs/ic_launcher.png';
         } else {
           this.appLogo = './assets/imgs/ic_launcher.png';
         }
@@ -145,12 +152,12 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
   }
 
   emitEvent($event, name) {
-      this.headerEvents.emit({name});
+    this.headerEvents.emit({ name });
   }
 
   emitSideMenuItemEvent($event, menuItem) {
     this.toggleMenu();
-    this.sideMenuItemEvent.emit({menuItem});
+    this.sideMenuItemEvent.emit({ menuItem });
   }
 
   ngOnDestroy() {
@@ -159,6 +166,19 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
     }
     this.events.subscribe('user-profile-changed');
     this.events.subscribe('app-global:profile-obj-changed');
+  }
+
+  getUnreadNotifications() {
+    let newNotificationCount = 0;
+    this.pushNotificationService.getAllNotifications({ notificationStatus: NotificationStatus.ALL }).subscribe((notificationList: any) => {
+      notificationList.forEach((item) => {
+        if (!item.isRead) {
+          newNotificationCount++;
+        }
+      });
+
+      this.isUnreadNotification = newNotificationCount ? true : false;
+    });
   }
 
 }

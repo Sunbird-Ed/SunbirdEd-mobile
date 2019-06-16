@@ -1,24 +1,18 @@
 import { ActiveDownloadsPage } from '@app/pages/active-downloads/active-downloads';
-import {Search} from './../../app/app.constant';
-import {AfterViewInit, Component, Inject, NgZone, OnInit, ViewChild} from '@angular/core';
-import {Events, NavController, ToastController, MenuController, Scroll, Tabs} from 'ionic-angular';
-import {Content as ContentView} from 'ionic-angular';
+import { Search } from './../../app/app.constant';
+import { AfterViewInit, Component, Inject, NgZone, OnInit, ViewChild } from '@angular/core';
+import { Events, NavController, ToastController, MenuController, Tabs } from 'ionic-angular';
+import { Content as ContentView } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
 import { SearchPage } from '../search/search';
 import { Map } from '../../app/telemetryutil';
 import {
-  AudienceFilter,
-  CardSectionName,
-  ContentCard,
-  ContentType,
-  PreferenceKey,
-  ViewMore
+  AudienceFilter, CardSectionName, ContentCard, ContentType, PreferenceKey, ViewMore
 } from '../../app/app.constant';
 import { PageFilterCallback } from '../page-filter/page.filter';
 import { AppGlobalService } from '../../service/app-global.service';
-import Driver from 'driver.js';
 import { AppVersion } from '@ionic-native/app-version';
 import { updateFilterInSearchQuery } from '../../util/filter.util';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
@@ -28,31 +22,17 @@ import { Network } from '@ionic-native/network';
 import { animate, group, state, style, transition, trigger } from '@angular/animations';
 import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
 import {
-  CategoryTerm,
-  ContentEventType,
-  ContentRequest,
-  ContentSearchCriteria,
-  ContentService,
-  EventsBusEvent,
-  EventsBusService,
-  FrameworkCategoryCode,
-  FrameworkCategoryCodesGroup,
-  FrameworkUtilService,
-  GetFrameworkCategoryTermsRequest,
-  Profile,
-  ProfileService,
-  ProfileType,
-  SearchType,
-  SharedPreferences,
+  CategoryTerm, ContentEventType, ContentRequest, ContentSearchCriteria, ContentService, EventsBusEvent,
+  EventsBusService, FrameworkCategoryCode, FrameworkCategoryCodesGroup, FrameworkUtilService,
+  GetFrameworkCategoryTermsRequest, Profile, ProfileService, ProfileType, SearchType, SharedPreferences,
   TelemetryObject
 } from 'sunbird-sdk';
-import { Environment, ImpressionType, InteractSubtype, InteractType, PageId } from '../../service/telemetry-constants';
+import { Environment, InteractSubtype, InteractType, PageId } from '../../service/telemetry-constants';
 import { PlayerPage } from '../player/player';
 import { Subscription } from 'rxjs';
 import { ProfileConstants } from '../../app';
 import { AppHeaderService } from '@app/service';
-import { GuestProfilePage } from '../profile';
-import { ProfilePage } from '../profile/profile';
+import { NotificationsPage } from '../notifications/notifications';
 
 @Component({
   selector: 'page-resources',
@@ -101,7 +81,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   selectedValue: Array<string> = [];
   guestUser = false;
   showSignInCard = false;
-  localResources: Array<any>;
   recentlyViewedResources: Array<any>;
   userId: string;
   showLoader = false;
@@ -184,6 +163,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.generateNetworkType();
 
   }
+
   subscribeUtilityEvents() {
     this.profileService.getActiveSessionProfile({ requiredFields: ProfileConstants.REQUIRED_FIELDS }).subscribe((profile: Profile) => {
       this.profile = profile;
@@ -232,7 +212,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       }
       // });
     });
-
   }
 
   /**
@@ -241,7 +220,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   ngOnInit() {
     this.getCurrentUser();
   }
-
 
   generateNetworkType() {
     const values = new Map();
@@ -298,21 +276,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.loadRecentlyViewedContent();
   }
 
-  // goToUserAndGroups() {
-  //   this.navCtrl.push(UserAndGroupsPage);
-  // }
-  // goToReports() {
-  //   this.navCtrl.push(ReportsPage);
-  // }
-  // goToLanguageSettings() {
-  //   this.navCtrl.push(LanguageSettingsPage, {
-  //     mainPage: true
-  //   });
-  // }
-  // goToSettings() {
-  //   this.navCtrl.push(SettingsPage);
-  // }
-
   navigateToViewMoreContentsPage(section: string) {
     const values = new Map();
     let headerTitle;
@@ -344,69 +307,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   /**
-   * Navigate to search page
-   *
-   * @param {string} queryParams search query params
-   */
-  navigateToViewMoreContentsPageWithParams(queryParams, headerTitle): void {
-    const values = new Map();
-    values['SectionName'] = headerTitle;
-    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-      InteractSubtype.VIEWALL_CLICKED,
-      Environment.HOME,
-      this.source,
-      undefined,
-      values);
-
-    queryParams = updateFilterInSearchQuery(queryParams, this.appliedFilter, this.profile, this.mode,
-      this.isFilterApplied, this.appGlobalService);
-
-    this.navCtrl.push(ViewMoreActivityPage, {
-      requestParams: queryParams,
-      headerTitle: headerTitle
-    });
-  }
-
-  /**
-	 * Get saved content
-	 */
-  async setSavedContent() {
-    this.showLoader = true;
-    const requestParams: ContentRequest = {
-      uid: this.profile ? this.profile.uid : undefined,
-      contentTypes: ContentType.FOR_LIBRARY_TAB,
-      audience: this.audienceFilter
-    };
-    await this.contentService.getContents(requestParams).toPromise()
-      .then(data => {
-        _.forEach(data, (value) => {
-          value.contentData.lastUpdatedOn = value.lastUpdatedTime;
-          if (value.contentData.appIcon) {
-            if (value.contentData.appIcon.includes('http:') || value.contentData.appIcon.includes('https:')) {
-              if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-                value.contentData.appIcon = value.contentData.appIcon;
-              } else {
-                value.contentData.appIcon = this.defaultImg;
-              }
-            } else if (value.basePath) {
-              value.contentData.appIcon = value.basePath + '/' + value.contentData.appIcon;
-            }
-          }
-
-        });
-        this.ngZone.run(() => {
-          this.localResources = data;
-        });
-      })
-      .catch(() => {
-        this.ngZone.run(() => {
-          this.showLoader = false;
-        });
-      });
-    // }
-  }
-
-  /**
 	 * Load/get recently viewed content
 	 */
   async loadRecentlyViewedContent(hideLoaderFlag?: boolean) {
@@ -421,7 +321,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       recentlyViewed: true,
       limit: 20
     };
-    await this.setSavedContent();
+
     this.contentService.getContents(requestParams).toPromise()
       .then(data => {
         _.forEach(data, (value) => {
@@ -439,27 +339,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           }
         });
         this.ngZone.run(() => {
-          // merge downloadedResources after recently viewed, which are not yet viewed
-          if ((data && data.length) && (this.localResources && this.localResources.length)) {
-            // remove if same content is downloaded and viewed.
-            for (let i = 0; i < data.length; i++) {
-              const index = this.localResources.findIndex((el) => {
-                return el.identifier === data[i].identifier;
-              });
-
-              if (index !== -1) {
-                this.localResources.splice(index, 1);
-              }
-            }
-            data.push(...this.localResources);
-            this.recentlyViewedResources = data;
-          } else {
-            if (!(data && data.length) && (this.localResources && this.localResources.length)) {
-              this.recentlyViewedResources = this.localResources;
-            } else if ((data && data.length) && !(this.localResources && this.localResources.length)) {
-              this.recentlyViewedResources = data;
-            }
-          }
+          this.recentlyViewedResources = data;
           if (!hideLoaderFlag) {
             this.showLoader = false;
           }
@@ -477,7 +357,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   /**
    * Get popular content
    */
-  getPopularContent(isAfterLanguageChange = false, contentSearchCriteria?: ContentSearchCriteria,avoidRefreshList = false) {
+  getPopularContent(isAfterLanguageChange = false, contentSearchCriteria?: ContentSearchCriteria, avoidRefreshList = false) {
     // if (this.isOnBoardingCardCompleted || !this.guestUser) {
     this.storyAndWorksheets = [];
     this.searchApiLoader = true;
@@ -526,8 +406,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   getGroupByPage(isAfterLanguageChange = false, avoidRefreshList = false) {
     const selectedBoardMediumGrade = this.getGroupByPageReq.board[0] + ', ' +
-                                     this.getGroupByPageReq.medium[0] + ' Medium, ' +
-                                     this.getGroupByPageReq.grade[0] ;
+      this.getGroupByPageReq.medium[0] + ' Medium, ' +
+      this.getGroupByPageReq.grade[0];
     this.appGlobalService.setSelectedBoardMediumGrade(selectedBoardMediumGrade);
     this.storyAndWorksheets = [];
     if (!this.refresh) {
@@ -572,20 +452,20 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             const sectionName = this.storyAndWorksheets[i].name,
               count = this.storyAndWorksheets[i].contents.length;
 
-              for (let k = 0, len = this.storyAndWorksheets[i].contents.length; k < len; k++) {
-                  const content = this.storyAndWorksheets[i].contents[k];
-                  if (content.appIcon) {
-                    if (content.appIcon.includes('http:') || content.appIcon.includes('https:')) {
-                      if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-                        content.appIcon = content.appIcon;
-                      } else {
-                        content.appIcon = this.defaultImg;
-                      }
-                    } else if (content.basePath) {
-                      content.appIcon = content.basePath + '/' + content.appIcon;
-                    }
+            for (let k = 0, len = this.storyAndWorksheets[i].contents.length; k < len; k++) {
+              const content = this.storyAndWorksheets[i].contents[k];
+              if (content.appIcon) {
+                if (content.appIcon.includes('http:') || content.appIcon.includes('https:')) {
+                  if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+                    content.appIcon = content.appIcon;
+                  } else {
+                    content.appIcon = this.defaultImg;
                   }
+                } else if (content.basePath) {
+                  content.appIcon = content.basePath + '/' + content.appIcon;
+                }
               }
+            }
 
             // check if locally available
             this.markLocallyAvailableTextBook();
@@ -624,11 +504,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             if (!isAfterLanguageChange) {
               this.commonUtilService.showToast('ERROR_FETCHING_DATA');
             }
-          } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable  && !avoidRefreshList) {
+          } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable && !avoidRefreshList) {
             this.commonUtilService.showToast(
               this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
-              { '%grade': this.getGroupByPageReq.grade,
-              '%medium': `${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')}` }));
+                {
+                  '%grade': this.getGroupByPageReq.grade,
+                  '%medium': `${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')}`
+                }));
           }
           const errvalues = new Map();
           errvalues['isNetworkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
@@ -673,7 +555,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
   generateExtraInfoTelemetry(sectionsCount) {
     const values = new Map();
-    values['savedItemVisible'] = (this.localResources && this.localResources.length) ? 'Y' : 'N';
     values['pageSectionCount'] = sectionsCount;
     values['networkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
     this.telemetryGeneratorService.generateExtraInfoTelemetry(
@@ -727,47 +608,16 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   ionViewDidEnter() {
     this.scrollToTop();
-    this.preferences.getString('show_app_walkthrough_screen').toPromise()
-      .then(value => {
-        if (value === 'true') {
-          const driver = new Driver({
-            allowClose: true,
-            closeBtnText: this.commonUtilService.translateMessage('DONE'),
-            showButtons: true,
-          });
-
-          setTimeout(() => {
-            driver.highlight({
-              element: '#qrIcon',
-              popover: {
-                title: this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE'),
-                description: '<img src="assets/imgs/ic_scanqrdemo.png" /><p>' + this.commonUtilService
-                  .translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + '</p>',
-                showButtons: true,         // Do not show control buttons in footer
-                closeBtnText: this.commonUtilService.translateMessage('DONE'),
-              }
-            });
-
-            const element = document.getElementById('driver-highlighted-element-stage');
-            const img = document.createElement('img');
-            img.src = 'assets/imgs/ic_scan.png';
-            img.id = 'qr_scanner';
-            element.appendChild(img);
-          }, 100);
-          this.telemetryGeneratorService.generatePageViewTelemetry(PageId.ONBOARDING_QR_SHOWCASE, Environment.ONBOARDING, PageId.LIBRARY);
-          this.preferences.putString('show_app_walkthrough_screen', 'false').toPromise().then();
-        }
-      });
   }
 
   ionViewWillEnter() {
     this.events.subscribe('update_header', (data) => {
-      this.headerServie.showHeaderWithHomeButton(['search', 'download']);
+      this.headerServie.showHeaderWithHomeButton(['search', 'download', 'notification']);
     });
     this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
-    this.headerServie.showHeaderWithHomeButton(['search', 'download']);
+    this.headerServie.showHeaderWithHomeButton(['search', 'download', 'notification']);
 
     this.getCategoryData();
 
@@ -790,8 +640,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   // Offline Toast
-  async presentToastForOffline(msg: string) {
-    this.toast = await this.toastController.create({
+  presentToastForOffline(msg: string) {
+    this.toast = this.toastController.create({
       duration: 3000,
       message: this.commonUtilService.translateMessage(msg),
       showCloseButton: true,
@@ -817,7 +667,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
    *
    * @param refresher
    */
-  swipeDownToRefresh(refresher?,avoidRefreshList?) {
+  swipeDownToRefresh(refresher?, avoidRefreshList?) {
     this.refresh = true;
     this.storyAndWorksheets = [];
 
@@ -830,9 +680,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     } else {
       this.getPopularContent(false, null, avoidRefreshList);
     }
-
   }
-
 
   scanQRCode() {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
@@ -842,21 +690,12 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.qrScanner.startScanner(PageId.LIBRARY);
   }
 
-
   search() {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.SEARCH_BUTTON_CLICKED,
       Environment.HOME,
       PageId.LIBRARY);
     this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
-  }
-  onProfileClick() {
-    const currentProfile = (this.appGlobalService.isGuestUser) ? GuestProfilePage : ProfilePage;
-    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-      'profile-button-clicked',
-      Environment.HOME,
-      PageId.LIBRARY);
-    this.navCtrl.push(currentProfile, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
   }
 
   getCategoryData() {
@@ -999,7 +838,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.getGroupByPageReq.grade = [this.categoryGradeLevels[index].name];
     // [grade.name];
     if ((this.currentGrade) && (this.currentGrade.name !== this.categoryGradeLevels[index].name)) {
-      this.getGroupByPage(false,!isClassClicked);
+      this.getGroupByPage(false, !isClassClicked);
     }
     for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
       if (i === index) {
@@ -1059,7 +898,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         content: item
       });
     } else {
-    this.presentToastForOffline('OFFLINE_WARNING_ETBUI_1');
+      this.presentToastForOffline('OFFLINE_WARNING_ETBUI_1');
     }
   }
 
@@ -1073,8 +912,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       case 'search': this.search();
         break;
       case 'download': this.redirectToActivedownloads();
-      break;
-
+        break;
+      case 'notification': this.redirectToNotifications();
+        break;
+      default: console.warn('Use Proper Event name');
     }
   }
 
@@ -1085,6 +926,18 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       Environment.HOME,
       PageId.LIBRARY);
     this.navCtrl.push(ActiveDownloadsPage);
+  }
+
+  redirectToNotifications() {
+    const valuesMap = new Map();
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.NOTIFICATION_CLICKED,
+      Environment.HOME,
+      PageId.LIBRARY,
+      undefined,
+      valuesMap);
+    this.navCtrl.push(NotificationsPage);
   }
 
   toggleMenu() {

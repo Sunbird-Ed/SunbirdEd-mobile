@@ -5,6 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ComponentsModule } from '../../component/components.module';
 import { PlayerPageModule } from '../player/player.module';
 import { DirectivesModule } from '@app/directives/directives.module';
+import { NotificationsPageModule } from '../notifications/notifications.module';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { DirectivesModule } from '@app/directives/directives.module';
     TranslateModule.forChild(),
     ComponentsModule,
     PlayerPageModule,
-    DirectivesModule
+    DirectivesModule,
+    NotificationsPageModule
   ],
   exports: [
     ResourcesPage

@@ -1,21 +1,15 @@
-import {Inject, Injectable} from '@angular/core';
-import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
-import {Content, ContentDetailRequest, ContentService, CorrelationData, TelemetryObject,} from 'sunbird-sdk';
-import {SearchPage} from '../search/search';
-import {ContentType, MimeType} from '../../app/app.constant';
-import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
-import {ContentDetailsPage} from '../content-details/content-details';
-import {CollectionDetailsPage} from '../collection-details/collection-details';
-import {CommonUtilService} from '../../service/common-util.service';
-import {App} from 'ionic-angular';
+import { Inject, Injectable } from '@angular/core';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { Content, ContentDetailRequest, ContentService, CorrelationData, TelemetryObject } from 'sunbird-sdk';
+import { SearchPage } from '../search/search';
+import { ContentType, MimeType } from '../../app/app.constant';
+import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
+import { ContentDetailsPage } from '../content-details/content-details';
+import { CollectionDetailsPage } from '../collection-details/collection-details';
+import { CommonUtilService } from '../../service/common-util.service';
+import { App } from 'ionic-angular';
 import {
-  Environment,
-  ImpressionSubtype,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  Mode,
-  PageId,
+  Environment, ImpressionSubtype, ImpressionType, InteractSubtype, InteractType, Mode, PageId
 } from '../../service/telemetry-constants';
 
 @Injectable()
@@ -79,19 +73,19 @@ export class QRScannerResultHandler {
           Environment.HOME,
         );
       }).catch(() => {
-      if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
-        this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
-      } else {
-        this.commonUtilService.showToast('UNKNOWN_QR');
-        this.telemetryGeneratorService.generateImpressionTelemetry(
-          ImpressionType.SEARCH, '',
-          ImpressionSubtype.INVALID_QR_CODE,
-          InteractType.OTHER,
-          PageId.QRCodeScanner,
-          Environment.HOME,
-        );
-      }
-    });
+        if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
+          this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
+        } else {
+          this.commonUtilService.showToast('UNKNOWN_QR');
+          this.telemetryGeneratorService.generateImpressionTelemetry(
+            ImpressionType.SEARCH, '',
+            ImpressionSubtype.INVALID_QR_CODE,
+            InteractType.OTHER,
+            PageId.QRCodeScanner,
+            Environment.HOME,
+          );
+        }
+      });
   }
 
   handleInvalidQRCode(source: string, scannedData: string) {
@@ -123,7 +117,6 @@ export class QRScannerResultHandler {
         corRelation: corRelationList,
         source: this.source,
         shouldGenerateEndTelemetry: true
-
       });
     } else {
       this.app.getActiveNavs()[0].push(ContentDetailsPage, {

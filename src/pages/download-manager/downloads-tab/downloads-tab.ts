@@ -10,7 +10,7 @@ import { InteractType, TelemetryObject, Content, ContentDelete } from 'sunbird-s
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 import { InteractSubtype, Environment, PageId, ActionButtonType } from '@app/service/telemetry-constants';
 import { EmitedContents } from '../download-manager.interface';
-
+import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 
 @Component({
     selector: 'downloads-tab',
@@ -110,12 +110,12 @@ export class DownloadsTabPage {
     private deleteContent() {
         const emitedContents: EmitedContents = {
             selectedContentsInfo: this.selectedContentsInfo,
-            selectedContents : this.selectedContents
+            selectedContents: this.selectedContents
         };
         this.deleteContents.emit(emitedContents);
     }
 
-    showSortOptions() {
+    showSortOptions(event: Event) {
         this.telemetryGeneratorService.generateInteractTelemetry(
             InteractType.TOUCH,
             InteractSubtype.SORT_OPTION_CLICKED,
@@ -126,7 +126,9 @@ export class DownloadsTabPage {
         }, {
                 cssClass: 'box download-popover'
             });
-        sortOptions.present();
+        sortOptions.present({
+            ev: event
+        });
         sortOptions.onDidDismiss((selectedSort: any) => {
             if (selectedSort) {
                 const sortattribute = JSON.parse(selectedSort);
@@ -270,10 +272,18 @@ export class DownloadsTabPage {
             PageId.DOWNLOADS,
             telemetryObject);
         if (!this.selectedContents.length) {
-            switch (content.mimeType) {
-                case MimeType.COLLECTION: this.navCtrl.push(CollectionDetailsEtbPage, { content: content });
-                    break;
-                default: this.navCtrl.push(ContentDetailsPage, { content: content });
+            if (content.contentData && content.contentData.contentType === ContentType.COURSE) {
+                this.navCtrl.push(EnrolledCourseDetailsPage, {
+                    content: content
+                });
+            } else if (content.mimeType === MimeType.COLLECTION) {
+                this.navCtrl.push(CollectionDetailsEtbPage, {
+                    content: content
+                });
+            } else {
+                this.navCtrl.push(ContentDetailsPage, {
+                    content: content
+                });
             }
         }
     }

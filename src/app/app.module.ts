@@ -1,41 +1,38 @@
-import {APP_INITIALIZER, ErrorHandler, NgModule, Provider} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {Events, IonicApp, IonicErrorHandler, IonicModule} from 'ionic-angular';
-import {MyApp} from './app.component';
-import {StatusBar} from '@ionic-native/status-bar';
-import {TranslateLoader, TranslateModule, TranslateService} from '@ngx-translate/core';
-import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import {HttpClient, HttpClientModule} from '@angular/common/http';
-import {PluginModules} from './module.service';
-import {AppVersion} from '@ionic-native/app-version';
-import {SocialSharing} from '@ionic-native/social-sharing';
-import {ImageLoader, ImageLoaderConfig, IonicImageLoader} from 'ionic-image-loader';
-import {FileTransfer, FileTransferObject} from '@ionic-native/file-transfer';
-import {FileOpener} from '@ionic-native/file-opener';
+import { APP_INITIALIZER, ErrorHandler, NgModule, Provider } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { Events, IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
+import { MyApp } from './app.component';
+import { StatusBar } from '@ionic-native/status-bar';
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { PluginModules } from './module.service';
+import { AppVersion } from '@ionic-native/app-version';
+import { SocialSharing } from '@ionic-native/social-sharing';
+import { ImageLoader, ImageLoaderConfig, IonicImageLoader } from 'ionic-image-loader';
+import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
+import { FileOpener } from '@ionic-native/file-opener';
 import {
-  AppGlobalService,
-  CommonUtilService,
-  CourseUtilService,
-  TelemetryGeneratorService,
-  UtilityService,
-  AppHeaderService,
+  AppGlobalService, CommonUtilService, CourseUtilService, TelemetryGeneratorService, UtilityService, AppHeaderService,
   AppRatingService
 } from '@app/service';
-import {UpgradePopover} from '@app/pages/upgrade';
-import {QRScannerResultHandler} from '../../src/pages/qrscanner';
-import {BroadcastComponent} from '@app/component/broadcast/broadcast';
-import {LogoutHandlerService} from '@app/service/handlers/logout-handler.service';
-import {TncUpdateHandlerService} from '@app/service/handlers/tnc-update-handler.service';
-import {SunbirdSdk} from 'sunbird-sdk';
-import {UniqueDeviceID} from '@ionic-native/unique-device-id';
-import {Device} from '@ionic-native/device';
-import {TabsPage} from '@app/pages/tabs/tabs';
-import {AndroidPermissionsService} from '@app/service/android-permissions/android-permissions.service';
-import {ComponentsModule} from '@app/component/components.module';
-import {ContainerService} from '@app/service/container.services';
-import {DirectivesModule} from '@app/directives/directives.module';
-import {ComingSoonMessageService} from '@app/service/coming-soon-message.service';
+import { UpgradePopover } from '@app/pages/upgrade';
+import { QRScannerResultHandler } from '../../src/pages/qrscanner';
+import { BroadcastComponent } from '@app/component/broadcast/broadcast';
+import { LogoutHandlerService } from '@app/service/handlers/logout-handler.service';
+import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
+import { SunbirdSdk } from 'sunbird-sdk';
+import { UniqueDeviceID } from '@ionic-native/unique-device-id';
+import { Device } from '@ionic-native/device';
+import { TabsPage } from '@app/pages/tabs/tabs';
+import { AndroidPermissionsService } from '@app/service/android-permissions/android-permissions.service';
+import { ComponentsModule } from '@app/component/components.module';
+import { ContainerService } from '@app/service/container.services';
+import { DirectivesModule } from '@app/directives/directives.module';
+import { ComingSoonMessageService } from '@app/service/coming-soon-message.service';
 import { NotificationService } from '@app/service/notification.service';
+import { CrashAnalyticsErrorLogger } from '@app/service/crash-analytics/crash-analytics-error-logger';
+import { ActivePageService } from '@app/service/active-page/active-page-service';
 
 export const translateHttpLoaderFactory = (httpClient: HttpClient) => {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
@@ -199,7 +196,7 @@ export const sunbirdSdkFactory =
           debugMode: false
         },
         apiConfig: {
-          debugMode: false,
+          debugMode: true,
           host: buildConfigValues['BASE_URL'],
           user_authentication: {
             redirectUrl: buildConfigValues['OAUTH_REDIRECT_URL'],
@@ -348,8 +345,10 @@ export const sunbirdSdkFactory =
     AndroidPermissionsService,
     ComingSoonMessageService,
     NotificationService,
+    ActivePageService,
     ...sunbirdSdkServicesProvidersFactory(),
     { provide: ErrorHandler, useClass: IonicErrorHandler },
+    { provide: ErrorHandler, useClass: CrashAnalyticsErrorLogger },
     { provide: APP_INITIALIZER, useFactory: sunbirdSdkFactory, deps: [], multi: true }
   ],
   exports: [

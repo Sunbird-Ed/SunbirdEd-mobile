@@ -1,3 +1,5 @@
+require('reflect-metadata');
+
 global.cordova = {
     plugins: {
         notification: {
@@ -6,6 +8,9 @@ global.cordova = {
                 getScheduledIds: () => {},
                 schedule: () => {}
             }
+        },
+        diagnostic: {
+            switchToSettings: () => {}
         }
     },
     file: {

@@ -136,4 +136,8 @@
   <plugin name="cordova-plugin-local-notification" spec="https://github.com/katzer/cordova-plugin-local-notifications.git#master" />
   <plugin name="com.jjdltc.cordova.plugin.zip" spec="https://github.com/swayangjit/jjdltc-cordova-plugin-zip.git"/>
   <plugin name="cordova-plugin-openrap" spec="https://github.com/project-sunbird/cordova-plugin-openrap.git" />
+  <plugin name="cordova.plugins.diagnostic" spec="^4.0.12">
+       <variable name="ANDROID_SUPPORT_VERSION" value="27.+" />
+   </plugin>
+  <plugin name="cordova-plugin-fcm-with-dependecy-updated" spec="https://github.com/swayangjit/cordova-plugin-fcm-with-dependecy-updated.git" />
 </widget>
