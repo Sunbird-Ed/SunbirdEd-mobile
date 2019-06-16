@@ -115,7 +115,7 @@ export class DownloadsTabPage {
         this.deleteContents.emit(emitedContents);
     }
 
-    showSortOptions() {
+    showSortOptions(event: Event) {
         this.telemetryGeneratorService.generateInteractTelemetry(
             InteractType.TOUCH,
             InteractSubtype.SORT_OPTION_CLICKED,
@@ -126,7 +126,9 @@ export class DownloadsTabPage {
         }, {
                 cssClass: 'box download-popover'
             });
-        sortOptions.present();
+        sortOptions.present({
+            ev: event
+        });
         sortOptions.onDidDismiss((selectedSort: any) => {
             if (selectedSort) {
                 const sortattribute = JSON.parse(selectedSort);
