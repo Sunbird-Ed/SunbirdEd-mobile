@@ -3,6 +3,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { StorageSettingsPage } from './storage-settings';
 import { TranslateModule } from '@ngx-translate/core';
 import { ComponentsModule } from './../../component/components.module';
+import { PipesModule } from '../../pipes/pipes.module';
 
 @NgModule({
   declarations: [
@@ -10,8 +11,9 @@ import { ComponentsModule } from './../../component/components.module';
   ],
   imports: [
     IonicPageModule.forChild(StorageSettingsPage),
-    TranslateModule.forChild(),
-    ComponentsModule
+    ComponentsModule,
+    PipesModule,
+    TranslateModule.forChild()
   ],
 })
 export class StorageSettingsPageModule { }

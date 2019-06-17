@@ -288,6 +288,7 @@ export const sunbirdSdkFactory =
           }
         }
       });
+      window['sunbird'] = SunbirdSdk.instance;
     };
   };
 
