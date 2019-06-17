@@ -539,8 +539,7 @@
   "CONTENT_ALREADY_EXISTS" : "Content exists in the Destination folder. Move to the destination folder anyway?",
   "TRANSFERRING_CONTENT_TO_DESTINATION": "Transferring Content to SD Card",
   "SUCCESSFUL_CONTENT_TRANSFER_TO_SDCARD": "All Contents will be transferred to SD Card",
-  "SUCCESSFUL_CONTENT_TRANSFER_TO_PHONE": "All Contents will be transferred to Phone"
-
+  "SUCCESSFUL_CONTENT_TRANSFER_TO_PHONE": "All Contents will be transferred to Phone",
   "WHATS_NEW": "Whats New",
   "PERMISSION_REQUIRED": "Permission Required",
   "ALLOW": "Allow"

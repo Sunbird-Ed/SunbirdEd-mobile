@@ -13,7 +13,10 @@ import {
   sharedPreferencesMock,
   telemetryGeneratorServiceMock,
   translateServiceMock,
-  zoneMock
+  zoneMock,
+  appHeaderServiceMock,
+  courseServiceMock,
+  popoverCtrlMock
 } from '../../__tests__/mocks';
 import {SearchPage} from './search';
 import {ProfileType} from 'sunbird';
@@ -48,7 +51,7 @@ describe.only('SearchPage', () => {
             telemetryGeneratorServiceMock as any,
             sharedPreferencesMock as any,
             translateServiceMock as any,
-            appHeaderSrvMock as any,
+            appHeaderServiceMock as any,
             courseServiceMock as any,
             popoverCtrlMock as any
         );
@@ -438,7 +441,7 @@ describe.only('SearchPage', () => {
   it('should update the download progress when download progress event comes subscribeSdkEvent() ', () => {
         // arrange
         // act
-        searchPage.subscribeGenieEvent();
+        searchPage.subscribeSdkEvent();
         eventsMock.subscribe.mock.calls[0][1].call(searchPage, JSON.stringify(mockRes.downloadProgressEventSample1));
         zoneMock.run.mock.calls[0][0].call(searchPage);
         // assert
@@ -448,7 +451,7 @@ describe.only('SearchPage', () => {
         // arrange
         // (eventsMock.subscribe as any).mockReturnValue(Promise.resolve(JSON.stringify(mockRes.downloadProgressEventSample2)));
         // act
-        searchPage.subscribeGenieEvent();
+        searchPage.subscribeSdkEvent();
 
         eventsMock.subscribe.mock.calls[0][1].call(searchPage, [(JSON.stringify(
             {
@@ -473,7 +476,7 @@ describe.only('SearchPage', () => {
 
         searchPage.isDownloadStarted = true;
         searchPage.queuedIdentifiers = ['SAMPLE_ID'];
-        searchPage.subscribeGenieEvent();
+        searchPage.subscribeSdkEvent();
 
         eventsMock.subscribe.mock.calls[0][1].call(searchPage, [(JSON.stringify(
             {
@@ -566,7 +569,7 @@ describe.only('SearchPage', () => {
         searchPage.checkParent({ identifier: 'SAMPLE_ID' }, { identifier: 'SAMPLE_ID' });
         // arrange
         setTimeout(() => {
-            expect(searchPage.subscribeGenieEvent).toHaveBeenCalled();
+            expect(searchPage.subscribeSdkEvent).toHaveBeenCalled();
             expect(searchPage.downloadParentContent).toHaveBeenCalled();
             done();
         }, 0);
