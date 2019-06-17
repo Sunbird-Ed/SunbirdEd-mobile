@@ -4,7 +4,7 @@ import { IonicPage, NavController, NavParams, Platform, AlertController } from '
 import { CanvasPlayerService } from './canvas-player.service';
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
 import { IonicApp } from 'ionic-angular';
-import { playerActionHandlerDelegate, hierarchyInfo, user } from './player-action-handler-delegate';
+import { PlayerActionHandlerDelegate, HierarchyInfo, User } from './player-action-handler-delegate';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { StatusBar } from '@ionic-native/status-bar';
 import { Events } from 'ionic-angular';
@@ -14,7 +14,7 @@ import { EventTopics } from '@app/app';
   selector: 'page-player',
   templateUrl: 'player.html',
 })
-export class PlayerPage implements playerActionHandlerDelegate {
+export class PlayerPage implements PlayerActionHandlerDelegate {
   unregisterBackButton: any;
   config = {};
   @ViewChild('preview') previewElement: ElementRef;
@@ -42,8 +42,9 @@ export class PlayerPage implements playerActionHandlerDelegate {
     this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.LANDSCAPE);
     this.statusBar.hide();
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
-      if (!this.ionicApp._overlayPortal.getActive())
+      if (!this.ionicApp._overlayPortal.getActive()) {
         this.showConfirm();
+      }
     }, 11);
 
     this.config = this.navParams.get('config');
@@ -51,7 +52,7 @@ export class PlayerPage implements playerActionHandlerDelegate {
 
 
     if (this.config['metadata'].mimeType === 'video/x-youtube') {
-      this.previewElement.nativeElement.setAttribute("sandbox", "allow-scripts allow-top-navigation allow-same-origin");
+      this.previewElement.nativeElement.setAttribute('sandbox', 'allow-scripts allow-top-navigation allow-same-origin');
     }
 
     // This is to reload a iframe as iframes reload method not working on cross-origin.
@@ -60,13 +61,13 @@ export class PlayerPage implements playerActionHandlerDelegate {
     this.previewElement.nativeElement.src = src;
     // this.previewElement.nativeElement.contentWindow['cordova'] = window['cordova'];
     this.previewElement.nativeElement.onload = () => {
-      console.log("config", this.config);
+      console.log('config', this.config);
       setTimeout(() => {
         this.previewElement.nativeElement.contentWindow['cordova'] = window['cordova'];
         this.previewElement.nativeElement.contentWindow['Media'] = window['Media'];
         this.previewElement.nativeElement.contentWindow['initializePreview'](this.config);
       }, 1000);
-    }
+    };
 
     this.events.subscribe('endGenieCanvas', (res) => {
       if (res.showConfirmBox) {
@@ -86,14 +87,14 @@ export class PlayerPage implements playerActionHandlerDelegate {
   }
 
   /**
-   * This will trigger from player/ iframe when it unable to find consecutive content  
+   * This will trigger from player/ iframe when it unable to find consecutive content
    * @param {string} identifier Content Identifier
    * @param {Array<hierarchyInfo>} hierarchyInfo Object of content hierarchy
    */
-  onContentNotFound(identifier: string, hierarchyInfo: Array<hierarchyInfo>) {
+  onContentNotFound(identifier: string, hierarchyInformation: Array<HierarchyInfo>) {
     const content = {
       identifier: identifier,
-      hierarchyInfo: hierarchyInfo
+      hierarchyInfo: hierarchyInformation
     };
     this.navCtrl.push(ContentDetailsPage, {
       content: content
@@ -107,7 +108,7 @@ export class PlayerPage implements playerActionHandlerDelegate {
    * This is an callback to mobile when player switches user
    * @param {user} selectedUser User id of the newly selected user by player
    */
-  onUserSwitch(selectedUser: user) {
+  onUserSwitch(selectedUser: User) {
     this.appGlobalService.setSelectedUser(selectedUser);
   }
 
@@ -115,11 +116,11 @@ export class PlayerPage implements playerActionHandlerDelegate {
    * This will close the player page and will fire some end telemetry events from the player
    */
   closeIframe() {
-    let stageId = this.previewElement.nativeElement.contentWindow['EkstepRendererAPI'].getCurrentStageId();
+    const stageId = this.previewElement.nativeElement.contentWindow['EkstepRendererAPI'].getCurrentStageId();
     try {
-      this.previewElement.nativeElement.contentWindow['TelemetryService'].exit(stageId)
+      this.previewElement.nativeElement.contentWindow['TelemetryService'].exit(stageId);
     } catch (err) {
-      console.error("End telemetry error:", err.message)
+      console.error('End telemetry error:', err.message);
     }
     this.events.publish(EventTopics.PLAYER_CLOSED, {
       selectedUser: this.appGlobalService.getSelectedUser()
@@ -131,9 +132,11 @@ export class PlayerPage implements playerActionHandlerDelegate {
    * This will show confirmation box while leaving the player, it will fire some telemetry events from the player.
    */
   showConfirm() {
-    let type = (this.previewElement.nativeElement.contentWindow['Renderer'] && !this.previewElement.nativeElement.contentWindow['Renderer'].running) ? "EXIT_APP" : "EXIT_CONTENT";
-    let stageId = this.previewElement.nativeElement.contentWindow['EkstepRendererAPI'].getCurrentStageId();
-    this.previewElement.nativeElement.contentWindow['TelemetryService'].interact("TOUCH", "DEVICE_BACK_BTN", "EXIT", { type: type, stageId: stageId });
+    const type = (this.previewElement.nativeElement.contentWindow['Renderer']
+      && !this.previewElement.nativeElement.contentWindow['Renderer'].running) ? 'EXIT_APP' : 'EXIT_CONTENT';
+    const stageId = this.previewElement.nativeElement.contentWindow['EkstepRendererAPI'].getCurrentStageId();
+    this.previewElement.nativeElement.contentWindow['TelemetryService'].interact(
+      'TOUCH', 'DEVICE_BACK_BTN', 'EXIT', { type: type, stageId: stageId });
 
     const alert = this.alertCtrl.create({
       title: this.commonUtilService.translateMessage('CONFIRM'),
@@ -143,15 +146,17 @@ export class PlayerPage implements playerActionHandlerDelegate {
           text: this.commonUtilService.translateMessage('CANCEL'),
           role: 'cancel',
           handler: () => {
-            this.previewElement.nativeElement.contentWindow['TelemetryService'].interact("TOUCH", "ALERT_CANCEL", "EXIT", { type: type, stageId: stageId })
+            this.previewElement.nativeElement.contentWindow['TelemetryService'].interact(
+              'TOUCH', 'ALERT_CANCEL', 'EXIT', { type: type, stageId: stageId });
           }
         },
         {
           text: this.commonUtilService.translateMessage('OKAY'),
           handler: () => {
-            this.previewElement.nativeElement.contentWindow['TelemetryService'].interact("END", "ALERT_OK", "EXIT", { type: type, stageId: stageId })
-            this.previewElement.nativeElement.contentWindow['TelemetryService'].interrupt("OTHER", stageId)
-            this.previewElement.nativeElement.contentWindow['EkstepRendererAPI'].dispatchEvent("renderer:telemetry:end")
+            this.previewElement.nativeElement.contentWindow['TelemetryService'].interact(
+              'END', 'ALERT_OK', 'EXIT', { type: type, stageId: stageId });
+            this.previewElement.nativeElement.contentWindow['TelemetryService'].interrupt('OTHER', stageId);
+            this.previewElement.nativeElement.contentWindow['EkstepRendererAPI'].dispatchEvent('renderer:telemetry:end');
 
             this.closeIframe();
           }

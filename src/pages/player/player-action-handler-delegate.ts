@@ -1,11 +1,11 @@
-export interface hierarchyInfo {
+export interface HierarchyInfo {
     contentType: string;
-    identifier: string
+    identifier: string;
 }
-export interface user {
-    uid: string
+export interface User {
+    uid: string;
 }
-export interface playerActionHandlerDelegate {
-    onContentNotFound(identifier: string, hierarchyInfo: Array<hierarchyInfo>);
-    onUserSwitch(user: user);
+export interface PlayerActionHandlerDelegate {
+    onContentNotFound(identifier: string, hierarchyInfo: Array<HierarchyInfo>);
+    onUserSwitch(user: User);
 }

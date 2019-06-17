@@ -5,7 +5,8 @@ export enum Environment {
     DOWNLOADS = 'downloads',
     USER = 'user',
     SETTINGS = 'settings',
-    ONBOARDING = 'onboarding'
+    ONBOARDING = 'onboarding',
+    NOTIFICATION = 'notification'
 }
 
 export enum ErrorCode {
@@ -99,7 +100,9 @@ export enum PageId {
     BULK_DELETE_CONFIRMATION_POPUP = 'bulk-delete-confirmation-popup',
     ACTIVE_DOWNLOADS = 'active-downloads',
     SINGLE_CANCEL_CONFIRMATION_POPUP = 'single-cancel-confirmation-popup',
-    BULK_CANCEL_CONFIRMATION_POPUP = 'bulk-cancel-confirmation-popup'
+    BULK_CANCEL_CONFIRMATION_POPUP = 'bulk-cancel-confirmation-popup',
+    NOTIFICATION = 'notification',
+    SPLASH = 'splash'
 }
 export enum LogType {
     NOTIFICATION = 'notification'
@@ -276,7 +279,12 @@ export enum InteractSubtype {
     HELP_SECTION_CLICKED = 'help-section-clicked',
     APP_RATING_APPEARED = 'app-rating-appeared',
     START_CLICKED = 'start-clicked',
-    UTM_INFO = 'utm_info'
+    UTM_INFO = 'utm-info',
+    CLEAR_NOTIFICATIONS_CLICKED = 'clear-all-notifications-clicked',
+    NOTIFICATION_READ = 'notification-read',
+    NOTIFICATION_DESCRIPTION_TOGGLE_EXPAND = 'notification-description-toggle-expand',
+    OPENRAP_DEVICE_CONNECTED = 'openrap-device-connected',
+    OPENRAP_DEVICE_DISCONNECTED = 'openrap-device-disconnected',
 }
 
 export enum ActionButtonType {
