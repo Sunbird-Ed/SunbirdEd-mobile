@@ -101,7 +101,6 @@ export class NotificationsPage {
   }
 
   handleTelemetry(event) {
-    console.log("Event", event);
     this.generateClickInteractEvent(event.valuesMap, event.interactSubType);
   }
 

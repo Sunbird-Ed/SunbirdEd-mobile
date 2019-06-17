@@ -24,6 +24,12 @@ describe('NotificationItemComponent', () => {
         notificationItemComponent = new NotificationItemComponent(notificationServiceMock as any);
     });
 
+    describe('Constructor', () => {
+        it('should create an instance of the Notification-item class', () => {
+            expect(notificationItemComponent).toBeTruthy();
+        })
+    });
+
     describe('toggleExpand', () => {
         it('should toggle the expand-compress div on click of expand button', () => {
             notificationItemComponent.isExpanded = false;
