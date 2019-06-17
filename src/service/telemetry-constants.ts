@@ -99,7 +99,12 @@ export enum PageId {
     BULK_DELETE_CONFIRMATION_POPUP = 'bulk-delete-confirmation-popup',
     ACTIVE_DOWNLOADS = 'active-downloads',
     SINGLE_CANCEL_CONFIRMATION_POPUP = 'single-cancel-confirmation-popup',
-    BULK_CANCEL_CONFIRMATION_POPUP = 'bulk-cancel-confirmation-popup'
+    BULK_CANCEL_CONFIRMATION_POPUP = 'bulk-cancel-confirmation-popup',
+    TRANSFER_CONTENT_CONFIRMATION_POPUP = 'transfer-content-confirmation-popup',
+    TRANSFERING_CONTENT_POPUP = 'transfering-content-popup',
+    RETRY_CONTENT_TRANSFER_POPUP = 'retry-content-transfer-popup',
+    SHOW_DUPLICATE_CONTENT_POPUP = 'show-duplicate-content-popup',
+    CONTENT_TRANSFER_SUCCEED_POPUP = 'content-transfer-succeed-popup'
 }
 export enum LogType {
     NOTIFICATION = 'notification'
@@ -272,7 +277,11 @@ export enum InteractSubtype {
     PLAY_STORE_BUTTON_CLICKED = 'play-store-button-clicked',
     HELP_SECTION_CLICKED = 'help-section-clicked',
     APP_RATING_APPEARED = 'app-rating-appeared',
-    START_CLICKED = 'start-clicked'
+    START_CLICKED = 'start-clicked',
+    UNDO_CLICKED = 'undo-clicked',
+    RETRY_CLICKED = 'retry-clicked',
+    OK_CLICKED = 'ok-clicked'
+
 }
 
 export enum ActionButtonType {
