@@ -125,7 +125,6 @@ export class MyApp implements OnInit, AfterViewInit {
       this.autoSyncTelemetry();
       this.subscribeEvents();
 
-      this.registerDeeplinks();
       this.startOpenrapDiscovery();
       this.saveDefaultSyncSetting();
       this.checkAppUpdateAvailable();
@@ -178,15 +177,6 @@ export class MyApp implements OnInit, AfterViewInit {
         console.log('Default Called');
         break;
     }
-
-    // const req: ContentDetailRequest = {
-    //   contentId: data.actionData.identifier,
-    //   attachFeedback: true,
-    //   attachContentAccess: true,
-    //   emitUpdateIfAny: true
-    // };
-    // this.contentService.getContentDetails(req).toPromise()
-    //   .then((data: Content) => {});
   }
 
 
@@ -195,14 +185,12 @@ export class MyApp implements OnInit, AfterViewInit {
    */
   receiveNotification() {
     FCMPlugin.onNotification((data) => {
-      console.log('Notificationdata');
-      console.log(data);
       if (data.wasTapped) {
         // Notification was received on device tray and tapped by the user.
       } else {
         // Notification was received in foreground. Maybe the user needs to be notified.
       }
-      data['isRead'] = data.wasTapped? 1: 0;
+      data['isRead'] = data.wasTapped ? 1 : 0;
       data['actionData']  = JSON.parse(data['actionData']);
       this.notificationServices.addNotification(data).subscribe((status) => {
         this.events.publish('notification:received');
@@ -290,66 +278,6 @@ export class MyApp implements OnInit, AfterViewInit {
         this.generateInteractEvent(data);
         // Added below code to generate Impression Before Interact for Library,Courses,Profile
         this.generateImpressionEvent(data);
-      });
-    });
-
-    this.events.subscribe('generic.event', (data) => {
-      this.zone.run(() => {
-        const response = JSON.parse(data);
-        let action;
-        try {
-          action = JSON.parse(response.data.action);
-        } catch (Error) {
-        }
-        const values = new Map();
-        values['openrapInfo'] = action;
-        if (response && response.data.action && response.data.action === 'logout') {
-          this.authService.getSession().toPromise().then((session: OAuthSession) => {
-            if (session) {
-              this.authService.resignSession().subscribe();
-              (<any>window).splashscreen.clearPrefs();
-            }
-            this.profileService.getActiveSessionProfile({
-              requiredFields: ProfileConstants.REQUIRED_FIELDS
-            }).toPromise()
-              .then((currentUser: any) => {
-
-                if (currentUser.profileType === ProfileType.STUDENT) {
-                  initTabs(this.containerService, GUEST_STUDENT_TABS);
-                  this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise().then();
-                } else {
-                  initTabs(this.containerService, GUEST_TEACHER_TABS);
-                  this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();
-                }
-
-                this.event.publish('refresh:profile');
-                this.event.publish(AppGlobalService.USER_INFO_UPDATED);
-
-                this.app.getRootNav().setRoot(TabsPage);
-
-              }).catch(() => {
-              });
-
-          });
-        } else if (response && action && action.actionType === 'connected') {
-          console.log('connected to openrap device with the IP ' + action.ip);
-          this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-            'openrap-device-connected',
-            Environment.HOME,
-            Environment.HOME, undefined,
-            values);
-        } else if (response && action && action.actionType === 'disconnected') {
-          console.log('disconnected from openrap device with the IP ' + action.ip);
-          this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-            'openrap-device-disconnected',
-            Environment.HOME,
-            Environment.HOME, undefined,
-            values);
-        } else if (response && response.data.action && response.data.action === EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY) {
-          this.events.publish(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, {
-            update: true
-          });
-        }
       });
     });
 
@@ -513,45 +441,12 @@ export class MyApp implements OnInit, AfterViewInit {
       });
   }
 
-  private async registerDeeplinks() {
-    (<any>window).splashscreen.onDeepLink(deepLinkResponse => {
-      setTimeout(() => {
-        const response = deepLinkResponse;
-
-        if (response.type === 'dialcode') {
-          const results = response.code.split('/');
-          const dialCode = results[results.length - 1];
-          this.nav.push(SearchPage, { dialCode: dialCode });
-        } else if (response.type === 'contentDetails') {
-          const hierarchyInfo = JSON.parse(response.hierarchyInfo);
-
-          const content = {
-            identifier: response.id,
-            hierarchyInfo: hierarchyInfo
-          };
-
-          const navObj = this.app.getActiveNavs()[0];
-
-          navObj.push(ContentDetailsPage, {
-            content: content
-          });
-        } else if (response.result) {
-          this.navigateToContentDetails(response.result);
-        }
-      }, 300);
-    });
-  }
-
   private generateInteractEvent(pageid: string) {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.TAB_CLICKED,
       Environment.HOME,
-      pageid.toLowerCase(),
-      null,
-      undefined,
-      undefined
-    );
+      pageid.toLowerCase());
   }
 
   private generateImpressionEvent(pageid: string) {
@@ -561,22 +456,6 @@ export class MyApp implements OnInit, AfterViewInit {
       ImpressionType.VIEW, '',
       pageid,
       env);
-  }
-
-  private navigateToContentDetails(content) {
-    if (content.contentData.contentType === ContentType.COURSE) {
-      this.nav.push(EnrolledCourseDetailsPage, {
-        content: content
-      });
-    } else if (content.mimeType === MimeType.COLLECTION) {
-      this.nav.push(CollectionDetailsPage, {
-        content: content
-      });
-    } else {
-      this.nav.push(ContentDetailsPage, {
-        content: content
-      });
-    }
   }
 
   private async startOpenrapDiscovery(): Promise<undefined> {
@@ -593,7 +472,7 @@ export class MyApp implements OnInit, AfterViewInit {
         const values = new Map();
         values['openrapInfo'] = response;
         this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-          response.actionType === 'connected' ? 'openrap-device-connected' : 'openrap-device-disconnected',
+          response.actionType === 'connected' ? InteractSubtype.OPENRAP_DEVICE_CONNECTED : InteractSubtype.OPENRAP_DEVICE_DISCONNECTED,
           Environment.HOME,
           Environment.HOME, undefined,
           values);
@@ -645,7 +524,7 @@ export class MyApp implements OnInit, AfterViewInit {
           break;
         }
         case 'DEEPLINK': {
-          await this.splaschreenDeeplinkActionHandlerDelegate.onAction(action.type, action.payload).toPromise();
+          await this.splaschreenDeeplinkActionHandlerDelegate.onAction(action.payload.type, action.payload).toPromise();
           break;
         }
         default:
@@ -670,18 +549,12 @@ export class MyApp implements OnInit, AfterViewInit {
 
   handleHeaderEvents($event) {
     if ($event.name === 'back') {
-      // this.handleBackButton();
       let navObj = this.app.getRootNavs()[0];
       let activeView: ViewController = this.nav.getActive();
       if (activeView != null && ((<any>activeView).instance instanceof TabsPage)) {
         navObj = this.app.getActiveNavs()[0];
         activeView = navObj.getActive();
-        // currentPage = navObj.getActive().name;
       }
-      // if (currentPage === 'TabsPage') {
-      //   navObj = this.app.getActiveNavs()[0];
-      //   currentPage = navObj.getActive().name;
-      // }
       if (((<any>activeView).instance instanceof UserTypeSelectionPage)
         || ((<any>activeView).instance instanceof EnrolledCourseDetailsPage)
         || ((<any>activeView).instance instanceof CollectionDetailsPage)
@@ -723,8 +596,7 @@ export class MyApp implements OnInit, AfterViewInit {
           InteractType.TOUCH,
           InteractSubtype.REPORTS_CLICKED,
           Environment.USER,
-          PageId.PROFILE
-        );
+          PageId.PROFILE);
         if (this.app.getRootNavs().length > 0) {
           this.app.getRootNavs()[0].push(ReportsPage, { profile: this.profile });
         }
@@ -735,11 +607,7 @@ export class MyApp implements OnInit, AfterViewInit {
           InteractType.TOUCH,
           InteractSubtype.SETTINGS_CLICKED,
           Environment.USER,
-          PageId.PROFILE,
-          null,
-          undefined,
-          undefined
-        );
+          PageId.PROFILE);
         if (this.app.getRootNavs().length > 0) {
           this.app.getRootNavs()[0].push(SettingsPage);
         }
@@ -750,11 +618,7 @@ export class MyApp implements OnInit, AfterViewInit {
           InteractType.TOUCH,
           InteractSubtype.LANGUAGE_CLICKED,
           Environment.USER,
-          PageId.PROFILE,
-          null,
-          undefined,
-          undefined
-        );
+          PageId.PROFILE);
         if (this.app.getRootNavs().length > 0) {
           this.app.getRootNavs()[0].push(LanguageSettingsPage, {
             isFromSettings: true
@@ -767,11 +631,7 @@ export class MyApp implements OnInit, AfterViewInit {
           InteractType.TOUCH,
           InteractSubtype.HELP_CLICKED,
           Environment.USER,
-          PageId.PROFILE,
-          null,
-          undefined,
-          undefined
-        );
+          PageId.PROFILE);
         if (this.app.getRootNavs().length > 0) {
           this.app.getRootNavs()[0].push(FaqPage, {
             isFromSettings: true
@@ -808,10 +668,7 @@ export class MyApp implements OnInit, AfterViewInit {
           Environment.HOME,
           PageId.HOME,
           undefined,
-          utmTelemetry,
-          undefined,
-          undefined
-        );
+          utmTelemetry);
         this.utilityService.clearUtmInfo();
       }
     })

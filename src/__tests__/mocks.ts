@@ -1,5 +1,5 @@
 import { AndroidPermissionsService } from '@app/service/android-permissions/android-permissions.service';
-import {FileTransfer} from '@ionic-native/file-transfer';
+import { FileTransfer } from '@ionic-native/file-transfer';
 import {
   AuthService,
   ContentService,
@@ -14,7 +14,9 @@ import {
   GroupService,
   DownloadService,
   EventsBusService,
-  PlayerService} from 'sunbird-sdk';
+  PlayerService,
+  NotificationService
+} from 'sunbird-sdk';
 import { CanvasPlayerService } from '../pages/player/canvas-player.service';
 import {
   App,
@@ -27,7 +29,8 @@ import {
   ViewController,
   IonicApp,
   AlertController,
-  ToastController
+  ToastController,
+  Navbar
 } from 'ionic-angular';
 
 import { NgZone } from '@angular/core';
@@ -52,8 +55,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ImageLoader } from 'ionic-image-loader';
 import { Network } from '@ionic-native/network';
 import { AppHeaderService } from '@app/service';
-import {ContainerService} from "@app/service/container.services";
-import {UtilityService} from "@app/service";
+import { ContainerService } from "@app/service/container.services";
+import { UtilityService } from "@app/service";
 import { FileSizePipe } from '../pipes/file-size/file-size';
 
 export type Mockify<T> = {
@@ -468,4 +471,16 @@ export const fileSizePipeMock = createSpyObj<FileSizePipe>([
 export const permissionServiceMock = createSpyObj<AndroidPermissionsService>([
   'checkPermissions',
   'requestPermissions'
+]);
+
+export const notificationServiceMock = createSpyObj<NotificationService>([
+  'addNotification',
+  'updateNotification',
+  'getAllNotifications',
+  'deleteNotification'
+]);
+
+
+export const NavbarMock = createSpyObj<Navbar>([
+  'backButtonClick'
 ]);

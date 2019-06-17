@@ -1,14 +1,14 @@
-import {SplashscreenActionHandlerDelegate} from "./splashscreen-action-handler-delegate";
-import {Observable} from "rxjs";
-import {Inject, Injectable} from "@angular/core";
-import {TelemetryService, InteractType} from "sunbird-sdk";
-import {Environment, ImpressionType} from "@app/service/telemetry-constants";
+import {SplashscreenActionHandlerDelegate} from './splashscreen-action-handler-delegate';
+import {Observable} from 'rxjs';
+import {Inject, Injectable} from '@angular/core';
+import {TelemetryService, InteractType} from 'sunbird-sdk';
+import {Environment, ImpressionType, PageId} from '@app/service/telemetry-constants';
 
 interface TelemetryActionPayload {
-  eid: 'IMPRESSION' | 'INTERACT',
+  eid: 'IMPRESSION' | 'INTERACT';
   extraInfo?: {
     isFirstTime?: boolean
-  }
+  };
 }
 
 @Injectable()
@@ -22,20 +22,20 @@ export class SplashcreenTelemetryActionHandlerDelegate implements SplashscreenAc
         return this.telemetryService.impression({
           env: Environment.HOME,
           type: ImpressionType.VIEW,
-          pageId: 'splash'
-        }).mapTo(undefined);
+          pageId: PageId.SPLASH
+        }).mapTo(undefined) as any;
       }
       case 'INTERACT': {
         return this.telemetryService.interact({
           env: Environment.HOME,
           type: InteractType.OTHER,
-          pageId:'splash',
-          id:'splash',
-          subType: 'splash',
+          pageId: PageId.SPLASH,
+          id: PageId.SPLASH,
+          subType: PageId.SPLASH,
           valueMap: {
-            ...payload.extraInfo!
+            ...payload.extraInfo
           }
-        }).mapTo(undefined);
+        }).mapTo(undefined) as any;
       }
       default: {
         return Observable.of(undefined);

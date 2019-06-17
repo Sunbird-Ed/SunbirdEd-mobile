@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 import { SunbirdSdk } from 'sunbird-sdk';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as X2JS from 'x2js';
@@ -20,44 +20,45 @@ export class CanvasPlayerService {
     handleAction() {
         window.handleAction = (methodName: string, params = []) => {
             switch (methodName) {
-                case "getCurrentUser":
-                    return SunbirdSdk.instance.profileService.getActiveSessionProfile({ requiredFields: ProfileConstants.REQUIRED_FIELDS }).toPromise();
-                case "getAllUserProfile":
+                case 'getCurrentUser':
+                    return SunbirdSdk.instance.profileService.getActiveSessionProfile({
+                         requiredFields: ProfileConstants.REQUIRED_FIELDS }).toPromise();
+                case 'getAllUserProfile':
                     return SunbirdSdk.instance.profileService.getAllProfiles(params[0]).toPromise();
-                case "setUser":
+                case 'setUser':
                     return SunbirdSdk.instance.profileService.setActiveSessionForProfile(params[0]).toPromise();
-                case "getContent":
+                case 'getContent':
                     return SunbirdSdk.instance.contentService.getContents(params[0]).toPromise();
-                case "getRelevantContent":
+                case 'getRelevantContent':
                     return SunbirdSdk.instance.contentService.getRelevantContent(JSON.parse(params[0])).toPromise();
-                case "getRelatedContent":
-                    console.log("getRelatedContent to be defined");
+                case 'getRelatedContent':
+                    console.log('getRelatedContent to be defined');
                     break;
-                case "getContentList":
+                case 'getContentList':
                     return SunbirdSdk.instance.contentService.getContents(params[0]).toPromise();
-                case "sendFeedback":
+                case 'sendFeedback':
                     return SunbirdSdk.instance.contentFeedbackService.sendFeedback(params[0]).toPromise();
-                case "languageSearch":
+                case 'languageSearch':
                     console.log('languageSearch to be defined');
                     break;
-                case "endGenieCanvas":
+                case 'endGenieCanvas':
                     this.events.publish('endGenieCanvas', { showConfirmBox: false });
                     break;
-                case "showExitConfirmPopup":
+                case 'showExitConfirmPopup':
                     this.events.publish('endGenieCanvas', { showConfirmBox: true });
                     break;
-                case "endContent":
+                case 'endContent':
                     console.log('endContent to be defined');
                     break;
-                case "launchContent":
+                case 'launchContent':
                     console.log('launchContent to be defined');
                     break;
-                case "send":
+                case 'send':
                     return SunbirdSdk.instance.telemetryService.saveTelemetry(params[0]).subscribe();
                 default:
-                    console.log("Please use valid method");
+                    console.log('Please use valid method');
             }
-        }
+        };
     }
 
     /**
@@ -71,13 +72,12 @@ export class CanvasPlayerService {
             return new Promise((resolve, reject) => {
                 try {
                     this._http.get(path, { headers: _headers, responseType: 'text' }).subscribe((data) => {
-                        var x2js = new X2JS();
-                        console.log("JSON", x2js.xml2js(data));
+                        const x2js = new X2JS();
                         const json = x2js.xml2js(data);
                         resolve(json);
                     });
                 } catch (error) {
-                    console.log("In error", error);
+                    console.log('In error', error);
                     reject('Unable to convert');
                 }
             });
@@ -99,7 +99,7 @@ export class CanvasPlayerService {
                         resolve(data);
                     });
                 } catch (error) {
-                    console.log("", error);
+                    console.log('', error);
                     reject('Unable to read JSON');
                 }
             });
