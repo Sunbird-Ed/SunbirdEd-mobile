@@ -597,7 +597,7 @@ describe('CollectionDetailsPage Component', () => {
         expect(popUp.present).toHaveBeenCalled();
     });
 
-    fit('get all profiles', (done) => {
+    it('get all profiles', (done) => {
         // arrange
         const loader = {
             present: jest.fn(),
