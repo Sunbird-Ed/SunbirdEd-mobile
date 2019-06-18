@@ -526,7 +526,7 @@
   "TRANSFER_CONTENT_TO_PHONE": "Transfer Content to Phone",
   "TOTAL_SIZE": "Total Size : ",
   "TRANSFERRING_FILES": "Transferring files",
-  "CONTENT_SUCCESSFULLY_TRANSFERRED_TO": "Content Successfully transferred to ",
+  "CONTENT_SUCCESSFULLY_TRANSFERRED_TO_PHONE": "Content Successfully transferred to Phone ",
   "STORAGE_SETTINGS": "Storage Settings",
   "CHOOSE_WHERE_TO_SAVE_DATA": "Choose where to save Data",
   "STORAGE": "Storage",
@@ -542,5 +542,9 @@
   "SUCCESSFUL_CONTENT_TRANSFER_TO_PHONE": "All Contents will be transferred to Phone",
   "WHATS_NEW": "Whats New",
   "PERMISSION_REQUIRED": "Permission Required",
-  "ALLOW": "Allow"
+  "ALLOW": "Allow",
+  "TRANSFER_STOPPED": "Transfer Stopped",
+  "CANCELLING_IN_PROGRESS": "Cancelling in Progress..",
+  "CONTENT_SUCCESSFULLY_TRANSFERRED_TO_SDCARD": "Content Successfully transferred to SD Card",
+  "SPACE_TAKEN_BY_APP": "Space taken by {{%s}} Content: "
 }

@@ -17,7 +17,7 @@ import { StorageSettingsInterface } from "@app/pages/storage-settings/storage-se
 import { SbPopoverComponent } from "@app/component";
 import { FileSizePipe } from '@app/pipes/file-size/file-size';
 import { ImpressionType, Environment, PageId, InteractType, InteractSubtype, } from '@app/service/telemetry-constants';
-
+import { AppVersion } from '@ionic-native/app-version';
 @IonicPage()
 @Component({
   selector: 'page-storage-settings',
@@ -35,6 +35,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
   public StorageDestination = StorageDestination;
   public storageDestination?: StorageDestination;
   public spaceTakenBySunbird$: Observable<number>;
+  appName: any;
 
   get isExternalMemoryAvailable(): boolean {
     return !!this._storageVolumes.find((volume) => volume.storageDestination === StorageDestination.EXTERNAL_STORAGE);
@@ -73,17 +74,27 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     private fileSizePipe: FileSizePipe,
     private changeDetectionRef: ChangeDetectorRef,
     private telemetryGeneratorService: TelemetryGeneratorService,
+    private appVersion: AppVersion,
     @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     @Inject('STORAGE_SERVICE') private storageService: StorageService,
     @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
   ) {
     this.spaceTakenBySunbird$ = this.storageService.getStorageDestinationVolumeInfo()
-      .mergeMap((storageDestination) => {
+      .mergeMap((storageVolume) => {
+        if (storageVolume.storageDestination === StorageDestination.INTERNAL_STORAGE) {
+          this.contentService
+            .getContentSpaceUsageSummary({ paths: [cordova.file.externalDataDirectory] });
+        }
+
         return this.contentService
-          .getContentSpaceUsageSummary({ paths: [storageDestination.info.path] });
+          .getContentSpaceUsageSummary({ paths: [storageVolume.info.path] });
       })
       .map((summary) => summary[0].sizeOnDevice) as any;
+      this.appVersion.getAppName()
+      .then((appName) => {
+        this.appName = appName;
+      });
   }
 
   ngOnInit() {
@@ -93,6 +104,9 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
   }
 
   async showShouldTransferContentsPopup(): Promise<void> {
+    if (this.storageDestination === await this.storageService.getStorageDestination().toPromise()) {
+      return;
+    }
 
     const spaceTakenBySunbird = await this.spaceTakenBySunbird$.toPromise();
 
@@ -151,7 +165,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
         existingContentAction: undefined,
         destinationFolder: this.getStorageDestinationVolume(this.storageDestination),
         deleteDestination: false
-      }).subscribe(null, null, () => { console.log('complete'); });
+      }).subscribe(null, (e) => { console.error(e); }, () => { console.log('complete'); });
 
       await this.showTransferringContentsPopup(transferContentPopup, this.storageDestination);
     });
@@ -187,12 +201,16 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
   }
 
   private getStorageDestinationVolume(storageDestination: StorageDestination): string {
+    if (storageDestination === StorageDestination.INTERNAL_STORAGE) {
+      return cordova.file.externalDataDirectory;
+    }
+
     const storageVolumePath = this._storageVolumes
       .find((storageVolume) => storageVolume.storageDestination === storageDestination)!
       .info.path;
 
     // TODO change prefix
-    return `file://${storageVolumePath}/`;
+    return `${storageVolumePath}`;
   }
 
   private async showTransferringContentsPopup(prevPopup: Popover, storageDestination: StorageDestination): Promise<undefined> {
@@ -236,7 +254,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
         }),
       actionsButtons: [
         {
-          btntext: 'Cancel',
+          btntext: this.commonUtilService.translateMessage('CANCEL'),
           btnClass: 'popover-color'
         },
       ],
@@ -254,7 +272,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
             ) + '/'
               + this.fileSizePipe.transform(totalTransferSize);
           } else {
-            return '0KB/KB';
+            return '0KB/0KB';
           }
         })
     }, {
@@ -300,10 +318,10 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
       .subscribe();
 
     cancellingTransferPopup = this.popoverCtrl.create(SbPopoverComponent, {
-      sbPopoverHeading: 'Transfer Stopped',
+      sbPopoverHeading: this.commonUtilService.translateMessage('TRANSFER_STOPPED'),
       actionsButtons: [],
       icon: null,
-      metaInfo: 'Cancelling in Progress..',
+      metaInfo: this.commonUtilService.translateMessage('CANCELLING_IN_PROGRESS'),
     }, {
       enableBackdropDismiss: false,
       cssClass: 'sb-popover dw-active-downloads-popover',
@@ -324,7 +342,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
       sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_ALREADY_EXISTS'),
       actionsButtons: [
         {
-          btntext: 'Continue',
+          btntext: this.commonUtilService.translateMessage('CONTINUE'),
           btnClass: 'popover-color'
         },
       ],
@@ -365,15 +383,16 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
   private async showSuccessTransferPopup(prevPopup: Popover, storageDestination: StorageDestination): Promise<undefined> {
     const spaceTakenBySunbird = await this.spaceTakenBySunbird$.toPromise();
     const successTransferPopup = this.popoverCtrl.create(SbPopoverComponent, {
-      sbPopoverHeading: this.commonUtilService.translateMessage('CONTENT_SUCCESSFULLY_TRANSFERRED_TO') +
-        (storageDestination === StorageDestination.INTERNAL_STORAGE) ? this.commonUtilService.translateMessage('PHONE') :
-        this.commonUtilService.translateMessage('SD_CARD'),
-      metaInfo: this.commonUtilService.translateMessage('SPACE_USED_BY_DIKSHA') + this.fileSizePipe.transform(spaceTakenBySunbird),
+      sbPopoverHeading: (storageDestination === StorageDestination.INTERNAL_STORAGE) ?
+      this.commonUtilService.translateMessage('CONTENT_SUCCESSFULLY_TRANSFERRED_TO_PHONE') :
+        this.commonUtilService.translateMessage('CONTENT_SUCCESSFULLY_TRANSFERRED_TO_SDCARD'),
+      metaInfo: this.commonUtilService.translateMessage('SPACE_TAKEN_BY_APP', this.appName)
+       + this.fileSizePipe.transform(spaceTakenBySunbird),
       sbPopoverContent: this.commonUtilService.translateMessage('SPACE_AVAILABLE_ON_SDCARD') +
         this.fileSizePipe.transform(this.availableExternalMemorySize),
       actionsButtons: [
         {
-          btntext: 'OK',
+          btntext: this.commonUtilService.translateMessage('OKAY'),
           btnClass: 'popover-color'
         },
       ],
