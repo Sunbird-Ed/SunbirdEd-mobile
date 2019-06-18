@@ -1,4 +1,4 @@
-import { NavbarMock } from './../../__tests__/mocks';
+import { navbarMock } from './../../__tests__/mocks';
 import { Observable } from 'rxjs';
 import { NotificationsPage } from "./notifications";
 import { navCtrlMock, navParamsMock, headerServiceMock, commonUtilServiceMock, notificationServiceMock, eventsMock, telemetryGeneratorServiceMock, platformMock } from "../../__tests__/mocks";
@@ -21,7 +21,9 @@ describe('Notification Page', () => {
             telemetryGeneratorServiceMock as any,
             platformMock as any
         );
-        notificationPage.navBar = NavbarMock as any;
+        notificationPage.navBar = navbarMock as any;
+
+        jest.resetAllMocks()
     });
 
     it('should create a instance', () => {
@@ -59,6 +61,14 @@ describe('Notification Page', () => {
                 done();
             }, 0);
         });
+
+        it('should handled callback once notification: received caught', () => {
+            notificationPage.ionViewWillEnter();
+            eventsMock.subscribe.mock.calls[0][1].call(notificationPage);
+            expect(notificationPage.getNotifications).toHaveBeenCalled();
+
+
+        });
     });
 
     describe('getNotifications', () => {
@@ -90,16 +100,15 @@ describe('Notification Page', () => {
 
     describe('ionViewDidLoad', () => {
         it('should call backButtonClick', () => {
-            //(notificationPage.navBar as any) = {};
-            //notificationPage.navBar.backButtonClick = jest.fn();
-            // spyOn(notificationPage.navBar, 'backButtonClick').and.callThrough();
             notificationPage.ionViewDidLoad();
-            // expect(telemetryGeneratorServiceMock.generateBackClickedTelemetry).toHaveBeenCalledWith(PageId.NOTIFICATION, Environment.NOTIFICATION, true);
-            // expect(navCtrlMock.pop).toHaveBeenCalled();
+            notificationPage.navBar.backButtonClick({} as UIEvent);
             expect(telemetryGeneratorServiceMock.generateImpressionTelemetry).toHaveBeenCalledWith(
                 ImpressionType.VIEW, '',
                 PageId.NOTIFICATION,
                 Environment.NOTIFICATION, '', '', '');
+
+            expect(navCtrlMock.pop).toHaveBeenCalled();
+            expect(telemetryGeneratorServiceMock.generateBackClickedTelemetry).toHaveBeenCalledWith(PageId.NOTIFICATION, Environment.NOTIFICATION, true);
         });
     });
 
