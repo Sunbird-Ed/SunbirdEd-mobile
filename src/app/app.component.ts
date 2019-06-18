@@ -145,17 +145,22 @@ export class MyApp implements OnInit, AfterViewInit {
   /* Generates new FCM Token if not available
    * if available then on token refresh updates FCM token
    */
-  fcmTokenWatcher() {
-    if (!this.preferences.getString('fcm_token')) {
+  async fcmTokenWatcher() {
+    const fcmToken = await this.preferences.getString('fcm_token').toPromise();
+    if (!fcmToken) {
       FCMPlugin.getToken((token) => {
-        this.preferences.putString('fcm_token', token);
-      });
-    } else {
-      FCMPlugin.onTokenRefresh((token) => {
-        this.preferences.putString('fcm_token', token);
+        this.storeFCMToken(token);
+        SunbirdSdk.instance.updateTelemetryConfig({ fcmToken: token});
       });
     }
+    FCMPlugin.onTokenRefresh((token) => {
+      this.storeFCMToken(token);
+      SunbirdSdk.instance.updateTelemetryConfig({ fcmToken: token});
+    });
+  }
 
+  storeFCMToken(token: string) {
+    this.preferences.putString('fcm_token', token).toPromise();
   }
 
   handleNotification(data) {
