@@ -92,16 +92,15 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     this.fetchStorageDestination();
   }
 
-  async showShouldTransferContentsPopup(storageDestination: StorageDestination): Promise<void> {
-    console.log(storageDestination, this.storageDestination);
+  async showShouldTransferContentsPopup(): Promise<void> {
 
     const spaceTakenBySunbird = await this.spaceTakenBySunbird$.toPromise();
 
     const transferContentPopup = this.popoverCtrl.create(SbPopoverComponent, {
-      sbPopoverHeading: (storageDestination === StorageDestination.INTERNAL_STORAGE) ?
+      sbPopoverHeading: (this.storageDestination === StorageDestination.INTERNAL_STORAGE) ?
         this.commonUtilService.translateMessage('TRANSFER_CONTENT_TO_PHONE') :
         this.commonUtilService.translateMessage('TRANSFER_CONTENT_TO_SDCARD'),
-      sbPopoverMainTitle: (storageDestination === StorageDestination.INTERNAL_STORAGE) ?
+      sbPopoverMainTitle: (this.storageDestination === StorageDestination.INTERNAL_STORAGE) ?
         this.commonUtilService.translateMessage('SUCCESSFUL_CONTENT_TRANSFER_TO_PHONE') :
         this.commonUtilService.translateMessage('SUCCESSFUL_CONTENT_TRANSFER_TO_SDCARD')
       ,
@@ -134,12 +133,9 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
           PageId.TRANSFER_CONTENT_CONFIRMATION_POPUP, undefined, undefined, undefined
         );
 
-        this.storageDestination = storageDestination === StorageDestination.INTERNAL_STORAGE ?
+        this.storageDestination = this.storageDestination === StorageDestination.INTERNAL_STORAGE ?
           StorageDestination.EXTERNAL_STORAGE :
           StorageDestination.INTERNAL_STORAGE;
-
-        console.log(storageDestination, this.storageDestination);
-
         return;
       }
 
@@ -153,11 +149,11 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
       this.storageService.transferContents({
         contentIds: [],
         existingContentAction: undefined,
-        destinationFolder: this.getStorageDestinationVolume(storageDestination),
+        destinationFolder: this.getStorageDestinationVolume(this.storageDestination),
         deleteDestination: false
       }).subscribe(null, null, () => { console.log('complete'); });
 
-      await this.showTransferringContentsPopup(transferContentPopup, storageDestination);
+      await this.showTransferringContentsPopup(transferContentPopup, this.storageDestination);
     });
   }
 
