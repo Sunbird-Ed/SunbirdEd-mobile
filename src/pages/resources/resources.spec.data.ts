@@ -104,9 +104,17 @@ export const mockRes = {
   upgradeAppResponse:
     '{"upgrade":{"type":"force","title":"New version of the App available!","desc":""}}',
 
-  sampleProfile:
-    { handle: 'sample', syllabus: ['NCF'], board: ['CBSE'], grade: ['KG'], subject: ['English'],
-    medium: ['English'], profileType: ProfileType.TEACHER, source: ProfileSource.LOCAL },
+    sampleProfile: {
+      handle: 'sample',
+      syllabus: ['NCF'],
+      board: ['CBSE'],
+      grade: ['KG'],
+      subject: ['English'],
+      medium: ['English'],
+      profileType: ProfileType.TEACHER,
+      source: ProfileSource.LOCAL,
+      uid: '86d38a0a-fd00-4076-861d-b4c634a4d353',
+  },
 
   libraryConfigFilter: [{ 'name': 'Board', 'translations': '{"en":"Board","hi":"बोर्ड","te":"బోర్డు","ta":"வாரியம்",' +
   '"mr":"बोर्ड"}', 'code': 'board', 'index': 1, 'values': [] }, { 'name': 'Subject', 'translations': '{"en":"Subject",' +
@@ -135,18 +143,38 @@ export const mockRes = {
   'status': ['Live'], 'board': ['State (Andhra Pradesh)'], 'medium': ['English'], 'gradeLevel': ['Class 6'] },
   'sort_by': { 'me_averageRating': 'desc' }, 'limit': 10 , 'mode': 'soft'} },
 
-  profile: { 'age': -1, 'avatar': 'avatar', 'board': ['stateandhrapradesh'], 'createdAt': 'Aug 31, 2018 7:36:04 PM',
-  'day': -1, 'gender': '', 'grade': ['class6'], 'gradeValueMap': { 'class6': 'Class 6' }, 'handle': 'Yecher1',
-  'isGroupUser': false, 'language': 'en', 'medium': ['english'], 'month': -1, 'profileType': 'TEACHER',
-  'source': 'LOCAL', 'standard': -1, 'syllabus': ['ap_k-12_13'], 'uid': '86d38a0a-fd00-4076-861d-b4c634a4d353' },
+  profile: {
+    'uid': '86d38a0a-fd00-4076-861d-b4c634a4d353',
+    'handle': 'Vivek',
+    'createdAt': 1560864266,
+    'medium': ['english'],
+    'board': ['stateandhrapradesh'],
+    'subject': ['english'],
+    'profileType': ProfileType.TEACHER,
+    'grade': ['class6'],
+    'syllabus': ['ap_k-12_13'],
+    'source': ProfileSource.LOCAL,
+    'gradeValue': {
+        'class6': 'Class 6'
+    },
+},
 
-  appliedFilterBooks: {'board': ['State (Andhra Pradesh)'], 'gradeLevel': ['Class 6']},
+appliedFilterBooks: {
+  'board': ['State (Andhra Pradesh)'],
+  'gradeLevel': ['Class 6']
+},
 
   importCompleteEvent:
     '{"data":{"downloadId":18788,"downloadProgress":-1,"identifier":"do_sample","status":"IMPORT_COMPLETED"},"type":"contentImport"}',
 
-  categoryMediumsParam: [ { name: 'english' } ],
+    categoryMediumsParam: [{
+      name: 'english'
+  }],
 
-  categoryGradeParam: { terms: [ { name: 'class 4' } ] }
+  categoryGradeParam: {
+    terms: [{
+        name: 'class 4'
+    }]
+}
 
 };
