@@ -1,16 +1,7 @@
-import { Component, NgZone } from '@angular/core';
-import { ContentActionsComponent } from '@app/component';
-import {
-  NavParams,
-  ViewController,
-  ToastController,
-  Events,
-  Platform
-} from 'ionic-angular';
-import { TelemetryGeneratorService } from '../../../service/telemetry-generator.service';
-import { TranslateService } from '@ngx-translate/core';
-import { ProfileConstants } from '../../../app/app.constant';
-import { Rollup, CorrelationData, ContentService, AuthService } from 'sunbird-sdk';
+import {Component, NgZone, OnDestroy} from '@angular/core';
+import {NavParams, Platform, ViewController} from 'ionic-angular';
+import {CorrelationData, Rollup} from 'sunbird-sdk';
+import {Observable, Subscription} from "rxjs";
 
 /**
  * Generated class for the PopupsComponent component.
@@ -22,8 +13,7 @@ import { Rollup, CorrelationData, ContentService, AuthService } from 'sunbird-sd
   selector: 'sb-popover',
   templateUrl: 'sb-popover.html'
 })
-export class SbPopoverComponent {
-
+export class SbPopoverComponent implements OnDestroy {
   sbPopoverHeading: any;
   sbPopoverMainTitle: any;
   sbPopoverContent: any;
@@ -41,13 +31,17 @@ export class SbPopoverComponent {
   showFlagMenu = true;
   public objRollup: Rollup;
   private corRelationList: Array<CorrelationData>;
-  isNotShowCloseIcon: boolean;
-  img: any;
+  private sbPopoverDynamicMainTitle$?: Observable<string>;
+  private sbPopoverDynamicMainTitleSubscription?: Subscription;
+  private sbPopoverDynamicContent$?: Observable<string>;
+  private sbPopoverDynamicContentSubscription?: Subscription;
 
-  constructor(public viewCtrl: ViewController, public navParams: NavParams,
-    private platform: Platform, private events: Events, private ngZone: NgZone) {
-    this.img = this.navParams.get('img');
-    this.isNotShowCloseIcon = this.navParams.get('isNotShowCloseIcon') ? true : false;
+  constructor(
+    public viewCtrl: ViewController,
+    public navParams: NavParams,
+    private platform: Platform,
+    private ngZone: NgZone
+  ) {
     this.content = this.navParams.get('content');
     this.actionsButtons = this.navParams.get('actionsButtons');
     this.icon = this.navParams.get('icon');
@@ -63,8 +57,33 @@ export class SbPopoverComponent {
     this.objRollup = this.navParams.get('objRollup');
     this.corRelationList = this.navParams.get('corRelationList');
 
+    // Dynamic
+    this.sbPopoverDynamicMainTitle$ = this.navParams.get('sbPopoverDynamicMainTitle');
+    this.sbPopoverDynamicContent$ = this.navParams.get('sbPopoverDynamicContent');
+
+
     if (this.navParams.get('isChild')) {
       this.isChild = true;
+    }
+
+    if (this.sbPopoverDynamicMainTitle$) {
+      this.sbPopoverDynamicMainTitleSubscription = this.sbPopoverDynamicMainTitle$
+        .do((v) => {
+          this.ngZone.run(() => {
+            this.sbPopoverMainTitle = v;
+          });
+        })
+        .subscribe();
+    }
+
+    if (this.sbPopoverDynamicContent$) {
+      this.sbPopoverDynamicContentSubscription = this.sbPopoverDynamicContent$
+        .do((v) => {
+          this.ngZone.run(() => {
+            this.sbPopoverContent = v;
+          });
+        })
+        .subscribe();
     }
 
     this.contentId = (this.content && this.content.identifier) ? this.content.identifier : '';
@@ -74,16 +93,14 @@ export class SbPopoverComponent {
     }, 20);
   }
 
-  ionViewWillEnter(): void {
-    this.events.subscribe('deletedContentList:changed', (data) => {
-      this.ngZone.run(() => {
-        this.sbPopoverMainTitle = data.deletedContentsInfo.deletedCount + '/' + data.deletedContentsInfo.totalCount;
-      });
-    });
-  }
+  ngOnDestroy(): void {
+    if (this.sbPopoverDynamicMainTitleSubscription) {
+      this.sbPopoverDynamicMainTitleSubscription.unsubscribe();
+    }
 
-  ionViewWillLeave(): void {
-    this.events.unsubscribe('deletedContentList:changed');
+    if (this.sbPopoverDynamicContentSubscription) {
+      this.sbPopoverDynamicContentSubscription.unsubscribe();
+    }
   }
 
   closePopover() {

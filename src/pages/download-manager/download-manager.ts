@@ -25,6 +25,7 @@ import { SbPopoverComponent } from '@app/component';
 import { ActiveDownloadsPage } from '../active-downloads/active-downloads';
 import { PageId, InteractType, Environment, InteractSubtype } from '@app/service/telemetry-constants';
 import { StorageSettingsPage } from '../storage-settings/storage-settings';
+import {BehaviorSubject, Observable, Subject} from "rxjs";
 
 /**
  * Generated class for the DownloadManagerPage page.
@@ -48,6 +49,8 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
   deleteAllConfirm: Popover;
   appName: string;
   sortCriteria: ContentSortCriteria[];
+
+  private deletedContentListTitle$?: BehaviorSubject<string>;
 
   constructor(
     public navCtrl: NavController,
@@ -222,6 +225,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     const contentDeleteRequest: ContentDeleteRequest = {
       contentDeleteList: emitedContents.selectedContents
     };
+    this.deletedContentListTitle$ = new BehaviorSubject('0/' + contentDeleteRequest.contentDeleteList.length);
     this.deleteAllConfirm = this.popoverCtrl.create(SbPopoverComponent, {
       sbPopoverHeading: this.commonUtilService.translateMessage('DELETE_PROGRESS'),
       actionsButtons: [
@@ -231,8 +235,8 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
         },
       ],
       icon: null,
-      sbPopoverMainTitle: '0/' + contentDeleteRequest.contentDeleteList.length,
       metaInfo: this.commonUtilService.translateMessage('FILES_DELETED'),
+      sbPopoverDynamicMainTitle: this.deletedContentListTitle$
       // sbPopoverContent: this.commonUtilService.translateMessage('FILES_DELETED')
     }, {
         cssClass: 'sb-popover danger sb-popover-cancel-delete',
@@ -246,12 +250,8 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     this.contentService.enqueueContentDelete(contentDeleteRequest).toPromise();
     this.contentService.getContentDeleteQueue().skip(1).takeWhile((list) => !!list.length)
       .finally(() => {
-        this.events.publish('deletedContentList:changed', {
-          deletedContentsInfo: {
-            totalCount: contentDeleteRequest.contentDeleteList.length,
-            deletedCount: contentDeleteRequest.contentDeleteList.length
-          }
-        });
+        this.deletedContentListTitle$
+          .next(`${contentDeleteRequest.contentDeleteList.length}/${contentDeleteRequest.contentDeleteList.length}`);
 
         this.deleteAllConfirm.dismiss();
 
@@ -262,12 +262,8 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
         });
       })
       .subscribe((list) => {
-        this.events.publish('deletedContentList:changed', {
-          deletedContentsInfo: {
-            totalCount: contentDeleteRequest.contentDeleteList.length,
-            deletedCount: contentDeleteRequest.contentDeleteList.length - list.length
-          }
-        });
+        this.deletedContentListTitle$
+          .next(`${contentDeleteRequest.contentDeleteList.length - list.length}/${contentDeleteRequest.contentDeleteList.length}`);
       });
   }
 

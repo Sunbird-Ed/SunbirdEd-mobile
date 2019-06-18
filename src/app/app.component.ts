@@ -276,66 +276,6 @@ export class MyApp implements OnInit, AfterViewInit {
       });
     });
 
-    this.events.subscribe('generic.event', (data) => {
-      this.zone.run(() => {
-        const response = JSON.parse(data);
-        let action;
-        try {
-          action = JSON.parse(response.data.action);
-        } catch (Error) {
-        }
-        const values = new Map();
-        values['openrapInfo'] = action;
-        if (response && response.data.action && response.data.action === 'logout') {
-          this.authService.getSession().toPromise().then((session: OAuthSession) => {
-            if (session) {
-              this.authService.resignSession().subscribe();
-              (<any>window).splashscreen.clearPrefs();
-            }
-            this.profileService.getActiveSessionProfile({
-              requiredFields: ProfileConstants.REQUIRED_FIELDS
-            }).toPromise()
-              .then((currentUser: any) => {
-
-                if (currentUser.profileType === ProfileType.STUDENT) {
-                  initTabs(this.containerService, GUEST_STUDENT_TABS);
-                  this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise().then();
-                } else {
-                  initTabs(this.containerService, GUEST_TEACHER_TABS);
-                  this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();
-                }
-
-                this.events.publish('refresh:profile');
-                this.events.publish(AppGlobalService.USER_INFO_UPDATED);
-
-                this.app.getRootNav().setRoot(TabsPage);
-
-              }).catch(() => {
-              });
-
-          });
-        } else if (response && action && action.actionType === 'connected') {
-          console.log('connected to openrap device with the IP ' + action.ip);
-          this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-            'openrap-device-connected',
-            Environment.HOME,
-            Environment.HOME, undefined,
-            values);
-        } else if (response && action && action.actionType === 'disconnected') {
-          console.log('disconnected from openrap device with the IP ' + action.ip);
-          this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-            'openrap-device-disconnected',
-            Environment.HOME,
-            Environment.HOME, undefined,
-            values);
-        } else if (response && response.data.action && response.data.action === EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY) {
-          this.events.publish(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, {
-            update: true
-          });
-        }
-      });
-    });
-
     this.translate.onLangChange.subscribe((params) => {
       if (params.lang === 'ur' && !this.platform.isRTL) {
         this.platform.setDir('rtl', true);
