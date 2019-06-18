@@ -1,4 +1,7 @@
-// import { ViewController } from 'ionic-angular/navigation/view-controller';
+// import {
+//      navCtrlMock,
+
+// } from '../../__tests__/mocks';
 // import { mockResponseUserAndGroups } from './user-and-groups-data.spec';
 // import { CommonUtilService } from './../../service/common-util.service';
 // import {
@@ -205,7 +208,7 @@
 
 //     describe('ionViewDidLoad', () => {
 //         it('makes expected calls', () => {
-//          const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.get(TelemetryGeneratorService);
+//             const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.get(TelemetryGeneratorService);
 //             spyOn(telemetryGeneratorServiceStub, 'generateImpressionTelemetry');
 //             comp.ionViewDidLoad();
 //             expect(telemetryGeneratorServiceStub.generateImpressionTelemetry).toHaveBeenCalled();
@@ -356,7 +359,7 @@
 //     describe('createGroup', () => {
 //         it('makes expected calls', () => {
 //             const navControllerStub: NavController = fixture.debugElement.injector.get(NavController);
-//          const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.get(TelemetryGeneratorService);
+//             const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.get(TelemetryGeneratorService);
 
 //             spyOn(navControllerStub, 'push');
 //             spyOn(telemetryGeneratorServiceStub, 'generateInteractTelemetry');
@@ -417,7 +420,7 @@
 //         it('makes expected calls', () => {
 //             const alertControllerStub: AlertController = TestBed.get(AlertController);
 //             const appGlobalServiceStub: AppGlobalService = fixture.debugElement.injector.get(AppGlobalService);
-//           const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.get(TelemetryGeneratorService);
+//             const telemetryGeneratorServiceStub: TelemetryGeneratorService = fixture.debugElement.injector.get(TelemetryGeneratorService);
 //             comp.selectedUserIndex = 0;
 //             comp.userList = [{
 //                 uid: 'user-id-1',
@@ -461,3 +464,198 @@
 //     });
 
 // });
+import {
+    navCtrlMock,
+    navParamsMock,
+    translateServiceMock,
+    alertCtrlMock,
+    popoverCtrlMock,
+    zoneMock,
+    profileServiceMock,
+    groupServiceMock,
+    authServiceMock,
+    platformMock,
+    ionicAppMock,
+    eventsMock,
+    appGlobalServiceMock,
+    containerServiceMock,
+    appMock,
+    telemetryGeneratorServiceMock,
+    loadingControllerMock,
+    commonUtilServiceMock,
+    sharedPreferencesMock,
+    appHeaderServiceMock
+} from '../../__tests__/mocks';
+import { UserAndGroupsPage } from './user-and-groups';
+import { mockResponseUserAndGroups } from './user-and-groups.spec.data';
+import { Observable } from 'rxjs';
+import 'jest';
+import { Popover } from 'ionic-angular';
+import { doesNotThrow } from 'assert';
+
+describe('CollectionDetailsPage Component', () => {
+    let userAndGroupsPage: UserAndGroupsPage;
+
+    beforeEach(() => {
+        userAndGroupsPage = new UserAndGroupsPage(
+            navCtrlMock as any,
+            navParamsMock as any,
+            translateServiceMock as any,
+            alertCtrlMock as any,
+            popoverCtrlMock as any,
+            zoneMock as any,
+            profileServiceMock as any,
+            groupServiceMock as any,
+            authServiceMock as any,
+            platformMock as any,
+            ionicAppMock as any,
+            eventsMock as any,
+            appGlobalServiceMock as any,
+            containerServiceMock as any,
+            appMock as any,
+            telemetryGeneratorServiceMock as any,
+            loadingControllerMock as any,
+            commonUtilServiceMock as any,
+            sharedPreferencesMock as any,
+            appHeaderServiceMock as any
+        );
+        jest.resetAllMocks();
+    });
+
+    it('test instance initiation', () => {
+        expect(userAndGroupsPage).toBeTruthy();
+    });
+
+    it('should be call ionViewWillEnter()', (done) => {
+        // arrange
+        spyOn(userAndGroupsPage, 'getAllProfile').and.stub();
+        spyOn(userAndGroupsPage, 'getAllGroup').and.stub();
+        spyOn(userAndGroupsPage, 'getCurrentGroup').and.stub();
+        appHeaderServiceMock.hideHeader.mockReturnValue(jest.fn());
+        platformMock.registerBackButtonAction.mockReturnValue(jest.fn());
+        spyOn(userAndGroupsPage, 'dismissPopup').and.stub();
+        userAndGroupsPage.userList = mockResponseUserAndGroups.UserList;
+        // act
+        userAndGroupsPage.ionViewWillEnter();
+        // assert
+        setTimeout(() => {
+            zoneMock.run.mock.calls[0][0].call(userAndGroupsPage);
+            platformMock.registerBackButtonAction.mock.calls[0][0].call(userAndGroupsPage);
+            expect(userAndGroupsPage.noUsersPresent).toBeFalsy();
+            expect(userAndGroupsPage.loadingUserList).toBeTruthy();
+            done();
+        }, 0);
+    });
+
+    it('should be call getCurrentGroup()', (done) => {
+        // arrange
+        groupServiceMock.getActiveSessionGroup.mockReturnValue(Observable.from([{
+            gid: 'group_id',
+            name: 'group',
+            syllabus: ['math', 'phy', 'ch'],
+            createdAt: 2,
+            grade: ['A', 'B'],
+            gradeValue: {
+                ['key']: 'key',
+            },
+            updatedAt: 2
+        }]));
+
+        // act
+        userAndGroupsPage.getCurrentGroup();
+
+        // assert
+        setTimeout(() => {
+            zoneMock.run.mock.calls[0][0].call(userAndGroupsPage);
+            expect(userAndGroupsPage.currentGroupId).toBe('group_id');
+            done();
+        }, 0);
+    });
+
+    it('should call dismissPopup() for registerBackButton action', () => {
+        // arrange
+        ionicAppMock._modalPortal = { getActive: jest.fn(() => ({ dismiss: jest.fn() })) };
+
+        // act
+        userAndGroupsPage.dismissPopup();
+        // assert
+    });
+
+    it('should call presentPopover()', () => {
+        // arrange
+        userAndGroupsPage.isCurrentUser = false;
+        userAndGroupsPage.userList[1] = [{ uid: 'uid' }];
+        const popUp = {
+            present: jest.fn(),
+            onDidDismiss: jest.fn()
+        };
+        popoverCtrlMock.create.mockReturnValue(popUp);
+        // act
+        userAndGroupsPage.presentPopover({}, 1, true);
+        // assert
+        //  expect(userAndGroupsPage.isCurrentUser).toBeTruthy();
+        expect(popUp.present).toHaveBeenCalled();
+    });
+
+    fit('get all profiles', (done) => {
+        // arrange
+        const loader = {
+            present: jest.fn(),
+            dismiss: jest.fn()
+        };
+        loadingControllerMock.create.mockReturnValue(loader);
+        const profileRequest = {
+            local: true
+        };
+        userAndGroupsPage.loadingUserList = true;
+        // assert
+        userAndGroupsPage.getAllProfile();
+        // act
+        expect(loader.present).toHaveBeenCalled();
+        setTimeout(() => {
+            zoneMock.run.mock.calls[0][0].call(userAndGroupsPage);
+            expect((profileServiceMock.getAllProfiles as any).map).toHaveBeenCalledWith(profileRequest);
+            done();
+        }, 0);
+    });
+
+    it('get all group', (done) => {
+        // arrange
+        groupServiceMock.getAllGroups.mockReturnValue(Observable.from([[{
+            gid: 'group_id',
+            name: 'group',
+            syllabus: ['math', 'phy', 'ch'],
+            createdAt: 2,
+            grade: ['A', 'B'],
+            gradeValue: {
+                ['key']: 'key',
+            },
+            updatedAt: 2
+        }]]));
+        userAndGroupsPage.showEmptyGroupsMessage = false;
+        userAndGroupsPage.userList = mockResponseUserAndGroups.UserList;
+        // act
+        userAndGroupsPage.getAllGroup();
+        // assert
+        setTimeout(() => {
+            zoneMock.run.mock.calls[0][0].call(userAndGroupsPage);
+          //  expect(groupServiceMock.)
+            done();
+        }, 0);
+    });
+
+    it('get all group', (done) => {
+        // arrange
+        groupServiceMock.getAllGroups.mockReturnValue(Observable.from([{}]));
+        // act
+        userAndGroupsPage.getAllGroup();
+        // assert
+        setTimeout(() => {
+            zoneMock.run.mock.calls[0][0].call(userAndGroupsPage);
+            expect(userAndGroupsPage.showEmptyGroupsMessage).toBeTruthy();
+            done();
+        }, 0);
+    });
+
+});
+
