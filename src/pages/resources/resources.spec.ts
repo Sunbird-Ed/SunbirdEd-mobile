@@ -1,127 +1,154 @@
-import {ResourcesPage} from './resources';
+import { Observable } from 'rxjs/Observable';
+import { toastControllerMock, headerServiceMock, profileServiceMock, eventBusServiceMock } from './../../__tests__/mocks';
+import { ResourcesPage } from './resources';
 import {
-  appGlobalServiceMock,
-  appVersionMock,
-  commonUtilServiceMock,
-  contentServiceMock,
-  eventsMock,
-  frameworkServiceMock,
-  navCtrlMock,
-  networkMock,
-  sharedPreferencesMock,
-  sunbirdQRScannerMock,
-  telemetryGeneratorServiceMock,
-  translateServiceMock,
-  zoneMock
+    appGlobalServiceMock,
+    appVersionMock,
+    commonUtilServiceMock,
+    contentServiceMock,
+    eventsMock,
+    frameworkServiceMock,
+    navCtrlMock,
+    networkMock,
+    sharedPreferencesMock,
+    sunbirdQRScannerMock,
+    telemetryGeneratorServiceMock,
+    translateServiceMock,
+    zoneMock,
+    tabsMock,
+    menuControllerMock
 } from '../../__tests__/mocks';
-import {mockRes} from './resources.spec.data';
-import {PageId, ProfileType} from 'sunbird';
-import {AudienceFilter, CardSectionName, ContentType, ViewMore} from '../../app/app.constant';
-import {ViewMoreActivityPage} from '../view-more-activity/view-more-activity';
-import {SearchPage} from '../search/search';
-import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
+import { mockRes } from './resources.spec.data';
+import { AudienceFilter, CardSectionName, ContentType, ViewMore } from '../../app/app.constant';
+import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
+import { SearchPage } from '../search/search';
+import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
+import { PageId } from '../../service/telemetry-constants';
 
 describe('ResourcesPage test cases', () => {
     let resource: ResourcesPage;
 
     beforeEach(() => {
 
-        sharedPreferencesMock.getString.mockResolvedValue('english');
-        // spyOn(resource, 'subscribeUtilityEvents').and.stub();
+        sharedPreferencesMock.getString.mockReturnValue(Observable.of('english'));
         appVersionMock.getAppName.mockResolvedValue('AppName');
+        profileServiceMock.getActiveSessionProfile.mockReturnValue(Observable.of({}));
+
 
         resource = new ResourcesPage(
+            profileServiceMock as any,
+            eventBusServiceMock as any,
             navCtrlMock as any,
             zoneMock as any,
-            contentServiceMock as any,
             sunbirdQRScannerMock as any,
             eventsMock as any,
-            sharedPreferencesMock as any,
             appGlobalServiceMock as any,
             appVersionMock as any,
             telemetryGeneratorServiceMock as any,
             commonUtilServiceMock as any,
-            frameworkServiceMock as any,
             translateServiceMock as any,
-            networkMock as any
+            networkMock as any,
+            tabsMock as any,
+            frameworkServiceMock as any,
+            contentServiceMock as any,
+            sharedPreferencesMock as any,
+            toastControllerMock as any,
+            menuControllerMock as any,
+            headerServiceMock as any
         );
 
         jest.resetAllMocks();
     });
 
-    it('instance testing ', () => {
+    it('should create a instance', () => {
         expect(resource).toBeTruthy();
     });
 
-    it('#subscribeUtilityEvents should call subscribe for savedResources:update', () => {
-        spyOn(resource, 'setSavedContent').and.stub();
-        spyOn(resource, 'loadRecentlyViewedContent').and.stub();
+    describe('subscribeUtilityEvents', () => {
+        it('should call getActiveSessionProfile once resource page initializes', () => {
+            profileServiceMock.getActiveSessionProfile.mockReturnValue(Observable.of({}));
+            resource.subscribeUtilityEvents();
+            expect(profileServiceMock.getActiveSessionProfile).toHaveBeenCalled();
+        });
+        it('should call subscribe for savedResources:update', () => {
+            profileServiceMock.getActiveSessionProfile.mockReturnValue(Observable.of({}));
+            spyOn(resource, 'loadRecentlyViewedContent').and.stub();
 
-        resource.subscribeUtilityEvents();
-        expect(eventsMock.subscribe).toHaveBeenCalledWith('savedResources:update', expect.any(Function));
-        eventsMock.subscribe.mock.calls[0][1].call(resource, { update: 'asdasd'});
-        expect(resource.setSavedContent).toHaveBeenCalled();
+            resource.subscribeUtilityEvents();
+            expect(eventsMock.subscribe).toHaveBeenCalledWith('savedResources:update', expect.any(Function));
+            eventsMock.subscribe.mock.calls[0][1].call(resource, { update: 'asdasd' });
+        });
+
+        it('should call subscribe for event:showScanner', () => {
+            profileServiceMock.getActiveSessionProfile.mockReturnValue(Observable.of({}));
+            spyOn(resource, 'loadRecentlyViewedContent').and.stub();
+
+            resource.subscribeUtilityEvents();
+            expect(eventsMock.subscribe).toHaveBeenCalledWith('event:showScanner', expect.any(Function));
+            eventsMock.subscribe.mock.calls[1][1].call(resource, { pageName: 'library' });
+            expect(sunbirdQRScannerMock.startScanner).toHaveBeenCalled();
+        });
+
+        it('should call subscribe for onAfterLanguageChange:update', () => {
+            profileServiceMock.getActiveSessionProfile.mockReturnValue(Observable.of({}));
+            spyOn(resource, 'getPopularContent').and.stub();
+            resource.subscribeUtilityEvents();
+            expect(eventsMock.subscribe).toHaveBeenCalledWith('onAfterLanguageChange:update', expect.any(Function));
+            eventsMock.subscribe.mock.calls[2][1].call(resource, { selectedLanguage: 'library' });
+            expect(resource.getPopularContent).toHaveBeenCalled();
+        });
+
+        it('should call subscribe for app-global:profile-obj-changed', () => {
+            profileServiceMock.getActiveSessionProfile.mockReturnValue(Observable.of({}));
+            spyOn(resource, 'swipeDownToRefresh').and.stub();
+            resource.subscribeUtilityEvents();
+            expect(eventsMock.subscribe).toHaveBeenCalledWith('app-global:profile-obj-changed', expect.any(Function));
+            eventsMock.subscribe.mock.calls[3][1].call(resource, { selectedLanguage: 'library' });
+            expect(resource.swipeDownToRefresh).toHaveBeenCalled();
+        });
+
+        it('should call subscribe for aforce_optional_upgrade', () => {
+            profileServiceMock.getActiveSessionProfile.mockReturnValue(Observable.of({}));
+            resource.subscribeUtilityEvents();
+            expect(eventsMock.subscribe).toHaveBeenCalledWith('force_optional_upgrade', expect.any(Function));
+            eventsMock.subscribe.mock.calls[4][1].call(resource, {});
+            expect(appGlobalServiceMock.openPopover).toHaveBeenCalled();
+        });
+
+        it('should call subscribe for tab.change', () => {
+            profileServiceMock.getActiveSessionProfile.mockReturnValue(Observable.of({}));
+            spyOn(resource, 'getPopularContent').calls.all();
+            resource.appliedFilter = 'dummy_filter';
+            resource.subscribeUtilityEvents();
+            expect(eventsMock.subscribe).toHaveBeenCalledWith('tab.change', expect.any(Function));
+            eventsMock.subscribe.mock.calls[5][1].call(resource, 'LIBRARY');
+            expect(resource.getPopularContent).toHaveBeenCalled();
+        });
     });
 
-    it('#subscribeUtilityEvents should call subscribe for event:showScanner', () => {
-        spyOn(resource, 'setSavedContent').and.stub();
-        spyOn(resource, 'loadRecentlyViewedContent').and.stub();
+    describe('ngOnInit', () => {
+        it('should be calling 2 methods', () => {
+            spyOn(resource, 'getCurrentUser').and.stub();
+            resource.ngOnInit();
+            expect(resource.getCurrentUser).toHaveBeenCalled();
+        });
 
-        resource.subscribeUtilityEvents();
-        expect(eventsMock.subscribe).toHaveBeenCalledWith('event:showScanner', expect.any(Function));
-        eventsMock.subscribe.mock.calls[1][1].call(resource, {pageName: 'library'});
-        expect(sunbirdQRScannerMock.startScanner).toHaveBeenCalled();
     });
 
-    it('#subscribeUtilityEvents should call subscribe for onAfterLanguageChange:update', () => {
-        spyOn(resource, 'getPopularContent').and.stub();
-        resource.subscribeUtilityEvents();
-        expect(eventsMock.subscribe).toHaveBeenCalledWith('onAfterLanguageChange:update', expect.any(Function));
-        eventsMock.subscribe.mock.calls[2][1].call(resource, {selectedLanguage: 'library'});
-        expect(resource.getPopularContent).toHaveBeenCalled();
-    });
+    describe('generateNetworkType', () => {
+        it('should call generateExtraInfoTelemetry', () => {
+            networkMock.type as any = 'wifi'
+            const values = new Map();
+            values['network-type'] = 'wifi';
+            resource.generateNetworkType();
+            expect(telemetryGeneratorServiceMock.generateExtraInfoTelemetry).toHaveBeenCalledWith( values, PageId.LIBRARY);
+        });
 
-    it('#subscribeUtilityEvents should call subscribe for app-global:profile-obj-changed', () => {
-        spyOn(resource, 'swipeDownToRefresh').and.stub();
-        resource.subscribeUtilityEvents();
-        expect(eventsMock.subscribe).toHaveBeenCalledWith('app-global:profile-obj-changed', expect.any(Function));
-        eventsMock.subscribe.mock.calls[3][1].call(resource, {selectedLanguage: 'library'});
-        expect(resource.swipeDownToRefresh).toHaveBeenCalled();
-    });
-
-    it('#subscribeUtilityEvents should call subscribe for aforce_optional_upgrade', () => {
-        resource.subscribeUtilityEvents();
-        expect(eventsMock.subscribe).toHaveBeenCalledWith('force_optional_upgrade', expect.any(Function));
-        eventsMock.subscribe.mock.calls[4][1].call(resource, {});
-        expect(appGlobalServiceMock.openPopover).toHaveBeenCalled();
-    });
-
-    it('#subscribeUtilityEvents should call subscribe for tab.change', () => {
-        spyOn(resource, 'getPopularContent').calls.all();
-        resource.appliedFilter = 'dummy_filter';
-        resource.subscribeUtilityEvents();
-        expect(eventsMock.subscribe).toHaveBeenCalledWith('tab.change', expect.any(Function));
-        eventsMock.subscribe.mock.calls[5][1].call(resource, 'LIBRARY');
-        zoneMock.run.mock.calls[0][0].call();
-        expect(resource.getPopularContent).toHaveBeenCalled();
-    });
-
-    it('#ngOnInit should be calling 2 methods', () => {
-        spyOn(resource, 'setSavedContent');
-        spyOn(resource, 'loadRecentlyViewedContent');
-        resource.ngOnInit();
-        expect(resource.setSavedContent).toHaveBeenCalled();
-        expect(resource.loadRecentlyViewedContent).toHaveBeenCalled();
-    });
-
-    it('#generateNetworkType should call generateExtraInfoTelemetry', () => {
-        resource.generateNetworkType();
-        expect(telemetryGeneratorServiceMock.generateExtraInfoTelemetry).toHaveBeenCalled();
     });
 
     it('#ngAfterViewInit should call subscribe for onboarding-card:completed event', () => {
         resource.ngAfterViewInit();
-        eventsMock.subscribe.mock.calls[0][1].call(resource, {isOnBoardingCardCompleted: true});
+        eventsMock.subscribe.mock.calls[0][1].call(resource, { isOnBoardingCardCompleted: true });
         expect(eventsMock.subscribe).toHaveBeenCalledWith('onboarding-card:completed', expect.any(Function));
         expect(resource.isOnBoardingCardCompleted).toBe(true);
     });
@@ -255,7 +282,8 @@ describe('ResourcesPage test cases', () => {
         resource.search();
         expect(telemetryGeneratorServiceMock.generateInteractTelemetry).toBeCalled();
         expect(navCtrlMock.push).toBeCalledWith(SearchPage,
-            { contentType: ContentType.FOR_LIBRARY_TAB,
+            {
+                contentType: ContentType.FOR_LIBRARY_TAB,
                 source: PageId.LIBRARY
             });
     });
@@ -264,7 +292,7 @@ describe('ResourcesPage test cases', () => {
         spyOn(resource, 'getMediumData').and.stub();
         spyOn(resource, 'getGradeLevelData').and.stub();
         const data = {
-            syllabus: [ 'Mathematics' ]
+            syllabus: ['Mathematics']
         };
         appGlobalServiceMock.getCurrentUser.mockReturnValue(data);
         resource.getCategoryData();
@@ -409,30 +437,30 @@ describe('ResourcesPage test cases', () => {
 
     it('#ionViewWillEnter should call all methods and audienceFilter deifined', () => {
         spyOn(resource, 'getPopularContent').and.stub();
-      spyOn(resource, 'subscribeSdkEvent').and.stub();
+        spyOn(resource, 'subscribeSdkEvent').and.stub();
         spyOn(resource, 'getCategoryData').and.stub();
         appGlobalServiceMock.isUserLoggedIn.mockReturnValue(true);
         resource.ionViewWillEnter();
         expect(appGlobalServiceMock.getCurrentUser).toBeCalled();
         expect(resource.getPopularContent).toBeCalled();
-      expect(resource.subscribeSdkEvent).toBeCalled();
+        expect(resource.subscribeSdkEvent).toBeCalled();
         expect(resource.getCategoryData).toBeCalled();
         expect(resource.audienceFilter).toBe(AudienceFilter.LOGGED_IN_USER);
     });
 
     it('#ionViewWillEnter should call this.getCurrentUser and other and audienceFilter undeifined', () => {
         spyOn(resource, 'getCurrentUser').and.stub();
-      spyOn(resource, 'subscribeSdkEvent').and.stub();
+        spyOn(resource, 'subscribeSdkEvent').and.stub();
         spyOn(resource, 'getCategoryData').and.stub();
         resource.pageLoadedSuccess = true;
         appGlobalServiceMock.isUserLoggedIn.mockReturnValue(false);
         resource.ionViewWillEnter();
         expect(resource.getCurrentUser).toBeCalled();
-      expect(resource.subscribeSdkEvent).toBeCalled();
+        expect(resource.subscribeSdkEvent).toBeCalled();
         expect(resource.getCategoryData).toBeCalled();
     });
 
-  it('#subscribeSdkEvent should ', () => {
+    it('#subscribeSdkEvent should ', () => {
         const data = {
             data: {
                 status: 'IMPORT_COMPLETED'
@@ -441,7 +469,7 @@ describe('ResourcesPage test cases', () => {
         };
         spyOn(resource, 'setSavedContent').and.stub();
         spyOn(resource, 'loadRecentlyViewedContent').and.stub();
-    resource.subscribeSdkEvent();
+        resource.subscribeSdkEvent();
         eventsMock.subscribe.mock.calls[0][1].call(resource, JSON.stringify(data));
         expect(eventsMock.subscribe).toBeCalledWith('genie.event', expect.any(Function));
         expect(resource.setSavedContent).toBeCalled();
