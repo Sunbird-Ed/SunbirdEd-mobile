@@ -1,4 +1,4 @@
-import { AppGlobalService, CommonUtilService } from '@app/service';
+import { AppGlobalService, CommonUtilService, AppHeaderService } from '@app/service';
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform, AlertController } from 'ionic-angular';
 import { CanvasPlayerService } from './canvas-player.service';
@@ -29,7 +29,8 @@ export class PlayerPage implements playerActionHandlerDelegate {
     private statusBar: StatusBar,
     private events: Events,
     private alertCtrl: AlertController,
-    private commonUtilService: CommonUtilService
+    private commonUtilService: CommonUtilService,
+    private headerService: AppHeaderService
   ) {
     this.canvasPlayerService.handleAction();
 
@@ -39,6 +40,7 @@ export class PlayerPage implements playerActionHandlerDelegate {
   }
 
   ionViewWillEnter() {
+    this.headerService.hideHeader();
     this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.LANDSCAPE);
     this.statusBar.hide();
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {

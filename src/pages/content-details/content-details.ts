@@ -96,6 +96,7 @@ export class ContentDetailsPage {
   identifier: string;
   headerObservable: any;
   new: Boolean = true;
+  showMoreFlag: Boolean = false;
 
   /**
    * To hold previous state data
@@ -193,7 +194,6 @@ export class ContentDetailsPage {
     private network: Network,
     public toastController: ToastController,
     private fileSizePipe: FileSizePipe,
-    private headerServie: AppHeaderService,
     private translate: TranslateService,
     private viewCtrl: ViewController,
     private headerService: AppHeaderService,
@@ -253,7 +253,8 @@ export class ContentDetailsPage {
     this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
-    this.headerServie.hideHeader();
+    // this.headerService.hideHeader();
+    this.headerService.showHeaderWithBackButton();
     this.cardData = this.navParams.get('content');
     this.isChildContent = this.navParams.get('isChildContent');
     this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');
@@ -1688,5 +1689,12 @@ export class ContentDetailsPage {
     if (index !== (length - 1)) {
       this.navCtrl.pop();
     }
+  }
+
+  toggleShowMore(val) {
+    this.zone.run(() => {
+      this.showMoreFlag = val;
+      console.log('this.showMoreFlag', this.showMoreFlag);
+    });
   }
 }
