@@ -1,4 +1,4 @@
-import { ProfileType, UserSource } from 'sunbird';
+import { ProfileType, ProfileSource } from 'sunbird-sdk';
 
 export const mockRes = {
   pageAPIResponse:
@@ -106,7 +106,7 @@ export const mockRes = {
 
   sampleProfile:
     { handle: 'sample', syllabus: ['NCF'], board: ['CBSE'], grade: ['KG'], subject: ['English'],
-    medium: ['English'], profileType: ProfileType.TEACHER, source: UserSource.LOCAL },
+    medium: ['English'], profileType: ProfileType.TEACHER, source: ProfileSource.LOCAL },
 
   libraryConfigFilter: [{ 'name': 'Board', 'translations': '{"en":"Board","hi":"बोर्ड","te":"బోర్డు","ta":"வாரியம்",' +
   '"mr":"बोर्ड"}', 'code': 'board', 'index': 1, 'values': [] }, { 'name': 'Subject', 'translations': '{"en":"Subject",' +
