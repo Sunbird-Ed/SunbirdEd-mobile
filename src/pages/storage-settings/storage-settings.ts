@@ -309,6 +309,12 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
       cssClass: 'sb-popover dw-active-downloads-popover',
     });
     cancellingTransferPopup.present();
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW,
+      '',
+      PageId.CANCELLING_CONTENT_TRANSFER_POPUP,
+      Environment.DOWNLOADS
+    );
     return;
   }
 
