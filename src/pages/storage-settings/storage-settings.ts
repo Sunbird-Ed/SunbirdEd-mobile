@@ -33,7 +33,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
   };
 
   public StorageDestination = StorageDestination;
-  public storageDestination$: Observable<StorageDestination>;
+  public storageDestination?: StorageDestination;
   public spaceTakenBySunbird$: Observable<number>;
 
   get isExternalMemoryAvailable(): boolean {
@@ -78,8 +78,6 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
   ) {
-    this.storageDestination$ = this.storageService.getStorageDestination() as any;
-
     this.spaceTakenBySunbird$ = this.storageService.getStorageDestinationVolumeInfo()
       .mergeMap((storageDestination) => {
         return this.contentService
@@ -91,12 +89,11 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
   ngOnInit() {
     this.initAppHeader();
     this.fetchStorageVolumes();
+    this.fetchStorageDestination();
   }
 
   async showShouldTransferContentsPopup(storageDestination: StorageDestination): Promise<void> {
-    if (storageDestination === (await this.storageDestination$.toPromise())) {
-      return;
-    }
+    console.log(storageDestination, this.storageDestination);
 
     const spaceTakenBySunbird = await this.spaceTakenBySunbird$.toPromise();
 
@@ -136,6 +133,13 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
           Environment.DOWNLOADS,
           PageId.TRANSFER_CONTENT_CONFIRMATION_POPUP, undefined, undefined, undefined
         );
+
+        this.storageDestination = storageDestination === StorageDestination.INTERNAL_STORAGE ?
+          StorageDestination.EXTERNAL_STORAGE :
+          StorageDestination.INTERNAL_STORAGE;
+
+        console.log(storageDestination, this.storageDestination);
+
         return;
       }
 
@@ -176,12 +180,14 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
   }
 
   private fetchStorageVolumes() {
-    this.storageDestination$ = this.storageService.getStorageDestination() as any;
-    
     this.deviceInfo.getStorageVolumes().subscribe((v) => {
       this._storageVolumes = v;
       this.changeDetectionRef.detectChanges();
     });
+  }
+
+  private async fetchStorageDestination() {
+    this.storageDestination = await this.storageService.getStorageDestination().toPromise();
   }
 
   private getStorageDestinationVolume(storageDestination: StorageDestination): string {

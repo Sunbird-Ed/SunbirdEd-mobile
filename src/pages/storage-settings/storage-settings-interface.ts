@@ -17,7 +17,6 @@ export interface StorageSettingsInterface extends OnInit {
 
   availableInternalMemorySize: number;
 
-  storageDestination$: Observable<StorageDestination>;
 
   spaceTakenBySunbird$: Observable<number>;
 
