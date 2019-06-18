@@ -1,4 +1,4 @@
-import { Component, Inject, NgZone, ViewChild } from '@angular/core';
+import {Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {
   AlertController,
   App,
@@ -10,29 +10,31 @@ import {
   NavParams,
   Platform,
   PopoverController,
-  ToastController,
-  ViewController
+  ToastController
 } from 'ionic-angular';
-import { SocialSharing } from '@ionic-native/social-sharing';
+import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
-import { EventTopics, PreferenceKey, XwalkConstants, ContentConstants, StoreRating } from '../../app/app.constant';
-import { GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, Map, ShareUrl } from '@app/app';
+import {ContentConstants, EventTopics, PreferenceKey, StoreRating, XwalkConstants} from '../../app/app.constant';
+import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, Map, ShareUrl} from '@app/app';
 import {
-  BookmarkComponent, ContentActionsComponent,
-  ContentRatingAlertComponent, ConfirmAlertComponent, SbPopoverComponent
+  BookmarkComponent,
+  ConfirmAlertComponent,
+  ContentActionsComponent,
+  ContentRatingAlertComponent,
+  SbPopoverComponent
 } from '@app/component';
-import { AppGlobalService, CourseUtilService, UtilityService, AppHeaderService, AppRatingService } from '@app/service';
-import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
-import { Network } from '@ionic-native/network';
-import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
+import {AppGlobalService, AppHeaderService, AppRatingService, CourseUtilService, UtilityService} from '@app/service';
+import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
+import {Network} from '@ionic-native/network';
+import {UserAndGroupsPage} from '../user-and-groups/user-and-groups';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {CommonUtilService} from '../../service/common-util.service';
+import {DialogPopupComponent} from '../../component/dialog-popup/dialog-popup';
 import {
   AuthService,
+  ChildContentRequest,
   Content,
-  ContentAccess,
-  ContentAccessStatus,
+  ContentDeleteStatus,
   ContentDetailRequest,
   ContentEventType,
   ContentExportRequest,
@@ -40,7 +42,6 @@ import {
   ContentImport,
   ContentImportRequest,
   ContentImportResponse,
-  ContentMarkerRequest,
   ContentService,
   CorrelationData,
   DownloadEventType,
@@ -48,20 +49,18 @@ import {
   EventsBusEvent,
   EventsBusService,
   GetAllProfileRequest,
-  MarkerType,
   PlayerService,
   ProfileService,
   ProfileType,
   Rollup,
   SharedPreferences,
-  TelemetryObject,
-  ChildContentRequest,
-  ContentDeleteStatus
+  StorageService,
+  TelemetryObject
 } from 'sunbird-sdk';
-import { CanvasPlayerService } from '../player/canvas-player.service';
-import { PlayerPage } from '../player/player';
-import { File } from '@ionic-native/file';
-import { Subscription } from 'rxjs';
+import {CanvasPlayerService} from '../player/canvas-player.service';
+import {PlayerPage} from '../player/player';
+import {File} from '@ionic-native/file';
+import {Subscription} from 'rxjs';
 import {
   Environment,
   ImpressionType,
@@ -70,12 +69,12 @@ import {
   Mode,
   PageId,
 } from '../../service/telemetry-constants';
-import { TabsPage } from '../tabs/tabs';
-import { ContainerService } from '@app/service/container.services';
-import { FileSizePipe } from '@app/pipes/file-size/file-size';
-import { TranslateService } from '@ngx-translate/core';
-import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
-import { AppRatingAlertComponent } from '@app/component/app-rating-alert/app-rating-alert';
+import {TabsPage} from '../tabs/tabs';
+import {ContainerService} from '@app/service/container.services';
+import {FileSizePipe} from '@app/pipes/file-size/file-size';
+import {TranslateService} from '@ngx-translate/core';
+import {SbGenericPopoverComponent} from '@app/component/popups/sb-generic-popup/sb-generic-popover';
+import {AppRatingAlertComponent} from '@app/component/app-rating-alert/app-rating-alert';
 import moment from 'moment';
 
 declare const cordova;
@@ -171,6 +170,8 @@ export class ContentDetailsPage {
     @Inject('EVENTS_BUS_SERVICE') private eventBusService: EventsBusService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     @Inject('PLAYER_SERVICE') private playerService: PlayerService,
+    @Inject('STORAGE_SERVICE') private storageService: StorageService,
+    @Inject('AUTH_SERVICE') private authService: AuthService,
     private navCtrl: NavController,
     private navParams: NavParams,
     private zone: NgZone,
@@ -189,7 +190,6 @@ export class ContentDetailsPage {
     private utilityService: UtilityService,
     private container: ContainerService,
     private app: App,
-    @Inject('AUTH_SERVICE') private authService: AuthService,
     private network: Network,
     public toastController: ToastController,
     private fileSizePipe: FileSizePipe,
@@ -924,7 +924,7 @@ export class ContentDetailsPage {
     _.forEach(identifiers, (value) => {
       requestParams.push({
         isChildContent: isChild,
-        destinationFolder: cordova.file.externalDataDirectory,
+        destinationFolder: this.storageService.getStorageDestinationDirectoryPath(),
         contentId: value,
         correlationData: this.corRelationList !== undefined ? this.corRelationList : []
       });
@@ -1536,7 +1536,7 @@ export class ContentDetailsPage {
     if (this.contentDownloadable[this.content.identifier]) {
       const exportContentRequest: ContentExportRequest = {
         contentIds: [this.content.identifier],
-        destinationFolder: cordova.file.externalDataDirectory
+        destinationFolder: this.storageService.getStorageDestinationDirectoryPath()
       };
       this.contentService.exportContent(exportContentRequest).toPromise()
         .then((response: ContentExportResponse) => {
