@@ -150,16 +150,18 @@ export class MyApp implements OnInit, AfterViewInit {
     const fcmToken = await this.preferences.getString('fcm_token').toPromise();
     if (!fcmToken) {
       FCMPlugin.getToken((token) => {
-        this.preferences.putString('fcm_token', token).toPromise();
-        SunbirdSdk.instance.updateTelemetryConfig({ fcmToken: token});
-      });
-    } else {
-      FCMPlugin.onTokenRefresh((token) => {
-        this.preferences.putString('fcm_token', token).toPromise();
+        this.storeFCMToken(token);
         SunbirdSdk.instance.updateTelemetryConfig({ fcmToken: token});
       });
     }
+    FCMPlugin.onTokenRefresh((token) => {
+      this.storeFCMToken(token);
+      SunbirdSdk.instance.updateTelemetryConfig({ fcmToken: token});
+    });
+  }
 
+  storeFCMToken(token: string) {
+    this.preferences.putString('fcm_token', token).toPromise();
   }
 
   handleNotification(data) {
