@@ -1,7 +1,7 @@
 import {ActiveDownloadsPage} from './../active-downloads/active-downloads';
 import {Component, Inject, NgZone, OnInit, ViewChild} from '@angular/core';
+import { Content as iContent } from 'ionic-angular';
 import {
-  Content as iContent,
   Events,
   IonicPage,
   Navbar,
