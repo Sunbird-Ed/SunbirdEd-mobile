@@ -14,8 +14,8 @@ import {
   GroupService,
   DownloadService,
   EventsBusService,
-  PlayerService,
-  NotificationService
+  NotificationService,
+  PlayerService
 } from 'sunbird-sdk';
 import { CanvasPlayerService } from '../pages/player/canvas-player.service';
 import {
@@ -37,9 +37,14 @@ import { NgZone } from '@angular/core';
 import {
   AppGlobalService,
   AppRatingService,
+  ActivePageService,
   CommonUtilService,
   CourseUtilService,
-  TelemetryGeneratorService
+  NotificationService as NotificationMock,
+  TelemetryGeneratorService,
+  SplashscreenImportActionHandlerDelegate,
+  SplashcreenTelemetryActionHandlerDelegate,
+  SplaschreenDeeplinkActionHandlerDelegate
 } from '@app/service';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
@@ -58,6 +63,9 @@ import { AppHeaderService } from '@app/service';
 import { ContainerService } from "@app/service/container.services";
 import { UtilityService } from "@app/service";
 import { FileSizePipe } from '../pipes/file-size/file-size';
+import { StatusBar } from '@ionic-native/status-bar';
+
+
 
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
@@ -87,7 +95,8 @@ export const navCtrlMock = createSpyObj<NavController>([
   'push',
   'setRoot',
   'popTo',
-  'canGoBack'
+  'canGoBack',
+  'getActive'
 ]);
 
 export const navParamsMock = createSpyObj<NavParams>([
@@ -192,7 +201,8 @@ export const fileUtilMock = createSpyObj<File>([
 export const platformMock = createSpyObj<Platform>([
   'registerBackButtonAction',
   'exitApp',
-  'resume'
+  'resume',
+  'ready'
 ]);
 
 export const translateServiceMock = createSpyObj<TranslateService>([
@@ -255,7 +265,8 @@ export const telemetryGeneratorServiceMock = createSpyObj<TelemetryGeneratorServ
   'generateLogEvent',
   'generateExtraInfoTelemetry',
   'readLessorReadMore',
-  'isCollection'
+  'isCollection',
+  'generateInterruptTelemetry'
 ]);
 
 export const courseUtilServiceMock = createSpyObj<CourseUtilService>([
@@ -347,7 +358,8 @@ export const deviceInfoServiceMock = createSpyObj<UtilityService>([
 
 export const viewControllerMock = createSpyObj<ViewController>([
   'dismiss',
-  'onDidDismiss'
+  'onDidDismiss',
+  'getActive'
 ]);
 
 
@@ -377,6 +389,9 @@ export const ionicAppMock = createSpyObj<IonicApp>([]);
 
 export const appMock = createSpyObj<App>([
   'group',
+  'getActiveNavs',
+  'getActive',
+  'getRootNavs'
 ]);
 
 export const tncUpdateHandlerServiceMock = createSpyObj<TncUpdateHandlerService>([
@@ -440,7 +455,9 @@ export const appHeaderServiceMock = createSpyObj<AppHeaderService>([
 ]);
 
 export const utilityServiceMock = createSpyObj<UtilityService>([
-  'openPlayStore'
+  'openPlayStore',
+  'getUtmInfo',
+  'clearUtmInfo'
 ]);
 export const appRatingServiceMock = createSpyObj<AppRatingService>([
   'setInitialDate',
@@ -483,4 +500,22 @@ export const notificationServiceMock = createSpyObj<NotificationService>([
 
 export const NavbarMock = createSpyObj<Navbar>([
   'backButtonClick'
+]);
+export const statusBarMock = createSpyObj<StatusBar>([
+  'styleBlackTranslucent'
+]);
+export const splashcreenTelemetryActionHandlerDelegateMock = createSpyObj<SplashcreenTelemetryActionHandlerDelegate>([
+  ''
+]);
+export const splashscreenImportActionHandlerDelegateMock = createSpyObj<SplashscreenImportActionHandlerDelegate>([
+
+]);
+export const splaschreenDeeplinkActionHandlerDelegateMock = createSpyObj<SplaschreenDeeplinkActionHandlerDelegate>([
+
+]);
+export const notificationMock = createSpyObj<NotificationMock>([
+  'setupLocalNotification'
+]);
+export const activePageServiceMock = createSpyObj<ActivePageService>([
+  'computePageId'
 ]);

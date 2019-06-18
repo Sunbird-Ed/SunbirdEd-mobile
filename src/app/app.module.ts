@@ -104,6 +104,9 @@ export function storageService() {
 export function notificationService() {
   return SunbirdSdk.instance.notificationService;
 }
+export function errorLoggerService() {
+  return SunbirdSdk.instance.errorLoggerService;
+}
 export function sdkDriverFactory() {
   return [{
     provide: 'SDK_CONFIG',
@@ -180,6 +183,9 @@ export function sdkDriverFactory() {
   }, {
     provide: 'NOTIFICATION_SERVICE',
     useFactory: notificationService
+  }, {
+    provide: 'ERROR_LOGGER_SERVICE',
+    useFactory: errorLoggerService
   }
   ];
 }
@@ -288,6 +294,8 @@ export const sunbirdSdkFactory =
           }
         }
       });
+
+      window['sunbird'] = SunbirdSdk.instance;
     };
   };
 

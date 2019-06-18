@@ -1,4 +1,3 @@
-
 <ion-content overflow-scroll="true">
   <div class="sb-view-all-container">
     <div class="sb-view-all-items">
@@ -6,40 +5,42 @@
         <ion-row>
           <ion-col class="ad-pt-4">
             <div class="download-page-heading"><b>{{'STORAGE_SETTINGS' | translate}}</b></div>
-            <div class="download-page-info">{{'CHOOSE_STORAGE_TO_SAVE' | translate}} </div>
+            <div class="download-page-info">{{'CHOOSE_WHERE_TO_SAVE_DATA' | translate}}</div>
           </ion-col>
         </ion-row>
       </ion-grid>
     </div>
-</div>
-<div class="sb-dw-manager o-hide">
-  <div class="pull-left">  
-    <span class="storage-info">{{'STORAGE' | translate}}</span>
   </div>
-  </div>
-<div radio-group [(ngModel)]="storageType" (ionChange)="getStorageType($event)">
-  <div class="sb-storage-container">
-  <div class="radio-container">
-      <ion-radio value="phone" checked></ion-radio>
-  </div>
-    <div class="iconSize">
-      <img src="./assets/imgs/Phone.png">
+  <div class="sb-dw-manager o-hide">
+    <div class="pull-left">
+      <span class="storage-info">{{'STORAGE' | translate}}</span>
     </div>
+  </div>
+  <div radio-group>
+    <div class="sb-storage-container">        
+      <div class="radio-container">
+        <ion-radio class="storage-radio-btn" (ionSelect)="showShouldTransferContentsPopup(StorageDestination.INTERNAL_STORAGE)" [checked]="(storageDestination$ | async) === StorageDestination.INTERNAL_STORAGE"></ion-radio>
+      </div>
+      <div class="iconSize">
+        <img src="./assets/imgs/Phone.png">
+      </div>
       <div class="sb-card-details">
-        <div class="title"> {{'PHONE_SPACE' | translate}}</div>
-        <div class="info">{{'FREE_SPACE' | translate}}</div>
+        <div class="title">{{'PHONE' | translate}}({{totalInternalMemorySize}})</div>
+        <div class="info">{{'FREE_SPACE' | translate}} {{availableInternalMemorySize | fileSize}}</div>
+      </div>
     </div>
-  </div>
-  <div class="sb-storage-container">
-    <div class="radio-container">
-        <ion-radio value="sdcard"></ion-radio>
-    </div>
+    <div class="sb-storage-container">
+      <div class="radio-container">
+        <ion-radio class="storage-radio-btn" (ionSelect)="showShouldTransferContentsPopup(StorageDestination.EXTERNAL_STORAGE)"  [checked]="(storageDestination$ | async) === StorageDestination.EXTERNAL_STORAGE" [disabled] = "!isExternalMemoryAvailable"></ion-radio>
+      </div>
       <div class="iconSize">
         <img src="./assets/imgs/SD_card.png">
       </div>
-        <div class="sb-card-details">
-          <div class="title">{{'SD_CARD_SPACE' | translate}}</div>
-          <div class="info">{{'FREE_SPACE' | translate}}</div>
+      <div class="sb-card-details">
+        <div class="title" *ngIf="isExternalMemoryAvailable">{{'SD_CARD' | translate}}({{totalExternalMemorySize}})</div>
+        <div class="title" *ngIf="!isExternalMemoryAvailable">{{'SD_CARD' | translate}} : (--) </div>
+        <div class="info" *ngIf="isExternalMemoryAvailable">{{'FREE_SPACE' | translate}} : {{availableExternalMemorySize | fileSize}}</div>
+        <div class="info" *ngIf="!isExternalMemoryAvailable">{{'FREE_SPACE' | translate}} :  -- </div>
       </div>
     </div>
   </div>

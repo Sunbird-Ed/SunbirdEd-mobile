@@ -97,7 +97,6 @@ export class MyApp implements OnInit, AfterViewInit {
     private events: Events,
     private zone: NgZone,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
-    private event: Events,
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
@@ -245,7 +244,6 @@ export class MyApp implements OnInit, AfterViewInit {
 
   handleBackButton() {
     this.platform.registerBackButtonAction(() => {
-
       let navObj = this.app.getRootNavs()[0];
       let currentPage = navObj.getActive().name;
       const activeView: ViewController = this.nav.getActive();
