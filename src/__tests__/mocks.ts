@@ -30,7 +30,9 @@ import {
   IonicApp,
   AlertController,
   ToastController,
-  Navbar
+  Navbar,
+  Tabs,
+  MenuController
 } from 'ionic-angular';
 
 import { NgZone } from '@angular/core';
@@ -63,9 +65,8 @@ import { AppHeaderService } from '@app/service';
 import { ContainerService } from "@app/service/container.services";
 import { UtilityService } from "@app/service";
 import { FileSizePipe } from '../pipes/file-size/file-size';
+import { ScreenOrientation } from '@ionic-native/screen-orientation';
 import { StatusBar } from '@ionic-native/status-bar';
-
-
 
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
@@ -139,7 +140,8 @@ export const profileServiceMock = createSpyObj<ProfileService>([
   'getAllProfile',
   'getAllProfiles',
   'exportProfile',
-  'updateProfile'
+  'updateProfile',
+  'getActiveSessionProfile'
 ]);
 
 export const authServiceMock = createSpyObj<AuthService>([
@@ -479,7 +481,9 @@ export const playerServiceMock = createSpyObj<PlayerService>([
   'getPlayerConfig'
 ]);
 export const canvasPlayerServiceMock = createSpyObj<CanvasPlayerService>([
-
+  'handleAction',
+  'xmlToJSon',
+  'readJSON'
 ]);
 export const fileSizePipeMock = createSpyObj<FileSizePipe>([
 
@@ -497,12 +501,8 @@ export const notificationServiceMock = createSpyObj<NotificationService>([
   'deleteNotification'
 ]);
 
-
-export const NavbarMock = createSpyObj<Navbar>([
+export const navbarMock = createSpyObj<Navbar>([
   'backButtonClick'
-]);
-export const statusBarMock = createSpyObj<StatusBar>([
-  'styleBlackTranslucent'
 ]);
 export const splashcreenTelemetryActionHandlerDelegateMock = createSpyObj<SplashcreenTelemetryActionHandlerDelegate>([
   ''
@@ -519,3 +519,23 @@ export const notificationMock = createSpyObj<NotificationMock>([
 export const activePageServiceMock = createSpyObj<ActivePageService>([
   'computePageId'
 ]);
+
+export const screenOrientationMock = createSpyObj<ScreenOrientation>([
+  'lock',
+  'unlock'
+]);
+
+export const statusBarMock = createSpyObj<StatusBar>([
+  'hide',
+  'show',
+  'styleBlackTranslucent'
+]);
+
+export const tabsMock = createSpyObj<Tabs>([
+
+]);
+
+export const menuControllerMock = createSpyObj<MenuController>([
+
+]);
+
