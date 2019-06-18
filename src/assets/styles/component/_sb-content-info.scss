@@ -3,8 +3,8 @@
 .sb-content-info-container {
 
     .sb-content-info-items{
-      background-color: $primary-color;
-      height: ($base-block-space * 11);
+      //background-color: $primary-color;
+      //height: ($base-block-space * 11);
       width: 100%;
       position: relative;
       @include padding(($base-block-space * 2),0,($base-block-space * 2),0);

@@ -10,10 +10,43 @@
 							<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
 						</div>
 					</div>
+          <div class="sb-dt-content sb-dt-content-main">
+            <div class="left">
+              <div class="sb-dt-title" style="font-size: 25px; font-family: 'Noto Sans'; color: white; margin-right: 15px;"> {{content?.contentData?.name}}</div>
+              <div class="sb-dt-source" style="margin-top: 10px;" *ngIf="content?.contentData?.owner || content?.contentData?.creator">
+                <span class="sb-by" style="color: white">{{ 'CONTENT_CREATED_BY' | translate }}</span>
+                <span class="sb-user" style="color: white">{{ content?.contentData?.owner || content?.contentData?.creator }}</span>
+                <span class ="sb-rating-view" *ngIf="content?.contentData?.me_averageRating">
+                  <span class="content-vertical-line"></span>
+                  <span class="sb-rating-value" style="color: white">{{ content?.contentData?.me_averageRating }}</span>
+                  <span class="sb-rating-star" style="color: yellow">
+							<ion-icon ios="ios-star" md="md-star"></ion-icon>
+						</span>
+                </span>
+              </div>
+            </div>
+<!--            <div class="sb-dt-content pt-0">-->
+<!--              &lt;!&ndash;				<div class="left" *ngIf="content?.contentData?.resourceType">&ndash;&gt;-->
+<!--              &lt;!&ndash;&lt;!&ndash;					<div class="sb-practice">&ndash;&gt;&ndash;&gt;-->
+<!--              &lt;!&ndash;&lt;!&ndash;						<button ion-button outline small class="content-btn-padding disable-ripple">{{content?.contentData?.resourceType}}</button>&ndash;&gt;&ndash;&gt;-->
+<!--              &lt;!&ndash;&lt;!&ndash;					</div>&ndash;&gt;&ndash;&gt;-->
+<!--              &lt;!&ndash;				</div>&ndash;&gt;-->
+<!--              <div class="right" *ngIf="content?.contentData?.me_averageRating">-->
+<!--                <div class="sb-rating-view">-->
+<!--                  <span class="sb-rating-value" style="color: white">{{ content?.contentData?.me_averageRating }}</span>-->
+<!--                  <span class="sb-rating-star">-->
+<!--							<ion-icon ios="ios-star" md="md-star"></ion-icon>-->
+<!--						</span>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+
+          </div>
 					<div class="sb-common-player-group sb-play-title-group">
 						<button ion-button clear icon-only class="sb-common-title">
 							<img src="assets/imgs/play_circle.png" alt="play-circle">
 						</button>
+            <p style="color: white; font-size: 18px; margin-top: 0;"> Play </p>
 					</div>
 				</div>
 			</div>
@@ -25,11 +58,44 @@
 							<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
 						</div>
 					</div>
-					<div class="sb-common-player-group sb-play-title-group">
+          <div class="sb-dt-content sb-dt-content-main">
+            <div class="left">
+              <div class="sb-dt-title" style="font-size: 25px; font-family: 'Noto Sans'; color: white; margin-right: 15px"> {{content?.contentData?.name}}</div>
+              <div class="sb-dt-source" style="color: white; margin-top: 10px;" *ngIf="content?.contentData?.owner || content?.contentData?.creator">
+                <span class="sb-by" style="color: white">{{ 'CONTENT_CREATED_BY' | translate }}</span>
+                <span class="sb-user" style="color: white">{{ content?.contentData?.owner || content?.contentData?.creator }}</span>
+                <span class ="sb-rating-view" *ngIf="content?.contentData?.me_averageRating">
+                                  <span class="content-vertical-line"></span>
+                  <span class="sb-rating-value" style="color: white">{{ content?.contentData?.me_averageRating }}</span>
+                  <span class="sb-rating-star" style="color: yellow">
+							<ion-icon ios="ios-star" md="md-star"></ion-icon>
+						</span>
+                </span>
+              </div>
+            </div>
+<!--            <div class="sb-dt-content pt-0">-->
+<!--              &lt;!&ndash;				<div class="left" *ngIf="content?.contentData?.resourceType">&ndash;&gt;-->
+<!--              &lt;!&ndash;&lt;!&ndash;					<div class="sb-practice">&ndash;&gt;&ndash;&gt;-->
+<!--              &lt;!&ndash;&lt;!&ndash;						<button ion-button outline small class="content-btn-padding disable-ripple">{{content?.contentData?.resourceType}}</button>&ndash;&gt;&ndash;&gt;-->
+<!--              &lt;!&ndash;&lt;!&ndash;					</div>&ndash;&gt;&ndash;&gt;-->
+<!--              &lt;!&ndash;				</div>&ndash;&gt;-->
+<!--              <div class="right" *ngIf="content?.contentData?.me_averageRating">-->
+<!--                <div class="sb-rating-view">-->
+<!--                  <span class="sb-rating-value" style="color: white">{{ content?.contentData?.me_averageRating }}</span>-->
+<!--                  <span class="sb-rating-star">-->
+<!--							<ion-icon ios="ios-star" md="md-star"></ion-icon>-->
+<!--						</span>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+
+          </div>
+          <div class="sb-common-player-group sb-play-title-group">
 						<button ion-button clear icon-only class="sb-common-title">
               <img src="assets/imgs/play_circle.png" alt="play-circle">
             </button>
-					</div>
+            <p style="color: white; font-size: 18px; margin-top: 0;"> Play </p>
+          </div>
 				</div>
 			</div>
 		</div>
@@ -40,7 +106,40 @@
 						<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
 					</div>
 				</div>
-				<div class="sb-common-player-group sb-download-title-group" (click)="openConfirmPopUp()">
+        <div class="sb-dt-content sb-dt-content-main">
+          <div class="left">
+            <div class="sb-dt-title" style="font-size: 25px; font-family: 'Noto Sans'; color: white"> {{content?.contentData?.name}}</div>
+            <div class="sb-dt-source" style="color: white; margin-top: 10px;" *ngIf="content?.contentData?.owner || content?.contentData?.creator">
+              <span class="sb-by" style="color: white">{{ 'CONTENT_CREATED_BY' | translate }}</span>
+              <span class="sb-user" style="color: white">{{ content?.contentData?.owner || content?.contentData?.creator }}</span>
+              <span class ="sb-rating-view" *ngIf="content?.contentData?.me_averageRating">
+                              <span class="content-vertical-line"></span>
+
+                  <span class="sb-rating-value" style="color: white">{{ content?.contentData?.me_averageRating }}</span>
+                  <span class="sb-rating-star" style="color: yellow">
+							<ion-icon ios="ios-star" md="md-star"></ion-icon>
+						</span>
+                </span>
+            </div>
+          </div>
+<!--          <div class="sb-dt-content pt-0">-->
+<!--            &lt;!&ndash;				<div class="left" *ngIf="content?.contentData?.resourceType">&ndash;&gt;-->
+<!--            &lt;!&ndash;&lt;!&ndash;					<div class="sb-practice">&ndash;&gt;&ndash;&gt;-->
+<!--            &lt;!&ndash;&lt;!&ndash;						<button ion-button outline small class="content-btn-padding disable-ripple">{{content?.contentData?.resourceType}}</button>&ndash;&gt;&ndash;&gt;-->
+<!--            &lt;!&ndash;&lt;!&ndash;					</div>&ndash;&gt;&ndash;&gt;-->
+<!--            &lt;!&ndash;				</div>&ndash;&gt;-->
+<!--            <div class="right" *ngIf="content?.contentData?.me_averageRating">-->
+<!--              <div class="sb-rating-view">-->
+<!--                <span class="sb-rating-value" style="color: white">{{ content?.contentData?.me_averageRating }}</span>-->
+<!--                <span class="sb-rating-star">-->
+<!--							<ion-icon ios="ios-star" md="md-star"></ion-icon>-->
+<!--						</span>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+
+        </div>
+        <div class="sb-common-player-group sb-download-title-group" (click)="openConfirmPopUp()">
 					<button ion-button clear icon-only class="sb-common-title">
 						<ion-icon ios="ios-cloud-download" md="md-cloud-download" class="sb-common-white-icon"></ion-icon>
 					</button>
@@ -55,11 +154,44 @@
 							<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
 						</div>
 					</div>
-					<div class="sb-common-player-group sb-play-title-group">
+          <div class="sb-dt-content sb-dt-content-main">
+            <div class="left">
+              <div class="sb-dt-title" style="font-size: 25px; font-family: 'Noto Sans'; margin-right: 15px;"> {{content?.contentData?.name}}</div>
+              <div class="sb-dt-source" style="margin-top: 10px; " *ngIf="content?.contentData?.owner || content?.contentData?.creator">
+                <span class="sb-by">{{ 'CONTENT_CREATED_BY' | translate }}</span>
+                <span class="sb-user">{{ content?.contentData?.owner || content?.contentData?.creator }}</span>
+                <span class ="sb-rating-view" *ngIf="content?.contentData?.me_averageRating">
+                                  <span class="content-vertical-line"></span>
+                  <span class="sb-rating-value" style="color: white">{{ content?.contentData?.me_averageRating }}</span>
+                  <span class="sb-rating-star" style="color: yellow">
+							<ion-icon ios="ios-star" md="md-star"></ion-icon>
+						</span>
+                </span>
+              </div>
+            </div>
+<!--            <div class="sb-dt-content pt-0">-->
+<!--              &lt;!&ndash;				<div class="left" *ngIf="content?.contentData?.resourceType">&ndash;&gt;-->
+<!--              &lt;!&ndash;&lt;!&ndash;					<div class="sb-practice">&ndash;&gt;&ndash;&gt;-->
+<!--              &lt;!&ndash;&lt;!&ndash;						<button ion-button outline small class="content-btn-padding disable-ripple">{{content?.contentData?.resourceType}}</button>&ndash;&gt;&ndash;&gt;-->
+<!--              &lt;!&ndash;&lt;!&ndash;					</div>&ndash;&gt;&ndash;&gt;-->
+<!--              &lt;!&ndash;				</div>&ndash;&gt;-->
+<!--              <div class="right" *ngIf="content?.contentData?.me_averageRating">-->
+<!--                <div class="sb-rating-view">-->
+<!--                  <span class="sb-rating-value" style="color: white">{{ content?.contentData?.me_averageRating }}</span>-->
+<!--                  <span class="sb-rating-star">-->
+<!--							<ion-icon ios="ios-star" md="md-star"></ion-icon>-->
+<!--						</span>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+
+          </div>
+          <div class="sb-common-player-group sb-play-title-group">
 						<button ion-button clear icon-only class="sb-common-title">
               <img src="assets/imgs/play_circle.png" alt="play-circle">
             </button>
-					</div>
+            <p style="color: white; font-size: 18px; margin-top: 0;"> Play </p>
+          </div>
 				</div>
 			</div>
 		</div>
@@ -73,11 +205,45 @@
 						<ion-icon name="arrow-back" class="sb-arrow-back"></ion-icon>
 					</div>
 				</div>
-				<div class="sb-common-player-group sb-play-title-group">
+        <div class="sb-dt-content sb-dt-content-main">
+          <div class="left">
+            <div class="sb-dt-title" style="font-size: 25px; font-family: 'Noto Sans'; color: white; margin-right: 15px;"> {{content?.contentData?.name}}</div>
+            <div class="sb-dt-source" style="color: white; margin-top: 10px;" *ngIf="content?.contentData?.owner || content?.contentData?.creator">
+              <span class="sb-by" style="color: white">{{ 'CONTENT_CREATED_BY' | translate }}</span>
+              <span class="sb-user" style="color: white">{{ content?.contentData?.owner || content?.contentData?.creator }}</span>
+              <span class ="sb-rating-view" *ngIf="content?.contentData?.me_averageRating">
+                              <span class="content-vertical-line"></span>
+                  <span class="sb-rating-value" style="color: white">{{ content?.contentData?.me_averageRating }}</span>
+                  <span class="sb-rating-star" style="color: yellow">
+							<ion-icon ios="ios-star" md="md-star"></ion-icon>
+						</span>
+                </span>
+            </div>
+          </div>
+<!--          <div class="sb-dt-content pt-0">-->
+<!--            &lt;!&ndash;				<div class="left" *ngIf="content?.contentData?.resourceType">&ndash;&gt;-->
+<!--            &lt;!&ndash;&lt;!&ndash;					<div class="sb-practice">&ndash;&gt;&ndash;&gt;-->
+<!--            &lt;!&ndash;&lt;!&ndash;						<button ion-button outline small class="content-btn-padding disable-ripple">{{content?.contentData?.resourceType}}</button>&ndash;&gt;&ndash;&gt;-->
+<!--            &lt;!&ndash;&lt;!&ndash;					</div>&ndash;&gt;&ndash;&gt;-->
+<!--            &lt;!&ndash;				</div>&ndash;&gt;-->
+<!--            <div class="right" *ngIf="content?.contentData?.me_averageRating">-->
+<!--              <div class="sb-rating-view">-->
+<!--                <span class="sb-rating-value" style="color: white">{{ content?.contentData?.me_averageRating }}</span>-->
+<!--                <span class="sb-rating-star">-->
+<!--							<ion-icon ios="ios-star" md="md-star"></ion-icon>-->
+<!--						</span>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+
+        </div>
+
+        <div class="sb-common-player-group sb-play-title-group">
 					<button ion-button clear icon-only class="sb-common-title">
             <img src="assets/imgs/play_circle.png" alt="play-circle">
           </button>
-				</div>
+          <p style="color: white; font-size: 18px; margin-top: 0;"> Play </p>
+        </div>
 			</div>
 		</div>
 		<div class="sb-player-container sb-offline-container" *ngIf="!contentDownloadable[content?.identifier]">
@@ -98,43 +264,43 @@
 	</div>
 
 
-	<div class="breadcrumb-container" *ngIf="childPaths.length>0">
-		<div class="step-indicator" >
-			<a class="step" href="#" *ngFor="let result of childPaths; let i = index" [ngClass]="{'completed': i!=(childPaths.length-1)}" (click)="goBack(i,childPaths.length)">
-				{{result}}
-			</a>
-		</div>
-	</div>
+<!--	<div class="breadcrumb-container" *ngIf="childPaths.length>0">-->
+<!--		<div class="step-indicator" >-->
+<!--			<a class="step" href="#" *ngFor="let result of childPaths; let i = index" [ngClass]="{'completed': i!=(childPaths.length-1)}" (click)="goBack(i,childPaths.length)">-->
+<!--				{{result}}-->
+<!--			</a>-->
+<!--		</div>-->
+<!--	</div>-->
 	<div class="sb-detail-card-info">
 		<div class="sb-dt-card">
-			<div class="sb-dt-content sb-dt-content-main">
-				<div class="left">
-					<div class="sb-dt-title"> {{content?.contentData?.name}}</div>
-					<div class="sb-dt-source" *ngIf="content?.contentData?.owner || content?.contentData?.creator">
-						<span class="sb-by">{{ 'CONTENT_CREATED_BY' | translate }}</span>
-						<span class="sb-user">{{ content?.contentData?.owner || content?.contentData?.creator }}</span>
-					</div>
-				</div>
-			</div>
+<!--			<div class="sb-dt-content sb-dt-content-main">-->
+<!--				<div class="left">-->
+<!--					<div class="sb-dt-title"> {{content?.contentData?.name}}</div>-->
+<!--					<div class="sb-dt-source" *ngIf="content?.contentData?.owner || content?.contentData?.creator">-->
+<!--						<span class="sb-by">{{ 'CONTENT_CREATED_BY' | translate }}</span>-->
+<!--						<span class="sb-user">{{ content?.contentData?.owner || content?.contentData?.creator }}</span>-->
+<!--					</div>-->
+<!--				</div>-->
+<!--			</div>-->
 
 
-			<div class="sb-dt-content pt-0">
-				<div class="left" *ngIf="content?.contentData?.resourceType">
-					<div class="sb-practice">
-						<button ion-button outline small class="content-btn-padding disable-ripple">{{content?.contentData?.resourceType}}</button>
-					</div>
-				</div>
-				<div class="right" *ngIf="content?.contentData?.me_averageRating">
-					<div class="sb-rating-view">
-						<span class="sb-rating-value">{{ content?.contentData?.me_averageRating }}</span>
-						<span class="sb-rating-star">
-							<ion-icon ios="ios-star" md="md-star"></ion-icon>
-						</span>
-					</div>
-				</div>
-			</div>
+<!--			<div class="sb-dt-content pt-0">-->
+<!--&lt;!&ndash;				<div class="left" *ngIf="content?.contentData?.resourceType">&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;					<div class="sb-practice">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;						<button ion-button outline small class="content-btn-padding disable-ripple">{{content?.contentData?.resourceType}}</button>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;					</div>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;				</div>&ndash;&gt;-->
+<!--				<div class="right" *ngIf="content?.contentData?.me_averageRating">-->
+<!--					<div class="sb-rating-view">-->
+<!--						<span class="sb-rating-value">{{ content?.contentData?.me_averageRating }}</span>-->
+<!--						<span class="sb-rating-star">-->
+<!--							<ion-icon ios="ios-star" md="md-star"></ion-icon>-->
+<!--						</span>-->
+<!--					</div>-->
+<!--				</div>-->
+<!--			</div>-->
 
-			<div class="sb-separator-line"></div>
+<!--			<div class="sb-separator-line"></div>-->
 
 			<div class="sb-dt-card-actions">
 
@@ -206,39 +372,51 @@
 					<div class="sb-content-title">{{ 'BOARD' | translate }}</div>
 					<div class="sb-content-title-data">{{content?.contentData?.board}}</div>
 				</div>
-				<div class="sb-info" *ngIf="content?.contentData?.medium">
-					<div class="sb-content-title">{{'MEDIUM' | translate}}</div>
-					<div class="sb-content-title-data">{{content?.contentData?.medium | csa}}</div>
-				</div>
-				<div class="sb-info" *ngIf="content?.contentData?.gradeLevel && content?.contentData?.gradeLevel?.length">
-					<div class="sb-content-title">{{'CLASS' | translate}}</div>
-					<div class="sb-content-title-data">{{content?.contentData?.gradeLevel?.join(', ')}}</div>
-				</div>
-				<div class="sb-info" *ngIf="content?.contentData?.subject">
-					<div class="sb-content-title">{{'SUBJECT' | translate}}</div>
-					<div class="sb-content-title-data">{{content?.contentData?.subject | csa}}</div>
-				</div>
-				<div class="sb-info" *ngIf="content?.contentData?.license">
-					<div class="sb-content-title">{{'LICENSE' | translate}}</div>
-					<div class="sb-content-title-data">{{content?.contentData?.license}}</div>
-				</div>
-				<div class="sb-info" *ngIf="!content?.contentData?.license">
-					<div class="sb-content-title">{{'LICENSE' | translate}}</div>
-					<div class="sb-content-title-data">{{defaultLicense}}</div>
-				</div>
-				<div class="sb-info" *ngIf="content?.contentData?.creators || content?.contentData?.creator">
-					<div class="sb-content-title">{{'CREATORS' | translate}}</div>
-					<div class="sb-content-title-data">{{mergeProperties('creators', 'creator')}}</div>
-				</div>
-				<div class="sb-info" *ngIf="content?.contentData?.contributors || content?.contentData?.owner">
-					<div class="sb-content-title">{{'CONTRIBUTORS' | translate}}</div>
-					<div class="sb-content-title-data"> {{mergeProperties('contributors', 'owner')}}</div>
-				</div>
-				<div class="sb-info" *ngIf="content?.contentData?.attributions">
-					<div class="sb-content-title">{{'ATTRIBUTIONS' | translate}}</div>
-					<div class="sb-content-title-data">{{content?.contentData?.attributions}}</div>
-				</div>
-
+        <div *ngIf="showMoreFlag">
+          <div class="sb-info" *ngIf="content?.contentData?.medium">
+            <div class="sb-content-title">{{'MEDIUM' | translate}}</div>
+            <div class="sb-content-title-data">{{content?.contentData?.medium | csa}}</div>
+          </div>
+          <div class="sb-info" *ngIf="content?.contentData?.gradeLevel && content?.contentData?.gradeLevel?.length">
+            <div class="sb-content-title">{{'CLASS' | translate}}</div>
+            <div class="sb-content-title-data">{{content?.contentData?.gradeLevel?.join(', ')}}</div>
+          </div>
+          <div class="sb-info" *ngIf="content?.contentData?.subject">
+            <div class="sb-content-title">{{'SUBJECT' | translate}}</div>
+            <div class="sb-content-title-data">{{content?.contentData?.subject | csa}}</div>
+          </div>
+          <div class="sb-info" *ngIf="content?.contentData?.license">
+            <div class="sb-content-title">{{'LICENSE' | translate}}</div>
+            <div class="sb-content-title-data">{{content?.contentData?.license}}</div>
+          </div>
+          <div class="sb-info" *ngIf="!content?.contentData?.license">
+            <div class="sb-content-title">{{'LICENSE' | translate}}</div>
+            <div class="sb-content-title-data">{{defaultLicense}}</div>
+          </div>
+          <div class="sb-info" *ngIf="content?.contentData?.creators || content?.contentData?.creator">
+            <div class="sb-content-title">{{'CREATORS' | translate}}</div>
+            <div class="sb-content-title-data">{{mergeProperties('creators', 'creator')}}</div>
+          </div>
+          <div class="sb-info" *ngIf="content?.contentData?.contributors || content?.contentData?.owner">
+            <div class="sb-content-title">{{'CONTRIBUTORS' | translate}}</div>
+            <div class="sb-content-title-data"> {{mergeProperties('contributors', 'owner')}}</div>
+          </div>
+          <div class="sb-info" *ngIf="content?.contentData?.attributions">
+            <div class="sb-content-title">{{'ATTRIBUTIONS' | translate}}</div>
+            <div class="sb-content-title-data">{{content?.contentData?.attributions}}</div>
+          </div>
+        </div>
+        <div class="read-more" *ngIf="content && content.contentData.description &&
+        content.contentData.description.length > 10 || content.contentData.gradeLevel ||
+        content.contentData.subject" (click)="showMoreFlag = !showMoreFlag">
+          <div *ngIf="showMoreFlag" style="padding-left: 8px; padding-right: 8px;" class="padding-top-10" (click)="readLessorReadMore('read-less-clicked')">
+            {{ 'READ_LESS' | translate }}
+            <ion-icon name="ios-arrow-up"></ion-icon>
+          </div>
+        <div *ngIf="!showMoreFlag"  style="padding-left: 8px; padding-right: 8px;" (click)="readLessorReadMore('read-more-clicked')">
+        {{ 'READ_MORE' | translate }}
+    </div>
+        </div>
 			</ion-card>
 		</div>
 	</div>

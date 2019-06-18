@@ -40,13 +40,24 @@ page-content-details {
     .content-btn-padding{
         padding: $sb-modal-actions-padding !important;
     }
-
+  .sb-dt-card {
+    margin: 0 !important;
+    box-shadow: none;
+    background-color: $primary-100;
+  }
+  .sb-content-info-container .sb-content-info-items{
+    .sb-content-info-title{
+      color: $blue;
+    }
+    .sb-content-info-card{
+      box-shadow: none;
+    }
+  }
 }
 .sb-dt-content.sb-dt-content-main
 {
-    display: grid;
-    grid-gap: 8px;
-    grid-template-columns: auto;
+   text-align: left;
+  margin-left: 30px;
 }
 .disable-ripple ion-button-effect {
     display: none;
@@ -54,5 +65,12 @@ page-content-details {
 
 .disable-ripple {
     pointer-events: none;
+}
+.content-vertical-line{
+  border-left: 2px solid white;
+  height: 18px;
+  position: relative;
+  margin-left: 8px;
+  margin-right: 8px;
 }
 
