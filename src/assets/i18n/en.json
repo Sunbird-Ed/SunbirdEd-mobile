@@ -527,5 +527,6 @@
   "APP_QR_CODE" : "Have a {{%s}} QR Code?",
   "QR_CODE_DETAILS": "This can be found in some of your text books. Use for instant access to content",
   "SCAN_TAP": "Tap to scan",
-  "OR": "or"
+  "OR": "or",
+  "PLAY_CONTENT": "Play content"
 }
