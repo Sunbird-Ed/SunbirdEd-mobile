@@ -1,55 +1,48 @@
-import { ErrorHandler, Inject, Optional } from '@angular/core';
-import { AppVersion } from '@ionic-native/app-version';
+import { ErrorHandler, Optional } from '@angular/core';
 import { ViewController, NavControllerBase, App } from 'ionic-angular';
 import { ActivePageService } from '@app/service/active-page/active-page-service';
-import { TelemetryService, SunbirdSdk } from 'sunbird-sdk';
+import { SunbirdSdk, TelemetryErrorRequest } from 'sunbird-sdk';
 
 export class CrashAnalyticsErrorLogger implements ErrorHandler {
 
-    private appVersion = '';
-    private appId = '';
-
     constructor(
-        @Optional() private appVersionService: AppVersion,
         @Optional() private activePageService: ActivePageService,
         @Optional() private app: App,
-    ) {
-        window.addEventListener('unhandledrejection', this.handleError);
+    ) {}
 
-        this.appVersionService.getPackageName().then((res: any) => {
-            if (res) { this.appId = res; }
-        });
+    handleError(error: Error | string | any): void {
+        console.log('ERROR', error);
+        const telemetryErrorRequest: TelemetryErrorRequest = {
+            errorCode: '',
+            errorType: '',
+            stacktrace: '',
+            pageId: ''
+        };
 
-        this.appVersionService.getVersionNumber().then((res: any) => {
-            if (res) { this.appVersion = res; }
-        });
+        const errorLoggerRequest = {
+            stackTrace: '',
+            errorType: '',
+            pageId: ''
+        };
 
-    }
-
-    handleError(error: any): void {
-        let stackTace = '';
-        let errorPageId = '';
-
-        if (typeof error === 'string') {
-            error = new Error(error);
+        if (error instanceof Error) {
+            telemetryErrorRequest.stacktrace = error.stack.slice(0, 250); // 250 characters limited for Telemetry purpose.
+            errorLoggerRequest.stackTrace = error.stack.slice(0, 250); // 250 characters limited for API purpose.
+            telemetryErrorRequest.errorType = error.name || '';
+            errorLoggerRequest.errorType = error.name || '';
         }
 
-        if (error && error.stack) {
-            stackTace = error.stack.slice(0, 250); // 250 characters limited for Telemetry purpose.
-        }
-
-        if (this.app && this.activePageService && this.app.getActiveNavs()[0] && this.app.getActiveNavs()[0].getActive) {
+        try {
             const navObj: NavControllerBase = this.app.getActiveNavs()[0];
             const activeView: ViewController = navObj.getActive();
-            errorPageId = this.activePageService.computePageId((<any>activeView).instance);
-        }
+            telemetryErrorRequest.pageId = this.activePageService.computePageId((<any>activeView).instance);
+            errorLoggerRequest.pageId = this.activePageService.computePageId((<any>activeView).instance);
 
-        SunbirdSdk.instance.telemetryService.error({
-            errorCode: '',
-            errorType: error.name || '',
-            stacktrace: stackTace,
-            pageId: errorPageId
-        });
+            SunbirdSdk.instance.telemetryService.error(telemetryErrorRequest).toPromise();
+
+            // SunbirdSdk.instance.errorLoggerService.logError(errorLoggerRequest).toPromise();
+
+        } catch (e) {}
 
         throw error;
     }
