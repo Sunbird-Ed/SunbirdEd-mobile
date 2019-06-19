@@ -1004,7 +1004,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
     if (enrolledCourses && enrolledCourses.length > 0) {
       for (const course of enrolledCourses) {
         if (course.courseId === identifier) {
-          if (this.courseCardData.batch && course.batch === this.courseCardData.batch) {
+          if (this.courseCardData.batch && course.batchId === this.courseCardData.batchId) {
             this.isAlreadyEnrolled = true;
             this.courseCardData = course;
           } else if (!this.courseCardData.batch) {

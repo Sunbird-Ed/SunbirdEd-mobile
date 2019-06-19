@@ -107,7 +107,8 @@ export enum PageId {
     TRANSFERING_CONTENT_POPUP = 'transfering-content-popup',
     RETRY_CONTENT_TRANSFER_POPUP = 'retry-content-transfer-popup',
     SHOW_DUPLICATE_CONTENT_POPUP = 'show-duplicate-content-popup',
-    CONTENT_TRANSFER_SUCCEED_POPUP = 'content-transfer-succeed-popup'
+    CONTENT_TRANSFER_SUCCEED_POPUP = 'content-transfer-succeed-popup',
+    CANCELLING_CONTENT_TRANSFER_POPUP = 'cancelling-content-transfer-popup'
 }
 export enum LogType {
     NOTIFICATION = 'notification'
