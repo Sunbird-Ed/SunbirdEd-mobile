@@ -173,13 +173,6 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
         PageId.TRANSFER_CONTENT_CONFIRMATION_POPUP, undefined, undefined, undefined
       );
 
-      this.storageService.transferContents({
-        contentIds: [],
-        existingContentAction: undefined,
-        destinationFolder: this.getStorageDestinationVolume(this.storageDestination),
-        deleteDestination: false
-      }).subscribe(null, (e) => { console.error(e); }, () => { console.log('complete'); });
-
       await this.showTransferringContentsPopup(this.shouldTransferContentsPopup, this.storageDestination);
     });
   }
@@ -231,26 +224,35 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
       return;
     }
 
+    this.storageService.transferContents({
+      contentIds: [],
+      existingContentAction: undefined,
+      destinationFolder: this.getStorageDestinationVolume(this.storageDestination),
+      deleteDestination: false
+    }).subscribe(null, (e) => { console.error(e); }, () => { console.log('complete'); });
+
     const totalTransferSize = await this.spaceTakenBySunbird$.toPromise();
 
-    const eventBusSubscription = this.eventsBusService
+    const transferCompleteSubscription = this.eventsBusService
       .events(EventNamespace.STORAGE)
       .takeWhile(e => e.type !== StorageEventType.TRANSFER_COMPLETED)
       .filter(e => e.type === StorageEventType.TRANSFER_FAILED_DUPLICATE_CONTENT)
-      .do((e) => this.showDuplicateContentPopup())
-      .reduce(() => undefined)
-      .subscribe();
+      .take(1)
+      .subscribe(async () => {
+        this.showDuplicateContentPopup();
+      });
 
     const transferProgress$ = this.eventsBusService
       .events(EventNamespace.STORAGE)
       .takeWhile(e => e.type !== StorageEventType.TRANSFER_COMPLETED)
       .filter(e => e.type === StorageEventType.TRANSFER_PROGRESS)
-      .map((e: StorageTransferProgress) => e.payload.progress)
-      .do(() => this.changeDetectionRef.detectChanges());
+      .map((e: StorageTransferProgress) => e.payload.progress);
 
-    transferProgress$
+    const transferProgressSubscription = transferProgress$
       .subscribe(null, null, async () => {
-        await this.transferringContentsPopup.dismiss();
+        if (this.transferringContentsPopup) {
+          await this.transferringContentsPopup.dismiss();
+        }
         this.showSuccessTransferPopup(this.transferringContentsPopup, storageDestination);
       });
 
@@ -307,7 +309,8 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     this.transferringContentsPopup.onDidDismiss(async (shouldCancel: boolean) => {
       this.transferringContentsPopup = undefined;
 
-      eventBusSubscription.unsubscribe();
+      transferCompleteSubscription.unsubscribe();
+      transferProgressSubscription.unsubscribe();
 
       if (shouldCancel) {
         this.telemetryGeneratorService.generateInteractTelemetry(
@@ -317,25 +320,39 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
           PageId.TRANSFERING_CONTENT_POPUP, undefined, undefined, undefined
         );
 
-        this.storageService.cancelTransfer().toPromise();
-        this.showCancellingTransferPopup(this.transferringContentsPopup);
+        this.showCancellingTransferPopup(this.transferringContentsPopup, storageDestination);
       }
     });
 
     return;
   }
 
-  private async showCancellingTransferPopup(prevPopup: Popover): Promise<undefined> {
+  private async showCancellingTransferPopup(prevPopup: Popover, storageDestination): Promise<undefined> {
     if (this.cancellingTransferPopup) {
       return;
     }
 
+    this.storageService.cancelTransfer().toPromise();
+
     this.eventsBusService
       .events(EventNamespace.STORAGE)
-      .filter(e => e.type === StorageEventType.TRANSFER_REVERT_COMPLETED)
+      .filter(e =>
+        e.type === StorageEventType.TRANSFER_REVERT_COMPLETED ||
+        e.type === StorageEventType.TRANSFER_COMPLETED
+      )
       .take(1)
-      .do(() => this.cancellingTransferPopup.dismiss())
-      .subscribe();
+      .subscribe((e) => {
+        if (e.type === StorageEventType.TRANSFER_REVERT_COMPLETED) {
+          this.storageDestination = this.storageDestination === StorageDestination.INTERNAL_STORAGE ?
+            StorageDestination.EXTERNAL_STORAGE :
+            StorageDestination.INTERNAL_STORAGE;
+
+          this.cancellingTransferPopup.dismiss();
+        } else if (e.type === StorageEventType.TRANSFER_COMPLETED) {
+          this.cancellingTransferPopup.dismiss();
+          this.showSuccessTransferPopup(this.cancellingTransferPopup, storageDestination);
+        }
+      });
 
       this.cancellingTransferPopup = this.popoverCtrl.create(SbPopoverComponent, {
       sbPopoverHeading: this.commonUtilService.translateMessage('TRANSFER_STOPPED'),
@@ -348,6 +365,10 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     });
 
     this.cancellingTransferPopup.present();
+
+    this.cancellingTransferPopup.onDidDismiss(() => {
+      this.cancellingTransferPopup = undefined;
+    });
 
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW,
@@ -399,6 +420,11 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
 
         return this.storageService.retryCurrentTransfer().toPromise();
       }
+
+      if (this.transferringContentsPopup) {
+        this.transferringContentsPopup.dismiss();
+      }
+
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.TOUCH,
         InteractSubtype.POPUP_DISMISSED,
@@ -414,7 +440,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     if (this.successTransferPopup) {
       return;
     }
-    
+
     const spaceTakenBySunbird = await this.spaceTakenBySunbird$.toPromise();
 
     this.successTransferPopup = this.popoverCtrl.create(SbPopoverComponent, {
