@@ -144,14 +144,14 @@ describe('CollectionDetailsPage Component', () => {
         };
         userAndGroupsPage.loadingUserList = true;
         profileServiceMock.getAllProfiles.mockReturnValue(Observable.of('test'));
-       // window.setTimeout = jest.fn();
+        // window.setTimeout = jest.fn();
         // assert
         userAndGroupsPage.getAllProfile();
         // act
         expect(loader.present).toHaveBeenCalled();
         setTimeout(() => {
             zoneMock.run.mock.calls[0][0].call(userAndGroupsPage);
-         //   expect((profileServiceMock.getAllProfiles as any).map).toHaveBeenCalledWith(profileRequest);
+            //   expect((profileServiceMock.getAllProfiles as any).map).toHaveBeenCalledWith(profileRequest);
             done();
         }, 1000);
     });
@@ -194,4 +194,9 @@ describe('CollectionDetailsPage Component', () => {
         }, 0);
     });
 
+    it('should be go to Group Details', () => {
+        // arrange
+        // act
+        // assert
+    });
 });
