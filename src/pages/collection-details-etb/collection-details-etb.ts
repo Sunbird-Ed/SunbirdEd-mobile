@@ -75,6 +75,7 @@ import {
 } from '../../service/telemetry-constants';
 import {FileSizePipe} from '@app/pipes/file-size/file-size';
 import {SbGenericPopoverComponent} from '@app/component/popups/sb-generic-popup/sb-generic-popover';
+import {ComingSoonMessageService} from "@app/service/coming-soon-message.service";
 
 /**
  * Generated class for the CollectionDetailsEtbPage page.
@@ -274,6 +275,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     private toastController: ToastController,
     private fileSizePipe: FileSizePipe,
     private headerService: AppHeaderService,
+    private comingSoonMessageService: ComingSoonMessageService
   ) {
     this.objRollup = new Rollup();
     this.checkLoggedInOrGuestUser();
@@ -537,11 +539,13 @@ export class CollectionDetailsEtbPage implements OnInit {
       });
   }
 
-  showCommingSoonPopup(childData: any) {
+  async showCommingSoonPopup(childData: any) {
+    const message = await this.comingSoonMessageService.getComingSoonMessage(childData);
     if (childData.contentData.mimeType === 'application/vnd.ekstep.content-collection' && !childData.children) {
         const popover = this.popoverCtrl.create(SbGenericPopoverComponent, {
             sbPopoverHeading: this.commonUtilService.translateMessage('CONTENT_COMMING_SOON'),
-            sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_IS_BEEING_ADDED') + childData.contentData.name,
+            sbPopoverMainTitle: message ? this.commonUtilService.translateMessage(message) :
+            this.commonUtilService.translateMessage('CONTENT_IS_BEEING_ADDED') + childData.contentData.name,
             actionsButtons: [
                 {
                     btntext: this.commonUtilService.translateMessage('OKAY'),
