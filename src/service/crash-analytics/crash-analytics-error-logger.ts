@@ -26,10 +26,11 @@ export class CrashAnalyticsErrorLogger implements ErrorHandler {
         };
 
         if (error instanceof Error) {
-            telemetryErrorRequest.stacktrace = error.stack.slice(0, 250); // 250 characters limited for Telemetry purpose.
-            errorLoggerRequest.stackTrace = error.stack.slice(0, 250); // 250 characters limited for API purpose.
+            telemetryErrorRequest.stacktrace = error.stack.slice(0, 250); // 250 characters limited for Telemetry and API purpose.
             telemetryErrorRequest.errorType = error.name || '';
-            errorLoggerRequest.errorType = error.name || '';
+
+            errorLoggerRequest.stackTrace = telemetryErrorRequest.stacktrace;
+            errorLoggerRequest.errorType = telemetryErrorRequest.errorType;
         }
 
         try {
