@@ -423,7 +423,8 @@ export const groupServiceMock = createSpyObj<GroupService>([
   'addUpdateProfilesToGroup',
   'updateGroup',
   'addUpdateProfilesToGroup',
-  'getAllGroup'
+  'getAllGroups',
+  'getActiveSessionGroup'
 ]);
 
 export const alertControllerMock = createSpyObj<AlertController>([

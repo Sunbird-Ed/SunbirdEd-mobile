@@ -1,24 +1,42 @@
-import { ActiveDownloadsPage } from './../active-downloads/active-downloads';
-import { Component, Inject, NgZone, ViewChild, OnInit } from '@angular/core';
-import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController } from 'ionic-angular';
+import {ActiveDownloadsPage} from './../active-downloads/active-downloads';
+import {Component, Inject, NgZone, OnInit, ViewChild} from '@angular/core';
 import { Content as iContent } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
-import { SocialSharing } from '@ionic-native/social-sharing';
+import {
+  Events,
+  IonicPage,
+  Navbar,
+  NavController,
+  NavParams,
+  Platform,
+  PopoverController,
+  ToastController,
+  ViewController
+} from 'ionic-angular';
+import {TranslateService} from '@ngx-translate/core';
+import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
-import { ContentDetailsPage } from '@app/pages/content-details/content-details';
-import { ConfirmAlertComponent, ContentActionsComponent, ContentRatingAlertComponent, SbPopoverComponent } from '@app/component';
-import { ContentType, MimeType, ShareUrl } from '@app/app';
-import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
+import {ContentDetailsPage} from '@app/pages/content-details/content-details';
+import {
+  ConfirmAlertComponent,
+  ContentActionsComponent,
+  ContentRatingAlertComponent,
+  SbPopoverComponent
+} from '@app/component';
+import {ContentType, MimeType, ShareUrl} from '@app/app';
+import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
 import {
   AppGlobalService,
+  AppHeaderService,
   CommonUtilService,
   CourseUtilService,
   TelemetryGeneratorService,
-  UtilityService,
-  AppHeaderService
+  UtilityService
 } from '@app/service';
 import {
   Content,
+  ContentAccess,
+  ContentAccessStatus,
+  ContentDeleteStatus,
   ContentDetailRequest,
   ContentEventType,
   ContentExportRequest,
@@ -28,6 +46,7 @@ import {
   ContentImportRequest,
   ContentImportResponse,
   ContentImportStatus,
+  ContentMarkerRequest,
   ContentService,
   ContentUpdate,
   CorrelationData,
@@ -35,19 +54,16 @@ import {
   DownloadProgress,
   EventsBusEvent,
   EventsBusService,
+  MarkerType,
+  Profile,
+  ProfileService,
   ProfileType,
   Rollup,
+  StorageService,
   TelemetryErrorCode,
-  TelemetryObject,
-  ContentDeleteStatus,
-  ProfileService,
-  ContentAccessStatus,
-  ContentAccess,
-  ContentMarkerRequest,
-  MarkerType,
-  Profile
+  TelemetryObject
 } from 'sunbird-sdk';
-import { Subscription } from 'rxjs';
+import {Subscription} from 'rxjs';
 import {
   Environment,
   ErrorType,
@@ -57,9 +73,9 @@ import {
   Mode,
   PageId
 } from '../../service/telemetry-constants';
-import { ViewController } from 'ionic-angular';
-import { FileSizePipe } from '@app/pipes/file-size/file-size';
-import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
+import {FileSizePipe} from '@app/pipes/file-size/file-size';
+import {SbGenericPopoverComponent} from '@app/component/popups/sb-generic-popup/sb-generic-popover';
+import {ComingSoonMessageService} from "@app/service/coming-soon-message.service";
 
 /**
  * Generated class for the CollectionDetailsEtbPage page.
@@ -238,10 +254,12 @@ export class CollectionDetailsEtbPage implements OnInit {
   toast: any;
   contentTypesCount: any;
   constructor(
-    private navCtrl: NavController,
-    private navParams: NavParams,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     @Inject('EVENTS_BUS_SERVICE') private eventBusService: EventsBusService,
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    @Inject('STORAGE_SERVICE') private storageService: StorageService,
+    private navCtrl: NavController,
+    private navParams: NavParams,
     private zone: NgZone,
     private events: Events,
     private popoverCtrl: PopoverController,
@@ -257,7 +275,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     private toastController: ToastController,
     private fileSizePipe: FileSizePipe,
     private headerService: AppHeaderService,
-    @Inject('PROFILE_SERVICE') private profileService: ProfileService
+    private comingSoonMessageService: ComingSoonMessageService
   ) {
     this.objRollup = new Rollup();
     this.checkLoggedInOrGuestUser();
@@ -521,11 +539,13 @@ export class CollectionDetailsEtbPage implements OnInit {
       });
   }
 
-  showCommingSoonPopup(childData: any) {
+  async showCommingSoonPopup(childData: any) {
+    const message = await this.comingSoonMessageService.getComingSoonMessage(childData);
     if (childData.contentData.mimeType === 'application/vnd.ekstep.content-collection' && !childData.children) {
         const popover = this.popoverCtrl.create(SbGenericPopoverComponent, {
             sbPopoverHeading: this.commonUtilService.translateMessage('CONTENT_COMMING_SOON'),
-            sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_IS_BEEING_ADDED') + childData.contentData.name,
+            sbPopoverMainTitle: message ? this.commonUtilService.translateMessage(message) :
+            this.commonUtilService.translateMessage('CONTENT_IS_BEEING_ADDED') + childData.contentData.name,
             actionsButtons: [
                 {
                     btntext: this.commonUtilService.translateMessage('OKAY'),
@@ -660,7 +680,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     _.forEach(identifiers, (value) => {
       requestParams.push({
         isChildContent: isChild,
-        destinationFolder: cordova.file.externalDataDirectory,
+        destinationFolder: this.storageService.getStorageDestinationDirectoryPath(),
         contentId: value,
         correlationData: this.corRelationList ? this.corRelationList : []
       });
@@ -994,7 +1014,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     if (this.contentDetail.isAvailableLocally) {
       const exportContentRequest: ContentExportRequest = {
         contentIds: [this.contentDetail.identifier],
-        destinationFolder: cordova.file.externalDataDirectory
+        destinationFolder: this.storageService.getStorageDestinationDirectoryPath()
       };
       this.contentService.exportContent(exportContentRequest).toPromise()
         .then((contntExportResponse: ContentExportResponse) => {

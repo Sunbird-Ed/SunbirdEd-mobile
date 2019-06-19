@@ -1,11 +1,9 @@
-import { AppVersion } from '@ionic-native/app-version';
-import { AppGlobalService, AppHeaderService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
-import { AppStorageInfo, DownloadManagerPageInterface, EmitedContents } from './download-manager.interface';
-import { AudienceFilter, ContentType } from './../../app/app.constant';
-import { ViewController } from 'ionic-angular/navigation/view-controller';
-import { Component, Inject, NgZone, OnInit } from '@angular/core';
-import { Events, IonicPage, Loading, NavController, NavParams, Popover, PopoverController } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
+import {AppVersion} from '@ionic-native/app-version';
+import {AppGlobalService, AppHeaderService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
+import {AppStorageInfo, DownloadManagerPageInterface, EmitedContents} from './download-manager.interface';
+import {ContentType} from './../../app/app.constant';
+import {Component, Inject, NgZone, OnInit} from '@angular/core';
+import {Events, IonicPage, Loading, NavController, NavParams, Popover, PopoverController} from 'ionic-angular';
 import {
   Content,
   ContentDeleteRequest,
@@ -18,14 +16,14 @@ import {
   ContentSpaceUsageSummaryResponse,
   DeviceInfo,
   Profile,
-  ProfileType,
-  SortOrder
+  SortOrder,
+  StorageService
 } from 'sunbird-sdk';
-import { SbPopoverComponent } from '@app/component';
-import { ActiveDownloadsPage } from '../active-downloads/active-downloads';
-import { PageId, InteractType, Environment, InteractSubtype } from '@app/service/telemetry-constants';
-import { StorageSettingsPage } from '../storage-settings/storage-settings';
-import {BehaviorSubject, Observable, Subject} from "rxjs";
+import {SbPopoverComponent} from '@app/component';
+import {ActiveDownloadsPage} from '../active-downloads/active-downloads';
+import {Environment, InteractSubtype, InteractType, PageId} from '@app/service/telemetry-constants';
+import {StorageSettingsPage} from '../storage-settings/storage-settings';
+import {BehaviorSubject} from "rxjs";
 
 /**
  * Generated class for the DownloadManagerPage page.
@@ -62,9 +60,10 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     private events: Events,
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
+    private telemetryGeneratorService: TelemetryGeneratorService,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
-    private telemetryGeneratorService: TelemetryGeneratorService,
+    @Inject('STORAGE_SERVICE') private storageService: StorageService
   ) {
   }
 
@@ -98,8 +97,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
 
 
   private async getAppStorageInfo(): Promise<AppStorageInfo> {
-
-    const req: ContentSpaceUsageSummaryRequest = { paths: [cordova.file.externalDataDirectory] };
+    const req: ContentSpaceUsageSummaryRequest = {paths: [this.storageService.getStorageDestinationDirectoryPath()]};
     return this.contentService.getContentSpaceUsageSummary(req).toPromise()
       .then((res: ContentSpaceUsageSummaryResponse[]) => {
        return  this.deviceInfo.getAvailableInternalMemorySize().toPromise()
