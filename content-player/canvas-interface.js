@@ -56,6 +56,10 @@ if (!window.genieservice) {
     });
   };
 
+  var showExitConfirmPopup = function showExitConfirmPopup() {
+    return window.parent.handleAction('showExitConfirmPopup');
+  }
+
   window.genieservice = function () {
     return {
       getCurrentUser: getCurrentUser,
@@ -69,7 +73,8 @@ if (!window.genieservice) {
       endGenieCanvas: endGenieCanvas,
       endContent: endContent,
       launchContent: launchContent,
-      sendTelemetry: sendTelemetry
+      sendTelemetry: sendTelemetry,
+      showExitConfirmPopup: showExitConfirmPopup
     };
   }();
 
