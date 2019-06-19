@@ -35,7 +35,7 @@ import {
   MenuController
 } from 'ionic-angular';
 
-import { NgZone } from '@angular/core';
+import { NgZone, ChangeDetectorRef } from '@angular/core';
 import {
   AppGlobalService,
   AppRatingService,
@@ -539,3 +539,6 @@ export const menuControllerMock = createSpyObj<MenuController>([
 
 ]);
 
+export const changeDetectionRefMock = createSpyObj<ChangeDetectorRef>([
+  'detectChanges'
+]);

@@ -14,7 +14,8 @@ import {
     toastControllerMock,
     appHeaderServiceMock,
     downloadServiceMock,
-    eventBusServiceMock
+    eventBusServiceMock,
+    changeDetectionRefMock
 } from '../../__tests__/mocks';
 import { ActiveDownloadsInterface } from './active-downloads.interface';
 import { Observable, Subscription } from 'rxjs';
@@ -23,16 +24,23 @@ import { SbNoNetworkPopupComponent } from '@app/component/popups/sb-no-network-p
 import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { EventNamespace } from 'sunbird-sdk';
 import { convertUrlToDehydratedSegments } from 'ionic-angular/umd/navigation/url-serializer';
+import { doesNotThrow } from 'assert';
 describe.only('ActiveDownloadsPage', () => {
     let activeDownloadPage: ActiveDownloadsPage;
     beforeEach(() => {
         platformMock.registerBackButtonAction.mockReturnValue(jest.fn());
-        downloadServiceMock.getActiveDownloadRequests.mockReturnValue(Observable.from([]));
+        downloadServiceMock.getActiveDownloadRequests.mockReturnValue(Observable.of([]));
         activeDownloadPage = new ActiveDownloadsPage(
-            popoverCtrlMock as any, viewControllerMock as any, ChangeDetectorRef as any,
-            appHeaderServiceMock as any, navCtrlMock as any, commonUtilServiceMock as any, toastControllerMock as any,
+            popoverCtrlMock as any,
+            viewControllerMock as any,
+            changeDetectionRefMock as any,
+            appHeaderServiceMock as any,
+            navCtrlMock as any,
+            commonUtilServiceMock as any,
+            toastControllerMock as any,
             telemetryGeneratorServiceMock as any,
-            downloadServiceMock as any, eventBusServiceMock as any
+            downloadServiceMock as any,
+            eventBusServiceMock as any
         );
         jest.resetAllMocks();
     });
@@ -126,7 +134,7 @@ describe.only('ActiveDownloadsPage', () => {
             popoverCtrlMock.create.mockReturnValue(popover);
             loader = {
                 present: jest.fn(() => ({ then: (cb) => cb() })),
-                dismiss: jest.fn()
+                dismiss: jest.fn(() => ({ then: (cb) => cb() }))
             };
             commonUtilServiceMock.getLoader.mockReturnValue(loader);
             toast = {
@@ -156,11 +164,23 @@ describe.only('ActiveDownloadsPage', () => {
             // assert
             expect(popover.present).toHaveBeenCalled();
         });
-        it('should cancel all the downloads when popover on onDidDismiss()', () => {
+        xit('should cancel all the downloads when popover on onDidDismiss()', (done) => {
+            // arrange
+            popoverCtrlMock.create.mockClear();
+            popover = {
+                present: jest.fn(),
+                onDidDismiss: jest.fn((cb) => {
+                    cb(true);
+                })
+            };
+            popoverCtrlMock.create.mockReturnValue(popover);
             // act
             activeDownloadPage.cancelAllDownloads();
             // assert
-            expect(downloadServiceMock.cancelAll).toHaveBeenCalled();
+            setTimeout(() => {
+                expect(downloadServiceMock.cancelAll).toHaveBeenCalled();
+                done();
+            }, 0);
         });
     });
 
