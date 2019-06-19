@@ -24,17 +24,25 @@ import { AppVersion } from '@ionic-native/app-version';
   templateUrl: 'storage-settings.html'
 })
 export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
+  // popovers
+  private shouldTransferContentsPopup?: Popover;
+  private transferringContentsPopup?: Popover;
+  private cancellingTransferPopup?: Popover;
+  private duplicateContentPopup?: Popover;
+  private successTransferPopup?: Popover;
+  // storage
+  public StorageDestination = StorageDestination;
+  public storageDestination?: StorageDestination;
+  public spaceTakenBySunbird$: Observable<number>;
+
   private _storageVolumes: StorageVolume[] = [];
+  // header
   private _appHeaderSubscription?: Subscription;
   private _headerConfig = {
     showHeader: true,
     showBurgerMenu: false,
     actionButtons: [] as string[]
   };
-
-  public StorageDestination = StorageDestination;
-  public storageDestination?: StorageDestination;
-  public spaceTakenBySunbird$: Observable<number>;
   appName: any;
 
   get isExternalMemoryAvailable(): boolean {
@@ -104,20 +112,23 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
   }
 
   async showShouldTransferContentsPopup(): Promise<void> {
+    if (this.shouldTransferContentsPopup) {
+      return;
+    }
+
     if (this.storageDestination === await this.storageService.getStorageDestination().toPromise()) {
       return;
     }
 
     const spaceTakenBySunbird = await this.spaceTakenBySunbird$.toPromise();
 
-    const transferContentPopup = this.popoverCtrl.create(SbPopoverComponent, {
+    this.shouldTransferContentsPopup = this.popoverCtrl.create(SbPopoverComponent, {
       sbPopoverHeading: (this.storageDestination === StorageDestination.INTERNAL_STORAGE) ?
         this.commonUtilService.translateMessage('TRANSFER_CONTENT_TO_PHONE') :
         this.commonUtilService.translateMessage('TRANSFER_CONTENT_TO_SDCARD'),
       sbPopoverMainTitle: (this.storageDestination === StorageDestination.INTERNAL_STORAGE) ?
         this.commonUtilService.translateMessage('SUCCESSFUL_CONTENT_TRANSFER_TO_PHONE') :
-        this.commonUtilService.translateMessage('SUCCESSFUL_CONTENT_TRANSFER_TO_SDCARD')
-      ,
+        this.commonUtilService.translateMessage('SUCCESSFUL_CONTENT_TRANSFER_TO_SDCARD'),
       actionsButtons: [
         {
           btntext: this.commonUtilService.translateMessage('MOVE'),
@@ -128,9 +139,9 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
       metaInfo: this.commonUtilService.translateMessage('TOTAL_SIZE') + this.fileSizePipe.transform(spaceTakenBySunbird),
     }, {
         cssClass: 'sb-popover dw-active-downloads-popover',
-      });
+    });
 
-    transferContentPopup.present();
+    this.shouldTransferContentsPopup.present();
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW,
       '',
@@ -138,7 +149,9 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
       Environment.DOWNLOADS
     );
 
-    transferContentPopup.onDidDismiss(async (shouldTransfer: boolean) => {
+    this.shouldTransferContentsPopup.onDidDismiss(async (shouldTransfer: boolean) => {
+      this.shouldTransferContentsPopup = undefined;
+
       if (!shouldTransfer) {
         this.telemetryGeneratorService.generateInteractTelemetry(
           InteractType.TOUCH,
@@ -167,7 +180,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
         deleteDestination: false
       }).subscribe(null, (e) => { console.error(e); }, () => { console.log('complete'); });
 
-      await this.showTransferringContentsPopup(transferContentPopup, this.storageDestination);
+      await this.showTransferringContentsPopup(this.shouldTransferContentsPopup, this.storageDestination);
     });
   }
 
@@ -214,7 +227,10 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
   }
 
   private async showTransferringContentsPopup(prevPopup: Popover, storageDestination: StorageDestination): Promise<undefined> {
-    let transferringContentPopup: Popover;
+    if (this.transferringContentsPopup) {
+      return;
+    }
+
     const totalTransferSize = await this.spaceTakenBySunbird$.toPromise();
 
     const eventBusSubscription = this.eventsBusService
@@ -234,11 +250,11 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
 
     transferProgress$
       .subscribe(null, null, async () => {
-        await transferringContentPopup.dismiss();
-        this.showSuccessTransferPopup(transferringContentPopup, storageDestination);
+        await this.transferringContentsPopup.dismiss();
+        this.showSuccessTransferPopup(this.transferringContentsPopup, storageDestination);
       });
 
-    transferringContentPopup = this.popoverCtrl.create(SbPopoverComponent, {
+    this.transferringContentsPopup = this.popoverCtrl.create(SbPopoverComponent, {
       sbPopoverHeading: this.commonUtilService.translateMessage('TRANSFERRING_FILES'),
       sbPopoverDynamicMainTitle: transferProgress$
         .startWith({
@@ -280,7 +296,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
       cssClass: 'sb-popover dw-active-downloads-popover',
     });
 
-    await transferringContentPopup.present();
+    await this.transferringContentsPopup.present();
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW,
       '',
@@ -288,7 +304,9 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
       Environment.DOWNLOADS
     );
 
-    transferringContentPopup.onDidDismiss(async (shouldCancel: boolean) => {
+    this.transferringContentsPopup.onDidDismiss(async (shouldCancel: boolean) => {
+      this.transferringContentsPopup = undefined;
+
       eventBusSubscription.unsubscribe();
 
       if (shouldCancel) {
@@ -300,7 +318,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
         );
 
         this.storageService.cancelTransfer().toPromise();
-        this.showCancellingTransferPopup(transferringContentPopup);
+        this.showCancellingTransferPopup(this.transferringContentsPopup);
       }
     });
 
@@ -308,16 +326,18 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
   }
 
   private async showCancellingTransferPopup(prevPopup: Popover): Promise<undefined> {
-    let cancellingTransferPopup: Popover;
+    if (this.cancellingTransferPopup) {
+      return;
+    }
 
     this.eventsBusService
       .events(EventNamespace.STORAGE)
       .filter(e => e.type === StorageEventType.TRANSFER_REVERT_COMPLETED)
       .take(1)
-      .do(() => cancellingTransferPopup.dismiss())
+      .do(() => this.cancellingTransferPopup.dismiss())
       .subscribe();
 
-    cancellingTransferPopup = this.popoverCtrl.create(SbPopoverComponent, {
+      this.cancellingTransferPopup = this.popoverCtrl.create(SbPopoverComponent, {
       sbPopoverHeading: this.commonUtilService.translateMessage('TRANSFER_STOPPED'),
       actionsButtons: [],
       icon: null,
@@ -326,7 +346,9 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
       enableBackdropDismiss: false,
       cssClass: 'sb-popover dw-active-downloads-popover',
     });
-    cancellingTransferPopup.present();
+
+    this.cancellingTransferPopup.present();
+
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW,
       '',
@@ -337,7 +359,11 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
   }
 
   private async showDuplicateContentPopup(): Promise<undefined> {
-    const duplicateContentPopup = this.popoverCtrl.create(SbPopoverComponent, {
+    if (this.duplicateContentPopup) {
+      return;
+    }
+
+    this.duplicateContentPopup = this.popoverCtrl.create(SbPopoverComponent, {
       sbPopoverHeading: this.commonUtilService.translateMessage('TRANSFERRING_FILES'),
       sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_ALREADY_EXISTS'),
       actionsButtons: [
@@ -351,7 +377,8 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
         cssClass: 'sb-popover warning dw-active-downloads-popover',
       });
 
-    duplicateContentPopup.present();
+    this.duplicateContentPopup.present();
+
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW,
       '',
@@ -359,7 +386,9 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
       Environment.DOWNLOADS
     );
 
-    duplicateContentPopup.onDidDismiss(async (canContinue: any) => {
+    this.duplicateContentPopup.onDidDismiss(async (canContinue: any) => {
+      this.duplicateContentPopup = undefined;
+
       if (canContinue) {
         this.telemetryGeneratorService.generateInteractTelemetry(
           InteractType.TOUCH,
@@ -367,6 +396,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
           Environment.DOWNLOADS,
           PageId.SHOW_DUPLICATE_CONTENT_POPUP, undefined, undefined, undefined
         );
+
         return this.storageService.retryCurrentTransfer().toPromise();
       }
       this.telemetryGeneratorService.generateInteractTelemetry(
@@ -381,8 +411,13 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
   }
 
   private async showSuccessTransferPopup(prevPopup: Popover, storageDestination: StorageDestination): Promise<undefined> {
+    if (this.successTransferPopup) {
+      return;
+    }
+    
     const spaceTakenBySunbird = await this.spaceTakenBySunbird$.toPromise();
-    const successTransferPopup = this.popoverCtrl.create(SbPopoverComponent, {
+
+    this.successTransferPopup = this.popoverCtrl.create(SbPopoverComponent, {
       sbPopoverHeading: (storageDestination === StorageDestination.INTERNAL_STORAGE) ?
       this.commonUtilService.translateMessage('CONTENT_SUCCESSFULLY_TRANSFERRED_TO_PHONE') :
         this.commonUtilService.translateMessage('CONTENT_SUCCESSFULLY_TRANSFERRED_TO_SDCARD'),
@@ -400,7 +435,9 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     }, {
         cssClass: 'sb-popover dw-active-downloads-popover',
       });
-    successTransferPopup.present();
+
+    this.successTransferPopup.present();
+
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW,
       '',
@@ -408,15 +445,16 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
       Environment.DOWNLOADS
     );
 
-    successTransferPopup.onDidDismiss(async (canCancel: any) => {
-      if (canCancel) {
+    this.successTransferPopup.onDidDismiss(async (okClicked: any) => {
+      this.successTransferPopup = undefined;
+
+      if (okClicked) {
         this.telemetryGeneratorService.generateInteractTelemetry(
           InteractType.TOUCH,
           InteractSubtype.OK_CLICKED,
           Environment.DOWNLOADS,
           PageId.SHOW_DUPLICATE_CONTENT_POPUP, undefined, undefined, undefined
         );
-        successTransferPopup.dismiss();
       }
     });
     return undefined;
