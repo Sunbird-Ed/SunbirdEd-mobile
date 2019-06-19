@@ -27,7 +27,7 @@
 
         <!-- new -->
         <ion-grid class="sb-accordian-header">
-          <ion-row (click)="toggleGroup(i)" *ngIf="item?.children">
+          <ion-row (click)="toggleGroup(i, item)" *ngIf="item?.children">
             <ion-col col-11>
               <div class="sb-topic-text"> {{item?.contentData?.name}} </div>
             </ion-col>

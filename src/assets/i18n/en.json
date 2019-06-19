@@ -537,5 +537,12 @@
   "TRANSFER_STOPPED": "Transfer Stopped",
   "CANCELLING_IN_PROGRESS": "Cancelling in Progress..",
   "CONTENT_SUCCESSFULLY_TRANSFERRED_TO_SDCARD": "Content Successfully transferred to SD Card",
-  "SPACE_TAKEN_BY_APP": "Space taken by {{%s}} Content: "
+  "SPACE_TAKEN_BY_APP": "Space taken by {{%s}} Content: ",
+  "TAP_SCAN": "Tap to scan {{%s}} QR Code",
+  "GOT_IT": "Got it",
+  "COACH_SCREEN": "by Scanning QR code, you will be redirected to the content",
+  "APP_QR_CODE" : "Have a {{%s}} QR Code?",
+  "QR_CODE_DETAILS": "This can be found in some of your text books. Use for instant access to content",
+  "SCAN_TAP": "Tap to scan",
+  "OR": "or"
 }

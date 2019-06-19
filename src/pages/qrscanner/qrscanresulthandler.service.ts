@@ -9,8 +9,9 @@ import { CollectionDetailsPage } from '../collection-details/collection-details'
 import { CommonUtilService } from '../../service/common-util.service';
 import { App } from 'ionic-angular';
 import {
-  Environment, ImpressionSubtype, ImpressionType, InteractSubtype, InteractType, Mode, PageId
+  Environment, ImpressionSubtype, ImpressionType, InteractSubtype, InteractType, Mode, PageId, CorReleationDataType
 } from '../../service/telemetry-constants';
+import { AppGlobalService } from '@app/service';
 
 @Injectable()
 export class QRScannerResultHandler {
@@ -21,7 +22,8 @@ export class QRScannerResultHandler {
     private app: App,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private commonUtilService: CommonUtilService,
-    private telemetryGeneratorService: TelemetryGeneratorService) {
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private appgloabalService: AppGlobalService) {
   }
 
   isDialCode(scannedData: string): boolean {
@@ -41,6 +43,7 @@ export class QRScannerResultHandler {
   }
 
   handleDialCode(source: string, scannedData: string) {
+    console.log('appglobal', source);
     this.source = source;
     const results = scannedData.split('/');
     const dialCode = results[results.length - 1];
@@ -100,6 +103,10 @@ export class QRScannerResultHandler {
     corRelation.id = identifier;
     corRelation.type = type;
     corRelationList.push(corRelation);
+    const corRelationftue: CorrelationData = new CorrelationData();
+    corRelationftue.type = CorReleationDataType.FTUE;
+    corRelationftue.id = this.source === PageId.USER_TYPE_SELECTION ? 'true' : 'false';
+    corRelationList.push(corRelationftue);
     return corRelationList;
   }
 

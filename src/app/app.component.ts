@@ -34,7 +34,14 @@ import {
   NotificationService
 } from 'sunbird-sdk';
 import { tap } from 'rxjs/operators';
-import { Environment, InteractSubtype, InteractType, PageId, ImpressionType } from '../service/telemetry-constants';
+import {
+  Environment,
+  InteractSubtype,
+  InteractType,
+  PageId,
+  ImpressionType,
+  ImpressionSubtype
+} from '../service/telemetry-constants';
 import { TabsPage } from '@app/pages/tabs/tabs';
 import { ContainerService } from '@app/service/container.services';
 import { SplashcreenTelemetryActionHandlerDelegate } from '@app/service/sunbird-splashscreen/splashcreen-telemetry-action-handler-delegate';
@@ -74,12 +81,17 @@ export class MyApp implements OnInit, AfterViewInit {
     actionButtons: ['search'],
   };
   public sideMenuEvent = new EventEmitter;
+  public showWalkthroughBackDrop = false;
+
+  readonly permissionList = [
+    AndroidPermission.WRITE_EXTERNAL_STORAGE,
+    AndroidPermission.RECORD_AUDIO,
+    AndroidPermission.CAMERA];
   private telemetryAutoSyncUtil: TelemetryAutoSyncUtil;
 
   profile: any = {};
   selectedLanguage: string;
-
-
+  appName: string;
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
@@ -273,6 +285,10 @@ export class MyApp implements OnInit, AfterViewInit {
   }
 
   subscribeEvents() {
+    this.events.subscribe('show-qr-walkthrough', (data) => {
+      this.showWalkthroughBackDrop = data.showWalkthroughBackDrop;
+      this.appName = data.appName;
+    });
     this.events.subscribe('tab.change', (data) => {
       this.zone.run(() => {
         this.generateInteractEvent(data);
@@ -422,6 +438,36 @@ export class MyApp implements OnInit, AfterViewInit {
     }
   }
 
+  private async requestAppPermissions() {
+    return this.permission.checkPermissions(this.permissionList)
+      .mergeMap((statusMap: { [key: string]: AndroidPermissionsStatus }) => {
+        const toRequest: AndroidPermission[] = [];
+        for (const permission in statusMap) {
+          if (!statusMap[permission].hasPermission) {
+            const values = new Map();
+            values['permission'] = permission;
+            values['permissionStatus'] = statusMap[permission];
+            this.telemetryGeneratorService.generateInteractTelemetry(
+              InteractType.OTHER,
+              InteractSubtype.PERMISSION_POPUP,
+              Environment.HOME,
+              PageId.ONBOARDING_LANGUAGE_SETTING,
+              undefined,
+              values
+            );
+            toRequest.push(permission as AndroidPermission);
+          }
+        }
+
+        if (!toRequest.length) {
+          return Observable.of(undefined);
+        }
+
+        return this.permission.requestPermissions(toRequest);
+      }).toPromise();
+  }
+
+
   private async makeEntryInSupportFolder() {
     return new Promise((resolve => {
       (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
@@ -563,7 +609,8 @@ export class MyApp implements OnInit, AfterViewInit {
         || ((<any>activeView).instance instanceof OnboardingPage)
         || ((<any>activeView).instance instanceof QrCodeResultPage)
         || ((<any>activeView).instance instanceof FaqPage)
-      ) {
+        || ((<any>activeView).instance['pageId'] === 'ProfileSettingsPage')
+        ) {
         this.headerServie.sidebarEvent($event);
         return;
       }
@@ -675,5 +722,25 @@ export class MyApp implements OnInit, AfterViewInit {
       .catch(error => {
         console.log('Error is', error);
       });
+    }
+
+  private qrWalkthroughBackdropClicked() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.WALKTHROUGH_BACKDROP_CLICKED,
+      Environment.ONBOARDING,
+      PageId.LIBRARY,
+    );
+  }
+
+  private onConfirmationClicked(event) {
+    event.stopPropagation();
+    this.showWalkthroughBackDrop = false;
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.WALKTHROUGH_CONFIRMATION_CLICKED,
+      Environment.ONBOARDING,
+      PageId.LIBRARY
+    );
   }
 }

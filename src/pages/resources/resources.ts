@@ -27,7 +27,7 @@ import {
   GetFrameworkCategoryTermsRequest, Profile, ProfileService, ProfileType, SearchType, SharedPreferences,
   TelemetryObject
 } from 'sunbird-sdk';
-import { Environment, InteractSubtype, InteractType, PageId } from '../../service/telemetry-constants';
+import { Environment, InteractSubtype, InteractType, PageId, ImpressionType, ImpressionSubtype } from '../../service/telemetry-constants';
 import { PlayerPage } from '../player/player';
 import { Subscription } from 'rxjs';
 import { ProfileConstants } from '../../app';
@@ -197,9 +197,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       }
     });
 
-    this.events.subscribe('tab.change', (data) => {
+    this.events.subscribe('tab.change', (data: string) => {
       // this.ngZone.run(() => {
-      if (data === 'LIBRARY') {
+      if (data.trim().toUpperCase() === 'LIBRARY') {
         if (this.appliedFilter) {
           this.filterIcon = './assets/imgs/ic_action_filter.png';
           this.resourceFilter = undefined;
@@ -208,7 +208,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.getPopularContent();
         }
       } else if (data === '') {
-        this.qrScanner.startScanner(PageId.LIBRARY);
+        this.qrScanner.startScanner(this.appGlobalService.getPageIdForTelemetry());
       }
       // });
     });
@@ -470,6 +470,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             // check if locally available
             this.markLocallyAvailableTextBook();
             sectionInfo[sectionName] = count;
+            sectionInfo['board'] = this.getGroupByPageReq.board[0];
+            sectionInfo['medium'] = this.getGroupByPageReq.medium[0];
+            sectionInfo['grade'] = this.getGroupByPageReq.grade[0];
           }
 
           const resvalues = new Map();
@@ -489,7 +492,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             if (this.tabs.getSelected().tabTitle === 'LIBRARY‌' && !avoidRefreshList) {
               this.commonUtilService.showToast(
                 this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
-                  `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
+                `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
             }
           }
         });
@@ -608,6 +611,19 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   ionViewDidEnter() {
     this.scrollToTop();
+    this.preferences.getString('show_app_walkthrough_screen').toPromise()
+      .then((value) => {
+        if(value === 'true') {
+          this.events.publish('show-qr-walkthrough' , {showWalkthroughBackDrop: true, appName: this.appLabel});
+          this.telemetryGeneratorService.generateImpressionTelemetry(
+            ImpressionType.VIEW,
+            ImpressionSubtype.QR_SCAN_WALKTHROUGH,
+            PageId.LIBRARY,
+            Environment.ONBOARDING
+          );
+        }
+      });
+    this.preferences.putString('show_app_walkthrough_screen', 'false').toPromise().then();
   }
 
   ionViewWillEnter() {
@@ -837,7 +853,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     }
     this.getGroupByPageReq.grade = [this.categoryGradeLevels[index].name];
     // [grade.name];
-    if ((this.currentGrade) && (this.currentGrade.name !== this.categoryGradeLevels[index].name)) {
+    if ((this.currentGrade) && (this.currentGrade.name !== this.categoryGradeLevels[index].name) && isClassClicked) {
       this.getGroupByPage(false, !isClassClicked);
     }
     for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
@@ -865,7 +881,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.generateMediumInteractTelemetry(mediumName, this.getGroupByPageReq.medium[0]);
     }
     this.getGroupByPageReq.medium = [mediumName];
-    if (this.currentMedium !== mediumName) {
+    if (this.currentMedium !== mediumName && isMediumClicked) {
       this.getGroupByPage(false, !isMediumClicked);
     }
 
@@ -885,7 +901,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     telemetryObject = new TelemetryObject(identifier, item.contentType, undefined);
 
     const values = new Map();
-    values['sectionName'] = sectionName;
+    values['sectionName'] = item.subject;
     values['positionClicked'] = index;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.CONTENT_CLICKED,

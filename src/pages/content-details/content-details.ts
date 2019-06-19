@@ -806,12 +806,13 @@ export class ContentDetailsPage {
     const values = new Map();
     values['isUpdateAvailable'] = this.isUpdateAvail;
     values['isDownloaded'] = this.contentDownloadable[this.content.identifier];
-    values['autoAfterDownload'] = this.downloadAndPlay;
+    values['autoAfterDownload'] = this.downloadAndPlay ? true : false;
+    const contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;
 
     const telemetryObject = new TelemetryObject(
       this.content.identifier,
-      this.content.contentType,
-      this.content.contentData.pkgVersion
+      this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType,
+      this.content.contentData.pkgVersion,
     );
 
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
@@ -1083,7 +1084,7 @@ export class ContentDetailsPage {
         });
         const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
         this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-          InteractSubtype.UPDATE_INITIATE ? this.isUpdateAvail : InteractSubtype.DOWNLOAD_INITIATE,
+          this.isUpdateAvail ? InteractSubtype.UPDATE_INITIATE : InteractSubtype.DOWNLOAD_INITIATE,
           Environment.HOME,
           PageId.CONTENT_DETAIL,
           telemetryObject,
@@ -1271,7 +1272,7 @@ export class ContentDetailsPage {
         this.isPlayerLaunched = true;
         const values = new Map();
 
-        values['autoAfterDownload'] = this.downloadAndPlay;
+        values['autoAfterDownload'] = this.downloadAndPlay ? true : false;
         values['isStreaming'] = isStreaming;
         const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
         this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
