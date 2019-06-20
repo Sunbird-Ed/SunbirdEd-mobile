@@ -277,7 +277,9 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
         },
       ],
       icon: null,
-      metaInfo: this.commonUtilService.translateMessage('TRANSFERRING_CONTENT_TO_DESTINATION'),
+      metaInfo: (this.storageDestination === StorageDestination.INTERNAL_STORAGE) ?
+      this.commonUtilService.translateMessage('TRANSFERRING_CONTENT_TO_PHONE') :
+      this.commonUtilService.translateMessage('TRANSFERRING_CONTENT_TO_SDCARD'),
       sbPopoverDynamicContent: transferProgress$
         .startWith({
           transferredCount: 0,
