@@ -40,13 +40,59 @@ page-content-details {
     .content-btn-padding{
         padding: $sb-modal-actions-padding !important;
     }
-
+  .sb-dt-card {
+    margin: 0 !important;
+    box-shadow: none;
+    background-color: $primary-100;
+  }
+  .sb-content-info-container .sb-content-info-items{
+    .sb-content-info-title{
+      color: $blue;
+    }
+    .sb-content-info-card{
+      box-shadow: none;
+    }
+  }
+  .sb-dt-title {
+    width:100%;
+    overflow:hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    font-weight: bold;
+    font-size:($font-size-base + 11);
+    color:$gray-0;
+    margin-right: 15px;
+  }
+  .sb-rating-value {
+    font-weight: bold;
+    color: $gray-0;
+  }
+  .play-text {
+    color: $gray-0;
+    font-size: 18px;
+    margin-top: 0;
+  }
+  .sb-rating-star {
+    color: $yellow;
+  }
+  .sb-dt-source {
+    margin-top: 10px;
+    .sb-by {
+      font-size: ($font-size-base - 4);
+      color: $gray-0;
+    }
+    .sb-user {
+      font-size: ($font-size-base - 2);
+      color: $gray-0;
+    }
+  }
 }
 .sb-dt-content.sb-dt-content-main
 {
-    display: grid;
-    grid-gap: 8px;
-    grid-template-columns: auto;
+   text-align: left;
+  margin-left: 10%;
 }
 .disable-ripple ion-button-effect {
     display: none;
@@ -54,5 +100,12 @@ page-content-details {
 
 .disable-ripple {
     pointer-events: none;
+}
+.content-vertical-line{
+  border-left: 2px solid white;
+  height: 18px;
+  position: relative;
+  margin-left: 8px;
+  margin-right: 8px;
 }
 

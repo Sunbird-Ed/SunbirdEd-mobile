@@ -1601,7 +1601,7 @@ export class ContentDetailsPage {
   readLessorReadMore(param, objRollup, corRelationList) {
     const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-      param = 'READ_MORE' === param ? InteractSubtype.READ_MORE_CLICKED : InteractSubtype.READ_LESS_CLICKED,
+      param = 'read-more-clicked' === param ? InteractSubtype.READ_MORE_CLICKED : InteractSubtype.READ_LESS_CLICKED,
       Environment.HOME,
       PageId.CONTENT_DETAIL,
       undefined,
