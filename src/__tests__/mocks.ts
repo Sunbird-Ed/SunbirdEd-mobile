@@ -35,7 +35,7 @@ import {
   MenuController
 } from 'ionic-angular';
 
-import { NgZone } from '@angular/core';
+import { NgZone, ChangeDetectorRef } from '@angular/core';
 import {
   AppGlobalService,
   AppRatingService,
@@ -423,7 +423,8 @@ export const groupServiceMock = createSpyObj<GroupService>([
   'addUpdateProfilesToGroup',
   'updateGroup',
   'addUpdateProfilesToGroup',
-  'getAllGroup'
+  'getAllGroups',
+  'getActiveSessionGroup'
 ]);
 
 export const alertControllerMock = createSpyObj<AlertController>([
@@ -539,3 +540,6 @@ export const menuControllerMock = createSpyObj<MenuController>([
 
 ]);
 
+export const changeDetectionRefMock = createSpyObj<ChangeDetectorRef>([
+  'detectChanges'
+]);
