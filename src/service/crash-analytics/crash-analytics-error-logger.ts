@@ -1,14 +1,17 @@
 import { ErrorHandler, Optional } from '@angular/core';
 import { ViewController, NavControllerBase, App } from 'ionic-angular';
 import { ActivePageService } from '@app/service/active-page/active-page-service';
-import { SunbirdSdk, TelemetryErrorRequest } from 'sunbird-sdk';
+import { SunbirdSdk, TelemetryErrorRequest, ErrorStack } from 'sunbird-sdk';
 
-export class CrashAnalyticsErrorLogger implements ErrorHandler {
+export class CrashAnalyticsErrorLogger extends ErrorHandler {
 
     constructor(
         @Optional() private activePageService: ActivePageService,
         @Optional() private app: App,
-    ) {}
+    ) {
+        super();
+        window.addEventListener('unhandledrejection', this.handleError);
+    }
 
     handleError(error: Error | string | any): void {
         console.log('ERROR', error);
@@ -19,33 +22,33 @@ export class CrashAnalyticsErrorLogger implements ErrorHandler {
             pageId: ''
         };
 
-        const errorLoggerRequest = {
-            stackTrace: '',
-            errorType: '',
-            pageId: ''
+        const errorLoggerRequest: ErrorStack = {
+            pageid: '',
+            log: ''
         };
 
         if (error instanceof Error) {
             telemetryErrorRequest.stacktrace = error.stack.slice(0, 250); // 250 characters limited for Telemetry and API purpose.
             telemetryErrorRequest.errorType = error.name || '';
 
-            errorLoggerRequest.stackTrace = telemetryErrorRequest.stacktrace;
-            errorLoggerRequest.errorType = telemetryErrorRequest.errorType;
+            errorLoggerRequest.log = telemetryErrorRequest.stacktrace;
         }
 
         try {
             const navObj: NavControllerBase = this.app.getActiveNavs()[0];
             const activeView: ViewController = navObj.getActive();
             telemetryErrorRequest.pageId = this.activePageService.computePageId((<any>activeView).instance);
-            errorLoggerRequest.pageId = this.activePageService.computePageId((<any>activeView).instance);
+            errorLoggerRequest.pageid = telemetryErrorRequest.pageId;
+        } catch (e) { }
+
+        if (SunbirdSdk.instance) {
 
             SunbirdSdk.instance.telemetryService.error(telemetryErrorRequest).toPromise();
 
             // SunbirdSdk.instance.errorLoggerService.logError(errorLoggerRequest).toPromise();
+        }
 
-        } catch (e) {}
-
-        throw error;
+        super.handleError(error);
     }
 
 }
