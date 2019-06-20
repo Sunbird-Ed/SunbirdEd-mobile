@@ -136,9 +136,9 @@ export class ProfileSettingsPage {
     });
     this.hideBackButton = Boolean(this.navParams.get('hideBackButton'));
     if (!this.hideBackButton) {
-      this.headerService.hideHeader();
-    } else {
       this.headerService.showHeaderWithBackButton();
+    } else {
+      this.headerService.hideHeader();  
     }
     if (this.navParams.get('isCreateNavigationStack')) {
       this.navCtrl.insertPages(0, [{page: 'LanguageSettingsPage'}, {page: 'UserTypeSelectionPage'}]);

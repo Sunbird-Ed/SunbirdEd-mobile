@@ -492,7 +492,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             if (this.tabs.getSelected().tabTitle === 'LIBRARY‌' && !avoidRefreshList) {
               this.commonUtilService.showToast(
                 this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
-                `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
+                  `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
             }
           }
         });
@@ -611,10 +611,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   ionViewDidEnter() {
     this.scrollToTop();
-    this.preferences.getString('show_app_walkthrough_screen').toPromise()
+    this.preferences.getBoolean('coach_mark_seen').toPromise()
       .then((value) => {
-        if(value === 'true') {
-          this.events.publish('show-qr-walkthrough' , {showWalkthroughBackDrop: true, appName: this.appLabel});
+        if (!value) {
+          this.events.publish('coach_mark_seen', { showWalkthroughBackDrop: true, appName: this.appLabel });
           this.telemetryGeneratorService.generateImpressionTelemetry(
             ImpressionType.VIEW,
             ImpressionSubtype.QR_SCAN_WALKTHROUGH,
@@ -623,7 +623,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           );
         }
       });
-    this.preferences.putString('show_app_walkthrough_screen', 'false').toPromise().then();
+    this.preferences.putBoolean('coach_mark_seen', true).toPromise().then();
   }
 
   ionViewWillEnter() {
