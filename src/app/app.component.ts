@@ -40,7 +40,6 @@ import {
   InteractType,
   PageId,
   ImpressionType,
-  ImpressionSubtype
 } from '../service/telemetry-constants';
 import { TabsPage } from '@app/pages/tabs/tabs';
 import { ContainerService } from '@app/service/container.services';
@@ -83,10 +82,6 @@ export class MyApp implements OnInit, AfterViewInit {
   public sideMenuEvent = new EventEmitter;
   public showWalkthroughBackDrop = false;
 
-  readonly permissionList = [
-    AndroidPermission.WRITE_EXTERNAL_STORAGE,
-    AndroidPermission.RECORD_AUDIO,
-    AndroidPermission.CAMERA];
   private telemetryAutoSyncUtil: TelemetryAutoSyncUtil;
 
   profile: any = {};
@@ -437,36 +432,6 @@ export class MyApp implements OnInit, AfterViewInit {
       await this.translate.use(selectedLanguage).toPromise();
     }
   }
-
-  private async requestAppPermissions() {
-    return this.permission.checkPermissions(this.permissionList)
-      .mergeMap((statusMap: { [key: string]: AndroidPermissionsStatus }) => {
-        const toRequest: AndroidPermission[] = [];
-        for (const permission in statusMap) {
-          if (!statusMap[permission].hasPermission) {
-            const values = new Map();
-            values['permission'] = permission;
-            values['permissionStatus'] = statusMap[permission];
-            this.telemetryGeneratorService.generateInteractTelemetry(
-              InteractType.OTHER,
-              InteractSubtype.PERMISSION_POPUP,
-              Environment.HOME,
-              PageId.ONBOARDING_LANGUAGE_SETTING,
-              undefined,
-              values
-            );
-            toRequest.push(permission as AndroidPermission);
-          }
-        }
-
-        if (!toRequest.length) {
-          return Observable.of(undefined);
-        }
-
-        return this.permission.requestPermissions(toRequest);
-      }).toPromise();
-  }
-
 
   private async makeEntryInSupportFolder() {
     return new Promise((resolve => {
