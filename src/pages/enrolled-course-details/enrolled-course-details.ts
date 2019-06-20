@@ -1091,7 +1091,9 @@ export class EnrolledCourseDetailsPage implements OnInit {
     if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
     }
-    this.headerObservable.unsubscribe();
+    if(this.headerObservable) {
+      this.headerObservable.unsubscribe();
+    }
     if (this.backButtonFunc) {
       this.backButtonFunc();
     }
