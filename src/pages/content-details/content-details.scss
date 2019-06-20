@@ -53,6 +53,41 @@ page-content-details {
       box-shadow: none;
     }
   }
+  .sb-dt-title {
+    width:100%;
+    overflow:hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    font-weight: bold;
+    font-size:($font-size-base + 11);
+    color:$gray-0;
+    margin-right: 15px;
+  }
+  .sb-rating-value {
+    font-weight: bold;
+    color: $gray-0;
+  }
+  .play-text {
+    color: $gray-0;
+    font-size: 18px;
+    margin-top: 0;
+  }
+  .sb-rating-star {
+    color: $yellow;
+  }
+  .sb-dt-source {
+    margin-top: 10px;
+    .sb-by {
+      font-size: ($font-size-base - 4);
+      color: $gray-0;
+    }
+    .sb-user {
+      font-size: ($font-size-base - 2);
+      color: $gray-0;
+    }
+  }
 }
 .sb-dt-content.sb-dt-content-main
 {
