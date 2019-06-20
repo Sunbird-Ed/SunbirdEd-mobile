@@ -1672,7 +1672,7 @@ export class ContentDetailsPage {
   }
 
   findHierarchyOfContent() {
-    if (this.cardData && this.cardData.hierarchyInfo) {
+    if (this.cardData && this.cardData.hierarchyInfo && this.breadCrumbData) {
       this.cardData.hierarchyInfo.forEach((element) => {
         const contentName = this.breadCrumbData.get(element.identifier);
         this.childPaths.push(contentName);
