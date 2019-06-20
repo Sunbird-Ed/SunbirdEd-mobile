@@ -146,6 +146,17 @@ export class PermissionPage {
 
         for (const permission in statusMap) {
           if (!statusMap[permission].hasPermission) {
+            const values = new Map();
+            values['permission'] = permission;
+            values['permissionStatus'] = statusMap[permission];
+            this.telemetryGeneratorService.generateInteractTelemetry(
+              InteractType.OTHER,
+              InteractSubtype.PERMISSION_POPUP,
+              Environment.HOME,
+              PageId.ONBOARDING_LANGUAGE_SETTING,
+              undefined,
+              values
+            );
             toRequest.push(permission as AndroidPermission);
           }
         }
