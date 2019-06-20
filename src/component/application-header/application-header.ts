@@ -28,7 +28,7 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
   decreaseZindex = false;
   isRtl: boolean;
   isLoggedIn = false;
-  showDownloadAnimation: boolean = false;
+  isDownloadingActive: boolean = false;
   networkSubscription: Subscription;
   isUnreadNotification: boolean = false;
 
@@ -120,7 +120,7 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
 
   listenDownloads() {
     this.downloadService.getActiveDownloadRequests().subscribe((list) => {
-      this.showDownloadAnimation = !!list.length;
+      this.isDownloadingActive = !!list.length;
       this.changeDetectionRef.detectChanges();
     });
   }
