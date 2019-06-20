@@ -15,9 +15,9 @@
       </ion-buttons>
 
       <ion-buttons class="sb-header-btn-group" end>
-        <button ion-button icon-only *ngIf="headerConfig?.actionButtons?.indexOf('download') >=0 && showDownloadAnimation"
+        <button ion-button icon-only *ngIf="headerConfig?.actionButtons?.indexOf('download') >=0 && isDownloadingActive"
             (click)="emitEvent($event, 'download');">
-          <svg [ngClass]="{'downloading': showDownloadAnimation}" class="active-downloads-icon" height="25"
+          <svg class="active-downloads-icon downloading" height="25"
                viewBox="0 0 14 20" width="25" xmlns="http://www.w3.org/2000/svg">
             <title>F2562297-C67D-4A8E-831F-4BBA8FB569A4@1.5x</title>
             <desc>Created with sketchtool.</desc>
@@ -43,10 +43,7 @@
             </g>
           </svg>
         </button>
-        <!-- <button ion-button icon-only (click)="emitEvent($event, 'download');">
-            <img src="./assets/imgs/active_download.png" class="tool-icon dw-icon" [ngClass]="{'jump-animation': showDownloadAnimation}">
-        </button> -->
-        <button ion-button icon-only *ngIf="headerConfig?.actionButtons?.indexOf('settings') >=0"
+        <button ion-button icon-only *ngIf="headerConfig?.actionButtons?.indexOf('settings') >=0 && !isDownloadingActive"
           (click)="emitEvent($event, 'settings');">
           <ion-icon name="settings"></ion-icon>
         </button>
