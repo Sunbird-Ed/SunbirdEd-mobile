@@ -1,7 +1,9 @@
+import { AppGlobalService } from './../../service/app-global.service';
 
 import { Component, ViewChild } from '@angular/core';
 import { ContainerService } from '../../service/container.services';
 import { Tabs, Tab, Events, ToastController } from 'ionic-angular';
+import { TelemetryGeneratorService } from '@app/service';
 
 @Component({
   selector: 'page-tabs',
@@ -28,8 +30,10 @@ export class TabsPage {
   constructor(
     private container: ContainerService,
     private events: Events,
-    public toastCtrl: ToastController
-  ) { }
+    public toastCtrl: ToastController,
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private appGlobalService: AppGlobalService
+  ) {}
 
   ionViewWillEnter() {
     this.tabs = this.container.getAllTabs();
@@ -53,6 +57,7 @@ export class TabsPage {
     // if active tab is other than scanner tab i.e, = tab 2
     if (tab.index !== 2) {
       this.tabs.forEach((tabTo, index) => {
+      this.appGlobalService.currentPageId = tab.tabTitle;
         if (tabTo.isSelected === true) {
           tabTo.isSelected = false;
         }

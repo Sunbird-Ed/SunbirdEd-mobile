@@ -180,6 +180,12 @@ export class CommonUtilService implements OnDestroy {
      * @param {string} source Page from alert got called
      */
     showContentComingSoonAlert(source) {
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.OTHER,
+        InteractSubtype.QR_CODE_COMINGSOON,
+        source === PageId.ONBOARDING_PROFILE_PREFERENCES ? Environment.ONBOARDING : Environment.HOME,
+        source
+      );
         if (source !== 'permission') {
             this.afterOnBoardQRErrorAlert('ERROR_CONTENT_NOT_FOUND', 'CONTENT_IS_BEING_ADDED');
             return;

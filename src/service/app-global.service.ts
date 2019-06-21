@@ -66,6 +66,8 @@ export class AppGlobalService implements OnDestroy {
           isRecordAudioAsked: false,
     };
 
+    currentPageId: string;
+
     constructor(
         @Inject('PROFILE_SERVICE') private profile: ProfileService,
         @Inject('AUTH_SERVICE') private authService: AuthService,
@@ -529,7 +531,7 @@ export class AppGlobalService implements OnDestroy {
         }
     }
 
-    generateAttributeChangeTelemetry(oldAttribute, newAttribute) {
+    generateAttributeChangeTelemetry(oldAttribute, newAttribute, pageId, env?) {
         if (this.TRACK_USER_TELEMETRY) {
             const values = new Map();
             values['oldValue'] = oldAttribute;
@@ -537,8 +539,8 @@ export class AppGlobalService implements OnDestroy {
 
             this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
                 InteractSubtype.PROFILE_ATTRIBUTE_CHANGED,
-                Environment.USER,
-                PageId.GUEST_PROFILE,
+                env ? env : Environment.USER,
+                pageId,
                 undefined,
                 values);
         }
@@ -557,6 +559,22 @@ export class AppGlobalService implements OnDestroy {
                 undefined,
                 values);
         }
+    }
+
+    getPageIdForTelemetry() {
+        let pageId = PageId.LIBRARY;
+        if (this.currentPageId) {
+          if (this.currentPageId.toLowerCase() === 'library') {
+            pageId = PageId.LIBRARY;
+          } else if (this.currentPageId.toLowerCase() === 'courses') {
+            pageId = PageId.COURSES;
+          } else if (this.currentPageId.toLowerCase() === 'profile') {
+            pageId = PageId.PROFILE;
+          } else if (this.currentPageId.toLowerCase() === 'downloads') {
+            pageId = PageId.DOWNLOADS;
+          }
+        }
+        return pageId;
     }
 
     setAverageTime(time) {

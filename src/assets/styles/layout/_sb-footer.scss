@@ -6,6 +6,9 @@
 .tabs-md .tab-button, .tabs-ios .tab-button{
     overflow: inherit;
 }
+.tabs-md .tabbar.show-tabbar {
+  min-height: 56px;
+}
 .tabs-md .tabbar,.tabs-ios .tabbar{
     filter: drop-shadow(0px 5px 6px rgba(0,0,0,0.3));
     &::before{

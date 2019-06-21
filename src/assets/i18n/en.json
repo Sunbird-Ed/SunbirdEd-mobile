@@ -537,5 +537,12 @@
   "WELCOME_BACK": "WELCOME BACK {{%s}}",
   "YES": "Yes",
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
+  "TAP_SCAN": "Tap to scan {{%s}} QR Code",
+  "GOT_IT": "Got it",
+  "COACH_SCREEN": "by Scanning QR code, you will be redirected to the content",
+  "APP_QR_CODE" : "Have a {{%s}} QR Code?",
+  "QR_CODE_DETAILS": "This can be found in some of your text books. Use for instant access to content",
+  "SCAN_TAP": "Tap to scan",
+  "OR": "or",
   "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "You are not connected to the internet"
 }

@@ -108,7 +108,8 @@ export enum PageId {
     RETRY_CONTENT_TRANSFER_POPUP = 'retry-content-transfer-popup',
     SHOW_DUPLICATE_CONTENT_POPUP = 'show-duplicate-content-popup',
     CONTENT_TRANSFER_SUCCEED_POPUP = 'content-transfer-succeed-popup',
-    CANCELLING_CONTENT_TRANSFER_POPUP = 'cancelling-content-transfer-popup'
+    CANCELLING_CONTENT_TRANSFER_POPUP = 'cancelling-content-transfer-popup',
+    DIAL_SEARCH = 'dial-book-result'
 }
 export enum LogType {
     NOTIFICATION = 'notification'
@@ -135,7 +136,8 @@ export enum ImpressionSubtype {
     RATING_POPUP = 'rating-popup',
     QR_CODE_VALID = 'qr-code-valid',
     INVALID_QR_CODE = 'invalid-qr-code',
-    APP_RATING_POPUP = 'app-rating-popup'
+    APP_RATING_POPUP = 'app-rating-popup',
+    QR_SCAN_WALKTHROUGH = 'qr-scan-walkthrough'
 }
 export enum InteractType {
     TOUCH = 'TOUCH',
@@ -246,6 +248,7 @@ export enum InteractSubtype {
     DELETE_CLICKED = 'delete-clicked',
     DIAL_SEARCH_RESULT_FOUND = 'dial-code-search-result-found',
     LOADING_SPINE = 'loading-spine',
+    LOADING_SPINE_COMPLETED = 'loading-spine-completed',
     DOWNLOAD_ALL_CLICKED = 'download-all-clicked',
     CANCEL_CLICKED = 'cancel-clicked',
     CLOSE_CLICKED = 'close-clicked',
@@ -293,8 +296,16 @@ export enum InteractSubtype {
     OPENRAP_DEVICE_DISCONNECTED = 'openrap-device-disconnected',
     UNDO_CLICKED = 'undo-clicked',
     RETRY_CLICKED = 'retry-clicked',
-    OK_CLICKED = 'ok-clicked'
-
+    OK_CLICKED = 'ok-clicked',
+    USER_TYPE_SELECTED = 'user-type-selected',
+    QR_CODE_INVALID = 'qr-code-invalid',
+    QR_CODE_COMINGSOON = 'qr-code-comingsoon',
+    IMPORT_COMPLETED = 'import-completed',
+    QR_SCAN_INVALID = 'qr-scan-invalid',
+    UNIT_CLICKED = 'unit-clicked',
+    PERMISSION_POPUP = 'permission-popup',
+    WALKTHROUGH_BACKDROP_CLICKED = 'walkthrough-backdrop-clicked',
+    WALKTHROUGH_CONFIRMATION_CLICKED = 'walkthrough-confirmation-clicked'
 }
 
 export enum ActionButtonType {
@@ -304,6 +315,7 @@ export enum ActionButtonType {
 
 export enum CorReleationDataType {
     COURSE_BATCH = 'CourseBatch',
+    FTUE = 'Ftue',
 }
 
 

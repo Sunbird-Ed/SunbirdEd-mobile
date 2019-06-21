@@ -423,7 +423,7 @@ export class GuestEditProfilePage {
     oldAttribute.subject = this.profileForTelemetry.subject ? this.profileForTelemetry.subject : '';
     newAttribute.subject = event ? event : '';
     if (!_.isEqual(oldAttribute, newAttribute)) {
-      this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute);
+      this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute, PageId.GUEST_PROFILE);
     }
     this.profileForTelemetry.subject = event;
   }
@@ -457,7 +457,7 @@ export class GuestEditProfilePage {
         oldAttribute.board = this.profileForTelemetry.board ? this.profileForTelemetry.board : '';
         newAttribute.board = this.guestEditForm.value.boards ? this.guestEditForm.value.boards : '';
         if (!_.isEqual(oldAttribute, newAttribute)) {
-          this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute);
+          this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute, PageId.GUEST_PROFILE);
         }
         this.profileForTelemetry.board = this.guestEditForm.value.boards;
         this.checkPrevValue(2, 'mediumList', this.guestEditForm.value.boards);
@@ -471,7 +471,7 @@ export class GuestEditProfilePage {
         oldAttribute.medium = this.profileForTelemetry.medium ? this.profileForTelemetry.medium : '';
         newAttribute.medium = this.guestEditForm.value.medium ? this.guestEditForm.value.medium : '';
         if (!_.isEqual(oldAttribute, newAttribute)) {
-          this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute);
+          this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute, PageId.GUEST_PROFILE);
         }
         this.profileForTelemetry.medium = this.guestEditForm.value.medium;
         this.checkPrevValue(3, 'gradeList', this.guestEditForm.value.medium);
@@ -483,7 +483,7 @@ export class GuestEditProfilePage {
         oldAttribute.class = this.profileForTelemetry.grade ? this.profileForTelemetry.grade : '';
         newAttribute.class = this.guestEditForm.value.grades ? this.guestEditForm.value.grades : '';
         if (!_.isEqual(oldAttribute, newAttribute)) {
-          this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute);
+          this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute, PageId.GUEST_PROFILE);
         }
         this.profileForTelemetry.grade = this.guestEditForm.value.grades;
         this.checkPrevValue(4, 'subjectList', this.guestEditForm.value.grades);

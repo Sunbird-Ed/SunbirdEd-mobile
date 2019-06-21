@@ -314,7 +314,7 @@ export class SunbirdQRScanner {
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW,
       ImpressionSubtype.QRCodeScanInitiate,
-      PageId.QRCodeScanner,
+      source,
       source === PageId.ONBOARDING_PROFILE_PREFERENCES ? Environment.ONBOARDING : Environment.HOME);
   }
 
@@ -340,6 +340,12 @@ export class SunbirdQRScanner {
   }
 
   showInvalidCodeAlert() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.OTHER,
+      InteractSubtype.QR_CODE_INVALID,
+      this.source === PageId.ONBOARDING_PROFILE_PREFERENCES ? Environment.ONBOARDING : Environment.HOME,
+      this.source
+    );
     if (this.source !== 'permission') {
       this.commonUtil.afterOnBoardQRErrorAlert('INVALID_QR', 'UNKNOWN_QR');
       return;

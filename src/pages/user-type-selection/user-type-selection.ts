@@ -135,6 +135,16 @@ export class UserTypeSelectionPage {
         this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, this.selectedUserType).toPromise().then();
       }
     });
+    const values = new Map();
+    values['userType'] = (this.selectedUserType).toUpperCase();
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.USER_TYPE_SELECTED,
+      Environment.HOME,
+      PageId.USER_TYPE_SELECTION,
+      undefined,
+      values
+    );
   }
 
   continue() {
@@ -212,18 +222,18 @@ export class UserTypeSelectionPage {
       }
     } else if (this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
       if (isUserTypeChanged) {
-        this.updateProfile(PermissionPage, { showProfileSettingPage: true })
+        this.updateProfile(PermissionPage, { showProfileSettingPage: true });
       } else {
         this.navCtrl.push(PermissionPage, { showProfileSettingPage: true });
       }
     } else {
-      this.updateProfile(PermissionPage, { showTabsPage: true })
+      this.updateProfile(PermissionPage, { showTabsPage: true });
     }
   }
 
   generateInteractEvent(userType) {
     const values = new Map();
-    values['UserType'] = userType;
+    values['userType'] = (userType).toUpperCase();
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.CONTINUE_CLICKED,
@@ -235,8 +245,8 @@ export class UserTypeSelectionPage {
 
   /**
    * Updates profile and navigates to desired page with given params
-   * @param page 
-   * @param params 
+   * @param page
+   * @param params
    */
   updateProfile(page, params = {}) {
     this.profile.profileType = this.selectedUserType;

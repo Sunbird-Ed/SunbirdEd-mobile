@@ -34,7 +34,13 @@ import {
   NotificationService
 } from 'sunbird-sdk';
 import { tap } from 'rxjs/operators';
-import { Environment, InteractSubtype, InteractType, PageId, ImpressionType } from '../service/telemetry-constants';
+import {
+  Environment,
+  InteractSubtype,
+  InteractType,
+  PageId,
+  ImpressionType,
+} from '../service/telemetry-constants';
 import { TabsPage } from '@app/pages/tabs/tabs';
 import { ContainerService } from '@app/service/container.services';
 import { SplashcreenTelemetryActionHandlerDelegate } from '@app/service/sunbird-splashscreen/splashcreen-telemetry-action-handler-delegate';
@@ -74,12 +80,13 @@ export class MyApp implements OnInit, AfterViewInit {
     actionButtons: ['search'],
   };
   public sideMenuEvent = new EventEmitter;
+  public showWalkthroughBackDrop = false;
+
   private telemetryAutoSyncUtil: TelemetryAutoSyncUtil;
 
   profile: any = {};
   selectedLanguage: string;
-
-
+  appName: string;
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
@@ -123,7 +130,7 @@ export class MyApp implements OnInit, AfterViewInit {
       this.generateNetworkTelemetry();
       this.autoSyncTelemetry();
       this.subscribeEvents();
-
+      this.showAppWalkThroughScreen();
       this.startOpenrapDiscovery();
       this.saveDefaultSyncSetting();
       this.checkAppUpdateAvailable();
@@ -150,12 +157,12 @@ export class MyApp implements OnInit, AfterViewInit {
     if (!fcmToken) {
       FCMPlugin.getToken((token) => {
         this.storeFCMToken(token);
-        SunbirdSdk.instance.updateTelemetryConfig({ fcmToken: token});
+        SunbirdSdk.instance.updateTelemetryConfig({ fcmToken: token });
       });
     }
     FCMPlugin.onTokenRefresh((token) => {
       this.storeFCMToken(token);
-      SunbirdSdk.instance.updateTelemetryConfig({ fcmToken: token});
+      SunbirdSdk.instance.updateTelemetryConfig({ fcmToken: token });
     });
   }
 
@@ -192,7 +199,7 @@ export class MyApp implements OnInit, AfterViewInit {
         // Notification was received in foreground. Maybe the user needs to be notified.
       }
       data['isRead'] = data.wasTapped ? 1 : 0;
-      data['actionData']  = JSON.parse(data['actionData']);
+      data['actionData'] = JSON.parse(data['actionData']);
       this.notificationServices.addNotification(data).subscribe((status) => {
         this.events.publish('notification:received');
         this.events.publish('notification-status:update', { isUnreadNotifications: true });
@@ -273,6 +280,10 @@ export class MyApp implements OnInit, AfterViewInit {
   }
 
   subscribeEvents() {
+    this.events.subscribe('coach_mark_seen', (data) => {
+      this.showWalkthroughBackDrop = data.showWalkthroughBackDrop;
+      this.appName = data.appName;
+    });
     this.events.subscribe('tab.change', (data) => {
       this.zone.run(() => {
         this.generateInteractEvent(data);
@@ -563,6 +574,7 @@ export class MyApp implements OnInit, AfterViewInit {
         || ((<any>activeView).instance instanceof OnboardingPage)
         || ((<any>activeView).instance instanceof QrCodeResultPage)
         || ((<any>activeView).instance instanceof FaqPage)
+        || ((<any>activeView).instance['pageId'] === 'ProfileSettingsPage')
       ) {
         this.headerServie.sidebarEvent($event);
         return;
@@ -675,5 +687,30 @@ export class MyApp implements OnInit, AfterViewInit {
       .catch(error => {
         console.log('Error is', error);
       });
+  }
+
+  private qrWalkthroughBackdropClicked() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.WALKTHROUGH_BACKDROP_CLICKED,
+      Environment.ONBOARDING,
+      PageId.LIBRARY,
+    );
+  }
+
+  private onConfirmationClicked(event) {
+    event.stopPropagation();
+    this.showWalkthroughBackDrop = false;
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.WALKTHROUGH_CONFIRMATION_CLICKED,
+      Environment.ONBOARDING,
+      PageId.LIBRARY
+    );
+  }
+
+  private async showAppWalkThroughScreen() {
+    const showAppWalkthrough: boolean = await this.preferences.getBoolean('coach_mark_seen').toPromise();
+    await this.preferences.putBoolean('coach_mark_seen', showAppWalkthrough).toPromise();
   }
 }

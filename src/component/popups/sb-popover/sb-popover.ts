@@ -29,6 +29,7 @@ export class SbPopoverComponent implements OnDestroy {
   userId = '';
   pageName = '';
   showFlagMenu = true;
+  img: string;
   public objRollup: Rollup;
   private corRelationList: Array<CorrelationData>;
   private sbPopoverDynamicMainTitle$?: Observable<string>;
@@ -56,6 +57,7 @@ export class SbPopoverComponent implements OnDestroy {
     this.pageName = this.navParams.get('pageName');
     this.objRollup = this.navParams.get('objRollup');
     this.corRelationList = this.navParams.get('corRelationList');
+    this.img = this.navParams.get('img');
 
     // Dynamic
     this.sbPopoverDynamicMainTitle$ = this.navParams.get('sbPopoverDynamicMainTitle');
