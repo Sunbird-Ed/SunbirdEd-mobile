@@ -7,10 +7,10 @@
 <ion-content padding-vertical>
   <form [formGroup]="profileEditForm">
     <ion-item>
-      <ion-label stacked class="label-font">{{'BOARD' | translate}}<span ion-text color="danger">&nbsp;*</span></ion-label>
+      <ion-label stacked class="label-font">{{'BOARD' | translate}} &lrm;<span ion-text color="danger">&nbsp;*</span></ion-label>
       <ion-select formControlName="syllabus" #boardSelect multiple="false" [selectOptions]="boardOptions" placeholder="{{'BOARD_OPTION_TEXT' | translate}}"
         okText="{{'BTN_SUBMIT' | translate}}" cancelText="{{'CANCEL' | translate}}" (ionChange)="resetForm(0)">
-        <ion-option *ngFor="let eachSyllabus of syllabusList" value="{{eachSyllabus?.code}}">{{eachSyllabus?.name}}</ion-option>
+        <ion-option *ngFor="let eachSyllabus of syllabusList" value="{{eachSyllabus?.code}}">{{eachSyllabus?.name}} &lrm;</ion-option>
       </ion-select>
     </ion-item>
     <ion-item>
