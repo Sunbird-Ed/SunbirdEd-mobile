@@ -43,9 +43,10 @@ export class PermissionPage {
   ];
 
   readonly permissionList = [
+    AndroidPermission.CAMERA,
     AndroidPermission.WRITE_EXTERNAL_STORAGE,
-    AndroidPermission.RECORD_AUDIO,
-    AndroidPermission.CAMERA];
+    AndroidPermission.RECORD_AUDIO
+  ];
 
   changePermissionAccess = false;
   showScannerPage = false;
