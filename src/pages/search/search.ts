@@ -254,7 +254,7 @@ export class SearchPage implements OnDestroy {
     }
   }
 
-  showContentDetails(content, isRootContent: boolean = false) {
+  private async showContentDetails(content, isRootContent: boolean = false) {
 
     let params;
     if (this.shouldGenerateEndTelemetry) {
@@ -284,6 +284,7 @@ export class SearchPage implements OnDestroy {
     }
 
     if (content.contentType === ContentType.COURSE) {
+      this.enrolledCourses = await this.getEnrolledCourses(false, false);
       if ( this.enrolledCourses && this.enrolledCourses.length) {
         for (let i = 0; i < this.enrolledCourses.length; i++) {
           if (content.identifier === this.enrolledCourses[i].courseId) {
@@ -1139,8 +1140,8 @@ export class SearchPage implements OnDestroy {
               this.appGlobalService.setEnrolledCourseList(courseList);
             }
             this.showLoader = false;
-            return enrolledCourses;
           });
+          return enrolledCourses;
         }
       }, (err) => {
         this.showLoader = false;
