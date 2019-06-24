@@ -208,7 +208,7 @@ export const sunbirdSdkFactory =
           debugMode: false
         },
         apiConfig: {
-          debugMode: true,
+          debugMode: false,
           host: buildConfigValues['BASE_URL'],
           user_authentication: {
             redirectUrl: buildConfigValues['OAUTH_REDIRECT_URL'],
