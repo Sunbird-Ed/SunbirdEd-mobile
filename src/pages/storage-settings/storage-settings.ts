@@ -249,7 +249,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
 
   private async showSettingsPageToast() {
     const toast = await this.toastController.create({
-      message: this.commonUtilService.translateMessage('CAMERA_PERMISSION_DESCRIPTION', this.appName),
+      message: this.commonUtilService.translateMessage('FILE_MANAGER_PERMISSION_DESCRIPTION', this.appName),
       cssClass: 'permissionSettingToast',
       showCloseButton: true,
       closeButtonText: this.commonUtilService.translateMessage('SETTINGS'),
