@@ -73,6 +73,7 @@ export class UserAndGroupsPage {
   selectedUsername: string;
   isCurUserSelected: boolean;
   ProfileType = ProfileType;
+  isLoggedIn = false;
 
   constructor(
     private navCtrl: NavController,
@@ -354,6 +355,7 @@ export class UserAndGroupsPage {
 
   selectUser(index: number, uid?: string, name?: string) {
     this.isCurUserSelected = this.appGlobalService.getCurrentUser().uid === uid;
+       this.isLoggedIn = (this.currentUserId === uid);
     this.zone.run(() => {
       this.selectedUserIndex = (this.selectedUserIndex === index) ? -1 : index;
     });
@@ -434,7 +436,7 @@ export class UserAndGroupsPage {
     });*/
     const confirm = this.popOverCtrl.create(SbGenericPopoverComponent, {
       sbPopoverHeading: this.commonUtilService.translateMessage('SWITCH_ACCOUNT_CONFIRMATION'),
-      sbPopoverMainTitle: this.commonUtilService.translateMessage('USER_DELETE_CONFIRM_SECOND_MESSAGE'),
+      sbPopoverMainTitle: this.commonUtilService.translateMessage('SIGNED_OUT_ACCOUNT_MESSAGE'),
       actionsButtons: [
         {
           btntext: this.commonUtilService.translateMessage('CANCEL'),
