@@ -174,9 +174,12 @@
     </ion-col>
       <ng-template #disableSwitchButton>
         <ion-col>
-        <button *ngIf="!playConfig" ion-button full center [disabled]="selectedUsername">
+        <button *ngIf="!playConfig" ion-button block center [disabled]="selectedUsername">
           {{'SWITCH_ACCOUNT' | translate}}
         </button>
+        <button *ngIf="playConfig" ion-button block [disabled]="isCurUserSelected">
+            {{'PLAY' | translate}}
+          </button>
       </ion-col>
       </ng-template>
   </ion-row>
