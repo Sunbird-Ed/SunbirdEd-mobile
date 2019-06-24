@@ -189,7 +189,9 @@ export class CoursesPage implements OnInit, AfterViewInit {
   }
 
   ionViewWillLeave() {
-    this.headerObservable.unsubscribe();
+    if(this.headerObservable) {
+      this.headerObservable.unsubscribe();
+    }
     this.events.unsubscribe('update_header');
     // this.tabBarElement.style.display = 'flex';
     this.ngZone.run(() => {

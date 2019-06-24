@@ -242,7 +242,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     }
     this.events.unsubscribe('update_header');
     this.events.unsubscribe('onboarding-card:completed');
-    this.headerObservable.unsubscribe();
+    if(this.headerObservable) {
+      this.headerObservable.unsubscribe();
+    }
     if (this.networkSubscription) {
       this.networkSubscription.unsubscribe();
       if (this.toast) {
@@ -871,7 +873,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     } else {
       setTimeout(() => {
         el = document.getElementById('class' + index);
-        el.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'start' });
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'start' });
+        }
       }, 1000);
     }
   }
