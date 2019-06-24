@@ -191,7 +191,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     const confirm = this.popoverCtrl.create(SbPopoverComponent, {
       isNotShowCloseIcon: false,
       sbPopoverHeading: this.commonUtilService.translateMessage('PERMISSION_REQUIRED'),
-      sbPopoverMainTitle: this.commonUtilService.translateMessage('CAMERA'),
+      sbPopoverMainTitle: this.commonUtilService.translateMessage('FILE_MANAGER'),
       actionsButtons: [
         {
           btntext: this.commonUtilService.translateMessage('NOT_NOW'),
@@ -231,9 +231,9 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
         }
       },
       img: {
-        path: './assets/imgs/ic_photo_camera.png',
+        path: './assets/imgs/ic_folder_open.png',
       },
-      metaInfo: this.commonUtilService.translateMessage('CAMERA_PERMISSION_DESCRIPTION', this.appName),
+      metaInfo: this.commonUtilService.translateMessage('FILE_MANAGER_PERMISSION_DESCRIPTION', this.appName),
     }, {
       cssClass: 'sb-popover sb-popover-permissions primary dw-active-downloads-popover',
     });
