@@ -123,7 +123,9 @@ export class GuestProfilePage implements OnInit, AfterViewInit {
   }
 
   ionViewWillLeave(): void {
-    this.headerObservable.unsubscribe();
+    if(this.headerObservable) {
+      this.headerObservable.unsubscribe();
+    }
     this.events.unsubscribe('update_header');
   }
 

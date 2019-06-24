@@ -775,7 +775,7 @@ export class UserAndGroupsPage {
           }
           this.event.publish('refresh:profile');
           this.event.publish(AppGlobalService.USER_INFO_UPDATED);
-          this.app.getRootNav().setRoot(TabsPage);
+          this.app.getRootNavs()[0].push(TabsPage);
         }
 
       }, 1000);
