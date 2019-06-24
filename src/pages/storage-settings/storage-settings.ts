@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, Inject, OnInit, ChangeDetectorRef } from '@angular/core';
-import { IonicPage, NavController, NavParams, Popover, PopoverController } from 'ionic-angular';
+import { Component, Inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { IonicPage, NavController, NavParams, Popover, PopoverController, ToastController, App } from 'ionic-angular';
 import { AppHeaderService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
 import { Observable, Subscription } from 'rxjs';
 import {
@@ -18,6 +18,8 @@ import { SbPopoverComponent } from "@app/component";
 import { FileSizePipe } from '@app/pipes/file-size/file-size';
 import { ImpressionType, Environment, PageId, InteractType, InteractSubtype, } from '@app/service/telemetry-constants';
 import { AppVersion } from '@ionic-native/app-version';
+import { AndroidPermissionsService } from '@app/service/android-permissions/android-permissions.service';
+import { AndroidPermission, AndroidPermissionsStatus } from '@app/service/android-permissions/android-permission';
 @IonicPage()
 @Component({
   selector: 'page-storage-settings',
@@ -83,6 +85,9 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     private changeDetectionRef: ChangeDetectorRef,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private appVersion: AppVersion,
+    private permissionsService: AndroidPermissionsService,
+    private toastController: ToastController,
+    private app: App,
     @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     @Inject('STORAGE_SERVICE') private storageService: StorageService,
     @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
@@ -99,7 +104,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
           .getContentSpaceUsageSummary({ paths: [storageVolume.info.path] });
       })
       .map((summary) => summary[0].sizeOnDevice) as any;
-      this.appVersion.getAppName()
+    this.appVersion.getAppName()
       .then((appName) => {
         this.appName = appName;
       });
@@ -111,70 +116,21 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     this.fetchStorageDestination();
   }
 
-  async showShouldTransferContentsPopup(): Promise<void> {
-    if (this.shouldTransferContentsPopup) {
-      return;
-    }
-
+  public async attemptTransfer() {
     if (this.storageDestination === await this.storageService.getStorageDestination().toPromise()) {
       return;
     }
+    
+    const permissionStatus = await this.getStoragePermissionStatus();
 
-    const spaceTakenBySunbird = await this.spaceTakenBySunbird$.toPromise();
-
-    this.shouldTransferContentsPopup = this.popoverCtrl.create(SbPopoverComponent, {
-      sbPopoverHeading: (this.storageDestination === StorageDestination.INTERNAL_STORAGE) ?
-        this.commonUtilService.translateMessage('TRANSFER_CONTENT_TO_PHONE') :
-        this.commonUtilService.translateMessage('TRANSFER_CONTENT_TO_SDCARD'),
-      sbPopoverMainTitle: (this.storageDestination === StorageDestination.INTERNAL_STORAGE) ?
-        this.commonUtilService.translateMessage('SUCCESSFUL_CONTENT_TRANSFER_TO_PHONE') :
-        this.commonUtilService.translateMessage('SUCCESSFUL_CONTENT_TRANSFER_TO_SDCARD'),
-      actionsButtons: [
-        {
-          btntext: this.commonUtilService.translateMessage('MOVE'),
-          btnClass: 'popover-color'
-        },
-      ],
-      icon: null,
-      metaInfo: this.commonUtilService.translateMessage('TOTAL_SIZE') + this.fileSizePipe.transform(spaceTakenBySunbird),
-    }, {
-        cssClass: 'sb-popover dw-active-downloads-popover',
-    });
-
-    this.shouldTransferContentsPopup.present();
-    this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.VIEW,
-      '',
-      PageId.TRANSFER_CONTENT_CONFIRMATION_POPUP,
-      Environment.DOWNLOADS
-    );
-
-    this.shouldTransferContentsPopup.onDidDismiss(async (shouldTransfer: boolean) => {
-      this.shouldTransferContentsPopup = undefined;
-
-      if (!shouldTransfer) {
-        this.telemetryGeneratorService.generateInteractTelemetry(
-          InteractType.TOUCH,
-          InteractSubtype.POPUP_DISMISSED,
-          Environment.DOWNLOADS,
-          PageId.TRANSFER_CONTENT_CONFIRMATION_POPUP, undefined, undefined, undefined
-        );
-
-        this.storageDestination = this.storageDestination === StorageDestination.INTERNAL_STORAGE ?
-          StorageDestination.EXTERNAL_STORAGE :
-          StorageDestination.INTERNAL_STORAGE;
-        return;
-      }
-
-      this.telemetryGeneratorService.generateInteractTelemetry(
-        InteractType.TOUCH,
-        InteractSubtype.START_CLICKED,
-        Environment.DOWNLOADS,
-        PageId.TRANSFER_CONTENT_CONFIRMATION_POPUP, undefined, undefined, undefined
-      );
-
-      await this.showTransferringContentsPopup(this.shouldTransferContentsPopup, this.storageDestination);
-    });
+    if (permissionStatus.hasPermission) {
+      this.showShouldTransferContentsPopup();
+    } else if (permissionStatus.isPermissionAlwaysDenied) {
+      this.revertSelectedStorageDestination();
+      this.showSettingsPageToast();
+    } else {
+      this.showStoragePermissionPopup();
+    }
   }
 
   private initAppHeader() {
@@ -202,6 +158,12 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     });
   }
 
+  private revertSelectedStorageDestination() {
+    this.storageDestination = this.storageDestination === StorageDestination.INTERNAL_STORAGE ?
+      StorageDestination.EXTERNAL_STORAGE :
+      StorageDestination.INTERNAL_STORAGE;
+  }
+
   private async fetchStorageDestination() {
     this.storageDestination = await this.storageService.getStorageDestination().toPromise();
   }
@@ -217,6 +179,159 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
 
     // TODO change prefix
     return `${storageVolumePath}`;
+  }
+
+  private async getStoragePermissionStatus(): Promise<AndroidPermissionsStatus> {
+    return (
+      await this.permissionsService.checkPermissions([AndroidPermission.WRITE_EXTERNAL_STORAGE]).toPromise()
+    )[AndroidPermission.WRITE_EXTERNAL_STORAGE];
+  }
+
+  private async showStoragePermissionPopup() {
+    const confirm = this.popoverCtrl.create(SbPopoverComponent, {
+      isNotShowCloseIcon: false,
+      sbPopoverHeading: this.commonUtilService.translateMessage('PERMISSION_REQUIRED'),
+      sbPopoverMainTitle: this.commonUtilService.translateMessage('CAMERA'),
+      actionsButtons: [
+        {
+          btntext: this.commonUtilService.translateMessage('NOT_NOW'),
+          btnClass: 'popover-button-cancel',
+        },
+        {
+          btntext: this.commonUtilService.translateMessage('ALLOW'),
+          btnClass: 'popover-button-allow',
+        }
+      ],
+      handler: (selectedButton: string) => {
+        if (selectedButton === this.commonUtilService.translateMessage('NOT_NOW')) {
+          // this.telemetryGeneratorService.generateInteractTelemetry(
+          //   InteractType.TOUCH,
+          //   InteractSubtype.PERMISSION_POPOVER_NOT_NOW_CLICKED,
+          //   Environment.ONBOARDING,
+          //   PageId.QRCodeScanner);
+          this.revertSelectedStorageDestination();
+          this.showSettingsPageToast();
+        } else if (selectedButton === this.commonUtilService.translateMessage('ALLOW')) {
+          // this.telemetryGeneratorService.generateInteractTelemetry(
+          //   InteractType.TOUCH,
+          //   InteractSubtype.PERMISSION_POPOVER_ALLOW_CLICKED,
+          //   Environment.ONBOARDING,
+          //   PageId.QRCodeScanner);
+          this.permissionsService.requestPermission(AndroidPermission.WRITE_EXTERNAL_STORAGE)
+            .subscribe((status: AndroidPermissionsStatus) => {
+              if (status.hasPermission) {
+                this.showShouldTransferContentsPopup();
+              } else if (status.isPermissionAlwaysDenied) {
+                this.revertSelectedStorageDestination();
+                this.showSettingsPageToast();
+              } else {
+                this.revertSelectedStorageDestination();
+              }
+          });
+        }
+      },
+      img: {
+        path: './assets/imgs/ic_photo_camera.png',
+      },
+      metaInfo: this.commonUtilService.translateMessage('CAMERA_PERMISSION_DESCRIPTION', this.appName),
+    }, {
+      cssClass: 'sb-popover sb-popover-permissions primary dw-active-downloads-popover',
+    });
+
+    confirm.present();
+
+    confirm.onWillDismiss((buttonClicked: boolean | null) => {
+      if (buttonClicked === null) {
+        this.revertSelectedStorageDestination();
+      }
+    });
+  }
+
+  private async showSettingsPageToast() {
+    const toast = await this.toastController.create({
+      message: this.commonUtilService.translateMessage('CAMERA_PERMISSION_DESCRIPTION', this.appName),
+      cssClass: 'permissionSettingToast',
+      showCloseButton: true,
+      closeButtonText: this.commonUtilService.translateMessage('SETTINGS'),
+      position: 'bottom',
+      duration: 3000
+    });
+
+    toast.present();
+
+    toast.onWillDismiss((_null, role) => {
+      switch (role) {
+        case 'close':
+          // this.telemetryGeneratorService.generateInteractTelemetry(
+          //   InteractType.TOUCH,
+          //   InteractSubtype.SETTINGS_CLICKED,
+          //   Environment.ONBOARDING,
+          //   PageId.QRCodeScanner
+          // );
+
+          this.app.getActiveNavs()[0].push('PermissionPage', { changePermissionAccess: true });
+      }
+    });
+  }
+
+  private async showShouldTransferContentsPopup(): Promise<void> {
+    if (this.shouldTransferContentsPopup) {
+      return;
+    }
+
+    const spaceTakenBySunbird = await this.spaceTakenBySunbird$.toPromise();
+
+    this.shouldTransferContentsPopup = this.popoverCtrl.create(SbPopoverComponent, {
+      sbPopoverHeading: (this.storageDestination === StorageDestination.INTERNAL_STORAGE) ?
+        this.commonUtilService.translateMessage('TRANSFER_CONTENT_TO_PHONE') :
+        this.commonUtilService.translateMessage('TRANSFER_CONTENT_TO_SDCARD'),
+      sbPopoverMainTitle: (this.storageDestination === StorageDestination.INTERNAL_STORAGE) ?
+        this.commonUtilService.translateMessage('SUCCESSFUL_CONTENT_TRANSFER_TO_PHONE') :
+        this.commonUtilService.translateMessage('SUCCESSFUL_CONTENT_TRANSFER_TO_SDCARD'),
+      actionsButtons: [
+        {
+          btntext: this.commonUtilService.translateMessage('MOVE'),
+          btnClass: 'popover-color'
+        },
+      ],
+      icon: null,
+      metaInfo: this.commonUtilService.translateMessage('TOTAL_SIZE') + this.fileSizePipe.transform(spaceTakenBySunbird),
+    }, {
+        cssClass: 'sb-popover dw-active-downloads-popover',
+      });
+
+    this.shouldTransferContentsPopup.present();
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW,
+      '',
+      PageId.TRANSFER_CONTENT_CONFIRMATION_POPUP,
+      Environment.DOWNLOADS
+    );
+
+    this.shouldTransferContentsPopup.onDidDismiss(async (shouldTransfer: boolean) => {
+      this.shouldTransferContentsPopup = undefined;
+
+      if (!shouldTransfer) {
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.POPUP_DISMISSED,
+          Environment.DOWNLOADS,
+          PageId.TRANSFER_CONTENT_CONFIRMATION_POPUP, undefined, undefined, undefined
+        );
+
+        this.revertSelectedStorageDestination();
+        return;
+      }
+
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        InteractSubtype.START_CLICKED,
+        Environment.DOWNLOADS,
+        PageId.TRANSFER_CONTENT_CONFIRMATION_POPUP, undefined, undefined, undefined
+      );
+
+      await this.showTransferringContentsPopup(this.shouldTransferContentsPopup, this.storageDestination);
+    });
   }
 
   private async showTransferringContentsPopup(prevPopup: Popover, storageDestination: StorageDestination): Promise<undefined> {
@@ -278,8 +393,8 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
       ],
       icon: null,
       metaInfo: (this.storageDestination === StorageDestination.INTERNAL_STORAGE) ?
-      this.commonUtilService.translateMessage('TRANSFERRING_CONTENT_TO_PHONE') :
-      this.commonUtilService.translateMessage('TRANSFERRING_CONTENT_TO_SDCARD'),
+        this.commonUtilService.translateMessage('TRANSFERRING_CONTENT_TO_PHONE') :
+        this.commonUtilService.translateMessage('TRANSFERRING_CONTENT_TO_SDCARD'),
       sbPopoverDynamicContent: transferProgress$
         .startWith({
           transferredCount: 0,
@@ -288,7 +403,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
         .map(({ transferredCount, totalCount }) => {
           if (transferredCount && totalCount) {
             return this.fileSizePipe.transform(
-              Math.round(transferredCount / totalCount) * totalTransferSize
+              (transferredCount / totalCount) * totalTransferSize
             ) + '/'
               + this.fileSizePipe.transform(totalTransferSize);
           } else {
@@ -296,9 +411,9 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
           }
         })
     }, {
-      enableBackdropDismiss: false,
-      cssClass: 'sb-popover dw-active-downloads-popover',
-    });
+        enableBackdropDismiss: false,
+        cssClass: 'sb-popover dw-active-downloads-popover',
+      });
 
     await this.transferringContentsPopup.present();
     this.telemetryGeneratorService.generateImpressionTelemetry(
@@ -356,15 +471,15 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
         }
       });
 
-      this.cancellingTransferPopup = this.popoverCtrl.create(SbPopoverComponent, {
+    this.cancellingTransferPopup = this.popoverCtrl.create(SbPopoverComponent, {
       sbPopoverHeading: this.commonUtilService.translateMessage('TRANSFER_STOPPED'),
       actionsButtons: [],
       icon: null,
       metaInfo: this.commonUtilService.translateMessage('CANCELLING_IN_PROGRESS'),
     }, {
-      enableBackdropDismiss: false,
-      cssClass: 'sb-popover dw-active-downloads-popover',
-    });
+        enableBackdropDismiss: false,
+        cssClass: 'sb-popover dw-active-downloads-popover',
+      });
 
     this.cancellingTransferPopup.present();
 
@@ -447,10 +562,10 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
 
     this.successTransferPopup = this.popoverCtrl.create(SbPopoverComponent, {
       sbPopoverHeading: (storageDestination === StorageDestination.INTERNAL_STORAGE) ?
-      this.commonUtilService.translateMessage('CONTENT_SUCCESSFULLY_TRANSFERRED_TO_PHONE') :
+        this.commonUtilService.translateMessage('CONTENT_SUCCESSFULLY_TRANSFERRED_TO_PHONE') :
         this.commonUtilService.translateMessage('CONTENT_SUCCESSFULLY_TRANSFERRED_TO_SDCARD'),
       metaInfo: this.commonUtilService.translateMessage('SPACE_TAKEN_BY_APP', this.appName)
-       + this.fileSizePipe.transform(spaceTakenBySunbird),
+        + this.fileSizePipe.transform(spaceTakenBySunbird),
       sbPopoverContent: this.commonUtilService.translateMessage('SPACE_AVAILABLE_ON_SDCARD') +
         this.fileSizePipe.transform(this.availableExternalMemorySize),
       actionsButtons: [
