@@ -32,12 +32,12 @@
 
     <!-- Syllabus -->
     <ion-item *ngIf="appGlobalService?.DISPLAY_FRAMEWORK_CATEGORIES_IN_PROFILE">
-      <ion-label stacked text-uppercase class="label-font">{{'BOARD' | translate }}<span ion-text color="danger">&nbsp;*</span>
+      <ion-label stacked text-uppercase class="label-font">{{'BOARD' | translate }} &lrm;<span ion-text color="danger">&nbsp;*</span>
       </ion-label>
       <ion-select multiple="false" text-capitalize formControlName="syllabus" [selectOptions]="syllabusOptions"
         placeholder="{{'SELECT' | translate }}" (ionChange)="resetForm(0, true)" okText="{{'BTN_SUBMIT' | translate}}"
         cancelText="{{'CANCEL' | translate}}">
-        <ion-option *ngFor="let eachSyllabus of syllabusList" value="{{eachSyllabus?.code}}">{{eachSyllabus?.name}}</ion-option>
+        <ion-option *ngFor="let eachSyllabus of syllabusList" value="{{eachSyllabus?.code}}">{{eachSyllabus?.name}}&lrm;</ion-option>
       </ion-select>
     </ion-item>
 
