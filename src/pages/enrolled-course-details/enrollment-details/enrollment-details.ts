@@ -84,6 +84,7 @@ export class EnrollmentDetailsPage {
         content: content
       });
     }
+    this.close();
   }
 
   saveContentContext(content: any) {
