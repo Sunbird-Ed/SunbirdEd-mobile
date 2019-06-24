@@ -140,7 +140,6 @@ export class SearchPage implements OnDestroy {
   ionViewWillEnter() {
     this.headerService.hideHeader();
     this.handleDeviceBackButton();
-    // const telemetryObject = new TelemetryObject();
   }
 
   ionViewDidEnter() {
@@ -285,6 +284,13 @@ export class SearchPage implements OnDestroy {
     }
 
     if (content.contentType === ContentType.COURSE) {
+      if ( this.enrolledCourses && this.enrolledCourses.length) {
+        for (let i = 0; i < this.enrolledCourses.length; i++) {
+          if (content.identifier === this.enrolledCourses[i].courseId) {
+            params['content'] = this.enrolledCourses[i];
+          }
+        }
+      }
       this.navCtrl.push(EnrolledCourseDetailsPage, params);
       if (this.isSingleContent) {
         this.isSingleContent = false;
@@ -484,12 +490,13 @@ export class SearchPage implements OnDestroy {
     return assembleFilter;
   }
 
-  checkRetiredOpenBatch(content: any, layoutName?: string): void {
+  private async checkRetiredOpenBatch(content: any, layoutName?: string) {
     this.loader = this.commonUtilService.getLoader();
     this.loader.present();
     this.loader.onDidDismiss(() => { this.loader = undefined; });
     let retiredBatches: Array<any> = [];
     let anyOpenBatch: Boolean = false;
+    await this.getEnrolledCourses(false, true);
     this.enrolledCourses = this.enrolledCourses || [];
     if (layoutName !== ContentCard.LAYOUT_INPROGRESS) {
       retiredBatches = this.enrolledCourses.filter((element) => {
@@ -574,7 +581,7 @@ export class SearchPage implements OnDestroy {
     this.source = this.navParams.get('source');
     this.enrolledCourses = this.navParams.get('enrolledCourses');
     this.guestUser = this.navParams.get('guestUser');
-    this.userId = this.navParams.get('userId');
+    this.userId = this.navParams.get('userId') ? this.navParams.get('userId') : this.appGlobalService.getUserId();
     this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
     this.generateImpressionEvent();
     const values = new Map();
@@ -1112,14 +1119,13 @@ export class SearchPage implements OnDestroy {
    *
    * It internally calls course handler of genie sdk
    */
-  getEnrolledCourses(refreshEnrolledCourses: boolean = true, returnRefreshedCourses: boolean = false): void {
+  private getEnrolledCourses(refreshEnrolledCourses: boolean = true, returnRefreshedCourses: boolean = false): Promise<any> {
     this.showLoader = true;
-
     const option: FetchEnrolledCourseRequest = {
       userId: this.userId,
       returnFreshCourses: returnRefreshedCourses
     };
-    this.courseService.getEnrolledCourses(option).toPromise()
+    return this.courseService.getEnrolledCourses(option).toPromise()
       .then((enrolledCourses) => {
         if (enrolledCourses) {
           this.zone.run(() => {
@@ -1132,12 +1138,13 @@ export class SearchPage implements OnDestroy {
 
               this.appGlobalService.setEnrolledCourseList(courseList);
             }
-
             this.showLoader = false;
+            return enrolledCourses;
           });
         }
       }, (err) => {
         this.showLoader = false;
+        return [];
       });
   }
 
