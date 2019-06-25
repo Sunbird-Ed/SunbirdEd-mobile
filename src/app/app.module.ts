@@ -292,6 +292,9 @@ export const sunbirdSdkFactory =
             enableUserSwitcher: false,
             showUser: false
           }
+        },
+        errorLoggerConfig: {
+          errorLoggerApiPath: '/api/data/v1/client/logs'
         }
       });
 

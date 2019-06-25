@@ -32,7 +32,7 @@ export class CrashAnalyticsErrorLogger extends ErrorHandler {
             telemetryErrorRequest.pageId = this.activePageService.computePageId((<any>activeView).instance);
         } catch (e) { }
 
-        if (SunbirdSdk.instance) {
+        if (SunbirdSdk.instance && telemetryErrorRequest.stacktrace) {
             SunbirdSdk.instance.telemetryService.error(telemetryErrorRequest).toPromise();
         }
 
