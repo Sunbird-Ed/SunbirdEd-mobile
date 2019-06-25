@@ -1,81 +1,35 @@
-import {ActiveDownloadsPage} from './../active-downloads/active-downloads';
-import {Component, Inject, NgZone, OnInit, ViewChild} from '@angular/core';
+import { ActiveDownloadsPage } from './../active-downloads/active-downloads';
+import { Component, Inject, NgZone, OnInit, ViewChild } from '@angular/core';
 import { Content as iContent } from 'ionic-angular';
 import {
-  Events,
-  IonicPage,
-  Navbar,
-  NavController,
-  NavParams,
-  Platform,
-  PopoverController,
-  ToastController,
-  ViewController
+  Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController, ViewController
 } from 'ionic-angular';
-import {TranslateService} from '@ngx-translate/core';
-import {SocialSharing} from '@ionic-native/social-sharing';
+import { TranslateService } from '@ngx-translate/core';
+import { SocialSharing } from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
-import {ContentDetailsPage} from '@app/pages/content-details/content-details';
+import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import {
-  ConfirmAlertComponent,
-  ContentActionsComponent,
-  ContentRatingAlertComponent,
-  SbPopoverComponent
+  ConfirmAlertComponent, ContentActionsComponent, ContentRatingAlertComponent, SbPopoverComponent
 } from '@app/component';
-import {ContentType, MimeType, ShareUrl} from '@app/app';
-import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
+import { ContentType, MimeType, ShareUrl } from '@app/app';
+import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import {
-  AppGlobalService,
-  AppHeaderService,
-  CommonUtilService,
-  CourseUtilService,
-  TelemetryGeneratorService,
-  UtilityService
+  AppGlobalService, AppHeaderService, CommonUtilService, CourseUtilService, TelemetryGeneratorService, UtilityService
 } from '@app/service';
 import {
-  Content,
-  ContentAccess,
-  ContentAccessStatus,
-  ContentDeleteStatus,
-  ContentDetailRequest,
-  ContentEventType,
-  ContentExportRequest,
-  ContentExportResponse,
-  ContentImport,
-  ContentImportCompleted,
-  ContentImportRequest,
-  ContentImportResponse,
-  ContentImportStatus,
-  ContentMarkerRequest,
-  ContentService,
-  ContentUpdate,
-  CorrelationData,
-  DownloadEventType,
-  DownloadProgress,
-  EventsBusEvent,
-  EventsBusService,
-  MarkerType,
-  Profile,
-  ProfileService,
-  ProfileType,
-  Rollup,
-  StorageService,
-  TelemetryErrorCode,
-  TelemetryObject
+  Content, ContentAccess, ContentAccessStatus, ContentDeleteStatus, ContentDetailRequest, ContentEventType,
+  ContentExportRequest, ContentExportResponse, ContentImport, ContentImportCompleted, ContentImportRequest,
+  ContentImportResponse, ContentImportStatus, ContentMarkerRequest, ContentService, ContentUpdate, CorrelationData,
+  DownloadEventType, DownloadProgress, EventsBusEvent, EventsBusService, MarkerType, Profile, ProfileService,
+  ProfileType, Rollup, StorageService, TelemetryErrorCode, TelemetryObject
 } from 'sunbird-sdk';
-import {Subscription} from 'rxjs';
+import { Subscription } from 'rxjs';
 import {
-  Environment,
-  ErrorType,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  Mode,
-  PageId
+  Environment, ErrorType, ImpressionType, InteractSubtype, InteractType, Mode, PageId
 } from '../../service/telemetry-constants';
-import {FileSizePipe} from '@app/pipes/file-size/file-size';
-import {SbGenericPopoverComponent} from '@app/component/popups/sb-generic-popup/sb-generic-popover';
-import {ComingSoonMessageService} from "@app/service/coming-soon-message.service";
+import { FileSizePipe } from '@app/pipes/file-size/file-size';
+import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
+import { ComingSoonMessageService } from "@app/service/coming-soon-message.service";
 
 /**
  * Generated class for the CollectionDetailsEtbPage page.
@@ -293,7 +247,7 @@ export class CollectionDetailsEtbPage implements OnInit {
 	 */
   ngOnInit() {
   }
-  
+
   ionViewDidLoad() {
     /*this.navBar.backButtonClick = () => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
@@ -370,22 +324,22 @@ export class CollectionDetailsEtbPage implements OnInit {
   }
 
   async markContent() {
-        const addContentAccessRequest: ContentAccess = {
-            status: ContentAccessStatus.PLAYED,
-            contentId: this.identifier,
-            contentType: this.content.contentType
-        };
-        const profile: Profile = await this.appGlobalService.getCurrentUser();
-        this.profileService.addContentAccess(addContentAccessRequest).toPromise().then();
-            const contentMarkerRequest: ContentMarkerRequest = {
-                uid: profile.uid,
-                contentId: this.identifier,
-                data: JSON.stringify(this.content.contentData),
-                marker: MarkerType.PREVIEWED,
-                isMarked: true,
-                extraInfo: {}
-            };
-            this.contentService.setContentMarker(contentMarkerRequest).toPromise().then();
+    const addContentAccessRequest: ContentAccess = {
+      status: ContentAccessStatus.PLAYED,
+      contentId: this.identifier,
+      contentType: this.content.contentType
+    };
+    const profile: Profile = await this.appGlobalService.getCurrentUser();
+    this.profileService.addContentAccess(addContentAccessRequest).toPromise().then();
+    const contentMarkerRequest: ContentMarkerRequest = {
+      uid: profile.uid,
+      contentId: this.identifier,
+      data: JSON.stringify(this.content.contentData),
+      marker: MarkerType.PREVIEWED,
+      isMarked: true,
+      extraInfo: {}
+    };
+    this.contentService.setContentMarker(contentMarkerRequest).toPromise().then();
   }
 
   async presentToastWithOptions() {
@@ -556,25 +510,25 @@ export class CollectionDetailsEtbPage implements OnInit {
 
   async showCommingSoonPopup(childData: any) {
     const message = await this.comingSoonMessageService.getComingSoonMessage(childData);
-    if (childData.contentData.mimeType === 'application/vnd.ekstep.content-collection' && !childData.children) {
-        const popover = this.popoverCtrl.create(SbGenericPopoverComponent, {
-            sbPopoverHeading: this.commonUtilService.translateMessage('CONTENT_COMMING_SOON'),
-            sbPopoverMainTitle: message ? this.commonUtilService.translateMessage(message) :
-            this.commonUtilService.translateMessage('CONTENT_IS_BEEING_ADDED') + childData.contentData.name,
-            actionsButtons: [
-                {
-                    btntext: this.commonUtilService.translateMessage('OKAY'),
-                    btnClass: 'popover-color'
-                }
-            ],
-        }, {
-            cssClass: 'sb-popover warning',
+    if (childData.contentData.mimeType === MimeType.COLLECTION && !childData.children) {
+      const popover = this.popoverCtrl.create(SbGenericPopoverComponent, {
+        sbPopoverHeading: this.commonUtilService.translateMessage('CONTENT_COMMING_SOON'),
+        sbPopoverMainTitle: message ? this.commonUtilService.translateMessage(message) :
+          this.commonUtilService.translateMessage('CONTENT_IS_BEEING_ADDED') + childData.contentData.name,
+        actionsButtons: [
+          {
+            btntext: this.commonUtilService.translateMessage('OKAY'),
+            btnClass: 'popover-color'
+          }
+        ],
+      }, {
+          cssClass: 'sb-popover warning',
         });
-        popover.present({
-            ev: event
-        });
+      popover.present({
+        ev: event
+      });
     }
-}
+  }
 
   /**
    * Function to extract api response.
@@ -827,7 +781,7 @@ export class CollectionDetailsEtbPage implements OnInit {
           this.showChildrenLoader = false;
         });
       });
-      this.ionContent.scrollTo(0, this.scrollPosition);
+    this.ionContent.scrollTo(0, this.scrollPosition);
   }
 
   getContentsSize(data) {
@@ -1301,7 +1255,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     if (this.localResourseCount) {
       contentTypeCount = this.localResourseCount + '';
       metaInfo = this.commonUtilService.translateMessage('ITEMS', contentTypeCount) +
-      ' (' + this.fileSizePipe.transform(this.contentDetail.sizeOnDevice, 2) + ')';
+        ' (' + this.fileSizePipe.transform(this.contentDetail.sizeOnDevice, 2) + ')';
     } else {
       metaInfo = this.fileSizePipe.transform(this.contentDetail.sizeOnDevice, 2);
     }
@@ -1398,10 +1352,10 @@ export class CollectionDetailsEtbPage implements OnInit {
     switch ($event.name) {
       case 'back': this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
         true, this.cardData.identifier, this.corRelationList);
-      this.handleBackButton();
-                    break;
+        this.handleBackButton();
+        break;
       case 'download': this.redirectToActivedownloads();
-                        break;
+        break;
 
     }
   }

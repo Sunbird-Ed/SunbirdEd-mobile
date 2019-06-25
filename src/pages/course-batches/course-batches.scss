@@ -78,6 +78,7 @@ page-course-batches {
     }
     .text-gray-color {
         color: gray;
+        display: inline-block;
         @extend .NotoSans;
     }
 
@@ -88,5 +89,9 @@ page-course-batches {
         @extend .NotoSans-bold;
         padding: 15px 0 12px 7px;
         font-size: 1.6rem;
+    }
+
+    ion-label {
+        white-space: unset
     }
 }
