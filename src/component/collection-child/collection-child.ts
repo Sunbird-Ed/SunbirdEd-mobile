@@ -1,16 +1,14 @@
 import { Component, Input, NgZone, AfterViewInit } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
-import {ContentType, MimeType
-} from '@app/app/app.constant';
+import { ContentType, MimeType } from '@app/app/app.constant';
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import { CommonUtilService } from '@app/service';
 import { PopoverController } from 'ionic-angular';
 import { SbGenericPopoverComponent } from '../popups/sb-generic-popup/sb-generic-popover';
-import {Content} from 'sunbird-sdk';
-import {ComingSoonMessageService} from "@app/service/coming-soon-message.service";
-
+import { Content } from 'sunbird-sdk';
+import { ComingSoonMessageService } from "@app/service/coming-soon-message.service";
 
 @Component({
     selector: 'collection-child',
@@ -24,7 +22,6 @@ export class CollectionChildComponent implements AfterViewInit {
     @Input() corRelationList: any;
     @Input() isDepthChild: any;
     @Input() breadCrumb: any;
-
 
     constructor(
         private navCtrl: NavController,
@@ -68,13 +65,13 @@ export class CollectionChildComponent implements AfterViewInit {
         });
     }
 
-   async showComingSoonPopup(childData: any) {
-      const message = await this.comingSoonMessageService.getComingSoonMessage(childData);
-        if (childData.contentData.mimeType === 'application/vnd.ekstep.content-collection' && !childData.children) {
+    async showComingSoonPopup(childData: any) {
+        const message = await this.comingSoonMessageService.getComingSoonMessage(childData);
+        if (childData.contentData.mimeType === MimeType.COLLECTION && !childData.children) {
             const popover = this.popoverCtrl.create(SbGenericPopoverComponent, {
                 sbPopoverHeading: this.commonUtilService.translateMessage('CONTENT_COMMING_SOON'),
                 sbPopoverMainTitle: message ? this.commonUtilService.translateMessage(message) :
-                  this.commonUtilService.translateMessage('CONTENT_IS_BEEING_ADDED') + childData.contentData.name,
+                    this.commonUtilService.translateMessage('CONTENT_IS_BEEING_ADDED') + childData.contentData.name,
                 actionsButtons: [
                     {
                         btntext: this.commonUtilService.translateMessage('OKAY'),
@@ -82,8 +79,8 @@ export class CollectionChildComponent implements AfterViewInit {
                     }
                 ],
             }, {
-                cssClass: 'sb-popover warning',
-            });
+                    cssClass: 'sb-popover warning',
+                });
             popover.present({
                 ev: event
             });
