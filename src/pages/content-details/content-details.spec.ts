@@ -35,7 +35,7 @@ import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import { Observable, Subscription } from 'rxjs';
 import 'jest';
 
-describe('CollectionDetailsPage Component', () => {
+describe('ContentDetailsPage Component', () => {
   let contentDetailsPage: ContentDetailsPage;
 
   beforeEach(() => {
@@ -81,7 +81,7 @@ describe('CollectionDetailsPage Component', () => {
     jest.resetAllMocks();
   });
 
-  it('test instance initiation', () => {
+  fit('test instance initiation', () => {
     expect(contentDetailsPage).toBeTruthy();
   });
   it('should create valid instance for ContentDetailsPage', () => {

@@ -92,7 +92,7 @@ describe('Notification Page', () => {
             }];
             notificationServiceMock.getAllNotifications.mockReturnValue(Observable.of(returnVal));
             notificationPage.getNotifications();
-            expect(notificationServiceMock.getAllNotifications).toHaveBeenCalledWith({ notificationStatus: NotificationStatus.ALL });
+            expect(notificationServiceMock.getAllNotifications).toHaveBeenCalledWith({ notificationStatus: 'all' });
             expect(notificationPage.newNotificationCount).toEqual(1);
             expect(notificationPage.notificationList).toEqual(returnVal);
         });
