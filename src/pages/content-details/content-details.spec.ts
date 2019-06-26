@@ -34,8 +34,9 @@ import {
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import { Observable, Subscription } from 'rxjs';
 import 'jest';
+import { PreferenceKey } from '../../app';
 
-describe('CollectionDetailsPage Component', () => {
+describe('ContentDetailsPage Component', () => {
   let contentDetailsPage: ContentDetailsPage;
 
   beforeEach(() => {
@@ -129,6 +130,12 @@ describe('CollectionDetailsPage Component', () => {
 
   it('should be called handleDeviceBackButton()', () => {
     // arrange
+    ionicAppMock._modalPortal = {
+      getActive: jest.fn()
+    };
+    ionicAppMock._overlayPortal = {
+      getActive: jest.fn()
+    };
     platformMock.registerBackButtonAction.mockReturnValue(jest.fn());
     contentDetailsPage.cardData = { identifier: 'SAMPLE_IDENTIFIER' };
     contentDetailsPage.shouldGenerateEndTelemetry = true;
@@ -141,8 +148,6 @@ describe('CollectionDetailsPage Component', () => {
     // assert
     expect(telemetryGeneratorServiceMock.generateEndTelemetry)
       .toHaveBeenCalledTimes(2);
-
-    expect(contentDetailsPage.backButtonFunc).toBeCalled();
   });
 
   it('should be called subscribePlayEvent()', () => {
@@ -163,16 +168,39 @@ describe('CollectionDetailsPage Component', () => {
     expect(contentDetailsPage.isUserLoggedIn).toBe(userLoggedIn);
   });
 
-  it('should be called calculateAvailableUserCount()', () => {
+  it('#calculateAvailableUserCount should set userCount value to 1', (done) => {
     // arrange
     const profileRequest = {
       local: true,
       server: false
     };
+    appGlobalServiceMock.isUserLoggedIn.mockReturnValue(true);
+    profileServiceMock.getAllProfiles.mockReturnValue(Observable.of([]));
+    contentDetailsPage.userCount = 0;
     // act
     contentDetailsPage.calculateAvailableUserCount();
     // assert
-    expect((profileServiceMock.getAllProfiles as any).map).toHaveBeenCalledWith(profileRequest);
+    setTimeout(() => {
+      expect(contentDetailsPage.userCount).toBe(1);
+      done();
+    }, 0);
+  });
+
+  it('#calculateAvailableUserCount should sets userCount with profiles.lenght', (done) => {
+    // arrange
+    const profiles = [
+      100,
+      200
+    ];
+    profileServiceMock.getAllProfiles.mockReturnValue(Observable.of(profiles));
+    contentDetailsPage.userCount = 0;
+    // act
+    contentDetailsPage.calculateAvailableUserCount();
+    // assert
+    setTimeout(() => {
+      expect(contentDetailsPage.userCount).toBe(profiles.length);
+      done();
+    }, 0);
   });
 
   it('should be called showSwitchUserAlert() if isStreaming is true', () => {
@@ -279,5 +307,67 @@ describe('CollectionDetailsPage Component', () => {
     // assert
     expect(contentDetailsPage.playContent).toHaveBeenCalled();
   });
+
+  it('#checkCurrentUserType should call getGuestUserInfo and set profileType', (done) => {
+    // arrange
+    const userType = 'Student';
+    contentDetailsPage.isGuestUser = true;
+    appGlobalServiceMock.getGuestUserInfo.mockResolvedValue(userType);
+    // act
+    contentDetailsPage.checkCurrentUserType();
+    // assert
+    setTimeout(() => {
+      expect(appGlobalServiceMock.getGuestUserInfo).toHaveBeenCalled();
+      expect(contentDetailsPage.profileType).toBe(userType);
+      done();
+    }, 0);
+  });
+
+  it('#checkCurrentUserType should go to catch and set profileType to blank', () => {
+    // arrange
+    contentDetailsPage.isGuestUser = true;
+    appGlobalServiceMock.getGuestUserInfo.mockReturnValue(Promise.reject());
+    // act
+    contentDetailsPage.checkCurrentUserType();
+    // assert
+    expect(appGlobalServiceMock.getGuestUserInfo).toHaveBeenCalled();
+    expect(contentDetailsPage.profileType).toBe('');
+  });
+
+  it('#checkBookmarkStatus should call showBookmarkMenu method', (done) => {
+    // arrange
+    sharedPreferencesMock.getString.mockReturnValue(Observable.of(false));
+    spyOn(contentDetailsPage, 'showBookmarkMenu');
+    // act
+    contentDetailsPage.checkBookmarkStatus();
+    // assert
+    setTimeout(() => {
+      expect(contentDetailsPage.showBookmarkMenu).toHaveBeenCalled();
+      done();
+    }, 0);
+  });
+
+  it('#rateContent should call ', (done) => {
+    // arrange
+    contentDetailsPage.isContentPlayed = true;
+    contentDetailsPage.content = {
+      contentAccess: [1, 2]
+    };
+    const popupType = 'automatic' ;
+    appRatingServiceMock.checkReadFile.mockReturnValue(false);
+    sharedPreferencesMock.getString.mockReturnValue(Observable.of('2019/06/18 19:00'));
+    spyOn(contentDetailsPage, 'contentRating').and.stub();
+    spyOn(contentDetailsPage, 'validateAndCheckDateDiff');
+    // act
+    contentDetailsPage.rateContent(popupType);
+    // assert
+    expect(appRatingServiceMock.checkReadFile).toHaveBeenCalled();
+    setTimeout(() => {
+      expect(sharedPreferencesMock.getString).toHaveBeenCalled();
+      expect(contentDetailsPage.validateAndCheckDateDiff).toReturnWith(Promise.resolve());
+      done();
+    }, 0);
+  });
+
 });
 

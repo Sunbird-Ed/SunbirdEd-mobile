@@ -95,13 +95,8 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
   ) {
     this.spaceTakenBySunbird$ = this.storageService.getStorageDestinationVolumeInfo()
       .mergeMap((storageVolume) => {
-        if (storageVolume.storageDestination === StorageDestination.INTERNAL_STORAGE) {
-          this.contentService
-            .getContentSpaceUsageSummary({ paths: [cordova.file.externalDataDirectory] });
-        }
-
         return this.contentService
-          .getContentSpaceUsageSummary({ paths: [storageVolume.info.path] });
+          .getContentSpaceUsageSummary({ paths: [storageVolume.info.contentStoragePath] });
       })
       .map((summary) => summary[0].sizeOnDevice) as any;
     this.appVersion.getAppName()
@@ -168,17 +163,10 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     this.storageDestination = await this.storageService.getStorageDestination().toPromise();
   }
 
-  private getStorageDestinationVolume(storageDestination: StorageDestination): string {
-    if (storageDestination === StorageDestination.INTERNAL_STORAGE) {
-      return cordova.file.externalDataDirectory;
-    }
-
-    const storageVolumePath = this._storageVolumes
-      .find((storageVolume) => storageVolume.storageDestination === storageDestination)!
-      .info.path;
-
-    // TODO change prefix
-    return `${storageVolumePath}`;
+  private getStorageDestinationDirectoryPath(storageDestination: StorageDestination): string {
+    return this._storageVolumes
+      .find((storageVolume) => storageVolume.storageDestination === storageDestination)
+      .info.contentStoragePath;
   }
 
   private async getStoragePermissionStatus(): Promise<AndroidPermissionsStatus> {
@@ -342,7 +330,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     this.storageService.transferContents({
       contentIds: [],
       existingContentAction: undefined,
-      destinationFolder: this.getStorageDestinationVolume(this.storageDestination),
+      destinationFolder: this.getStorageDestinationDirectoryPath(this.storageDestination),
       deleteDestination: false
     }).subscribe(null, (e) => { console.error(e); }, () => { console.log('complete'); });
 
