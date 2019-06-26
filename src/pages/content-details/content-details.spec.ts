@@ -36,7 +36,7 @@ import { Observable, Subscription } from 'rxjs';
 import 'jest';
 import { PreferenceKey } from '../../app';
 
-describe('CollectionDetailsPage Component', () => {
+describe('ContentDetailsPage Component', () => {
   let contentDetailsPage: ContentDetailsPage;
 
   beforeEach(() => {
