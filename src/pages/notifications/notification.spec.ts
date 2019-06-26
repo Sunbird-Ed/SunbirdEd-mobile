@@ -3,7 +3,6 @@ import { Observable } from 'rxjs';
 import { NotificationsPage } from "./notifications";
 import { navCtrlMock, navParamsMock, headerServiceMock, commonUtilServiceMock, notificationServiceMock, eventsMock, telemetryGeneratorServiceMock, platformMock } from "../../__tests__/mocks";
 import { PageId, Environment, ImpressionType, InteractSubtype, InteractType } from '../../service/telemetry-constants';
-import { NotificationStatus, InteractSubType } from 'sunbird-sdk';
 import { ItemSliding } from 'ionic-angular';
 
 describe('Notification Page', () => {
@@ -80,19 +79,18 @@ describe('Notification Page', () => {
                 expiry: 212121212,
                 isRead: 0,
                 actionData: {
-                    actionType: '',
-                    title: 'string',
-                    identifier: '',
-                    ctaText: 'string',
-                    deepLink: 'string',
-                    thumbnail: 'string',
-                    banner: 'string'
+                    actionType: 'updateApp',
+                    title: 'Update Available',
+                    ctaText: 'Update App',
+                    deepLink: 'https://google-play',
+                    thumbnail: 'https://getuikit.com/v2/docs/images/placeholder_600x400.svg',
+                    banner: 'https://getuikit.com/v2/docs/images/placeholder_600x400.svg'
                 }
 
             }];
             notificationServiceMock.getAllNotifications.mockReturnValue(Observable.of(returnVal));
             notificationPage.getNotifications();
-            expect(notificationServiceMock.getAllNotifications).toHaveBeenCalledWith({ notificationStatus: NotificationStatus.ALL });
+            expect(notificationServiceMock.getAllNotifications).toHaveBeenCalledWith({ notificationStatus: 'all' });
             expect(notificationPage.newNotificationCount).toEqual(1);
             expect(notificationPage.notificationList).toEqual(returnVal);
         });
@@ -136,13 +134,12 @@ describe('Notification Page', () => {
                 expiry: 212121212,
                 isRead: 0,
                 actionData: {
-                    actionType: '',
-                    title: 'string',
-                    identifier: '',
-                    ctaText: 'string',
-                    deepLink: 'string',
-                    thumbnail: 'string',
-                    banner: 'string'
+                    actionType: 'updateApp',
+                    title: 'Update Available',
+                    ctaText: 'Update App',
+                    deepLink: 'https://google-play',
+                    thumbnail: 'https://getuikit.com/v2/docs/images/placeholder_600x400.svg',
+                    banner: 'https://getuikit.com/v2/docs/images/placeholder_600x400.svg'
                 }
 
             }];

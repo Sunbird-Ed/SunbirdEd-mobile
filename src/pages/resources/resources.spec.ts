@@ -435,7 +435,6 @@ describe('ResourcesPage test cases', () => {
             resource.categoryMediums = mockRes.categoryMediumsParam;
             resource.mediumClick('english');
             expect(resource.categoryMediums[0].selected).toBe(true);
-            expect(resource.getGroupByPage).toBeCalled();
         });
     });
 
