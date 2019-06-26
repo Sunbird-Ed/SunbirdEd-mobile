@@ -21,6 +21,8 @@ export class EditContactDetailsPopupComponent {
   err: boolean;
   personEditForm: FormGroup;
   isRequired: Boolean = false;
+  updateErr: boolean;
+  blockedAccount: boolean;
 
   constructor(private navParams: NavParams,
     public viewCtrl: ViewController,
@@ -76,7 +78,7 @@ export class EditContactDetailsPopupComponent {
         loader.dismiss();
         if (success && success.response) {
           if (success.response.id === this.userId) {
-            this.viewCtrl.dismiss(false);
+            this.updateErr = true;
           } else {
             this.err = true;
           }
@@ -85,8 +87,8 @@ export class EditContactDetailsPopupComponent {
         loader.dismiss();
         if (error.response.body.params.err === 'USER_NOT_FOUND') {
           this.generateOTP();
-        } else if (error.response.body.params.err === 'INVALID_PHONE_FORMAT') {
-          // TODO
+        } else if (error.response.body.params.err === 'USER_ACCOUNT_BLOCKED') {
+          this.blockedAccount = true;
         }
       });
     } else {
@@ -94,9 +96,11 @@ export class EditContactDetailsPopupComponent {
     }
   }
 
-  phoneNumberErr() {
-    if (this.err) {
+  refreshErr() {
+    if (this.err || this.updateErr || this.blockedAccount) {
       this.err = false;
+      this.updateErr = false;
+      this.blockedAccount = false;
     }
   }
 
