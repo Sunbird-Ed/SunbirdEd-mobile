@@ -61,6 +61,10 @@ export class FaqPage {
   }
 
   ionViewDidLoad() {
+    this.appVersion.getAppName()
+      .then((appName) => {
+        this.appName = appName;
+      });
     window.addEventListener('message', this.messageListener, false);
   }
 
@@ -79,10 +83,6 @@ export class FaqPage {
 
   async ionViewWillEnter() {
     this.headerService.showHeaderWithBackButton();
-    this.appVersion.getAppName()
-      .then((appName) => {
-        this.appName = appName;
-      });
     await this.createAndPresentLoadingSpinner();
     this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
@@ -101,7 +101,7 @@ export class FaqPage {
         url += '?selectedlang=' + this.selectedLanguage + '&randomid=' + Math.random();
         this.faq.url = url;
         this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
-      } else  {
+      } else {
         this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
 
       }
@@ -141,6 +141,8 @@ export class FaqPage {
     const element = document.getElementsByTagName('iframe')[0];
     if (element) {
       if (element.contentDocument.documentElement.getElementsByTagName('body')[0].innerHTML.length !== 0 && this.loading) {
+        const appData = { appName: this.appName };
+        element.contentWindow.postMessage(appData, '*');
         this.loading.dismissAll();
       }
       if (element.contentDocument.documentElement.getElementsByTagName('body').length === 0 ||
