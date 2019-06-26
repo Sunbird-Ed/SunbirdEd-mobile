@@ -1,19 +1,6 @@
 var selectedLang = getUrlVars()["selectedlang"];
-var appName = '';
-if (window.parent.cordova) {
-    window.parent.cordova.getAppVersion.getAppName(function (name) {
-        appName = name;
-    });
-} else {
-    appName = getUrlVars()["appname"];
-}
 console.log('selected Lang', selectedLang);
 $(document).ready(function () {
-    if (window.parent.cordova) {
-        window.parent.cordova.getAppVersion.getAppName(function (name) {
-            appName = name;
-        });
-    }
     var jsonUrl;
     if (selectedLang) {
         jsonUrl = "./resources/res/faq-" + selectedLang.trim() + ".json"
@@ -23,14 +10,6 @@ $(document).ready(function () {
 
     console.log(jsonUrl);
     $.getJSON(jsonUrl, function (data) {
-        for (var i = 0; i < data.faqs.length; i++) {
-            if (data.faqs[i].topic.includes('{{APP_NAME}}')) {
-                data.faqs[i].topic = data.faqs[i].topic.replace('{{APP_NAME}}', appName);
-            }
-            if (data.faqs[i].description.includes('{{APP_NAME}}')) {
-                data.faqs[i].description = data.faqs[i].description.replace('{{APP_NAME}}', appName);
-            }
-        }
         var html = '';
         html += '<div class="help-header-send-email">'
             + '<h4>' + data.constants.reportIssue + '</h4>'

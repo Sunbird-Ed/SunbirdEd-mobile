@@ -467,6 +467,7 @@ export const appRatingServiceMock = createSpyObj<AppRatingService>([
   'checkInitialDate',
   'setEndStoreRate',
   'createFolder',
+  'checkReadFile'
 ]);
 export const downloadServiceMock = createSpyObj<DownloadService>([
   'getActiveDownloadRequests',
