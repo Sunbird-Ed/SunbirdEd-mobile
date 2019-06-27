@@ -26,8 +26,8 @@ export class CollectionChildComponent implements AfterViewInit {
     @Input() corRelationList: any;
     @Input() isDepthChild: any;
     @Input() breadCrumb: any;
-
-
+    @Input() defaultAppIcon: string;
+    @Input() localImage: string;
     constructor(
         private navCtrl: NavController,
         private zone: NgZone,
