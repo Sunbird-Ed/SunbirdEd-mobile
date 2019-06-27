@@ -349,6 +349,8 @@ export class GuestEditProfilePage {
               });
               this.resetForm(1, false);
             }
+          } else {
+            this.isEditData = false;
           }
         } else if (this.isEditData) {
           this.isEditData = false;
