@@ -20,11 +20,19 @@
       </ion-row>
     </div>
     <!-- End import content -->
-
+    <div class="sb-slider-pills-container" *ngIf=" childrenData && childrenData?.length">
+      <div class="sb-pills-container sb-grade-pills-container" id="gradeScroll">
+        <div class="pill" *ngFor="let type of mimeTypes; let i = index; let first = first"
+             [ngClass]="{'active': type?.selected, '': !type?.selected}" attr.id="class{{i}}"
+             (click)="onFilterMimeTypeChange(type.value, i);">
+          {{type?.name}}
+        </div>
+      </div>
+    </div>
     <!-- Looping Inside Children Data Textbook -->
     <section *ngIf=" childrenData && childrenData?.length">
       <ion-card class="sb-accordian-card" *ngFor="let item of childrenData;  let i = index;">
-
+        <ng-container *ngIf="item | hasMimeType: activeMimeTypeFilter">
         <!-- new -->
         <ion-grid class="sb-accordian-header">
           <ion-row (click)="toggleGroup(i, item)" *ngIf="item?.children">
@@ -77,11 +85,12 @@
           <div class="box-align" *ngFor="let firstChildren of item?.children; let j = index;">
               <div class="sb-topics-container">
                 <collection-child
-                  [childData]="firstChildren" [index]="j" [depth]="depth"
+                  [childData]="firstChildren" [index]="j" [depth]="depth" [activeMimeTypeFilter] = "activeMimeTypeFilter"
                   [corRelationList]="corRelationList" [isDepthChild]="isDepthChild" [breadCrumb]="breadCrumb"></collection-child>
               </div>
           </div>
         </div>
+        </ng-container>
       </ion-card>
     </section>
   </div>

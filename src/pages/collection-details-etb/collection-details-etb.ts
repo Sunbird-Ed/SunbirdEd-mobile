@@ -87,7 +87,16 @@ export class CollectionDetailsEtbPage implements OnInit {
 
   contentDetail?: Content;
   childrenData: Array<any>;
-
+  mimeTypes = [
+    { name: 'All', selected: true, value: ['all'], icon: ''},
+    { name: 'Videos', value: ['video/mp4', 'video/x-youtube'], icon: ''},
+    { name: 'Docs', value: ['application/pdf', 'application/epub'], icon: ''},
+    { name: 'Interaction',
+      value: ['application/vnd.ekstep.ecml-archive', 'application/vnd.ekstep.h5p-archive', 'application/vnd.ekstep.html-archive'],
+      icon: ''
+    }
+  ];
+  activeMimeTypeFilter = ['all'];
   /**
    * Show loader while importing content
    */
@@ -1393,5 +1402,13 @@ export class CollectionDetailsEtbPage implements OnInit {
       Environment.HOME,
       PageId.COLLECTION_DETAIL);
     this.navCtrl.push(ActiveDownloadsPage);
+  }
+  onFilterMimeTypeChange(val, idx) {
+    console.log('onFilterMimeTypeChange', val);
+    this.activeMimeTypeFilter = val;
+    this.mimeTypes.forEach((type) => {
+      type.selected = false;
+    });
+    this.mimeTypes[idx].selected = true;
   }
 }

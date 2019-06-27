@@ -4,7 +4,8 @@
         {{childData?.contentData?.name}}
     </div>
     <div
-         *ngIf="childData?.contentData?.mimeType !== 'application/vnd.ekstep.content-collection'"
+      *ngIf="childData?.contentData?.mimeType !== 'application/vnd.ekstep.content-collection'
+      && hasMimeType(activeMimeTypeFilter, childData?.contentData?.mimeType)"
          (click)="navigateToDetailsPage(childData, depth + '.' + (i + 1))">
       <!--        <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle"-->
       <!--            [ngClass]="{'sb-accordian-grey-icon': !commonUtilService.networkInfo.isNetworkAvailable && !childData?.isAvailableLocally, 'sb-play-icon': commonUtilService.networkInfo.isNetworkAvailable || childData?.isAvailableLocally}">-->
@@ -36,6 +37,6 @@
     <!-- <div *ngIf="childData?.children && childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection'"
         class="sb-separator-line ml8 mtb-8"></div> -->
     <div *ngFor="let firstChildren of childData?.children; let j = index;">
-        <collection-child [childData]="firstChildren" [breadCrumb]="breadCrumb"></collection-child>
+        <collection-child [childData]="firstChildren" [breadCrumb]="breadCrumb" [activeMimeTypeFilter] = "activeMimeTypeFilter"></collection-child>
     </div>
 </div>
