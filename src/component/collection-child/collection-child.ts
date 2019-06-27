@@ -1,9 +1,7 @@
 import { Component, Input, NgZone, AfterViewInit } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
-import {
-    ContentType,
-    MimeType
+import {ContentType, MimeType
 } from '@app/app/app.constant';
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
@@ -28,6 +26,8 @@ export class CollectionChildComponent implements AfterViewInit {
     @Input() breadCrumb: any;
     @Input() defaultAppIcon: string;
     @Input() localImage: string;
+    @Input() activeMimeTypeFilter: any;
+
     constructor(
         private navCtrl: NavController,
         private zone: NgZone,
@@ -91,6 +91,13 @@ export class CollectionChildComponent implements AfterViewInit {
                 ev: event
             });
         }
+    }
+
+    hasMimeType(activeMimeType: string[], mimeType: string): boolean {
+      if (activeMimeType.indexOf('all') > -1) {
+        return true;
+      }
+      return !!activeMimeType.find( m => m === mimeType);
     }
 
     ngAfterViewInit(): void {
