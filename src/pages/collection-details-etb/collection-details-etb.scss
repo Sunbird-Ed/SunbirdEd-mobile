@@ -134,8 +134,11 @@ page-collection-details-etb {
     }
     .font-grey-text
     {
-      //  padding: 4px;
-        color : #979797;
+      height: 3.11%;
+      width: 91.11%;
+      color: #999999;
+      font-size: 12px;
+      line-height: 18px;
     }
     .grey-icon
     {
@@ -385,5 +388,32 @@ shadow{
   .scroll-content{
     padding-bottom: 20%!important;
   }
-  
+  .sb-topics-containe{
+    padding-right: 5%;
+  }
+  .sb-hidden-content{
+    background-color: #F2F2F2;
+    height: 34.15%;
+    width: 100%;
+    border-radius: 0 0 2px 2px;
+    padding-top: 2%;
+    padding-bottom: 2%;
+  }
+  .sb-accordian-card{
+    height: 6.1%;
+    width: 100%;
+    border-radius: 2px;
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 7px 0 rgba(0,0,0,0.1);
+  }
+  .sb-topic-text {
+    height: 2.44%;
+    width: 80%;
+    color: $blue;
+    font-size: 14px;
+    line-height: 20px;
+  }
+  .box-align {
+    margin-right: 18px;
+  }
 }

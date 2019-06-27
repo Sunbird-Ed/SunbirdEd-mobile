@@ -73,14 +73,13 @@
           <!-- </div> -->
         </ion-grid>
         <!-- <div class="sb-separator-line"></div> -->
-        <div class="sb-hidden-content px-16 pt-8" *ngIf="isGroupShown(i) && (item?.children && item?.children?.length)">
-          <div *ngFor="let firstChildren of item?.children; let j = index;">
-            <!-- <div class="separator-line"></div> -->
-            <div class="sb-topics-container">
-              <collection-child
-                [childData]="firstChildren" [index]="j" [depth]="depth"
-                [corRelationList]="corRelationList" [isDepthChild]="isDepthChild" [breadCrumb]="breadCrumb"></collection-child>
-            </div>
+        <div class="sb-hidden-content" *ngIf="isGroupShown(i) && (item?.children && item?.children?.length)">
+          <div class="box-align" *ngFor="let firstChildren of item?.children; let j = index;">
+              <div class="sb-topics-container">
+                <collection-child
+                  [childData]="firstChildren" [index]="j" [depth]="depth"
+                  [corRelationList]="corRelationList" [isDepthChild]="isDepthChild" [breadCrumb]="breadCrumb"></collection-child>
+              </div>
           </div>
         </div>
       </ion-card>
