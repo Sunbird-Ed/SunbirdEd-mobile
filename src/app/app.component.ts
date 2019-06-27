@@ -126,7 +126,22 @@ export class MyApp implements OnInit, AfterViewInit {
       this.handleBackButton();
       this.appRatingService.checkInitialDate();
       this.getUtmParameter();
+      this.checkForCodeUpdates();
     });
+  }
+  checkForCodeUpdates() {
+    SunbirdSdk.instance.sharedPreferences.getString("deploymentKey").toPromise().then(deploymentKey => {
+      if(codePush != null && deploymentKey) {
+        this.platform.resume.subscribe(() => codePush.sync({
+          deploymentKey:deploymentKey
+        },null));
+
+        codePush.sync({
+          deploymentKey:deploymentKey
+        },null);
+      }
+    });
+    
   }
 
   /* Generates new FCM Token if not available
