@@ -539,7 +539,9 @@ export class ContentDetailsPage {
   }
 
   appRating() {
-    const popover = this.popoverCtrl.create(AppRatingAlertComponent, {}, {
+    const popover = this.popoverCtrl.create(AppRatingAlertComponent, {
+      pageId: PageId.CONTENT_DETAIL,
+    }, {
       cssClass: 'sb-popover'
     });
     popover.present({

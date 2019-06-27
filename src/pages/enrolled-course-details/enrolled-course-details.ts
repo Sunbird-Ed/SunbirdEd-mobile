@@ -1381,7 +1381,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
         break;
       case 'more': this.showOverflowMenu($event);
         break;
-      case 'back': this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
+      case 'back': this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COURSE_DETAIL, Environment.HOME,
         true, this.identifier, this.corRelationList);
         this.handleNavBackButton();
         break;

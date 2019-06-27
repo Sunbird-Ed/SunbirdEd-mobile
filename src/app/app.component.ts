@@ -247,7 +247,7 @@ export class MyApp implements OnInit, AfterViewInit {
       if (navObj.canGoBack()) {
         return navObj.pop();
       } else {
-        this.commonUtilService.showExitPopUp(this.activePageService.computePageId((<any>activeView).instance), Environment.HOME, false);
+        this.commonUtilService.showExitPopUp(this.appGlobalService.getPageIdForTelemetry(), Environment.HOME, false);
       }
     });
   }
@@ -562,7 +562,7 @@ export class MyApp implements OnInit, AfterViewInit {
       if (navObj.canGoBack()) {
         return navObj.pop();
       } else {
-        this.commonUtilService.showExitPopUp(this.activePageService.computePageId((<any>activeView).instance), Environment.HOME, false);
+        this.commonUtilService.showExitPopUp(this.appGlobalService.getPageIdForTelemetry(), Environment.HOME, false);
       }
     } else {
       this.headerServie.sidebarEvent($event);
