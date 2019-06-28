@@ -1476,7 +1476,7 @@ export class ContentDetailsPage {
       InteractType.TOUCH,
       InteractSubtype.DELETE_CLICKED,
       Environment.HOME,
-      this.pageName,
+      PageId.CONTENT_DETAIL,
       telemetryObject,
       undefined,
       this.objRollup,

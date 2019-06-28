@@ -393,7 +393,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
       data: data,
       content: contentData,
       batchDetails: this.batchDetails,
-      pageName: 'course'
+      pageName: PageId.COURSE_DETAIL
     }, {
         cssClass: 'content-action'
       });
