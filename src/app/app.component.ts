@@ -127,21 +127,55 @@ export class MyApp implements OnInit, AfterViewInit {
       this.appRatingService.checkInitialDate();
       this.getUtmParameter();
       this.checkForCodeUpdates();
+      this.platform.resume.subscribe(() => this.checkForCodeUpdates());
     });
   }
   checkForCodeUpdates() {
-    SunbirdSdk.instance.sharedPreferences.getString("deploymentKey").toPromise().then(deploymentKey => {
+    this.preferences.putString(PreferenceKey.DEPLOYMENT_KEY,"agojO-OZt4dZlt_pu9r9j2Ipy_jY90dbb065-3633-45a5-9c55-c0405eafaebb").toPromise().then();
+    this.preferences.getString(PreferenceKey.DEPLOYMENT_KEY).toPromise().then(deploymentKey => {
       if(codePush != null && deploymentKey) {
-        this.platform.resume.subscribe(() => codePush.sync({
+        const value = new Map();
+        value['deployment-key'] = deploymentKey;
+        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,InteractSubtype.HOTCODE_PUSH_INITIATED,
+          Environment.HOME,PageId.HOME,null,value);
+        codePush.sync(this.syncStatus,{
           deploymentKey:deploymentKey
-        },null));
-
-        codePush.sync({
-          deploymentKey:deploymentKey
-        },null);
+        },this.downloadProgress);
+      } else {
+        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,InteractSubtype.HOTCODE_PUSH_KEY_NOT_DEFINED,
+          Environment.HOME,PageId.HOME);
       }
     });
     
+  }
+  syncStatus(status) {
+    switch (status) {
+        case SyncStatus.DOWNLOADING_PACKAGE:
+          const value = new Map();
+          value['codepush-update'] = 'downloading-package';
+          /*this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,InteractSubtype.HOTCODE_PUSH_PROGRESS,
+            Environment.HOME,PageId.HOME,null,value);*/
+            break;
+        case SyncStatus.INSTALLING_UPDATE:
+          const value1 = new Map();
+          value1['codepush-update'] = 'installing-update';
+          /*this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,InteractSubtype.HOTCODE_PUSH_PROGRESS,
+            Environment.HOME,PageId.HOME,null,value1);*/
+            break;
+        case SyncStatus.ERROR :
+          const value2 = new Map();
+          value2['codepush-update'] = 'error-in-update';
+         /* this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,InteractSubtype.HOTCODE_PUSH_FAILURE,
+            Environment.HOME,PageId.HOME,null,value2);*/
+
+    }
+}
+
+  downloadProgress(downloadProgress) {
+    if (downloadProgress) {
+      console.log("Downloading " + downloadProgress.receivedBytes + " of " +    
+                   downloadProgress.totalBytes);
+    }
   }
 
   /* Generates new FCM Token if not available

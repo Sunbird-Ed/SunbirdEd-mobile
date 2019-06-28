@@ -305,7 +305,12 @@ export enum InteractSubtype {
     UNIT_CLICKED = 'unit-clicked',
     PERMISSION_POPUP = 'permission-popup',
     WALKTHROUGH_BACKDROP_CLICKED = 'walkthrough-backdrop-clicked',
-    WALKTHROUGH_CONFIRMATION_CLICKED = 'walkthrough-confirmation-clicked'
+    WALKTHROUGH_CONFIRMATION_CLICKED = 'walkthrough-confirmation-clicked',
+    HOTCODE_PUSH_INITIATED = 'hotcode-push-initiated',
+    HOTCODE_PUSH_SUCCESS = 'hotcode-push-success',
+    HOTCODE_PUSH_FAILURE = 'hotcode-push-failure',
+    HOTCODE_PUSH_PROGRESS = 'hotcode-push-progress',
+    HOTCODE_PUSH_KEY_NOT_DEFINED = 'hotcode-push-key-not-defined'
 }
 
 export enum ActionButtonType {

@@ -196,6 +196,7 @@ export class PreferenceKey {
     public static readonly APP_RATE_LATER_CLICKED = 'app_rate_later_clicked';
     public static readonly APP_RATING_POPUP_APPEARED = 'app_rating_popup_appeared';
     public static readonly APP_PERMISSION_ASKED = 'app_permission_asked';
+    public static readonly DEPLOYMENT_KEY = 'deployment_key';
 }
 
 export class GenericAppConfig {
