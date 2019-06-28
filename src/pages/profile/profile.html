@@ -57,7 +57,7 @@
         </div>
     </div>
     <div class="school-recent" *ngIf="profile?.organisations?.length > 0 ">
-        <p class="bolder MB5" style="position: relative;">{{profile?.organisations[0].orgName}}
+        <p class="bolder MB5" style="position: relative;">{{organisationDetails}}
             <span *ngIf="!isCustodianOrgId && profile?.organisations[0].orgName" class="isymbol" item-right text-left
                 (click)="toggleTooltips($event, 'org')">
                 <ion-icon name="information-circle" class="info-icon"></ion-icon>
