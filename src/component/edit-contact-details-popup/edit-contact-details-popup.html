@@ -2,7 +2,7 @@
   <ion-spinner *ngIf="loader" padding></ion-spinner>
 
   <ion-grid class="P0">
-    <form [formGroup]="personEditForm" (ngSubmit)="validate()">
+    <form [formGroup]="personEditForm" >
       <ion-row class="P16">
         <ion-col col-12 no-padding class="text-center">
           <p>{{title}}</p>
@@ -26,7 +26,7 @@
             <div class="W100 merged-input-container MT10">
               <ion-input type="tel" placeholder="+91 -" class="form-control decorator "  value="+91 -" disabled></ion-input>
               <ion-input type="tel" placeholder="{{'PHONE_PLACEHOLDER' | translate }}" maxlength="10" minlength="10"
-                required class="form-control custom" (input)="refreshErr()" formControlName="phone" [(ngModel)]="phone"></ion-input>
+                required class="form-control custom" (input)="refreshErr()" formControlName="phone"></ion-input>
             </div>
           </ion-col>
 
@@ -50,7 +50,7 @@
           <ion-col col-12 no-padding class="text-center">
             <div class="W100 merged-input-container MT10">
               <ion-input type="text" placeholder="{{'EMAIL_PLACEHOLDER' | translate}}" class="form-control custom"
-                formControlName="email" (input)="refreshErr()" [(ngModel)]="email"></ion-input>
+                formControlName="email" (input)="refreshErr()"></ion-input>
             </div>
           </ion-col>
         </section>
@@ -58,10 +58,10 @@
       </ion-row>
       <ion-row class =  "custom-shodow">
         <ion-col padding>
-          <button ion-button block outline (click)="cancel()">{{ 'CANCEL' | translate }} </button>
+          <button ion-button block outline (click)="cancel($event)">{{ 'CANCEL' | translate }} </button>
         </ion-col>
         <ion-col padding>
-          <button ion-button block type="submit" [disabled]="!personEditForm.valid">{{ 'BTN_SUBMIT' | translate }}
+          <button ion-button block type="submit" (click)="validate($event)" [disabled]="!personEditForm.valid">{{ 'BTN_SUBMIT' | translate }}
           </button>
         </ion-col>
         <!-- <ion-col padding>
