@@ -245,24 +245,6 @@ export class EnrolledCourseDetailsPage implements OnInit {
       // delete this.batchDetails; // to show 'Enroll in Course' button courseCardData should be undefined/null
       this.isAlreadyEnrolled = false; // and isAlreadyEnrolled should be false
     });
-
-    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
-      this.telemetryGeneratorService.generateBackClickedTelemetry(
-        PageId.CONTENT_DETAIL,
-        Environment.HOME,
-        false,
-        this.identifier,
-        this.corRelationList
-      );
-      this.didViewLoad = false;
-      this.generateEndEvent(this.objId, this.objType, this.objVer);
-
-      if (this.shouldGenerateEndTelemetry) {
-        this.generateQRSessionEndEvent(this.source, this.course.identifier);
-      }
-      this.navCtrl.pop();
-      this.backButtonFunc();
-    }, 10);
   }
 
   updateEnrolledCourseList(unenrolledCourse) {
@@ -988,6 +970,27 @@ export class EnrolledCourseDetailsPage implements OnInit {
     // If courseCardData does not have a batch id then it is not a enrolled course
     this.subscribeSdkEvent();
     this.populateCorRelationData( this.courseCardData.batchId);
+    this.handleBackButton();
+  }
+
+  handleBackButton() {
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(
+        PageId.CONTENT_DETAIL,
+        Environment.HOME,
+        false,
+        this.identifier,
+        this.corRelationList
+      );
+      this.didViewLoad = false;
+      this.generateEndEvent(this.objId, this.objType, this.objVer);
+
+      if (this.shouldGenerateEndTelemetry) {
+        this.generateQRSessionEndEvent(this.source, this.course.identifier);
+      }
+      this.navCtrl.pop();
+      this.backButtonFunc();
+    }, 10);
   }
 
   populateCorRelationData(batchId) {
