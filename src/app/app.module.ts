@@ -223,7 +223,7 @@ export const sunbirdSdkFactory =
             producerUniqueId: 'sunbird.app'
           },
           cached_requests: {
-            timeToLive: 30 * 60 * 60 * 1000
+            timeToLive: 2 * 60 * 60 * 1000
           }
         },
         eventsBusConfig: {

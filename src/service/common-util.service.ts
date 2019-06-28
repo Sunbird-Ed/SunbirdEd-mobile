@@ -54,7 +54,6 @@ export class CommonUtilService implements OnDestroy {
         private network: Network,
         private zone: NgZone,
         private platform: Platform,
-        private alertCtrl: AlertController,
         private telemetryGeneratorService: TelemetryGeneratorService,
         @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     ) {

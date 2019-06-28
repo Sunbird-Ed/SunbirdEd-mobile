@@ -1312,7 +1312,7 @@ export class CollectionDetailsEtbPage implements OnInit {
       InteractType.TOUCH,
       InteractSubtype.DELETE_CLICKED,
       Environment.HOME,
-      this.pageName,
+      PageId.COLLECTION_DETAIL,
       telemetryObject,
       undefined,
       this.objRollup,

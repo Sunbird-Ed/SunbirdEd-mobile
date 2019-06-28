@@ -25,11 +25,7 @@ export class ContentType {
         ContentType.RESOURCE,
         ContentType.COLLECTION,
         ContentType.TEXTBOOK,
-        ContentType.LESSON_PLAN,
-        ContentType.FOCUS_SPOT,
-        ContentType.LEARNING_OUTCOME_DEFINITION,
-        ContentType.PRACTICE_QUESTION_SET,
-        ContentType.CURIOSITY_QUESTIONS
+        ContentType.LESSON_PLAN
     ];
     // TODO: not need to pass content types, by default all the content types should display
     public static readonly FOR_DOWNLOADED_TAB = [
