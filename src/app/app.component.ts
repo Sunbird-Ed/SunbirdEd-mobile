@@ -6,12 +6,11 @@ import { GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, LOGIN_TEACHER_TABS } 
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
 import { ImageLoaderConfig } from 'ionic-image-loader';
 import { TranslateService } from '@ngx-translate/core';
-import { SearchPage } from '@app/pages/search';
 import { CollectionDetailsPage } from '../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../pages/content-details/content-details';
-import { ContentType, EventTopics, GenericAppConfig, MimeType, PreferenceKey, ProfileConstants } from './app.constant';
+import { GenericAppConfig, PreferenceKey, ProfileConstants } from './app.constant';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
-import { FormAndFrameworkUtilService, GuestProfilePage } from '@app/pages/profile';
+import { FormAndFrameworkUtilService } from '@app/pages/profile';
 import {
   AppGlobalService, CommonUtilService, TelemetryGeneratorService, UtilityService, AppHeaderService, AppRatingService
 } from '@app/service';
@@ -19,27 +18,12 @@ import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
 import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
 import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
 import {
-  AuthService,
-  ErrorEventType,
-  EventNamespace,
-  EventsBusService,
-  OAuthSession,
-  ProfileService,
-  ProfileType,
-  SharedPreferences,
-  SunbirdSdk,
-  TelemetryAutoSyncUtil,
-  TelemetryService,
-  ContentDetailRequest,
-  NotificationService
+  AuthService, ErrorEventType, EventNamespace, EventsBusService, ProfileService, ProfileType, SharedPreferences,
+  SunbirdSdk, TelemetryAutoSyncUtil, TelemetryService, NotificationService
 } from 'sunbird-sdk';
 import { tap } from 'rxjs/operators';
 import {
-  Environment,
-  InteractSubtype,
-  InteractType,
-  PageId,
-  ImpressionType,
+  Environment, InteractSubtype, InteractType, PageId, ImpressionType
 } from '../service/telemetry-constants';
 import { TabsPage } from '@app/pages/tabs/tabs';
 import { ContainerService } from '@app/service/container.services';
@@ -51,16 +35,12 @@ import { ReportsPage } from '@app/pages/reports';
 import { UserAndGroupsPage } from '@app/pages/user-and-groups';
 import { LogoutHandlerService } from '@app/service/handlers/logout-handler.service';
 import { Network } from '@ionic-native/network';
-import { ResourcesPage } from '@app/pages/resources/resources';
-import { CoursesPage } from '@app/pages/courses/courses';
-import { ProfilePage } from '@app/pages/profile/profile';
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
 import { QrCodeResultPage } from '@app/pages/qr-code-result';
 import { FaqPage } from '@app/pages/help/faq';
 import { NotificationService as localNotification } from '@app/service/notification.service';
 import { SplaschreenDeeplinkActionHandlerDelegate } from '@app/service/sunbird-splashscreen/splaschreen-deeplink-action-handler-delegate';
 import { ActivePageService } from '@app/service/active-page/active-page-service';
-import { notificationService } from './app.module';
 
 @Component({
   templateUrl: 'app.html',
@@ -267,7 +247,7 @@ export class MyApp implements OnInit, AfterViewInit {
       if (navObj.canGoBack()) {
         return navObj.pop();
       } else {
-        this.commonUtilService.showExitPopUp(this.activePageService.computePageId((<any>activeView).instance), Environment.HOME, false);
+        this.commonUtilService.showExitPopUp(this.appGlobalService.getPageIdForTelemetry(), Environment.HOME, false);
       }
     });
   }
@@ -582,7 +562,7 @@ export class MyApp implements OnInit, AfterViewInit {
       if (navObj.canGoBack()) {
         return navObj.pop();
       } else {
-        this.commonUtilService.showExitPopUp(this.activePageService.computePageId((<any>activeView).instance), Environment.HOME, false);
+        this.commonUtilService.showExitPopUp(this.appGlobalService.getPageIdForTelemetry(), Environment.HOME, false);
       }
     } else {
       this.headerServie.sidebarEvent($event);

@@ -598,7 +598,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
       email: this.profile.email,
       title: newTitle,
       description: '',
-      type: 'email'
+      type: 'email',
+      userId: this.profile.userId
     }, {
       cssClass: 'popover-alert'
     });

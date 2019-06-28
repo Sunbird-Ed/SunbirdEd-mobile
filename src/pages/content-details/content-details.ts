@@ -539,7 +539,9 @@ export class ContentDetailsPage {
   }
 
   appRating() {
-    const popover = this.popoverCtrl.create(AppRatingAlertComponent, {}, {
+    const popover = this.popoverCtrl.create(AppRatingAlertComponent, {
+      pageId: PageId.CONTENT_DETAIL,
+    }, {
       cssClass: 'sb-popover'
     });
     popover.present({
@@ -1474,7 +1476,7 @@ export class ContentDetailsPage {
       InteractType.TOUCH,
       InteractSubtype.DELETE_CLICKED,
       Environment.HOME,
-      this.pageName,
+      PageId.CONTENT_DETAIL,
       telemetryObject,
       undefined,
       this.objRollup,

@@ -31,7 +31,6 @@ export class TabsPage {
     private container: ContainerService,
     private events: Events,
     public toastCtrl: ToastController,
-    private telemetryGeneratorService: TelemetryGeneratorService,
     private appGlobalService: AppGlobalService
   ) {}
 
