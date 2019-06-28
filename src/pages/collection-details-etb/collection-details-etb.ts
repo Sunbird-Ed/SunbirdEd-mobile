@@ -1,6 +1,6 @@
 import { ActiveDownloadsPage } from './../active-downloads/active-downloads';
-import { Component, Inject, NgZone, ViewChild, OnInit } from '@angular/core';
-import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController } from 'ionic-angular';
+import { Component, Inject, NgZone, ViewChild, OnInit, ElementRef } from '@angular/core';
+import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ScrollEvent, ToastController } from 'ionic-angular';
 import { Content as iContent } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
@@ -60,6 +60,7 @@ import {
 import { ViewController } from 'ionic-angular';
 import { FileSizePipe } from '@app/pipes/file-size/file-size';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
+import {falseIfMissing} from "protractor/built/util";
 
 /**
  * Generated class for the CollectionDetailsEtbPage page.
@@ -240,6 +241,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   localImage = '';
   @ViewChild(Navbar) navBar: Navbar;
   @ViewChild(iContent) ionContent: iContent;
+  @ViewChild('stickyPillsRef') stickyPillsRef: ElementRef;
   private eventSubscription: Subscription;
 
   showDownload: boolean;
@@ -803,6 +805,7 @@ export class CollectionDetailsEtbPage implements OnInit {
             this.getContentsSize(data.children || []);
           }
           this.showChildrenLoader = false;
+          this.toggleGroup(0,this.content);
           this.telemetryGeneratorService.generateInteractTelemetry(
             InteractType.OTHER,
             InteractSubtype.IMPORT_COMPLETED,
@@ -1410,5 +1413,14 @@ export class CollectionDetailsEtbPage implements OnInit {
       type.selected = false;
     });
     this.mimeTypes[idx].selected = true;
+  }
+
+  onScroll(event: ScrollEvent) {
+    if (event.scrollTop >= 205) {
+      (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.add('sticky');
+      return;
+    }
+
+    (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.remove('sticky');
   }
 }

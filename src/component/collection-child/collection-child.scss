@@ -71,6 +71,7 @@ collection-child {
       font-size: 12px;
       line-height: 20px;
       margin: 6px;
+      vertical-align: middle;
     }
     .sb-play-selected{
       font-size: 12px;
@@ -104,5 +105,12 @@ collection-child {
     height: 38px;
     border: 0.5px solid #D6D6D6;
     background-color: #CCCCCC;
+  }
+  .sb-checkmark-icon
+  {
+    color : $secondary-200;
+    font-size: ($font-size-base + 4);
+    @include margin(null,null,null,($base-block-space * .5));
+    vertical-align: middle;
   }
 }
