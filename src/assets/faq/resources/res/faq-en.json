@@ -1,7 +1,7 @@
 ﻿{
     "faqs": [
         {
-            "topic": "A message “Content Coming Soon” is displayed on my screen and I cannot see any content for the QR code scanned",
+            "topic": "A message \"Content Coming Soon\" is displayed on my screen and I cannot see any content for the QR code scanned",
             "description": "Your State is currently creating content for this QR code. The delay is because there is a large number of textbooks for many classes, mediums and subjects. You will see the content  as soon as the State has created it."
         },
         {
@@ -25,27 +25,28 @@
             "description": "You can download content only when you are connected to the Internet. Only the downloaded content can be played later without the Internet. \nYou can play YouTube videos only when you are connected to the Internet because YouTube does not allow other apps to download videos."
         },
         {
-            "topic": "{{APP_NAME}} content takes up a lot of space on my phone",
+            "topic": "Content takes up a lot of space on my phone",
             "description": "You can delete the downloaded content from the downloads tab in the app to free up space"
         },
         {
             "topic": "I want to create and add content on {{APP_NAME}}",
-            "description": "Currently, the State appoints  teachers to create and add content on {{APP_NAME}}. If you are interested in creating content,  send a request to your State authority to get creation rights"
+            "description": "Currently, the State appoints teachers to create and add content on {{APP_NAME}}. If you are interested in creating content,  send a request to your State authority to get creation rights"
         },
         {
             "topic": "I want to unenroll from a course",
             "description": "Select the course you want to unenroll from, tap the options menu (three vertical dots) on the top right corner and tap 'Unenroll'"
         },
         {
-            "topic": "I want to get the {{APP_NAME}} app on iOS or desktop",
-            "description": "You can visit https://www.{{APP_NAME}}.gov.in/explore/ using your browser on iOS or desktop devices to view {{APP_NAME}} content. We are currently working on a desktop application for offline use that is expected to be ready later this year"
+            "topic": "I want to get the mobile app on iOS or desktop",
+            "description": "You can visit https://www.{{APP_NAME}}.gov.in/explore/ using your browser on iOS or desktop devices to view content. We are currently working on a desktop application for offline use that is expected to be ready later this year"
         },
         {
             "topic": "I want to know the status of my course completion",
-            "description": "Once you have successfully completed taking a course, the course name  will be displayed under the Trainings Attended section of your profile page"
+            "description": "After you have successfully completed a course, the course name  will be displayed under the 'Trainings Attended' section in your profile page"
         }
     ],
     "constants": {
+        "charactersLeft": "Characters left",
         "explainMsg": "Could you explain the problem?",
         "faqMsg": "Frequently asked questions",
         "help": "Help",
@@ -62,7 +63,6 @@
         "thanksMsg": "Thank you for your response!",
         "triggerEmailMsg": "After you add details in the text box and tap the Initiate email button, we will trigger an email on your behalf. You can add further details and/or attach files there.",
         "typeHere": "Type Here...",
-        "yesMsg": "Yes",
-        "charactersLeft": "Characters left"
-    }
+        "yesMsg": "Yes"
+      }
 }

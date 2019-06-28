@@ -70,6 +70,10 @@ export class AppRatingAlertComponent {
     }, 20);
   }
 
+  ionViewWillLeave(): void {
+    this.backButtonFunc();
+  }
+
   getAppName() {
     this.appVersion.getAppName()
       .then((appName: any) => {
