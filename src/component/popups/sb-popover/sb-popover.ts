@@ -114,4 +114,8 @@ export class SbPopoverComponent implements OnDestroy {
       this.navParams.get('handler')(whichbtnClicked);
     }
   }
+
+  ionViewWillLeave(): void {
+    this.backButtonFunc();
+  }
 }
