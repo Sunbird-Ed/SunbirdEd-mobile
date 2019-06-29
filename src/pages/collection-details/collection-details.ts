@@ -222,15 +222,6 @@ export class CollectionDetailsPage {
     this.getBaseURL();
   }
 
-  ionViewDidLoad() {
-    /*this.navBar.backButtonClick = () => {
-      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
-        true, this.cardData.identifier, this.corRelationList);
-      this.handleBackButton();
-    };*/
-    this.registerDeviceBackButton();
-  }
-
   /**
    * Ionic life cycle hook
    */
@@ -288,6 +279,7 @@ export class CollectionDetailsPage {
       this.didViewLoad = true;
       this.setContentDetails(this.identifier, true);
       this.subscribeSdkEvent();
+      this.registerDeviceBackButton();
     });
   }
 
@@ -1050,11 +1042,13 @@ export class CollectionDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillLeave(): void {
-    // this.downloadProgress = '';
     this.headerObservable.unsubscribe();
     this.downloadProgress = 0;
     if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
+    }
+    if (this.backButtonFunc) {
+     this.backButtonFunc();
     }
   }
 

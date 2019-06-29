@@ -976,7 +976,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
   handleBackButton() {
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(
-        PageId.CONTENT_DETAIL,
+        PageId.COURSE_DETAIL,
         Environment.HOME,
         false,
         this.identifier,
