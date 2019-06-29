@@ -9,6 +9,7 @@ import { ContentService, Content } from 'sunbird-sdk';
 import { App } from 'ionic-angular';
 import { AppGlobalService } from '@app/service';
 import { SearchPage } from '@app/pages/search';
+import { PageId } from '../telemetry-constants';
 
 @Injectable()
 export class SplaschreenDeeplinkActionHandlerDelegate implements SplashscreenActionHandlerDelegate {
@@ -34,7 +35,7 @@ export class SplaschreenDeeplinkActionHandlerDelegate implements SplashscreenAct
           }).mapTo(undefined) as any;
         }
       case 'dial': {
-          navObj.push(SearchPage, { dialCode: identifier });
+          navObj.push(SearchPage, { dialCode: identifier, source: PageId.HOME });
           return Observable.of(undefined);
       }
       default: {

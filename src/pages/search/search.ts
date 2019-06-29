@@ -1096,7 +1096,7 @@ export class SearchPage implements OnDestroy {
   private generateImpressionEvent() {
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.SEARCH, '',
-      this.source,
+      this.source ? this.source : PageId.HOME,
       Environment.HOME, '', '', '',
       undefined,
       this.corRelationList);

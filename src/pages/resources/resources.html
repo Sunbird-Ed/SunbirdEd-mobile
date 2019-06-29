@@ -109,7 +109,7 @@
 					<div class="sb-card-scroll-container" (scroll)='onScroll($event)'>
 						<!-- Card style -->
 						<div class="sb-card-container sb-card-recently-container">
-							<new-course-card *ngFor="let course of recentlyViewedResources" [course]="course" [env]="'home'"
+							<new-course-card *ngFor="let course of recentlyViewedResources" [course]="library" [env]="'home'"
 								[index]="i" [sectionName]="recentViewedSection" [layoutName]="layoutSavedContent"></new-course-card>
 						</div>
 					</div>

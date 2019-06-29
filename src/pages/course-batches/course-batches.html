@@ -18,7 +18,7 @@
           <button ion-button block (click)="signIn()">{{ 'OVERLAY_SIGN_IN' | translate }}</button>
         </div>-->
     <div class="guest-user-info" text-center>
-      <sign-in-card (valueChange)="buttonClick($event)" [title]="'OVERLAY_LABEL_TAKE_COURSE'" [description]="'OVERLAY_INFO_TEXT_TAKE_COURSE'"></sign-in-card>
+      <sign-in-card (valueChange)="buttonClick($event)" [source]="'course-batches'" [title]="'OVERLAY_LABEL_TAKE_COURSE'" [description]="'OVERLAY_INFO_TEXT_TAKE_COURSE'"></sign-in-card>
     </div>
   </div>
 
