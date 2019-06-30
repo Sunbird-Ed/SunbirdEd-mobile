@@ -248,16 +248,6 @@ export class CollectionDetailsEtbPage implements OnInit {
   ngOnInit() {
   }
 
-  ionViewDidLoad() {
-    /*this.navBar.backButtonClick = () => {
-      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
-        true, this.cardData.identifier, this.corRelationList);
-      this.handleBackButton();
-    };*/
-
-    this.registerDeviceBackButton();
-  }
-
   /**
    * Ionic life cycle hook
    */
@@ -321,6 +311,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     this.ionContent.ionScroll.subscribe((event) => {
       this.scrollPosition = event.scrollTop;
     });
+    this.registerDeviceBackButton();
   }
 
   async markContent() {

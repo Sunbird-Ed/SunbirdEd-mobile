@@ -117,6 +117,10 @@ export class ContentRatingAlertComponent {
     });
   }
 
+  ionViewWillLeave(): void {
+    this.backButtonFunc();
+  }
+
   /**
    * Get user id
    */

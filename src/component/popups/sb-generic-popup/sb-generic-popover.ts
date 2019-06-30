@@ -55,6 +55,7 @@ export class SbGenericPopoverComponent {
   }
   ionViewWillLeave(): void {
     this.events.unsubscribe('selectedContents:changed');
+    this.backButtonFunc();
   }
   closePopover() {
     this.viewCtrl.dismiss(null);

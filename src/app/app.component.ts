@@ -432,20 +432,20 @@ export class MyApp implements OnInit, AfterViewInit {
       });
   }
 
-  private generateInteractEvent(pageid: string) {
+  private generateInteractEvent(pageId: string) {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.TAB_CLICKED,
       Environment.HOME,
-      pageid.toLowerCase());
+      pageId ? pageId.toLowerCase() : PageId.QRCodeScanner);
   }
 
-  private generateImpressionEvent(pageid: string) {
-    pageid = pageid.toLowerCase();
-    const env = pageid.localeCompare(PageId.PROFILE) ? Environment.HOME : Environment.USER;
+  private generateImpressionEvent(pageId: string) {
+    pageId = pageId.toLowerCase();
+    const env = pageId.localeCompare(PageId.PROFILE) ? Environment.HOME : Environment.USER;
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
-      pageid,
+      pageId ? pageId.toLowerCase() : PageId.QRCodeScanner,
       env);
   }
 

@@ -193,7 +193,7 @@ export class SearchPage implements OnDestroy {
 
     if (this.appGlobalService.isGuestUser) {
       if ((this.source === PageId.PERMISSION || this.source === PageId.ONBOARDING_PROFILE_PREFERENCES)
-       && this.appGlobalService.isOnBoardingCompleted) {
+        && this.appGlobalService.isOnBoardingCompleted) {
         if (this.appGlobalService.isProfileSettingsCompleted || !this.appGlobalService.DISPLAY_ONBOARDING_CATEGORY_PAGE) {
           this.navCtrl.setRoot(TabsPage, {
             loginMode: 'guest'
@@ -285,7 +285,7 @@ export class SearchPage implements OnDestroy {
 
     if (content.contentType === ContentType.COURSE) {
       this.enrolledCourses = await this.getEnrolledCourses(false, false);
-      if ( this.enrolledCourses && this.enrolledCourses.length) {
+      if (this.enrolledCourses && this.enrolledCourses.length) {
         for (let i = 0; i < this.enrolledCourses.length; i++) {
           if (content.identifier === this.enrolledCourses[i].courseId) {
             params['content'] = this.enrolledCourses[i];
@@ -571,6 +571,9 @@ export class SearchPage implements OnDestroy {
         // this.navCtrl.push(CourseBatchesPage);
       }
     } else {
+      if (this.loader) {
+        this.loader.dismiss();
+      }
       this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
     }
   }
@@ -953,7 +956,7 @@ export class SearchPage implements OnDestroy {
                   undefined,
                   undefined,
                   this.corRelationList
-                  );
+                );
                 this.queuedIdentifiers.push(value.identifier);
               }
             });
@@ -997,27 +1000,27 @@ export class SearchPage implements OnDestroy {
         }
 
         // if (event.payload && event.payload.status === 'IMPORT_COMPLETED' && event.type === 'contentImport') {
-          if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
-            if (this.queuedIdentifiers.length && this.isDownloadStarted) {
-              if (_.includes(this.queuedIdentifiers, event.payload.contentId)) {
-                this.currentCount++;
-              }
-              if (this.queuedIdentifiers.length === this.currentCount) {
-                this.showLoading = false;
-                this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-                  InteractSubtype.LOADING_SPINE_COMPLETED,
-                  this.source === PageId.USER_TYPE_SELECTION ? Environment.ONBOARDING : Environment.HOME,
-                  PageId.DIAL_SEARCH,
-                  undefined,
-                  undefined,
-                  undefined,
-                  this.corRelationList
-                  );
-                this.showContentDetails(this.childContent);
-                this.events.publish('savedResources:update', {
-                  update: true
-                });
-              }
+        if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
+          if (this.queuedIdentifiers.length && this.isDownloadStarted) {
+            if (_.includes(this.queuedIdentifiers, event.payload.contentId)) {
+              this.currentCount++;
+            }
+            if (this.queuedIdentifiers.length === this.currentCount) {
+              this.showLoading = false;
+              this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+                InteractSubtype.LOADING_SPINE_COMPLETED,
+                this.source === PageId.USER_TYPE_SELECTION ? Environment.ONBOARDING : Environment.HOME,
+                PageId.DIAL_SEARCH,
+                undefined,
+                undefined,
+                undefined,
+                this.corRelationList
+              );
+              this.showContentDetails(this.childContent);
+              this.events.publish('savedResources:update', {
+                update: true
+              });
+            }
           } else {
             this.events.publish('savedResources:update', {
               update: true
@@ -1093,7 +1096,7 @@ export class SearchPage implements OnDestroy {
   private generateImpressionEvent() {
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.SEARCH, '',
-      this.source,
+      this.source ? this.source : PageId.HOME,
       Environment.HOME, '', '', '',
       undefined,
       this.corRelationList);

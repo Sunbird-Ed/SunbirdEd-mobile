@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { LoadingController, Platform, ViewController, NavParams } from 'ionic-angular';
+import { LoadingController, Platform, ViewController, NavParams, Keyboard } from 'ionic-angular';
 import { GenerateOtpRequest, IsProfileAlreadyInUseRequest, ProfileService } from 'sunbird-sdk';
 import { ProfileConstants } from '@app/app';
 import { CommonUtilService } from '@app/service';
@@ -30,7 +30,8 @@ export class EditContactDetailsPopupComponent {
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     private loadingCtrl: LoadingController,
     private commonUtilService: CommonUtilService,
-    private fb: FormBuilder) {
+    private fb: FormBuilder,
+    private keyboard: Keyboard) {
     // this.phoneNumber = this.navParams.get('phoneNumber');
     this.userId = this.navParams.get('userId');
     this.title = this.navParams.get('title');
@@ -57,43 +58,43 @@ export class EditContactDetailsPopupComponent {
   }
 
   validate() {
-    if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-      const loader = this.getLoader();
-      const formVal = this.personEditForm.value;
-      loader.present();
-      let req: IsProfileAlreadyInUseRequest;
-      if (this.type === ProfileConstants.CONTACT_TYPE_PHONE) {
-        req = {
-          key: formVal.phone,
-          type: ProfileConstants.CONTACT_TYPE_PHONE
-        };
-      } else {
-        req = {
-          key: formVal.email,
-          type: ProfileConstants.CONTACT_TYPE_EMAIL
-        };
-      }
-
-      this.profileService.isProfileAlreadyInUse(req).subscribe((success: any) => {
-        loader.dismiss();
-        if (success && success.response) {
-          if (success.response.id === this.userId) {
-            this.updateErr = true;
-          } else {
-            this.err = true;
+      if (this.commonUtilService.networkInfo.isNetworkAvailable) {
+        const loader = this.getLoader();
+        const formVal = this.personEditForm.value;
+        loader.present();
+        let req: IsProfileAlreadyInUseRequest;
+        if (this.type === ProfileConstants.CONTACT_TYPE_PHONE) {
+          req = {
+            key: formVal.phone,
+            type: ProfileConstants.CONTACT_TYPE_PHONE
+          };
+        } else {
+          req = {
+            key: formVal.email,
+            type: ProfileConstants.CONTACT_TYPE_EMAIL
+          };
+        }
+  
+        this.profileService.isProfileAlreadyInUse(req).subscribe((success: any) => {
+          loader.dismiss();
+          if (success && success.response) {
+            if (success.response.id === this.userId) {
+              this.updateErr = true;
+            } else {
+              this.err = true;
+            }
           }
-        }
-      }, (error) => {
-        loader.dismiss();
-        if (error.response.body.params.err === 'USER_NOT_FOUND') {
-          this.generateOTP();
-        } else if (error.response.body.params.err === 'USER_ACCOUNT_BLOCKED') {
-          this.blockedAccount = true;
-        }
-      });
-    } else {
-      this.commonUtilService.showToast('INTERNET_CONNECTIVITY_NEEDED');
-    }
+        }, (error) => {
+          loader.dismiss();
+          if (error.response.body.params.err === 'USER_NOT_FOUND') {
+            this.generateOTP();
+          } else if (error.response.body.params.err === 'USER_ACCOUNT_BLOCKED') {
+            this.blockedAccount = true;
+          }
+        });
+      } else {
+        this.commonUtilService.showToast('INTERNET_CONNECTIVITY_NEEDED');
+      }
   }
 
   refreshErr() {
@@ -144,8 +145,12 @@ export class EditContactDetailsPopupComponent {
     });
   }
 
-  cancel() {
-    this.viewCtrl.dismiss(false);
+  cancel(event) {
+    if(event.sourceCapabilities) {
+      this.viewCtrl.dismiss(false);
+    } else {
+      this.keyboard.close();
+    }
   }
 
 }

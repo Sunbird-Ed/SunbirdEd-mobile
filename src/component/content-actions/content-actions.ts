@@ -71,6 +71,10 @@ export class ContentActionsComponent {
     this.getUserId();
   }
 
+  ionViewWillLeave(): void {
+    this.backButtonFunc();
+  }
+
   getUserId() {
     this.authService.getSession().subscribe((session: OAuthSession) => {
       if (!session) {
