@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { AppGlobalService } from '../../service/app-global.service';
 import { AppVersion } from '@ionic-native/app-version';
-import { PreferenceKey, SystemSettingsIds, ContentType } from '../../app/app.constant';
+import { PreferenceKey, SystemSettingsIds, ContentType, ContentFilterConfig } from '../../app/app.constant';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 import { Events } from 'ionic-angular';
@@ -248,28 +248,42 @@ export class FormAndFrameworkUtilService {
             });
     }
 
-    async getLibraryTabContentTypes(): Promise<Array<string>> {
+    async getSupportedContentFilterConfig(name): Promise<Array<string>> {
         let contentFilterConfig: any;
-        let libraryTabContentTypes: Array<string> = ContentType.FOR_LIBRARY_TAB;
+        let libraryTabContentTypes: Array<string>;
+        switch (name) {
+            case ContentFilterConfig.NAME_LIBRARY:
+                libraryTabContentTypes = ContentType.FOR_LIBRARY_TAB;
+                break;
+            case ContentFilterConfig.NAME_COURSE:
+                libraryTabContentTypes = ContentType.FOR_COURSE_TAB;
+                break;
+            case ContentFilterConfig.NAME_DOWNLOADS:
+                libraryTabContentTypes = ContentType.FOR_DOWNLOADED_TAB;
+                break;
+            case ContentFilterConfig.NAME_DIALCODE:
+                libraryTabContentTypes = ContentType.FOR_DIAL_CODE_SEARCH;
+                break;
+        }
 
         // get cached library config
         contentFilterConfig = this.getCachedContentFilterConfig();
 
         if (contentFilterConfig === undefined || contentFilterConfig.length === 0) {
             return this.invokeContentFilterConfigFormApi()
-            .then(fields => {
-                for (const field of fields) {
-                    if (field.name === 'library' && field.code === 'contentType') {
-                        libraryTabContentTypes = field.values;
-                        break;
+                .then(fields => {
+                    for (const field of fields) {
+                        if (field.name === name && field.code === ContentFilterConfig.CODE_CONTENT_TYPE) {
+                            libraryTabContentTypes = field.values;
+                            break;
+                        }
                     }
-                }
 
-                return libraryTabContentTypes;
-            })
-            .catch(error => {
-                return libraryTabContentTypes;
-            });
+                    return libraryTabContentTypes;
+                })
+                .catch(error => {
+                    return libraryTabContentTypes;
+                });
         }
     }
 

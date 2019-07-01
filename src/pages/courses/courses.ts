@@ -7,7 +7,7 @@ import { QRResultCallback, SunbirdQRScanner } from '../qrscanner/sunbirdqrscanne
 import { SearchPage } from '../search/search';
 import { ContentDetailsPage } from '../content-details/content-details';
 import * as _ from 'lodash';
-import { ContentCard, ContentType, EventTopics, PreferenceKey, ProfileConstants, ViewMore } from '../../app/app.constant';
+import { ContentCard, EventTopics, PreferenceKey, ProfileConstants, ViewMore, ContentFilterConfig } from '../../app/app.constant';
 import { PageFilter, PageFilterCallback } from '../page-filter/page.filter';
 import { Network } from '@ionic-native/network';
 import { AppGlobalService } from '../../service/app-global.service';
@@ -189,7 +189,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
   }
 
   ionViewWillLeave() {
-    if(this.headerObservable) {
+    if (this.headerObservable) {
       this.headerObservable.unsubscribe();
     }
     this.events.unsubscribe('update_header');
@@ -522,13 +522,15 @@ export class CoursesPage implements OnInit, AfterViewInit {
     this.qrScanner.startScanner(PageId.COURSES);
   }
 
-  search() {
+  async search() {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.SEARCH_BUTTON_CLICKED,
       Environment.HOME,
       PageId.COURSES);
+    const contentTypes = await this.formAndFrameworkUtilService.getSupportedContentFilterConfig(
+      ContentFilterConfig.NAME_COURSE);
     this.navCtrl.push(SearchPage, {
-      contentType: ContentType.FOR_COURSE_TAB,
+      contentType: contentTypes,
       source: PageId.COURSES,
       enrolledCourses: this.enrolledCourses,
       guestUser: this.guestUser,

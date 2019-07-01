@@ -42,20 +42,6 @@ export class ContentType {
         ContentType.PRACTICE_QUESTION_SET,
         ContentType.CURIOSITY_QUESTIONS
     ];
-    public static readonly FOR_PROFILE_TAB = [
-        ContentType.STORY,
-        ContentType.WORKSHEET,
-        ContentType.GAME,
-        ContentType.RESOURCE,
-        ContentType.COLLECTION,
-        ContentType.TEXTBOOK,
-        ContentType.LESSON_PLAN,
-        ContentType.COURSE,
-        ContentType.FOCUS_SPOT,
-        ContentType.LEARNING_OUTCOME_DEFINITION,
-        ContentType.PRACTICE_QUESTION_SET,
-        ContentType.CURIOSITY_QUESTIONS
-    ];
     public static readonly FOR_DIAL_CODE_SEARCH = [
         ContentType.TEXTBOOK,
         ContentType.TEXTBOOK_UNIT,
@@ -339,3 +325,10 @@ export class ContentConstants {
     public static readonly COMING_SOON_MSG = 'comingSoonMsg';
 }
 
+export class ContentFilterConfig {
+    public static readonly NAME_LIBRARY = 'library';
+    public static readonly NAME_COURSE = 'course';
+    public static readonly NAME_DOWNLOADS = 'downloads';
+    public static readonly NAME_DIALCODE = 'dialcode';
+    public static readonly CODE_CONTENT_TYPE = 'contentType';
+}

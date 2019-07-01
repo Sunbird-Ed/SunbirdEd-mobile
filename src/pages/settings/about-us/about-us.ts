@@ -11,7 +11,8 @@ import { Environment, ImpressionType, InteractSubtype, InteractType, PageId } fr
 import {
   ContentRequest, ContentService, DeviceInfo, GetAllProfileRequest, ProfileService, SharedPreferences
 } from 'sunbird-sdk';
-import { AudienceFilter, ContentType } from '@app/app';
+import { AudienceFilter, ContentFilterConfig } from '@app/app';
+import { FormAndFrameworkUtilService } from '@app/pages/profile/formandframeworkutil.service';
 
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
 
@@ -43,7 +44,8 @@ export class AboutUsPage {
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     private utilityService: UtilityService,
     private appGlobalService: AppGlobalService,
-    private headerService: AppHeaderService
+    private headerService: AppHeaderService,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
   ) {
   }
 
@@ -82,8 +84,10 @@ export class AboutUsPage {
       local: true,
       server: true
     };
+    const contentTypes = await this.formAndFrameworkUtilService.getSupportedContentFilterConfig(
+      ContentFilterConfig.NAME_DOWNLOADS);
     const contentRequest: ContentRequest = {
-      contentTypes: ContentType.FOR_DOWNLOADED_TAB,
+      contentTypes: contentTypes,
       audience: AudienceFilter.GUEST_TEACHER
     };
     const getUserCount = await this.profileService.getAllProfiles(allUserProfileRequest).map((profile) => profile.length).toPromise();

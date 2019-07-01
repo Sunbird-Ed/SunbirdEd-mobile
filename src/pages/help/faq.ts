@@ -1,5 +1,5 @@
 import { FormAndFrameworkUtilService } from '@app/pages/profile';
-import { appLanguages } from '../../app/app.constant';
+import { appLanguages, ContentFilterConfig, PreferenceKey, AudienceFilter } from '../../app/app.constant';
 import { AppGlobalService } from '../../service/app-global.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { AppHeaderService, TelemetryGeneratorService } from '@app/service';
@@ -8,7 +8,6 @@ import { IonicPage, Loading, LoadingController, Platform, NavController } from '
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PageId, Environment, InteractType } from '@app/service/telemetry-constants';
 import { SharedPreferences, ProfileService, ContentService, DeviceInfo, GetAllProfileRequest, ContentRequest, Profile } from 'sunbird-sdk';
-import { PreferenceKey, ContentType, AudienceFilter } from '@app/app/app.constant';
 import { AppVersion } from '@ionic-native/app-version';
 import { SocialSharing } from '@ionic-native/social-sharing';
 
@@ -212,8 +211,10 @@ export class FaqPage {
       local: true,
       server: true
     };
+    const contentTypes = await this.formAndFrameworkUtilService.getSupportedContentFilterConfig(
+      ContentFilterConfig.NAME_DOWNLOADS);
     const contentRequest: ContentRequest = {
-      contentTypes: ContentType.FOR_DOWNLOADED_TAB,
+      contentTypes: contentTypes,
       audience: AudienceFilter.GUEST_TEACHER
     };
     const getUserCount = await this.profileService.getAllProfiles(allUserProfileRequest).map((profile) => profile.length).toPromise();

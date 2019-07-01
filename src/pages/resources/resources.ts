@@ -1,5 +1,5 @@
 import { ActiveDownloadsPage } from '@app/pages/active-downloads/active-downloads';
-import { Search } from './../../app/app.constant';
+import { Search, ContentFilterConfig } from './../../app/app.constant';
 import { AfterViewInit, Component, Inject, NgZone, OnInit, ViewChild } from '@angular/core';
 import { Events, NavController, ToastController, MenuController, Tabs } from 'ionic-angular';
 import { Content as ContentView } from 'ionic-angular';
@@ -715,7 +715,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       InteractSubtype.SEARCH_BUTTON_CLICKED,
       Environment.HOME,
       PageId.LIBRARY);
-    const contentTypes = await this.formAndFrameworkUtilService.getLibraryTabContentTypes();
+    const contentTypes = await this.formAndFrameworkUtilService.getSupportedContentFilterConfig(
+      ContentFilterConfig.NAME_LIBRARY);
     this.navCtrl.push(SearchPage, { contentType: contentTypes, source: PageId.LIBRARY });
   }
 

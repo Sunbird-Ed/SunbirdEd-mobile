@@ -1,21 +1,14 @@
 import { ActiveDownloadsPage } from './../active-downloads/active-downloads';
 import { Component, NgZone, OnInit, AfterViewInit, Inject } from '@angular/core';
 import {
-  App,
-  Events,
-  LoadingController,
-  NavController,
-  NavParams,
-  PopoverController,
-  ViewController
+  App, Events, LoadingController, NavController, NavParams, PopoverController, ViewController
 } from 'ionic-angular';
 import { OverflowMenuComponent } from '@app/pages/profile';
 import { generateInteractTelemetry } from '@app/app/telemetryutil';
-import { ContentCard, ContentType, MenuOverflow, MimeType, ProfileConstants } from '@app/app/app.constant';
+import { ContentCard, ContentType, MenuOverflow, MimeType, ProfileConstants, ContentFilterConfig } from '@app/app/app.constant';
 import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
 import { PersonalDetailsEditPage } from '@app/pages/profile/personal-details-edit.profile/personal-details-edit.profile';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details/enrolled-course-details';
-import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, AppHeaderService } from '@app/service';
@@ -39,7 +32,7 @@ import {
   UpdateServerProfileInfoRequest,
   CachedItemRequestSourceFrom
 } from 'sunbird-sdk';
-import { Environment, ImpressionType, InteractSubtype, InteractType, PageId } from '../../service/telemetry-constants';
+import { Environment, InteractSubtype, InteractType, PageId } from '../../service/telemetry-constants';
 
 /**
  * The Profile page
@@ -547,15 +540,18 @@ export class ProfilePage implements OnInit, AfterViewInit {
   /**
    * Searches contents created by the user
    */
-  searchContent(): void {
+  async searchContent() {
     const contentSortCriteria: ContentSortCriteria = {
       sortAttribute: 'lastUpdatedOn',
       sortOrder: SortOrder.DESC
     };
+
+    const contentTypes = await this.formAndFrameworkUtilService.getSupportedContentFilterConfig(
+      ContentFilterConfig.NAME_DOWNLOADS);
     const contentSearchCriteria: ContentSearchCriteria = {
       createdBy: [this.userId || this.loggedInUserId],
       limit: 100,
-      contentTypes: ContentType.FOR_PROFILE_TAB,
+      contentTypes: contentTypes,
       sortCriteria: [contentSortCriteria],
       searchType: SearchType.SEARCH
     };

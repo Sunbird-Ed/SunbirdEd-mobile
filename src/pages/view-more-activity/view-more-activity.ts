@@ -6,7 +6,7 @@ import {
   DownloadProgress, EventsBusEvent, EventsBusService, SearchType, TelemetryObject
 } from 'sunbird-sdk';
 import * as _ from 'lodash';
-import { ContentType, ViewMore, MimeType } from '../../app/app.constant';
+import { ContentType, ViewMore, MimeType, ContentFilterConfig } from '../../app/app.constant';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { CourseUtilService } from '../../service/course-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
@@ -15,6 +15,7 @@ import { Environment, ImpressionType, LogLevel, PageId, InteractType, InteractSu
 import { Subscription } from 'rxjs';
 import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
 import { AppHeaderService } from '@app/service';
+import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
 
 @IonicPage()
 @Component({
@@ -141,7 +142,8 @@ export class ViewMoreActivityPage implements OnInit {
     private courseUtilService: CourseUtilService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private headerServie: AppHeaderService
+    private headerServie: AppHeaderService,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService
   ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
     this.tabBarElement = document.querySelector('.tabbar.show-tabbar');
@@ -315,12 +317,21 @@ export class ViewMoreActivityPage implements OnInit {
     if (!hideLoaderFlag) {
       loader.present();
     }
+
+    let contentTypes;
+    if (recentlyViewed) {
+      contentTypes = ContentType.FOR_RECENTLY_VIEWED;
+    } else {
+      contentTypes = await this.formAndFrameworkUtilService.getSupportedContentFilterConfig(
+        ContentFilterConfig.NAME_LIBRARY);
+    }
+
     const requestParams: ContentRequest = {
       uid: this.uid,
       audience: this.audience,
       recentlyViewed: recentlyViewed,
       localOnly: downloaded,
-      contentTypes: recentlyViewed ? ContentType.FOR_RECENTLY_VIEWED : ContentType.FOR_LIBRARY_TAB,
+      contentTypes: contentTypes,
       limit: recentlyViewed ? 20 : 0
     };
     this.contentService.getContents(requestParams).toPromise()
