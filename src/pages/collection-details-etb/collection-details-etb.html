@@ -86,13 +86,11 @@
         <!-- <div class="sb-separator-line"></div> -->
         <div class="sb-hidden-content" *ngIf="isGroupShown(i) && (item?.children && item?.children?.length)">
           <div class="box-align" *ngFor="let firstChildren of item?.children; let j = index;">
-              <ng-container>
                 <div class="sb-topics-container">
                   <collection-child
                     [childData]="firstChildren" [index]="j" [depth]="depth" [activeMimeTypeFilter] = "activeMimeTypeFilter"
                     [corRelationList]="corRelationList" [isDepthChild]="isDepthChild" [breadCrumb]="breadCrumb"></collection-child>
                 </div>
-              </ng-container>
           </div>
         </div>
         </ng-container>
