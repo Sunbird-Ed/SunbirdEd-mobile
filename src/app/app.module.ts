@@ -33,6 +33,7 @@ import { ComingSoonMessageService } from '@app/service/coming-soon-message.servi
 import { NotificationService } from '@app/service/notification.service';
 import { CrashAnalyticsErrorLogger } from '@app/service/crash-analytics/crash-analytics-error-logger';
 import { ActivePageService } from '@app/service/active-page/active-page-service';
+import { FormAndFrameworkUtilService } from '@app/pages/profile/formandframeworkutil.service';
 
 export const translateHttpLoaderFactory = (httpClient: HttpClient) => {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
@@ -363,6 +364,7 @@ export const sunbirdSdkFactory =
     ComingSoonMessageService,
     NotificationService,
     ActivePageService,
+    FormAndFrameworkUtilService,
     ...sunbirdSdkServicesProvidersFactory(),
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     { provide: ErrorHandler, useClass: CrashAnalyticsErrorLogger },

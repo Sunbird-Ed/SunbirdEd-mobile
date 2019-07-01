@@ -14,7 +14,6 @@ import {
 import { PageFilterCallback } from '../page-filter/page.filter';
 import { AppGlobalService } from '../../service/app-global.service';
 import { AppVersion } from '@ionic-native/app-version';
-import { updateFilterInSearchQuery } from '../../util/filter.util';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -34,6 +33,7 @@ import { ProfileConstants } from '../../app';
 import { AppHeaderService } from '@app/service';
 import { NotificationsPage } from '../notifications/notifications';
 import { TextbookViewMorePage } from '../textbook-view-more/textbook-view-more';
+import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
 
 @Component({
   selector: 'page-resources',
@@ -147,7 +147,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     public toastController: ToastController,
     public menuCtrl: MenuController,
-    private headerServie: AppHeaderService
+    private headerServie: AppHeaderService,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService
   ) {
     this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
       .then(val => {
@@ -709,12 +710,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.qrScanner.startScanner(PageId.LIBRARY);
   }
 
-  search() {
+  async search() {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.SEARCH_BUTTON_CLICKED,
       Environment.HOME,
       PageId.LIBRARY);
-    this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
+    const contentTypes = await this.formAndFrameworkUtilService.getLibraryTabContentTypes();
+    this.navCtrl.push(SearchPage, { contentType: contentTypes, source: PageId.LIBRARY });
   }
 
   getCategoryData() {

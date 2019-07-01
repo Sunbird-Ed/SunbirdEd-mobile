@@ -133,7 +133,6 @@ import { NotificationItemComponent } from './notification-item/notification-item
         SbNoNetworkPopupComponent
     ],
     providers: [
-        FormAndFrameworkUtilService
     ]
 })
 export class ComponentsModule { }
