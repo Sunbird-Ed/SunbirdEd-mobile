@@ -53,3 +53,11 @@ ion-spinner {
     position: fixed;
   }
 }
+
+.sb-view-more {
+  background: #EDF4F9;
+  text-align: center;
+  padding: $base-block-space * 2;
+  color:  $primary-color;
+  font-weight: bolder;
+}

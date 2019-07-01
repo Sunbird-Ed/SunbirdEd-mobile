@@ -33,6 +33,7 @@ import { Subscription } from 'rxjs';
 import { ProfileConstants } from '../../app';
 import { AppHeaderService } from '@app/service';
 import { NotificationsPage } from '../notifications/notifications';
+import { TextbookViewMorePage } from '../textbook-view-more/textbook-view-more';
 
 @Component({
   selector: 'page-resources',
@@ -242,7 +243,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     }
     this.events.unsubscribe('update_header');
     this.events.unsubscribe('onboarding-card:completed');
-    if(this.headerObservable) {
+    if (this.headerObservable) {
       this.headerObservable.unsubscribe();
     }
     if (this.networkSubscription) {
@@ -916,6 +917,18 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     if (this.commonUtilService.networkInfo.isNetworkAvailable || item.isAvailableLocally) {
       this.navCtrl.push(CollectionDetailsEtbPage, {
         content: item
+      });
+    } else {
+      this.presentToastForOffline('OFFLINE_WARNING_ETBUI_1');
+    }
+  }
+
+  navigateToTextbookPage(items, subject) {
+    const values = new Map();
+    if (this.commonUtilService.networkInfo.isNetworkAvailable || items.isAvailableLocally) {
+      this.navCtrl.push(TextbookViewMorePage, {
+        content: items,
+        subjectName: subject
       });
     } else {
       this.presentToastForOffline('OFFLINE_WARNING_ETBUI_1');
