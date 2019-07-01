@@ -19,7 +19,7 @@ import { TelemetryGeneratorService } from '../../service/telemetry-generator.ser
 import {
   Content, ContentEventType, ContentImportRequest, ContentImportResponse, ContentImportStatus, ContentService, Course,
   CourseService, DownloadEventType, DownloadProgress, EventsBusEvent, EventsBusService, FetchEnrolledCourseRequest,
-  PageAssembleCriteria, PageAssembleService, PageName, ProfileType, SharedPreferences
+  PageAssembleCriteria, PageAssembleService, PageName, ProfileType, SharedPreferences, NetworkError
 } from 'sunbird-sdk';
 import { Environment, InteractSubtype, InteractType, PageId } from '../../service/telemetry-constants';
 import { Subscription } from 'rxjs';
@@ -666,8 +666,12 @@ export class CoursesPage implements OnInit, AfterViewInit {
           this.importContent([identifier], false);
         }
       })
-      .catch(() => {
-        this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
+      .catch((err) => {
+        if (err instanceof NetworkError) {
+          this.commonUtilService.showToast('NO_INTERNET');
+        } else {
+          this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
+        }
       });
   }
 
