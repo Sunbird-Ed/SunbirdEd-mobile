@@ -74,8 +74,8 @@ export class TextbookViewMorePage {
     values['positionClicked'] = index;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.CONTENT_CLICKED,
-      'home',
-      'library',
+      Environment.Home,
+      PageId.Library,
       telemetryObject,
       values);
     if (this.commonUtilService.networkInfo.isNetworkAvailable || item.isAvailableLocally) {
