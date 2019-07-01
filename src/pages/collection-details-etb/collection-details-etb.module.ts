@@ -8,6 +8,7 @@ import { ComponentsModule } from '../../component/components.module';
 import { DirectivesModule } from '../../directives/directives.module';
 import { PipesModule } from '../../pipes/pipes.module';
 import { FileSizePipe } from '@app/pipes/file-size/file-size';
+import { ContentShareHandler } from '@app/service/content/content-share-handler';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,7 @@ import { FileSizePipe } from '@app/pipes/file-size/file-size';
     Ionic2RatingModule,
     PipesModule
   ],
-  providers: [],
+  providers: [ContentShareHandler],
   exports: [
     CollectionDetailsEtbPage
   ]
