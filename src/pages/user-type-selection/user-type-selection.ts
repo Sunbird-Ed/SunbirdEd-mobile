@@ -48,30 +48,24 @@ export class UserTypeSelectionPage {
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     public navCtrl: NavController,
     public navParams: NavParams,
-    private translate: TranslateService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private container: ContainerService,
     private zone: NgZone,
     private event: Events,
     private commonUtilService: CommonUtilService,
     private appGlobalService: AppGlobalService,
-    private scannerService: SunbirdQRScanner,
     private platform: Platform,
-    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     private headerService: AppHeaderService
   ) { }
 
   ionViewDidLoad() {
-    /*this.navBar.backButtonClick = (e: UIEvent) => {
-      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.USER_TYPE_SELECTION, Environment.HOME, true);
-      this.handleBackButton();
-    };*/
     this.telemetryGeneratorService.generateImpressionTelemetry(
       ImpressionType.VIEW, '',
       PageId.USER_TYPE_SELECTION,
-      Environment.HOME, '', '', '');
+      this.appGlobalService.isOnBoardingCompleted ? Environment.HOME : Environment.ONBOARDING);
   }
 
   ionViewWillEnter() {
@@ -140,7 +134,7 @@ export class UserTypeSelectionPage {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.USER_TYPE_SELECTED,
-      Environment.HOME,
+      this.appGlobalService.isOnBoardingCompleted ? Environment.HOME : Environment.ONBOARDING,
       PageId.USER_TYPE_SELECTION,
       undefined,
       values
@@ -237,7 +231,7 @@ export class UserTypeSelectionPage {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.CONTINUE_CLICKED,
-      Environment.HOME,
+      this.appGlobalService.isOnBoardingCompleted ? Environment.HOME : Environment.ONBOARDING,
       PageId.USER_TYPE_SELECTION,
       undefined,
       values);
