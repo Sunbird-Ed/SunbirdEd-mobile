@@ -92,6 +92,12 @@ export class PermissionPage {
     });
   }
 
+  ionViewDidLoad() {
+    this.telemetryGeneratorService.generatePageViewTelemetry(PageId.PERMISSION,
+      Environment.ONBOARDING,
+      '');
+  }
+
   grantAccess() {
     this.appGlobalService.setIsPermissionAsked(PermissionAskedEnum.isCameraAsked, true);
     this.appGlobalService.setIsPermissionAsked(PermissionAskedEnum.isRecordAudioAsked, true);
