@@ -144,6 +144,11 @@ export class DownloadsTabPage {
     }
 
     selectAllContents() {
+        this.telemetryGeneratorService.generateInteractTelemetry(
+            InteractType.TOUCH,
+            InteractSubtype.SELECT_ALL_CLICKED,
+            Environment.DOWNLOADS,
+            PageId.DOWNLOADS);
         this.downloadedContents.forEach(element => {
             element['isSelected'] = true;
         });
@@ -153,6 +158,11 @@ export class DownloadsTabPage {
     }
 
     unSelectAllContents() {
+        this.telemetryGeneratorService.generateInteractTelemetry(
+            InteractType.TOUCH,
+            InteractSubtype.UNSELECT_ALL_CLICKED,
+            Environment.DOWNLOADS,
+            PageId.DOWNLOADS);
         this.downloadedContents.forEach(element => {
             element['isSelected'] = false;
         });

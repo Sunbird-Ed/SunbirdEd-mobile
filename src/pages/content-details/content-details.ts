@@ -315,6 +315,8 @@ export class ContentDetailsPage {
   }
 
   handleNavBackButton() {
+    this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
+      true, this.cardData.identifier, this.corRelationList);
     this.didViewLoad = false;
     this.generateEndEvent(this.objId, this.objType, this.objVer);
     if (this.shouldGenerateEndTelemetry) {
@@ -1620,8 +1622,8 @@ export class ContentDetailsPage {
 
   handleHeaderEvents($event) {
     switch ($event.name) {
-      case 'back': this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
-        true, this.cardData.identifier, this.corRelationList);
+      case 'back':
+      
         this.handleNavBackButton();
         break;
     }

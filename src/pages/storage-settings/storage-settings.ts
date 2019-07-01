@@ -115,7 +115,7 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     if (this.storageDestination === await this.storageService.getStorageDestination().toPromise()) {
       return;
     }
-    
+
     const permissionStatus = await this.getStoragePermissionStatus();
 
     if (permissionStatus.hasPermission) {
@@ -339,10 +339,19 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     const transferCompleteSubscription = this.eventsBusService
       .events(EventNamespace.STORAGE)
       .takeWhile(e => e.type !== StorageEventType.TRANSFER_COMPLETED)
-      .filter(e => e.type === StorageEventType.TRANSFER_FAILED_DUPLICATE_CONTENT)
+      .filter(e => e.type === StorageEventType.TRANSFER_FAILED_DUPLICATE_CONTENT ||
+        e.type === StorageEventType.TRANSFER_FAILED_LOW_MEMORY)
       .take(1)
-      .subscribe(async () => {
-        this.showDuplicateContentPopup();
+      .subscribe(async (e) => {
+        if (e.type === StorageEventType.TRANSFER_FAILED_DUPLICATE_CONTENT) {
+          this.showDuplicateContentPopup();
+        } else if (e.type === StorageEventType.TRANSFER_FAILED_LOW_MEMORY) {
+          if (this.transferringContentsPopup) {
+            this.transferringContentsPopup.dismiss();
+          }
+          this.showLowMemoryToast();
+          this.revertSelectedStorageDestination();
+        }
       });
 
     const transferProgress$ = this.eventsBusService
@@ -430,6 +439,16 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
     });
 
     return;
+  }
+
+  private async showLowMemoryToast() {
+    const toast = await this.toastController.create({
+      message: this.commonUtilService.translateMessage('ERROR_LOW_MEMORY'),
+      duration: 2000,
+      position: 'bottom',
+      closeButtonText: ''
+    });
+    toast.present();
   }
 
   private async showCancellingTransferPopup(prevPopup: Popover, storageDestination): Promise<undefined> {
