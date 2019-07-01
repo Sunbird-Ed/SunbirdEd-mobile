@@ -29,7 +29,8 @@ import {
 } from '../../service/telemetry-constants';
 import { FileSizePipe } from '@app/pipes/file-size/file-size';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
-import { ComingSoonMessageService } from "@app/service/coming-soon-message.service";
+import { ComingSoonMessageService } from '@app/service/coming-soon-message.service';
+import { ContentShareHandler } from '@app/service/content/content-share-handler';
 
 /**
  * Generated class for the CollectionDetailsEtbPage page.
@@ -229,12 +230,12 @@ export class CollectionDetailsEtbPage implements OnInit {
     private toastController: ToastController,
     private fileSizePipe: FileSizePipe,
     private headerService: AppHeaderService,
-    private comingSoonMessageService: ComingSoonMessageService
+    private comingSoonMessageService: ComingSoonMessageService,
+    private contentShareHandler: ContentShareHandler
   ) {
     this.objRollup = new Rollup();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
-    this.getBaseURL();
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
     this.content = this.navParams.get('content');
     this.data = this.navParams.get('data');
@@ -405,16 +406,6 @@ export class CollectionDetailsEtbPage implements OnInit {
         false, this.cardData.identifier, this.corRelationList);
       this.handleBackButton();
     }, 10);
-  }
-
-  getBaseURL() {
-    this.utilityService.getBuildConfigValue('BASE_URL')
-      .then(response => {
-        this.baseUrl = response;
-      })
-      .catch((error) => {
-        console.error('Error Occurred=> ', error);
-      });
   }
 
   /**
@@ -973,29 +964,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   }
 
   share() {
-    this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.contentDetail.contentType);
-    const loader = this.commonUtilService.getLoader();
-    loader.present();
-    const url = this.baseUrl + ShareUrl.COLLECTION + this.contentDetail.identifier;
-    if (this.contentDetail.isAvailableLocally) {
-      const exportContentRequest: ContentExportRequest = {
-        contentIds: [this.contentDetail.identifier],
-        destinationFolder: this.storageService.getStorageDestinationDirectoryPath()
-      };
-      this.contentService.exportContent(exportContentRequest).toPromise()
-        .then((contntExportResponse: ContentExportResponse) => {
-          loader.dismiss();
-          this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.contentDetail.contentType);
-          this.social.share('', '', '' + contntExportResponse.exportedFilePath, url);
-        }).catch(() => {
-          loader.dismiss();
-          this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
-        });
-    } else {
-      loader.dismiss();
-      this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.contentDetail.contentType);
-      this.social.share('', '', '', url);
-    }
+    this.contentShareHandler.shareContent(this.contentDetail, this.corRelationList, this.objRollup);
   }
 
   /**
@@ -1098,19 +1067,6 @@ export class CollectionDetailsEtbPage implements OnInit {
         undefined,
         this.corRelationList);
     }
-  }
-
-  generateShareInteractEvents(interactType, subType, contentType) {
-    const values = new Map();
-    values['ContentType'] = contentType;
-    this.telemetryGeneratorService.generateInteractTelemetry(interactType,
-      subType,
-      Environment.HOME,
-      PageId.COLLECTION_DETAIL,
-      undefined,
-      values,
-      undefined,
-      this.corRelationList);
   }
 
   showDownloadConfirmationAlert(myEvent) {

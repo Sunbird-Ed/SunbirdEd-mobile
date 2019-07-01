@@ -76,6 +76,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {SbGenericPopoverComponent} from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 import {AppRatingAlertComponent} from '@app/component/app-rating-alert/app-rating-alert';
 import moment from 'moment';
+import { ContentShareHandler } from '@app/service/content/content-share-handler';
 
 declare const cordova;
 
@@ -141,7 +142,6 @@ export class ContentDetailsPage {
   didViewLoad: boolean;
   contentDetail: any;
   backButtonFunc = undefined;
-  baseUrl = '';
   shouldGenerateEndTelemetry = false;
   source = '';
   unregisterBackButton: any;
@@ -199,7 +199,8 @@ export class ContentDetailsPage {
     private fileSizePipe: FileSizePipe,
     private translate: TranslateService,
     private headerService: AppHeaderService,
-    private appRatingService: AppRatingService
+    private appRatingService: AppRatingService,
+    private contentShareHandler: ContentShareHandler
   ) {
 
     this.objRollup = new Rollup();
@@ -352,11 +353,6 @@ export class ContentDetailsPage {
   }
 
   subscribePlayEvent() {
-    this.utilityService.getBuildConfigValue('BASE_URL')
-      .then(response => {
-        this.baseUrl = response;
-        console.log('url', this.baseUrl);
-      });
     this.launchPlayer = this.navParams.get('launchplayer');
     this.events.subscribe('playConfig', (config) => {
       this.appGlobalService.setSelectedUser(config['selectedUser']);
@@ -1533,50 +1529,7 @@ export class ContentDetailsPage {
    * Shares content to external devices
    */
   share() {
-    this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.content.contentType);
-    const loader = this.commonUtilService.getLoader();
-    loader.present();
-    const url = this.baseUrl + ShareUrl.CONTENT + this.content.identifier;
-    if (this.contentDownloadable[this.content.identifier]) {
-      const exportContentRequest: ContentExportRequest = {
-        contentIds: [this.content.identifier],
-        destinationFolder: this.storageService.getStorageDestinationDirectoryPath()
-      };
-      this.contentService.exportContent(exportContentRequest).toPromise()
-        .then((response: ContentExportResponse) => {
-          loader.dismiss();
-          this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.content.contentType);
-          this.social.share('', '', '' + response.exportedFilePath, url);
-        }).catch(() => {
-          loader.dismiss();
-          this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
-        });
-    } else {
-      loader.dismiss();
-      this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.content.contentType);
-      this.social.share(null, null, null, url);
-    }
-
-  }
-
-  /**
-   * Generates Interact Events
-   * @param interactType
-   * @param subType
-   * @param contentType
-   */
-  generateShareInteractEvents(interactType, subType, contentType) {
-    const values = new Map();
-    values['ContentType'] = contentType;
-    const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
-    this.telemetryGeneratorService.generateInteractTelemetry(interactType,
-      subType,
-      Environment.HOME,
-      PageId.CONTENT_DETAIL,
-      telemetryObject,
-      values,
-      this.objRollup,
-      this.corRelationList);
+    this.contentShareHandler.shareContent(this.content, this.corRelationList, this.objRollup);
   }
 
   /**

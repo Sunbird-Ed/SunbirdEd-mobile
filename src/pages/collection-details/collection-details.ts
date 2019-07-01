@@ -50,6 +50,7 @@ import {
   PageId,
 } from '../../service/telemetry-constants';
 import {Subscription} from 'rxjs';
+import { ContentShareHandler } from '@app/service/content/content-share-handler';
 
 declare const cordova;
 @IonicPage()
@@ -213,13 +214,13 @@ export class CollectionDetailsPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private courseUtilService: CourseUtilService,
     private utilityService: UtilityService,
-    private headerService: AppHeaderService
+    private headerService: AppHeaderService,
+    private contentShareHandler: ContentShareHandler
   ) {
 
     this.objRollup = new Rollup();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
-    this.getBaseURL();
   }
 
   /**
@@ -302,58 +303,6 @@ export class CollectionDetailsPage {
       this.handleBackButton();
     }, 10);
   }
-
-  getBaseURL() {
-    this.utilityService.getBuildConfigValue('BASE_URL')
-      .then(response => {
-        this.baseUrl = response;
-      })
-      .catch((error) => {
-        console.error('Error Occurred=> ', error);
-      });
-  }
-
-  /**
-   * Function to rate content
-   */
-  // rateContent() {
-  //   if (!this.guestUser) {
-  //     this.telemetryGeneratorService.generateInteractTelemetry(
-  //       InteractType.TOUCH,
-  //       InteractSubtype.RATING_CLICKED,
-  //       Environment.HOME,
-  //       PageId.COLLECTION_DETAIL,
-  //       undefined,
-  //       undefined,
-  //       this.objRollup,
-  //       this.corRelationList
-  //     );
-  //     if (this.contentDetail.isAvailableLocally) {
-  //       const popUp = this.popoverCtrl.create(ContentRatingAlertComponent, {
-  //         content: this.contentDetail,
-  //         rating: this.userRating,
-  //         comment: this.ratingComment,
-  //         pageId: PageId.COLLECTION_DETAIL,
-  //       }, {
-  //           cssClass: 'content-rating-alert'
-  //         });
-  //       popUp.present();
-  //       popUp.onDidDismiss(data => {
-  //         if (data && data.message === 'rating.success') {
-  //           this.userRating = data.rating;
-  //           this.ratingComment = data.comment;
-  //         }
-  //       });
-  //     } else {
-  //       this.commonUtilService.showToast('TRY_BEFORE_RATING');
-  //     }
-  //   } else {
-  //     if (this.profileType === ProfileType.TEACHER) {
-  //       this.commonUtilService.showToast('SIGNIN_TO_USE_FEATURE');
-  //     }
-  //   }
-  // }
-
 
   rateContent(event) {
     // TODO: check content is played or not
@@ -847,29 +796,7 @@ export class CollectionDetailsPage {
   }
 
   share() {
-    this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.contentDetail.contentType);
-    const loader = this.commonUtilService.getLoader();
-    loader.present();
-    const url = this.baseUrl + ShareUrl.COLLECTION + this.contentDetail.identifier;
-    if (this.contentDetail.isAvailableLocally) {
-      const exportContentRequest: ContentExportRequest = {
-        contentIds: [this.contentDetail.identifier],
-        destinationFolder: this.storageService.getStorageDestinationDirectoryPath()
-      };
-      this.contentService.exportContent(exportContentRequest).toPromise()
-        .then((contentExportResponse: ContentExportResponse) => {
-          loader.dismiss();
-          this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.contentDetail.contentType);
-          this.social.share('', '', contentExportResponse.exportedFilePath, url);
-        }).catch(() => {
-        loader.dismiss();
-        this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
-      });
-    } else {
-      loader.dismiss();
-      this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.contentDetail.contentType);
-      this.social.share('', '', '', url);
-    }
+    this.contentShareHandler.shareContent(this.contentDetail, this.corRelationList, this.objRollup);
   }
 
   /**
@@ -971,19 +898,6 @@ export class CollectionDetailsPage {
         undefined,
         this.corRelationList);
     }
-  }
-
-  generateShareInteractEvents(interactType, subType, contentType) {
-    const values = new Map();
-    values['ContentType'] = contentType;
-    this.telemetryGeneratorService.generateInteractTelemetry(interactType,
-      subType,
-      Environment.HOME,
-      PageId.COLLECTION_DETAIL,
-      undefined,
-      values,
-      undefined,
-      this.corRelationList);
   }
 
   showDownloadConfirmationAlert(myEvent) {

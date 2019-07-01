@@ -67,6 +67,7 @@ import {
 import { ProfileConstants } from '../../app';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 import { BatchConstants } from '@app/app';
+import { ContentShareHandler } from '@app/service/content/content-share-handler';
 
 declare const cordova;
 
@@ -185,15 +186,16 @@ export class EnrolledCourseDetailsPage implements OnInit {
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
+    @Inject('COURSE_SERVICE') private courseService: CourseService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     private navCtrl: NavController,
     private navParams: NavParams,
     private alertCtrl: AlertController,
-    @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private zone: NgZone,
     private events: Events,
     private popoverCtrl: PopoverController,
-    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
-    @Inject('COURSE_SERVICE') private courseService: CourseService,
     private social: SocialSharing,
     private courseUtilService: CourseUtilService,
     private platform: Platform,
@@ -202,8 +204,8 @@ export class EnrolledCourseDetailsPage implements OnInit {
     private commonUtilService: CommonUtilService,
     private datePipe: DatePipe,
     private utilityService: UtilityService,
-    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
-    private headerService: AppHeaderService
+    private headerService: AppHeaderService,
+    private contentShareHandler: ContentShareHandler
   ) {
 
     this.appGlobalService.getUserId();
@@ -1198,53 +1200,10 @@ export class EnrolledCourseDetailsPage implements OnInit {
   }
 
   share() {
-    this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_COURSE_INITIATED, this.course.contentType);
-    const loader = this.commonUtilService.getLoader();
-    loader.present();
-    const url = this.baseUrl + ShareUrl.COLLECTION + this.course.identifier;
-    if (this.course.isAvailableLocally) {
-      const exportContentRequest: ContentExportRequest = {
-        contentIds: [this.course.identifier],
-        destinationFolder: cordova.file.externalDataDirectory
-      };
-      this.contentService.exportContent(exportContentRequest).toPromise()
-        .then((contentExportResponse: ContentExportResponse) => {
-          loader.dismiss();
-          this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.course.contentType);
-          this.social.share('', '', '' + contentExportResponse.exportedFilePath, url);
-        }).catch(() => {
-          loader.dismiss();
-          this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
-        });
-    } else {
-      loader.dismiss();
-      this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_COURSE_SUCCESS, this.course.contentType);
-      this.social.share('', '', '', url);
-    }
-  }
-
-  generateShareInteractEvents(interactType, subType, contentType) {
-    const values = new Map();
-    values['ContentType'] = contentType;
-    this.telemetryGeneratorService.generateInteractTelemetry(interactType,
-      subType,
-      Environment.HOME,
-      PageId.CONTENT_DETAIL, undefined,
-      values,
-      undefined,
-      this.corRelationList
-    );
+    this.contentShareHandler.shareContent(this.course, this.corRelationList);
   }
 
   ionViewDidLoad() {
-    /*this.navBar.backButtonClick = () => {
-      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
-        true, this.identifier, this.corRelationList);
-      this.handleNavBackButton();
-    };*/
-
-
-
     this.subscribeUtilityEvents();
   }
 
