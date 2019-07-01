@@ -37,4 +37,8 @@ export class ConfirmAlertComponent {
     this.viewCtrl.dismiss();
   }
 
+  ionViewWillLeave(): void {
+    this.backButtonFunc();
+  }
+
 }

@@ -157,13 +157,17 @@ export class ContentDetailsPage {
   private ratingComment = '';
   private corRelationList: Array<CorrelationData>;
   private eventSubscription: Subscription;
-
+  defaultLicense: string;
+  showChildrenLoader: any;
+  showLoading: any;
+  hierarchyInfo: any;
   showDownload: boolean;
   contentPath: Array<any>[];
   FileSizePipe: any;
   toast: any;
   childPaths: Array<string> = [];
   breadCrumbData: any;
+  networkSubscription: any;
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
@@ -211,13 +215,6 @@ export class ContentDetailsPage {
   }
 
   ionViewDidLoad() {
-    // this.navBar.backButtonClick = (e: UIEvent) => {
-    //   this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
-    //     true, this.cardData.identifier, this.corRelationList);
-    //   this.handleNavBackButton();
-    // };
-    // this.handleDeviceBackButton();
-
     if (!AppGlobalService.isPlayerLaunched) {
       this.calculateAvailableUserCount();
     }
@@ -293,6 +290,7 @@ export class ContentDetailsPage {
         this.presentToastForOffline();
       }
     });
+    this.handleDeviceBackButton();
   }
 
   /**
@@ -309,6 +307,9 @@ export class ContentDetailsPage {
         this.toast.dismiss();
         this.toast = undefined;
       }
+    }
+    if (this.backButtonFunc) {
+      this.backButtonFunc();
     }
   }
 
@@ -328,12 +329,12 @@ export class ContentDetailsPage {
         false, this.cardData.identifier, this.corRelationList);
       this.didViewLoad = false;
       this.dismissPopup();
-      this.popToPreviousPage(true);
+      this.popToPreviousPage(false);
       this.generateEndEvent(this.objId, this.objType, this.objVer);
       if (this.shouldGenerateEndTelemetry) {
         this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
       }
-      // this.backButtonFunc();
+      this.backButtonFunc();
     }, 11);
   }
 
