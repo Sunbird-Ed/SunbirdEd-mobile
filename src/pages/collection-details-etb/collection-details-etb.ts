@@ -90,7 +90,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   childrenData: Array<any>;
   mimeTypes = [
     { name: 'All', selected: true, value: ['all'], icon: ''},
-    { name: 'Videos', value: ['video/mp4', 'video/x-youtube'], icon: ''},
+    { name: 'Videos', value: ['video/mp4', 'video/x-youtube', 'video/webm'], icon: ''},
     { name: 'Docs', value: ['application/pdf', 'application/epub'], icon: ''},
     { name: 'Interaction',
       value: ['application/vnd.ekstep.ecml-archive', 'application/vnd.ekstep.h5p-archive', 'application/vnd.ekstep.html-archive'],
@@ -797,6 +797,7 @@ export class CollectionDetailsEtbPage implements OnInit {
           if (data && data.children) {
             this.breadCrumb.set(data.identifier, data.contentData.name);
             this.childrenData = data.children;
+            console.log('this.childrenData', this.childrenData);
           }
 
           if (!this.isDepthChild) {
