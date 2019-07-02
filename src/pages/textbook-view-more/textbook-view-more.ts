@@ -1,17 +1,13 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
 import { AppHeaderService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { TelemetryObject } from 'sunbird-sdk';
-import { Environment, InteractSubtype, InteractType, PageId, ImpressionType, ImpressionSubtype } from '../../service/telemetry-constants';
+import { Environment, InteractSubtype, InteractType, PageId } from '../../service/telemetry-constants';
 import { CollectionDetailsEtbPage } from './../collection-details-etb/collection-details-etb';
 /**
  * Generated class for the TextbookViewMorePage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
  */
-
 @IonicPage()
 @Component({
   selector: 'page-textbook-view-more',
@@ -74,8 +70,8 @@ export class TextbookViewMorePage {
     values['positionClicked'] = index;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.CONTENT_CLICKED,
-      Environment.Home,
-      PageId.Library,
+      Environment.HOME,
+      PageId.LIBRARY,
       telemetryObject,
       values);
     if (this.commonUtilService.networkInfo.isNetworkAvailable || item.isAvailableLocally) {
@@ -86,7 +82,6 @@ export class TextbookViewMorePage {
       this.presentToastForOffline('OFFLINE_WARNING_ETBUI_1');
     }
   }
-
 
   // Offline Toast
   presentToastForOffline(msg: string) {
@@ -103,6 +98,4 @@ export class TextbookViewMorePage {
       this.toast = undefined;
     });
   }
-
-
 }
