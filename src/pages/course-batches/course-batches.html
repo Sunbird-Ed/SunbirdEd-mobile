@@ -39,9 +39,10 @@
             </span>
             <p *ngIf="batch.creatorFirstName">
               <span>{{ 'BATCH_CREATED_BY' | translate }}</span>&nbsp;
-              <span class="text-gray-color">{{ batch.creatorFirstName }}</span>&nbsp;<span class="text-gray-color" *ngIf="batch.creatorLastName">{{batch.creatorLastName}}</span>
+              <span class="text-gray-color">{{ batch.creatorFirstName }}</span>&nbsp;<span class="text-gray-color"
+                *ngIf="batch.creatorLastName">{{batch.creatorLastName}}</span>
             </p>
-            <button class="enroll-btn" ion-button clear item-end (click)="enrollIntoBatch(batch)">
+            <button class="enroll-btn" ion-button clear item-end (click)="enrollIntoBatch(batch)" [disabled]="(todayDate > batch.endDate && batch.endDate) ? true :  false">
               {{ 'ENROLL' | translate }}
             </button>
           </ion-item>
@@ -51,29 +52,30 @@
   </div>
 
   <div *ngIf="upcommingBatches && upcommingBatches.length">
-  <div class="background-gray">
-    <div class="width-100 batch-font" text-capitalize>
-      {{ 'VIEW_UPCOMING_BATCHES' | translate }}
+    <div class="background-gray">
+      <div class="width-100 batch-font" text-capitalize>
+        {{ 'VIEW_UPCOMING_BATCHES' | translate }}
+      </div>
     </div>
-  </div>
 
-  <div class="batch-list" padding-top *ngIf="!isGuestUser">
-    <div>
-      <ion-list *ngIf="upcommingBatches && upcommingBatches.length && !showLoader">
-        <ion-item no-lines *ngFor="let batch of upcommingBatches">
-          <div class="batch-name">{{ batch.name }}</div>
-          <span>{{ batch.startDate | date: 'mediumDate' }} - {{ batch.endDate | date: 'mediumDate' }}</span>
-          <p *ngIf="batch.creatorFirstName">
-            <span> {{ 'BATCH_CREATED_BY' | translate }} </span>&nbsp;
-            <span class="text-gray-color">{{ batch.creatorFirstName }}</span>&nbsp;<span class="text-gray-color" *ngIf="batch.creatorLastName">{{batch.creatorLastName}}</span>
-          </p>
-          <button class="enroll-btn" ion-button clear item-end (click)="enrollIntoBatch(batch)">
-            {{ 'ENROLL' | translate }}
-          </button>
-        </ion-item>
-      </ion-list>
+    <div class="batch-list" padding-top *ngIf="!isGuestUser">
+      <div>
+        <ion-list *ngIf="upcommingBatches && upcommingBatches.length && !showLoader">
+          <ion-item no-lines *ngFor="let batch of upcommingBatches">
+            <div class="batch-name">{{ batch.name }}</div>
+            <span>{{ batch.startDate | date: 'mediumDate' }} - {{ batch.endDate | date: 'mediumDate' }}</span>
+            <p *ngIf="batch.creatorFirstName">
+              <span> {{ 'BATCH_CREATED_BY' | translate }} </span>&nbsp;
+              <span class="text-gray-color">{{ batch.creatorFirstName }}</span>&nbsp;<span class="text-gray-color"
+                *ngIf="batch.creatorLastName">{{batch.creatorLastName}}</span>
+            </p>
+            <button class="enroll-btn" ion-button clear item-end (click)="enrollIntoBatch(batch)">
+              {{ 'ENROLL' | translate }}
+            </button>
+          </ion-item>
+        </ion-list>
+      </div>
     </div>
-  </div>
   </div>
 
   <div *ngIf="showLoader">
