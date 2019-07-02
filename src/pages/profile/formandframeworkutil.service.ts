@@ -249,42 +249,44 @@ export class FormAndFrameworkUtilService {
     }
 
     async getSupportedContentFilterConfig(name): Promise<Array<string>> {
-        let contentFilterConfig: any;
-        let libraryTabContentTypes: Array<string>;
-        switch (name) {
-            case ContentFilterConfig.NAME_LIBRARY:
-                libraryTabContentTypes = ContentType.FOR_LIBRARY_TAB;
-                break;
-            case ContentFilterConfig.NAME_COURSE:
-                libraryTabContentTypes = ContentType.FOR_COURSE_TAB;
-                break;
-            case ContentFilterConfig.NAME_DOWNLOADS:
-                libraryTabContentTypes = ContentType.FOR_DOWNLOADED_TAB;
-                break;
-            case ContentFilterConfig.NAME_DIALCODE:
-                libraryTabContentTypes = ContentType.FOR_DIAL_CODE_SEARCH;
-                break;
-        }
-
         // get cached library config
-        contentFilterConfig = this.getCachedContentFilterConfig();
+        let contentFilterConfig: any = this.getCachedContentFilterConfig();
+        let libraryTabContentTypes: Array<string>;
 
         if (contentFilterConfig === undefined || contentFilterConfig.length === 0) {
-            return this.invokeContentFilterConfigFormApi()
+            await this.invokeContentFilterConfigFormApi()
                 .then(fields => {
-                    for (const field of fields) {
-                        if (field.name === name && field.code === ContentFilterConfig.CODE_CONTENT_TYPE) {
-                            libraryTabContentTypes = field.values;
-                            break;
-                        }
-                    }
-
-                    return libraryTabContentTypes;
+                    contentFilterConfig = fields;
                 })
                 .catch(error => {
-                    return libraryTabContentTypes;
                 });
         }
+
+        if (contentFilterConfig === undefined || contentFilterConfig.length === 0) {
+            switch (name) {
+                case ContentFilterConfig.NAME_LIBRARY:
+                    libraryTabContentTypes = ContentType.FOR_LIBRARY_TAB;
+                    break;
+                case ContentFilterConfig.NAME_COURSE:
+                    libraryTabContentTypes = ContentType.FOR_COURSE_TAB;
+                    break;
+                case ContentFilterConfig.NAME_DOWNLOADS:
+                    libraryTabContentTypes = ContentType.FOR_DOWNLOADED_TAB;
+                    break;
+                case ContentFilterConfig.NAME_DIALCODE:
+                    libraryTabContentTypes = ContentType.FOR_DIAL_CODE_SEARCH;
+                    break;
+            }
+        } else {
+            for (const field of contentFilterConfig) {
+                if (field.name === name && field.code === ContentFilterConfig.CODE_CONTENT_TYPE) {
+                    libraryTabContentTypes = field.values;
+                    break;
+                }
+            }
+        }
+
+        return libraryTabContentTypes;
     }
 
     /**
