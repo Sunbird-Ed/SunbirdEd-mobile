@@ -109,7 +109,7 @@
 					<div class="sb-card-scroll-container" (scroll)='onScroll($event)'>
 						<!-- Card style -->
 						<div class="sb-card-container sb-card-recently-container">
-							<new-course-card *ngFor="let course of recentlyViewedResources" [course]="library" [env]="'home'"
+							<new-course-card *ngFor="let course of recentlyViewedResources" [course]="course" [pageName]="library" [env]="'home'"
 								[index]="i" [sectionName]="recentViewedSection" [layoutName]="layoutSavedContent"></new-course-card>
 						</div>
 					</div>
@@ -133,9 +133,12 @@
 						</span>
 					</div>
 					<!-- Card style -->
-					<div class="sb-card-container sb-card-textbook-container">
-						<textbook-card *ngFor="let item of items?.contents; let i = index" [content]="item"
+					<div class="sb-card-container sb-card-textbook-container"> 
+						<div *ngFor="let item of items?.contents; let i = index">
+						<textbook-card *ngIf ="i < 3" [content]="item"
 							[layoutName]='layoutName' (click)="navigateToDetailPage(item, i, item.name)"></textbook-card>
+						</div>
+						<div class="sb-view-more" *ngIf="items?.contents?.length > 3" (click)="navigateToTextbookPage(items?.contents, items.name)">{{'VIEW_MORE' | translate}}</div>
 					</div>
 				</div>
 			</div>

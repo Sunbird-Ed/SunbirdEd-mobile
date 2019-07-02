@@ -1,5 +1,5 @@
 import { ActiveDownloadsPage } from '@app/pages/active-downloads/active-downloads';
-import { Search } from './../../app/app.constant';
+import { Search, ContentFilterConfig } from './../../app/app.constant';
 import { AfterViewInit, Component, Inject, NgZone, OnInit, ViewChild } from '@angular/core';
 import { Events, NavController, ToastController, MenuController, Tabs } from 'ionic-angular';
 import { Content as ContentView } from 'ionic-angular';
@@ -14,7 +14,6 @@ import {
 import { PageFilterCallback } from '../page-filter/page.filter';
 import { AppGlobalService } from '../../service/app-global.service';
 import { AppVersion } from '@ionic-native/app-version';
-import { updateFilterInSearchQuery } from '../../util/filter.util';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { CommonUtilService } from '../../service/common-util.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -33,6 +32,8 @@ import { Subscription } from 'rxjs';
 import { ProfileConstants } from '../../app';
 import { AppHeaderService } from '@app/service';
 import { NotificationsPage } from '../notifications/notifications';
+import { TextbookViewMorePage } from '../textbook-view-more/textbook-view-more';
+import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
 
 @Component({
   selector: 'page-resources',
@@ -146,7 +147,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     public toastController: ToastController,
     public menuCtrl: MenuController,
-    private headerServie: AppHeaderService
+    private headerServie: AppHeaderService,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService
   ) {
     this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
       .then(val => {
@@ -242,7 +244,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     }
     this.events.unsubscribe('update_header');
     this.events.unsubscribe('onboarding-card:completed');
-    if(this.headerObservable) {
+    if (this.headerObservable) {
       this.headerObservable.unsubscribe();
     }
     if (this.networkSubscription) {
@@ -708,12 +710,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.qrScanner.startScanner(PageId.LIBRARY);
   }
 
-  search() {
+  async search() {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.SEARCH_BUTTON_CLICKED,
       Environment.HOME,
       PageId.LIBRARY);
-    this.navCtrl.push(SearchPage, { contentType: ContentType.FOR_LIBRARY_TAB, source: PageId.LIBRARY });
+    const contentTypes = await this.formAndFrameworkUtilService.getSupportedContentFilterConfig(
+      ContentFilterConfig.NAME_LIBRARY);
+    this.navCtrl.push(SearchPage, { contentType: contentTypes, source: PageId.LIBRARY });
   }
 
   getCategoryData() {
@@ -916,6 +920,18 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     if (this.commonUtilService.networkInfo.isNetworkAvailable || item.isAvailableLocally) {
       this.navCtrl.push(CollectionDetailsEtbPage, {
         content: item
+      });
+    } else {
+      this.presentToastForOffline('OFFLINE_WARNING_ETBUI_1');
+    }
+  }
+
+  navigateToTextbookPage(items, subject) {
+    const values = new Map();
+    if (this.commonUtilService.networkInfo.isNetworkAvailable || items.isAvailableLocally) {
+      this.navCtrl.push(TextbookViewMorePage, {
+        content: items,
+        subjectName: subject
       });
     } else {
       this.presentToastForOffline('OFFLINE_WARNING_ETBUI_1');

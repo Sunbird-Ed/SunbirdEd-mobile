@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { AppGlobalService } from '../../service/app-global.service';
 import { AppVersion } from '@ionic-native/app-version';
-import { PreferenceKey, SystemSettingsIds } from '../../app/app.constant';
+import { PreferenceKey, SystemSettingsIds, ContentType, ContentFilterConfig } from '../../app/app.constant';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 import { Events } from 'ionic-angular';
@@ -24,6 +24,8 @@ import {
 
 @Injectable()
 export class FormAndFrameworkUtilService {
+
+    contentFilterConfig: Array<any> = [];
 
     /**
      * This variable is used to store the language selected, which is required when getting form related details.
@@ -194,66 +196,6 @@ export class FormAndFrameworkUtilService {
     }
 
     /**
-     * Get all categories using framework api
-     */
-    // getFrameworkDetails(frameworkId: string): Promise<any> {
-    //     return new Promise((resolve, reject) => {
-    //         const req: FrameworkDetailsRequest = {
-    //             defaultFrameworkDetails: true,
-    //             categories: FrameworkCategory.DEFAULT_FRAMEWORK_CATEGORIES
-    //         };
-
-    //         if (frameworkId !== undefined && frameworkId.length) {
-    //             req.defaultFrameworkDetails = false;
-    //             req.frameworkId = frameworkId;
-    //         }
-
-    //         this.framework.getAllCategories(req)
-    //             .then(res => {
-    //                 resolve(res);
-    //             })
-    //             .catch(error => {
-    //                 reject(error);
-    //             });
-    //     });
-    // }
-
-    /**
-     *
-     * This gets the categoy data according to current and previously selected values
-     *
-     * @param req
-     * @param frameworkId
-     */
-    // getCategoryData(req: CategoryRequest, frameworkId?: string): Promise<any> {
-    //     return new Promise((resolve, reject) => {
-    //         if (frameworkId !== undefined && frameworkId.length) {
-    //             req.frameworkId = frameworkId;
-    //         }
-
-    //         const categoryList: Array<any> = [];
-
-    //         this.framework.getCategoryData(req)
-    //             .then(res => {
-    //                 const category = JSON.parse(res);
-    //                 const resposneArray = category.terms;
-    //                 let value = {};
-    //                 resposneArray.forEach(element => {
-
-    //                     value = { 'name': element.name, 'code': element.code };
-
-    //                     categoryList.push(value);
-    //                 });
-
-    //                 resolve(categoryList);
-    //             })
-    //             .catch(err => {
-    //                 reject(err);
-    //             });
-    //     });
-    // }
-
-    /**
      * Network call to form api
      *
      * @param libraryFilterConfig
@@ -279,6 +221,72 @@ export class FormAndFrameworkUtilService {
                 resolve(libraryFilterConfig);
             });
     }
+
+    private setContentFilterConfig(contentFilterConfig: Array<any>) {
+        this.contentFilterConfig = contentFilterConfig;
+    }
+
+    private getCachedContentFilterConfig() {
+        return this.contentFilterConfig;
+    }
+
+    private async invokeContentFilterConfigFormApi(): Promise<any> {
+        const req: FormRequest = {
+            type: 'config',
+            subType: 'content',
+            action: 'filter',
+        };
+
+        // form api call
+        return this.formService.getForm(req).toPromise()
+            .then((res: any) => {
+                this.setContentFilterConfig(res.form.data.fields);
+                return res.form.data.fields;
+            }).catch((error: any) => {
+                console.log('Error - ' + error);
+                return error;
+            });
+    }
+
+    async getSupportedContentFilterConfig(name): Promise<Array<string>> {
+        let contentFilterConfig: any;
+        let libraryTabContentTypes: Array<string>;
+        switch (name) {
+            case ContentFilterConfig.NAME_LIBRARY:
+                libraryTabContentTypes = ContentType.FOR_LIBRARY_TAB;
+                break;
+            case ContentFilterConfig.NAME_COURSE:
+                libraryTabContentTypes = ContentType.FOR_COURSE_TAB;
+                break;
+            case ContentFilterConfig.NAME_DOWNLOADS:
+                libraryTabContentTypes = ContentType.FOR_DOWNLOADED_TAB;
+                break;
+            case ContentFilterConfig.NAME_DIALCODE:
+                libraryTabContentTypes = ContentType.FOR_DIAL_CODE_SEARCH;
+                break;
+        }
+
+        // get cached library config
+        contentFilterConfig = this.getCachedContentFilterConfig();
+
+        if (contentFilterConfig === undefined || contentFilterConfig.length === 0) {
+            return this.invokeContentFilterConfigFormApi()
+                .then(fields => {
+                    for (const field of fields) {
+                        if (field.name === name && field.code === ContentFilterConfig.CODE_CONTENT_TYPE) {
+                            libraryTabContentTypes = field.values;
+                            break;
+                        }
+                    }
+
+                    return libraryTabContentTypes;
+                })
+                .catch(error => {
+                    return libraryTabContentTypes;
+                });
+        }
+    }
+
     /**
      * update local profile for logged in user and return promise with a status saying,
      *  whether user has to be redirected to categoryedit page or library page

@@ -14,6 +14,9 @@ export class ContentType {
     public static readonly LEARNING_OUTCOME_DEFINITION = 'LearningOutcomeDefinition';
     public static readonly PRACTICE_QUESTION_SET = 'PracticeQuestionSet';
     public static readonly CURIOSITY_QUESTIONS = 'CuriosityQuestions';
+    public static readonly MARKING_SCHEME_RUBRIC = 'MarkingSchemeRubric';
+    public static readonly EXPLANATION_RESOURCE = 'ExplanationResource';
+    public static readonly EXPERIENTIAL_RESOURCE = 'ExperientialResource';
 
     public static readonly FOR_COURSE_TAB = [
         ContentType.COURSE
@@ -40,21 +43,10 @@ export class ContentType {
         ContentType.FOCUS_SPOT,
         ContentType.LEARNING_OUTCOME_DEFINITION,
         ContentType.PRACTICE_QUESTION_SET,
-        ContentType.CURIOSITY_QUESTIONS
-    ];
-    public static readonly FOR_PROFILE_TAB = [
-        ContentType.STORY,
-        ContentType.WORKSHEET,
-        ContentType.GAME,
-        ContentType.RESOURCE,
-        ContentType.COLLECTION,
-        ContentType.TEXTBOOK,
-        ContentType.LESSON_PLAN,
-        ContentType.COURSE,
-        ContentType.FOCUS_SPOT,
-        ContentType.LEARNING_OUTCOME_DEFINITION,
-        ContentType.PRACTICE_QUESTION_SET,
-        ContentType.CURIOSITY_QUESTIONS
+        ContentType.CURIOSITY_QUESTIONS,
+        ContentType.MARKING_SCHEME_RUBRIC,
+        ContentType.EXPLANATION_RESOURCE,
+        ContentType.EXPERIENTIAL_RESOURCE
     ];
     public static readonly FOR_DIAL_CODE_SEARCH = [
         ContentType.TEXTBOOK,
@@ -339,3 +331,10 @@ export class ContentConstants {
     public static readonly COMING_SOON_MSG = 'comingSoonMsg';
 }
 
+export class ContentFilterConfig {
+    public static readonly NAME_LIBRARY = 'library';
+    public static readonly NAME_COURSE = 'course';
+    public static readonly NAME_DOWNLOADS = 'downloads';
+    public static readonly NAME_DIALCODE = 'dialcode';
+    public static readonly CODE_CONTENT_TYPE = 'contentType';
+}

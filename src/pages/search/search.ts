@@ -1,4 +1,4 @@
-import { BatchConstants } from './../../app/app.constant';
+import { BatchConstants, ContentFilterConfig } from './../../app/app.constant';
 import { Component, Inject, NgZone, OnDestroy, ViewChild } from '@angular/core';
 import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, Loading } from 'ionic-angular';
 import { Content as ContentView } from 'ionic-angular';
@@ -601,7 +601,7 @@ export class SearchPage implements OnDestroy {
     });
   }
 
-  getContentForDialCode() {
+  async getContentForDialCode() {
     if (this.dialCode === undefined || this.dialCode.length === 0) {
       return;
     }
@@ -609,13 +609,10 @@ export class SearchPage implements OnDestroy {
     this.isDialCodeSearch = true;
 
     this.showLoader = true;
-    this.contentType = ContentType.FOR_DIAL_CODE_SEARCH;
 
-    let isOfflineSearch = false;
-
-    if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
-      isOfflineSearch = true;
-    }
+    const contentTypes = await this.formAndFrameworkUtilService.getSupportedContentFilterConfig(
+      ContentFilterConfig.NAME_DIALCODE);
+    this.contentType = contentTypes;
 
     // Page API START
     const pageAssemblefilter: PageAssembleFilter = {};

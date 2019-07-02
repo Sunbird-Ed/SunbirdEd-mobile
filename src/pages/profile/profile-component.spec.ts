@@ -422,7 +422,7 @@ describe('ProfilePage', () => {
                 contentDataList: {
                     createdBy: ['this.userId' || 'this.loggedInUserId'],
                     limit: 100,
-                    contentTypes: 'ContentType.FOR_PROFILE_TAB',
+                    contentTypes: 'ContentType.FOR_DOWNLOADED_TAB',
                     sortCriteria: ['contentSortCriteria']
                 }
             }
@@ -445,7 +445,7 @@ describe('ProfilePage', () => {
         const contentSearchCriteria = {
             createdBy: ['this.userId' || 'this.loggedInUserId'],
             limit: 100,
-            contentTypes: 'ContentType.FOR_PROFILE_TAB',
+            contentTypes: 'ContentType.FOR_DOWNLOADED_TAB',
             sortCriteria: ['contentSortCriteria']
         };
         (contentServiceMock.searchContent as any).mockRejectedValue(Promise.resolve(JSON.stringify(mockProfileRes.searchResultResponse)));

@@ -28,6 +28,7 @@ import { DownloadManagerPageModule } from '../pages/download-manager/download-ma
 import { DownloadManagerPage } from '../pages/download-manager/download-manager';
 import { ActiveDownloadsPageModule } from '../pages/active-downloads/active-downloads.module';
 import { StorageSettingsPageModule } from '../pages/storage-settings/storage-settings.module';
+import { TextbookViewMorePageModule } from '../pages/textbook-view-more/textbook-view-more.module';
 
 
 // const HOME_TAB = { root: HomePage, icon: "home", label: "HOME_BNAV", index: 0, tabsHideOnSubPages: true };
@@ -182,5 +183,6 @@ export const PluginModules = [
     TermsAndConditionsPageModule,
     DownloadManagerPageModule,
     ActiveDownloadsPageModule,
-    StorageSettingsPageModule
+    StorageSettingsPageModule,
+    TextbookViewMorePageModule
 ];

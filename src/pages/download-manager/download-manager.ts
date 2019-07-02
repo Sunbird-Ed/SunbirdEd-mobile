@@ -1,29 +1,20 @@
-import {AppVersion} from '@ionic-native/app-version';
-import {AppGlobalService, AppHeaderService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
-import {AppStorageInfo, DownloadManagerPageInterface, EmitedContents} from './download-manager.interface';
-import {ContentType} from './../../app/app.constant';
-import {Component, Inject, NgZone, OnInit} from '@angular/core';
-import {Events, IonicPage, Loading, NavController, NavParams, Popover, PopoverController} from 'ionic-angular';
+import { AppVersion } from '@ionic-native/app-version';
+import { AppGlobalService, AppHeaderService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
+import { AppStorageInfo, DownloadManagerPageInterface, EmitedContents } from './download-manager.interface';
+import { ContentFilterConfig } from './../../app/app.constant';
+import { Component, Inject, NgZone, OnInit } from '@angular/core';
+import { Events, IonicPage, Loading, NavController, NavParams, Popover, PopoverController } from 'ionic-angular';
 import {
-  Content,
-  ContentDeleteRequest,
-  ContentDeleteResponse,
-  ContentDeleteStatus,
-  ContentRequest,
-  ContentService,
-  ContentSortCriteria,
-  ContentSpaceUsageSummaryRequest,
-  ContentSpaceUsageSummaryResponse,
-  DeviceInfo,
-  Profile,
-  SortOrder,
-  StorageService
+  Content, ContentDeleteRequest, ContentDeleteResponse, ContentDeleteStatus, ContentRequest, ContentService,
+  ContentSortCriteria, ContentSpaceUsageSummaryRequest, ContentSpaceUsageSummaryResponse, DeviceInfo, Profile,
+  SortOrder, StorageService
 } from 'sunbird-sdk';
-import {SbPopoverComponent} from '@app/component';
-import {ActiveDownloadsPage} from '../active-downloads/active-downloads';
-import {Environment, InteractSubtype, InteractType, PageId} from '@app/service/telemetry-constants';
-import {StorageSettingsPage} from '../storage-settings/storage-settings';
-import {BehaviorSubject} from "rxjs";
+import { SbPopoverComponent } from '@app/component';
+import { ActiveDownloadsPage } from '../active-downloads/active-downloads';
+import { Environment, InteractSubtype, InteractType, PageId } from '@app/service/telemetry-constants';
+import { StorageSettingsPage } from '../storage-settings/storage-settings';
+import { BehaviorSubject } from 'rxjs';
+import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
 
 /**
  * Generated class for the DownloadManagerPage page.
@@ -61,6 +52,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
     private telemetryGeneratorService: TelemetryGeneratorService,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
     @Inject('STORAGE_SERVICE') private storageService: StorageService
@@ -72,7 +64,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     return Promise.all(
       [this.getDownloadedContents(true),
       this.getAppName()]
-      );
+    );
   }
 
   ionViewWillEnter() {
@@ -97,10 +89,10 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
 
 
   private async getAppStorageInfo(): Promise<AppStorageInfo> {
-    const req: ContentSpaceUsageSummaryRequest = {paths: [this.storageService.getStorageDestinationDirectoryPath()]};
+    const req: ContentSpaceUsageSummaryRequest = { paths: [this.storageService.getStorageDestinationDirectoryPath()] };
     return this.contentService.getContentSpaceUsageSummary(req).toPromise()
       .then((res: ContentSpaceUsageSummaryResponse[]) => {
-       return  this.deviceInfo.getAvailableInternalMemorySize().toPromise()
+        return this.deviceInfo.getAvailableInternalMemorySize().toPromise()
           .then((size) => {
             this.storageInfo = {
               usedSpace: res[0].sizeOnDevice,
@@ -126,9 +118,13 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
       sortAttribute: 'sizeOnDevice',
       sortOrder: SortOrder.DESC
     }];
+
+    const contentTypes = await this.formAndFrameworkUtilService.getSupportedContentFilterConfig(
+      ContentFilterConfig.NAME_DOWNLOADS);
+
     const requestParams: ContentRequest = {
       uid: profile.uid,
-      contentTypes: ContentType.FOR_DOWNLOADED_TAB,
+      contentTypes: contentTypes,
       audience: [],
       sortCriteria: this.sortCriteria || defaultSortCriteria
     };
