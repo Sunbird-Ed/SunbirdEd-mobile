@@ -68,29 +68,29 @@
                 {{item?.contentData?.name}}
                 <span>
                   <ion-icon class="sb-checkmark-icon" name="md-checkmark-circle" *ngIf="item?.isAvailableLocally"></ion-icon>
-                  <!-- </span>
-                <span>
+                </span>
+                <!-- <span>
                   <ion-icon class="checkmark-icon" name="checkmark-circle-outline" *ngIf="item?.isAvailableLocally">
-                  </ion-icon> -->
-                </span></div>
+                  </ion-icon>
+                </span> -->
+              </div>
             </ion-col>
           </ion-row>
-          <div class="font-grey-text" (click)="showCommingSoonPopup(item)" *ngIf="item?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !item?.children">
+          <!-- <div class="font-grey-text" (click)="showCommingSoonPopup(item)" *ngIf="item?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !item?.children">
             {{item?.contentData?.name}}
             <span class="grey-icon-span">
               <ion-icon ios="ios-alert" md="md-alert" class="grey-icon ML5"></ion-icon>
             </span>
-          </div>
-          <!-- </div> -->
+          </div> -->
         </ion-grid>
         <!-- <div class="sb-separator-line"></div> -->
         <div class="sb-hidden-content" *ngIf="isGroupShown(i) && (item?.children && item?.children?.length)">
           <div class="box-align" *ngFor="let firstChildren of item?.children; let j = index;">
-              <div class="sb-topics-container">
-                <collection-child
-                  [childData]="firstChildren" [index]="j" [depth]="depth" [activeMimeTypeFilter] = "activeMimeTypeFilter"
-                  [corRelationList]="corRelationList" [isDepthChild]="isDepthChild" [breadCrumb]="breadCrumb"></collection-child>
-              </div>
+                <div class="sb-topics-container">
+                  <collection-child
+                    [childData]="firstChildren" [index]="j" [depth]="depth" [activeMimeTypeFilter] = "activeMimeTypeFilter"
+                    [corRelationList]="corRelationList" [isDepthChild]="isDepthChild" [breadCrumb]="breadCrumb"></collection-child>
+                </div>
           </div>
         </div>
         </ng-container>

@@ -1,11 +1,12 @@
 <div>
-    <div class="unit-hierachy"
-        *ngIf="childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && childData?.children">
-        {{childData?.contentData?.name}}
-    </div>
+     <ng-container *ngIf="childData | hasMimeType: activeMimeTypeFilter">
+        <div class="unit-hierachy"
+            *ngIf="childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && childData?.children">
+            {{childData?.contentData?.name}}
+        </div>
+    </ng-container>
     <div
-      *ngIf="childData?.contentData?.mimeType !== 'application/vnd.ekstep.content-collection'
-      && hasMimeType(activeMimeTypeFilter, childData?.contentData?.mimeType)"
+        *ngIf="childData?.contentData?.mimeType !== 'application/vnd.ekstep.content-collection' && hasMimeType(activeMimeTypeFilter, childData?.contentData?.mimeType)"
          (click)="navigateToDetailsPage(childData, depth + '.' + (i + 1))">
       <!--        <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle"-->
       <!--            [ngClass]="{'sb-accordian-grey-icon': !commonUtilService.networkInfo.isNetworkAvailable && !childData?.isAvailableLocally, 'sb-play-icon': commonUtilService.networkInfo.isNetworkAvailable || childData?.isAvailableLocally}">-->
@@ -28,15 +29,15 @@
       </ion-card>
     </div>
 
-    <div class="row sb-topic-item" (click)="showComingSoonPopup(childData)"
+    <!-- <div class="row sb-topic-item" (click)="showComingSoonPopup(childData)"
         *ngIf="childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !childData?.children">
         <div class="sb-accordian-grey-text">{{childData?.contentData?.name}}</div>
         <ion-icon ios="ios-alert" md="md-alert" class="grey-icon mt-4"></ion-icon>
-    </div>
+    </div> -->
 
     <!-- <div *ngIf="childData?.children && childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection'"
         class="sb-separator-line ml8 mtb-8"></div> -->
     <div *ngFor="let firstChildren of childData?.children; let j = index;">
-        <collection-child [childData]="firstChildren" [breadCrumb]="breadCrumb" [activeMimeTypeFilter] = "activeMimeTypeFilter"></collection-child>
+            <collection-child [childData]="firstChildren" [breadCrumb]="breadCrumb" [activeMimeTypeFilter] = "activeMimeTypeFilter"></collection-child>
     </div>
 </div>
