@@ -11,21 +11,23 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class MimeTypePipe implements PipeTransform {
   transform(item: Content, mimeTypes: string[] = ['all']): boolean {
-    if (mimeTypes.indexOf('all') > -1) {
+    if (!mimeTypes) {
+      return true;
+    } else {
+      if (mimeTypes.indexOf('all') > -1) {
         if (item.contentData.mimeType === MimeType.COLLECTION && !item.children) {
             return false;
         }
-      return true;
+        return true;
+      }
+      return this.getFilteredItems(item.children, mimeTypes);
     }
-    return this.getFilteredItems(item.children, mimeTypes);
   }
 ​
 ​
   getFilteredItems(contents: Content[] = [], mimeTypes: string[]): boolean {
-    console.log('mimeTypes:', mimeTypes);
     const t = this.flattenDeep(contents)
       .some((c) => !!mimeTypes.find(m => m === c.contentData.mimeType));
-    console.log('shouldShow:', t);
     return t;
   }
 ​

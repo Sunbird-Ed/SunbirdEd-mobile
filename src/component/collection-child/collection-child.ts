@@ -93,10 +93,14 @@ export class CollectionChildComponent implements AfterViewInit {
     }
 
     hasMimeType(activeMimeType: string[], mimeType: string): boolean {
-        if (activeMimeType.indexOf('all') > -1) {
+        if (!activeMimeType){
             return true;
+        } else {
+            if (activeMimeType.indexOf('all') > -1) {
+                return true;
+            }
+            return !!activeMimeType.find( m => m === mimeType);
         }
-        return !!activeMimeType.find( m => m === mimeType);
     }
 
     ngAfterViewInit(): void {

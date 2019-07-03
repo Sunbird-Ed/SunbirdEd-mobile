@@ -20,15 +20,22 @@
       </ion-row>
     </div>
     <!-- End import content -->
-    <div #stickyPillsRef class="sb-slider-pills-container" *ngIf=" childrenData && childrenData?.length">
-      <div class="sb-pills-container sb-grade-pills-container" id="gradeScroll">
-        <div class="pill" *ngFor="let type of mimeTypes; let i = index; let first = first"
-             [ngClass]="{'active': type?.selected, '': !type?.selected}" attr.id="class{{i}}"
-             (click)="onFilterMimeTypeChange(type.value, i);">
-          {{type?.name}}
+    <div #stickyPillsRef *ngIf=" childrenData && childrenData?.length">
+      <div class="sb-chapter-dd" (click)="openTextbookToc()">
+        <span class="pull-left">Select Chapter</span>
+        <span class="pull-right"><ion-icon name="ios-arrow-dropdown-circle"></ion-icon></span>
+      </div>
+     <div class="sb-slider-pills-container">
+        <div class="sb-pills-container sb-grade-pills-container" id="gradeScroll">
+          <div class="pill" *ngFor="let type of mimeTypes; let i = index; let first = first"
+              [ngClass]="{'active': type?.selected, '': !type?.selected}" attr.id="class{{i}}"
+              (click)="onFilterMimeTypeChange(type.value, i);">
+            {{type?.name}}
+          </div>
         </div>
       </div>
     </div>
+    
 
     <div *ngIf="shouldPillsStick" style="height: 48px;"></div>
 
@@ -86,7 +93,7 @@
         <!-- <div class="sb-separator-line"></div> -->
         <div class="sb-hidden-content" *ngIf="isGroupShown(i) && (item?.children && item?.children?.length)">
           <div class="box-align" *ngFor="let firstChildren of item?.children; let j = index;">
-                <div class="sb-topics-container">
+                <div class="sb-topics-container sb-topics-container-ftue">
                   <collection-child
                     [childData]="firstChildren" [index]="j" [depth]="depth" [activeMimeTypeFilter] = "activeMimeTypeFilter"
                     [corRelationList]="corRelationList" [isDepthChild]="isDepthChild" [breadCrumb]="breadCrumb"></collection-child>

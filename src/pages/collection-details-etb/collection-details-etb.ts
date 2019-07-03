@@ -1,3 +1,4 @@
+import { TextBookTocPage } from './textbook-toc/textbook-toc';
 import { ActiveDownloadsPage } from './../active-downloads/active-downloads';
 import { Component, Inject, NgZone, ViewChild, OnInit, ElementRef } from '@angular/core';
 import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ScrollEvent, ToastController } from 'ionic-angular';
@@ -1416,6 +1417,11 @@ export class CollectionDetailsEtbPage implements OnInit {
     this.mimeTypes[idx].selected = true;
   }
 
+  openTextbookToc() {
+    console.log('in openTextbookToc');
+    this.navCtrl.push(TextBookTocPage, {childrenData: this.childrenData});
+  }
+  
   onScroll(event: ScrollEvent) {
     if (event.scrollTop >= 205) {
       (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.add('sticky');
