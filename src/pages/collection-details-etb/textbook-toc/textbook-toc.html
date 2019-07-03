@@ -1,0 +1,76 @@
+<ion-content no-padding (ionScroll)="onScroll($event)" class="sb-textbook-toc">
+    <div #stickyPillsRef class="sb-chapter-dd" (click)="handleBackButton()">
+        <span class="pull-left">Select Chapter</span>
+        <span class="pull-right"><ion-icon name="ios-arrow-dropup-circle"></ion-icon></span>
+    </div>
+    <section *ngIf=" childrenData && childrenData?.length">
+        <ion-card class="sb-accordian-card" *ngFor="let item of childrenData;  let i = index;">
+  
+          <!-- new -->
+          <ion-grid class="sb-accordian-header">
+            <ion-row *ngIf="item?.children">
+              <ion-col col-11>
+                <div class="sb-topic-text"> {{item?.contentData?.name}} </div>
+              </ion-col>
+              <!-- <ion-col col-1 *ngIf="!isGroupShown(i)">
+                <div>
+                  <ion-icon ios="ios-arrow-dropdown" md="md-arrow-dropdown" class="sb-accordian-arrow"></ion-icon>
+                </div>
+              </ion-col>
+              <ion-col col-1 *ngIf="isGroupShown(i)">
+                <div>
+                  <ion-icon ios="ios-arrow-dropup" md="md-arrow-dropup" class="sb-accordian-arrow"></ion-icon>
+                </div>
+              </ion-col> -->
+            </ion-row>
+            <ion-row *ngIf="item?.contentData?.mimeType !== 'application/vnd.ekstep.content-collection' && !item?.children"
+              (click)="navigateToDetailsPage(item, depth + '.' + (i + 1))">
+              <ion-col col-1>
+                <div>
+                  <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle"
+                  [ngClass]="{'sb-accordian-grey-icon': !commonUtilService.networkInfo.isNetworkAvailable && !item?.isAvailableLocally, 'sb-play-icon': commonUtilService.networkInfo.isNetworkAvailable || item?.isAvailableLocally}">
+                  </ion-icon>
+                </div>
+              </ion-col>
+              <ion-col col-11>
+                <div [ngClass]="{'sb-accordian-grey-text': !commonUtilService.networkInfo.isNetworkAvailable && !item?.isAvailableLocally,
+                'sb-play-selected':item?.isAvailableLocally,'sb-play-unselected':!item?.isAvailableLocally}">
+                  {{item?.contentData?.name}}
+                    <!-- <span>
+                        <ion-icon class="sb-checkmark-icon" name="md-checkmark-circle" *ngIf="item?.isAvailableLocally"></ion-icon>
+                    </span> -->
+                </div>
+              </ion-col>
+            </ion-row>
+            <div class="font-grey-text" (click)="showCommingSoonPopup(item)" *ngIf="item?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !item?.children">
+              {{item?.contentData?.name}}
+              <span class="grey-icon-span">
+                <ion-icon ios="ios-alert" md="md-alert" class="grey-icon ML5"></ion-icon>
+              </span>
+            </div>
+          </ion-grid>
+          <!-- <div class="sb-separator-line"></div> -->
+          <div class="sb-hidden-content px-16 pt-8" *ngIf="(item?.children && item?.children?.length)">
+            <div *ngFor="let firstChildren of item?.children; let j = index;">
+              <!-- <div class="separator-line"></div> -->
+              <div class="sb-topics-container sb-topics-container-toc">
+                <collection-child
+                  [childData]="firstChildren" [index]="j" [depth]="depth"
+                  [corRelationList]="corRelationList" [isDepthChild]="isDepthChild" [breadCrumb]="breadCrumb"></collection-child>
+              </div>
+            </div>
+          </div>
+        </ion-card>
+      </section>
+</ion-content>
+
+<ion-backdrop class="loading-backdrop" *ngIf="showLoading && !isDownloadStarted" text-center>
+    <div class="backdrop-container">
+        <ion-label>{{ 'LOADING_CONTENTS' | translate: {'%s': downloadProgress ? downloadProgress : 0} }}</ion-label>
+        <pb-horizontal [progress]="downloadProgress" isOnBoardCard="false"></pb-horizontal>
+    </div>
+
+    <div class="backdrop-footer">
+        <button ion-button small (click)="cancelDownload()">{{ 'CANCEL' | translate }}</button>
+    </div>
+</ion-backdrop>
