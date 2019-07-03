@@ -338,3 +338,11 @@ export class ContentFilterConfig {
     public static readonly NAME_DIALCODE = 'dialcode';
     public static readonly CODE_CONTENT_TYPE = 'contentType';
 }
+
+export class ActionType {
+    public static readonly CODE_PUSH = 'codePush';
+    public static readonly COURSE_UPDATE = 'courseUpdate';
+    public static readonly CONTENT_UPDATE = 'contentUpdate';
+    public static readonly BOOK_UPDATE = 'bookUpdate';
+    public static readonly UPDATE_APP = 'updateApp';
+}

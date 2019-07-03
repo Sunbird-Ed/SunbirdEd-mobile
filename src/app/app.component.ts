@@ -8,7 +8,7 @@ import { ImageLoaderConfig } from 'ionic-image-loader';
 import { TranslateService } from '@ngx-translate/core';
 import { CollectionDetailsPage } from '../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../pages/content-details/content-details';
-import { GenericAppConfig, PreferenceKey, ProfileConstants } from './app.constant';
+import { GenericAppConfig, PreferenceKey, ProfileConstants, ActionType } from './app.constant';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { FormAndFrameworkUtilService } from '@app/pages/profile';
 import {
@@ -32,7 +32,8 @@ import {
   ContentDetailRequest,
   NotificationService,
   ContentService,
-  Content
+  Content,
+  Notification
 } from 'sunbird-sdk';
 import { tap } from 'rxjs/operators';
 import {
@@ -186,7 +187,7 @@ export class MyApp implements OnInit, AfterViewInit {
 
   downloadProgress(downloadProgress) {
     if (downloadProgress) {
-      console.log("Downloading " + downloadProgress.receivedBytes + " of " +
+      console.log('Downloading ' + downloadProgress.receivedBytes + ' of ' +
         downloadProgress.totalBytes);
     }
   }
@@ -216,42 +217,30 @@ export class MyApp implements OnInit, AfterViewInit {
    * can take action on data variable
    */
   receiveNotification() {
-    FCMPlugin.onNotification((data) => {
-      console.log('Notification data');
-      console.log(this.telemetryGeneratorService);
-      if (data.wasTapped) {
+    FCMPlugin.onNotification((data: Notification) => {
+      if (data['wasTapped']) {
         // Notification was received on device tray and tapped by the user.
       } else {
         // Notification was received in foreground. Maybe the user needs to be notified.
       }
-      data['isRead'] = data.wasTapped ? 1 : 0;
-      data['actionData'] = JSON.parse(data['actionData']);
+      data['isRead'] = data['wasTapped'] ? 1 : 0;
+      data['actionData'] = JSON.parse(data.actionData);
       this.notificationServices.addNotification(data).subscribe((status) => {
         this.events.publish('notification:received');
         this.events.publish('notification-status:update', { isUnreadNotifications: true });
       });
-      if (data.actionData.actionType === 'codePush') {
-        alert('CodePush detected');
+      if (data.actionData.actionType === ActionType.CODE_PUSH) {
         this.preferences.putString(PreferenceKey.DEPLOYMENT_KEY, data.actionData.deploymentKey).toPromise().then();
       } else {
-        alert('Going Out!');
         this.splaschreenDeeplinkActionHandlerDelegate.handleNotification(data);
       }
     },
       (sucess) => {
         console.log('Notification Sucess Callback');
-        console.log(sucess);
       },
       (err) => {
-        console.log('Notification Error Callback');
-        console.log(err);
+        console.log('Notification Error Callback', err);
       });
-  }
-
-  fetchStoreContentData(data) {
-    /* Test
-     */
-    this.identifier = data.actionData.identifier;
   }
 
   /**

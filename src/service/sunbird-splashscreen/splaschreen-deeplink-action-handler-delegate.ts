@@ -1,7 +1,7 @@
 import { SplashscreenActionHandlerDelegate } from '@app/service/sunbird-splashscreen/splashscreen-action-handler-delegate';
 import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ContentType, MimeType } from '@app/app';
+import { ContentType, MimeType, ActionType } from '@app/app';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
@@ -19,38 +19,12 @@ export class SplaschreenDeeplinkActionHandlerDelegate implements SplashscreenAct
     private app: App) {
   }
 
-  /* checks for contentData, and
-   * Navigate to the appropriate page based on content type
-   */
-  // naviagteNotification(contentData: any) {
-  //   if (contentData) {
-  //     const navObj = this.app.getRootNavs()[0];
-  //     if (contentData.contentType === ContentType.COURSE.toLowerCase()) {
-  //       navObj.push(EnrolledCourseDetailsPage, {
-  //         content: contentData.contentData
-  //       });
-  //     } else if (contentData.mimeType === MimeType.COLLECTION) {
-  //       navObj.push(CollectionDetailsEtbPage, {
-  //         content: contentData.contentData
-  //       });
-  //     } else {
-  //       setTimeout(() => {
-  //         navObj.push(ContentDetailsPage, {
-  //           content: contentData.contentData
-  //         });
-  //       }, 1000);
-  //     }
-  //     // const navObj = this.app.getActiveNavs()[0];
-  //   }
-  // }
-
   handleNotification(data) {
     switch (data.actionData.actionType) {
-      case 'updateApp':
+      case ActionType.UPDATE_APP:
         console.log('updateApp');
         break;
-      case 'courseUpdate' || 'contentUpdate' || 'bookUpdate':
-        console.log('courseUpdate');
+      case ActionType.BOOK_UPDATE || ActionType.CONTENT_UPDATE || ActionType.COURSE_UPDATE:
         this.identifier = data.actionData.identifier;
         break;
       default:
