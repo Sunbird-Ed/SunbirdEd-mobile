@@ -24,43 +24,43 @@ export class CourseBatchesPage implements OnInit {
   /**
    * Contains user id
    */
-  userId: string;
+  public userId: string;
 
   /**
    * To hold course indentifier
    */
-  identifier: string;
+  public identifier: string;
 
   /**
    * Loader
    */
-  showLoader: boolean;
+  public showLoader: boolean;
 
   /**
    * Contains upcomming batches list
    */
-  upcommingBatches: Array<Batch> = [];
+  public upcommingBatches: Array<Batch> = [];
 
   /**
    * Contains ongoing batches list
    */
-  ongoingBatches: Array<Batch> = [];
+  public ongoingBatches: Array<Batch> = [];
 
   /**
    * Flag to check guest user
    */
-  isGuestUser = false;
+  public isGuestUser = false;
 
   /**
    * Contains batches list
    */
   public batches: Array<Batch> = [];
 
-  todayDate: any;
+  public todayDate: any;
   /**
    * Selected filter
    */
-  selectedFilter: string;
+  public selectedFilter: string;
   headerConfig = {
     showHeader: false,
     showBurgerMenu: false,
