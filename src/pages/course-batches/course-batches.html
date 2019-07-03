@@ -42,7 +42,7 @@
               <span class="text-gray-color">{{ batch.creatorFirstName }}</span>&nbsp;<span class="text-gray-color"
                 *ngIf="batch.creatorLastName">{{batch.creatorLastName}}</span>
             </p>
-            <button class="enroll-btn" ion-button clear item-end (click)="enrollIntoBatch(batch)" [disabled]="(batch.endDate && (todayDate > batch.endDate))">
+            <button class="enroll-btn" ion-button clear item-end (click)="enrollIntoBatch(batch)" [disabled]="(batch.enrollmentEndDate && (todayDate > batch.enrollmentEndDate))">
               {{ 'ENROLL' | translate }}
             </button>
           </ion-item>
@@ -69,7 +69,7 @@
               <span class="text-gray-color">{{ batch.creatorFirstName }}</span>&nbsp;<span class="text-gray-color"
                 *ngIf="batch.creatorLastName">{{batch.creatorLastName}}</span>
             </p>
-            <button class="enroll-btn" ion-button clear item-end (click)="enrollIntoBatch(batch)" [disabled]="(batch.endDate && (todayDate > batch.endDate))">
+            <button class="enroll-btn" ion-button clear item-end (click)="enrollIntoBatch(batch)" [disabled]="(batch.enrollmentEndDate && (todayDate > batch.enrollmentEndDate))">
               {{ 'ENROLL' | translate }}
             </button>
           </ion-item>
