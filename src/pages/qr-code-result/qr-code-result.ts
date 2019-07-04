@@ -379,7 +379,6 @@ export class QrCodeResultPage implements OnDestroy {
       });
     }
   }
-
   /** funtion add elipses to the texts**/
 
   addElipsesInLongText(msg: string) {

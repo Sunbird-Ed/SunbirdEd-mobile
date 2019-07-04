@@ -300,11 +300,6 @@ export class SearchPage implements OnDestroy {
     if (this.isDialCodeSearch && !this.appGlobalService.isOnBoardingCompleted && (this.parentContent || content)) {
       this.appGlobalService.setOnBoardingCompleted();
     }
-    if (this.parentContent || content) {
-      this.contentData = this.parentContent ? this.parentContent : content;
-      // this.profile = this.appGlobalService.getCurrentUser();
-      // window.setTimeout(() => this.checkProfileData(this.contentData, this.profile), 0);
-    }
 
     if (content.contentType === ContentType.COURSE) {
       this.enrolledCourses = await this.getEnrolledCourses(false, false);
