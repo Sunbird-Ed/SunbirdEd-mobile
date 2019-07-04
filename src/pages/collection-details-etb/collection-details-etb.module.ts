@@ -1,3 +1,4 @@
+import { TextbookTocService } from './textbook-toc-service';
 import { TextBookTocPage } from './textbook-toc/textbook-toc';
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
@@ -25,7 +26,7 @@ import { FileSizePipe } from '@app/pipes/file-size/file-size';
     Ionic2RatingModule,
     PipesModule
   ],
-  providers: [],
+  providers: [TextbookTocService],
   exports: [
     CollectionDetailsEtbPage,
     TextBookTocPage

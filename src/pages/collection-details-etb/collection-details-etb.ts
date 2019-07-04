@@ -62,6 +62,7 @@ import { ViewController } from 'ionic-angular';
 import { FileSizePipe } from '@app/pipes/file-size/file-size';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 import {falseIfMissing} from "protractor/built/util";
+import { TextbookTocService } from './textbook-toc-service';
 
 /**
  * Generated class for the CollectionDetailsEtbPage page.
@@ -269,6 +270,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     private toastController: ToastController,
     private fileSizePipe: FileSizePipe,
     private headerService: AppHeaderService,
+    private textbookTocService: TextbookTocService,
     @Inject('PROFILE_SERVICE') private profileService: ProfileService
   ) {
     this.objRollup = new Rollup();
@@ -295,6 +297,7 @@ export class CollectionDetailsEtbPage implements OnInit {
       this.handleBackButton();
     };*/
 
+    window['scrollTest'] = this.ionContent;
     this.registerDeviceBackButton();
   }
 
@@ -402,7 +405,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     let isCollapsed = true;
     if (this.isGroupShown(group)) {
       isCollapsed = false;
-      this.shownGroup = null;
+      this.shownGroup = group;
     } else {
       this.shownGroup = group;
     }
@@ -807,7 +810,23 @@ export class CollectionDetailsEtbPage implements OnInit {
             this.getContentsSize(data.children || []);
           }
           this.showChildrenLoader = false;
-          this.toggleGroup(0,this.content);
+          let carouselIndex = 0;
+          if (this.textbookTocService.textbookIds && this.textbookTocService.textbookIds.rootUnitId) {
+            console.log('this.this.scrollToId', this.textbookTocService.textbookIds.rootUnitId);
+            carouselIndex = this.childrenData.findIndex((content) => this.textbookTocService.textbookIds.rootUnitId === content.identifier);
+            console.log('carouselIndex', carouselIndex);
+            carouselIndex = carouselIndex > 0 ? carouselIndex : 0;
+          }
+          console.log('carouselIndex', carouselIndex);
+          this.toggleGroup(carouselIndex, this.content);
+          console.log('this.textbookTocService.textbookIds.contentId', this.textbookTocService.textbookIds.contentId);
+          if (this.textbookTocService.textbookIds && this.textbookTocService.textbookIds.contentId) {
+            console.log('in scroll', document.getElementById(this.textbookTocService.textbookIds.contentId));
+            setTimeout(() => {
+              document.getElementById(this.textbookTocService.textbookIds.contentId).scrollIntoView();
+              window['scrollTest'].getScrollElement().scrollBy(0, -100);
+            }, 200);
+          }
           this.telemetryGeneratorService.generateInteractTelemetry(
             InteractType.OTHER,
             InteractSubtype.IMPORT_COMPLETED,
@@ -1419,9 +1438,17 @@ export class CollectionDetailsEtbPage implements OnInit {
 
   openTextbookToc() {
     console.log('in openTextbookToc');
-    this.navCtrl.push(TextBookTocPage, {childrenData: this.childrenData});
+    this.navCtrl.push(TextBookTocPage, {
+      childrenData: this.childrenData,
+      dismissCallback: (() => {
+        console.log('textbookTocService etb', this.textbookTocService.textbookIds);
+        // this.activeMimeTypeFilter = ['all'];
+        this.onFilterMimeTypeChange(['all'], 0);
+        // this.scrollToId = this.textbookTocService.textbookIds.rootUnitId;
+      }).bind(this)
+    });
   }
-  
+
   onScroll(event: ScrollEvent) {
     if (event.scrollTop >= 205) {
       (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.add('sticky');
