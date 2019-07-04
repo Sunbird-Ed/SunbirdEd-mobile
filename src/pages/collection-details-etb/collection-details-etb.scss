@@ -14,10 +14,18 @@ page-collection-details-etb {
     text-align: center;
   }
   .filter-icon {
-    margin-right: 5px;
+    margin-right: 8px;
+    height: 15px;
+    width: 15px;
   }
   .img-align{
-    margin-top: 3px;
+    margin-top: 5px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .allign-middle{
+    display: inline-block;
+    vertical-align: middle;
   }
   .sb-slider-pills-container {
     &.sticky {
