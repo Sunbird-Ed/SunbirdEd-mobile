@@ -5,8 +5,12 @@
             <ion-icon name="close" class="sb-modal-close" (click)="closePopover()"></ion-icon> </ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content no-padding class="sb-popover-container">
-        <div class="sb-popover-items">
+    <ion-content no-padding class="sb-popover-container" overflow-scroll="true" style="overflow: scroll;">
+        <div class="sb-popover-items" style="
+        overflow-y: scroll;
+        overflow: scroll;
+        max-height: 70vh;
+        display: block;">
             <rating [(ngModel)]="userRating" (ngModelChange)="rateContent($event)"></rating>
             <div class="sb-popover-content-details" *ngIf="userRating">
               <div class="main-title">
@@ -17,12 +21,15 @@
             </div>
             <ion-input *ngIf="showCommentBox" [(ngModel)]="comment" placeholder="{{'FEEDBACK_HINT' | translate}}" style="border-bottom : 2px;"></ion-input>
             <div *ngIf="showCommentBox" class="sb-line"></div>
+            <div class="sb-popover-footer">
+              <button ion-button class="sb-popover-action-btn popover-color" [disabled]="!userRating" (click)="submit()">{{ 'BTN_SUBMIT' | translate }}</button>
+            </div>
         </div>
     </ion-content>
     
-    <ion-footer>
+    <!-- <ion-footer>
         <div class="sb-popover-footer">
           <button ion-button class="sb-popover-action-btn popover-color" [disabled]="!userRating" (click)="submit()">{{ 'BTN_SUBMIT' | translate }}</button>
         </div>
-      </ion-footer>
+      </ion-footer> -->
   
