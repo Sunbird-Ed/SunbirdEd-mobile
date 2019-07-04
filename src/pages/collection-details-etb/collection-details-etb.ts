@@ -91,7 +91,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   };
 
   contentDetail?: Content;
-  childrenData: Array<any>;
+  childrenData?: Array<any>;
   mimeTypes = [
     { name: 'ALL', selected: true, value: ['all'], iconNormal: '', iconActive: ''},
     { name: 'VIDEOS', value: ['video/mp4', 'video/x-youtube', 'video/webm'], iconNormal: './assets/imgs/Play.svg', iconActive:'./assets/imgs/Play-active.svg'},
@@ -240,7 +240,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   headerObservable: any;
   breadCrumb = new Map();
   scrollPosition = 0;
-  currentFilter: any;
+  currentFilter: string = 'ALL';
   // Local Image
   localImage = '';
   @ViewChild(Navbar) navBar: Navbar;
@@ -804,6 +804,7 @@ export class CollectionDetailsEtbPage implements OnInit {
           if (data && data.children) {
             this.breadCrumb.set(data.identifier, data.contentData.name);
             this.childrenData = data.children;
+            this.changeDetectionRef.detectChanges();
             console.log('this.childrenData', this.childrenData);
           }
 
@@ -941,7 +942,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     this.refreshHeader();
     this.downloadProgress = 0;
     this.cardData = '';
-    this.childrenData = [];
+    this.childrenData;
     this.contentDetail = undefined;
     this.showDownload = false;
     this.showDownloadBtn = false;
