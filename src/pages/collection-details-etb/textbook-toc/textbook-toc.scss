@@ -1,0 +1,18 @@
+textbook-toc {
+  .sb-topic-text{
+    width: 90.28%;
+    color: #024F9D;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 20px;
+  }
+  .sb-topic-item {
+    color: $primary-color;
+    padding: 8px;
+  }
+  .sb-accordian-card {
+    margin: 0 !important;
+    box-shadow: none;
+    border-bottom: 1px solid #CCCCCC;
+  }
+}
