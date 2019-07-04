@@ -1,10 +1,10 @@
-<ion-content no-padding (ionScroll)="onScroll($event)" class="sb-textbook-toc">
-    <div #stickyPillsRef class="sb-chapter-dd" (click)="handleBackButton()">
+<ion-content no-padding class="sb-textbook-toc">
+    <!-- <div #stickyPillsRef class="sb-chapter-dd" (click)="handleBackButton()">
         <span class="pull-left">Select Chapter</span>
         <span class="pull-right"><ion-icon name="ios-arrow-dropup-circle"></ion-icon></span>
-    </div>
+    </div> -->
     <section *ngIf=" childrenData && childrenData?.length">
-        <ion-card class="sb-accordian-card" *ngFor="let item of childrenData;  let i = index;">
+        <ion-card class="sb-accordian-card" *ngFor="let item of childrenData;  let i = index;" (click)="onUnitClick(item)">
   
           <!-- new -->
           <ion-grid class="sb-accordian-header">
@@ -55,7 +55,7 @@
               <!-- <div class="separator-line"></div> -->
               <div class="sb-topics-container sb-topics-container-toc">
                 <collection-child
-                  [childData]="firstChildren" [index]="j" [depth]="depth"
+                  [childData]="firstChildren" [index]="j" [depth]="depth" [rootUnitId]="item.identifier"
                   [corRelationList]="corRelationList" [isDepthChild]="isDepthChild" [breadCrumb]="breadCrumb"></collection-child>
               </div>
             </div>

@@ -1,3 +1,4 @@
+import { TextbookTocService } from '../../pages/collection-details-etb/textbook-toc-service';
 import { Component, Input, NgZone, AfterViewInit } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
@@ -26,6 +27,7 @@ export class CollectionChildComponent implements AfterViewInit {
     @Input() defaultAppIcon: string;
     @Input() localImage: string;
     @Input() activeMimeTypeFilter: any;
+    @Input() rootUnitId: any;
 
     constructor(
         private navCtrl: NavController,
@@ -33,40 +35,47 @@ export class CollectionChildComponent implements AfterViewInit {
         private navParams: NavParams,
         private commonUtilService: CommonUtilService,
         private popoverCtrl: PopoverController,
-        private comingSoonMessageService: ComingSoonMessageService
+        private comingSoonMessageService: ComingSoonMessageService,
+        private textbookTocService: TextbookTocService
     ) { this.cardData = this.navParams.get('content'); }
-    navigateToDetailsPage(content: Content, depth) {
-        const stateData = this.navParams.get('contentState');
 
-        this.zone.run(() => {
-            if (content.contentType === ContentType.COURSE) {
-                this.navCtrl.push(EnrolledCourseDetailsPage, {
-                    content: content,
-                    depth: depth,
-                    contentState: stateData,
-                    corRelation: this.corRelationList,
-                    breadCrumb: this.breadCrumb
-                });
-            } else if (content.mimeType === MimeType.COLLECTION) {
-                this.isDepthChild = true;
-                this.navCtrl.push(CollectionDetailsEtbPage, {
-                    content: content,
-                    depth: depth,
-                    contentState: stateData,
-                    corRelation: this.corRelationList,
-                    breadCrumb: this.breadCrumb
-                });
-            } else {
-                this.navCtrl.push(ContentDetailsPage, {
-                    isChildContent: true,
-                    content: content,
-                    depth: depth,
-                    contentState: stateData,
-                    corRelation: this.corRelationList,
-                    breadCrumb: this.breadCrumb
-                });
-            }
-        });
+    navigateToDetailsPage(content: Content, depth) {
+        if (this.navCtrl.getActive().component['pageName'] === 'TextBookTocPage') {
+            console.log('TextBookTocPage', depth, content);
+            this.textbookTocService.setTextbookIds({rootUnitId: this.rootUnitId, contentId: content.identifier});
+        } else {
+            const stateData = this.navParams.get('contentState');
+
+            this.zone.run(() => {
+                if (content.contentType === ContentType.COURSE) {
+                    this.navCtrl.push(EnrolledCourseDetailsPage, {
+                        content: content,
+                        depth: depth,
+                        contentState: stateData,
+                        corRelation: this.corRelationList,
+                        breadCrumb: this.breadCrumb
+                    });
+                } else if (content.mimeType === MimeType.COLLECTION) {
+                    this.isDepthChild = true;
+                    this.navCtrl.push(CollectionDetailsEtbPage, {
+                        content: content,
+                        depth: depth,
+                        contentState: stateData,
+                        corRelation: this.corRelationList,
+                        breadCrumb: this.breadCrumb
+                    });
+                } else {
+                    this.navCtrl.push(ContentDetailsPage, {
+                        isChildContent: true,
+                        content: content,
+                        depth: depth,
+                        contentState: stateData,
+                        corRelation: this.corRelationList,
+                        breadCrumb: this.breadCrumb
+                    });
+                }
+            });
+        }
     }
 
     async showComingSoonPopup(childData: any) {
