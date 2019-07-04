@@ -186,6 +186,7 @@
   "ERROR_EMPTY_PASSWORD": "Enter password",
   "ERROR_FAILED_TO_DOWNLOAD_ATTACHMENT": "Failed to download attachment",
   "ERROR_FETCHING_DATA": "Unable to fetch data ",
+  "ERROR_LOW_MEMORY": "Not enough space available for transfer",
   "ERROR_NAME_INVALID": "Enter only alphabets or space for a name ",
   "ERROR_NO_BATCHES_FOUND": "There are no batches for this course",
   "ERROR_NO_INTERNET_MESSAGE": "No internet access",
@@ -542,6 +543,5 @@
   "WELCOME_BACK": "WELCOME BACK {{%s}}",
   "YES": "Yes",
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
-  "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "You are not connected to the internet",
-  "ERROR_LOW_MEMORY": "Not enough space available for transfer"
+  "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "You are not connected to the internet"
 }
