@@ -17,13 +17,17 @@ import {
   DeviceInfo,
   Profile,
   SortOrder,
-  StorageService
+  StorageService,
+  StorageDestination
 } from 'sunbird-sdk';
 import {SbPopoverComponent} from '@app/component';
 import {ActiveDownloadsPage} from '../active-downloads/active-downloads';
 import {Environment, InteractSubtype, InteractType, PageId} from '@app/service/telemetry-constants';
 import {StorageSettingsPage} from '../storage-settings/storage-settings';
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject} from 'rxjs';
+import { SbNoNetworkPopupComponent } from '@app/component/popups/sb-no-network-popup/sb-no-network-popup';
+import { FileSizePipe } from '@app/pipes/file-size/file-size';
+import { SbInsufficientStoragePopupComponent } from '@app/component/popups/sb-insufficient-storage-popup/sb-insufficient-storage-popup';
 
 /**
  * Generated class for the DownloadManagerPage page.
@@ -39,6 +43,7 @@ import {BehaviorSubject} from "rxjs";
 })
 export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit {
   headerObservable: any;
+  _toast: any;
 
   storageInfo: AppStorageInfo;
   downloadedContents: Content[] = [];
@@ -47,6 +52,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
   deleteAllConfirm: Popover;
   appName: string;
   sortCriteria: ContentSortCriteria[];
+  storageDestination: any;
 
   private deletedContentListTitle$?: BehaviorSubject<string>;
 
@@ -61,6 +67,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
     private telemetryGeneratorService: TelemetryGeneratorService,
+    private fileSizePipe: FileSizePipe,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
     @Inject('STORAGE_SERVICE') private storageService: StorageService
@@ -86,6 +93,12 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     this.headerServie.showHeaderWithHomeButton(['download', 'settings']);
     this.getAppStorageInfo();
     this.getDownloadedContents();
+    this.checkAvailableSpace();
+    this.fetchStorageDestination();
+  }
+
+  ionViewDidLoad() {
+    //  this.checkAvailableSpace();
   }
 
   private async getAppName() {
@@ -325,5 +338,34 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
   private redirectToSettings() {
     this.navCtrl.push(StorageSettingsPage);
   }
+
+  private async fetchStorageDestination() {
+    this.storageDestination = await this.storageService.getStorageDestination().toPromise();
+  }
+
+  private async presentPopupForLessStorageSpace() {
+   console.log('STORAGEDEST', this.storageDestination);
+    this._toast = this.popoverCtrl.create(SbInsufficientStoragePopupComponent, {
+      sbPopoverHeading: this.commonUtilService.translateMessage('INSUFFICIENT_STORAGE'),
+      sbPopoverMessage: this.storageDestination === StorageDestination.INTERNAL_STORAGE ?
+      this.commonUtilService.translateMessage('MOVE_FILES_TO_OTHER_DESTINATION', this.commonUtilService.translateMessage('SD_CARD')) :
+      this.commonUtilService.translateMessage('MOVE_FILES_TO_OTHER_DESTINATION', this.commonUtilService.translateMessage(
+        'INTERNAL_MEMORY'
+      )),
+    }, {
+        cssClass: 'sb-popover no-network',
+      });
+    this._toast.present();
+  }
+
+  private checkAvailableSpace() {
+    this.storageService.getStorageDestinationVolumeInfo()
+    .do((volumeInfo) => {
+     if (volumeInfo.info.availableSize < 209715200) {
+       this.presentPopupForLessStorageSpace();
+     }
+    })
+    .subscribe();
+   }
 
 }

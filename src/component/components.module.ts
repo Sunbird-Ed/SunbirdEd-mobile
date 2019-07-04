@@ -38,6 +38,7 @@ import { DirectivesModule } from '@app/directives/directives.module';
 import { AppRatingAlertComponent } from './app-rating-alert/app-rating-alert';
 import { SbNoNetworkPopupComponent } from './popups/sb-no-network-popup/sb-no-network-popup';
 import { NotificationItemComponent } from './notification-item/notification-item';
+import { SbInsufficientStoragePopupComponent } from '@app/component/popups/sb-insufficient-storage-popup/sb-insufficient-storage-popup';
 
 @NgModule({
     declarations: [
@@ -71,7 +72,8 @@ import { NotificationItemComponent } from './notification-item/notification-item
         SideMenuComponent,
         AppRatingAlertComponent,
         SbNoNetworkPopupComponent,
-        NotificationItemComponent
+        NotificationItemComponent,
+        SbInsufficientStoragePopupComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -115,7 +117,8 @@ import { NotificationItemComponent } from './notification-item/notification-item
         SideMenuComponent,
         AppRatingAlertComponent,
         SbNoNetworkPopupComponent,
-        NotificationItemComponent
+        NotificationItemComponent,
+        SbInsufficientStoragePopupComponent
     ],
     entryComponents: [
         ConfirmAlertComponent,
@@ -130,7 +133,8 @@ import { NotificationItemComponent } from './notification-item/notification-item
         SbDownloadPopupComponent,
         SbGenericPopoverComponent,
         AppRatingAlertComponent,
-        SbNoNetworkPopupComponent
+        SbNoNetworkPopupComponent,
+        SbInsufficientStoragePopupComponent
     ],
     providers: [
         FormAndFrameworkUtilService

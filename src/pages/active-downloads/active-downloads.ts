@@ -10,11 +10,15 @@ import {
   DownloadRequest,
   DownloadService,
   EventNamespace,
-  EventsBusService
+  EventsBusService,
+  StorageService,
+  StorageDestination
 } from 'sunbird-sdk';
 import { SbPopoverComponent } from '@app/component';
 import { AppHeaderService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
 import { SbNoNetworkPopupComponent } from '@app/component/popups/sb-no-network-popup/sb-no-network-popup';
+import { FileSizePipe } from '@app/pipes/file-size/file-size';
+import { SbInsufficientStoragePopupComponent } from '@app/component/popups/sb-insufficient-storage-popup/sb-insufficient-storage-popup';
 
 @IonicPage()
 @Component({
@@ -36,6 +40,7 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
     actionButtons: [] as string[]
   };
   private _toast: any;
+  private storageDestination: any;
 
   constructor(
     private popoverCtrl: PopoverController,
@@ -46,8 +51,10 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
     private commonUtilService: CommonUtilService,
     private toastController: ToastController,
     private telemetryGeneratorService: TelemetryGeneratorService,
+    private fileSizePipe: FileSizePipe,
     @Inject('DOWNLOAD_SERVICE') private downloadService: DownloadService,
     @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
+    @Inject('STORAGE_SERVICE') private storageService: StorageService
   ) {
     this.downloadProgressMap = {};
     // @ts-ignore
@@ -76,11 +83,15 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
       }
     }
   }
-
+  ionViewWillEnter() {
+    this.fetchStorageDestination();
+    this.checkAvailableSpace();
+  }
   ionViewDidLoad() {
     this.telemetryGeneratorService.generatePageViewTelemetry(
       PageId.ACTIVE_DOWNLOADS,
       Environment.DOWNLOADS, '');
+    //  this.checkAvailableSpace();
   }
 
   cancelAllDownloads(): void {
@@ -220,6 +231,34 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
       });
 
     this._toast.present();
+  }
+  private async fetchStorageDestination() {
+    this.storageDestination = await this.storageService.getStorageDestination().toPromise();
+  }
+
+  private async presentPopupForLessStorageSpace() {
+    console.log('STORAGEDEST', this.storageDestination);
+    this._toast = this.popoverCtrl.create(SbNoNetworkPopupComponent, {
+    sbPopoverHeading: this.commonUtilService.translateMessage('INSUFFICIENT_STORAGE'),
+    sbPopoverMessage: this.storageDestination === StorageDestination.INTERNAL_STORAGE ?
+    this.commonUtilService.translateMessage('MOVE_FILES_TO_OTHER_DESTINATION', this.commonUtilService.translateMessage('SD_CARD')) :
+    this.commonUtilService.translateMessage('MOVE_FILES_TO_OTHER_DESTINATION', this.commonUtilService.translateMessage(
+      'INTERNAL_MEMORY'
+    )),
+    }, {
+        cssClass: 'sb-popover no-network',
+      });
+    this._toast.present();
+  }
+
+  private checkAvailableSpace() {
+   this.storageService.getStorageDestinationVolumeInfo()
+   .do((volumeInfo) => {
+    if (volumeInfo.info.availableSize < 209715200) {
+      this.presentPopupForLessStorageSpace();
+    }
+   })
+   .subscribe();
   }
 
 }
