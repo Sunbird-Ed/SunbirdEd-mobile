@@ -1,4 +1,24 @@
 page-collection-details-etb {
+  .heading {
+    margin-top: 50px;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 19px;
+    text-align: center;
+    color: #666666;
+  }
+  .sub-heading {
+    color: #666666;
+    font-size: 12px;
+    line-height: 17px;
+    text-align: center;
+  }
+  .filter-icon {
+    margin-right: 5px;
+  }
+  .img-align{
+    margin-top: 3px;
+  }
   .sb-slider-pills-container {
     &.sticky {
       position: sticky;
@@ -46,7 +66,7 @@ page-collection-details-etb {
         margin: 0 !important;
     }
     .P15{
-        padding: 15 !important;
+        padding: 15px !important;
     }
     .M5 {
         margin: 5px ;
@@ -223,7 +243,7 @@ page-collection-details-etb {
  color: map-get($newColors, danger);
 }
 shadow{
-    margin: none;
+    margin: 0;
    box-shadow: 0 3px 5px 4px rgba(0, 0, 0, 0.05);
 }
  //  Details card
@@ -241,7 +261,7 @@ shadow{
           grid-template-columns: 1fr;
           margin-right:5px;
           padding:10px;
-          font-size:2 rem;
+          font-size:2rem;
           .item{
             flex:1 1 auto;
             justify-content: right;
@@ -282,7 +302,7 @@ shadow{
         grid-template-columns: 1fr;
         margin-right:5px;
         padding:10px;
-        font-size:2 rem;
+        font-size:2rem;
       }
       .right {
         overflow:hidden;
@@ -414,6 +434,9 @@ shadow{
     box-shadow: 0 4px 7px 0 rgba(0,0,0,0.1);
   }
   .sb-topic-text {
+    &.sb-topic-text {
+      padding-top: 5px;
+    }
     height: 2.44%;
     width: 80%;
     color: $blue;
@@ -430,6 +453,10 @@ shadow{
   padding: $base-block-space;
   background-color: #fff;
   ion-icon{
+    height: 24px;
+    width: 24px;
+    border-radius: 12px;
     font-size: 28px;
+    color: #7EAEDE;
   }
 }

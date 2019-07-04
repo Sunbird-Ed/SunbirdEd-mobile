@@ -527,5 +527,12 @@
   "APP_QR_CODE" : "Have a {{%s}} QR Code?",
   "QR_CODE_DETAILS": "This can be found in some of your text books. Use for instant access to content",
   "SCAN_TAP": "Tap to scan",
-  "OR": "or"
+  "OR": "or",
+  "ALL": "All",
+  "VIDEOS": "Videos",
+  "DOCS": "Docs",
+  "INTERACTION": "Interaction",
+  "NO_CONTENTS": "No {{%s}} Contents",
+  "NO_CONTENTS_MESSAGE": "Please select another type of content",
+  "SELECT_CHAPTER": "Select Chapter"
 }

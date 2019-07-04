@@ -281,7 +281,9 @@ export enum InteractSubtype {
     UNIT_CLICKED = 'unit-clicked',
     PERMISSION_POPUP = 'permission-popup',
     WALKTHROUGH_BACKDROP_CLICKED = 'walkthrough-backdrop-clicked',
-    WALKTHROUGH_CONFIRMATION_CLICKED = 'walkthrough-confirmation-clicked'
+    WALKTHROUGH_CONFIRMATION_CLICKED = 'walkthrough-confirmation-clicked',
+    FILTER_CLICKED = 'filter-clicked',
+    DROPDOWN_CLICKED = 'drop-down-clicked'
 }
 
 export enum ActionButtonType {

@@ -1,6 +1,6 @@
 import { TextBookTocPage } from './textbook-toc/textbook-toc';
 import { ActiveDownloadsPage } from './../active-downloads/active-downloads';
-import { Component, Inject, NgZone, ViewChild, OnInit, ElementRef } from '@angular/core';
+import {Component, Inject, NgZone, ViewChild, OnInit, ElementRef, ViewChildren, QueryList, ChangeDetectorRef} from '@angular/core';
 import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ScrollEvent, ToastController } from 'ionic-angular';
 import { Content as iContent } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
@@ -79,6 +79,8 @@ declare const cordova;
 })
 export class CollectionDetailsEtbPage implements OnInit {
 
+  @ViewChildren('filteredItems') public filteredItemsQueryList: QueryList<any>;
+
   facets: any;
   selected: boolean;
   isSelected: boolean;
@@ -91,12 +93,12 @@ export class CollectionDetailsEtbPage implements OnInit {
   contentDetail?: Content;
   childrenData: Array<any>;
   mimeTypes = [
-    { name: 'All', selected: true, value: ['all'], icon: ''},
-    { name: 'Videos', value: ['video/mp4', 'video/x-youtube', 'video/webm'], icon: ''},
-    { name: 'Docs', value: ['application/pdf', 'application/epub'], icon: ''},
-    { name: 'Interaction',
+    { name: 'ALL', selected: true, value: ['all'], iconNormal: '', iconActive: ''},
+    { name: 'VIDEOS', value: ['video/mp4', 'video/x-youtube', 'video/webm'], iconNormal: './assets/imgs/Play.svg', iconActive:'./assets/imgs/Play-active.svg'},
+    { name: 'DOCS', value: ['application/pdf', 'application/epub'], iconNormal: './assets/imgs/Doc.svg',iconActive:'./assets/imgs/Doc-active.svg'},
+    { name: 'INTERACTION',
       value: ['application/vnd.ekstep.ecml-archive', 'application/vnd.ekstep.h5p-archive', 'application/vnd.ekstep.html-archive'],
-      icon: ''
+      iconNormal: './assets/imgs/Touch.svg', iconActive:'./assets/imgs/Touch-active.svg'
     }
   ];
   activeMimeTypeFilter = ['all'];
@@ -238,7 +240,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   headerObservable: any;
   breadCrumb = new Map();
   scrollPosition = 0;
-
+  currentFilter: any;
   // Local Image
   localImage = '';
   @ViewChild(Navbar) navBar: Navbar;
@@ -270,6 +272,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     private toastController: ToastController,
     private fileSizePipe: FileSizePipe,
     private headerService: AppHeaderService,
+    private changeDetectionRef: ChangeDetectorRef,
     private textbookTocService: TextbookTocService,
     @Inject('PROFILE_SERVICE') private profileService: ProfileService
   ) {
@@ -289,7 +292,7 @@ export class CollectionDetailsEtbPage implements OnInit {
 	 */
   ngOnInit() {
   }
-  
+
   ionViewDidLoad() {
     /*this.navBar.backButtonClick = () => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
@@ -1427,13 +1430,29 @@ export class CollectionDetailsEtbPage implements OnInit {
       PageId.COLLECTION_DETAIL);
     this.navCtrl.push(ActiveDownloadsPage);
   }
-  onFilterMimeTypeChange(val, idx) {
-    console.log('onFilterMimeTypeChange', val);
+
+  async onFilterMimeTypeChange(val, idx, currentFilter?) {
+    const values = new Map();
+    values['filter'] = currentFilter;
     this.activeMimeTypeFilter = val;
+    this.currentFilter = this.commonUtilService.translateMessage(currentFilter);
     this.mimeTypes.forEach((type) => {
       type.selected = false;
     });
     this.mimeTypes[idx].selected = true;
+    this.filteredItemsQueryList.changes
+      .do((v) => {
+        this.changeDetectionRef.detectChanges();
+        values['contentLength'] = v.length;
+      })
+      .subscribe();
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.FILTER_CLICKED,
+      Environment.HOME,
+      PageId.COLLECTION_DETAIL,
+      undefined,
+      values);
   }
 
   openTextbookToc() {
@@ -1447,6 +1466,13 @@ export class CollectionDetailsEtbPage implements OnInit {
         // this.scrollToId = this.textbookTocService.textbookIds.rootUnitId;
       }).bind(this)
     });
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.DROPDOWN_CLICKED,
+      Environment.HOME,
+      PageId.COLLECTION_DETAIL,
+      undefined
+    );
   }
 
   onScroll(event: ScrollEvent) {
