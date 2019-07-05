@@ -252,6 +252,8 @@ export class CollectionDetailsEtbPage implements OnInit {
   networkSubscription: any;
   toast: any;
   contentTypesCount: any;
+  stckyUnitTitle?: string;
+
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -408,7 +410,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     let isCollapsed = true;
     if (this.isGroupShown(group)) {
       isCollapsed = false;
-      this.shownGroup = group;
+      this.shownGroup = null;
     } else {
       this.shownGroup = group;
     }
@@ -803,6 +805,9 @@ export class CollectionDetailsEtbPage implements OnInit {
         this.zone.run(() => {
           if (data && data.children) {
             this.breadCrumb.set(data.identifier, data.contentData.name);
+            if (this.textbookTocService.textbookIds.rootUnitId && this.activeMimeTypeFilter !== ['all']) {
+              this.onFilterMimeTypeChange(this.mimeTypes[0].value, 0, this.mimeTypes[0].name);
+            }
             this.childrenData = data.children;
             this.changeDetectionRef.detectChanges();
             console.log('this.childrenData', this.childrenData);
@@ -815,7 +820,7 @@ export class CollectionDetailsEtbPage implements OnInit {
           }
           this.showChildrenLoader = false;
           let carouselIndex = 0;
-          if (this.textbookTocService.textbookIds && this.textbookTocService.textbookIds.rootUnitId) {
+          if (this.textbookTocService.textbookIds.rootUnitId) {
             console.log('this.this.scrollToId', this.textbookTocService.textbookIds.rootUnitId);
             carouselIndex = this.childrenData.findIndex((content) => this.textbookTocService.textbookIds.rootUnitId === content.identifier);
             console.log('carouselIndex', carouselIndex);
@@ -823,10 +828,10 @@ export class CollectionDetailsEtbPage implements OnInit {
           }
           console.log('carouselIndex', carouselIndex);
           this.toggleGroup(carouselIndex, this.content);
-          console.log('this.textbookTocService.textbookIds.contentId', this.textbookTocService.textbookIds.contentId);
-          if (this.textbookTocService.textbookIds && this.textbookTocService.textbookIds.contentId) {
-            console.log('in scroll', document.getElementById(this.textbookTocService.textbookIds.contentId));
+          if (this.textbookTocService.textbookIds.contentId) {
             setTimeout(() => {
+              console.log('this.textbookTocService.textbookIds.contentId', this.textbookTocService.textbookIds.contentId);
+              console.log('in scroll', document.getElementById(this.textbookTocService.textbookIds.contentId));
               document.getElementById(this.textbookTocService.textbookIds.contentId).scrollIntoView();
               window['scrollTest'].getScrollElement().scrollBy(0, -100);
             }, 200);
@@ -1458,13 +1463,12 @@ export class CollectionDetailsEtbPage implements OnInit {
 
   openTextbookToc() {
     console.log('in openTextbookToc');
+    this.shownGroup = null;
     this.navCtrl.push(TextBookTocPage, {
       childrenData: this.childrenData,
       dismissCallback: (() => {
         console.log('textbookTocService etb', this.textbookTocService.textbookIds);
-        // this.activeMimeTypeFilter = ['all'];
-        this.onFilterMimeTypeChange(['all'], 0);
-        // this.scrollToId = this.textbookTocService.textbookIds.rootUnitId;
+        this.onFilterMimeTypeChange(this.mimeTypes[0].value, 0, this.mimeTypes[0].name);
       }).bind(this)
     });
     this.telemetryGeneratorService.generateInteractTelemetry(
@@ -1477,6 +1481,20 @@ export class CollectionDetailsEtbPage implements OnInit {
   }
 
   onScroll(event: ScrollEvent) {
+    const titles = document.querySelectorAll('[data-sticky-unit]');
+
+    console.log(event.scrollTop, Array.from(titles).map((t) => t.getBoundingClientRect().top));
+
+    const currentTitle = Array.from(titles).find((title) => {
+      return title.getBoundingClientRect().top >= 100;
+    });
+
+    if (currentTitle) {
+      this.zone.run(() => {
+        this.stckyUnitTitle = currentTitle.getAttribute('data-sticky-unit');
+      });
+    }
+
     if (event.scrollTop >= 205) {
       (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.add('sticky');
       return;
