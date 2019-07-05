@@ -99,7 +99,8 @@ export enum PageId {
     ACTIVE_DOWNLOADS = 'active-downloads',
     SINGLE_CANCEL_CONFIRMATION_POPUP = 'single-cancel-confirmation-popup',
     BULK_CANCEL_CONFIRMATION_POPUP = 'bulk-cancel-confirmation-popup',
-    DIAL_SEARCH = 'dial-book-result'
+    DIAL_SEARCH = 'dial-book-result',
+    TEXTBOOK_TOC = 'textbook-toc'
 }
 export enum LogType {
     NOTIFICATION = 'notification'
