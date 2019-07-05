@@ -30,11 +30,11 @@
           <div class="pill" *ngFor="let type of mimeTypes; let i = index; let first = first"
                [ngClass]="{'active': type?.selected, '': !type?.selected}" attr.id="class{{i}}"
                (click)="onFilterMimeTypeChange(type.value, i, type.name);">
-            <span class="img-align">
-              <img class="filter-icon" *ngIf="type?.iconNormal && type?.selected" src="{{type?.iconActive}}" alt="">
+            <span class="img-align" *ngIf="type?.iconNormal && type?.selected">
+              <img class="filter-icon" src="{{type?.iconActive}}" alt="">
             </span>
-            <span class="img-align">
-              <img class="filter-icon" *ngIf="type?.iconNormal && !type?.selected" src="{{type?.iconNormal}}" alt="">
+            <span class="img-align" *ngIf="type?.iconNormal && !type?.selected">
+              <img class="filter-icon" src="{{type?.iconNormal}}" alt="">
             </span>
             <span class="allign-middle">{{type?.name | translate}}</span>
 
