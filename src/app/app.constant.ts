@@ -47,6 +47,10 @@ export class ContentType {
 
 export class MimeType {
     public static readonly COLLECTION = 'application/vnd.ekstep.content-collection';
+    public static readonly ALL = ['video/mp4', 'video/x-youtube', 'video/webm', 'application/pdf', 'application/epub',
+    'application/pdf', 'application/epub', 'application/vnd.ekstep.ecml-archive', 'application/vnd.ekstep.h5p-archive',
+     'application/vnd.ekstep.html-archive'
+    ];
 }
 
 export class Search {

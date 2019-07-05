@@ -1,5 +1,5 @@
 <div>
-     <ng-container *ngIf="childData | hasMimeType: activeMimeTypeFilter">
+     <ng-container *ngIf="childData | hasMimeType: activeMimeTypeFilter : isTextbookTocPage">
         <div class="unit-hierachy sb-topic-item" (click)="setContentId(childData.identifier)" [id]="childData.identifier"
             *ngIf="childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && childData?.children">
             {{childData?.contentData?.name}}
