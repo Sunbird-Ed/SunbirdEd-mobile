@@ -5,11 +5,12 @@ import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { ContentType, MimeType } from '@app/app/app.constant';
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
-import { CommonUtilService } from '@app/service';
+import {CommonUtilService, TelemetryGeneratorService} from '@app/service';
 import { PopoverController } from 'ionic-angular';
 import { SbGenericPopoverComponent } from '../popups/sb-generic-popup/sb-generic-popover';
 import { Content } from 'sunbird-sdk';
 import { ComingSoonMessageService } from "@app/service/coming-soon-message.service";
+import {Environment, InteractSubtype, InteractType, PageId} from "@app/service/telemetry-constants";
 
 
 @Component({
@@ -38,7 +39,8 @@ export class CollectionChildComponent implements AfterViewInit {
         private commonUtilService: CommonUtilService,
         private popoverCtrl: PopoverController,
         private comingSoonMessageService: ComingSoonMessageService,
-        private textbookTocService: TextbookTocService
+        private textbookTocService: TextbookTocService,
+        private telemetryService: TelemetryGeneratorService
     ) {
         this.cardData = this.navParams.get('content');
     }
@@ -47,6 +49,16 @@ export class CollectionChildComponent implements AfterViewInit {
     setContentId(id: string) {
         console.log('collection first child', id);
         if (this.navCtrl.getActive().component['pageName'] === 'TextBookTocPage') {
+          const values = new Map();
+          values['unitClicked'] = id;
+           this.telemetryService.generateInteractTelemetry(
+            InteractType.TOUCH,
+            InteractSubtype.UNIT_CLICKED,
+            Environment.HOME,
+            PageId.TEXTBOOK_TOC,
+            undefined,
+            values
+          );
             this.textbookTocService.setTextbookIds({rootUnitId: this.rootUnitId, contentId: id});
             this.navCtrl.pop();
         }
@@ -55,6 +67,15 @@ export class CollectionChildComponent implements AfterViewInit {
     navigateToDetailsPage(content: Content, depth) {
         if (this.navCtrl.getActive().component['pageName'] === 'TextBookTocPage') {
             console.log('collection last child', depth, content);
+            const values = new Map();
+            values['contentClicked'] = content.identifier;
+            this.telemetryService.generateInteractTelemetry(
+            InteractType.TOUCH,
+            InteractSubtype.CONTENT_CLICKED,
+            Environment.HOME,
+            PageId.TEXTBOOK_TOC, undefined,
+            values
+          );
             this.textbookTocService.setTextbookIds({rootUnitId: this.rootUnitId, contentId: content.identifier});
             this.navCtrl.pop();
         } else {
