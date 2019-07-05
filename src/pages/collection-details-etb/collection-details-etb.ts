@@ -98,7 +98,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     { name: 'DOCS', value: ['application/pdf', 'application/epub'], iconNormal: './assets/imgs/Doc.svg',iconActive:'./assets/imgs/Doc-active.svg'},
     { name: 'INTERACTION',
       value: ['application/vnd.ekstep.ecml-archive', 'application/vnd.ekstep.h5p-archive', 'application/vnd.ekstep.html-archive'],
-      iconNormal: './assets/imgs/Touch.svg', iconActive:'./assets/imgs/Touch-active.svg'
+      iconNormal: './assets/imgs/Touch.svg', iconActive: './assets/imgs/Touch-active.svg'
     }
   ];
   activeMimeTypeFilter = ['all'];
@@ -823,7 +823,6 @@ export class CollectionDetailsEtbPage implements OnInit {
           if (this.textbookTocService.textbookIds.rootUnitId) {
             console.log('this.this.scrollToId', this.textbookTocService.textbookIds.rootUnitId);
             carouselIndex = this.childrenData.findIndex((content) => this.textbookTocService.textbookIds.rootUnitId === content.identifier);
-            console.log('carouselIndex', carouselIndex);
             carouselIndex = carouselIndex > 0 ? carouselIndex : 0;
           }
           console.log('carouselIndex', carouselIndex);

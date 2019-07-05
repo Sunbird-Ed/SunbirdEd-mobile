@@ -51,67 +51,69 @@
         <div class="heading">{{'NO_CONTENTS' | translate:{'%s': currentFilter } }}</div>
         <div class="sub-heading">{{'NO_CONTENTS_MESSAGE' | translate}}</div>
       </div>
-      <ion-card class="sb-accordian-card" *ngFor="let item of childrenData;  let i = index;">
-        <div *ngIf="item | hasMimeType: activeMimeTypeFilter" [attr.data-sticky-unit]="item.contentData.name" #filteredItems>
-          <!-- new -->
-          <ion-grid class="sb-accordian-header">
-            <ion-row (click)="toggleGroup(i, item)" *ngIf="item?.children">
-              <ion-col col-11>
-                <div class="sb-topic-text"> {{item?.contentData?.name}} </div>
-              </ion-col>
-              <ion-col col-1 *ngIf="!isGroupShown(i)">
-                <div>
-                  <ion-icon ios="ios-arrow-dropdown" md="md-arrow-dropdown" class="sb-accordian-arrow"></ion-icon>
-                </div>
-              </ion-col>
-              <ion-col col-1 *ngIf="isGroupShown(i)">
-                <div>
-                  <ion-icon ios="ios-arrow-dropup" md="md-arrow-dropup" class="sb-accordian-arrow"></ion-icon>
-                </div>
-              </ion-col>
-            </ion-row>
-            <ion-row *ngIf="item?.contentData?.mimeType !== 'application/vnd.ekstep.content-collection' && !item?.children"
-              (click)="navigateToDetailsPage(item, depth + '.' + (i + 1))">
-              <ion-col col-1>
-                <div>
-                  <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle"
-                  [ngClass]="{'sb-accordian-grey-icon': !commonUtilService.networkInfo.isNetworkAvailable && !item?.isAvailableLocally, 'sb-play-icon': commonUtilService.networkInfo.isNetworkAvailable || item?.isAvailableLocally}">
-                  </ion-icon>
-                </div>
-              </ion-col>
-              <ion-col col-11>
-                <div [ngClass]="{'sb-accordian-grey-text': !commonUtilService.networkInfo.isNetworkAvailable && !item?.isAvailableLocally,
-                'sb-play-selected':item?.isAvailableLocally,'sb-play-unselected':!item?.isAvailableLocally}">
-                  {{item?.contentData?.name}}
-                  <span>
-                    <ion-icon class="sb-checkmark-icon" name="md-checkmark-circle" *ngIf="item?.isAvailableLocally"></ion-icon>
-                  </span>
-                  <!-- <span>
-                    <ion-icon class="checkmark-icon" name="checkmark-circle-outline" *ngIf="item?.isAvailableLocally">
-                    </ion-icon>
-                  </span> -->
-                </div>
-              </ion-col>
-            </ion-row>
-            <!-- <div class="font-grey-text" (click)="showCommingSoonPopup(item)" *ngIf="item?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !item?.children">
-              {{item?.contentData?.name}}
-              <span class="grey-icon-span">
-                <ion-icon ios="ios-alert" md="md-alert" class="grey-icon ML5"></ion-icon>
-              </span>
-            </div> -->
-          </ion-grid>
-          <!-- <div class="sb-separator-line"></div> -->
-          <div class="sb-hidden-content" *ngIf="isGroupShown(i) && (item?.children && item?.children?.length)">
-            <div class="box-align" *ngFor="let firstChildren of item?.children; let j = index;">
-                  <div class="sb-topics-container  sb-topics-container-ftue">
-                    <collection-child
-                      [childData]="firstChildren" [index]="j" [depth]="depth" [activeMimeTypeFilter] = "activeMimeTypeFilter" [isTextbookTocPage] = "false"
-                      [corRelationList]="corRelationList" [isDepthChild]="isDepthChild" [breadCrumb]="breadCrumb"></collection-child>
+      <ng-container *ngFor="let item of childrenData;  let i = index;">
+        <ion-card class="sb-accordian-card" *ngIf="item | hasMimeType: activeMimeTypeFilter">
+          <div  [attr.data-sticky-unit]="item.contentData.name" #filteredItems>
+            <!-- new -->
+            <ion-grid class="sb-accordian-header">
+              <ion-row (click)="toggleGroup(i, item)" *ngIf="item?.children">
+                <ion-col col-11>
+                  <div class="sb-topic-text"> {{item?.contentData?.name}} </div>
+                </ion-col>
+                <ion-col col-1 *ngIf="!isGroupShown(i)">
+                  <div>
+                    <ion-icon ios="ios-arrow-dropdown" md="md-arrow-dropdown" class="sb-accordian-arrow"></ion-icon>
                   </div>
+                </ion-col>
+                <ion-col col-1 *ngIf="isGroupShown(i)">
+                  <div>
+                    <ion-icon ios="ios-arrow-dropup" md="md-arrow-dropup" class="sb-accordian-arrow"></ion-icon>
+                  </div>
+                </ion-col>
+              </ion-row>
+              <ion-row *ngIf="item?.contentData?.mimeType !== 'application/vnd.ekstep.content-collection' && !item?.children"
+                (click)="navigateToDetailsPage(item, depth + '.' + (i + 1))">
+                <ion-col col-1>
+                  <div>
+                    <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle"
+                    [ngClass]="{'sb-accordian-grey-icon': !commonUtilService.networkInfo.isNetworkAvailable && !item?.isAvailableLocally, 'sb-play-icon': commonUtilService.networkInfo.isNetworkAvailable || item?.isAvailableLocally}">
+                    </ion-icon>
+                  </div>
+                </ion-col>
+                <ion-col col-11>
+                  <div [ngClass]="{'sb-accordian-grey-text': !commonUtilService.networkInfo.isNetworkAvailable && !item?.isAvailableLocally,
+                  'sb-play-selected':item?.isAvailableLocally,'sb-play-unselected':!item?.isAvailableLocally}">
+                    {{item?.contentData?.name}}
+                    <span>
+                      <ion-icon class="sb-checkmark-icon" name="md-checkmark-circle" *ngIf="item?.isAvailableLocally"></ion-icon>
+                    </span>
+                    <!-- <span>
+                      <ion-icon class="checkmark-icon" name="checkmark-circle-outline" *ngIf="item?.isAvailableLocally">
+                      </ion-icon>
+                    </span> -->
+                  </div>
+                </ion-col>
+              </ion-row>
+              <!-- <div class="font-grey-text" (click)="showCommingSoonPopup(item)" *ngIf="item?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !item?.children">
+                {{item?.contentData?.name}}
+                <span class="grey-icon-span">
+                  <ion-icon ios="ios-alert" md="md-alert" class="grey-icon ML5"></ion-icon>
+                </span>
+              </div> -->
+            </ion-grid>
+            <!-- <div class="sb-separator-line"></div> -->
+            <div class="sb-hidden-content" *ngIf="isGroupShown(i) && (item?.children && item?.children?.length)">
+              <div class="box-align" *ngFor="let firstChildren of item?.children; let j = index;">
+                    <div class="sb-topics-container  sb-topics-container-ftue">
+                      <collection-child
+                        [childData]="firstChildren" [index]="j" [depth]="depth" [activeMimeTypeFilter] = "activeMimeTypeFilter" [isTextbookTocPage] = "false"
+                        [corRelationList]="corRelationList" [isDepthChild]="isDepthChild" [breadCrumb]="breadCrumb"></collection-child>
+                    </div>
+              </div>
             </div>
           </div>
-        </div>
-      </ion-card>
+        </ion-card>
+      </ng-container> 
     </section>
   </div>
 </ion-content>
