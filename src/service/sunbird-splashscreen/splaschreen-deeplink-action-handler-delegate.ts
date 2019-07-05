@@ -24,7 +24,13 @@ export class SplaschreenDeeplinkActionHandlerDelegate implements SplashscreenAct
       case ActionType.UPDATE_APP:
         console.log('updateApp');
         break;
-      case ActionType.BOOK_UPDATE || ActionType.CONTENT_UPDATE || ActionType.COURSE_UPDATE:
+      case ActionType.COURSE_UPDATE:
+        this.identifier = data.actionData.identifier;
+        break;
+      case ActionType.CONTENT_UPDATE:
+        this.identifier = data.actionData.identifier;
+        break;
+      case ActionType.BOOK_UPDATE:
         this.identifier = data.actionData.identifier;
         break;
       default:
