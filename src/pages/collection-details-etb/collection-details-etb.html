@@ -22,7 +22,7 @@
     <!-- End import content -->
     <div #stickyPillsRef *ngIf=" childrenData && childrenData?.length">
       <div class="sb-chapter-dd" (click)="openTextbookToc()">
-        <span class="pull-left">{{'SELECT_CHAPTER' | translate}}</span>
+        <span class="pull-left">{{stckyUnitTitle || ('SELECT_CHAPTER' | translate)}}</span>
         <span class="pull-right"><ion-icon name="ios-arrow-dropright-circle"></ion-icon></span>
       </div>
       <div class="sb-slider-pills-container">
@@ -52,7 +52,7 @@
         <div class="sub-heading">{{'NO_CONTENTS_MESSAGE' | translate}}</div>
       </div>
       <ion-card class="sb-accordian-card" *ngFor="let item of childrenData;  let i = index;">
-        <div *ngIf="item | hasMimeType: activeMimeTypeFilter" #filteredItems>
+        <div *ngIf="item | hasMimeType: activeMimeTypeFilter" [attr.data-sticky-unit]="item.contentData.name" #filteredItems>
           <!-- new -->
           <ion-grid class="sb-accordian-header">
             <ion-row (click)="toggleGroup(i, item)" *ngIf="item?.children">
@@ -105,7 +105,7 @@
             <div class="box-align" *ngFor="let firstChildren of item?.children; let j = index;">
                   <div class="sb-topics-container  sb-topics-container-ftue">
                     <collection-child
-                      [childData]="firstChildren" [index]="j" [depth]="depth" [activeMimeTypeFilter] = "activeMimeTypeFilter"
+                      [childData]="firstChildren" [index]="j" [depth]="depth" [activeMimeTypeFilter] = "activeMimeTypeFilter" [isTextbookTocPage] = "false"
                       [corRelationList]="corRelationList" [isDepthChild]="isDepthChild" [breadCrumb]="breadCrumb"></collection-child>
                   </div>
             </div>

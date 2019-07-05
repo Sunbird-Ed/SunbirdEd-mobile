@@ -18,6 +18,7 @@ import { ComingSoonMessageService } from "@app/service/coming-soon-message.servi
 })
 export class CollectionChildComponent implements AfterViewInit {
     cardData: any;
+    // isTextbookTocPage: Boolean = false;
     @Input() childData: Content;
     @Input() index: any;
     @Input() depth: any;
@@ -28,6 +29,7 @@ export class CollectionChildComponent implements AfterViewInit {
     @Input() localImage: string;
     @Input() activeMimeTypeFilter: any;
     @Input() rootUnitId: any;
+    @Input() isTextbookTocPage: Boolean;
 
     constructor(
         private navCtrl: NavController,
@@ -37,12 +39,24 @@ export class CollectionChildComponent implements AfterViewInit {
         private popoverCtrl: PopoverController,
         private comingSoonMessageService: ComingSoonMessageService,
         private textbookTocService: TextbookTocService
-    ) { this.cardData = this.navParams.get('content'); }
+    ) {
+        this.cardData = this.navParams.get('content');
+    }
+
+
+    setContentId(id: string) {
+        console.log('collection first child', id);
+        if (this.navCtrl.getActive().component['pageName'] === 'TextBookTocPage') {
+            this.textbookTocService.setTextbookIds({rootUnitId: this.rootUnitId, contentId: id});
+            this.navCtrl.pop();
+        }
+    }
 
     navigateToDetailsPage(content: Content, depth) {
         if (this.navCtrl.getActive().component['pageName'] === 'TextBookTocPage') {
-            console.log('TextBookTocPage', depth, content);
+            console.log('collection last child', depth, content);
             this.textbookTocService.setTextbookIds({rootUnitId: this.rootUnitId, contentId: content.identifier});
+            this.navCtrl.pop();
         } else {
             const stateData = this.navParams.get('contentState');
 
@@ -79,7 +93,11 @@ export class CollectionChildComponent implements AfterViewInit {
     }
 
     async showComingSoonPopup(childData: any) {
-        const channelId = (this.cardData.contentData && this.cardData.contentData.channel) || this.cardData.channel;
+        console.log('in show comingsooon collection child', childData);
+        let channelId;
+        if (this.cardData) {
+            channelId = (this.cardData.contentData && this.cardData.contentData.channel) || this.cardData.channel;
+        }
         const message = await this.comingSoonMessageService.getComingSoonMessage(channelId, childData);
         if (childData.contentData.mimeType === 'application/vnd.ekstep.content-collection' && !childData.children) {
             const popover = this.popoverCtrl.create(SbGenericPopoverComponent, {
@@ -101,11 +119,14 @@ export class CollectionChildComponent implements AfterViewInit {
         }
     }
 
-    hasMimeType(activeMimeType: string[], mimeType: string): boolean {
-        if (!activeMimeType){
+    hasMimeType(activeMimeType: string[], mimeType: string, content): boolean {
+        if (!activeMimeType) {
             return true;
         } else {
             if (activeMimeType.indexOf('all') > -1) {
+                // if (content.contentData.mimeType === MimeType.COLLECTION && !content.children) {
+                //     return false;
+                // }
                 return true;
             }
             return !!activeMimeType.find( m => m === mimeType);

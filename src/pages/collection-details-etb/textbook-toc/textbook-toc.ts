@@ -96,8 +96,8 @@ export class TextBookTocPage {
 
     async onUnitClick(item) {
         console.log('onUnitClick', item);
-        await this.navCtrl.pop();
-        this.dismissCallback();
+        // await this.navCtrl.pop();
+        // this.dismissCallback();
     }
 
 }
