@@ -109,12 +109,12 @@ export class EditContactDetailsPopupComponent {
     let req: GenerateOtpRequest;
     if (this.type === ProfileConstants.CONTACT_TYPE_PHONE) {
       req = {
-        key: this.phone,
+        key: this.personEditForm.value.phone,
         type: ProfileConstants.CONTACT_TYPE_PHONE
       };
     } else {
       req = {
-        key: this.email,
+        key: this.personEditForm.value.email,
         type: ProfileConstants.CONTACT_TYPE_EMAIL
       };
     }
@@ -124,9 +124,9 @@ export class EditContactDetailsPopupComponent {
       .then(() => {
         loader.dismiss();
         if (this.type === ProfileConstants.CONTACT_TYPE_PHONE) {
-          this.viewCtrl.dismiss(true, this.phone);
+          this.viewCtrl.dismiss(true, this.personEditForm.value.phone);
         } else {
-          this.viewCtrl.dismiss(true, this.email);
+          this.viewCtrl.dismiss(true, this.personEditForm.value.email);
         }
       })
       .catch((err) => {

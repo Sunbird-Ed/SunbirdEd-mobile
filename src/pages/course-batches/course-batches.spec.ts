@@ -1,22 +1,33 @@
-import { CourseBatchStatus, CourseEnrollmentType } from 'sunbird';
 import { mockRes } from '../course-batches/course-batches.spec.data';
 import { CourseBatchesPage } from './course-batches';
 import {
   authServiceMock,
-  commonUtilServiceMock,
   courseServiceMock,
-  eventsMock, navCtrlMock,
+  navCtrlMock,
   navParamsMock,
-  zoneMock
+  zoneMock,
+  commonUtilServiceMock,
+  eventsMock,
+  telemetryGeneratorServiceMock,
+  appHeaderServiceMock
 } from '../../__tests__/mocks';
 import 'jest';
+import { Observable } from 'rxjs';
 
 describe.only('CourseBatchesPage', () => {
   let courseBatchesPage: CourseBatchesPage;
 
   beforeAll(() => {
-    courseBatchesPage = new CourseBatchesPage(courseServiceMock as any, navCtrlMock as any,
-      navParamsMock as any, zoneMock as any, authServiceMock as any, commonUtilServiceMock as any, eventsMock as any);
+    courseBatchesPage = new CourseBatchesPage(
+      authServiceMock as any,
+      courseServiceMock as any,
+      navCtrlMock as any,
+      navParamsMock as any,
+      zoneMock as any,
+      commonUtilServiceMock as any,
+      eventsMock as any,
+      telemetryGeneratorServiceMock as any,
+      appHeaderServiceMock as any);
   });
 
   beforeEach(() => {
@@ -44,7 +55,8 @@ describe.only('CourseBatchesPage', () => {
 
   it('should show toast message after successfully enrolling to a batch', (done) => {
     // arrange
-    (courseServiceMock.enrollCourse as any).mockReturnValue(Promise.resolve(JSON.stringify(mockRes.enrollBatchResponse)));
+    commonUtilServiceMock.getLoader.mockReturnValue({ present: jest.fn(), dismiss: jest.fn() });
+    (courseServiceMock.enrollCourse as any).mockReturnValue(Observable.of(JSON.stringify(mockRes.enrollBatchResponse)));
     // act
     courseBatchesPage.enrollIntoBatch({});
     // assert
@@ -56,15 +68,16 @@ describe.only('CourseBatchesPage', () => {
     }, 0);
   });
 
-  it('should show error toast message while enrolling to a batch in case of no internet connection', (done) => {
+  fit('should show error toast message while enrolling to a batch in case of no internet connection', (done) => {
     // arrange
+    commonUtilServiceMock.getLoader.mockReturnValue({ present: jest.fn(), dismiss: jest.fn() });
     const option = {};
-    (courseServiceMock.enrollCourse as any).mockReturnValue(Promise.reject(JSON.stringify(mockRes.connectionFailureResponse)));
+    courseServiceMock.enrollCourse.mockRejectedValue(Observable.of(mockRes.connectionFailureResponse));
     // act
     courseBatchesPage.enrollIntoBatch(option);
     // assert
     setTimeout(() => {
-      (zoneMock.run as jest.Mock).mock.calls[0][0].call(courseBatchesPage, undefined);
+      zoneMock.run.mock.calls[0][0].call(courseBatchesPage, undefined);
       expect(commonUtilServiceMock.translateMessage).toHaveBeenCalledWith('ERROR_NO_INTERNET_MESSAGE');
       done();
     }, 0);
@@ -88,8 +101,13 @@ describe.only('CourseBatchesPage', () => {
   it('should not invoke getBatchesByCourseId for guestUser', (done) => {
     // arrange
     courseBatchesPage.ngOnInit();
+    authServiceMock.getSession.mockReturnValue(Observable.from([{
+      access_token: '',
+      refresh_token: '',
+      userToken: ''
+    }]))
     // act
-    (authServiceMock.getSessionData as jest.Mock).mock.calls[0][0].call(courseBatchesPage, undefined);
+    (authServiceMock as any.getSessionData as jest.Mock).mock.calls[0][0].call(courseBatchesPage, undefined);
     (zoneMock.run as jest.Mock).mock.calls[0][0].call(courseBatchesPage, undefined);
     // assert
     setTimeout(() => {
@@ -103,7 +121,7 @@ describe.only('CourseBatchesPage', () => {
     courseBatchesPage.ngOnInit();
     (authServiceMock.getSessionData as jest.Mock).mock.calls[0][0].call(courseBatchesPage,
       JSON.stringify(mockRes.sessionResponse));
-      // expect
+    // expect
     setTimeout(() => {
       (zoneMock.run as jest.Mock).mock.calls[0][0].call(courseBatchesPage, undefined);
       expect(zoneMock.run).toHaveBeenCalled();
