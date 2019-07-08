@@ -832,8 +832,9 @@ export class CollectionDetailsEtbPage implements OnInit {
               console.log('this.textbookTocService.textbookIds.contentId', this.textbookTocService.textbookIds.contentId);
               console.log('in scroll', document.getElementById(this.textbookTocService.textbookIds.contentId));
               document.getElementById(this.textbookTocService.textbookIds.contentId).scrollIntoView();
-              window['scrollTest'].getScrollElement().scrollBy(0, -100);
-            }, 200);
+              window['scrollTest'].getScrollElement().scrollBy(0, -200);
+              this.textbookTocService.resetTextbookIds();
+            }, 800);
           }
           this.telemetryGeneratorService.generateInteractTelemetry(
             InteractType.OTHER,

@@ -16,4 +16,11 @@ export class TextbookTocService {
         console.log('this.TextbookIds in service', this.textbookIds);
     }
 
+    resetTextbookIds() {
+        this.textbookIds = {
+            contentId: undefined,
+            rootUnitId: undefined
+        };
+    }
+
 }

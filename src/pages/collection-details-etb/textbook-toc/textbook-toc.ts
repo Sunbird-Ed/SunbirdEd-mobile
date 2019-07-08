@@ -100,4 +100,23 @@ export class TextBookTocPage {
         // this.dismissCallback();
     }
 
+    setContentId(id: string) {
+        console.log('collection first child', id);
+        // if (this.navCtrl.getActive().component['pageName'] === 'TextBookTocPage') {
+        //   const values = new Map();
+        //   values['unitClicked'] = id;
+        //    this.telemetryService.generateInteractTelemetry(
+        //     InteractType.TOUCH,
+        //     InteractSubtype.UNIT_CLICKED,
+        //     Environment.HOME,
+        //     PageId.TEXTBOOK_TOC,
+        //     undefined,
+        //     values
+        //   );
+        // }
+
+        this.textbookTocService.setTextbookIds({rootUnitId: id, contentId: id});
+        this.navCtrl.pop();
+    }
+
 }

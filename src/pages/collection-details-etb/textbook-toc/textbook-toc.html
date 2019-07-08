@@ -4,7 +4,7 @@
           <ion-grid class="sb-accordian-header">
             <ion-row *ngIf="item?.children">
               <ion-col col-11>
-                <div class="sb-topic-text"> {{item?.contentData?.name}} </div>
+                <div class="sb-topic-text" (click)="setContentId(item.identifier)"> {{item?.contentData?.name}} </div>
               </ion-col>
               <!-- <ion-col col-1 *ngIf="!isGroupShown(i)">
                 <div>
