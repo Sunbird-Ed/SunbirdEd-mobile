@@ -575,7 +575,7 @@ async showComingSoonPopUp(data) {
             if (data.framework === element.identifier || data.board.indexOf(element.name) !== -1) {
               isProfileUpdated = true;
               const frameworkDetailsRequest: FrameworkDetailsRequest = {
-                frameworkId: data.framework,
+                frameworkId: element.identifier,
                 requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
               };
               this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
