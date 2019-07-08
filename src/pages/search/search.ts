@@ -1,35 +1,80 @@
-import { BatchConstants, ContentFilterConfig } from './../../app/app.constant';
-import { Component, Inject, NgZone, OnDestroy, ViewChild } from '@angular/core';
-import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, Loading } from 'ionic-angular';
-import { Content as ContentView } from 'ionic-angular';
+import {BatchConstants, ContentFilterConfig} from './../../app/app.constant';
+import {ChangeDetectorRef, Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
 import {
-  CachedItemRequestSourceFrom, Content, ContentDetailRequest, ContentEventType, ContentImport, ContentImportRequest,
-  ContentImportResponse, ContentImportStatus, ContentSearchCriteria, ContentSearchResult, ContentService,
-  CorrelationData, DownloadEventType, DownloadProgress, EventsBusEvent, EventsBusService, PageAssembleCriteria,
-  PageAssembleFilter, PageAssembleService, PageName, ProfileType, SearchType, SharedPreferences, TelemetryObject,
-  NetworkError, CourseService, CourseBatchesRequest, CourseEnrollmentType, CourseBatchStatus, Course, Batch,
-  FetchEnrolledCourseRequest
+  Content as ContentView,
+  Events,
+  IonicPage,
+  Loading,
+  Navbar,
+  NavController,
+  NavParams,
+  Platform,
+  PopoverController,
+  TextInput
+} from 'ionic-angular';
+import {
+  Batch,
+  CachedItemRequestSourceFrom,
+  Content,
+  ContentDetailRequest,
+  ContentEventType,
+  ContentImport,
+  ContentImportRequest,
+  ContentImportResponse,
+  ContentImportStatus,
+  ContentSearchCriteria,
+  ContentSearchResult,
+  ContentService,
+  CorrelationData,
+  Course,
+  CourseBatchesRequest,
+  CourseBatchStatus,
+  CourseEnrollmentType,
+  CourseService,
+  DownloadEventType,
+  DownloadProgress,
+  EventsBusEvent,
+  EventsBusService,
+  FetchEnrolledCourseRequest,
+  NetworkError,
+  PageAssembleCriteria,
+  PageAssembleFilter,
+  PageAssembleService,
+  PageName,
+  ProfileType,
+  SearchEntry,
+  SearchHistoryService,
+  SearchType,
+  SharedPreferences,
+  TelemetryObject
 } from 'sunbird-sdk';
-import { FilterPage } from './filters/filter';
-import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
-import { ContentDetailsPage } from '../content-details/content-details';
-import { Map } from '../../app/telemetryutil';
+import {FilterPage} from './filters/filter';
+import {CollectionDetailsEtbPage} from '../collection-details-etb/collection-details-etb';
+import {ContentDetailsPage} from '../content-details/content-details';
+import {Map} from '../../app/telemetryutil';
 import * as _ from 'lodash';
-import { AudienceFilter, ContentType, MimeType, Search, ContentCard } from '../../app/app.constant';
-import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
-import { AppGlobalService } from '../../service/app-global.service';
-import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { QrCodeResultPage } from '../qr-code-result/qr-code-result';
-import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
+import {AudienceFilter, ContentCard, ContentType, MimeType, Search} from '../../app/app.constant';
+import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
+import {AppGlobalService} from '../../service/app-global.service';
+import {FormAndFrameworkUtilService} from '../profile/formandframeworkutil.service';
+import {CommonUtilService} from '../../service/common-util.service';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {QrCodeResultPage} from '../qr-code-result/qr-code-result';
+import {TranslateService} from '@ngx-translate/core';
+import {Observable, Subscription} from 'rxjs';
 import {
-  Environment, ImpressionType, InteractSubtype, InteractType, LogLevel, Mode, PageId
+  Environment,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  LogLevel,
+  Mode,
+  PageId
 } from '../../service/telemetry-constants';
-import { TabsPage } from '@app/pages/tabs/tabs';
-import { AppHeaderService } from '@app/service';
-import { EnrollmentDetailsPage } from '../enrolled-course-details/enrollment-details/enrollment-details';
+import {TabsPage} from '@app/pages/tabs/tabs';
+import {AppHeaderService} from '@app/service';
+import {EnrollmentDetailsPage} from '../enrolled-course-details/enrollment-details/enrollment-details';
+import {SearchHistoryNamespaces} from "@app/config/search-history-namespaces";
 
 declare const cordova;
 
@@ -40,54 +85,32 @@ declare const cordova;
 })
 export class SearchPage implements OnDestroy {
 
+  public searchHistory$: Observable<SearchEntry[]>;
+
   showLoading: boolean;
   downloadProgress: any;
-  @ViewChild('searchInput') searchBar;
-
   contentType: Array<string> = [];
-
   source: string;
-
   dialCode: string;
-
   dialCodeResult: Array<any> = [];
-
   dialCodeContentResult: Array<any> = [];
-
   searchContentResult: Array<any> = [];
-
   showLoader = false;
-
   filterIcon;
-
   searchKeywords = '';
-
   responseData: any;
-
   isDialCodeSearch = false;
-
   showEmptyMessage: boolean;
-
   defaultAppIcon: string;
-
   isEmptyResult = false;
-
   queuedIdentifiers = [];
-
   isDownloadStarted = false;
-
   currentCount = 0;
-
   parentContent: any = undefined;
-
   childContent: any = undefined;
-
   loadingDisplayText = 'Loading content';
-
   audienceFilter = [];
-
   eventSubscription?: Subscription;
-
   displayDialCodeResult: any;
   profile: any;
   isFirstLaunch = false;
@@ -96,17 +119,24 @@ export class SearchPage implements OnDestroy {
   isSingleContent = false;
   currentFrameworkId = '';
   selectedLanguageCode = '';
-  @ViewChild(Navbar) navBar: Navbar;
-  private corRelationList: Array<CorrelationData>;
   layoutName = 'search';
   enrolledCourses: any;
   guestUser: any;
   batches: any;
   loader?: Loading;
   userId: any;
+  @ViewChild('searchInput') searchBar;
+  @ViewChild(Navbar) navBar: Navbar;
+  private corRelationList: Array<CorrelationData>;
   @ViewChild('contentView') contentView: ContentView;
+
   constructor(
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
+    @Inject('PAGE_ASSEMBLE_SERVICE') private pageService: PageAssembleService,
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    @Inject('COURSE_SERVICE') private courseService: CourseService,
+    @Inject('SEARCH_HISTORY_SERVICE') private searchHistoryService: SearchHistoryService,
     private navParams: NavParams,
     private navCtrl: NavController,
     private zone: NgZone,
@@ -118,12 +148,9 @@ export class SearchPage implements OnDestroy {
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private translate: TranslateService,
-    @Inject('PAGE_ASSEMBLE_SERVICE') private pageService: PageAssembleService,
-    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
-    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     private headerService: AppHeaderService,
-    @Inject('COURSE_SERVICE') private courseService: CourseService,
-    private popoverCtrl: PopoverController
+    private popoverCtrl: PopoverController,
+    private changeDetectionRef: ChangeDetectorRef
   ) {
 
     this.checkUserSession();
@@ -154,6 +181,31 @@ export class SearchPage implements OnDestroy {
   }
 
   ionViewDidLoad() {
+    this.searchHistory$ = (this.searchBar as TextInput).ionChange
+      .map((e) => e.value)
+      .share()
+      .startWith('')
+      .debounceTime(500)
+      .switchMap((v) => {
+        if (v) {
+          return this.searchHistoryService.getEntries({
+            like: v,
+            limit: 5,
+            namespace: SearchHistoryNamespaces.LIBRARY
+          });
+        }
+
+        return this.searchHistoryService.getEntries({
+          limit: 10,
+          namespace: SearchHistoryNamespaces.LIBRARY
+        });
+      })
+      .do((v) => {
+        setTimeout(() => {
+          this.changeDetectionRef.detectChanges();
+        });
+      });
+
     this.navBar.backButtonClick = () => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(ImpressionType.SEARCH,
         Environment.HOME, true, undefined, this.corRelationList);
@@ -380,6 +432,8 @@ export class SearchPage implements OnDestroy {
       return;
     }
 
+    this.addSearchHistoryEntry();
+
     this.showLoader = true;
 
     (<any>window).cordova.plugins.Keyboard.close();
@@ -450,6 +504,15 @@ export class SearchPage implements OnDestroy {
           }
         });
       });
+  }
+
+  private addSearchHistoryEntry() {
+    this.searchHistoryService
+      .addEntry({
+        query: this.searchKeywords,
+        namespace: SearchHistoryNamespaces.LIBRARY
+      })
+      .toPromise();
   }
 
   applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey?: string) {
