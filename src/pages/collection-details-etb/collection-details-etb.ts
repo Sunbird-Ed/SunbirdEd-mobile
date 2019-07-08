@@ -834,6 +834,7 @@ export class CollectionDetailsEtbPage implements OnInit {
               (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.add('sticky');
               document.getElementById(this.textbookTocService.textbookIds.contentId).scrollIntoView();
               window['scrollTest'].getScrollElement().scrollBy(0, -200);
+              this.textbookTocService.resetTextbookIds();
             }, 500);
           }
           this.telemetryGeneratorService.generateInteractTelemetry(

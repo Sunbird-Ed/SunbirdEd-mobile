@@ -15,4 +15,11 @@ textbook-toc {
     box-shadow: none;
     border-bottom: 1px solid #CCCCCC;
   }
+  .sb-play-selected{
+    font-weight: normal;
+    color: $blue;
+    ion-icon {
+      display: none;
+    }
+  }
 }
