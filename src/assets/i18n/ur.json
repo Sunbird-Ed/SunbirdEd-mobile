@@ -186,6 +186,7 @@
   "ERROR_EMPTY_PASSWORD": "اپنا حروفے مخفي  ٹائپ  کریں",
   "ERROR_FAILED_TO_DOWNLOAD_ATTACHMENT": "اتاچمنٹ ڈونلڈ  ناکام ہوگیا  ",
   "ERROR_FETCHING_DATA": "ڈیٹا حاصل کرنے میں قاصر",
+  "ERROR_LOW_MEMORY": "منتقل کیلئے خالی جگہ دستیاب نہیں ہے",
   "ERROR_NAME_INVALID": " نام کے لئے صرف حروف یا سپیس درج کریں",
   "ERROR_NO_BATCHES_FOUND": "اس نصاب کے لئے کوئی بھی دستہ موجود نہیں ہیں ",
   "ERROR_NO_INTERNET_MESSAGE": "انٹرنیٹ تک رسائی نہیں",
