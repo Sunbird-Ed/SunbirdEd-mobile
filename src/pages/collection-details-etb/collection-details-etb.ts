@@ -1484,11 +1484,9 @@ export class CollectionDetailsEtbPage implements OnInit {
   onScroll(event: ScrollEvent) {
     const titles = document.querySelectorAll('[data-sticky-unit]');
 
-    console.log(event.scrollTop, Array.from(titles).map((t) => t.getBoundingClientRect().top));
-
-    const currentTitle = Array.from(titles).find((title) => {
-      return title.getBoundingClientRect().top >= 100;
-    });
+    const currentTitle = Array.from(titles).filter((title) => {
+      return title.getBoundingClientRect().top < 150;
+    }).slice(-1)[0];
 
     if (currentTitle) {
       this.zone.run(() => {
