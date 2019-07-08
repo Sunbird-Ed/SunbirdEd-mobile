@@ -99,7 +99,8 @@ export class TextBookTocPage {
         // await this.navCtrl.pop();
         // this.dismissCallback();
     }
-
+    
+    // set textbook unit and contentids for scrolling to particular unit in etb page
     setContentId(id: string) {
         console.log('collection first child', id);
         // if (this.navCtrl.getActive().component['pageName'] === 'TextBookTocPage') {

@@ -20,12 +20,12 @@
       </ion-row>
     </div>
     <!-- End import content -->
-    <div  class="sb-slider-pills-container" #stickyPillsRef *ngIf=" childrenData && childrenData?.length">
+    <div #stickyPillsRef *ngIf=" childrenData && childrenData?.length">
       <div class="sb-chapter-dd" (click)="openTextbookToc()">
         <span class="pull-left">{{stckyUnitTitle || ('SELECT_CHAPTER' | translate)}}</span>
         <span class="pull-right"><ion-icon name="ios-arrow-dropright-circle"></ion-icon></span>
       </div>
-      <div>
+      <div class="sb-slider-pills-container">
         <div class="sb-pills-container sb-grade-pills-container" id="gradeScroll">
           <div class="pill" *ngFor="let type of mimeTypes; let i = index; let first = first"
                [ngClass]="{'active': type?.selected, '': !type?.selected}" attr.id="class{{i}}"
