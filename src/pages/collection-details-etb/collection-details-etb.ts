@@ -831,10 +831,11 @@ export class CollectionDetailsEtbPage implements OnInit {
             setTimeout(() => {
               console.log('this.textbookTocService.textbookIds.contentId', this.textbookTocService.textbookIds.contentId);
               console.log('in scroll', document.getElementById(this.textbookTocService.textbookIds.contentId));
+              (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.add('sticky');
               document.getElementById(this.textbookTocService.textbookIds.contentId).scrollIntoView();
               window['scrollTest'].getScrollElement().scrollBy(0, -200);
               this.textbookTocService.resetTextbookIds();
-            }, 800);
+            }, 500);
           }
           this.telemetryGeneratorService.generateInteractTelemetry(
             InteractType.OTHER,
