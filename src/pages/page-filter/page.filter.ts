@@ -228,7 +228,7 @@ export class PageFilter {
           this.pagetAssemblefilter[element.code] = resourceTypeSelectedValues;
         }
       });
-      this.callback.applyFilter(this.pagetAssemblefilter, this.facetsFilter);
+      this.callback.applyFilter(this.pagetAssemblefilter, this.facetsFilter, true);
     }
     this.viewCtrl.dismiss();
   }
@@ -239,7 +239,7 @@ export class PageFilter {
       Environment.HOME,
       this.pageId);
 
-    this.callback.applyFilter(this.pagetAssemblefilter, this.backupFilters);
+    this.callback.applyFilter(this.pagetAssemblefilter, this.backupFilters, false);
     this.viewCtrl.dismiss();
   }
 
@@ -262,5 +262,5 @@ export class PageFilter {
 
 
 export interface PageFilterCallback {
-  applyFilter(filter: PageAssembleFilter, appliedFilter: any);
+  applyFilter(filter: PageAssembleFilter, appliedFilter: any, isChecked: boolean);
 }
