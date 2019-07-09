@@ -109,7 +109,8 @@ export enum PageId {
     SHOW_DUPLICATE_CONTENT_POPUP = 'show-duplicate-content-popup',
     CONTENT_TRANSFER_SUCCEED_POPUP = 'content-transfer-succeed-popup',
     CANCELLING_CONTENT_TRANSFER_POPUP = 'cancelling-content-transfer-popup',
-    DIAL_SEARCH = 'dial-book-result'
+    DIAL_SEARCH = 'dial-book-result',
+    TEXTBOOK_TOC = 'textbook-toc'
 }
 export enum LogType {
     NOTIFICATION = 'notification'
@@ -307,7 +308,9 @@ export enum InteractSubtype {
     UNIT_CLICKED = 'unit-clicked',
     PERMISSION_POPUP = 'permission-popup',
     WALKTHROUGH_BACKDROP_CLICKED = 'walkthrough-backdrop-clicked',
-    WALKTHROUGH_CONFIRMATION_CLICKED = 'walkthrough-confirmation-clicked'
+    WALKTHROUGH_CONFIRMATION_CLICKED = 'walkthrough-confirmation-clicked',
+    FILTER_CLICKED = 'filter-clicked',
+    DROPDOWN_CLICKED = 'drop-down-clicked'
 }
 
 export enum ActionButtonType {

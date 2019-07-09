@@ -1,5 +1,6 @@
+import { TextBookTocPage } from './textbook-toc/textbook-toc';
 import { ActiveDownloadsPage } from './../active-downloads/active-downloads';
-import { Component, Inject, NgZone, OnInit, ViewChild } from '@angular/core';
+import {Component, Inject, NgZone, ViewChild, OnInit, ElementRef, ViewChildren, QueryList, ChangeDetectorRef} from '@angular/core';
 import { Content as iContent } from 'ionic-angular';
 import {
   Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController, ViewController
@@ -30,6 +31,8 @@ import {
 import { FileSizePipe } from '@app/pipes/file-size/file-size';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 import { ComingSoonMessageService } from "@app/service/coming-soon-message.service";
+import {falseIfMissing} from "protractor/built/util";
+import { TextbookTocService } from './textbook-toc-service';
 
 /**
  * Generated class for the CollectionDetailsEtbPage page.
@@ -46,6 +49,8 @@ declare const cordova;
 })
 export class CollectionDetailsEtbPage implements OnInit {
 
+  @ViewChildren('filteredItems') public filteredItemsQueryList: QueryList<any>;
+
   facets: any;
   selected: boolean;
   isSelected: boolean;
@@ -56,8 +61,17 @@ export class CollectionDetailsEtbPage implements OnInit {
   };
 
   contentDetail?: Content;
-  childrenData: Array<any>;
-
+  childrenData?: Array<any>;
+  mimeTypes = [
+    { name: 'ALL', selected: true, value: ['all'], iconNormal: '', iconActive: ''},
+    { name: 'VIDEOS', value: ['video/mp4', 'video/x-youtube', 'video/webm'], iconNormal: './assets/imgs/Play.svg', iconActive:'./assets/imgs/Play-active.svg'},
+    { name: 'DOCS', value: ['application/pdf', 'application/epub'], iconNormal: './assets/imgs/Doc.svg',iconActive:'./assets/imgs/Doc-active.svg'},
+    { name: 'INTERACTION',
+      value: ['application/vnd.ekstep.ecml-archive', 'application/vnd.ekstep.h5p-archive', 'application/vnd.ekstep.html-archive'],
+      iconNormal: './assets/imgs/Touch.svg', iconActive: './assets/imgs/Touch-active.svg'
+    }
+  ];
+  activeMimeTypeFilter = ['all'];
   /**
    * Show loader while importing content
    */
@@ -196,17 +210,20 @@ export class CollectionDetailsEtbPage implements OnInit {
   headerObservable: any;
   breadCrumb = new Map();
   scrollPosition = 0;
-
+  currentFilter: string = 'ALL';
   // Local Image
   localImage = '';
   @ViewChild(Navbar) navBar: Navbar;
   @ViewChild(iContent) ionContent: iContent;
+  @ViewChild('stickyPillsRef') stickyPillsRef: ElementRef;
   private eventSubscription: Subscription;
 
   showDownload: boolean;
   networkSubscription: any;
   toast: any;
   contentTypesCount: any;
+  stckyUnitTitle?: string;
+
   constructor(
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     @Inject('EVENTS_BUS_SERVICE') private eventBusService: EventsBusService,
@@ -229,7 +246,9 @@ export class CollectionDetailsEtbPage implements OnInit {
     private toastController: ToastController,
     private fileSizePipe: FileSizePipe,
     private headerService: AppHeaderService,
-    private comingSoonMessageService: ComingSoonMessageService
+    private comingSoonMessageService: ComingSoonMessageService,
+    private changeDetectionRef: ChangeDetectorRef,
+    private textbookTocService: TextbookTocService
   ) {
     this.objRollup = new Rollup();
     this.checkLoggedInOrGuestUser();
@@ -246,6 +265,11 @@ export class CollectionDetailsEtbPage implements OnInit {
 	 * Angular life cycle hooks
 	 */
   ngOnInit() {
+  }
+
+  ionViewDidLoad() {
+    window['scrollTest'] = this.ionContent;
+    this.registerDeviceBackButton();
   }
 
   /**
@@ -750,7 +774,12 @@ export class CollectionDetailsEtbPage implements OnInit {
         this.zone.run(() => {
           if (data && data.children) {
             this.breadCrumb.set(data.identifier, data.contentData.name);
+            if (this.textbookTocService.textbookIds.rootUnitId && this.activeMimeTypeFilter !== ['all']) {
+              this.onFilterMimeTypeChange(this.mimeTypes[0].value, 0, this.mimeTypes[0].name);
+            }
             this.childrenData = data.children;
+            this.changeDetectionRef.detectChanges();
+            console.log('this.childrenData', this.childrenData);
           }
 
           if (!this.isDepthChild) {
@@ -759,6 +788,24 @@ export class CollectionDetailsEtbPage implements OnInit {
             this.getContentsSize(data.children || []);
           }
           this.showChildrenLoader = false;
+          let carouselIndex = 0;
+          if (this.textbookTocService.textbookIds.rootUnitId) {
+            console.log('this.this.scrollToId', this.textbookTocService.textbookIds.rootUnitId);
+            carouselIndex = this.childrenData.findIndex((content) => this.textbookTocService.textbookIds.rootUnitId === content.identifier);
+            carouselIndex = carouselIndex > 0 ? carouselIndex : 0;
+          }
+          console.log('carouselIndex', carouselIndex);
+          this.toggleGroup(carouselIndex, this.content);
+          if (this.textbookTocService.textbookIds.contentId) {
+            setTimeout(() => {
+              console.log('this.textbookTocService.textbookIds.contentId', this.textbookTocService.textbookIds.contentId);
+              console.log('in scroll', document.getElementById(this.textbookTocService.textbookIds.contentId));
+              (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.add('sticky');
+              document.getElementById(this.textbookTocService.textbookIds.contentId).scrollIntoView();
+              window['scrollTest'].getScrollElement().scrollBy(0, -200);
+              this.textbookTocService.resetTextbookIds();
+            }, 500);
+          }
           this.telemetryGeneratorService.generateInteractTelemetry(
             InteractType.OTHER,
             InteractSubtype.IMPORT_COMPLETED,
@@ -870,7 +917,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     this.refreshHeader();
     this.downloadProgress = 0;
     this.cardData = '';
-    this.childrenData = [];
+    this.childrenData;
     this.contentDetail = undefined;
     this.showDownload = false;
     this.showDownloadBtn = false;
@@ -1358,5 +1405,71 @@ export class CollectionDetailsEtbPage implements OnInit {
       Environment.HOME,
       PageId.COLLECTION_DETAIL);
     this.navCtrl.push(ActiveDownloadsPage);
+  }
+
+  async onFilterMimeTypeChange(val, idx, currentFilter?) {
+    const values = new Map();
+    values['filter'] = currentFilter;
+    this.activeMimeTypeFilter = val;
+    this.currentFilter = this.commonUtilService.translateMessage(currentFilter);
+    this.mimeTypes.forEach((type) => {
+      type.selected = false;
+    });
+    this.mimeTypes[idx].selected = true;
+    this.filteredItemsQueryList.changes
+      .do((v) => {
+        this.changeDetectionRef.detectChanges();
+        values['contentLength'] = v.length;
+      })
+      .subscribe();
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.FILTER_CLICKED,
+      Environment.HOME,
+      PageId.COLLECTION_DETAIL,
+      undefined,
+      values);
+  }
+
+  openTextbookToc() {
+    console.log('in openTextbookToc');
+    this.shownGroup = null;
+    this.navCtrl.push(TextBookTocPage, {
+      childrenData: this.childrenData,
+      dismissCallback: (() => {
+        console.log('textbookTocService etb', this.textbookTocService.textbookIds);
+        this.onFilterMimeTypeChange(this.mimeTypes[0].value, 0, this.mimeTypes[0].name);
+      }).bind(this)
+    });
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.DROPDOWN_CLICKED,
+      Environment.HOME,
+      PageId.COLLECTION_DETAIL,
+      undefined
+    );
+  }
+
+  onScroll(event: ScrollEvent) {
+    const titles = document.querySelectorAll('[data-sticky-unit]');
+
+    console.log(event.scrollTop, Array.from(titles).map((t) => t.getBoundingClientRect().top));
+
+    const currentTitle = Array.from(titles).find((title) => {
+      return title.getBoundingClientRect().top >= 100;
+    });
+
+    if (currentTitle) {
+      this.zone.run(() => {
+        this.stckyUnitTitle = currentTitle.getAttribute('data-sticky-unit');
+      });
+    }
+
+    if (event.scrollTop >= 205) {
+      (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.add('sticky');
+      return;
+    }
+
+    (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.remove('sticky');
   }
 }

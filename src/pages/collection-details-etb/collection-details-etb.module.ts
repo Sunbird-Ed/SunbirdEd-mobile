@@ -1,3 +1,5 @@
+import { TextbookTocService } from './textbook-toc-service';
+import { TextBookTocPage } from './textbook-toc/textbook-toc';
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { CollectionDetailsEtbPage } from './collection-details-etb';
@@ -12,8 +14,9 @@ import { FileSizePipe } from '@app/pipes/file-size/file-size';
 @NgModule({
   declarations: [
     CollectionDetailsEtbPage,
+    TextBookTocPage
   ],
-  entryComponents: [],
+  entryComponents: [TextBookTocPage],
   imports: [
     IonicPageModule.forChild(CollectionDetailsEtbPage),
     TranslateModule.forChild(),
@@ -23,9 +26,10 @@ import { FileSizePipe } from '@app/pipes/file-size/file-size';
     Ionic2RatingModule,
     PipesModule
   ],
-  providers: [],
+  providers: [TextbookTocService],
   exports: [
-    CollectionDetailsEtbPage
+    CollectionDetailsEtbPage,
+    TextBookTocPage
   ]
 })
 export class CollectionDetailsEtbPageModule { }
