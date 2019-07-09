@@ -930,13 +930,11 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     const identifier = items.contentId || items.identifier;
     let telemetryObject: TelemetryObject;
     telemetryObject = new TelemetryObject(identifier, items.contentType, undefined);
-    const values = new Map();
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.VIEW_MORE_CLICKED,
       Environment.HOME,
       PageId.LIBRARY,
-      telemetryObject,
-      values);
+      telemetryObject);
     if (this.commonUtilService.networkInfo.isNetworkAvailable || items.isAvailableLocally) {
       this.navCtrl.push(TextbookViewMorePage, {
         content: items,
