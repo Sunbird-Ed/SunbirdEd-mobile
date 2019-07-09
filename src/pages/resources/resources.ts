@@ -496,7 +496,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             if (this.tabs.getSelected().tabTitle === 'LIBRARY‌' && !avoidRefreshList) {
               this.commonUtilService.showToast(
                 this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
-                  `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
+                `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
             }
           }
         });
@@ -927,7 +927,16 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   navigateToTextbookPage(items, subject) {
+    const identifier = items.contentId || items.identifier;
+    let telemetryObject: TelemetryObject;
+    telemetryObject = new TelemetryObject(identifier, items.contentType, undefined);
     const values = new Map();
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.VIEW_MORE_CLICKED,
+      Environment.HOME,
+      PageId.LIBRARY,
+      telemetryObject,
+      values);
     if (this.commonUtilService.networkInfo.isNetworkAvailable || items.isAvailableLocally) {
       this.navCtrl.push(TextbookViewMorePage, {
         content: items,
