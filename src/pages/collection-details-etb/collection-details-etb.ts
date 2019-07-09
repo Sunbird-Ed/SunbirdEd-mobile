@@ -1,7 +1,7 @@
 import { TextBookTocPage } from './textbook-toc/textbook-toc';
 import { ActiveDownloadsPage } from './../active-downloads/active-downloads';
 import {Component, Inject, NgZone, ViewChild, OnInit, ElementRef, ViewChildren, QueryList, ChangeDetectorRef} from '@angular/core';
-import { Content as iContent } from 'ionic-angular';
+import { Content as iContent, ScrollEvent } from 'ionic-angular';
 import {
   Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController, ViewController
 } from 'ionic-angular';
