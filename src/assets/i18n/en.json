@@ -530,6 +530,7 @@
   "OR": "or",
   "ALL": "All",
   "VIDEOS": "Videos",
+  "AUDIOS": "Audios",
   "DOCS": "Docs",
   "INTERACTION": "Interaction",
   "NO_CONTENTS": "No {{%s}} Contents",

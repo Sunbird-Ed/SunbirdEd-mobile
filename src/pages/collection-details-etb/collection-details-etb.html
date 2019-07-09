@@ -20,7 +20,7 @@
       </ion-row>
     </div>
     <!-- End import content -->
-    <div #stickyPillsRef *ngIf=" childrenData && childrenData?.length">
+    <div #stickyPillsRef *ngIf=" childrenData && childrenData?.length" class="collection-etb-filter">
       <div class="sb-chapter-dd" (click)="openTextbookToc()">
         <span class="pull-left">{{stckyUnitTitle || ('SELECT_CHAPTER' | translate)}}</span>
         <span class="pull-right"><ion-icon name="ios-arrow-dropright-circle"></ion-icon></span>
