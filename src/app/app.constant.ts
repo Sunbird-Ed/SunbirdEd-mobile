@@ -86,6 +86,12 @@ export class ContentType {
 
 export class MimeType {
     public static readonly COLLECTION = 'application/vnd.ekstep.content-collection';
+    public static readonly VIDEO = ['video/avi', 'video/mpeg', 'video/quicktime', 'video/3gpp', 'video/mpeg', 'video/mp4',
+                                    'video/ogg', 'video/webm'];
+    public static readonly AUDIO = [ 'audio/mp3', 'audio/mp4', 'audio/mpeg', 'audio/ogg', 'audio/webm', 'audio/x-wav', 'audio/wav'];
+    public static readonly INTERACTION = ['application/vnd.ekstep.ecml-archive', 'application/vnd.ekstep.html-archive',
+                                        'application/vnd.android.package-archive', 'application/vnd.ekstep.content-archive',
+                                        'application/vnd.ekstep.plugin-archive', 'application/vnd.ekstep.h5p-archive'];
     public static readonly ALL = ['video/mp4', 'video/x-youtube', 'video/webm', 'application/pdf', 'application/epub',
     'application/pdf', 'application/epub', 'application/vnd.ekstep.ecml-archive', 'application/vnd.ekstep.h5p-archive',
      'application/vnd.ekstep.html-archive'

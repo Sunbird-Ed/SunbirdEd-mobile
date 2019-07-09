@@ -31,7 +31,6 @@ import {
 import { FileSizePipe } from '@app/pipes/file-size/file-size';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 import { ComingSoonMessageService } from "@app/service/coming-soon-message.service";
-import {falseIfMissing} from "protractor/built/util";
 import { TextbookTocService } from './textbook-toc-service';
 
 /**
@@ -64,12 +63,15 @@ export class CollectionDetailsEtbPage implements OnInit {
   childrenData?: Array<any>;
   mimeTypes = [
     { name: 'ALL', selected: true, value: ['all'], iconNormal: '', iconActive: ''},
-    { name: 'VIDEOS', value: ['video/mp4', 'video/x-youtube', 'video/webm'], iconNormal: './assets/imgs/Play.svg', iconActive:'./assets/imgs/Play-active.svg'},
-    { name: 'DOCS', value: ['application/pdf', 'application/epub'], iconNormal: './assets/imgs/Doc.svg',iconActive:'./assets/imgs/Doc-active.svg'},
+    { name: 'VIDEOS', value: ['video/mp4', 'video/x-youtube', 'video/webm'], iconNormal: './assets/imgs/Play.svg',
+    iconActive: './assets/imgs/Play-active.svg'},
+    { name: 'DOCS', value: ['application/pdf', 'application/epub', 'application/msword'], iconNormal: './assets/imgs/Doc.svg',
+    iconActive: './assets/imgs/Doc-active.svg'},
     { name: 'INTERACTION',
       value: ['application/vnd.ekstep.ecml-archive', 'application/vnd.ekstep.h5p-archive', 'application/vnd.ekstep.html-archive'],
       iconNormal: './assets/imgs/Touch.svg', iconActive: './assets/imgs/Touch-active.svg'
-    }
+    },
+    // { name: 'AUDIOS', value: MimeType.AUDIO, iconNormal: './assets/imgs/Audio.svg', iconActive: './assets/imgs/Audio-active.svg'},
   ];
   activeMimeTypeFilter = ['all'];
   /**
@@ -248,7 +250,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     private headerService: AppHeaderService,
     private comingSoonMessageService: ComingSoonMessageService,
     private changeDetectionRef: ChangeDetectorRef,
-    private textbookTocService: TextbookTocService
+    private textbookTocService: TextbookTocService,
   ) {
     this.objRollup = new Rollup();
     this.checkLoggedInOrGuestUser();
@@ -268,7 +270,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   }
 
   ionViewDidLoad() {
-    window['scrollTest'] = this.ionContent;
+    window['scrollWindow'] = this.ionContent;
     this.registerDeviceBackButton();
   }
 
@@ -801,10 +803,11 @@ export class CollectionDetailsEtbPage implements OnInit {
               console.log('this.textbookTocService.textbookIds.contentId', this.textbookTocService.textbookIds.contentId);
               console.log('in scroll', document.getElementById(this.textbookTocService.textbookIds.contentId));
               (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.add('sticky');
+              window['scrollWindow'].getScrollElement().scrollBy(0, 0);
               document.getElementById(this.textbookTocService.textbookIds.contentId).scrollIntoView();
-              window['scrollTest'].getScrollElement().scrollBy(0, -200);
+              window['scrollWindow'].getScrollElement().scrollBy(0, -150);
               this.textbookTocService.resetTextbookIds();
-            }, 500);
+            }, 0);
           }
           this.telemetryGeneratorService.generateInteractTelemetry(
             InteractType.OTHER,
@@ -1453,11 +1456,9 @@ export class CollectionDetailsEtbPage implements OnInit {
   onScroll(event: ScrollEvent) {
     const titles = document.querySelectorAll('[data-sticky-unit]');
 
-    console.log(event.scrollTop, Array.from(titles).map((t) => t.getBoundingClientRect().top));
-
-    const currentTitle = Array.from(titles).find((title) => {
-      return title.getBoundingClientRect().top >= 100;
-    });
+    const currentTitle = Array.from(titles).filter((title) => {
+      return title.getBoundingClientRect().top < 150;
+    }).slice(-1)[0];
 
     if (currentTitle) {
       this.zone.run(() => {

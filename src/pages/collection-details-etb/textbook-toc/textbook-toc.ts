@@ -1,10 +1,11 @@
 import { TextbookTocService } from './../textbook-toc-service';
-import { Environment, PageId } from '@app/service/telemetry-constants';
 import { AppHeaderService } from './../../../service/app-header.service';
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { NavController, NavParams, Platform, ScrollEvent, PopoverController } from 'ionic-angular';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 import { CommonUtilService } from '@app/service/common-util.service';
+import { TelemetryGeneratorService} from '@app/service/telemetry-generator.service';
+import {Environment, InteractSubtype, InteractType, PageId} from "@app/service/telemetry-constants";
 
 
 @Component({
@@ -31,8 +32,8 @@ export class TextBookTocPage {
         private platform: Platform,
         private commonUtilService: CommonUtilService,
         private popoverCtrl: PopoverController,
-        private textbookTocService: TextbookTocService
-        // private telemetryGeneratorService: TelemetryGeneratorService
+        private textbookTocService: TextbookTocService,
+        private telemetryService: TelemetryGeneratorService
         ) {
 
         this.childrenData = this.navParams.get('childrenData');
@@ -99,22 +100,22 @@ export class TextBookTocPage {
         // await this.navCtrl.pop();
         // this.dismissCallback();
     }
-    
+
     // set textbook unit and contentids for scrolling to particular unit in etb page
     setContentId(id: string) {
         console.log('collection first child', id);
-        // if (this.navCtrl.getActive().component['pageName'] === 'TextBookTocPage') {
-        //   const values = new Map();
-        //   values['unitClicked'] = id;
-        //    this.telemetryService.generateInteractTelemetry(
-        //     InteractType.TOUCH,
-        //     InteractSubtype.UNIT_CLICKED,
-        //     Environment.HOME,
-        //     PageId.TEXTBOOK_TOC,
-        //     undefined,
-        //     values
-        //   );
-        // }
+        if (this.navCtrl.getActive().component['pageName'] === 'TextBookTocPage') {
+          const values = new Map();
+          values['unitClicked'] = id;
+           this.telemetryService.generateInteractTelemetry(
+            InteractType.TOUCH,
+            InteractSubtype.UNIT_CLICKED,
+            Environment.HOME,
+            PageId.TEXTBOOK_TOC,
+            undefined,
+            values
+          );
+        }
 
         this.textbookTocService.setTextbookIds({rootUnitId: id, contentId: id});
         this.navCtrl.pop();

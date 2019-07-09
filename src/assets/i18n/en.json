@@ -549,6 +549,7 @@
   "INSUFFICIENT_STORAGE": "Insufficient Storage Space",
   "ALL": "All",
   "VIDEOS": "Videos",
+  "AUDIOS": "Audios",
   "DOCS": "Docs",
   "INTERACTION": "Interaction",
   "NO_CONTENTS": "No {{%s}} Contents",
