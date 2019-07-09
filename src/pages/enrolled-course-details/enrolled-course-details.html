@@ -44,7 +44,7 @@
 					<!-- </span> -->
 				</div>
 				<div *ngIf="course?.creator" margin-top>
-					<div class="content-meta-title" text-uppercase>{{ 'PUBLISHED_BY' | translate }}</div>
+					<div class="content-meta-title" text-uppercase>{{ 'PUBLISHED_BY' | translate:{'%s': appName} }}</div>
 					<!-- <span *ngFor="let grade of course.gradeLevel"> -->
 					<span class="text-gray-color">{{course?.creator}}</span>
 					<!-- </span> -->

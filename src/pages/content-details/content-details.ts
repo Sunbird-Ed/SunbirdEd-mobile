@@ -77,6 +77,7 @@ import {SbGenericPopoverComponent} from '@app/component/popups/sb-generic-popup/
 import {AppRatingAlertComponent} from '@app/component/app-rating-alert/app-rating-alert';
 import moment from 'moment';
 import { ContentShareHandler } from '@app/service/content/content-share-handler';
+import { AppVersion } from '@ionic-native/app-version';
 
 declare const cordova;
 
@@ -86,6 +87,7 @@ declare const cordova;
   templateUrl: 'content-details.html',
 })
 export class ContentDetailsPage {
+  appName: any;
   [x: string]: any;
   apiLevel: number;
   appAvailability: string;
@@ -200,7 +202,8 @@ export class ContentDetailsPage {
     private translate: TranslateService,
     private headerService: AppHeaderService,
     private appRatingService: AppRatingService,
-    private contentShareHandler: ContentShareHandler
+    private contentShareHandler: ContentShareHandler,
+    private appVersion: AppVersion
   ) {
 
     this.objRollup = new Rollup();
@@ -216,6 +219,12 @@ export class ContentDetailsPage {
   }
 
   ionViewDidLoad() {
+    console.log('log----');
+    this.appVersion.getAppName()
+      .then((appName: any) => {
+        this.appName = appName;
+    });
+
     if (!AppGlobalService.isPlayerLaunched) {
       this.calculateAvailableUserCount();
     }
