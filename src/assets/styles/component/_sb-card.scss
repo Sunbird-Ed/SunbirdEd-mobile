@@ -283,6 +283,30 @@
       display: flex;
       align-items: center;
       @include padding(0, ($base-block-space * 1));
+      .sb-download-all{
+        display: grid;
+        grid-template-columns: 4.9fr 1fr;
+        .sb-view-all-title{
+          color: $white-color;
+          .page-heading{
+              font-size: $font-size-base + 2;
+              font-weight: bold;
+              line-height: 22px;
+          }
+          .page-info{
+              display: block;
+              font-size: $font-size-base - 2;
+              line-height: 15px;
+          }
+      }
+      .sb-download-cancel{
+        color: #ffffff;
+        font-size: $font-size-base * 2;
+        span{
+          font-size: $font-size-base - 2;
+        }
+      }
+      }
       .sb-view-all-title{
           color: $white-color;
           .page-heading{
@@ -295,6 +319,9 @@
               display: block;
               font-size: $font-size-base - 2;
               line-height: 15px;
+              .pull-right{
+                font-size: $font-size-xs;
+              }
           }
       }
       .sb-card-scroll-container{
@@ -329,6 +356,7 @@
 }
 
 .sb-card-download-container {
+  margin-bottom: 65px;
   .sb-card {
     grid-template-columns: ($base-block-space * 4) ($base-block-space * 10) auto;
     @include padding(0);
@@ -336,12 +364,16 @@
       grid-column: 1;
       display: flex;
       align-items: center;
-      background: $gray-0;
+      // background: $gray-0;
+      background: $light-blue-bg;
       justify-content: center;
     }
     .img-container {
       grid-column: 2;
       margin: $base-block-space 0;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
     }
     .sb-card-details {
       grid-column: 3;
@@ -350,6 +382,34 @@
     .sb-card-actions {
       @include padding(0, $base-block-space, 0 0)
     }
+    .checkbox-md {
+      .checkbox-icon{
+        border-width: 1px;
+        border-color: #7AB4EE;
+        border-radius: 4px;
+      }
+      .checkbox-checked{
+        border-color: $blue;
+        background-color: $blue;
+      }
+    } 
   }
 }
+.sb-card-download-container.extra-margin{
+  margin-bottom: 130px;
+}
+
+.popover-progress-container{
+        height: ($base-block-space * 0.5);
+        background-color: $primary-300;
+        position: relative;
+        .progress-highlight{
+            position:absolute; 
+            background:$primary-0; 
+            left:20%; 
+            right:0; 
+            top:0; 
+            bottom:0
+        }
+    }
 

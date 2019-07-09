@@ -112,7 +112,7 @@
 				</span>
 			</div>
 			<!-- enrolledCourseMimeType === 'application/vnd.ekstep.content-collection' -->
-			<ion-list *ngIf="childrenData && childrenData.length" padding-top>
+			<ion-list *ngIf="childrenData && childrenData.length" padding-top class="list-mb-48">
 				<span *ngIf="courseCardData && enrolledCourseMimeType === 'application/vnd.ekstep.content-collection'">
 					<ion-item *ngFor="let item of childrenData; let i = index;" class="child-item" (click)="navigateToChildrenDetailsPage(item, depth + '.' + (i + 1))">
 						<ion-icon [name]="item.status? 'ios-checkmark-circle': (item.lastRead? 'ios-radio-button-on': 'ios-radio-button-off')"></ion-icon>

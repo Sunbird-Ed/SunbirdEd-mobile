@@ -2,6 +2,7 @@ export enum Environment {
     HOME = 'home',
     COURSE = 'course',
     LIBRARY = 'library',
+    DOWNLOADS = 'downloads',
     USER = 'user',
     SETTINGS = 'settings',
     ONBOARDING = 'onboarding'
@@ -56,6 +57,7 @@ export enum PageId {
     NOTIFICATION_LIST = 'notifiaction-list',
     SIGNIN_OVERLAY = 'signin-overlay',
     SETTINGS = 'settings',
+    FAQ = 'faq',
     SETTINGS_LANGUAGE = 'settings-language',
     SETTINGS_DATASYNC = 'settings-datasync',
     SETTINGS_DEVICE_TAGS = 'settings-device-tags',
@@ -89,7 +91,15 @@ export enum PageId {
     DIAL_NOT_LINKED = 'dial-not-linked',
     DIAL_LINKED_NO_CONTENT = 'dial-linked-but-no-content',
     TERMS_N_CONDITIONS = 'terms-n-conditions',
-    TERMS_N_CONDITIONS_STATIC_PAGE = 'terms-n-conditions-static-page'
+    TERMS_N_CONDITIONS_STATIC_PAGE = 'terms-n-conditions-static-page',
+    DOWNLOADS = 'downloads',
+    SINGLE_DELETE_CONFIRMATION_POPUP = 'single-delete-confirmation-popup',
+    BULK_DELETE_POPUP = 'bulk-delete-popup',
+    BULK_DELETE_CONFIRMATION_POPUP = 'bulk-delete-confirmation-popup',
+    ACTIVE_DOWNLOADS = 'active-downloads',
+    SINGLE_CANCEL_CONFIRMATION_POPUP = 'single-cancel-confirmation-popup',
+    BULK_CANCEL_CONFIRMATION_POPUP = 'bulk-cancel-confirmation-popup',
+    DIAL_SEARCH = 'dial-book-result'
 }
 export enum LogType {
     NOTIFICATION = 'notification'
@@ -115,7 +125,9 @@ export enum ImpressionSubtype {
     QRCodeScanInitiate = 'qr-code-scan-initiate',
     RATING_POPUP = 'rating-popup',
     QR_CODE_VALID = 'qr-code-valid',
-    INVALID_QR_CODE = 'invalid-qr-code'
+    INVALID_QR_CODE = 'invalid-qr-code',
+    APP_RATING_POPUP = 'app-rating-popup',
+    QR_SCAN_WALKTHROUGH = 'qr-scan-walkthrough'
 }
 export enum InteractType {
     TOUCH = 'TOUCH',
@@ -159,6 +171,7 @@ export enum InteractSubtype {
     SIGNIN_OVERLAY_CLICKED = 'signin-overlay-clicked',
     SETTINGS_CLICKED = 'settings-clicked',
     LANGUAGE_CLICKED = 'language-clicked',
+    HELP_CLICKED = 'help-clicked',
     DATA_SYNC_CLICKED = 'data-sync-clicked',
     DEVICE_TAGS_CLICKED = 'device-tags-clicked',
     SUPPORT_CLICKED = 'support-clicked',
@@ -221,6 +234,7 @@ export enum InteractSubtype {
     DELETE_CLICKED = 'delete-clicked',
     DIAL_SEARCH_RESULT_FOUND = 'dial-code-search-result-found',
     LOADING_SPINE = 'loading-spine',
+    LOADING_SPINE_COMPLETED = 'loading-spine-completed',
     DOWNLOAD_ALL_CLICKED = 'download-all-clicked',
     CANCEL_CLICKED = 'cancel-clicked',
     CLOSE_CLICKED = 'close-clicked',
@@ -245,7 +259,39 @@ export enum InteractSubtype {
     ENROLL_CLICKED = 'enroll-clicked',
     YES_CLICKED = 'yes-clicked',
     NO_CLICKED = 'no-clicked',
-    RESUME_CLICKED = 'resume-clicked'
+    RESUME_CLICKED = 'resume-clicked',
+    APP_INTIATED = 'app-initiated',
+    ACTIVE_DOWNLOADS_CLICKED = 'active-downloads-clicked',
+    SORT_OPTION_CLICKED = 'sort-option-clicked',
+    SORT_OPTION_SELECTED = 'sort-options-selected',
+    ACTION_BUTTON_CLICKED = 'action-button-clicked',
+    OUTSIDE_POPUP_AREA_CLICKED = 'outside-popup-area-clicked',
+    POPUP_DISMISSED= 'popup-dismissed',
+    DOWNLOAD_CANCEL_ALL_CLICKED = 'download-cancel-all-clicked',
+    DOWNLOAD_CANCEL_CLICKED = 'download-cancel-clicked',
+    RATE_LATER_CLICKED = 'rate-later-clicked',
+    PLAY_STORE_BUTTON_CLICKED = 'play-store-button-clicked',
+    HELP_SECTION_CLICKED = 'help-section-clicked',
+    APP_RATING_APPEARED = 'app-rating-appeared',
+    USER_TYPE_SELECTED = 'user-type-selected',
+    QR_CODE_INVALID = 'qr-code-invalid',
+    QR_CODE_COMINGSOON = 'qr-code-comingsoon',
+    IMPORT_COMPLETED = 'import-completed',
+    QR_SCAN_INVALID = 'qr-scan-invalid',
+    UNIT_CLICKED = 'unit-clicked',
+    PERMISSION_POPUP = 'permission-popup',
+    WALKTHROUGH_BACKDROP_CLICKED = 'walkthrough-backdrop-clicked',
+    WALKTHROUGH_CONFIRMATION_CLICKED = 'walkthrough-confirmation-clicked'
+}
+
+export enum ActionButtonType {
+    POSITIVE = 'positive',
+    NEGATIVE = 'negative'
+}
+
+export enum CorReleationDataType {
+    COURSE_BATCH = 'CourseBatch',
+    FTUE = 'Ftue',
 }
 
 

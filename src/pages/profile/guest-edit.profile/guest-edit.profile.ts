@@ -171,9 +171,7 @@ export class GuestEditProfilePage {
   }
 
   ionViewWillEnter() {
-    const header = this.headerService.getDefaultPageConfig();
-    header.showHeader = false;
-    this.headerService.updatePageConfig(header);
+    this.headerService.hideHeader();
     this.getSyllabusDetails();
     this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
       this.dismissPopup();
@@ -281,6 +279,7 @@ export class GuestEditProfilePage {
   }
 
   getSyllabusDetails() {
+    this._dismissLoader();
     this.loader = this.getLoader();
     this.loader.present();
     const getSuggestedFrameworksRequest: GetSuggestedFrameworksRequest = {
@@ -311,15 +310,14 @@ export class GuestEditProfilePage {
 
               }).catch(() => {
                 this.isFormValid = false;
-                this.loader.dismiss();
+                this._dismissLoader();
                 this.commonUtilService.showToast(this.commonUtilService.translateMessage('NEED_INTERNET_TO_CHANGE'));
               });
           } else {
-            this.loader.dismiss();
+            this._dismissLoader();
           }
         } else {
-          this.loader.dismiss();
-
+          this._dismissLoader();
           this.commonUtilService.showToast(this.commonUtilService.translateMessage('NO_DATA_FOUND'));
         }
       });
@@ -333,12 +331,8 @@ export class GuestEditProfilePage {
   getCategoryData(req: GetFrameworkCategoryTermsRequest, list): void {
     this.frameworkUtilService.getFrameworkCategoryTerms(req).toPromise()
     .then((result: CategoryTerm[]) => {
-
-        if (this.loader !== undefined) {
-          this.loader.dismiss();
-        }
-
-        this[list] = result;
+      this._dismissLoader();
+      this[list] = result;
 
         if (req.currentCategoryCode === 'board') {
           const boardName = this.syllabusList.find(framework => this.frameworkId === framework.code);
@@ -429,7 +423,7 @@ export class GuestEditProfilePage {
     oldAttribute.subject = this.profileForTelemetry.subject ? this.profileForTelemetry.subject : '';
     newAttribute.subject = event ? event : '';
     if (!_.isEqual(oldAttribute, newAttribute)) {
-      this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute);
+      this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute, PageId.GUEST_PROFILE);
     }
     this.profileForTelemetry.subject = event;
   }
@@ -446,6 +440,7 @@ export class GuestEditProfilePage {
           medium: []
         });
         if (showloader) {
+          this._dismissLoader();
           this.loader = this.getLoader();
           this.loader.present();
         }
@@ -462,7 +457,7 @@ export class GuestEditProfilePage {
         oldAttribute.board = this.profileForTelemetry.board ? this.profileForTelemetry.board : '';
         newAttribute.board = this.guestEditForm.value.boards ? this.guestEditForm.value.boards : '';
         if (!_.isEqual(oldAttribute, newAttribute)) {
-          this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute);
+          this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute, PageId.GUEST_PROFILE);
         }
         this.profileForTelemetry.board = this.guestEditForm.value.boards;
         this.checkPrevValue(2, 'mediumList', this.guestEditForm.value.boards);
@@ -476,7 +471,7 @@ export class GuestEditProfilePage {
         oldAttribute.medium = this.profileForTelemetry.medium ? this.profileForTelemetry.medium : '';
         newAttribute.medium = this.guestEditForm.value.medium ? this.guestEditForm.value.medium : '';
         if (!_.isEqual(oldAttribute, newAttribute)) {
-          this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute);
+          this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute, PageId.GUEST_PROFILE);
         }
         this.profileForTelemetry.medium = this.guestEditForm.value.medium;
         this.checkPrevValue(3, 'gradeList', this.guestEditForm.value.medium);
@@ -488,7 +483,7 @@ export class GuestEditProfilePage {
         oldAttribute.class = this.profileForTelemetry.grade ? this.profileForTelemetry.grade : '';
         newAttribute.class = this.guestEditForm.value.grades ? this.guestEditForm.value.grades : '';
         if (!_.isEqual(oldAttribute, newAttribute)) {
-          this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute);
+          this.appGlobalService.generateAttributeChangeTelemetry(oldAttribute, newAttribute, PageId.GUEST_PROFILE);
         }
         this.profileForTelemetry.grade = this.guestEditForm.value.grades;
         this.checkPrevValue(4, 'subjectList', this.guestEditForm.value.grades);
@@ -603,7 +598,7 @@ export class GuestEditProfilePage {
         if (this.isCurrentUser) {
           this.publishProfileEvents(formVal);
         }
-        loader.dismiss();
+        this._dismissLoader(loader);
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_SUCCESS'));
         this.telemetryGeneratorService.generateInteractTelemetry(
           InteractType.OTHER,
@@ -613,7 +608,7 @@ export class GuestEditProfilePage {
         );
         this.navCtrl.pop();
       }, (err: any) => {
-        loader.dismiss();
+        this._dismissLoader(loader);
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('PROFILE_UPDATE_FAILED'));
       });
   }
@@ -670,13 +665,13 @@ export class GuestEditProfilePage {
     }
 
     this.profileService.createProfile(req, req.source).subscribe((res: any) => {
-      loader.dismiss();
+      this._dismissLoader(loader);
       this.commonUtilService.showToast(this.commonUtilService.translateMessage('USER_CREATED_SUCCESSFULLY'));
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.OTHER, InteractSubtype.CREATE_USER_SUCCESS, Environment.USER, PageId.CREATE_USER);
       this.navCtrl.pop();
     }, (err: any) => {
-        loader.dismiss();
+        this._dismissLoader(loader);
         this.commonUtilService.showToast(this.commonUtilService.translateMessage('FILL_THE_MANDATORY_FIELDS'));
       });
   }
@@ -686,5 +681,15 @@ export class GuestEditProfilePage {
       duration: 3000,
       spinner: 'crescent'
     });
+  }
+
+  private _dismissLoader(loader?) {
+    if (loader) {
+      loader.dismiss();
+      loader = undefined;
+    } else if (this.loader) {
+      this.loader.dismiss();
+      this.loader = undefined;
+    }
   }
 }

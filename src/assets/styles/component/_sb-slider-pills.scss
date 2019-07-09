@@ -43,7 +43,7 @@
         .pill {
             border:$secondary-color 1px solid;
             color:$secondary-color;
-            &:hover, &:active, &.active {
+            &:active, &.active {
             color: $white-color;
             background-color:$secondary-color;
             box-shadow: 0 0 4px 0 rgba(21,18,18,0.24), 0 2px 4px 0 rgba(0,0,0,0.12);
@@ -62,7 +62,7 @@
             box-shadow: 0 3px 4px 0 rgba(0,0,0,0.19);
             color: $primary-color;	
             min-height: ($base-block-space * 4);
-            &:hover, &:active, &.active {
+            &:active, &.active {
                 background-color: $primary-color;
                 color: $white-color;
             }

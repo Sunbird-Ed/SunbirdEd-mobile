@@ -1,5 +1,7 @@
+import { ActiveDownloadsPage } from './../active-downloads/active-downloads';
 import { Component, Inject, NgZone, ViewChild, OnInit } from '@angular/core';
 import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController } from 'ionic-angular';
+import { Content as iContent } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
@@ -37,7 +39,13 @@ import {
   Rollup,
   TelemetryErrorCode,
   TelemetryObject,
-  ContentDeleteStatus
+  ContentDeleteStatus,
+  ProfileService,
+  ContentAccessStatus,
+  ContentAccess,
+  ContentMarkerRequest,
+  MarkerType,
+  Profile
 } from 'sunbird-sdk';
 import { Subscription } from 'rxjs';
 import {
@@ -193,6 +201,8 @@ export class CollectionDetailsEtbPage implements OnInit {
   ratingComment = '';
   // defaultIcon
   defaultAppIcon: string;
+
+  localResourseCount: number;
   /**
    * Telemetry roll up object
    */
@@ -214,11 +224,13 @@ export class CollectionDetailsEtbPage implements OnInit {
   batchDetails: any;
   pageName: any;
   headerObservable: any;
-
+  breadCrumb = new Map();
+  scrollPosition = 0;
 
   // Local Image
   localImage = '';
   @ViewChild(Navbar) navBar: Navbar;
+  @ViewChild(iContent) ionContent: iContent;
   private eventSubscription: Subscription;
 
   showDownload: boolean;
@@ -245,6 +257,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     private toastController: ToastController,
     private fileSizePipe: FileSizePipe,
     private headerService: AppHeaderService,
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService
   ) {
     this.objRollup = new Rollup();
     this.checkLoggedInOrGuestUser();
@@ -262,7 +275,7 @@ export class CollectionDetailsEtbPage implements OnInit {
 	 */
   ngOnInit() {
   }
-
+  
   ionViewDidLoad() {
     /*this.navBar.backButtonClick = () => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
@@ -282,7 +295,7 @@ export class CollectionDetailsEtbPage implements OnInit {
         this.handleHeaderEvents(eventName);
       });
       this.headerConfig = this.headerService.getDefaultPageConfig();
-      this.headerConfig.actionButtons = [];
+      this.headerConfig.actionButtons = ['download'];
       this.headerConfig.showHeader = false;
       this.headerConfig.showBurgerMenu = false;
       this.headerService.updatePageConfig(this.headerConfig);
@@ -316,6 +329,7 @@ export class CollectionDetailsEtbPage implements OnInit {
         this.objType = contentType;
         this.generateStartEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
         this.generateImpressionEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
+        this.markContent();
       }
 
       this.didViewLoad = true;
@@ -332,6 +346,28 @@ export class CollectionDetailsEtbPage implements OnInit {
         }
       });
     });
+    this.ionContent.ionScroll.subscribe((event) => {
+      this.scrollPosition = event.scrollTop;
+    });
+  }
+
+  async markContent() {
+        const addContentAccessRequest: ContentAccess = {
+            status: ContentAccessStatus.PLAYED,
+            contentId: this.identifier,
+            contentType: this.content.contentType
+        };
+        const profile: Profile = await this.appGlobalService.getCurrentUser();
+        this.profileService.addContentAccess(addContentAccessRequest).toPromise().then();
+            const contentMarkerRequest: ContentMarkerRequest = {
+                uid: profile.uid,
+                contentId: this.identifier,
+                data: JSON.stringify(this.content.contentData),
+                marker: MarkerType.PREVIEWED,
+                isMarked: true,
+                extraInfo: {}
+            };
+            this.contentService.setContentMarker(contentMarkerRequest).toPromise().then();
   }
 
   async presentToastWithOptions() {
@@ -350,12 +386,27 @@ export class CollectionDetailsEtbPage implements OnInit {
   }
 
   // toggle the card
-  toggleGroup(group) {
+  toggleGroup(group, content) {
+    let isCollapsed = true;
     if (this.isGroupShown(group)) {
+      isCollapsed = false;
       this.shownGroup = null;
     } else {
       this.shownGroup = group;
     }
+    const values = new Map();
+    values['isCollapsed'] = isCollapsed;
+    const telemetryObject = new TelemetryObject(content.identifier, ContentType.TEXTBOOK_UNIT, content.contentData.pkgVersion);
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.UNIT_CLICKED,
+      Environment.HOME,
+      PageId.COLLECTION_DETAIL,
+      telemetryObject,
+      values,
+      undefined,
+      this.corRelationList
+    );
   }
 
   // to check whether the card is toggled or not
@@ -567,7 +618,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     if (this.contentDetail.contentData.me_totalDownloads) {
       this.contentDetail.contentData.me_totalDownloads = this.contentDetail.contentData.me_totalDownloads.split('.')[0];
     }
-      this.setCollectionStructure();
+    this.setCollectionStructure();
   }
 
   setCollectionStructure() {
@@ -626,7 +677,7 @@ export class CollectionDetailsEtbPage implements OnInit {
         isChildContent: isChild,
         destinationFolder: cordova.file.externalDataDirectory,
         contentId: value,
-        correlationData: this.corRelationList !== undefined ? this.corRelationList : []
+        correlationData: this.corRelationList ? this.corRelationList : []
       });
     });
 
@@ -640,10 +691,13 @@ export class CollectionDetailsEtbPage implements OnInit {
    * @param {boolean} isChild
    */
   importContent(identifiers: Array<string>, isChild: boolean, isDownloadAllClicked?) {
-    this.headerService.hideHeader();
+    if (this.showLoading && !this.isDownloadStarted) {
+      this.headerService.hideHeader();
+    }
     const option: ContentImportRequest = {
       contentImportArray: this.getImportContentRequestBody(identifiers, isChild),
-      contentStatusArray: []
+      contentStatusArray: [],
+      fields: ['appIcon', 'name', 'subject', 'size', 'gradeLevel'],
     };
     // Call content service
     this.contentService.importContent(option).toPromise()
@@ -730,15 +784,22 @@ export class CollectionDetailsEtbPage implements OnInit {
       .then((data: Content) => {
         this.zone.run(() => {
           if (data && data.children) {
-            //  console.log('ChildrenData', this.childrenData);
+            this.breadCrumb.set(data.identifier, data.contentData.name);
             this.childrenData = data.children;
           }
 
           if (!this.isDepthChild) {
             this.downloadSize = 0;
+            this.localResourseCount = 0;
             this.getContentsSize(data.children || []);
           }
           this.showChildrenLoader = false;
+          this.telemetryGeneratorService.generateInteractTelemetry(
+            InteractType.OTHER,
+            InteractSubtype.IMPORT_COMPLETED,
+            Environment.HOME,
+            PageId.COLLECTION_DETAIL
+          );
         });
       })
       .catch(() => {
@@ -746,17 +807,26 @@ export class CollectionDetailsEtbPage implements OnInit {
           this.showChildrenLoader = false;
         });
       });
+      this.ionContent.scrollTo(0, this.scrollPosition);
   }
 
   getContentsSize(data) {
     _.forEach(data, (value) => {
+      this.breadCrumb.set(value.identifier, value.contentData.name);
       if (value.contentData.size) {
         this.downloadSize += Number(value.contentData.size);
       }
+      if (!value.children) {
+        if (value.isAvailableLocally) {
+          this.localResourseCount++;
+        }
+      }
+
       this.getContentsSize(value.children);
       if (value.isAvailableLocally === false) {
         this.downloadIdentifiers.push(value.contentData.identifier);
       }
+
     });
     if (this.downloadIdentifiers.length && !this.isDownloadCompleted) {
       this.showDownloadBtn = true;
@@ -807,7 +877,8 @@ export class CollectionDetailsEtbPage implements OnInit {
           content: content,
           depth: depth,
           contentState: stateData,
-          corRelation: this.corRelationList
+          corRelation: this.corRelationList,
+          breadCrumb: this.breadCrumb
         });
       }
     });
@@ -820,7 +891,8 @@ export class CollectionDetailsEtbPage implements OnInit {
       content: content,
       depth: depth,
       contentState: stateData,
-      corRelation: this.corRelationList
+      corRelation: this.corRelationList,
+      breadCrumb: this.breadCrumb
     });
   }
 
@@ -902,9 +974,7 @@ export class CollectionDetailsEtbPage implements OnInit {
                 this.showLoading = false;
                 this.refreshHeader();
                 this.updateSavedResources();
-                setTimeout(() => {
-                  this.setChildContents();
-                }, 500);
+                this.setChildContents();
                 this.contentDetail.isAvailableLocally = true;
               }
 
@@ -1081,8 +1151,8 @@ export class CollectionDetailsEtbPage implements OnInit {
   showDownloadConfirmationAlert(myEvent) {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       let contentTypeCount;
-      if (this.contentDetail.contentData.contentTypesCount) {
-        contentTypeCount = this.contentTypesCount.TextBookUnit;
+      if (this.downloadIdentifiers.length) {
+        contentTypeCount = this.downloadIdentifiers.length;
       } else {
         contentTypeCount = '';
       }
@@ -1097,8 +1167,8 @@ export class CollectionDetailsEtbPage implements OnInit {
           },
         ],
         icon: null,
-        metaInfo: contentTypeCount +
-          'items' + '(' + this.fileSizePipe.transform(this.contentDetail.contentData.size, 2) + ')',
+        metaInfo: this.commonUtilService.translateMessage('ITEMS', contentTypeCount)
+          + ' (' + this.fileSizePipe.transform(this.downloadSize, 2) + ')',
       }, {
           cssClass: 'sb-popover info',
         });
@@ -1116,6 +1186,7 @@ export class CollectionDetailsEtbPage implements OnInit {
             this.objRollup,
             this.corRelationList);
           this.downloadAllContent();
+          this.events.publish('header:decreasezIndex');
         } else {
           // Cancel Clicked Telemetry
           this.generateCancelDownloadTelemetry(this.contentDetail);
@@ -1147,12 +1218,12 @@ export class CollectionDetailsEtbPage implements OnInit {
     const values = new Map();
     const telemetryObject = new TelemetryObject(content.identifier || content.contentId, content.contentType, content.pkgVersion);
     this.telemetryGeneratorService.generateInteractTelemetry(
-        InteractType.TOUCH,
-        InteractSubtype.CLOSE_CLICKED,
-        Environment.HOME,
-        PageId.COLLECTION_DETAIL,
-        telemetryObject,
-        values);
+      InteractType.TOUCH,
+      InteractSubtype.CLOSE_CLICKED,
+      Environment.HOME,
+      PageId.COLLECTION_DETAIL,
+      telemetryObject,
+      values);
   }
 
   /**
@@ -1179,6 +1250,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   ionViewWillLeave() {
     this.downloadProgress = 0;
     this.headerObservable.unsubscribe();
+    this.events.publish('header:setzIndexToNormal');
     if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
     }
@@ -1204,11 +1276,16 @@ export class CollectionDetailsEtbPage implements OnInit {
       this.objRollup,
       this.corRelationList);
     let contentTypeCount;
-    if (this.contentDetail.contentData.contentTypesCount) {
-      contentTypeCount = this.contentTypesCount.TextBookUnit;
+    let metaInfo: string;
+
+    if (this.localResourseCount) {
+      contentTypeCount = this.localResourseCount + '';
+      metaInfo = this.commonUtilService.translateMessage('ITEMS', contentTypeCount) +
+      ' (' + this.fileSizePipe.transform(this.contentDetail.sizeOnDevice, 2) + ')';
     } else {
-      contentTypeCount = '';
+      metaInfo = this.fileSizePipe.transform(this.contentDetail.sizeOnDevice, 2);
     }
+
     const confirm = this.popoverCtrl.create(SbPopoverComponent, {
       content: this.contentDetail,
       isChild: this.isDepthChild,
@@ -1224,8 +1301,7 @@ export class CollectionDetailsEtbPage implements OnInit {
         },
       ],
       icon: null,
-      sbPopoverContent: contentTypeCount +
-        'items' + '(' + this.fileSizePipe.transform(this.contentDetail.contentData.size, 2) + ')',
+      sbPopoverContent: metaInfo,
       metaInfo: this.contentDetail.contentData.name
     }, {
         cssClass: 'sb-popover danger',
@@ -1233,7 +1309,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     confirm.present({
       ev: event
     });
-       confirm.onDidDismiss((canDelete: any) => {
+    confirm.onDidDismiss((canDelete: any) => {
       if (canDelete) {
         this.deleteContent();
       }
@@ -1292,10 +1368,11 @@ export class CollectionDetailsEtbPage implements OnInit {
 
   refreshHeader() {
     this.headerConfig = this.headerService.getDefaultPageConfig();
-    this.headerConfig.actionButtons = [];
+    this.headerConfig.actionButtons = ['download'];
     this.headerConfig.showBurgerMenu = false;
     this.headerConfig.showHeader = true;
     this.headerService.updatePageConfig(this.headerConfig);
+    this.events.publish('header:setzIndexToNormal');
   }
   handleHeaderEvents($event) {
     switch ($event.name) {
@@ -1303,6 +1380,18 @@ export class CollectionDetailsEtbPage implements OnInit {
         true, this.cardData.identifier, this.corRelationList);
       this.handleBackButton();
                     break;
+      case 'download': this.redirectToActivedownloads();
+                        break;
+
     }
+  }
+
+  private redirectToActivedownloads() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.ACTIVE_DOWNLOADS_CLICKED,
+      Environment.HOME,
+      PageId.COLLECTION_DETAIL);
+    this.navCtrl.push(ActiveDownloadsPage);
   }
 }

@@ -49,13 +49,16 @@ export class SbDownloadPopupComponent implements OnChanges {
     private fileSizePipe: FileSizePipe) {
   }
 
-  togglePopover() {
-    console.log('caldddd');
+  togglePopover(popover?) {
+    if (popover) {
+      this.events.publish('header:decreasezIndex');
+    } else {
+      this.events.publish('header:setzIndexToNormal');
+    }
   }
   cancelDownload() {
     this.cancelDownloadEmit.emit();
     this.showDownload = false;
-    console.log('cald');
   }
   ngOnChanges(changes: SimpleChanges) {
     // only run when property "data" changed

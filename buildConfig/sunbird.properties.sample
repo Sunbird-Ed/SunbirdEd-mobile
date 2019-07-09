@@ -50,3 +50,7 @@ open_rapdiscovery_enabled = OPEN_RAPDISCOVERY_ENABLED
 display_onboarding_category_page = DISPLAY_ONBOARDING_CATEGORY_PAGE
 display_onboarding_scan_page = DISPLAY_ONBOARDING_SCAN_PAGE
 support_email = SUPPORT_EMAIL
+
+dev_custom_scheme = org.sunbird.app.dev
+staging_custom_scheme = staging.diksha.app
+production_custom_scheme = in.gov.diksha.app

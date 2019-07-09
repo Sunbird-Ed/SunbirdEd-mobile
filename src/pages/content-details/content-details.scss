@@ -41,6 +41,88 @@ page-content-details {
         padding: $sb-modal-actions-padding !important;
     }
 
+    // FTUE
+    .sb-content-ftue{
+        padding: 30px 15px 30px 15px;
+        @include padding(($base-block-space * 3),($base-block-space * 3),($base-block-space * 3),($base-block-space * 3));
+        .sb-content-info-ftue{
+            display: flex;
+            .sb-content-info--left-ftue{
+                // flex-grow: 3;
+                padding-right: 15px;
+                float: left;
+                width: calc(100% - 50px);
+                .sb-dt-title{
+                    font-size: 16px;
+                    color: #373737;
+                }
+            }
+            .sb-img-container{
+                float: left;
+                img{
+                    width: 50px;
+                    height: 50px;
+                }
+            }
+        }
+        .sb-content-data-ftue{
+            @include clearfix;
+        }
+        .sb-content-data-ftue{
+            padding: 15px 0;
+            .sb-by{
+                font-size: 12px;
+            }
+            .sb-user{
+                color: $gray-200;
+            }
+            .sb-rating-view{
+                .sb-rating-value{
+                    font-weight: bold;
+                    padding-right: 5px;
+                }
+                .sb-rating-star{
+                    color: $yellow;
+                }
+            }
+        }
+    }
+    .content-btn-container{
+        text-align: center;
+        margin-top: 5px; 
+        .content-btn{
+            background-color: $secondary-200;
+            padding: 10px 20px;
+            text-align: center;
+            color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+            img{
+                vertical-align: middle;
+                width: 25px;
+            }
+            span{
+                display: inline-block;
+                vertical-align: middle;
+                font-size: 16px;
+                padding-left: 5px;
+            }
+        }
+    }
+    .sb-dt-card {
+        margin: 0 !important;
+        box-shadow: none;
+        background-color: $primary-100;
+    }
+    .sb-content-info-container .sb-content-info-items{
+        .sb-content-info-title{
+            color: $blue;
+        }
+        .sb-content-info-card{
+            box-shadow: none;
+        }
+    }
+
 }
 .sb-dt-content.sb-dt-content-main
 {
@@ -48,7 +130,6 @@ page-content-details {
     grid-gap: 8px;
     grid-template-columns: auto;
 }
-
 .disable-ripple ion-button-effect {
     display: none;
 }

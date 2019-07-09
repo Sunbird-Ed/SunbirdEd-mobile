@@ -1,0 +1,9 @@
+<ion-content hide-header-footer overflow-scroll="true">
+  <!-- <ion-refresher (ionRefresh)="swipeDownToRefresh($event)"></ion-refresher> -->
+  <!-- <div class="sb-view-all-container"> -->
+    <downloads-header [storageInfo]="storageInfo" [appName]="appName"></downloads-header>
+    <no-downloads *ngIf="!downloadedContents.length"></no-downloads>
+    <downloads-tab *ngIf="downloadedContents.length" [downloadedContents]="downloadedContents" (deleteContents)="deleteContents($event)"
+    (sortCriteriaChanged)="onSortCriteriaChange($event)"></downloads-tab>
+<!-- </div> -->
+</ion-content>

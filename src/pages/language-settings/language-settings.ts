@@ -8,6 +8,9 @@ import {OnboardingPage} from '@app/pages/onboarding/onboarding';
 import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
 import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
 import { ResourcesPage } from '../resources/resources';
+import { NotificationService } from '@app/service/notification.service';
+
+declare const cordova;
 
 
 @IonicPage()
@@ -41,7 +44,8 @@ export class LanguageSettingsPage {
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
-    private headerServie: AppHeaderService
+    private headerServie: AppHeaderService,
+    private notification: NotificationService
   ) {
     this.mainPage = this.navParams.get('mainPage');
    }
@@ -207,6 +211,7 @@ export class LanguageSettingsPage {
       this.events.publish('onAfterLanguageChange:update', {
         selectedLanguage: this.language
       });
+      this.notification.setupLocalNotification(this.language);
       if (this.isFromSettings) {
         this.navCtrl.pop();
       } else if (this.appGlobalService.DISPLAY_ONBOARDING_PAGE) {
@@ -220,4 +225,5 @@ export class LanguageSettingsPage {
       this.commonUtilService.showToast('PLEASE_SELECT_A_LANGUAGE', false, 'redErrorToast');
     }
   }
+
 }

@@ -1,10 +1,14 @@
-import { Component, Input, Output, EventEmitter, OnInit, Inject, OnDestroy } from '@angular/core';
-import { Events, App, MenuController } from 'ionic-angular';
-import { CommonUtilService, AppGlobalService, UtilityService } from '@app/service';
-import { SharedPreferences } from 'sunbird-sdk';
-import { PreferenceKey, GenericAppConfig } from '../../app/app.constant';
-import { AppVersion } from '@ionic-native/app-version';
+import {ChangeDetectorRef, Component, EventEmitter, Inject, Input, OnInit, Output, OnDestroy} from '@angular/core';
+import {App, Events, MenuController, Platform} from 'ionic-angular';
+import {AppGlobalService, UtilityService, CommonUtilService} from '@app/service';
+import {DownloadService, SharedPreferences} from 'sunbird-sdk';
+import {GenericAppConfig, PreferenceKey} from '../../app/app.constant';
+import {AppVersion} from '@ionic-native/app-version';
+import { NotificationService } from '@app/service/notification.service';
 import { Subscription } from 'rxjs';
+import {TranslateService} from "@ngx-translate/core";
+
+declare const cordova;
 
 @Component({
   selector: 'application-header',
@@ -16,20 +20,32 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
   @Input() headerConfig: any = false;
   @Output() headerEvents = new EventEmitter();
   @Output() sideMenuItemEvent = new EventEmitter();
-  appLogo: string;
-  appName: string;
+
+  appLogo?: string;
+  appName?: string;
+  versionName?: string;
+  versionCode?: string;
+  decreaseZindex = false;
+  isRtl: boolean;
   isLoggedIn = false;
-  versionName: string;
-  versionCode: string;
+  showDownloadAnimation: Boolean = false;
   networkSubscription: Subscription;
 
-  constructor(public menuCtrl: MenuController,
+  constructor(
+    public menuCtrl: MenuController,
     private commonUtilService: CommonUtilService,
     @Inject('SHARED_PREFERENCES') private preference: SharedPreferences,
+    @Inject('DOWNLOAD_SERVICE') private downloadService: DownloadService,
     private events: Events,
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
-    private utilityService: UtilityService) {
+    private utilityService: UtilityService,
+    private changeDetectionRef: ChangeDetectorRef,
+    private app: App,
+    private notification: NotificationService,
+    private translate: TranslateService,
+    private platform : Platform
+  ) {
     this.setLanguageValue();
     this.events.subscribe('onAfterLanguageChange:update', (res) => {
       if (res && res.selectedLanguage) {
@@ -41,31 +57,46 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.setAppLogo();
     this.setAppVersion();
-    this.events.subscribe('user-profile-changed', (res) => {
-     this.setAppLogo();
-    });
-    this.events.subscribe('app-global:profile-obj-changed', (res) => {
+    this.events.subscribe('user-profile-changed', () => {
       this.setAppLogo();
-     });
-     this.networkSubscription = this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
+    });
+    this.events.subscribe('app-global:profile-obj-changed', () => {
+      this.setAppLogo();
+    });
+    this.translate.onLangChange.subscribe((params) => {
+      if(params.lang == 'ur' && !this.platform.isRTL) {
+        this.isRtl = true;
+      } else if(this.platform.isRTL) {
+        this.isRtl = false;
+      }
+    });
+    this.events.subscribe('header:decreasezIndex', () => {
+      this.decreaseZindex = true;
+    });
+    this.events.subscribe('header:setzIndexToNormal', () => {
+      this.decreaseZindex = false;
+    });
+    this.listenDownloads();
+    this.networkSubscription = this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
         this.setAppLogo();
     });
   }
+
   setAppVersion(): any {
-    this.utilityService.getBuildConfigValue(GenericAppConfig.VERSION_NAME )
-            .then(vName => {
-              this.versionName = vName;
-                this.utilityService.getBuildConfigValue(GenericAppConfig.VERSION_CODE )
-                .then(vCode => {
-                  this.versionCode = vCode;
-                })
-                .catch(error => {
-                  console.log('Error in getting app version code');
-                });
-            })
-            .catch(error => {
-              console.log('Error in getting app version name');
-            });
+    this.utilityService.getBuildConfigValue(GenericAppConfig.VERSION_NAME)
+      .then(vName => {
+        this.versionName = vName;
+        this.utilityService.getBuildConfigValue(GenericAppConfig.VERSION_CODE)
+          .then(vCode => {
+            this.versionCode = vCode;
+          })
+          .catch(error => {
+            console.error('Error in getting app version code', error);
+          });
+      })
+      .catch(error => {
+        console.error('Error in getting app version name', error);
+      });
   }
 
   setLanguageValue() {
@@ -73,6 +104,18 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
       .then(value => {
         this.selectedLanguage = value;
       });
+    this.preference.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
+    .then(langCode => {
+      console.log('Language code: ', langCode);
+      this.notification.setupLocalNotification(langCode);
+    });
+  }
+
+  listenDownloads() {
+    this.downloadService.getActiveDownloadRequests().subscribe((list) => {
+      this.showDownloadAnimation = !!list.length;
+      this.changeDetectionRef.detectChanges();
+    });
   }
 
   setAppLogo() {
@@ -85,8 +128,8 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
     } else {
       this.isLoggedIn = true;
       this.preference.getString('app_logo').toPromise().then(value => {
-        if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-          this.appLogo = value;
+        if (value) {
+          this.appLogo =  this.commonUtilService.networkInfo.isNetworkAvailable ? value : './assets/imgs/ic_launcher.png';
         } else {
           this.appLogo = './assets/imgs/ic_launcher.png';
         }
@@ -102,12 +145,12 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
   }
 
   emitEvent($event, name) {
-    this.headerEvents.emit({ name });
+      this.headerEvents.emit({name});
   }
 
   emitSideMenuItemEvent($event, menuItem) {
     this.toggleMenu();
-    this.sideMenuItemEvent.emit({ menuItem });
+    this.sideMenuItemEvent.emit({menuItem});
   }
 
   ngOnDestroy() {

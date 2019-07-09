@@ -575,7 +575,8 @@ export class CollectionDetailsPage {
   importContent(identifiers: Array<string>, isChild: boolean, isDownloadAllClicked?) {
     const option: ContentImportRequest = {
       contentImportArray: this.getImportContentRequestBody(identifiers, isChild),
-      contentStatusArray: []
+      contentStatusArray: [],
+      fields: ['appIcon', 'name', 'subject', 'size', 'gradeLevel']
     };
 
     // Call content service
@@ -994,7 +995,7 @@ export class CollectionDetailsPage {
   showDownloadConfirmationAlert(myEvent) {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       const popover = this.popoverCtrl.create(ConfirmAlertComponent, {}, {
-        cssClass: 'confirm-alert-box'
+        cssClass: 'sb-popover info'
       });
       popover.present({
         ev: myEvent

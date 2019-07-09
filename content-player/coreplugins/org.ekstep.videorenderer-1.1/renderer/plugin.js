@@ -56,7 +56,7 @@ org.ekstep.contentrenderer.baseLauncher.extend({
         video.id = "videoElement";
         video.autoplay = true;
         video.className = 'vjs-default-skin';
-        document.body.appendChild(video);
+		document.body.appendChild(video);
 
         var loaderArea = document.createElement('div');
         loaderArea.id = 'loaderArea';
@@ -71,7 +71,8 @@ org.ekstep.contentrenderer.baseLauncher.extend({
         jQuery('#loaderArea').show();
 
         if (data.mimeType === "video/x-youtube") {
-            this._loadYoutube(data.artifactUrl);
+        $('.vjs-default-skin').css('opacity', '0');
+        this._loadYoutube(data.artifactUrl);
         } else if (data.streamingUrl && (data.mimeType != "video/x-youtube")) {
             data.mimeType = this.supportedStreamingMimeType;
             this._loadVideo(data.streamingUrl, data);
@@ -101,7 +102,8 @@ org.ekstep.contentrenderer.baseLauncher.extend({
 
         if (data.streamingUrl || window.cordova) {
             var videoPlayer = videojs('videoElement', {
-                "controls": true, "autoplay": true, "preload": "auto"
+                "controls": true, "autoplay": true, "preload": "auto",
+                "nativeControlsForTouch": true
             });
         } else {
             var videoPlayer = videojs('videoElement', {
@@ -141,7 +143,8 @@ org.ekstep.contentrenderer.baseLauncher.extend({
             "controls": true, "autoplay": true, "preload": "auto"
         });
         videojs("videoElement").ready(function () {
-            var youtubeInstance = this;
+			var youtubeInstance = this;
+			$('.vjs-default-skin').css('opacity', '1');
             youtubeInstance.src({
                 type: 'video/youtube',
                 src: path
@@ -291,16 +294,18 @@ org.ekstep.contentrenderer.baseLauncher.extend({
         }
     },
     contentProgress: function () {
+        console.log("Content progress");
         var totalDuration = 0;
         if (this.videoPlayer){
-            if (content.mimeType === 'video/x-youtube') {
+            if (_.isFunction(this.videoPlayer.duration)) {
                 totalDuration = this.videoPlayer.duration();
             } else {
                 totalDuration = this.videoPlayer.duration;
             }
         }
         totalDuration = (this.currentTime < totalDuration) ? Math.floor(totalDuration) : Math.ceil(totalDuration);
-        return this.progres(this.currentTime, totalDuration);
+        var progress = this.progres(this.currentTime, totalDuration);
+        return progress === 0 ? 1 : progress;  // setting default value of progress=1 when video opened
     },
     onOverlayAudioMute: function () {
         if (!this.videoPlayer) return false

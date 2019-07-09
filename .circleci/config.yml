@@ -2,23 +2,26 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: circleci/node
+      - image: circleci/node:chakracore-10.13.0
     steps:
       - checkout
-      - run: npm install
       - run:
-        name: Installing genie-sdk-wrapper
-        command: |
-          git clone -b $buildBranch https://github.com/project-sunbird/genie-sdk-wrapper.git |
-          cd genie-sdk-wrapper |
-          rm package-lock.json |
-          npm install |
-          npm run build |
-          rm $(pwd)/dist/dependencies.json |
-          npm pack $(pwd)/dist |
-          cd .. |
-          npm install |
-          npm install $(pwd)/genie-sdk-wrapper/*.tgz --save |
-          rm -rf genie-sdk-wrapper
-      - run: npm run test:ci
+          name: Check current version of node
+          command: node -v
+      - restore_cache:
+          keys:
+            - node_modules_cache_{{ checksum "package-lock.json" }}
+      - run:
+          name: Install project dependencies
+          command: npm i -f
+      - save_cache:
+          key: node_modules_cache_{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+      - run:
+          name: Run Tests
+          command: npm run test:ci
+      - store_artifacts:
+          path: coverage
+
 

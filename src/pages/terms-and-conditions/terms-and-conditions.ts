@@ -3,7 +3,7 @@ import {Loading, LoadingController, NavParams, Platform} from 'ionic-angular';
 import {TncUpdateHandlerService} from '@app/service/handlers/tnc-update-handler.service';
 import {LogoutHandlerService} from '@app/service/handlers/logout-handler.service';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
-import {CommonUtilService, TelemetryGeneratorService} from '@app/service';
+import {CommonUtilService, TelemetryGeneratorService, AppHeaderService} from '@app/service';
 import {TranslateService} from '@ngx-translate/core';
 import {AppVersion} from '@ionic-native/app-version';
 import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
@@ -32,11 +32,13 @@ export class TermsAndConditionsPage {
     private commonUtilService: CommonUtilService,
     private translateService: TranslateService,
     private appVersion: AppVersion,
-    private telemetryGeneratorService: TelemetryGeneratorService
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private headerService: AppHeaderService
   ) {
   }
 
   public async ionViewDidLoad() {
+    this.headerService.hideHeader();
     this.userProfileDetails = (await this.profileService.getActiveSessionProfile({requiredFields: ProfileConstants.REQUIRED_FIELDS}).toPromise()).serverProfile;
 
     this.tncLatestVersionUrl = this.sanitizer

@@ -16,7 +16,8 @@ import {
   GetAllProfileRequest,
   ProfileService,
   SharedPreferences,
-  TelemetryImpressionRequest
+  TelemetryImpressionRequest,
+  Profile
 } from 'sunbird-sdk';
 
 declare const cordova;
@@ -135,7 +136,9 @@ export class SettingsPage {
               if (Boolean(val)) {
                 this.fileUrl = 'file://' + val;
                 this.subjectDetails = this.appName + ' ' + SUBJECT_NAME + '-' + this.deviceId;
-                this.socialSharing.shareViaEmail('', this.subjectDetails, [this.appGlobalService.SUPPORT_EMAIL], null, null, this.fileUrl)
+                this.socialSharing.shareViaEmail( this.getBoardMediumGrade(),
+                                                  this.subjectDetails,
+                                                  [this.appGlobalService.SUPPORT_EMAIL], null, null, this.fileUrl)
                   .catch(error => {
                     console.error(error);
                   });
@@ -146,7 +149,13 @@ export class SettingsPage {
       console.error('ERROR - ' + error);
     });
   }
-
+  getBoardMediumGrade(): string {
+    const userProfile: Profile = this.appGlobalService.getCurrentUser();
+    const userDetails: string = 'From: ' + userProfile.profileType[0].toUpperCase() + userProfile.profileType.slice(1) + ', ' +
+                                  this.appGlobalService.getSelectedBoardMediumGrade() +
+                                  '.<br> <br> <b>Ticket summary</b> <br> <br>';
+    return userDetails;
+  }
   // this.appGlobalService.APP_NAME
   shareApp() {
     const loader = this.commonUtilService.getLoader();

@@ -44,7 +44,7 @@ export class SbPopoverComponent {
 
 
   constructor(public viewCtrl: ViewController, public navParams: NavParams,
-    private platform: Platform) {
+    private platform: Platform, private events: Events) {
     this.content = this.navParams.get('content');
     this.actionsButtons = this.navParams.get('actionsButtons');
     this.icon = this.navParams.get('icon');
@@ -69,6 +69,16 @@ export class SbPopoverComponent {
       this.viewCtrl.dismiss();
       this.backButtonFunc();
     }, 20);
+  }
+
+  ionViewWillEnter(): void {
+    this.events.subscribe('deletedContentList:changed', (data) => {
+      this.sbPopoverMainTitle = data.deletedContentsInfo.deletedCount + '/' + data.deletedContentsInfo.totalCount;
+    });
+  }
+
+  ionViewWillLeave(): void {
+    this.events.unsubscribe('deletedContentList:changed');
   }
 
   closePopover() {

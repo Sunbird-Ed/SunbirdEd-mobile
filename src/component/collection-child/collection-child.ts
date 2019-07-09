@@ -11,6 +11,7 @@ import { CommonUtilService } from '@app/service';
 import { PopoverController } from 'ionic-angular';
 import { SbGenericPopoverComponent } from '../popups/sb-generic-popup/sb-generic-popover';
 import {Content} from 'sunbird-sdk';
+import {ComingSoonMessageService} from "@app/service/coming-soon-message.service";
 
 
 @Component({
@@ -18,12 +19,13 @@ import {Content} from 'sunbird-sdk';
     templateUrl: 'collection-child.html'
 })
 export class CollectionChildComponent implements AfterViewInit {
-
+    cardData: any;
     @Input() childData: Content;
     @Input() index: any;
     @Input() depth: any;
     @Input() corRelationList: any;
     @Input() isDepthChild: any;
+    @Input() breadCrumb: any;
 
 
     constructor(
@@ -31,9 +33,9 @@ export class CollectionChildComponent implements AfterViewInit {
         private zone: NgZone,
         private navParams: NavParams,
         private commonUtilService: CommonUtilService,
-        private popoverCtrl: PopoverController
-    ) { }
-
+        private popoverCtrl: PopoverController,
+        private comingSoonMessageService: ComingSoonMessageService
+    ) { this.cardData =this.navParams.get('content'); }
     navigateToDetailsPage(content: Content, depth) {
         const stateData = this.navParams.get('contentState');
 
@@ -43,7 +45,8 @@ export class CollectionChildComponent implements AfterViewInit {
                     content: content,
                     depth: depth,
                     contentState: stateData,
-                    corRelation: this.corRelationList
+                    corRelation: this.corRelationList,
+                    breadCrumb: this.breadCrumb
                 });
             } else if (content.mimeType === MimeType.COLLECTION) {
                 this.isDepthChild = true;
@@ -51,7 +54,8 @@ export class CollectionChildComponent implements AfterViewInit {
                     content: content,
                     depth: depth,
                     contentState: stateData,
-                    corRelation: this.corRelationList
+                    corRelation: this.corRelationList,
+                    breadCrumb: this.breadCrumb
                 });
             } else {
                 this.navCtrl.push(ContentDetailsPage, {
@@ -59,17 +63,21 @@ export class CollectionChildComponent implements AfterViewInit {
                     content: content,
                     depth: depth,
                     contentState: stateData,
-                    corRelation: this.corRelationList
+                    corRelation: this.corRelationList,
+                    breadCrumb: this.breadCrumb
                 });
             }
         });
     }
 
-    showCommingSoonPopup(childData: any) {
+   async showComingSoonPopup(childData: any) {
+      const channelId = (this.cardData.contentData && this.cardData.contentData.channel) || this.cardData.channel;
+      const message = await this.comingSoonMessageService.getComingSoonMessage(channelId, childData);
         if (childData.contentData.mimeType === 'application/vnd.ekstep.content-collection' && !childData.children) {
             const popover = this.popoverCtrl.create(SbGenericPopoverComponent, {
                 sbPopoverHeading: this.commonUtilService.translateMessage('CONTENT_COMMING_SOON'),
-                sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_IS_BEEING_ADDED') + childData.contentData.name,
+                sbPopoverMainTitle: message ? this.commonUtilService.translateMessage(message) :
+                  this.commonUtilService.translateMessage('CONTENT_IS_BEEING_ADDED') + childData.contentData.name,
                 actionsButtons: [
                     {
                         btntext: this.commonUtilService.translateMessage('OKAY'),

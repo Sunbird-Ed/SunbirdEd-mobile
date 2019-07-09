@@ -43,7 +43,7 @@ export class CommonUtilService implements OnDestroy {
     connectSubscription: any;
 
     disconnectSubscription: any;
-    private alert?: Alert;
+    private alert?: any;
 
     constructor(
         private toastCtrl: ToastController,
@@ -172,6 +172,12 @@ export class CommonUtilService implements OnDestroy {
      * @param {string} source Page from alert got called
      */
     showContentComingSoonAlert(source) {
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.OTHER,
+        InteractSubtype.QR_CODE_COMINGSOON,
+        source === PageId.ONBOARDING_PROFILE_PREFERENCES ? Environment.ONBOARDING : Environment.HOME,
+        source
+      );
         if (source !== 'user-type-selection') {
             this.afterOnBoardQRErrorAlert('ERROR_CONTENT_NOT_FOUND', 'CONTENT_IS_BEING_ADDED');
             return;
@@ -325,7 +331,7 @@ export class CommonUtilService implements OnDestroy {
                 ]
             });
             this.alert.present();*/
-            const confirm = this.popOverCtrl.create(SbGenericPopoverComponent, {
+            this.alert = this.popOverCtrl.create(SbGenericPopoverComponent, {
                 sbPopoverHeading: this.translateMessage('BACK_TO_EXIT'),
                 sbPopoverMainTitle: '',
                 actionsButtons: [
@@ -341,7 +347,7 @@ export class CommonUtilService implements OnDestroy {
             }, {
                     cssClass: 'sb-popover',
                 });
-            confirm.onDidDismiss((leftBtnClicked: any) => {
+            this.alert.onDidDismiss((leftBtnClicked: any) => {
                 if (leftBtnClicked == null) {
                     this.telemetryGeneratorService.generateInteractTelemetry(
                         InteractType.TOUCH,
@@ -369,7 +375,7 @@ export class CommonUtilService implements OnDestroy {
                     this.telemetryGeneratorService.generateEndTelemetry('app', '', '', environment);
                 }
             });
-            confirm.present({
+            this.alert.present({
                 ev: event
             });
             this.telemetryGeneratorService.generateBackClickedTelemetry(pageId, environment, isNavBack);
@@ -381,5 +387,12 @@ export class CommonUtilService implements OnDestroy {
                 this.alert = undefined;
             }
         }
+    }
+
+    fileSizeInMB(bytes) {
+        if (!bytes) {
+            return '0.00';
+        }
+        return (bytes / 1048576).toFixed(2);
     }
 }

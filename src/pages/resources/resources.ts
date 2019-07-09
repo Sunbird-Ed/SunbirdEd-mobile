@@ -1,6 +1,8 @@
-import { Search } from './../../app/app.constant';
-import { AfterViewInit, Component, Inject, NgZone, OnInit, ViewChild } from '@angular/core';
-import { Events, NavController, ToastController, MenuController, Scroll, Tabs } from 'ionic-angular';
+import { ActiveDownloadsPage } from '@app/pages/active-downloads/active-downloads';
+import {Search} from './../../app/app.constant';
+import {AfterViewInit, Component, Inject, NgZone, OnInit, ViewChild} from '@angular/core';
+import {Events, NavController, ToastController, MenuController, Scroll, Tabs} from 'ionic-angular';
+import {Content as ContentView} from 'ionic-angular';
 import * as _ from 'lodash';
 import { ViewMoreActivityPage } from '../view-more-activity/view-more-activity';
 import { SunbirdQRScanner } from '../qrscanner/sunbirdqrscanner.service';
@@ -44,7 +46,14 @@ import {
   SharedPreferences,
   TelemetryObject
 } from 'sunbird-sdk';
-import { Environment, ImpressionType, InteractSubtype, InteractType, PageId } from '../../service/telemetry-constants';
+import {
+  Environment,
+  ImpressionSubtype,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  PageId
+} from '../../service/telemetry-constants';
 import { PlayerPage } from '../player/player';
 import { Subscription } from 'rxjs';
 import { ProfileConstants } from '../../app';
@@ -99,7 +108,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   selectedValue: Array<string> = [];
   guestUser = false;
   showSignInCard = false;
-  showWarning = false;
   localResources: Array<any>;
   recentlyViewedResources: Array<any>;
   userId: string;
@@ -145,6 +153,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   networkSubscription: Subscription;
   headerObservable: any;
   scrollEventRemover: any;
+  @ViewChild('contentView') contentView: ContentView;
+
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
@@ -203,7 +213,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     });
 
     this.events.subscribe(AppGlobalService.PROFILE_OBJ_CHANGED, () => {
-      this.swipeDownToRefresh(false,true);
+      this.swipeDownToRefresh(false, true);
     });
 
     // Event for optional and forceful upgrade
@@ -214,9 +224,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       }
     });
 
-    this.events.subscribe('tab.change', (data) => {
+    this.events.subscribe('tab.change', (data: string) => {
       // this.ngZone.run(() => {
-      if (data === 'LIBRARY') {
+      if (data.trim().toUpperCase() === 'LIBRARY') {
         if (this.appliedFilter) {
           this.filterIcon = './assets/imgs/ic_action_filter.png';
           this.resourceFilter = undefined;
@@ -225,7 +235,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.getPopularContent();
         }
       } else if (data === '') {
-        this.qrScanner.startScanner(PageId.LIBRARY);
+        this.qrScanner.startScanner(this.appGlobalService.getPageIdForTelemetry());
       }
       // });
     });
@@ -512,10 +522,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.getGroupByPageReq.mode = 'hard';
     this.getGroupByPageReq.facets = Search.FACETS_ETB;
     this.getGroupByPageReq.contentTypes = [ContentType.TEXTBOOK];
-    this.getGroupByPage(isAfterLanguageChange,avoidRefreshList);
+    this.getGroupByPage(isAfterLanguageChange, avoidRefreshList);
   }
 
-  getGroupByPage(isAfterLanguageChange = false,avoidRefreshList = false) {
+  getGroupByPage(isAfterLanguageChange = false, avoidRefreshList = false) {
+    const selectedBoardMediumGrade = this.getGroupByPageReq.board[0] + ', ' +
+                                     this.getGroupByPageReq.medium[0] + ' Medium, ' +
+                                     this.getGroupByPageReq.grade[0] ;
+    this.appGlobalService.setSelectedBoardMediumGrade(selectedBoardMediumGrade);
     this.storyAndWorksheets = [];
     if (!this.refresh) {
       this.searchApiLoader = true;
@@ -577,6 +591,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             // check if locally available
             this.markLocallyAvailableTextBook();
             sectionInfo[sectionName] = count;
+            sectionInfo['board'] = this.getGroupByPageReq.board[0];
+            sectionInfo['medium'] = this.getGroupByPageReq.medium[0];
+            sectionInfo['grade'] = this.getGroupByPageReq.grade[0];
           }
 
           const resvalues = new Map();
@@ -596,7 +613,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             if (this.tabs.getSelected().tabTitle === 'LIBRARY‌' && !avoidRefreshList) {
               this.commonUtilService.showToast(
                 this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
-                  `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
+                `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
             }
           }
         });
@@ -712,47 +729,30 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewDidEnter() {
+    this.scrollToTop();
     this.preferences.getString('show_app_walkthrough_screen').toPromise()
-      .then(value => {
-        if (value === 'true') {
-          const driver = new Driver({
-            allowClose: true,
-            closeBtnText: this.commonUtilService.translateMessage('DONE'),
-            showButtons: true,
-          });
-
-          setTimeout(() => {
-            driver.highlight({
-              element: '#qrIcon',
-              popover: {
-                title: this.commonUtilService.translateMessage('ONBOARD_SCAN_QR_CODE'),
-                description: '<img src="assets/imgs/ic_scanqrdemo.png" /><p>' + this.commonUtilService
-                  .translateMessage('ONBOARD_SCAN_QR_CODE_DESC', this.appLabel) + '</p>',
-                showButtons: true,         // Do not show control buttons in footer
-                closeBtnText: this.commonUtilService.translateMessage('DONE'),
-              }
-            });
-
-            const element = document.getElementById('driver-highlighted-element-stage');
-            const img = document.createElement('img');
-            img.src = 'assets/imgs/ic_scan.png';
-            img.id = 'qr_scanner';
-            element.appendChild(img);
-          }, 100);
-          this.telemetryGeneratorService.generatePageViewTelemetry(PageId.ONBOARDING_QR_SHOWCASE, Environment.ONBOARDING, PageId.LIBRARY);
-          this.preferences.putString('show_app_walkthrough_screen', 'false').toPromise().then();
+      .then((value) => {
+        if(value === 'true') {
+          this.events.publish('show-qr-walkthrough' , {showWalkthroughBackDrop: true, appName: this.appLabel});
+          this.telemetryGeneratorService.generateImpressionTelemetry(
+            ImpressionType.VIEW,
+            ImpressionSubtype.QR_SCAN_WALKTHROUGH,
+            PageId.LIBRARY,
+            Environment.ONBOARDING
+          );
         }
       });
+    this.preferences.putString('show_app_walkthrough_screen', 'false').toPromise().then();
   }
 
   ionViewWillEnter() {
     this.events.subscribe('update_header', (data) => {
-      this.headerServie.showHeaderWithHomeButton(['search']);
+      this.headerServie.showHeaderWithHomeButton(['search', 'download']);
     });
     this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
-    this.headerServie.showHeaderWithHomeButton(['search']);
+    this.headerServie.showHeaderWithHomeButton(['search', 'download']);
 
     this.getCategoryData();
 
@@ -813,20 +813,10 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.telemetryGeneratorService.generatePullToRefreshTelemetry(PageId.LIBRARY, Environment.HOME);
       this.getGroupByPage();
     } else {
-      this.getPopularContent(false,null,avoidRefreshList);
+      this.getPopularContent(false, null, avoidRefreshList);
     }
 
   }
-
-
-  scanQRCode() {
-    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-      InteractSubtype.QRCodeScanClicked,
-      Environment.HOME,
-      PageId.LIBRARY);
-    this.qrScanner.startScanner(PageId.LIBRARY);
-  }
-
 
   search() {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
@@ -939,10 +929,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   showOfflineNetworkWarning() {
-    this.showWarning = true;
-    setTimeout(() => {
-      this.showWarning = false;
-    }, 3000);
+    this.presentToastForOffline('NO_INTERNET_TITLE');
   }
 
   checkNetworkStatus(showRefresh = false) {
@@ -986,8 +973,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     }
     this.getGroupByPageReq.grade = [this.categoryGradeLevels[index].name];
     // [grade.name];
-    if ((this.currentGrade) && (this.currentGrade.name !== this.categoryGradeLevels[index].name)) {
-      this.getGroupByPage(false,!isClassClicked);
+    if ((this.currentGrade) && (this.currentGrade.name !== this.categoryGradeLevels[index].name) && isClassClicked) {
+      this.getGroupByPage(false, !isClassClicked);
     }
     for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
       if (i === index) {
@@ -1014,8 +1001,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.generateMediumInteractTelemetry(mediumName, this.getGroupByPageReq.medium[0]);
     }
     this.getGroupByPageReq.medium = [mediumName];
-    if (this.currentMedium !== mediumName) {
-      this.getGroupByPage(false,!isMediumClicked);
+    if (this.currentMedium !== mediumName && isMediumClicked) {
+      this.getGroupByPage(false, !isMediumClicked);
     }
 
     for (let i = 0, len = this.categoryMediums.length; i < len; i++) {
@@ -1034,7 +1021,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     telemetryObject = new TelemetryObject(identifier, item.contentType, undefined);
 
     const values = new Map();
-    values['sectionName'] = sectionName;
+    values['sectionName'] = item.subject;
     values['positionClicked'] = index;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.CONTENT_CLICKED,
@@ -1060,7 +1047,19 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     switch ($event.name) {
       case 'search': this.search();
         break;
+      case 'download': this.redirectToActivedownloads();
+      break;
+
     }
+  }
+
+  redirectToActivedownloads() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.ACTIVE_DOWNLOADS_CLICKED,
+      Environment.HOME,
+      PageId.LIBRARY);
+    this.navCtrl.push(ActiveDownloadsPage);
   }
 
   toggleMenu() {
@@ -1069,7 +1068,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   logScrollEnd(event) {
     // Added Telemetry on reaching Vertical Scroll End
-    if (event.scrollElement.scrollHeight <= event.scrollElement.scrollTop + event.scrollElement.offsetHeight) {
+    if (event && event.scrollElement.scrollHeight <= event.scrollElement.scrollTop + event.scrollElement.offsetHeight) {
       this.telemetryGeneratorService.generateInteractTelemetry(InteractType.SCROLL,
         InteractSubtype.BOOK_LIST_END_REACHED,
         Environment.HOME,
@@ -1079,12 +1078,19 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
   onScroll(event) {
     // Added Telemetry on reaching Horizontal Scroll End
-    if (event.target.scrollWidth <= event.target.scrollLeft + event.target.offsetWidth) {
+    if (event && event.target.scrollWidth <= event.target.scrollLeft + event.target.offsetWidth) {
       this.telemetryGeneratorService.generateInteractTelemetry(InteractType.SCROLL,
         InteractSubtype.RECENTLY_VIEWED_END_REACHED,
         Environment.HOME,
         this.source, undefined,
       );
     }
+  }
+
+  scrollToTop() {
+
+    this.contentView.scrollToTop();
+    // this.contentView._scrollContent.nativeElement.scrollToTop();
+
   }
 }

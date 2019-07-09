@@ -1,15 +1,6 @@
 import {CommonUtilService} from './../../service/common-util.service';
 import {Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
-import {
-  AlertController,
-  Events,
-  IonicPage,
-  Navbar,
-  NavController,
-  NavParams,
-  Platform,
-  PopoverController
-} from 'ionic-angular';
+import { AlertController, Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController } from 'ionic-angular';
 import {ContentDetailsPage} from '../content-details/content-details';
 import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
 import {ContentType, MimeType} from '../../app/app.constant';
@@ -45,7 +36,8 @@ import {
   NetworkError,
   PlayerService,
   Profile,
-  ProfileService
+  ProfileService,
+  TelemetryObject
 } from 'sunbird-sdk';
 import {Subscription} from 'rxjs';
 import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '../../service/telemetry-constants';
@@ -182,11 +174,11 @@ export class QrCodeResultPage implements OnDestroy {
   ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(ImpressionType.VIEW, '',
       PageId.DIAL_CODE_SCAN_RESULT,
-      !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME);
-
-    /*this.navBar.backButtonClick = () => {
+      !this.appGlobalService.isProfileSettingsCompleted ? Environment.ONBOARDING : this.appGlobalService.getPageIdForTelemetry());
+    this.navBar.backButtonClick = () => {
       this.handleBackButton(InteractSubtype.NAV_BACK_CLICKED);
-    };*/
+    };
+
     if (!AppGlobalService.isPlayerLaunched) {
       this.calculateAvailableUserCount();
     }
@@ -307,10 +299,43 @@ export class QrCodeResultPage implements OnDestroy {
     const request: any = {};
     request.streaming = true;
     AppGlobalService.isPlayerLaunched = true;
+    const values = new Map();
+    values['isStreaming'] =  request.streaming;
+    const identifier = content.identifier;
+    let telemetryObject: TelemetryObject;
+    const objectType = this.telemetryGeneratorService.isCollection(content.mimeType) ? content.contentType : ContentType.RESOURCE;
+    telemetryObject = new TelemetryObject(identifier, objectType, undefined);
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.CONTENT_PLAY,
+      !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
+      PageId.DIAL_CODE_SCAN_RESULT,
+      telemetryObject,
+      values,
+      undefined,
+      this.corRelationList);
     this.openPlayer(content, request);
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      content.isAvailableLocally ? InteractSubtype.PLAY_FROM_DEVICE : InteractSubtype.PLAY_ONLINE,
+      !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : this.appGlobalService.getPageIdForTelemetry(),
+      PageId.DIAL_CODE_SCAN_RESULT,
+      telemetryObject,
+      undefined,
+      undefined,
+      this.corRelationList);
   }
 
   playOnline(content) {
+    const identifier = content.identifier;
+    let telemetryObject: TelemetryObject;
+    const objectType = this.telemetryGeneratorService.isCollection(content.mimeType) ? content.contentType : ContentType.RESOURCE;
+    telemetryObject = new TelemetryObject(identifier, objectType, undefined);
+
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.CONTENT_CLICKED,
+      !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
+      PageId.DIAL_CODE_SCAN_RESULT,
+      telemetryObject);
     if (content.contentData.streamingUrl && !content.isAvailableLocally) {
       this.playContent(content);
     } else {
@@ -332,14 +357,15 @@ export class QrCodeResultPage implements OnDestroy {
     } else {
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.TOUCH,
-        Boolean(content.isAvailableLocally) ? InteractSubtype.PLAY_CLICKED : InteractSubtype.DOWNLOAD_PLAY_CLICKED,
+        Boolean(content.isAvailableLocally) ? InteractSubtype.PLAY_FROM_DEVICE : InteractSubtype.DOWNLOAD_PLAY_CLICKED,
         !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
         PageId.DIAL_CODE_SCAN_RESULT);
       this.navCtrl.push(ContentDetailsPage, {
         content: content,
         depth: '1',
         isChildContent: true,
-        downloadAndPlay: true
+        downloadAndPlay: true,
+        corRelation: this.corRelationList
       });
     }
   }
@@ -377,6 +403,8 @@ export class QrCodeResultPage implements OnDestroy {
           this.events.publish('refresh:profile');
         }
         this.appGlobalService.guestUserProfile = res;
+        this.telemetryGeneratorService.generateProfilePopulatedTelemetry(PageId.DIAL_CODE_SCAN_RESULT,
+          req, 'auto');
       })
       .catch(() => {
       });
@@ -510,6 +538,7 @@ export class QrCodeResultPage implements OnDestroy {
         language: this.translate.currentLang,
         requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
       };
+      // Auto update the profile if that board/framework is listed in custodian framework list.
       this.frameworkUtilService.getActiveChannelSuggestedFrameworkList(getSuggestedFrameworksRequest).toPromise()
         .then((res: Framework[]) => {
           let isProfileUpdated = false;
@@ -605,8 +634,6 @@ export class QrCodeResultPage implements OnDestroy {
               return;
             }
           });
-          this.telemetryGeneratorService.generateProfilePopulatedTelemetry(PageId.DIAL_CODE_SCAN_RESULT,
-            data.framework, Boolean(isProfileUpdated) ? 'auto' : 'na');
         })
         .catch((err) => {
           if (err instanceof NetworkError) {
@@ -666,7 +693,8 @@ export class QrCodeResultPage implements OnDestroy {
   importContent(identifiers: Array<string>, isChild: boolean, isDownloadAllClicked?) {
     const option: ContentImportRequest = {
       contentImportArray: this.getImportContentRequestBody(identifiers, isChild),
-      contentStatusArray: []
+      contentStatusArray: [],
+      fields: ['appIcon', 'name', 'subject', 'size', 'gradeLevel']
     };
 
     // Call content service

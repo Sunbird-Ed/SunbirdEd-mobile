@@ -27,7 +27,7 @@
 
         <!-- new -->
         <ion-grid class="sb-accordian-header">
-          <ion-row (click)="toggleGroup(i)" *ngIf="item?.children">
+          <ion-row (click)="toggleGroup(i, item)" *ngIf="item?.children">
             <ion-col col-11>
               <div class="sb-topic-text"> {{item?.contentData?.name}} </div>
             </ion-col>
@@ -56,7 +56,7 @@
               'sb-play-selected':item?.isAvailableLocally,'sb-play-unselected':!item?.isAvailableLocally}">
                 {{item?.contentData?.name}}
                 <span>
-                  <ion-icon class="sb-checkmark-icon" name="checkmark-circle-outline" *ngIf="item?.isAvailableLocally"></ion-icon>
+                  <ion-icon class="sb-checkmark-icon" name="md-checkmark-circle" *ngIf="item?.isAvailableLocally"></ion-icon>
                   <!-- </span>
                 <span>
                   <ion-icon class="checkmark-icon" name="checkmark-circle-outline" *ngIf="item?.isAvailableLocally">
@@ -65,10 +65,10 @@
             </ion-col>
           </ion-row>
           <div class="font-grey-text" (click)="showCommingSoonPopup(item)" *ngIf="item?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !item?.children">
+            {{item?.contentData?.name}}
             <span class="grey-icon-span">
               <ion-icon ios="ios-alert" md="md-alert" class="grey-icon ML5"></ion-icon>
             </span>
-            {{item?.contentData?.name}}
           </div>
           <!-- </div> -->
         </ion-grid>
@@ -79,7 +79,7 @@
             <div class="sb-topics-container">
               <collection-child
                 [childData]="firstChildren" [index]="j" [depth]="depth"
-                [corRelationList]="corRelationList" [isDepthChild]="isDepthChild"></collection-child>
+                [corRelationList]="corRelationList" [isDepthChild]="isDepthChild" [breadCrumb]="breadCrumb"></collection-child>
             </div>
           </div>
         </div>

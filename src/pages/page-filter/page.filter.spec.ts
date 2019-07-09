@@ -14,17 +14,23 @@ import {
     commonUtilServiceMock,
     viewControllerMock
 } from '../../__tests__/mocks';
-import { Profile, PageId } from 'sunbird';
+import { Profile, ProfileSource, ProfileType } from 'sunbird-sdk';
 
 describe('PageFilter component', () => {
     let pageFilter: PageFilter;
+    const profile: Profile = {
+        uid: 'sample-uid',
+        handle: 'Name',
+        source: ProfileSource.LOCAL,
+        profileType: ProfileType.TEACHER
+    };
 
     beforeEach(() => {
         commonUtilServiceMock.getLoader.mockReturnValue({
-            present: () => {},
-            dismiss: () => {}
-          });
-          navParamsMock.get.mockImplementation((param: string) => {
+            present: () => { },
+            dismiss: () => { }
+        });
+        navParamsMock.get.mockImplementation((param: string) => {
             if (param === 'filter') {
                 return [{
                     'name': 'Organization',
@@ -87,7 +93,8 @@ describe('PageFilter component', () => {
                     return 'pageId';
                 }
             });
-            appGlobalServiceMock.getCurrentUser.mockReturnValue(new Profile());
+
+            appGlobalServiceMock.getCurrentUser.mockReturnValue(profile);
             // act
             pageFilter.initFilterValues();
             // assert
@@ -103,7 +110,7 @@ describe('PageFilter component', () => {
                     return 'pageId';
                 }
             });
-            appGlobalServiceMock.getCurrentUser.mockReturnValue(new Profile());
+            appGlobalServiceMock.getCurrentUser.mockReturnValue(profile);
             // act
             pageFilter.initFilterValues();
             // assert
@@ -158,29 +165,29 @@ describe('PageFilter component', () => {
     it('getRootOrganizations() should set the values of organization in filter array', (done) => {
 
         formAndFrameworkUtilServiceMock.getRootOrganizations.mockResolvedValue(['Organization List']);
-         // act
+        // act
         pageFilter.getRootOrganizations(0);
 
-            setTimeout(() => {
+        setTimeout(() => {
 
-                // assert
-                expect(pageFilter.filters[0].values.length).toEqual(1);
-                done();
-            }, 10 );
+            // assert
+            expect(pageFilter.filters[0].values.length).toEqual(1);
+            done();
+        }, 10);
 
     });
     it('getRootOrganizations() should set the values of organization in filter array', (done) => {
 
         formAndFrameworkUtilServiceMock.getRootOrganizations.mockResolvedValue(['Organization List']);
-         // act
+        // act
         pageFilter.getRootOrganizations(0);
 
-            setTimeout(() => {
+        setTimeout(() => {
 
-                // assert
-                expect(pageFilter.filters[0].values.length).toEqual(1);
-                done();
-            }, 10 );
+            // assert
+            expect(pageFilter.filters[0].values.length).toEqual(1);
+            done();
+        }, 10);
 
     });
 
@@ -203,9 +210,9 @@ describe('PageFilter component', () => {
         });
 
         commonUtilServiceMock.getLoader.mockReturnValue({
-            present: () => {},
-            dismiss: () => {}
-          });
+            present: () => { },
+            dismiss: () => { }
+        });
         appGlobalServiceMock.getCurrentUser.mockReturnValue({ syllabus: 'sample' });
 
         formAndFrameworkUtilServiceMock.getRootOrganizations.mockResolvedValue(['Organization List']);
@@ -223,9 +230,9 @@ describe('PageFilter component', () => {
         setTimeout(() => {
 
             // assert
-        expect(formAndFrameworkUtilServiceMock.getCourseFrameworkId).toHaveBeenCalled();
+            expect(formAndFrameworkUtilServiceMock.getCourseFrameworkId).toHaveBeenCalled();
             done();
-        }, 10 );
+        }, 10);
     });
 
 });

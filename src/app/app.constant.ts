@@ -87,24 +87,26 @@ export class FlagContent {
         'OPTION_OTHER'
     ];
 }
+
 export class BatchConstants {
-  public static readonly REQUIRED_FIELDS = [
-    'endDate',
-    'description',
-    'name',
-    'enrollmentType',
-    'hashTagId',
-    'startDate',
-    'courseId',
-    'status',
-    'createdBy',
-    'creatorFirstName',
-    'creatorLastName',
-    'identifier',
-    'id'
-  ];
-  // createdFor ,courseAdditionalInfo, participant, updatedDate, createdDate, courseCreator, mentors
+    public static readonly REQUIRED_FIELDS = [
+        'endDate',
+        'description',
+        'name',
+        'enrollmentType',
+        'hashTagId',
+        'startDate',
+        'courseId',
+        'status',
+        'createdBy',
+        'creatorFirstName',
+        'creatorLastName',
+        'identifier',
+        'id'
+    ];
+    // createdFor ,courseAdditionalInfo, participant, updatedDate, createdDate, courseCreator, mentors
 }
+
 export class ProfileConstants {
     public static readonly USER_TOKEN = 'userToken';
     public static readonly REQUIRED_FIELDS = [
@@ -144,6 +146,7 @@ export class ShareUrl {
 export class MenuOverflow {
     public static readonly MENU_GUEST = ['USERS_AND_GROUPS', 'REPORTS', 'SETTINGS'];
     public static readonly MENU_LOGIN = ['USERS_AND_GROUPS', 'REPORTS', 'SETTINGS', 'LOGOUT'];
+    public static readonly DOWNLOAD_FILTERS = ['CONTENT_SIZE', 'LAST_VIEWED'];
 }
 
 export class SideMenu {
@@ -170,6 +173,9 @@ export class PreferenceKey {
     public static readonly KEY_DATA_SYNC_TIME = 'sunbirddata_sync_time';
     public static readonly APP_LOGO = 'app_logo';
     public static readonly APP_NAME = 'app_name';
+    public static readonly APP_RATING_DATE = 'app_rating_date';
+    public static readonly APP_RATE_LATER_CLICKED = 'app_rate_later_clicked';
+    public static readonly APP_RATING_POPUP_APPEARED = 'app_rating_popup_appeared';
 }
 
 export class GenericAppConfig {
@@ -294,6 +300,25 @@ export class FrameworkCategory {
     ];
 }
 
+export class SystemSettingsIds {
+    public static readonly CUSTODIAN_ORG_ID = 'custodianOrgId';
+    public static readonly COURSE_FRAMEWORK_ID = 'courseFrameworkId';
+    public static readonly CONTENT_COMING_SOON_MSG = 'contentComingSoonMsg';
+    public static readonly CONSUMPTION_FAQS = 'consumptionFaqs';
+}
+
+export class StoreRating {
+    public static readonly DATE_DIFF = 2;
+    public static readonly APP_MIN_RATE = 4;
+    public static readonly FOLDER_NAME = 'sunbird-app-rating';
+    public static readonly FILE_NAME = 'app-rating.doc';
+    public static readonly FILE_TEXT = 'APP-Rating';
+    public static readonly RETURN_CLOSE = 'close';
+    public static readonly RETURN_HELP = 'help';
+    public static readonly DEVICE_FOLDER_PATH = cordova.file.dataDirectory;
+}
 export class ContentConstants {
     public static readonly DEFAULT_LICENSE = 'CC BY 4.0';
+    public static readonly COMING_SOON_MSG = 'comingSoonMsg';
 }
+

@@ -1,3 +1,4 @@
+import { ActiveDownloadsPage } from '@app/pages/active-downloads/active-downloads';
 import {ViewMoreActivityPage} from './../view-more-activity/view-more-activity';
 import {Component, Inject, NgZone, OnInit, AfterViewInit} from '@angular/core';
 import {Events, IonicPage, NavController, ToastController, PopoverController, MenuController, Tabs} from 'ionic-angular';
@@ -76,7 +77,6 @@ export class CoursesPage implements OnInit, AfterViewInit {
   pageApiLoader = true;
   guestUser = false;
   showSignInCard = false;
-  showWarning = false;
   isOnBoardingCardCompleted = false;
   onBoardingProgress = 0;
   toast: any;
@@ -183,13 +183,13 @@ export class CoursesPage implements OnInit, AfterViewInit {
 
   ionViewWillEnter() {
     this.events.subscribe('update_header', (data) => {
-      this.headerServie.showHeaderWithHomeButton(['search', 'filter']);
+      this.headerServie.showHeaderWithHomeButton(['search', 'filter', 'download']);
     });
     this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
     this.getEnrolledCourses();
-    this.headerServie.showHeaderWithHomeButton(['search', 'filter']);
+    this.headerServie.showHeaderWithHomeButton(['search', 'filter', 'download']);
 
   }
 
@@ -302,9 +302,9 @@ export class CoursesPage implements OnInit, AfterViewInit {
       }
     });
 
-    this.events.subscribe('tab.change', (data) => {
+    this.events.subscribe('tab.change', (data: string) => {
       this.ngZone.run(() => {
-        if (data === 'COURSES') {
+        if (data.trim().toUpperCase() === 'COURSES') {
           if (this.appliedFilter) {
             this.filterIcon = './assets/imgs/ic_action_filter.png';
             this.courseFilter = undefined;
@@ -688,10 +688,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
   }
 
   showOfflineWarning() {
-    this.showWarning = true;
-    setTimeout(() => {
-      this.showWarning = false;
-    }, 3000);
+    this.presentToastForOffline('NO_INTERNET_TITLE');
   }
 
   retryShowingPopularCourses(showRefresh = false) {
@@ -774,7 +771,8 @@ export class CoursesPage implements OnInit, AfterViewInit {
   importContent(identifiers, isChild) {
     const option: ContentImportRequest = {
       contentImportArray: this.courseUtilService.getImportContentRequestBody(identifiers, isChild),
-      contentStatusArray: []
+      contentStatusArray: [],
+      fields: ['appIcon', 'name', 'subject', 'size', 'gradeLevel']
     };
 
     this.contentService.importContent(option).toPromise()
@@ -843,7 +841,18 @@ export class CoursesPage implements OnInit, AfterViewInit {
                     break;
       case 'filter': this.showFilter();
                       break;
+      case 'download': this.redirectToActivedownloads();
+      break;
     }
+  }
+
+  redirectToActivedownloads() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.ACTIVE_DOWNLOADS_CLICKED,
+      Environment.HOME,
+      PageId.COURSES);
+    this.navCtrl.push(ActiveDownloadsPage);
   }
 
   toggleMenu() {

@@ -140,6 +140,16 @@ export class UserTypeSelectionPage {
         this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, this.selectedUserType).toPromise().then();
       }
     });
+    const values = new Map();
+    values['userType'] = (this.selectedUserType).toUpperCase();
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.USER_TYPE_SELECTED,
+      Environment.HOME,
+      PageId.USER_TYPE_SELECTION,
+      undefined,
+      values
+    );
   }
 
   continue() {
@@ -245,7 +255,7 @@ export class UserTypeSelectionPage {
             console.error('Error=');
           });
       } else {
-        this.navCtrl.push(ProfileSettingsPage);
+        this.navCtrl.push(ProfileSettingsPage, {hideBackButton: true});
       }
     } else {
       this.profile.profileType = this.selectedUserType;
@@ -261,7 +271,7 @@ export class UserTypeSelectionPage {
 
   generateInteractEvent(userType) {
     const values = new Map();
-    values['UserType'] = userType;
+    values['userType'] = (userType).toUpperCase();
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.CONTINUE_CLICKED,

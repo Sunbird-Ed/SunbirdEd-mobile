@@ -118,7 +118,8 @@ page-collection-details-etb {
     .grey-icon-span
     {
       position: relative;
-      top : 4px;
+      top: 5px;
+      vertical-align: super;
     }
     .checkmark-icon
     {
@@ -139,7 +140,7 @@ page-collection-details-etb {
     .grey-icon
     {
         color : #979797;
-        font-size: 25px;
+        font-size: ($font-size-base + 4);
     }
     $newColors: (
        primary:#024f9d,

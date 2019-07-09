@@ -1,5 +1,4 @@
 import { Observable } from 'rxjs';
-import { ProfileSettingsPage } from './../pages/profile-settings/profile-settings';
 import { AfterViewInit, Component, Inject, NgZone, ViewChild, OnInit, EventEmitter } from '@angular/core';
 import { App, Events, Nav, Platform, PopoverController, ToastController, ViewController, NavControllerBase } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
@@ -13,12 +12,20 @@ import { ContentDetailsPage } from '../pages/content-details/content-details';
 import { ContentType, EventTopics, GenericAppConfig, MimeType, PreferenceKey, ProfileConstants } from './app.constant';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { FormAndFrameworkUtilService, GuestProfilePage } from '@app/pages/profile';
-import { AppGlobalService, CommonUtilService, TelemetryGeneratorService, UtilityService, AppHeaderService } from '@app/service';
+import {
+  AppGlobalService,
+  CommonUtilService,
+  TelemetryGeneratorService,
+  UtilityService,
+  AppHeaderService,
+  AppRatingService
+} from '@app/service';
 import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
 import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
 import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
 import {
   AuthService,
+  ErrorEventType,
   EventNamespace,
   EventsBusService,
   OAuthSession,
@@ -30,7 +37,14 @@ import {
   TelemetryService,
 } from 'sunbird-sdk';
 import { tap } from 'rxjs/operators';
-import { Environment, InteractSubtype, InteractType, PageId, ImpressionType } from '../service/telemetry-constants';
+import {
+  Environment,
+  InteractSubtype,
+  InteractType,
+  PageId,
+  ImpressionType,
+  ImpressionSubtype
+} from '../service/telemetry-constants';
 import { TabsPage } from '@app/pages/tabs/tabs';
 import { ContainerService } from '@app/service/container.services';
 import { AndroidPermissionsService } from '../service/android-permissions/android-permissions.service';
@@ -48,12 +62,16 @@ import { CoursesPage } from '@app/pages/courses/courses';
 import { ProfilePage } from '@app/pages/profile/profile';
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
 import { QrCodeResultPage } from '@app/pages/qr-code-result';
+import { FaqPage } from '@app/pages/help/faq';
+import { NotificationService } from '@app/service/notification.service';
+import {SplaschreenDeeplinkActionHandlerDelegate} from '@app/service/sunbird-splashscreen/splaschreen-deeplink-action-handler-delegate';
 
 @Component({
   templateUrl: 'app.html',
   providers: [
     SplashcreenTelemetryActionHandlerDelegate,
-    SplashscreenImportActionHandlerDelegate
+    SplashscreenImportActionHandlerDelegate,
+    SplaschreenDeeplinkActionHandlerDelegate
   ]
 })
 export class MyApp implements OnInit, AfterViewInit {
@@ -66,6 +84,7 @@ export class MyApp implements OnInit, AfterViewInit {
     actionButtons: ['search'],
   };
   public sideMenuEvent = new EventEmitter;
+  public showWalkthroughBackDrop = false;
 
   readonly permissionList = [
     AndroidPermission.WRITE_EXTERNAL_STORAGE,
@@ -74,8 +93,8 @@ export class MyApp implements OnInit, AfterViewInit {
   private telemetryAutoSyncUtil: TelemetryAutoSyncUtil;
 
   profile: any = {};
-
-
+  selectedLanguage: string;
+  appName: string;
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
@@ -102,9 +121,12 @@ export class MyApp implements OnInit, AfterViewInit {
     private utilityService: UtilityService,
     private splashcreenTelemetryActionHandlerDelegate: SplashcreenTelemetryActionHandlerDelegate,
     private splashscreenImportActionHandlerDelegate: SplashscreenImportActionHandlerDelegate,
+    private splaschreenDeeplinkActionHandlerDelegate: SplaschreenDeeplinkActionHandlerDelegate,
     private headerServie: AppHeaderService,
     private logoutHandlerService: LogoutHandlerService,
-    private network: Network
+    private network: Network,
+    private appRatingService: AppRatingService,
+    private notificationSrc: NotificationService
   ) {
     this.telemetryAutoSyncUtil = new TelemetryAutoSyncUtil(this.telemetryService);
     platform.ready().then(async () => {
@@ -117,7 +139,7 @@ export class MyApp implements OnInit, AfterViewInit {
 
 
       this.registerDeeplinks();
-      // this.startOpenrapDiscovery();
+      this.startOpenrapDiscovery();
       this.saveDefaultSyncSetting();
       this.showAppWalkThroughScreen();
       this.checkAppUpdateAvailable();
@@ -132,6 +154,7 @@ export class MyApp implements OnInit, AfterViewInit {
       window['thisRef'] = this;
       this.statusBar.styleBlackTranslucent();
       this.handleBackButton();
+      this.appRatingService.checkInitialDate();
     });
   }
 
@@ -153,6 +176,7 @@ export class MyApp implements OnInit, AfterViewInit {
         this.addNetworkTelemetry(InteractSubtype.INTERNET_DISCONNECTED, pageId);
       }
     });
+    this.notificationSrc.setupLocalNotification();
   }
 
   addNetworkTelemetry(subtype: string, pageId: string) {
@@ -222,6 +246,10 @@ export class MyApp implements OnInit, AfterViewInit {
   }
 
   subscribeEvents() {
+    this.events.subscribe('show-qr-walkthrough', (data) => {
+      this.showWalkthroughBackDrop = data.showWalkthroughBackDrop;
+      this.appName = data.appName;
+    });
     this.events.subscribe('tab.change', (data) => {
       this.zone.run(() => {
         this.generateInteractEvent(data);
@@ -435,9 +463,19 @@ export class MyApp implements OnInit, AfterViewInit {
     return this.permission.checkPermissions(this.permissionList)
       .mergeMap((statusMap: { [key: string]: AndroidPermissionsStatus }) => {
         const toRequest: AndroidPermission[] = [];
-
         for (const permission in statusMap) {
           if (!statusMap[permission].hasPermission) {
+            const values = new Map();
+            values['permission'] = permission;
+            values['permissionStatus'] = statusMap[permission];
+            this.telemetryGeneratorService.generateInteractTelemetry(
+              InteractType.OTHER,
+              InteractSubtype.PERMISSION_POPUP,
+              Environment.HOME,
+              PageId.ONBOARDING_LANGUAGE_SETTING,
+              undefined,
+              values
+            );
             toRequest.push(permission as AndroidPermission);
           }
         }
@@ -550,6 +588,13 @@ export class MyApp implements OnInit, AfterViewInit {
           }
         );
       }).do((response: { ip?: string, actionType: 'connected' | 'disconnected' }) => {
+        const values = new Map();
+        values['openrapInfo'] = response;
+        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+          response.actionType === 'connected' ? 'openrap-device-connected' : 'openrap-device-disconnected',
+          Environment.HOME,
+          Environment.HOME, undefined,
+          values);
         SunbirdSdk.instance.updateContentServiceConfig({
           host: response.actionType === 'connected' ? response.ip : undefined
         });
@@ -597,6 +642,10 @@ export class MyApp implements OnInit, AfterViewInit {
           await this.splashscreenImportActionHandlerDelegate.onAction(action.type, action.payload).toPromise();
           break;
         }
+        case 'DEEPLINK': {
+          await this.splaschreenDeeplinkActionHandlerDelegate.onAction(action.type, action.payload).toPromise();
+          break;
+        }
         default:
           return;
       }
@@ -632,16 +681,14 @@ export class MyApp implements OnInit, AfterViewInit {
       //   currentPage = navObj.getActive().name;
       // }
       if (((<any>activeView).instance instanceof UserTypeSelectionPage)
-        || ((<any>activeView).instance instanceof CollectionDetailsEtbPage)
         || ((<any>activeView).instance instanceof EnrolledCourseDetailsPage)
-        || ((<any>activeView).instance instanceof OnboardingPage)
-        || ((<any>activeView).instance instanceof QrCodeResultPage)
         || ((<any>activeView).instance instanceof CollectionDetailsPage)
         || ((<any>activeView).instance instanceof CollectionDetailsEtbPage)
-        || ((<any>activeView).instance instanceof CollectionDetailsPage)
         || ((<any>activeView).instance instanceof ContentDetailsPage)
         || ((<any>activeView).instance instanceof OnboardingPage)
         || ((<any>activeView).instance instanceof QrCodeResultPage)
+        || ((<any>activeView).instance instanceof FaqPage)
+        || ((<any>activeView).instance['pageId'] === 'ProfileSettingsPage')
         ) {
         this.headerServie.sidebarEvent($event);
         return;
@@ -714,6 +761,23 @@ export class MyApp implements OnInit, AfterViewInit {
         }
         break;
       }
+      case 'HELP': {
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.HELP_CLICKED,
+          Environment.USER,
+          PageId.PROFILE,
+          null,
+          undefined,
+          undefined
+        );
+        if (this.app.getRootNavs().length > 0) {
+          this.app.getRootNavs()[0].push(FaqPage, {
+            isFromSettings: true
+          });
+        }
+        break;
+      }
       case 'LOGOUT':
         if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
           this.commonUtilService.showToast('NEED_INTERNET_TO_CHANGE');
@@ -726,8 +790,28 @@ export class MyApp implements OnInit, AfterViewInit {
   }
 
   private handleAuthErrors() {
-    this.eventsBusService.events(EventNamespace.ERROR).take(1).subscribe(() => {
-      this.logoutHandlerService.onLogout();
-    });
+    this.eventsBusService.events(EventNamespace.ERROR)
+      .filter((e) => e.type === ErrorEventType.AUTH_TOKEN_REFRESH_ERROR)
+      .take(1).subscribe(() => {
+        this.logoutHandlerService.onLogout();
+      });
+  }
+  private qrWalkthroughBackdropClicked() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.WALKTHROUGH_BACKDROP_CLICKED,
+      Environment.ONBOARDING,
+      PageId.LIBRARY,
+    );
+  }
+  private onConfirmationClicked(event) {
+    event.stopPropagation();
+    this.showWalkthroughBackDrop = false;
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.WALKTHROUGH_CONFIRMATION_CLICKED,
+      Environment.ONBOARDING,
+      PageId.LIBRARY
+    );
   }
 }

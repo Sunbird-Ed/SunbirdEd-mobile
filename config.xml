@@ -30,6 +30,9 @@
       <uses-permission android:name="android.permission.RECORD_AUDIO"/>
       <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     </config-file>
+    <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
+            <application android:allowBackup="false" />
+    </edit-config>
     <preference name="android-manifest/@xmlns:tools" value="http://schemas.android.com/tools"/>
     <preference name="android-manifest/application/@tools:replace" value="android:allowBackup"/>
     <preference name="android-manifest/application/@android:allowBackup" value="false"/>
@@ -53,6 +56,7 @@
     <splash density="port-xhdpi" src="resources/android/splash/drawable-hdpi-splash.png"/>
     <splash density="port-xxhdpi" src="resources/android/splash/drawable-xhdpi-splash.png"/>
     <splash density="port-xxxhdpi" src="resources/android/splash/drawable-xhdpi-splash.png"/>
+    <resource-file src="resources/android/icon/mipmap-hdpi-icon.png" target="app/src/main/res/mipmap-hdpi/n_icon.png" />
   </platform>
   <platform name="ios">
     <allow-intent href="itms:*"/>
@@ -129,4 +133,7 @@
   <plugin name="cordova-plugin-android-downloadmanager"
           spec="https://github.com/swayangjit/cordova-plugin-android-downloadmanager.git"/>
   <plugin name="cordova-plugin-statusbar" spec="^2.4.2"/>
+  <plugin name="cordova-plugin-local-notification" spec="https://github.com/katzer/cordova-plugin-local-notifications.git#master" />
+  <plugin name="com.jjdltc.cordova.plugin.zip" spec="https://github.com/swayangjit/jjdltc-cordova-plugin-zip.git"/>
+  <plugin name="cordova-plugin-openrap" spec="https://github.com/project-sunbird/cordova-plugin-openrap.git" />
 </widget>

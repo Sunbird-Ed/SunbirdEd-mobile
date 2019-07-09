@@ -1,6 +1,7 @@
+import { ActiveDownloadsPage } from './../../active-downloads/active-downloads';
 import {TranslateService} from '@ngx-translate/core';
 import {Component, Inject, OnInit, AfterViewInit} from '@angular/core';
-import {Events, NavController, PopoverController} from 'ionic-angular';
+import {Events, NavController, PopoverController, ToastController} from 'ionic-angular';
 import * as _ from 'lodash';
 import {GuestEditProfilePage, OverflowMenuComponent} from '@app/pages/profile';
 import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
@@ -17,7 +18,7 @@ import {
   ProfileType,
   SharedPreferences
 } from 'sunbird-sdk';
-import {PageId, Environment} from '../../../service/telemetry-constants';
+import {PageId, Environment, InteractType, InteractSubtype} from '../../../service/telemetry-constants';
 import {ProfileConstants} from '../../../app';
 
 @Component({
@@ -31,7 +32,6 @@ export class GuestProfilePage implements OnInit, AfterViewInit {
   ProfileType = ProfileType;
   showSignInCard = false;
   isNetworkAvailable: boolean;
-  showWarning = false;
   boards = '';
   grade = '';
   medium = '';
@@ -42,6 +42,7 @@ export class GuestProfilePage implements OnInit, AfterViewInit {
   selectedLanguage: string;
   loader: any;
   headerObservable: any;
+  toast: any;
 
 
   isUpgradePopoverShown = false;
@@ -58,7 +59,8 @@ export class GuestProfilePage implements OnInit, AfterViewInit {
     @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
     @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
-    private headerServie: AppHeaderService
+    private headerServie: AppHeaderService,
+    public toastController: ToastController
   ) {
 
 
@@ -108,12 +110,12 @@ export class GuestProfilePage implements OnInit, AfterViewInit {
 
   ionViewWillEnter() {
     this.events.subscribe('update_header', (data) => {
-      this.headerServie.showHeaderWithHomeButton();
+      this.headerServie.showHeaderWithHomeButton(['download']);
     });
     this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
-    this.headerServie.showHeaderWithHomeButton();
+    this.headerServie.showHeaderWithHomeButton(['download']);
   }
 
   ngAfterViewInit() {
@@ -154,12 +156,6 @@ export class GuestProfilePage implements OnInit, AfterViewInit {
     });
   }
 
-  showNetworkWarning() {
-    this.showWarning = true;
-    setTimeout(() => {
-      this.showWarning = false;
-    }, 3000);
-  }
   /**
    * To show popover menu
    * @param {object} event
@@ -248,18 +244,48 @@ export class GuestProfilePage implements OnInit, AfterViewInit {
    *
    */
   goToRoles() {
-    this.navCtrl.push(UserTypeSelectionPage, {
+    this.navCtrl.push(GuestEditProfilePage, {
       profile: this.profile,
-      isChangeRoleRequest: true
+      isChangeRoleRequest: true,
+      isCurrentUser: true
     });
   }
 
   buttonClick(isNetAvailable?) {
-    this.showNetworkWarning();
+    this.presentToastForOffline('NO_INTERNET_TITLE');
   }
 
   handleHeaderEvents($event) {
-    // Handle any click on headers
+    switch ($event.name) {
+      case 'download':
+        this.redirectToActivedownloads();
+        break;
+    }
+  }
+
+  private redirectToActivedownloads() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.ACTIVE_DOWNLOADS_CLICKED,
+      Environment.HOME,
+      PageId.GUEST_PROFILE);
+    this.navCtrl.push(ActiveDownloadsPage);
+  }
+
+  // Offline Toast
+  async presentToastForOffline(msg: string) {
+    this.toast = await this.toastController.create({
+      duration: 3000,
+      message: this.commonUtilService.translateMessage(msg),
+      showCloseButton: true,
+      position: 'top',
+      closeButtonText: '',
+      cssClass: 'toastHeader'
+    });
+    this.toast.present();
+    this.toast.onDidDismiss(() => {
+      this.toast = undefined;
+    });
   }
 
 }

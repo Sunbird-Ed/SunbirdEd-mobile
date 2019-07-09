@@ -20,15 +20,15 @@
         </div>
     </div>
 
-    <div class="row sb-topic-item" (click)="showCommingSoonPopup(childData)"
+    <div class="row sb-topic-item" (click)="showComingSoonPopup(childData)"
         *ngIf="childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !childData?.children">
         <div class="sb-accordian-grey-text">{{childData?.contentData?.name}}</div>
-        <ion-icon ios="ios-alert" md="md-alert" class="sb-accordian-grey-icon"></ion-icon>
+        <ion-icon ios="ios-alert" md="md-alert" class="grey-icon mt-4"></ion-icon>
     </div>
 
     <!-- <div *ngIf="childData?.children && childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection'"
         class="sb-separator-line ml8 mtb-8"></div> -->
     <div class="ml8" *ngFor="let firstChildren of childData?.children; let j = index;">
-        <collection-child [childData]="firstChildren"></collection-child>
+        <collection-child [childData]="firstChildren" [breadCrumb]="breadCrumb"></collection-child>
     </div>
 </div>
