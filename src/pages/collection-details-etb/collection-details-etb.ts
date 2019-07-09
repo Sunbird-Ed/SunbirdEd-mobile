@@ -94,12 +94,15 @@ export class CollectionDetailsEtbPage implements OnInit {
   childrenData?: Array<any>;
   mimeTypes = [
     { name: 'ALL', selected: true, value: ['all'], iconNormal: '', iconActive: ''},
-    { name: 'VIDEOS', value: ['video/mp4', 'video/x-youtube', 'video/webm'], iconNormal: './assets/imgs/Play.svg', iconActive:'./assets/imgs/Play-active.svg'},
-    { name: 'DOCS', value: ['application/pdf', 'application/epub'], iconNormal: './assets/imgs/Doc.svg',iconActive:'./assets/imgs/Doc-active.svg'},
+    { name: 'VIDEOS', value: ['video/mp4', 'video/x-youtube', 'video/webm'], iconNormal: './assets/imgs/Play.svg',
+    iconActive: './assets/imgs/Play-active.svg'},
+    { name: 'DOCS', value: ['application/pdf', 'application/epub', 'application/msword'], iconNormal: './assets/imgs/Doc.svg',
+    iconActive: './assets/imgs/Doc-active.svg'},
     { name: 'INTERACTION',
       value: ['application/vnd.ekstep.ecml-archive', 'application/vnd.ekstep.h5p-archive', 'application/vnd.ekstep.html-archive'],
       iconNormal: './assets/imgs/Touch.svg', iconActive: './assets/imgs/Touch-active.svg'
-    }
+    },
+    // { name: 'AUDIOS', value: MimeType.AUDIO, iconNormal: './assets/imgs/Audio.svg', iconActive: './assets/imgs/Audio-active.svg'},
   ];
   activeMimeTypeFilter = ['all'];
   /**
@@ -302,7 +305,7 @@ export class CollectionDetailsEtbPage implements OnInit {
       this.handleBackButton();
     };*/
 
-    window['scrollTest'] = this.ionContent;
+    window['scrollWindow'] = this.ionContent;
     this.registerDeviceBackButton();
   }
 
@@ -832,10 +835,11 @@ export class CollectionDetailsEtbPage implements OnInit {
               console.log('this.textbookTocService.textbookIds.contentId', this.textbookTocService.textbookIds.contentId);
               console.log('in scroll', document.getElementById(this.textbookTocService.textbookIds.contentId));
               (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.add('sticky');
+              window['scrollWindow'].getScrollElement().scrollBy(0, 0);
               document.getElementById(this.textbookTocService.textbookIds.contentId).scrollIntoView();
-              window['scrollTest'].getScrollElement().scrollBy(0, -200);
+              window['scrollWindow'].getScrollElement().scrollBy(0, -150);
               this.textbookTocService.resetTextbookIds();
-            }, 500);
+            }, 0);
           }
           this.telemetryGeneratorService.generateInteractTelemetry(
             InteractType.OTHER,
