@@ -43,10 +43,10 @@
 					<span class="text-gray-color">{{course?.author}}</span>
 					<!-- </span> -->
 				</div>
-				<div *ngIf="course?.creator" margin-top>
+				<div *ngIf="course?.organisation" margin-top>
 					<div class="content-meta-title" text-uppercase>{{ 'PUBLISHED_BY' | translate:{'%s': appName} }}</div>
 					<!-- <span *ngFor="let grade of course.gradeLevel"> -->
-					<span class="text-gray-color">{{course?.creator}}</span>
+					<span class="text-gray-color">{{course?.organisation}}</span>
 					<!-- </span> -->
 				</div>
 				<div *ngIf="course?.license" margin-top>
