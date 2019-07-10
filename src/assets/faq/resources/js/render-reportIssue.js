@@ -22,7 +22,7 @@ $(document).ready(function () {
             + '<form action="#" id ="send-email-form"> '
             + '<div id="textareadiv">'
             + '<textarea type="text" name="moreInfo" placeholder="' + data.constants.typeHere + '" class="input-text-form" maxlength="1000"></textarea>'
-            + '<p id="textareainfo"> <span id="charleft">1000</span>' + data.constants.charactersLeft + '</p>'
+            + '<p id="textareainfo"> <span id="charleft">1000</span>' + ' ' + data.constants.charactersLeft + '</p>'
             + '</div>'
             + '<div class="initiate-email-info">'
             + '<p class = "send-email-info">' + data.constants.triggerEmailMsg + '</p>'

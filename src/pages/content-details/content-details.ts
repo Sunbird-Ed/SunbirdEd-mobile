@@ -981,6 +981,9 @@ export class ContentDetailsPage {
             this.isDownloadStarted = true;
             this.downloadProgress = downloadEvent.payload.progress === -1 ? '0' : downloadEvent.payload.progress;
             this.downloadProgress = Math.round(this.downloadProgress);
+            if (isNaN(this.downloadProgress)) {
+              this.downloadProgress = 0;
+            }
             if (this.downloadProgress === 100) {
               this.showLoading = false;
               this.showDownload = false;

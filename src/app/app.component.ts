@@ -8,7 +8,7 @@ import { ImageLoaderConfig } from 'ionic-image-loader';
 import { TranslateService } from '@ngx-translate/core';
 import { CollectionDetailsPage } from '../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../pages/content-details/content-details';
-import { GenericAppConfig, PreferenceKey, ProfileConstants } from './app.constant';
+import { GenericAppConfig, PreferenceKey, ProfileConstants, ActionType } from './app.constant';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { FormAndFrameworkUtilService } from '@app/pages/profile';
 import {
@@ -18,8 +18,22 @@ import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
 import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
 import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
 import {
-  AuthService, ErrorEventType, EventNamespace, EventsBusService, ProfileService, ProfileType, SharedPreferences,
-  SunbirdSdk, TelemetryAutoSyncUtil, TelemetryService, NotificationService
+  AuthService,
+  ErrorEventType,
+  EventNamespace,
+  EventsBusService,
+  OAuthSession,
+  ProfileService,
+  ProfileType,
+  SharedPreferences,
+  SunbirdSdk,
+  TelemetryAutoSyncUtil,
+  TelemetryService,
+  ContentDetailRequest,
+  NotificationService,
+  ContentService,
+  Content,
+  Notification
 } from 'sunbird-sdk';
 import { tap } from 'rxjs/operators';
 import {
@@ -67,7 +81,7 @@ export class MyApp implements OnInit, AfterViewInit {
   profile: any = {};
   selectedLanguage: string;
   appName: string;
-
+  identifier: Content;
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
@@ -75,6 +89,7 @@ export class MyApp implements OnInit, AfterViewInit {
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     @Inject('NOTIFICATION_SERVICE') private notificationServices: NotificationService,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private platform: Platform,
     private statusBar: StatusBar,
     private toastCtrl: ToastController,
@@ -128,13 +143,10 @@ export class MyApp implements OnInit, AfterViewInit {
       this.appRatingService.checkInitialDate();
       this.getUtmParameter();
       this.checkForCodeUpdates();
-      // this.platform.resume.subscribe(() => this.checkForCodeUpdates());
     });
   }
 
   checkForCodeUpdates() {
-    // This will be removed shortly
-    // this.preferences.putString(PreferenceKey.DEPLOYMENT_KEY,"agojO-OZt4dZlt_pu9r9j2Ipy_jY90dbb065-3633-45a5-9c55-c0405eafaebb").toPromise().then();
     this.preferences.getString(PreferenceKey.DEPLOYMENT_KEY).toPromise().then(deploymentKey => {
       if (codePush != null && deploymentKey) {
         const value = new Map();
@@ -201,47 +213,33 @@ export class MyApp implements OnInit, AfterViewInit {
     this.preferences.putString('fcm_token', token).toPromise();
   }
 
-  handleNotification(data) {
-    switch (data.actionData.actionType) {
-      case 'updateApp':
-        console.log('updateApp');
-        break;
-      case 'contentUpdate':
-        console.log('contentUpdate');
-        break;
-      case 'bookUpdate':
-        console.log('bookUpdate');
-        break;
-      default:
-        console.log('Default Called');
-        break;
-    }
-  }
-
   /* Notification data will be received in data variable
    * can take action on data variable
    */
   receiveNotification() {
-    FCMPlugin.onNotification((data) => {
-      if (data.wasTapped) {
+    FCMPlugin.onNotification((data: Notification) => {
+      if (data['wasTapped']) {
         // Notification was received on device tray and tapped by the user.
       } else {
         // Notification was received in foreground. Maybe the user needs to be notified.
       }
-      data['isRead'] = data.wasTapped ? 1 : 0;
-      data['actionData'] = JSON.parse(data['actionData']);
+      data['isRead'] = data['wasTapped'] ? 1 : 0;
+      data['actionData'] = JSON.parse(data.actionData);
       this.notificationServices.addNotification(data).subscribe((status) => {
         this.events.publish('notification:received');
         this.events.publish('notification-status:update', { isUnreadNotifications: true });
       });
+      if (data.actionData.actionType === ActionType.CODE_PUSH) {
+        this.preferences.putString(PreferenceKey.DEPLOYMENT_KEY, data.actionData.deploymentKey).toPromise().then();
+      } else {
+        this.splaschreenDeeplinkActionHandlerDelegate.handleNotification(data);
+      }
     },
       (sucess) => {
         console.log('Notification Sucess Callback');
-        console.log(sucess);
       },
       (err) => {
-        console.log('Notification Error Callback');
-        console.log(err);
+        console.log('Notification Error Callback', err);
       });
   }
 
@@ -382,6 +380,7 @@ export class MyApp implements OnInit, AfterViewInit {
 
           if (display_cat_page === 'false') {
             await this.nav.setRoot(TabsPage);
+            this.splaschreenDeeplinkActionHandlerDelegate.onAction('content', { identifier: this.identifier }).toPromise();
           } else {
             const profile = await this.profileService.getActiveSessionProfile({ requiredFields: ProfileConstants.REQUIRED_FIELDS })
               .toPromise();
@@ -394,6 +393,7 @@ export class MyApp implements OnInit, AfterViewInit {
             ) {
               this.appGlobalService.isProfileSettingsCompleted = true;
               await this.nav.setRoot(TabsPage);
+              this.splaschreenDeeplinkActionHandlerDelegate.onAction('content', { identifier: this.identifier }).toPromise();
             } else {
               this.appGlobalService.isProfileSettingsCompleted = false;
               try {
@@ -452,6 +452,7 @@ export class MyApp implements OnInit, AfterViewInit {
                     profile: value['profile']
                   });
                 }
+                console.log(this.nav.getAllChildNavs());
               });
           }
         });

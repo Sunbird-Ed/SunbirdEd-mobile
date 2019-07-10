@@ -480,7 +480,7 @@ export class UserAndGroupsPage {
   // method below fetches the last created user
   getLastCreatedProfile() {
     return new Promise((resolve, reject) => {
-      this.profileService.getAllProfiles()
+      this.profileService.getAllProfiles({local: true})
         .map((profiles) => (profiles.sort((p1, p2) => p2.createdAt - p1.createdAt))[0])
         .toPromise().then((lastCreatedProfile: any) => {
           this.lastCreatedProfileData = lastCreatedProfile;
