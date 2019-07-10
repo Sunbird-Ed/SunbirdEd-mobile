@@ -101,7 +101,7 @@
   "CONTENT_RETIRED_BY_AUTHOR": "यह कंटेंट रचयिता द्वारा हटाया जा चुका है, और इसलिए यह उपलब्ध नहीं है",
   "CONTENT_SIZE": "कंटेंट का आकार",
   "CONTENT_SUCCESSFULLY_TRANSFERRED_TO": "कंटेंट सफलतापूर्वक भेजा गया हैं|",
-  "CONTENT_SUCCESSFULLY_TRANSFERRED_TO_PHONE": "कंटेंट सफलतापूर्वक मोबाइल में  स्थानांतरित किया गया",
+  "CONTENT_SUCCESSFULLY_TRANSFERRED_TO_PHONE": "कंटेंट सफलतापूर्वक मोबाइल में  भेजा गया",
   "CONTENT_SUCCESSFULLY_TRANSFERRED_TO_SDCARD": "कंटेंट सफलतापूर्वक SD कार्ड में भेजा गया",
   "CONTINUE": "जारी है",
   "CONTINUE_AS_ROLE": "'{{%s}}' के रूप में जारी रखें",

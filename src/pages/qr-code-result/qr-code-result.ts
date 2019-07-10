@@ -47,6 +47,8 @@ import {CanvasPlayerService} from '../player/canvas-player.service';
 import {File} from '@ionic-native/file';
 import { AppHeaderService } from '@app/service';
 import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
+import {ComingSoonMessageService} from "@app/service/coming-soon-message.service";
+import { SbGenericPopoverComponent } from '../../component/popups/sb-generic-popup/sb-generic-popover';
 
 declare const cordova;
 
@@ -134,7 +136,9 @@ export class QrCodeResultPage implements OnDestroy {
     @Inject('PLAYER_SERVICE') private playerService: PlayerService,
     private canvasPlayerService: CanvasPlayerService,
     private file: File,
-    private headerService: AppHeaderService
+    private headerService: AppHeaderService,
+    private comingSoonMessageService: ComingSoonMessageService,
+    private popoverCtrl: PopoverController,
   ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
@@ -245,16 +249,10 @@ export class QrCodeResultPage implements OnDestroy {
             '',
             PageId.DIAL_LINKED_NO_CONTENT,
             Environment.HOME);
-            if (this.isProfileUpdated) {
-              this.navCtrl.setRoot(TabsPage, {
-                loginMode: 'guest'
-              });
-            this.commonUtilService.showContentComingSoonAlert(this.source);
+
+           // this.commonUtilService.showContentComingSoonAlert(this.source);
+             this.showComingSoonPopUp(data);
             this.navCtrl.pop();
-            } else {
-              this.commonUtilService.showContentComingSoonAlert(this.source);
-            this.navCtrl.pop();
-            }
         }
 
       })
@@ -266,6 +264,28 @@ export class QrCodeResultPage implements OnDestroy {
         this.navCtrl.pop();
       });
 
+  }
+
+async showComingSoonPopUp(data) {
+    const message = await this.comingSoonMessageService.getComingSoonMessage(data);
+      if (data.contentData.mimeType === 'application/vnd.ekstep.content-collection') {
+          const popover = this.popoverCtrl.create(SbGenericPopoverComponent, {
+              sbPopoverHeading: this.commonUtilService.translateMessage('CONTENT_COMMING_SOON'),
+              sbPopoverMainTitle: message ? this.commonUtilService.translateMessage(message) :
+                this.commonUtilService.translateMessage('CONTENT_IS_BEEING_ADDED') + data.contentData.name,
+              actionsButtons: [
+                  {
+                      btntext: this.commonUtilService.translateMessage('OKAY'),
+                      btnClass: 'popover-color'
+                  }
+              ],
+          }, {
+              cssClass: 'sb-popover warning',
+          });
+          popover.present({
+              ev: event
+          });
+      }
   }
 
   calculateAvailableUserCount() {
@@ -379,47 +399,6 @@ export class QrCodeResultPage implements OnDestroy {
       });
     }
   }
-
-  // editProfile(): void {
-  //   const req: Profile = {
-  //     board: this.profile.board,
-  //     grade: this.profile.grade,
-  //     medium: this.profile.medium,
-  //     subject: this.profile.subject,
-  //     uid: this.profile.uid,
-  //     handle: this.profile.handle,
-  //     profileType: this.profile.profileType,
-  //     source: this.profile.source,
-  //     createdAt: this.profile.createdAt,
-  //     syllabus: this.profile.syllabus
-  //   };
-  //   if (this.profile.grade && this.profile.grade.length > 0) {
-  //     this.profile.grade.forEach(gradeCode => {
-  //       for (let i = 0; i < this.gradeList.length; i++) {
-  //         if (this.gradeList[i].code === gradeCode) {
-  //           req.gradeValue = this.profile.gradeValue;
-  //           req.gradeValue[this.gradeList[i].code] = this.gradeList[i].name;
-  //           break;
-  //         }
-  //       }
-  //     });
-  //   }
-
-  //   this.profileService.updateProfile(req).toPromise()
-  //     .then((res: any) => {
-  //       if (res.syllabus && res.syllabus.length && res.board && res.board.length
-  //         && res.grade && res.grade.length && res.medium && res.medium.length) {
-  //         this.events.publish(AppGlobalService.USER_INFO_UPDATED);
-  //         this.events.publish('refresh:profile');
-  //       }
-  //       this.appGlobalService.guestUserProfile = res;
-  //       this.telemetryGeneratorService.generateProfilePopulatedTelemetry(PageId.DIAL_CODE_SCAN_RESULT,
-  //         req, 'auto');
-  //     })
-  //     .catch(() => {
-  //     });
-  // }
-
   /** funtion add elipses to the texts**/
 
   addElipsesInLongText(msg: string) {
@@ -448,212 +427,19 @@ export class QrCodeResultPage implements OnDestroy {
       });
   }
 
-  // setGrade(reset, grades) {
-  //   if (reset) {
-  //     this.profile.grade = [];
-  //     this.profile.gradeValue = {};
-  //   }
-  //   _.each(grades, (grade) => {
-  //     if (grade && this.profile.grade.indexOf(grade) === -1) {
-  //       if (this.profile.grade && this.profile.grade.length) {
-  //         this.profile.grade.push(grade);
-  //       } else {
-  //         this.profile.grade = [grade];
-  //       }
-  //     }
-  //   });
-  // }
-
-  // setMedium(reset, mediums) {
-  //   if (reset) {
-  //     this.profile.medium = [];
-  //   }
-  //   _.each(mediums, (medium) => {
-  //     if (medium && this.profile.medium.indexOf(medium) === -1) {
-  //       if (this.profile.medium && this.profile.medium.length) {
-  //         this.profile.medium.push(medium);
-  //       } else {
-  //         this.profile.medium = [medium];
-  //       }
-  //     }
-  //   });
-  // }
-
-  /**
+   /**
    * @param categoryList
    * @param data
    * @param categoryType
    * return the code of board,medium and subject based on Name
    */
-  // findCode(categoryList: Array<any>, data, categoryType) {
-  //   if (_.find(categoryList, (category) => category.name === data[categoryType])) {
-  //     return _.find(categoryList, (category) => category.name === data[categoryType]).code;
-  //   } else {
-  //     return undefined;
-  //   }
-  // }
-
-  /**
-   * Assigning board, medium, grade and subject to profile
-   */
-
-  // setCurrentProfile(index, data) {
-  //   if (!this.profile.medium || !this.profile.medium.length) {
-  //     this.profile.medium = [];
-  //   }
-  //   /*     if (!this.profile.subject || !this.profile.subject.length) {
-  //         this.profile.subject = [];
-  //       }
-  //    */
-  //   switch (index) {
-  //     case 0:
-  //       this.profile.syllabus = [data.framework];
-  //       this.profile.board = [data.board];
-  //       this.setMedium(true, data.medium);
-  //       // this.profile.subject = [data.subject];
-  //       this.profile.subject = [];
-  //       this.setGrade(true, data.gradeLevel);
-  //       break;
-  //     case 1:
-  //       this.profile.board = [data.board];
-  //       this.setMedium(true, data.medium);
-  //       // this.profile.subject = [data.subject];
-  //       this.profile.subject = [];
-  //       this.setGrade(true, data.gradeLevel);
-  //       break;
-  //     case 2:
-  //       this.setMedium(false, data.medium);
-  //       break;
-  //     case 3:
-  //       this.setGrade(false, data.gradeLevel);
-  //       break;
-  //     /*       case 4:
-  //             this.profile.subject.push(data.subject);
-  //             break;
-  //      */
-  //   }
-  //  // this.editProfile();
-  // }
 
   /**
    * comparing current profile data with qr result data, If not matching then reset current profile data
    * @param {object} data
    * @param {object} profile
    */
-  // checkProfileData(data, profile) {
-
-  //   if (data && data.framework) {
-
-  //     const getSuggestedFrameworksRequest: GetSuggestedFrameworksRequest = {
-  //       language: this.translate.currentLang,
-  //       requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
-  //     };
-  //     // Auto update the profile if that board/framework is listed in custodian framework list.
-  //     this.frameworkUtilService.getActiveChannelSuggestedFrameworkList(getSuggestedFrameworksRequest).toPromise()
-  //       .then((res: Framework[]) => {
-  //         let isProfileUpdated = false;
-  //         res.forEach(element => {
-  //           // checking whether content data framework Id exists/valid in syllabus list
-  //           if (data.framework === element.identifier || data.board.indexOf(element.name) !== -1) {
-  //             isProfileUpdated = true;
-  //             const frameworkDetailsRequest: FrameworkDetailsRequest = {
-  //               frameworkId: data.framework,
-  //               requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
-  //             };
-  //             this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
-  //               .then((framework: Framework) => {
-  //                 this.categories = framework.categories;
-  //                 this.boardList = _.find(this.categories, (category) => category.code === 'board').terms;
-  //                 this.mediumList = _.find(this.categories, (category) => category.code === 'medium').terms;
-  //                 this.gradeList = _.find(this.categories, (category) => category.code === 'gradeLevel').terms;
-  //                 //                  this.subjectList = _.find(this.categories, (category) => category.code === 'subject').terms;
-  //                 if (data.board) {
-  //                   data.board = this.findCode(this.boardList, data, 'board');
-  //                 }
-  //                 if (data.medium) {
-  //                   if (typeof data.medium === 'string') {
-  //                     data.medium = [this.findCode(this.mediumList, data, 'medium')];
-  //                   } else {
-  //                     data.medium = _.map(data.medium, (dataMedium) => {
-  //                       return _.find(this.mediumList, (medium) => medium.name === dataMedium).code;
-  //                     });
-  //                   }
-  //                 }
-  //                 /*                   if (data.subject) {
-  //                                     data.subject = this.findCode(this.subjectList, data, 'subject');
-  //                                   } */
-  //                 if (data.gradeLevel && data.gradeLevel.length) {
-  //                   data.gradeLevel = _.map(data.gradeLevel, (dataGrade) => {
-  //                     return _.find(this.gradeList, (grade) => grade.name === dataGrade).code;
-  //                   });
-  //                 }
-  //                 if (profile && profile.syllabus && profile.syllabus[0] && data.framework === profile.syllabus[0]) {
-  //                   if (data.board) {
-  //                     if (profile.board && !(profile.board.length > 1) && data.board === profile.board[0]) {
-  //                       if (data.medium) {
-  //                         let existingMedium = false;
-  //                           for (let i = 0; i < data.medium.length; i++) {
-  //                             const mediumExists = _.find(profile.medium, (medium) => {
-  //                               return medium === data.medium[i];
-  //                             });
-  //                             if (!mediumExists) {
-  //                               break;
-  //                             }
-  //                             existingMedium = true;
-  //                           }
-  //                         if (!existingMedium) {
-  //                           this.setCurrentProfile(2, data);
-  //                         }
-  //                         if (data.gradeLevel && data.gradeLevel.length) {
-  //                           let existingGrade = false;
-  //                           for (let i = 0; i < data.gradeLevel.length; i++) {
-  //                             const gradeExists = _.find(profile.grade, (grade) => {
-  //                               return grade === data.gradeLevel[i];
-  //                             });
-  //                             if (!gradeExists) {
-  //                               break;
-  //                             }
-  //                             existingGrade = true;
-  //                           }
-  //                           if (!existingGrade) {
-  //                             this.setCurrentProfile(3, data);
-  //                           }
-  //                           /*                             let existingSubject = false;
-  //                                                       existingSubject = _.find(profile.subject, (subject) => {
-  //                                                         return subject === data.subject;
-  //                                                       });
-  //                                                       if (!existingSubject) {
-  //                                                         this.setCurrentProfile(4, data);
-  //                                                       }
-  //                            */
-  //                         }
-  //                       }
-  //                     } else {
-  //                       this.setCurrentProfile(1, data);
-  //                     }
-  //                   }
-  //                 } else {
-  //                   this.setCurrentProfile(0, data);
-  //                 }
-  //               }).catch((err) => {
-  //                 if (err instanceof NetworkError) {
-  //                   this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
-  //                 }
-  //               });
-
-  //             return;
-  //           }
-  //         });
-  //       })
-  //       .catch((err) => {
-  //         if (err instanceof NetworkError) {
-  //           this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
-  //         }
-  //       });
-  //   }
-  // }
-
-  /**
+   /**
    * Subscribe genie event to get content download progress
    */
   subscribeSdkEvent() {

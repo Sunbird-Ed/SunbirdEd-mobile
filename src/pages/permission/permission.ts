@@ -21,26 +21,7 @@ export class PermissionPage {
 
   appName = '';
 
-  permissionListDetails = [
-    {
-      title: this.commonUtilService.translateMessage('CAMERA'),
-      path: './assets/imgs/ic_photo_camera.png',
-      description: this.commonUtilService.translateMessage('CAMERA_PERMISSION_DESCRIPTION', this.appName),
-      permission: false
-    },
-    {
-      title: this.commonUtilService.translateMessage('FILE_MANAGER'),
-      path: './assets/imgs/ic_folder_open.png',
-      description: this.commonUtilService.translateMessage('FILE_MANAGER_PERMISSION_DESCRIPTION'),
-      permission: false
-    },
-    {
-      title: this.commonUtilService.translateMessage('MICROPHONE'),
-      path: './assets/imgs/ic_keyboard_voice.png',
-      description: this.commonUtilService.translateMessage('MICROPHONE_PERMISSION_DESCRIPTION'),
-      permission: false
-    }
-  ];
+  permissionListDetails = [];
 
   readonly permissionList = [
     AndroidPermission.CAMERA,
@@ -66,7 +47,32 @@ export class PermissionPage {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private appVersion: AppVersion) {
     this.appVersion.getAppName()
-      .then((appName: any) => this.appName = appName);
+      .then((appName: any) => { this.appName = appName;
+        this.constructPermissionMessageList();
+       });
+  }
+
+  private constructPermissionMessageList() {
+    this.permissionListDetails = [
+      {
+        title: this.commonUtilService.translateMessage('CAMERA'),
+        path: './assets/imgs/ic_photo_camera.png',
+        description: this.commonUtilService.translateMessage('CAMERA_PERMISSION_DESCRIPTION', this.appName),
+        permission: false
+      },
+      {
+        title: this.commonUtilService.translateMessage('FILE_MANAGER'),
+        path: './assets/imgs/ic_folder_open.png',
+        description: this.commonUtilService.translateMessage('FILE_MANAGER_PERMISSION_DESCRIPTION', this.appName),
+        permission: false
+      },
+      {
+        title: this.commonUtilService.translateMessage('MICROPHONE'),
+        path: './assets/imgs/ic_keyboard_voice.png',
+        description: this.commonUtilService.translateMessage('MICROPHONE_PERMISSION_DESCRIPTION', this.appName),
+        permission: false
+      }
+    ];
   }
 
   async ionViewWillEnter() {

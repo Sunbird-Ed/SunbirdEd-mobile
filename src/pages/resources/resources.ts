@@ -320,7 +320,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     }
     const requestParams: ContentRequest = {
       uid: this.profile ? this.profile.uid : undefined,
-      contentTypes: ContentType.FOR_RECENTLY_VIEWED,
+      contentTypes: [],
       audience: this.audienceFilter,
       recentlyViewed: true,
       limit: 20
@@ -496,7 +496,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             if (this.tabs.getSelected().tabTitle === 'LIBRARY‌' && !avoidRefreshList) {
               this.commonUtilService.showToast(
                 this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
-                  `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
+                `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
             }
           }
         });
@@ -927,7 +927,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   navigateToTextbookPage(items, subject) {
-    const values = new Map();
+    const identifier = items.contentId || items.identifier;
+    let telemetryObject: TelemetryObject;
+    telemetryObject = new TelemetryObject(identifier, items.contentType, undefined);
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.VIEW_MORE_CLICKED,
+      Environment.HOME,
+      PageId.LIBRARY,
+      telemetryObject);
     if (this.commonUtilService.networkInfo.isNetworkAvailable || items.isAvailableLocally) {
       this.navCtrl.push(TextbookViewMorePage, {
         content: items,

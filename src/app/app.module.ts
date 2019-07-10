@@ -108,6 +108,10 @@ export function notificationService() {
 export function errorLoggerService() {
   return SunbirdSdk.instance.errorLoggerService;
 }
+
+export function searchHistoryService() {
+  return SunbirdSdk.instance.searchHistoryService;
+}
 export function sdkDriverFactory() {
   return [{
     provide: 'SDK_CONFIG',
@@ -187,6 +191,9 @@ export function sdkDriverFactory() {
   }, {
     provide: 'ERROR_LOGGER_SERVICE',
     useFactory: errorLoggerService
+  }, {
+    provide: 'SEARCH_HISTORY_SERVICE',
+    useFactory: searchHistoryService
   }
   ];
 }
