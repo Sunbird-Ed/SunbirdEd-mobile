@@ -1,5 +1,5 @@
 import { BatchConstants, ContentFilterConfig } from './../../app/app.constant';
-import {ChangeDetectorRef, Component, Inject, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
   Events,
   IonicPage,
@@ -18,7 +18,7 @@ import {
   CorrelationData, DownloadEventType, DownloadProgress, EventsBusEvent, EventsBusService, PageAssembleCriteria,
   PageAssembleFilter, PageAssembleService, PageName, ProfileType, SearchType, SharedPreferences, TelemetryObject,
   NetworkError, CourseService, CourseBatchesRequest, CourseEnrollmentType, CourseBatchStatus, Course, Batch,
-  FetchEnrolledCourseRequest, Profile, ProfileService,  Framework,
+  FetchEnrolledCourseRequest, Profile, ProfileService, Framework,
   FrameworkCategoryCodesGroup,
   FrameworkDetailsRequest,
   FrameworkService,
@@ -202,13 +202,13 @@ export class SearchPage implements OnInit, OnDestroy {
           return this.searchHistoryService.getEntries({
             like: v,
             limit: 5,
-            namespace: SearchHistoryNamespaces.LIBRARY
+            namespace: this.source === PageId.LIBRARY ? SearchHistoryNamespaces.LIBRARY : SearchHistoryNamespaces.COURSE
           });
         }
 
         return this.searchHistoryService.getEntries({
           limit: 10,
-          namespace: SearchHistoryNamespaces.LIBRARY
+          namespace: this.source === PageId.LIBRARY ? SearchHistoryNamespaces.LIBRARY : SearchHistoryNamespaces.COURSE
         });
       })
       .do((v) => {
@@ -459,7 +459,7 @@ export class SearchPage implements OnInit, OnDestroy {
   }
 
 
- checkProfileData(data, profile) {
+  checkProfileData(data, profile) {
     if (data && data.framework) {
 
       const getSuggestedFrameworksRequest: GetSuggestedFrameworksRequest = {
@@ -469,7 +469,7 @@ export class SearchPage implements OnInit, OnDestroy {
       // Auto update the profile if that board/framework is listed in custodian framework list.
       this.frameworkUtilService.getActiveChannelSuggestedFrameworkList(getSuggestedFrameworksRequest).toPromise()
         .then((res: Framework[]) => {
-           this.isProfileUpdated = false;
+          this.isProfileUpdated = false;
           res.forEach(element => {
             // checking whether content data framework Id exists/valid in syllabus list
             if (data.framework === element.identifier || data.board.indexOf(element.name) !== -1) {
@@ -507,15 +507,15 @@ export class SearchPage implements OnInit, OnDestroy {
                       if (profile.board && !(profile.board.length > 1) && data.board === profile.board[0]) {
                         if (data.medium) {
                           let existingMedium = false;
-                            for (let i = 0; i < data.medium.length; i++) {
-                              const mediumExists = _.find(profile.medium, (medium) => {
-                                return medium === data.medium[i];
-                              });
-                              if (!mediumExists) {
-                                break;
-                              }
-                              existingMedium = true;
+                          for (let i = 0; i < data.medium.length; i++) {
+                            const mediumExists = _.find(profile.medium, (medium) => {
+                              return medium === data.medium[i];
+                            });
+                            if (!mediumExists) {
+                              break;
                             }
+                            existingMedium = true;
+                          }
                           if (!existingMedium) {
                             this.setCurrentProfile(2, data);
                           }
@@ -740,7 +740,7 @@ export class SearchPage implements OnInit, OnDestroy {
     this.searchHistoryService
       .addEntry({
         query: this.searchKeywords,
-        namespace: SearchHistoryNamespaces.LIBRARY
+        namespace: this.source === PageId.LIBRARY ? SearchHistoryNamespaces.LIBRARY : SearchHistoryNamespaces.COURSE
       })
       .toPromise();
   }
