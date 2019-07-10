@@ -45,8 +45,8 @@ import {
 import { TabsPage } from '@app/pages/tabs/tabs';
 import { AppHeaderService } from '@app/service';
 import { EnrollmentDetailsPage } from '../enrolled-course-details/enrollment-details/enrollment-details';
-import {SearchHistoryNamespaces} from '@app/config/search-history-namespaces';
-import {AppVersion} from 'ionic-native';
+import { SearchHistoryNamespaces } from '@app/config/search-history-namespaces';
+import { AppVersion } from '@ionic-native/app-version';
 
 declare const cordova;
 

@@ -414,6 +414,7 @@
   "SCORED": "Scored",
   "SD_CARD": "SD Card",
   "SEARCH_HINT": "Search",
+  "SEARCH_PLACEHOLDER": "Search for content (Eg: ’English Stories’)",
   "SEARCH_TO_FIND_CONTENT": "Search {{%s}} to find content",
   "SEE_ALL_RESULTS_FOR": "see all results for \"{{%s}}\"",
   "SELECT": "SELECT",

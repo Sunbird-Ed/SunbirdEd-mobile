@@ -3,7 +3,7 @@
     <ion-input type="search" *ngIf="!dialCode" #searchInput dir="{{commonUtilService.getAppDirection()}}"
                (keyup.enter)="handleSearch()"
                (ngModelChange)="searchContentResult = undefined; filterIcon = false; isEmptyResult = false"
-               [(ngModel)]="searchKeywords" [placeholder]="'Search'"></ion-input>
+               [(ngModel)]="searchKeywords" [placeholder]="'SEARCH_PLACEHOLDER' | translate"></ion-input>
     <ion-buttons end *ngIf="!dialCode">
       <button (click)="searchKeywords = ''; searchContentResult = undefined; filterIcon = false; isEmptyResult = false"
               *ngIf="searchKeywords" ion-button>
