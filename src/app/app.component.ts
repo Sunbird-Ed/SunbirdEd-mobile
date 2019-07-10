@@ -81,7 +81,6 @@ export class MyApp implements OnInit, AfterViewInit {
   profile: any = {};
   selectedLanguage: string;
   appName: string;
-  identifier: Content;
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
@@ -380,7 +379,7 @@ export class MyApp implements OnInit, AfterViewInit {
 
           if (display_cat_page === 'false') {
             await this.nav.setRoot(TabsPage);
-            this.splaschreenDeeplinkActionHandlerDelegate.onAction('content', { identifier: this.identifier }).toPromise();
+            this.splaschreenDeeplinkActionHandlerDelegate.onAction('content').toPromise();
           } else {
             const profile = await this.profileService.getActiveSessionProfile({ requiredFields: ProfileConstants.REQUIRED_FIELDS })
               .toPromise();
@@ -393,7 +392,7 @@ export class MyApp implements OnInit, AfterViewInit {
             ) {
               this.appGlobalService.isProfileSettingsCompleted = true;
               await this.nav.setRoot(TabsPage);
-              this.splaschreenDeeplinkActionHandlerDelegate.onAction('content', { identifier: this.identifier }).toPromise();
+              this.splaschreenDeeplinkActionHandlerDelegate.onAction('content').toPromise();
             } else {
               this.appGlobalService.isProfileSettingsCompleted = false;
               try {

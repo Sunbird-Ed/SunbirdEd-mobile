@@ -39,8 +39,9 @@ export class SplaschreenDeeplinkActionHandlerDelegate implements SplashscreenAct
     }
   }
 
-  onAction(type: string, { identifier }: any): Observable<undefined> {
+  onAction(type: string, action?: { identifier: string } ): Observable<undefined> {
     const navObj = this.app.getRootNavs()[0];
+    const identifier: any = action !== undefined ? action.identifier : undefined;
     switch (type) {
       case 'content': {
           return this.contentService.getContentDetails({

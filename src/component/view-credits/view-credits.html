@@ -13,7 +13,7 @@
   <ion-grid padding>
     <div *ngIf="content?.creators || content?.creator">
       <ion-row class="text-gray-color">
-        {{ 'CREATORS' | translate }}
+        {{ 'CREATORS' | translate:{'%s': appName} }}
       </ion-row>
       <ion-row class="content">
         {{mergeProperties('creators', 'creator')}}

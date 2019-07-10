@@ -37,25 +37,29 @@
 				<p *ngIf="course?.description?.length" class="text-gray-color">
 					{{ course?.description }}
 				</p>
-				<div *ngIf="course?.gradeLevel?.length" margin-top>
-					<div class="content-meta-title" text-uppercase>{{ 'CLASS' | translate }}</div>
+				<div *ngIf="course?.author" margin-top>
+					<div class="content-meta-title" text-uppercase>{{ 'AUTHOR' | translate }}</div>
 					<!-- <span *ngFor="let grade of course.gradeLevel"> -->
-					<span class="text-gray-color">{{course?.gradeLevel}}</span>
+					<span class="text-gray-color">{{course?.author}}</span>
 					<!-- </span> -->
 				</div>
-				<div *ngIf="course?.subject" margin-top>
-					<div class="content-meta-title" text-uppercase>{{ 'SUBJECT' | translate }}</div>
-					<span class="text-gray-color">{{course?.subject | csa }}</span>
+				<div *ngIf="course?.creator" margin-top>
+					<div class="content-meta-title" text-uppercase>{{ 'PUBLISHED_BY' | translate:{'%s': appName} }}</div>
+					<!-- <span *ngFor="let grade of course.gradeLevel"> -->
+					<span class="text-gray-color">{{course?.creator}}</span>
+					<!-- </span> -->
 				</div>
-
-				<div *ngIf="course?.board" margin-top>
-					<div class="content-meta-title" text-uppercase>{{ 'BOARD' | translate }}</div>
-					<span class="text-gray-color">{{course?.board}}</span>
+				<div *ngIf="course?.license" margin-top>
+					<div class="content-meta-title" text-uppercase>{{ 'LICENSE' | translate }}</div>
+					<!-- <span *ngFor="let grade of course.gradeLevel"> -->
+					<span class="text-gray-color">{{course?.license}}</span>
+					<!-- </span> -->
 				</div>
-
-				<div *ngIf="course?.medium" margin-top>
-					<div class="content-meta-title" text-uppercase>{{ 'MEDIUM' | translate }}</div>
-					<span class="text-gray-color">{{course?.medium | csa }}</span>
+				<div *ngIf="course?.owner" margin-top>
+					<div class="content-meta-title" text-uppercase>{{ 'COPYRIGHT' | translate }}</div>
+					<!-- <span *ngFor="let grade of course.gradeLevel"> -->
+					<span class="text-gray-color">{{course?.owner}}</span>
+					<!-- </span> -->
 				</div>
 				<!-- Batch details - only for enrolled courses -->
 				<div *ngIf="batchDetails?.name" margin-top>

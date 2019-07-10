@@ -326,16 +326,24 @@
             <div class="sb-content-title-data">{{defaultLicense}}</div>
           </div>
           <div class="sb-info" *ngIf="content?.contentData?.creators || content?.contentData?.creator">
-            <div class="sb-content-title">{{'CREATORS' | translate}}</div>
+            <div class="sb-content-title">{{ 'CREATORS' | translate:{'%s': appName} }}</div>
             <div class="sb-content-title-data">{{mergeProperties('creators', 'creator')}}</div>
           </div>
-          <div class="sb-info" *ngIf="content?.contentData?.contributors || content?.contentData?.owner">
+          <div class="sb-info" *ngIf="content?.contentData?.originalAuthor">
+            <div class="sb-content-title">{{'ORIGINAL_AUTHOR' | translate}}</div>
+            <div class="sb-content-title-data">{{content?.contentData?.originalAuthor}}</div>
+          </div>
+          <!-- <div class="sb-info" *ngIf="content?.contentData?.contributors || content?.contentData?.owner">
             <div class="sb-content-title">{{'CONTRIBUTORS' | translate}}</div>
             <div class="sb-content-title-data"> {{mergeProperties('contributors', 'owner')}}</div>
+          </div> -->
+          <div class="sb-info" *ngIf="content?.contentData?.copyright">
+            <div class="sb-content-title">{{'COPYRIGHT' | translate}}</div>
+            <div class="sb-content-title-data">{{content?.contentData?.owner}}</div>
           </div>
           <div class="sb-info" *ngIf="content?.contentData?.attributions">
             <div class="sb-content-title">{{'ATTRIBUTIONS' | translate}}</div>
-            <div class="sb-content-title-data">{{content?.contentData?.attributions}}</div>
+            <div class="sb-content-title-data">{{mergeProperties('contributors','acknowledgement')}}</div>
           </div>
         </div>
         <div class="read-more" *ngIf="content && content.contentData.description &&

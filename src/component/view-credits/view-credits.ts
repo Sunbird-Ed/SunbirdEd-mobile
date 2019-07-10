@@ -5,6 +5,7 @@ import {ProfileConstants} from '../../app/app.constant';
 import {AppGlobalService} from '../../service/app-global.service';
 import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
 import {Environment, InteractType} from '../../service/telemetry-constants';
+import { AppVersion } from '@ionic-native/app-version';
 
 @Component({
   selector: 'view-credits',
@@ -18,6 +19,7 @@ export class ViewCreditsComponent {
   correlation: any;
   private pageId = '';
   private popupType: string;
+  appName: any;
 
   /**
    * Default function of class ViewCreditsComponent
@@ -35,7 +37,8 @@ export class ViewCreditsComponent {
     private platform: Platform,
     private ngZone: NgZone,
     private telemetrygeneratorService: TelemetryGeneratorService,
-    private appGlobalService: AppGlobalService
+    private appGlobalService: AppGlobalService,
+    private appVersion: AppVersion
   ) {
     this.getUserId();
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
@@ -51,6 +54,11 @@ export class ViewCreditsComponent {
    * Ionic life cycle hook
    */
   ionViewDidLoad(): void {
+    this.appVersion.getAppName()
+      .then((appName: any) => {
+        this.appName = appName;
+    });
+
     this.content = this.navParams.get('content');
     this.pageId = this.navParams.get('pageId');
     this.rollUp = this.navParams.get('rollUp');

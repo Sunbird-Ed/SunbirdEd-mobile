@@ -68,6 +68,7 @@ import { ProfileConstants } from '../../app';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 import { BatchConstants } from '@app/app';
 import { ContentShareHandler } from '@app/service/content/content-share-handler';
+import { AppVersion } from '@ionic-native/app-version';
 
 declare const cordova;
 
@@ -183,6 +184,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
   private corRelationList: Array<CorrelationData>;
   headerObservable: any;
   content: Content;
+  appName: any;
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
@@ -205,7 +207,8 @@ export class EnrolledCourseDetailsPage implements OnInit {
     private datePipe: DatePipe,
     private utilityService: UtilityService,
     private headerService: AppHeaderService,
-    private contentShareHandler: ContentShareHandler
+    private contentShareHandler: ContentShareHandler,
+    private appVersion: AppVersion
   ) {
 
     this.appGlobalService.getUserId();
@@ -1204,6 +1207,10 @@ export class EnrolledCourseDetailsPage implements OnInit {
   }
 
   ionViewDidLoad() {
+    this.appVersion.getAppName()
+      .then((appName: any) => {
+        this.appName = appName;
+    });
     this.subscribeUtilityEvents();
   }
 
