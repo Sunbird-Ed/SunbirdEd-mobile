@@ -1,3 +1,4 @@
 export enum SearchHistoryNamespaces {
-  LIBRARY = 'LIBRARY'
+  LIBRARY = 'LIBRARY',
+  COURSE = 'COURSE'
 }
