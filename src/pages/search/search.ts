@@ -1,5 +1,5 @@
 import {BatchConstants, ContentFilterConfig} from './../../app/app.constant';
-import {ChangeDetectorRef, Component, Inject, NgZone, OnDestroy, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, Inject, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
   Content as ContentView,
   Events,
@@ -75,6 +75,7 @@ import {TabsPage} from '@app/pages/tabs/tabs';
 import {AppHeaderService} from '@app/service';
 import {EnrollmentDetailsPage} from '../enrolled-course-details/enrollment-details/enrollment-details';
 import {SearchHistoryNamespaces} from "@app/config/search-history-namespaces";
+import {AppVersion} from '@ionic-native/app-version';
 
 declare const cordova;
 
@@ -83,10 +84,11 @@ declare const cordova;
   selector: 'page-search',
   templateUrl: './search.html'
 })
-export class SearchPage implements OnDestroy {
+export class SearchPage implements OnInit, OnDestroy {
 
   public searchHistory$: Observable<SearchEntry[]>;
 
+  appName: string;
   showLoading: boolean;
   downloadProgress: any;
   contentType: Array<string> = [];
@@ -137,6 +139,7 @@ export class SearchPage implements OnDestroy {
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     @Inject('COURSE_SERVICE') private courseService: CourseService,
     @Inject('SEARCH_HISTORY_SERVICE') private searchHistoryService: SearchHistoryService,
+    private appVersion: AppVersion,
     private navParams: NavParams,
     private navCtrl: NavController,
     private zone: NgZone,
@@ -162,6 +165,10 @@ export class SearchPage implements OnDestroy {
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
     this.getFrameworkId();
     this.selectedLanguageCode = this.translate.currentLang;
+  }
+
+  ngOnInit(): void {
+    this.getAppName();
   }
 
   ionViewWillEnter() {
@@ -226,6 +233,13 @@ export class SearchPage implements OnDestroy {
     if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
     }
+  }
+
+  private async getAppName() {
+    return this.appVersion.getAppName()
+      .then((appName: any) => {
+        this.appName = appName;
+      });
   }
 
   getFrameworkId() {

@@ -3,7 +3,7 @@
     <ion-input type="search" *ngIf="!dialCode" #searchInput dir="{{commonUtilService.getAppDirection()}}"
                (keyup.enter)="handleSearch()"
                (ngModelChange)="searchContentResult = undefined; filterIcon = false; isEmptyResult = false"
-               [(ngModel)]="searchKeywords" placeholder="Search"></ion-input>
+               [(ngModel)]="searchKeywords" [placeholder]="'Search'"></ion-input>
     <ion-buttons end *ngIf="!dialCode">
       <button (click)="searchKeywords = ''; searchContentResult = undefined; filterIcon = false; isEmptyResult = false"
               *ngIf="searchKeywords" ion-button>
@@ -28,7 +28,7 @@
       <ng-container *ngIf="!searchHistory.length && !searchKeywords">
         <div class="sb-no-search-history">
       <span>
-        Search Sunbird to find content
+        {{'SEARCH_TO_FIND_CONTENT' | translate: {'%s': appName} }}
       </span>
         </div>
       </ng-container>
@@ -39,7 +39,7 @@
             <img src="assets/imgs/icon_recent.svg">
           </div>
           <div class="col">
-            see all results for "{{searchKeywords}}"
+            {{'SEE_ALL_RESULTS_FOR' | translate: {'%s': searchKeywords} }}
           </div>
         </div>
       </ng-container>
@@ -187,7 +187,7 @@
   <div *ngIf="searchContentResult && searchContentResult.length">
     <div class="sb-search-history-entry sb-search-header-meta row">
       <div class="col">
-        Showing {{searchContentResult.length}} results for '{{searchKeywords}}'
+        {{'SHOWING_RESULTS_FOR' | translate: {'%count': searchContentResult.length, '%query': searchKeywords} }}
       </div>
     </div>
     <div class="sb-card-container sb-card-textbook-container">
