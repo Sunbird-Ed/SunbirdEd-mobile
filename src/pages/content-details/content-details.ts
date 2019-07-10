@@ -1615,20 +1615,18 @@ export class ContentDetailsPage {
    else if firstprperty is not there and secondprperty is there, then return secondprperty value
    else do the merger of firstprperty and secondprperty value and return merged value
  */
-  mergeProperties(firstProp, secondProp) {
-    if (this.content.contentData[firstProp] && !this.content.contentData[secondProp]) {
-      return this.content.contentData[firstProp];
-    } else if (!this.content.contentData[firstProp] && this.content.contentData[secondProp]) {
-      return this.content.contentData[secondProp];
-    } else {
-      let first: any;
-      let second: any;
-      first = this.content.contentData[firstProp].split(', ');
-      second = this.content.contentData[secondProp].split(', ');
-      first = second.concat(first);
-      first = Array.from(new Set(first));
-      return first.join(', ');
-    }
+  mergeProperties(mergeProp) {
+    let displayStr: string;
+    mergeProp.forEach( ele => {
+      if (this.content.contentData[ele]) {
+        if (displayStr) {
+          displayStr = displayStr + ', ' + this.content.contentData[ele];
+        } else {
+          displayStr = this.content.contentData[ele];
+        }
+      }
+    });
+    return displayStr;
   }
 
   handleHeaderEvents($event) {
