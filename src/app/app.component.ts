@@ -223,7 +223,7 @@ export class MyApp implements OnInit, AfterViewInit {
         // Notification was received in foreground. Maybe the user needs to be notified.
       }
       data['isRead'] = data['wasTapped'] ? 1 : 0;
-      data['actionData'] = JSON.parse(data.actionData);
+      data['actionData'] = typeof data.actionData === 'string' ? JSON.parse(data.actionData) : data.actionData;
       this.notificationServices.addNotification(data).subscribe((status) => {
         this.events.publish('notification:received');
         this.events.publish('notification-status:update', { isUnreadNotifications: true });
