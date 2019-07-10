@@ -35,7 +35,7 @@
   "AS_FILE": "As File",
   "AS_LINK": "As Link",
   "ATTACHMENT_DOWNLOADED": "Attachment downloaded",
-  "ATTRIBUTIONS": "Acknowledgement(s)",
+  "ATTRIBUTIONS": "Attribution(s)",
   "AUTHOR": "Author",
   "AUTOMATIC_SYNC": "Automatic Data Sync",
   "AVAILABLE": "Available",
@@ -547,5 +547,7 @@
   "YES": "Yes",
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
   "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "You are not connected to the internet",
-  "ERROR_LOW_MEMORY": "Not enough space available for transfer"
+  "ERROR_LOW_MEMORY": "Not enough space available for transfer",
+  "ORIGINAL_CONTENT_DATA": "This content is derived from:",
+  "ORIGINAL_CONTENT": "Content"
 }

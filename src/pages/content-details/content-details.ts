@@ -219,7 +219,6 @@ export class ContentDetailsPage {
   }
 
   ionViewDidLoad() {
-    console.log('log----');
     this.appVersion.getAppName()
       .then((appName: any) => {
         this.appName = appName;
@@ -1632,7 +1631,6 @@ export class ContentDetailsPage {
   handleHeaderEvents($event) {
     switch ($event.name) {
       case 'back':
-      
         this.handleNavBackButton();
         break;
     }
