@@ -1,6 +1,16 @@
 import { BatchConstants, ContentFilterConfig } from './../../app/app.constant';
-import { Component, Inject, NgZone, OnDestroy, ViewChild } from '@angular/core';
-import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, Loading } from 'ionic-angular';
+import {ChangeDetectorRef, Component, Inject, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {
+  Events,
+  IonicPage,
+  Navbar,
+  NavController,
+  NavParams,
+  Platform,
+  PopoverController,
+  Loading,
+  TextInput
+} from 'ionic-angular';
 import { Content as ContentView } from 'ionic-angular';
 import {
   CachedItemRequestSourceFrom, Content, ContentDetailRequest, ContentEventType, ContentImport, ContentImportRequest,
@@ -13,7 +23,7 @@ import {
   FrameworkDetailsRequest,
   FrameworkService,
   FrameworkUtilService,
-  GetSuggestedFrameworksRequest,
+  GetSuggestedFrameworksRequest, SearchEntry, SearchHistoryService
 } from 'sunbird-sdk';
 import { FilterPage } from './filters/filter';
 import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
@@ -28,13 +38,15 @@ import { CommonUtilService } from '../../service/common-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { QrCodeResultPage } from '../qr-code-result/qr-code-result';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import {
   Environment, ImpressionType, InteractSubtype, InteractType, LogLevel, Mode, PageId
 } from '../../service/telemetry-constants';
 import { TabsPage } from '@app/pages/tabs/tabs';
 import { AppHeaderService } from '@app/service';
 import { EnrollmentDetailsPage } from '../enrolled-course-details/enrollment-details/enrollment-details';
+import { SearchHistoryNamespaces } from '@app/config/search-history-namespaces';
+import { AppVersion } from '@ionic-native/app-version';
 
 declare const cordova;
 
@@ -43,8 +55,11 @@ declare const cordova;
   selector: 'page-search',
   templateUrl: './search.html'
 })
-export class SearchPage implements OnDestroy {
+export class SearchPage implements OnInit, OnDestroy {
 
+  public searchHistory$: Observable<SearchEntry[]>;
+
+  appName: string;
   showLoading: boolean;
   downloadProgress: any;
   @ViewChild('searchInput') searchBar;
@@ -120,6 +135,16 @@ export class SearchPage implements OnDestroy {
   @ViewChild('contentView') contentView: ContentView;
   constructor(
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
+    @Inject('PAGE_ASSEMBLE_SERVICE') private pageService: PageAssembleService,
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
+    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
+    @Inject('COURSE_SERVICE') private courseService: CourseService,
+    @Inject('SEARCH_HISTORY_SERVICE') private searchHistoryService: SearchHistoryService,
+    private appVersion: AppVersion,
+    private changeDetectionRef: ChangeDetectorRef,
     private navParams: NavParams,
     private navCtrl: NavController,
     private zone: NgZone,
@@ -131,15 +156,8 @@ export class SearchPage implements OnDestroy {
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private translate: TranslateService,
-    @Inject('PAGE_ASSEMBLE_SERVICE') private pageService: PageAssembleService,
-    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
-    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     private headerService: AppHeaderService,
-    @Inject('COURSE_SERVICE') private courseService: CourseService,
     private popoverCtrl: PopoverController,
-    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
-    @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
-    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
   ) {
 
     this.checkUserSession();
@@ -151,6 +169,10 @@ export class SearchPage implements OnDestroy {
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
     this.getFrameworkId();
     this.selectedLanguageCode = this.translate.currentLang;
+  }
+
+  ngOnInit(): void {
+    this.getAppName();
   }
 
   ionViewWillEnter() {
@@ -170,6 +192,31 @@ export class SearchPage implements OnDestroy {
   }
 
   ionViewDidLoad() {
+    this.searchHistory$ = (this.searchBar as TextInput).ionChange
+      .map((e) => e.value)
+      .share()
+      .startWith('')
+      .debounceTime(500)
+      .switchMap((v) => {
+        if (v) {
+          return this.searchHistoryService.getEntries({
+            like: v,
+            limit: 5,
+            namespace: SearchHistoryNamespaces.LIBRARY
+          });
+        }
+
+        return this.searchHistoryService.getEntries({
+          limit: 10,
+          namespace: SearchHistoryNamespaces.LIBRARY
+        });
+      })
+      .do((v) => {
+        setTimeout(() => {
+          this.changeDetectionRef.detectChanges();
+        });
+      });
+
     this.navBar.backButtonClick = () => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(ImpressionType.SEARCH,
         Environment.HOME, true, undefined, this.corRelationList);
@@ -190,6 +237,13 @@ export class SearchPage implements OnDestroy {
     if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
     }
+  }
+
+  private async getAppName() {
+    return this.appVersion.getAppName()
+      .then((appName: any) => {
+        this.appName = appName;
+      });
   }
 
   getFrameworkId() {
@@ -613,6 +667,8 @@ export class SearchPage implements OnDestroy {
       return;
     }
 
+    this.addSearchHistoryEntry();
+
     this.showLoader = true;
 
     (<any>window).cordova.plugins.Keyboard.close();
@@ -683,6 +739,15 @@ export class SearchPage implements OnDestroy {
           }
         });
       });
+  }
+
+  private addSearchHistoryEntry() {
+    this.searchHistoryService
+      .addEntry({
+        query: this.searchKeywords,
+        namespace: SearchHistoryNamespaces.LIBRARY
+      })
+      .toPromise();
   }
 
   applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey?: string) {
