@@ -320,7 +320,7 @@ export class ViewMoreActivityPage implements OnInit {
 
     let contentTypes;
     if (recentlyViewed) {
-      contentTypes = ContentType.FOR_RECENTLY_VIEWED;
+      contentTypes = [];
     } else {
       contentTypes = await this.formAndFrameworkUtilService.getSupportedContentFilterConfig(
         ContentFilterConfig.NAME_LIBRARY);
