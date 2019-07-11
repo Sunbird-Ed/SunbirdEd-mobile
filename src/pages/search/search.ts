@@ -215,7 +215,7 @@ export class SearchPage implements OnInit, OnDestroy {
         setTimeout(() => {
           this.changeDetectionRef.detectChanges();
         });
-      });
+      }) as any;
 
     this.navBar.backButtonClick = () => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(ImpressionType.SEARCH,
