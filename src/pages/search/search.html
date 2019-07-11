@@ -69,8 +69,25 @@
     </div>
   </ng-container>
 
-  <div class="spinner-container" *ngIf="showLoader">
+  <!-- <div class="spinner-container" *ngIf="showLoader">
     <ion-spinner padding class="loader"></ion-spinner>
+  </div> -->
+
+  <ion-list class="m-n" *ngIf="showLoader">
+    <ion-item>
+        <skeleton-item height="12px" width="75%"></skeleton-item>
+        <skeleton-item height="12px" width="40%"></skeleton-item>
+    </ion-item>
+    <ion-item *ngFor="let i of [0,1,2,3,4,5,6,7,8]">
+      <ion-avatar item-end>
+        <skeleton-item height="56px" width="56px"></skeleton-item>
+      </ion-avatar>
+      <skeleton-item height="12px" width="40%"></skeleton-item>
+      <skeleton-item height="12px" width="30%"></skeleton-item>
+    </ion-item>
+  </ion-list>
+  <div text-center *ngIf="isEmptyResult">
+    <h4>{{ 'EMPTY_SEARCH_RESULTS' | translate }}</h4>
   </div>
   <!-- Testing here  -->
   <ion-list no-lines *ngIf="displayDialCodeResult" class="collection-list">
@@ -178,8 +195,7 @@
   <div *ngIf="dialCodeContentResult && dialCodeContentResult.length">
     <div class="sb-card-container sb-card-textbook-container">
       <textbook-card class="tb-border-btm" *ngFor="let content of dialCodeContentResult; let i = index; let last = last"
-                     (click)="openContent(content, content,i)" [content]="content"
-                     [layoutName]='search'></textbook-card>
+        (click)="openContent(content, content,i)" [content]="content" [layoutName]='search'></textbook-card>
     </div>
   </div>
 
