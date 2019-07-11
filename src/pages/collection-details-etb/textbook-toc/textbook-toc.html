@@ -36,7 +36,7 @@
                 </div>
               </ion-col>
             </ion-row>
-            <div class="font-grey-text" (click)="showCommingSoonPopup(item)" *ngIf="item?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !item?.children">
+            <div class="sb-accordian-grey-text" (click)="showCommingSoonPopup(item)" *ngIf="item?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !item?.children">
               {{item?.contentData?.name}}
               <span class="grey-icon-span">
                 <ion-icon ios="ios-alert" md="md-alert" class="grey-icon ML5"></ion-icon>
