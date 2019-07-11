@@ -43,6 +43,7 @@ export class CollectionChildComponent implements AfterViewInit {
         private telemetryService: TelemetryGeneratorService
     ) {
         this.cardData = this.navParams.get('content');
+        this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
     }
 
 
