@@ -554,5 +554,11 @@
   "INTERACTION": "Interaction",
   "NO_CONTENTS": "No {{%s}} Contents",
   "NO_CONTENTS_MESSAGE": "Please select another type of content",
-  "SELECT_CHAPTER": "Select Chapter"
+  "SELECT_CHAPTER": "Select Chapter",
+  "DATA": "See more books and content",
+  "NO_BOOKS_DEFINITION": "Your board is yet to add more books.Click below to see more books and content on {{%s}} ",
+  "NO_BOOKS_AVAILABLE": "Board is adding books",
+  "MORE_CONTENT": "Find more books and content on {{%s}} below.",
+  "SEARCH_BOOK": "Search for content (Eg: ’English Stories’)",
+  "TEXTBOOK": "Textbooks"
 }
