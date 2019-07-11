@@ -249,12 +249,17 @@ export class QrCodeResultPage implements OnDestroy {
             '',
             PageId.DIAL_LINKED_NO_CONTENT,
             Environment.HOME);
-
-           // this.commonUtilService.showContentComingSoonAlert(this.source);
-             this.showComingSoonPopUp(data);
+            if (this.isProfileUpdated) {
+              this.navCtrl.setRoot(TabsPage, {
+                loginMode: 'guest'
+              });
+              this.showComingSoonPopUp(data);
+            this.navCtrl.pop();
+            } else {
+              this.showComingSoonPopUp(data);
             this.navCtrl.pop();
         }
-
+      }
       })
       .catch(() => {
         this.zone.run(() => {
