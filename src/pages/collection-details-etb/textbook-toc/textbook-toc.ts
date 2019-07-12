@@ -19,8 +19,6 @@ export class TextBookTocPage {
     headerObservable: any;
     backButtonFunc = undefined;
     childrenData: Array<any>;
-    // shownGroup: any;
-    dismissCallback: Function;
     activeMimeTypeFilter = ['all'];
 
     @ViewChild('stickyPillsRef') stickyPillsRef: ElementRef;
@@ -40,11 +38,9 @@ export class TextBookTocPage {
     }
 
     ionViewDidLoad() {
-        this.dismissCallback = this.navParams.get('dismissCallback');
     }
 
     ionViewWillEnter() {
-        console.log('in TOC page', this.childrenData);
         this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
             this.handleHeaderEvents(eventName);
         });
@@ -62,7 +58,6 @@ export class TextBookTocPage {
     }
 
     handleBackButton() {
-        console.log('TOC handleBackButton');
         this.navCtrl.pop();
     }
 
@@ -97,19 +92,16 @@ export class TextBookTocPage {
 
     // set textbook unit and contentids for scrolling to particular unit in etb page
     setContentId(id: string) {
-        console.log('collection first child', id);
-        if (this.navCtrl.getActive().component['pageName'] === 'TextBookTocPage') {
-          const values = new Map();
-          values['unitClicked'] = id;
-           this.telemetryService.generateInteractTelemetry(
+        const values = new Map();
+        values['unitClicked'] = id;
+        this.telemetryService.generateInteractTelemetry(
             InteractType.TOUCH,
             InteractSubtype.UNIT_CLICKED,
             Environment.HOME,
             PageId.TEXTBOOK_TOC,
             undefined,
             values
-          );
-        }
+        );
 
         this.textbookTocService.setTextbookIds({rootUnitId: id, contentId: id});
         this.navCtrl.pop();
