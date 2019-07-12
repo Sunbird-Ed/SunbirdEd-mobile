@@ -469,6 +469,9 @@ shadow{
   color: $blue;
   padding: $base-block-space;
   background-color: #fff;
+  .pull-left{
+    line-height: 30px;
+  }
   ion-icon{
     height: 24px;
     width: 24px;
