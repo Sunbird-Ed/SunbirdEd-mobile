@@ -12,6 +12,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { ComponentsModule } from '../../component/components.module';
 import { FileSizePipe } from '@app/pipes/file-size/file-size';
 import { ContentShareHandler } from '@app/service/content/content-share-handler';
+import { ProfileSwitchHandler } from '@app/service/user-groups/profile-switch-handler';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { ContentShareHandler } from '@app/service/content/content-share-handler'
   providers: [
     SocialSharing,
     FileSizePipe,
-    ContentShareHandler
+    ContentShareHandler,
+    ProfileSwitchHandler
   ],
   exports: [
     ContentDetailsPage
