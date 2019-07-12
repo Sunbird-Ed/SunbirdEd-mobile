@@ -1039,8 +1039,13 @@ export class SearchPage implements OnInit, OnDestroy {
 
         if (dialCodeContentResult.length) {
           dialCodeResultObj.dialCodeContentResult = dialCodeContentResult;
-          displayDialCodeResult.push(dialCodeResultObj);
+          if (displayDialCodeResult && !(displayDialCodeResult.length > 0)) {
+            displayDialCodeResult.push(dialCodeResultObj);
+          } else {
+            displayDialCodeResult[0].dialCodeContentResult = dialCodeContentResult;
+          }
         }
+        // Course
         if (dialCodeContentCourseResult.length) {
           dialCodeCourseResultObj.dialCodeContentResult = dialCodeContentCourseResult;
           displayDialCodeResult.push(dialCodeCourseResultObj);
