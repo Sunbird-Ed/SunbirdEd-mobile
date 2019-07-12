@@ -2,9 +2,7 @@ import { TextBookTocPage } from './textbook-toc/textbook-toc';
 import { ActiveDownloadsPage } from './../active-downloads/active-downloads';
 import {Component, Inject, NgZone, ViewChild, OnInit, ElementRef, ViewChildren, QueryList, ChangeDetectorRef} from '@angular/core';
 import { Content as iContent, ScrollEvent } from 'ionic-angular';
-import {
-  Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController, ViewController
-} from 'ionic-angular';
+import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController, ViewController} from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
@@ -225,6 +223,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   toast: any;
   contentTypesCount: any;
   stckyUnitTitle?: string;
+  isChapterVisible = false;
 
   constructor(
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
@@ -289,7 +288,6 @@ export class CollectionDetailsEtbPage implements OnInit {
       this.headerService.updatePageConfig(this.headerConfig);
       this.resetVariables();
       this.cardData = this.navParams.get('content');
-      console.log('this.cardData', this.cardData);
       this.corRelationList = this.navParams.get('corRelation');
       const depth = this.navParams.get('depth');
       this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
@@ -381,11 +379,12 @@ export class CollectionDetailsEtbPage implements OnInit {
       isCollapsed = false;
       this.shownGroup = null;
     } else {
+      isCollapsed = false;
       this.shownGroup = group;
     }
     const values = new Map();
     values['isCollapsed'] = isCollapsed;
-    const telemetryObject = new TelemetryObject(content.identifier, ContentType.TEXTBOOK_UNIT, content.contentData.pkgVersion);
+    const telemetryObject = new TelemetryObject(content.identifier, ContentType.TEXTBOOK_UNIT, content.pkgVersion);
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.UNIT_CLICKED,
@@ -404,8 +403,6 @@ export class CollectionDetailsEtbPage implements OnInit {
   }
 
   changeValue(event, text) {
-    console.log('EVENT Thrown', event);
-    console.log('Tetx Inside ChnageValue', text);
     if (!text) {
       this.isSelected = false;
     } else {
@@ -438,9 +435,7 @@ export class CollectionDetailsEtbPage implements OnInit {
       .then(response => {
         this.baseUrl = response;
       })
-      .catch((error) => {
-        console.error('Error Occurred=> ', error);
-      });
+      .catch(() => {});
   }
 
   /**
@@ -487,8 +482,7 @@ export class CollectionDetailsEtbPage implements OnInit {
         .then((userType) => {
           this.profileType = userType;
         })
-        .catch((error) => {
-          console.error('Error Occurred', error);
+        .catch(() => {
           this.profileType = '';
         });
     }
@@ -517,8 +511,7 @@ export class CollectionDetailsEtbPage implements OnInit {
           });
         });
       })
-      .catch((error: any) => {
-        console.log('error while loading content details', error);
+      .catch(() => {
         loader.dismiss();
         this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
         this.navCtrl.pop();
@@ -742,7 +735,6 @@ export class CollectionDetailsEtbPage implements OnInit {
       })
       .catch((error: any) => {
         this.zone.run(() => {
-          console.log('error while loading content details', error);
           // if (this.isDownloadStarted) {
           this.showDownloadBtn = true;
           this.isDownloadStarted = false;
@@ -781,7 +773,6 @@ export class CollectionDetailsEtbPage implements OnInit {
             }
             this.childrenData = data.children;
             this.changeDetectionRef.detectChanges();
-            console.log('this.childrenData', this.childrenData);
           }
 
           if (!this.isDepthChild) {
@@ -792,16 +783,12 @@ export class CollectionDetailsEtbPage implements OnInit {
           this.showChildrenLoader = false;
           let carouselIndex = 0;
           if (this.textbookTocService.textbookIds.rootUnitId) {
-            console.log('this.this.scrollToId', this.textbookTocService.textbookIds.rootUnitId);
             carouselIndex = this.childrenData.findIndex((content) => this.textbookTocService.textbookIds.rootUnitId === content.identifier);
             carouselIndex = carouselIndex > 0 ? carouselIndex : 0;
           }
-          console.log('carouselIndex', carouselIndex);
           this.toggleGroup(carouselIndex, this.content);
           if (this.textbookTocService.textbookIds.contentId) {
             setTimeout(() => {
-              console.log('this.textbookTocService.textbookIds.contentId', this.textbookTocService.textbookIds.contentId);
-              console.log('in scroll', document.getElementById(this.textbookTocService.textbookIds.contentId));
               (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.add('sticky');
               window['scrollWindow'].getScrollElement().scrollBy(0, 0);
               document.getElementById(this.textbookTocService.textbookIds.contentId).scrollIntoView();
@@ -1373,9 +1360,8 @@ export class CollectionDetailsEtbPage implements OnInit {
         this.commonUtilService.showToast('MSG_RESOURCE_DELETED');
         this.viewCtrl.dismiss('delete.success');
       }
-    }).catch((error: any) => {
+    }).catch(() => {
       loader.dismiss();
-      console.log('delete response: ', error);
       this.commonUtilService.showToast('CONTENT_DELETE_FAILED');
       this.viewCtrl.dismiss();
     });
@@ -1435,21 +1421,23 @@ export class CollectionDetailsEtbPage implements OnInit {
   }
 
   openTextbookToc() {
-    console.log('in openTextbookToc');
     this.shownGroup = null;
     this.navCtrl.push(TextBookTocPage, {
+      parentId: this.identifier,
       childrenData: this.childrenData,
       dismissCallback: (() => {
-        console.log('textbookTocService etb', this.textbookTocService.textbookIds);
         this.onFilterMimeTypeChange(this.mimeTypes[0].value, 0, this.mimeTypes[0].name);
       }).bind(this)
     });
+    const values = new Map();
+    values['selectChapterVisible'] = this.isChapterVisible;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.DROPDOWN_CLICKED,
       Environment.HOME,
       PageId.COLLECTION_DETAIL,
-      undefined
+      undefined,
+      values
     );
   }
 
@@ -1461,6 +1449,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     }).slice(-1)[0];
 
     if (currentTitle) {
+      this.isChapterVisible = true;
       this.zone.run(() => {
         this.stckyUnitTitle = currentTitle.getAttribute('data-sticky-unit');
       });
