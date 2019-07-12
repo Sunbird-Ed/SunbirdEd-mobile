@@ -796,16 +796,12 @@ export class CollectionDetailsEtbPage implements OnInit {
             });
 
           if (this.textbookTocService.textbookIds.rootUnitId) {
-            console.log('this.this.scrollToId', this.textbookTocService.textbookIds.rootUnitId);
             carouselIndex = this.childrenData.findIndex((content) => this.textbookTocService.textbookIds.rootUnitId === content.identifier);
             // carouselIndex = carouselIndex > 0 ? carouselIndex : 0;
           }
-          console.log('carouselIndex', carouselIndex);
           this.toggleGroup(carouselIndex, this.content);
           if (this.textbookTocService.textbookIds.contentId) {
             setTimeout(() => {
-              console.log('this.textbookTocService.textbookIds.contentId', this.textbookTocService.textbookIds.contentId);
-              console.log('in scroll', document.getElementById(this.textbookTocService.textbookIds.contentId));
               (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.add('sticky');
               window['scrollWindow'].getScrollElement().scrollBy(0, 0);
               document.getElementById(this.textbookTocService.textbookIds.contentId).scrollIntoView();
@@ -1442,11 +1438,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     console.log('in openTextbookToc');
     this.shownGroup = null;
     this.navCtrl.push(TextBookTocPage, {
-      childrenData: this.childrenData,
-      dismissCallback: (() => {
-        console.log('textbookTocService etb', this.textbookTocService.textbookIds);
-        this.onFilterMimeTypeChange(this.mimeTypes[0].value, 0, this.mimeTypes[0].name);
-      }).bind(this)
+      childrenData: this.childrenData
     });
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
