@@ -223,6 +223,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   toast: any;
   contentTypesCount: any;
   stckyUnitTitle?: string;
+  isChapterVisible = false;
 
   constructor(
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
@@ -287,7 +288,6 @@ export class CollectionDetailsEtbPage implements OnInit {
       this.headerService.updatePageConfig(this.headerConfig);
       this.resetVariables();
       this.cardData = this.navParams.get('content');
-      console.log('this.cardData', this.cardData);
       this.corRelationList = this.navParams.get('corRelation');
       const depth = this.navParams.get('depth');
       this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
@@ -380,11 +380,12 @@ export class CollectionDetailsEtbPage implements OnInit {
       isCollapsed = false;
       this.shownGroup = null;
     } else {
+      isCollapsed = false;
       this.shownGroup = group;
     }
     const values = new Map();
     values['isCollapsed'] = isCollapsed;
-    const telemetryObject = new TelemetryObject(content.identifier, ContentType.TEXTBOOK_UNIT, content.contentData.pkgVersion);
+    const telemetryObject = new TelemetryObject(content.identifier, ContentType.TEXTBOOK_UNIT, content.pkgVersion);
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.UNIT_CLICKED,
@@ -403,8 +404,6 @@ export class CollectionDetailsEtbPage implements OnInit {
   }
 
   changeValue(event, text) {
-    console.log('EVENT Thrown', event);
-    console.log('Tetx Inside ChnageValue', text);
     if (!text) {
       this.isSelected = false;
     } else {
@@ -437,9 +436,7 @@ export class CollectionDetailsEtbPage implements OnInit {
       .then(response => {
         this.baseUrl = response;
       })
-      .catch((error) => {
-        console.error('Error Occurred=> ', error);
-      });
+      .catch(() => {});
   }
 
   /**
@@ -486,8 +483,7 @@ export class CollectionDetailsEtbPage implements OnInit {
         .then((userType) => {
           this.profileType = userType;
         })
-        .catch((error) => {
-          console.error('Error Occurred', error);
+        .catch(() => {
           this.profileType = '';
         });
     }
@@ -516,8 +512,7 @@ export class CollectionDetailsEtbPage implements OnInit {
           });
         });
       })
-      .catch((error: any) => {
-        console.log('error while loading content details', error);
+      .catch(() => {
         loader.dismiss();
         this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
         this.navCtrl.pop();
@@ -741,7 +736,6 @@ export class CollectionDetailsEtbPage implements OnInit {
       })
       .catch((error: any) => {
         this.zone.run(() => {
-          console.log('error while loading content details', error);
           // if (this.isDownloadStarted) {
           this.showDownloadBtn = true;
           this.isDownloadStarted = false;
@@ -780,7 +774,6 @@ export class CollectionDetailsEtbPage implements OnInit {
             }
             this.childrenData = data.children;
             this.changeDetectionRef.detectChanges();
-            console.log('this.childrenData', this.childrenData);
           }
 
           if (!this.isDepthChild) {
@@ -1373,9 +1366,8 @@ export class CollectionDetailsEtbPage implements OnInit {
         this.commonUtilService.showToast('MSG_RESOURCE_DELETED');
         this.viewCtrl.dismiss('delete.success');
       }
-    }).catch((error: any) => {
+    }).catch(() => {
       loader.dismiss();
-      console.log('delete response: ', error);
       this.commonUtilService.showToast('CONTENT_DELETE_FAILED');
       this.viewCtrl.dismiss();
     });
@@ -1435,17 +1427,20 @@ export class CollectionDetailsEtbPage implements OnInit {
   }
 
   openTextbookToc() {
-    console.log('in openTextbookToc');
     this.shownGroup = null;
     this.navCtrl.push(TextBookTocPage, {
-      childrenData: this.childrenData
+      childrenData: this.childrenData,
+      parentId: this.identifier
     });
+    const values = new Map();
+    values['selectChapterVisible'] = this.isChapterVisible;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.DROPDOWN_CLICKED,
       Environment.HOME,
       PageId.COLLECTION_DETAIL,
-      undefined
+      undefined,
+      values
     );
   }
 
@@ -1457,6 +1452,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     }).slice(-1)[0];
 
     if (currentTitle) {
+      this.isChapterVisible = true;
       this.zone.run(() => {
         this.stckyUnitTitle = currentTitle.getAttribute('data-sticky-unit');
       });
