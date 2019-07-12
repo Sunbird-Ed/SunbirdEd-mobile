@@ -2,9 +2,7 @@ import { TextBookTocPage } from './textbook-toc/textbook-toc';
 import { ActiveDownloadsPage } from './../active-downloads/active-downloads';
 import {Component, Inject, NgZone, ViewChild, OnInit, ElementRef, ViewChildren, QueryList, ChangeDetectorRef} from '@angular/core';
 import { Content as iContent, ScrollEvent } from 'ionic-angular';
-import {
-  Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController, ViewController
-} from 'ionic-angular';
+import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController, ViewController} from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
@@ -225,6 +223,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   toast: any;
   contentTypesCount: any;
   stckyUnitTitle?: string;
+  isChapterVisible = false;
 
   constructor(
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
@@ -381,11 +380,12 @@ export class CollectionDetailsEtbPage implements OnInit {
       isCollapsed = false;
       this.shownGroup = null;
     } else {
+      isCollapsed = false;
       this.shownGroup = group;
     }
     const values = new Map();
     values['isCollapsed'] = isCollapsed;
-    const telemetryObject = new TelemetryObject(content.identifier, ContentType.TEXTBOOK_UNIT, content.contentData.pkgVersion);
+    const telemetryObject = new TelemetryObject(content.identifier, ContentType.TEXTBOOK_UNIT, content.pkgVersion);
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.UNIT_CLICKED,
@@ -1435,21 +1435,24 @@ export class CollectionDetailsEtbPage implements OnInit {
   }
 
   openTextbookToc() {
-    console.log('in openTextbookToc');
     this.shownGroup = null;
     this.navCtrl.push(TextBookTocPage, {
+      parentId: this.identifier,
       childrenData: this.childrenData,
       dismissCallback: (() => {
         console.log('textbookTocService etb', this.textbookTocService.textbookIds);
         this.onFilterMimeTypeChange(this.mimeTypes[0].value, 0, this.mimeTypes[0].name);
       }).bind(this)
     });
+    const values = new Map();
+    values['selectChapterVisible'] = this.isChapterVisible;
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.DROPDOWN_CLICKED,
       Environment.HOME,
       PageId.COLLECTION_DETAIL,
-      undefined
+      undefined,
+      values
     );
   }
 
@@ -1461,6 +1464,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     }).slice(-1)[0];
 
     if (currentTitle) {
+      this.isChapterVisible = true;
       this.zone.run(() => {
         this.stckyUnitTitle = currentTitle.getAttribute('data-sticky-unit');
       });

@@ -19,6 +19,7 @@ import {Environment, InteractSubtype, InteractType, PageId} from "@app/service/t
 })
 export class CollectionChildComponent implements AfterViewInit {
     cardData: any;
+    parentId: any;
     // isTextbookTocPage: Boolean = false;
     @Input() childData: Content;
     @Input() index: any;
@@ -43,6 +44,7 @@ export class CollectionChildComponent implements AfterViewInit {
         private telemetryService: TelemetryGeneratorService
     ) {
         this.cardData = this.navParams.get('content');
+        this.parentId = this.navParams.get('parentId');
     }
 
 
@@ -69,7 +71,8 @@ export class CollectionChildComponent implements AfterViewInit {
             console.log('collection last child', depth, content);
             const values = new Map();
             values['contentClicked'] = content.identifier;
-            this.telemetryService.generateInteractTelemetry(
+            values['parentId'] = this.parentId;
+          this.telemetryService.generateInteractTelemetry(
             InteractType.TOUCH,
             InteractSubtype.CONTENT_CLICKED,
             Environment.HOME,

@@ -5,7 +5,14 @@ import { NavController, NavParams, Platform, ScrollEvent, PopoverController } fr
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 import { CommonUtilService } from '@app/service/common-util.service';
 import { TelemetryGeneratorService} from '@app/service/telemetry-generator.service';
-import {Environment, InteractSubtype, InteractType, PageId} from "@app/service/telemetry-constants";
+import {
+  Environment,
+  ImpressionSubtype,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  PageId
+} from "@app/service/telemetry-constants";
 
 
 @Component({
@@ -22,6 +29,7 @@ export class TextBookTocPage {
     // shownGroup: any;
     dismissCallback: Function;
     activeMimeTypeFilter = ['all'];
+    parentId: any;
 
     @ViewChild('stickyPillsRef') stickyPillsRef: ElementRef;
 
@@ -36,11 +44,12 @@ export class TextBookTocPage {
         private telemetryService: TelemetryGeneratorService
         ) {
 
-        this.childrenData = this.navParams.get('childrenData');
     }
 
     ionViewDidLoad() {
-        this.dismissCallback = this.navParams.get('dismissCallback');
+      this.childrenData = this.navParams.get('childrenData');
+      this.parentId = this.navParams.get('parentId');
+      this.dismissCallback = this.navParams.get('dismissCallback');
     }
 
     ionViewWillEnter() {
@@ -93,6 +102,12 @@ export class TextBookTocPage {
                 ev: event
             });
         }
+        this.telemetryService.generateImpressionTelemetry(
+          ImpressionType.VIEW,
+          ImpressionSubtype.COMINGSOON_POPUP,
+          PageId.TEXTBOOK_TOC,
+          Environment.HOME,
+        )
     }
 
     async onUnitClick(item) {
@@ -107,6 +122,7 @@ export class TextBookTocPage {
         if (this.navCtrl.getActive().component['pageName'] === 'TextBookTocPage') {
           const values = new Map();
           values['unitClicked'] = id;
+          values['parentId'] = this.parentId;
            this.telemetryService.generateInteractTelemetry(
             InteractType.TOUCH,
             InteractSubtype.UNIT_CLICKED,
