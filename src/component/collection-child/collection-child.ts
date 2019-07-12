@@ -49,7 +49,6 @@ export class CollectionChildComponent implements AfterViewInit {
 
 
     setContentId(id: string) {
-        console.log('collection first child', id);
         if (this.navCtrl.getActive().component['pageName'] === 'TextBookTocPage') {
           const values = new Map();
           values['unitClicked'] = id;
@@ -68,7 +67,6 @@ export class CollectionChildComponent implements AfterViewInit {
 
     navigateToDetailsPage(content: Content, depth) {
         if (this.navCtrl.getActive().component['pageName'] === 'TextBookTocPage') {
-            console.log('collection last child', depth, content);
             const values = new Map();
             values['contentClicked'] = content.identifier;
             values['parentId'] = this.parentId;
