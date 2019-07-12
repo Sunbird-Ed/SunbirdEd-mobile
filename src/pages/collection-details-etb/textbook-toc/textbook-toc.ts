@@ -102,7 +102,7 @@ export class TextBookTocPage {
           ImpressionSubtype.COMINGSOON_POPUP,
           PageId.TEXTBOOK_TOC,
           Environment.HOME,
-        )
+        );
     }
 
     // set textbook unit and contentids for scrolling to particular unit in etb page

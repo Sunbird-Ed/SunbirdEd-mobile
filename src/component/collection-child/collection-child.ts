@@ -10,7 +10,14 @@ import { PopoverController } from 'ionic-angular';
 import { SbGenericPopoverComponent } from '../popups/sb-generic-popup/sb-generic-popover';
 import { Content } from 'sunbird-sdk';
 import { ComingSoonMessageService } from "@app/service/coming-soon-message.service";
-import {Environment, InteractSubtype, InteractType, PageId} from "@app/service/telemetry-constants";
+import {
+  Environment,
+  ImpressionSubtype,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  PageId
+} from "@app/service/telemetry-constants";
 
 
 @Component({
@@ -32,6 +39,9 @@ export class CollectionChildComponent implements AfterViewInit {
     @Input() activeMimeTypeFilter: any;
     @Input() rootUnitId: any;
     @Input() isTextbookTocPage: Boolean;
+    @Input() bookID: string;
+
+
 
     constructor(
         private navCtrl: NavController,
@@ -53,9 +63,10 @@ export class CollectionChildComponent implements AfterViewInit {
         if (this.navCtrl.getActive().component['pageName'] === 'TextBookTocPage') {
           const values = new Map();
           values['unitClicked'] = id;
+          values['parentId'] = this.parentId;
            this.telemetryService.generateInteractTelemetry(
             InteractType.TOUCH,
-            InteractSubtype.UNIT_CLICKED,
+            InteractSubtype.SUBUNIT_CLICKED,
             Environment.HOME,
             PageId.TEXTBOOK_TOC,
             undefined,
@@ -82,7 +93,9 @@ export class CollectionChildComponent implements AfterViewInit {
             this.navCtrl.pop();
         } else {
             const stateData = this.navParams.get('contentState');
-
+          const values = new Map();
+          values['contentClicked'] = content.identifier;
+          values['parentId'] = this.bookID;
             this.zone.run(() => {
                 if (content.contentType === ContentType.COURSE) {
                     this.navCtrl.push(EnrolledCourseDetailsPage, {
@@ -103,6 +116,14 @@ export class CollectionChildComponent implements AfterViewInit {
                     });
                 } else {
                     this.textbookTocService.setTextbookIds({rootUnitId: this.rootUnitId, contentId: content.identifier});
+
+                    this.telemetryService.generateInteractTelemetry(
+                    InteractType.TOUCH,
+                    InteractSubtype.CONTENT_CLICKED,
+                    Environment.HOME,
+                    PageId.COLLECTION_DETAIL, undefined,
+                    values
+                    );
                     this.navCtrl.push(ContentDetailsPage, {
                         isChildContent: true,
                         content: content,
@@ -136,6 +157,12 @@ export class CollectionChildComponent implements AfterViewInit {
                 ev: event
             });
         }
+      this.telemetryService.generateImpressionTelemetry(
+        ImpressionType.VIEW,
+        ImpressionSubtype.COMINGSOON_POPUP,
+        PageId.TEXTBOOK_TOC,
+        Environment.HOME,
+      );
     }
 
     hasMimeType(activeMimeType: string[], mimeType: string, content): boolean {
