@@ -2,7 +2,7 @@ import { TextBookTocPage } from './textbook-toc/textbook-toc';
 import { ActiveDownloadsPage } from './../active-downloads/active-downloads';
 import {Component, Inject, NgZone, ViewChild, OnInit, ElementRef, ViewChildren, QueryList, ChangeDetectorRef} from '@angular/core';
 import { Content as iContent, ScrollEvent } from 'ionic-angular';
-import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController, ViewController} from 'ionic-angular';
+import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController, ViewController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
@@ -296,6 +296,7 @@ export class CollectionDetailsEtbPage implements OnInit {
       this.isAlreadyEnrolled = this.navParams.get('isAlreadyEnrolled');
       this.isChildClickable = this.navParams.get('isChildClickable');
       this.facets = this.facets = this.navParams.get('facets');
+      this.shownGroup = null;
 
       // check for parent content
       this.parentContent = this.navParams.get('parentContent');
@@ -781,10 +782,15 @@ export class CollectionDetailsEtbPage implements OnInit {
             this.getContentsSize(data.children || []);
           }
           this.showChildrenLoader = false;
-          let carouselIndex = 0;
+          const divElement = this.filteredItemsQueryList.find((f) => f.nativeElement.id);
+          let carouselIndex = this.childrenData
+            .findIndex((d: Content) => {
+                return divElement.nativeElement.id === d.identifier;
+            });
+
           if (this.textbookTocService.textbookIds.rootUnitId) {
             carouselIndex = this.childrenData.findIndex((content) => this.textbookTocService.textbookIds.rootUnitId === content.identifier);
-            carouselIndex = carouselIndex > 0 ? carouselIndex : 0;
+            // carouselIndex = carouselIndex > 0 ? carouselIndex : 0;
           }
           this.toggleGroup(carouselIndex, this.content);
           if (this.textbookTocService.textbookIds.contentId) {
@@ -792,7 +798,7 @@ export class CollectionDetailsEtbPage implements OnInit {
               (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.add('sticky');
               window['scrollWindow'].getScrollElement().scrollBy(0, 0);
               document.getElementById(this.textbookTocService.textbookIds.contentId).scrollIntoView();
-              window['scrollWindow'].getScrollElement().scrollBy(0, -150);
+              window['scrollWindow'].getScrollElement().scrollBy(0, -155);
               this.textbookTocService.resetTextbookIds();
             }, 0);
           }
@@ -809,7 +815,7 @@ export class CollectionDetailsEtbPage implements OnInit {
           this.showChildrenLoader = false;
         });
       });
-    this.ionContent.scrollTo(0, this.scrollPosition);
+    // this.ionContent.scrollTo(0, this.scrollPosition);
   }
 
   getContentsSize(data) {
@@ -1423,11 +1429,8 @@ export class CollectionDetailsEtbPage implements OnInit {
   openTextbookToc() {
     this.shownGroup = null;
     this.navCtrl.push(TextBookTocPage, {
-      parentId: this.identifier,
       childrenData: this.childrenData,
-      dismissCallback: (() => {
-        this.onFilterMimeTypeChange(this.mimeTypes[0].value, 0, this.mimeTypes[0].name);
-      }).bind(this)
+      parentId: this.identifier
     });
     const values = new Map();
     values['selectChapterVisible'] = this.isChapterVisible;

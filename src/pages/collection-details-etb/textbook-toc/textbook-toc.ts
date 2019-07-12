@@ -26,8 +26,6 @@ export class TextBookTocPage {
     headerObservable: any;
     backButtonFunc = undefined;
     childrenData: Array<any>;
-    // shownGroup: any;
-    dismissCallback: Function;
     activeMimeTypeFilter = ['all'];
     parentId: any;
 
@@ -49,7 +47,6 @@ export class TextBookTocPage {
     ionViewDidLoad() {
       this.childrenData = this.navParams.get('childrenData');
       this.parentId = this.navParams.get('parentId');
-      this.dismissCallback = this.navParams.get('dismissCallback');
     }
 
     ionViewWillEnter() {
@@ -108,15 +105,8 @@ export class TextBookTocPage {
         )
     }
 
-    async onUnitClick(item) {
-        console.log('onUnitClick', item);
-        // await this.navCtrl.pop();
-        // this.dismissCallback();
-    }
-
     // set textbook unit and contentids for scrolling to particular unit in etb page
     setContentId(id: string) {
-        if (this.navCtrl.getActive().component['pageName'] === 'TextBookTocPage') {
           const values = new Map();
           values['unitClicked'] = id;
           values['parentId'] = this.parentId;
@@ -127,8 +117,7 @@ export class TextBookTocPage {
             PageId.TEXTBOOK_TOC,
             undefined,
             values
-          );
-        }
+        );
 
         this.textbookTocService.setTextbookIds({rootUnitId: id, contentId: id});
         this.navCtrl.pop();

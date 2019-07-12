@@ -44,6 +44,7 @@ export class CollectionChildComponent implements AfterViewInit {
         private telemetryService: TelemetryGeneratorService
     ) {
         this.cardData = this.navParams.get('content');
+        this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
         this.parentId = this.navParams.get('parentId');
     }
 
@@ -101,6 +102,7 @@ export class CollectionChildComponent implements AfterViewInit {
                         breadCrumb: this.breadCrumb
                     });
                 } else {
+                    this.textbookTocService.setTextbookIds({rootUnitId: this.rootUnitId, contentId: content.identifier});
                     this.navCtrl.push(ContentDetailsPage, {
                         isChildContent: true,
                         content: content,

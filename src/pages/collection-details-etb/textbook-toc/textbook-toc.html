@@ -1,6 +1,6 @@
 <ion-content no-padding class="sb-textbook-toc">
     <section *ngIf=" childrenData && childrenData?.length">
-        <ion-card class="sb-accordian-card" *ngFor="let item of childrenData;  let i = index;" (click)="onUnitClick(item)">
+        <ion-card class="sb-accordian-card" *ngFor="let item of childrenData;  let i = index;">
           <ion-grid class="sb-accordian-header">
             <ion-row *ngIf="item?.children">
               <ion-col col-11>
@@ -17,26 +17,22 @@
                 </div>
               </ion-col> -->
             </ion-row>
-            <ion-row *ngIf="item?.contentData?.mimeType !== 'application/vnd.ekstep.content-collection' && !item?.children"
-              (click)="navigateToDetailsPage(item, depth + '.' + (i + 1))">
-              <ion-col col-1>
+            <ion-row *ngIf="item?.contentData?.mimeType !== 'application/vnd.ekstep.content-collection' && !item?.children" (click)="setContentId(item.identifier)">
+              <!-- <ion-col col-1>
                 <div>
                   <ion-icon ios="ios-arrow-dropright-circle" md="md-arrow-dropright-circle"
                   [ngClass]="{'sb-accordian-grey-icon': !commonUtilService.networkInfo.isNetworkAvailable && !item?.isAvailableLocally, 'sb-play-icon': commonUtilService.networkInfo.isNetworkAvailable || item?.isAvailableLocally}">
                   </ion-icon>
                 </div>
-              </ion-col>
+              </ion-col> -->
               <ion-col col-11>
                 <div [ngClass]="{'sb-accordian-grey-text': !commonUtilService.networkInfo.isNetworkAvailable && !item?.isAvailableLocally,
                 'sb-play-selected':item?.isAvailableLocally,'sb-play-unselected':!item?.isAvailableLocally}">
                   {{item?.contentData?.name}}
-                    <!-- <span>
-                        <ion-icon class="sb-checkmark-icon" name="md-checkmark-circle" *ngIf="item?.isAvailableLocally"></ion-icon>
-                    </span> -->
                 </div>
               </ion-col>
             </ion-row>
-            <div class="font-grey-text" (click)="showCommingSoonPopup(item)" *ngIf="item?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !item?.children">
+            <div class="sb-accordian-grey-text" (click)="showCommingSoonPopup(item)" *ngIf="item?.contentData?.mimeType === 'application/vnd.ekstep.content-collection' && !item?.children">
               {{item?.contentData?.name}}
               <span class="grey-icon-span">
                 <ion-icon ios="ios-alert" md="md-alert" class="grey-icon ML5"></ion-icon>
