@@ -53,7 +53,6 @@
       </div>
       <ng-container *ngFor="let item of childrenData;  let i = index;">
         <ion-card class="sb-accordian-card" *ngIf="item | hasMimeType: activeMimeTypeFilter">
-        <!-- <ion-card class="sb-accordian-card"> -->
           <div  [attr.data-sticky-unit]="item.contentData.name" #filteredItems [id]="item.mimeType === 'application/vnd.ekstep.content-collection' ? item.identifier : ''">
             <!-- new -->
             <ion-grid class="sb-accordian-header">
