@@ -101,6 +101,7 @@ export class CollectionChildComponent implements AfterViewInit {
                         breadCrumb: this.breadCrumb
                     });
                 } else {
+                    this.textbookTocService.setTextbookIds({rootUnitId: this.rootUnitId, contentId: content.identifier});
                     this.navCtrl.push(ContentDetailsPage, {
                         isChildContent: true,
                         content: content,

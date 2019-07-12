@@ -2,9 +2,7 @@ import { TextBookTocPage } from './textbook-toc/textbook-toc';
 import { ActiveDownloadsPage } from './../active-downloads/active-downloads';
 import {Component, Inject, NgZone, ViewChild, OnInit, ElementRef, ViewChildren, QueryList, ChangeDetectorRef} from '@angular/core';
 import { Content as iContent, ScrollEvent } from 'ionic-angular';
-import {
-  Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController, ViewController
-} from 'ionic-angular';
+import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController, ViewController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
@@ -298,6 +296,7 @@ export class CollectionDetailsEtbPage implements OnInit {
       this.isAlreadyEnrolled = this.navParams.get('isAlreadyEnrolled');
       this.isChildClickable = this.navParams.get('isChildClickable');
       this.facets = this.facets = this.navParams.get('facets');
+      this.shownGroup = null;
 
       // check for parent content
       this.parentContent = this.navParams.get('parentContent');
@@ -790,11 +789,16 @@ export class CollectionDetailsEtbPage implements OnInit {
             this.getContentsSize(data.children || []);
           }
           this.showChildrenLoader = false;
-          let carouselIndex = 0;
+          const divElement = this.filteredItemsQueryList.find((f) => f.nativeElement.id);
+          let carouselIndex = this.childrenData
+            .findIndex((d: Content) => {
+                return divElement.nativeElement.id === d.identifier;
+            });
+
           if (this.textbookTocService.textbookIds.rootUnitId) {
             console.log('this.this.scrollToId', this.textbookTocService.textbookIds.rootUnitId);
             carouselIndex = this.childrenData.findIndex((content) => this.textbookTocService.textbookIds.rootUnitId === content.identifier);
-            carouselIndex = carouselIndex > 0 ? carouselIndex : 0;
+            // carouselIndex = carouselIndex > 0 ? carouselIndex : 0;
           }
           console.log('carouselIndex', carouselIndex);
           this.toggleGroup(carouselIndex, this.content);
@@ -805,7 +809,7 @@ export class CollectionDetailsEtbPage implements OnInit {
               (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.add('sticky');
               window['scrollWindow'].getScrollElement().scrollBy(0, 0);
               document.getElementById(this.textbookTocService.textbookIds.contentId).scrollIntoView();
-              window['scrollWindow'].getScrollElement().scrollBy(0, -150);
+              window['scrollWindow'].getScrollElement().scrollBy(0, -155);
               this.textbookTocService.resetTextbookIds();
             }, 0);
           }
@@ -822,7 +826,7 @@ export class CollectionDetailsEtbPage implements OnInit {
           this.showChildrenLoader = false;
         });
       });
-    this.ionContent.scrollTo(0, this.scrollPosition);
+    // this.ionContent.scrollTo(0, this.scrollPosition);
   }
 
   getContentsSize(data) {

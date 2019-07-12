@@ -95,12 +95,6 @@ export class TextBookTocPage {
         }
     }
 
-    async onUnitClick(item) {
-        console.log('onUnitClick', item);
-        // await this.navCtrl.pop();
-        // this.dismissCallback();
-    }
-
     // set textbook unit and contentids for scrolling to particular unit in etb page
     setContentId(id: string) {
         console.log('collection first child', id);
