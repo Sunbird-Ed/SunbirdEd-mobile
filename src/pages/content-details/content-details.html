@@ -334,13 +334,9 @@
             <div class="sb-content-title-data">{{content?.contentData?.organisation}}</div>
           </div>
           <div class="sb-info" *ngIf="content?.contentData?.author">
-            <div class="sb-content-title">{{'ORIGINAL_AUTHOR' | translate}}</div>
+            <div class="sb-content-title">{{'AUTHOR' | translate}}</div>
             <div class="sb-content-title-data">{{content?.contentData?.author}}</div>
           </div>
-          <!-- <div class="sb-info" *ngIf="content?.contentData?.contributors || content?.contentData?.owner">
-            <div class="sb-content-title">{{'CONTRIBUTORS' | translate}}</div>
-            <div class="sb-content-title-data"> {{mergeProperties('contributors', 'owner')}}</div>
-          </div> -->
           <div class="sb-info" *ngIf="content?.contentData?.copyright">
             <div class="sb-content-title">{{'COPYRIGHT' | translate}}</div>
             <div class="sb-content-title-data">{{content?.contentData?.owner}}</div>
@@ -353,8 +349,11 @@
             <div class="sb-content-title">{{'ATTRIBUTIONS' | translate}}</div>
             <div class="sb-content-title-data">{{mergeProperties(['attributions', 'collaborators', 'creators'])}}</div>
           </div>
-          <div class="sb-info" *ngIf="content?.contentData?.originData">
+          <div class="sb-info" *ngIf="content?.contentData?.origin">
             <div class="sb-content-title">{{'ORIGINAL_CONTENT_DATA' | translate}}</div>
+          </div>
+          <div class="sb-info" *ngIf="content?.contentData?.origin && !content?.contentData?.originData">
+            <div class="sb-content-title-data">{{'NOT_AVAILABLE' | translate}}</div>
           </div>
           <div class="sb-info" *ngIf="content?.contentData?.originData?.name">
             <div class="sb-content-title">{{'ORIGINAL_CONTENT' | translate}}</div>

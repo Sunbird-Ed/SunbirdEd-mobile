@@ -334,7 +334,7 @@
   "OPEN_SETTINGS": "OPEN SETTINGS",
   "OPTIONAL": "Optional",
   "OR": "or",
-  "ORIGINAL_AUTHOR": "Original Author",
+  "ORIGINAL_AUTHOR": "Author of Source Content",
   "OTHER_USERS": "Other Users",
   "OTP_PLACEHOLDER": "Enter OTP",
   "OTP_RESENT": "OTP resent",
@@ -556,5 +556,6 @@
   "ORIGINAL_CONTENT": "Content",
   "MOVE_FILES_TO_OTHER_DESTINATION": "Move Files to {{%s}} to free space",
   "INTERNAL_MEMORY": "Internal Storage",
-  "INSUFFICIENT_STORAGE": "Insufficient Storage Space"
+  "INSUFFICIENT_STORAGE": "Insufficient Storage Space",
+  "NOT_AVAILABLE": "Not available"
 }
