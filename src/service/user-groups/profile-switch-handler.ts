@@ -13,7 +13,7 @@ export class ProfileSwitchHandler {
         private container: ContainerService,
         private events: Events,
         private appGlobalService: AppGlobalService,
-        private app: App,
+        private app: App
     ) {
     }
     public switchUser(selectedProfile) {

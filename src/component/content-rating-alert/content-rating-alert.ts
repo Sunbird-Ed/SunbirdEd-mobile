@@ -95,10 +95,7 @@ export class ContentRatingAlertComponent {
       ImpressionType.VIEW,
       ImpressionSubtype.RATING_POPUP,
       this.pageId,
-      Environment.HOME, '', '', '',
-      undefined,
-      undefined
-    );
+      Environment.HOME);
 
     const log = new TelemetryLogRequest();
     log.level = LogLevel.INFO;
@@ -110,11 +107,7 @@ export class ContentRatingAlertComponent {
     paramsMap['PopupType'] = this.popupType;
     params.push(paramsMap);
     log.params = params;
-    this.telemetryService.log(log).subscribe((val) => {
-      console.log(val);
-    }, err => {
-      console.log(err);
-    });
+    this.telemetryService.log(log).subscribe();
   }
 
   ionViewWillLeave(): void {

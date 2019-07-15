@@ -12,7 +12,7 @@ import {
   ImpressionType,
   InteractSubtype,
   InteractType
-} from "@app/service/telemetry-constants";
+} from '@app/service/telemetry-constants';
 
 enum ViewType {
   APP_RATE = 'appRate',
@@ -87,10 +87,7 @@ export class AppRatingAlertComponent {
       ImpressionType.VIEW,
       ImpressionSubtype.APP_RATING_POPUP,
       this.pageId,
-      Environment.HOME, '', '', '',
-      undefined,
-      undefined
-    );
+      Environment.HOME);
     this.appRatePopup();
   }
 
@@ -133,15 +130,13 @@ export class AppRatingAlertComponent {
     if (rating >= StoreRating.APP_MIN_RATE) {
       this.currentViewText = this.appRateView[ViewType.STORE_RATE];
       this.appRate = rating;
-      const paramsMap = new Map();
-      paramsMap['appRating'] = rating;
+      const map = new Map();
+      map['appRating'] = rating;
       this.telemetryGeneratorService.generateInteractTelemetry(
         InteractType.TOUCH,
         InteractSubtype.RATING_SUBMITTED,
         Environment.HOME,
-        this.pageId, undefined, paramsMap,
-        undefined, undefined
-      );
+        this.pageId, undefined, map);
       return;
     }
     this.currentViewText = this.appRateView[ViewType.HELP_DESK];
@@ -151,9 +146,7 @@ export class AppRatingAlertComponent {
       InteractType.TOUCH,
       InteractSubtype.RATING_SUBMITTED,
       Environment.HOME,
-      this.pageId, undefined, paramsMap,
-      undefined, undefined
-    );
+      this.pageId, undefined, paramsMap);
   }
 
   goToHelpSection() {
@@ -161,8 +154,7 @@ export class AppRatingAlertComponent {
       InteractType.TOUCH,
       InteractSubtype.HELP_SECTION_CLICKED,
       Environment.HOME,
-      this.pageId, undefined, undefined, undefined
-    );
+      this.pageId);
       this.viewCtrl.dismiss(StoreRating.RETURN_HELP);
   }
 
@@ -172,9 +164,7 @@ export class AppRatingAlertComponent {
     paramsMap['appRatingPopAppearedCount'] = this.appRatingPopCount;
     await this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.OTHER, InteractSubtype.APP_RATING_APPEARED,
-      this.pageId, Environment.HOME, undefined, paramsMap,
-      undefined, undefined
-    );
+      Environment.HOME, this.pageId, undefined, paramsMap);
   }
 
   async calculateAppRatingCountAppeared(value) {
