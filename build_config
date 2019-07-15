@@ -23,7 +23,7 @@ cordova-plugin=https://github.com/swayangjit/cordova-plugin-buildconfig-reader.g
 cordova-plugin=https://github.com/swayangjit/cordova-plugin-android-downloadmanager.git
 cordova-plugin=https://github.com/swayangjit/sb-cordova-plugin-db.git
 cordova-plugin=https://github.com/katzer/cordova-plugin-local-notifications.git
-cordova-plugin=https://github.com/swayangjit/cordova-plugin-fcm-with-dependecy-updated.git
+cordova-plugin=https://github.com/swayangjit/cordova-plugin-fcm-with-dependecy-updated.git#release-2.2.0
 cordova-plugin=cordova-android-support-gradle-release --variable ANDROID_SUPPORT_VERSION=27.1.0
 cordova-plugin=https://github.com/Sunbird-Ed/sb-cordova-plugin-customtabs.git --variable URL_SCHEME=@string/custom_scheme_url --variable URL_HOST=mobile
 sunbird-cordova-plugin=https://github.com/project-sunbird/cordova-plugin-imagechooser.git
