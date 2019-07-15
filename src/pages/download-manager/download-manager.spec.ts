@@ -11,7 +11,9 @@ import {
     appHeaderServiceMock,
     deviceInfoServiceMock,
     navParamsMock,
-    popoverCtrlMock
+    popoverCtrlMock,
+    storageServiceMock,
+    formAndFrameworkUtilServiceMock
 } from './../../__tests__/mocks';
 import { profileDataMock, downloadsDataMock, appStorageInfo } from './downloads-manager.spec.data';
 import { Observable } from 'rxjs';
@@ -32,9 +34,11 @@ describe('DownloadManager', () => {
             eventsMock as any,
             appGlobalServiceMock as any,
             appVersionMock as any,
+            telemetryGeneratorServiceMock as any,
+            formAndFrameworkUtilServiceMock as any,
             contentServiceMock as any,
             deviceInfoServiceMock as any,
-            telemetryGeneratorServiceMock as any,
+            storageServiceMock as any
         );
 
         jest.resetAllMocks();
