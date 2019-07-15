@@ -228,7 +228,7 @@ export class MyApp implements OnInit, AfterViewInit {
         this.events.publish('notification:received');
         this.events.publish('notification-status:update', { isUnreadNotifications: true });
       });
-        this.splaschreenDeeplinkActionHandlerDelegate.handleNotification(data);
+      this.splaschreenDeeplinkActionHandlerDelegate.handleNotification(data);
     },
       (sucess) => {
         console.log('Notification Sucess Callback');
