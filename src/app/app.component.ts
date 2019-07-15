@@ -228,11 +228,7 @@ export class MyApp implements OnInit, AfterViewInit {
         this.events.publish('notification:received');
         this.events.publish('notification-status:update', { isUnreadNotifications: true });
       });
-      if (data.actionData.actionType === ActionType.CODE_PUSH) {
-        this.preferences.putString(PreferenceKey.DEPLOYMENT_KEY, data.actionData.deploymentKey).toPromise().then();
-      } else {
         this.splaschreenDeeplinkActionHandlerDelegate.handleNotification(data);
-      }
     },
       (sucess) => {
         console.log('Notification Sucess Callback');
