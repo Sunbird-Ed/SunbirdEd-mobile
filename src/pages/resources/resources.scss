@@ -8,20 +8,22 @@ ion-spinner {
   }
 
   .sb-card-textbook-container, .sb-card-view-all-container{
+    .sb-card-textbook{
     textbook-card {
       .sb-card{
-        border-bottom: 0.5px solid rgba(151, 151, 151, 0.40);
+         border-bottom: 0.5px solid rgba(151, 151, 151, 0.40);
         &:last-child{
-          border-bottom: 0.5px solid rgba(151, 151, 151, 0.40);
+           border-bottom: 0.5px solid rgba(151, 151, 151, 0.40);
         }
       }
       &:last-child{
         .sb-card{
           border-bottom: none;
         }
-        
+
       }
     }
+  }
   }
   .spinner-align{
     margin: 40px; 
@@ -51,6 +53,28 @@ ion-spinner {
   }
   #couchMark {
     position: fixed;
+  }
+
+  .skeleton-rectangle {
+    width: 56px;
+    height: 56px;
+    border-radius: 2px;
+    @extend .animated-background;
+  }
+
+  .skeleton-title, .skeleton-text {
+    height: 14px;
+    border-radius: 2px;
+    margin-bottom: 8px;
+    @extend .animated-background;
+  }
+  .skeleton-text {
+    height: 8px;
+    width: 80%;
+  }
+  .animation-background {
+    padding: 0px 8px 0px 8px;
+    background-color: #f2f2f2;
   }
 }
 

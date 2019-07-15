@@ -1,7 +1,5 @@
 import {Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {
-  AlertController,
-  App,
   Events,
   IonicApp,
   IonicPage,
@@ -12,15 +10,12 @@ import {
   PopoverController,
   ToastController
 } from 'ionic-angular';
-import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
 import {ContentConstants, EventTopics, PreferenceKey, StoreRating, XwalkConstants} from '../../app/app.constant';
-import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, Map, ShareUrl} from '@app/app';
+import { Map } from '@app/app';
 import {
-  BookmarkComponent,
   ConfirmAlertComponent,
   ContentActionsComponent,
-  ContentRatingAlertComponent,
   SbPopoverComponent
 } from '@app/component';
 import {AppGlobalService, AppHeaderService, AppRatingService, CourseUtilService, UtilityService} from '@app/service';
@@ -31,14 +26,11 @@ import {TelemetryGeneratorService} from '../../service/telemetry-generator.servi
 import {CommonUtilService} from '../../service/common-util.service';
 import {DialogPopupComponent} from '../../component/dialog-popup/dialog-popup';
 import {
-  AuthService,
   ChildContentRequest,
   Content,
   ContentDeleteStatus,
   ContentDetailRequest,
   ContentEventType,
-  ContentExportRequest,
-  ContentExportResponse,
   ContentImport,
   ContentImportRequest,
   ContentImportResponse,
@@ -51,7 +43,6 @@ import {
   GetAllProfileRequest,
   PlayerService,
   ProfileService,
-  ProfileType,
   Rollup,
   SharedPreferences,
   StorageService,
@@ -69,15 +60,13 @@ import {
   Mode,
   PageId,
 } from '../../service/telemetry-constants';
-import {TabsPage} from '../tabs/tabs';
-import {ContainerService} from '@app/service/container.services';
 import {FileSizePipe} from '@app/pipes/file-size/file-size';
 import {TranslateService} from '@ngx-translate/core';
 import {SbGenericPopoverComponent} from '@app/component/popups/sb-generic-popup/sb-generic-popover';
-import {AppRatingAlertComponent} from '@app/component/app-rating-alert/app-rating-alert';
-import moment from 'moment';
 import { ContentShareHandler } from '@app/service/content/content-share-handler';
 import { AppVersion } from '@ionic-native/app-version';
+import { ProfileSwitchHandler } from '@app/service/user-groups/profile-switch-handler';
+import { RatingHandler } from '@app/service/rating/rating-handler';
 
 declare const cordova;
 
@@ -155,7 +144,6 @@ export class ContentDetailsPage {
   showMessage: any;
   localImage: any;
   isUsrGrpAlrtOpen: Boolean = false;
-  private resume;
   private ratingComment = '';
   private corRelationList: Array<CorrelationData>;
   private eventSubscription: Subscription;
@@ -177,16 +165,13 @@ export class ContentDetailsPage {
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     @Inject('PLAYER_SERVICE') private playerService: PlayerService,
     @Inject('STORAGE_SERVICE') private storageService: StorageService,
-    @Inject('AUTH_SERVICE') private authService: AuthService,
     private navCtrl: NavController,
     private navParams: NavParams,
     private zone: NgZone,
     private events: Events,
     private popoverCtrl: PopoverController,
-    private social: SocialSharing,
     private platform: Platform,
     private appGlobalService: AppGlobalService,
-    private alertCtrl: AlertController,
     private ionicApp: IonicApp,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
@@ -194,8 +179,6 @@ export class ContentDetailsPage {
     private canvasPlayerService: CanvasPlayerService,
     private file: File,
     private utilityService: UtilityService,
-    private container: ContainerService,
-    private app: App,
     private network: Network,
     public toastController: ToastController,
     private fileSizePipe: FileSizePipe,
@@ -203,7 +186,9 @@ export class ContentDetailsPage {
     private headerService: AppHeaderService,
     private appRatingService: AppRatingService,
     private contentShareHandler: ContentShareHandler,
-    private appVersion: AppVersion
+    private appVersion: AppVersion,
+    private profileSwitchHandler: ProfileSwitchHandler,
+    private ratingHandler: RatingHandler
   ) {
 
     this.objRollup = new Rollup();
@@ -233,21 +218,13 @@ export class ContentDetailsPage {
         if (!data.selectedUser['profileType']) {
           this.profileService.getActiveProfileSession().toPromise()
             .then((profile) => {
-              this.switchUser(profile);
+              this.profileSwitchHandler.switchUser(profile);
             });
         } else {
-          this.switchUser(data.selectedUser);
+          this.profileSwitchHandler.switchUser(data.selectedUser);
         }
       }
     });
-  }
-
-  private switchUser(selectedUser) {
-    if (this.appGlobalService.isUserLoggedIn()) {
-      this.authService.resignSession().subscribe();
-      (<any>window).splashscreen.clearPrefs();
-    }
-    this.resetTabs(selectedUser);
   }
 
   /**
@@ -350,16 +327,6 @@ export class ContentDetailsPage {
   }
 
   handlePageResume() {
-    // This is to know when the app has come to foreground
-    // this.resume = this.platform.resume.subscribe(() => {
-    //   console.log('Page Resumed');
-    //   this.isContentPlayed = true;
-    //   if (this.isPlayerLaunched) {
-    //     this.isPlayerLaunched = false;
-    //     this.setContentDetails(this.identifier, true /* No Automatic Rating for 1.9.0 */);
-    //   }
-    //   // this.updateContentProgress();
-    // });
   }
 
   subscribePlayEvent() {
@@ -439,137 +406,6 @@ export class ContentDetailsPage {
     }
   }
 
-  checkBookmarkStatus() {
-    this.preferences.getString(PreferenceKey.IS_BOOKMARK_VIEWED).toPromise().then(val => {
-      if (!val) {
-        this.showBookmarkMenu();
-      }
-    });
-  }
-
-  /*
-   selectBookmark() {
-     this.content.bookmarked = true;
-     this.showMessage = true;
-     const notifyTimer = Observable.timer(10000);
-     notifyTimer.subscribe(e => {
-       this.showMessage = false;
-     });
-   }
-
-   deSelectBookmark() {
-     this.content.bookmarked = false;
-     if (this.showMessage) {
-       this.showMessage = false;
-     }
-   }
-   */
-  /**
-   * Function to rate content
-   */
-
-  async rateContent(popupType: string) {
-    const paramsMap = new Map();
-    if (this.isContentPlayed || this.content.contentAccess.length) {
-      if (popupType === 'automatic') {
-        if (!(await this.appRatingService.checkReadFile())) {
-          this.preferences.getString(PreferenceKey.APP_RATING_DATE).toPromise().then(async res => {
-            if (await this.validateAndCheckDateDiff(res)) {
-              paramsMap['IsPlayed'] = 'N';
-              this.appRating();
-            } else {
-              paramsMap['IsPlayed'] = 'Y';
-              this.contentRating(popupType);
-            }
-          }).catch(err => {
-            paramsMap['IsPlayed'] = 'Y';
-            this.contentRating(popupType);
-          });
-        } else {
-          paramsMap['IsPlayed'] = 'Y';
-          this.contentRating(popupType);
-        }
-      } else if (popupType === 'manual') {
-        paramsMap['IsPlayed'] = 'Y';
-        this.contentRating(popupType);
-      }
-
-    } else {
-      paramsMap['IsPlayed'] = 'N';
-      this.commonUtilService.showToast('TRY_BEFORE_RATING');
-    }
-    this.telemetryGeneratorService.generateInteractTelemetry(
-      InteractType.TOUCH,
-      InteractSubtype.RATING_CLICKED,
-      Environment.HOME,
-      PageId.CONTENT_DETAIL,
-      undefined,
-      paramsMap,
-      this.objRollup,
-      this.corRelationList);
-  }
-
-  async validateAndCheckDateDiff(date) {
-    let isValid = false;
-    if (await this.commonUtilService.networkInfo.isNetworkAvailable) {
-      const presentDate = moment();
-      const initialDate = moment(date);
-      if (initialDate.isValid()) {
-        const diffInDays = presentDate.diff(initialDate, 'days');
-        if (diffInDays >= StoreRating.DATE_DIFF) {
-          isValid = true;
-        }
-      }
-    }
-    return isValid;
-  }
-
-  contentRating(popupType) {
-    const popover = this.popoverCtrl.create(ContentRatingAlertComponent, {
-      content: this.content,
-      pageId: PageId.CONTENT_DETAIL,
-      rating: this.userRating,
-      comment: this.ratingComment,
-      popupType: popupType,
-    }, {
-        cssClass: 'sb-popover info',
-      });
-    popover.present({
-      ev: event
-    });
-    popover.onDidDismiss(data => {
-      if (data && data.message === 'rating.success') {
-        this.userRating = data.rating;
-        this.ratingComment = data.comment;
-      }
-    });
-  }
-
-  appRating() {
-    const popover = this.popoverCtrl.create(AppRatingAlertComponent, {
-      pageId: PageId.CONTENT_DETAIL,
-    }, {
-      cssClass: 'sb-popover'
-    });
-    popover.present({
-      ev: event
-    });
-    popover.onDidDismiss((data: any) => {
-      console.log(data);
-      switch (data) {
-        case null: {
-          this.appRatingService.setInitialDate();
-          break;
-        }
-        case StoreRating.RETURN_HELP: {
-          this.appRatingService.setInitialDate();
-          this.navCtrl.push('FaqPage');
-          break;
-        }
-      }
-    });
-  }
-
   /**
    * To set content details in local variable
    * @param {string} identifier identifier of content / course
@@ -609,11 +445,12 @@ export class ContentDetailsPage {
 
           if (showRating) {
             this.isPlayerLaunched = false;
-            if (this.userRating === 0) {
-              if (!this.appGlobalService.getSelectedUser()) {
-                this.rateContent('automatic');
-              }
-            }
+            // if (this.userRating === 0) {
+            //   if (!this.appGlobalService.getSelectedUser()) {
+            //     this.rateContent('automatic');
+            //   }
+            // }
+            this.ratingHandler.showRatingPopup(this.isContentPlayed, data, 'automatic', this.corRelationList, this.objRollup);
           }
         });
       })
@@ -1517,27 +1354,6 @@ export class ContentDetailsPage {
     });
   }
 
-  showBookmarkMenu(event?) {
-    const popover = this.popoverCtrl.create(BookmarkComponent, {
-      content: this.content,
-      isChild: this.isChildContent,
-      objRollup: this.objRollup,
-      corRelationList: this.corRelationList,
-      position: 'bottom'
-    }, {
-        cssClass: 'bookmark-menu'
-      });
-    popover.present({
-      ev: event
-    });
-  }
-
-  updateBookmarkPreference() {
-    // this.preference.putString(PreferenceKey.IS_BOOKMARK_VIEWED, 'true');
-    // this.viewCtrl.dismiss();
-    console.log('updateBookmarkPreference');
-  }
-
   /**
    * Shares content to external devices
    */
@@ -1589,22 +1405,6 @@ export class ContentDetailsPage {
         cssClass: 'popover-alert'
       });
     popover.present();
-  }
-
-  private resetTabs(selectedUser) {
-    setTimeout(() => {
-      if (selectedUser.profileType === ProfileType.STUDENT) {
-        initTabs(this.container, GUEST_STUDENT_TABS);
-        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise().then();
-      } else {
-        initTabs(this.container, GUEST_TEACHER_TABS);
-        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();
-      }
-      this.events.publish('refresh:profile');
-      this.events.publish(AppGlobalService.USER_INFO_UPDATED);
-      this.appGlobalService.setSelectedUser(undefined);
-      this.app.getRootNav().setRoot(TabsPage);
-    }, 1000);
   }
 
   /* Present Toast */

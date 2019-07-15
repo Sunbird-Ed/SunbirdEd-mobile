@@ -93,10 +93,20 @@
 	</div>
 	<div class="scrollable-container">
 		<ion-refresher (ionRefresh)="swipeDownToRefresh($event)"></ion-refresher>
-		<div *ngIf="refresh" class="spinner-align">
+		<!-- <div *ngIf="refresh" class="spinner-align">
 			<ion-spinner icon="spiral"></ion-spinner>
-		</div>
-		<ion-spinner *ngIf="showLoader" padding style="padding-top: 100px;"></ion-spinner>
+		</div> -->
+		<!-- <ion-spinner *ngIf="showLoader" padding style="padding-top: 100px;"></ion-spinner> -->
+		<ion-list class="m-n" *ngIf="showLoader || refresh" style="padding-top: 100px;">
+				<skeleton-item height="16px" width="40%" style="padding: 16px;"></skeleton-item>
+				<ion-item *ngFor="let i of [0,1,2,3,4,5,6,7,8]" class="animation-background">
+					<ion-avatar item-start>
+						<skeleton-item height="72px" width="72px"></skeleton-item>
+					</ion-avatar>
+					<skeleton-item height="12px" width="67%"></skeleton-item>
+					<skeleton-item height="12px" width="47%"></skeleton-item>
+				</ion-item>
+			</ion-list>
 		<div *ngIf="recentlyViewedResources && recentlyViewedResources.length">
 			<div class="sb-recently-viewed-container" style="padding-bottom:40px;">
 
@@ -116,11 +126,21 @@
 				</div>
 			</div>
 		</div>
-		<div *ngIf="searchApiLoader && storyAndWorksheets && storyAndWorksheets.length === 0">
+		<!-- <div *ngIf="searchApiLoader && storyAndWorksheets && storyAndWorksheets.length === 0">
 			<div style="height: 500px;">
 				<ion-spinner padding style="padding-top: 110px;"></ion-spinner>
 			</div>
-		</div>
+		</div> -->
+		<ion-list class="m-n" *ngIf="searchApiLoader && storyAndWorksheets && storyAndWorksheets.length === 0">
+			<skeleton-item height="16px" width="40%" style="padding: 16px;"></skeleton-item>
+			<ion-item *ngFor="let i of [0,1,2,3,4,5,6,7,8]"  class="animation-background">
+				<ion-avatar item-start>
+					<skeleton-item height="72px" width="72px"></skeleton-item>
+				</ion-avatar>
+				<skeleton-item height="12px" width="67%"></skeleton-item>
+				<skeleton-item height="12px" width="47%"></skeleton-item>
+			</ion-item>
+		</ion-list>
 		<div *ngFor="let items of storyAndWorksheets">
 			<div class="sb-textbook-container" *ngIf="items?.contents && items?.contents?.length">
 				<div class="sb-textbook-items">
@@ -134,7 +154,7 @@
 					</div>
 					<!-- Card style -->
 					<div class="sb-card-container sb-card-textbook-container"> 
-						<div *ngFor="let item of items?.contents; let i = index">
+						<div class="sb-card-textbook" *ngFor="let item of items?.contents; let i = index"> 
 						<textbook-card *ngIf ="i < 3" [content]="item"
 							[layoutName]='layoutName' (click)="navigateToDetailPage(item, i, item.name)"></textbook-card>
 						</div>
@@ -145,9 +165,19 @@
 		</div>
 
 		<div *ngIf="pageApiLoader && storyAndWorksheets && storyAndWorksheets.length === 0">
-			<div class="course-scroll-holder" style="height: 500px;">
+			<!-- <div class="course-scroll-holder" style="height: 500px;">
 				<ion-spinner padding style="padding-top: 110px;"></ion-spinner>
-			</div>
+			</div> -->
+			<ion-list class="m-n" *ngIf="searchApiLoader && storyAndWorksheets && storyAndWorksheets.length === 0">
+				<skeleton-item height="16px" width="40%" style="padding: 16px;"></skeleton-item>
+				<ion-item *ngFor="let i of [0,1,2,3,4,5,6,7,8]"  class="animation-background">
+					<ion-avatar item-start>
+						<skeleton-item height="72px" width="72px"></skeleton-item>
+					</ion-avatar>
+					<skeleton-item height="12px" width="67%"></skeleton-item>
+					<skeleton-item height="12px" width="47%"></skeleton-item>
+				</ion-item>
+			</ion-list>
 		</div>
 
 		<div padding text-center class="mt-32 mb-32" *ngIf="!commonUtilService?.networkInfo?.isNetworkAvailable">
