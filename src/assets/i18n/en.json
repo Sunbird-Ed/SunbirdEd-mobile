@@ -250,7 +250,6 @@
   "INACTIVE": "Inactive",
   "INSTALL_CROSSWALK": "Install Crosswalk",
   "INSUFFICIENT_STORAGE": "Insufficient storage space",
-  "INTERNAL_MEMORY": "Internal storage",
   "INTERNET_AVAILABLE": "You are online now",
   "INTERNET_CONNECTIVITY_NEEDED": "No internet connectivity",
   "INVALID_CONTENT": "Invalid content",
@@ -282,7 +281,6 @@
   "MORE": "More",
   "MORE_DETAILS": "More details  (provide more information or attach a screenshot of the issue)",
   "MOVE": "Move",
-  "MOVE_FILES_TO_OTHER_DESTINATION": "Move files to {{%s}} to free space",
   "MSG_ALREADY_IMPORTED": "Already Imported",
   "MSG_IMPORTED_SUCCESSFULLY": "Content imported successfully",
   "MSG_LOADING_BATCHES": "Fetching batches...",
@@ -339,7 +337,7 @@
   "OPEN_SETTINGS": "OPEN SETTINGS",
   "OPTIONAL": "Optional",
   "OR": "or",
-  "ORIGINAL_AUTHOR": "Author of source content",
+  "ORIGINAL_AUTHOR": "Author of Source Content",
   "ORIGINAL_CONTENT": "Content",
   "ORIGINAL_CONTENT_DATA": "This content is derived from:",
   "OTHER_USERS": "Other Users",
@@ -554,5 +552,8 @@
   "WELCOME_BACK": "WELCOME BACK {{%s}}",
   "YES": "Yes",
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
-  "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "You are not connected to the internet"
+  "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "You are not connected to the internet",
+  "MOVE_FILES_TO_OTHER_DESTINATION": "Move Files to {{%s}} to free space",
+  "INTERNAL_MEMORY": "Internal Storage",
+  "NOT_AVAILABLE": "Not available"
 }
