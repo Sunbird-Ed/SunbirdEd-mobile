@@ -45,7 +45,7 @@
       </ng-container>
 
       <ng-container *ngIf="searchHistory.length">
-        <div (tap)="searchKeywords = searchEntry.query; handleSearch()" *ngFor="let searchEntry of searchHistory"
+        <div (tap)="onSearchHistoryTap(searchEntry)" *ngFor="let searchEntry of searchHistory"
              class="sb-search-history-entry row">
           <div class="col-auto">
             <img src="assets/imgs/icon_recent.svg">

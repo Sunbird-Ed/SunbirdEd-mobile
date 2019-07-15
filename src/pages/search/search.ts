@@ -47,6 +47,7 @@ import { AppHeaderService } from '@app/service';
 import { EnrollmentDetailsPage } from '../enrolled-course-details/enrollment-details/enrollment-details';
 import { SearchHistoryNamespaces } from '@app/config/search-history-namespaces';
 import { AppVersion } from '@ionic-native/app-version';
+import {featureIdMap} from '@app/feature-id-map';
 
 declare const cordova;
 
@@ -222,6 +223,24 @@ export class SearchPage implements OnInit, OnDestroy {
         Environment.HOME, true, undefined, this.corRelationList);
       this.navigateToPreviousPage();
     };
+  }
+
+  onSearchHistoryTap(searchEntry: SearchEntry) {
+    this.searchKeywords = searchEntry.query;
+    this.handleSearch();
+
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.SEARCH_HISTORY_CLICKED,
+      Environment.HOME,
+      PageId.SEARCH,
+      undefined,
+      {
+        'selectedSearchHistory': searchEntry.query
+      },
+      undefined,
+      featureIdMap.searchHistory.SEARCH_HISTORY_QUERY_FROM_HISTORY
+    );
   }
 
   ionViewWillLeave() {

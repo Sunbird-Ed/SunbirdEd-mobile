@@ -312,7 +312,8 @@ export enum InteractSubtype {
     HOTCODE_PUSH_SUCCESS = 'hotcode-push-success',
     HOTCODE_PUSH_FAILURE = 'hotcode-push-failure',
     HOTCODE_PUSH_PROGRESS = 'hotcode-push-progress',
-    HOTCODE_PUSH_KEY_NOT_DEFINED = 'hotcode-push-key-not-defined'
+    HOTCODE_PUSH_KEY_NOT_DEFINED = 'hotcode-push-key-not-defined',
+    SEARCH_HISTORY_CLICKED = 'search-history-clicked'
 }
 
 export enum ActionButtonType {

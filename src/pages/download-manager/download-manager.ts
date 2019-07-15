@@ -17,6 +17,7 @@ import { BehaviorSubject } from 'rxjs';
 import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
 import { SbInsufficientStoragePopupComponent } from '@app/component/popups/sb-insufficient-storage-popup/sb-insufficient-storage-popup';
 import { FileSizePipe } from '@app/pipes/file-size/file-size';
+import {featureIdMap} from '@app/feature-id-map';
 
 /**
  * Generated class for the DownloadManagerPage page.
@@ -226,7 +227,12 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
       InteractType.TOUCH,
       InteractSubtype.DELETE_CLICKED,
       Environment.DOWNLOADS,
-      PageId.BULK_DELETE_CONFIRMATION_POPUP, undefined, valuesMap);
+      PageId.BULK_DELETE_CONFIRMATION_POPUP,
+      undefined,
+      valuesMap,
+      undefined,
+      featureIdMap.downloadManager.DOWNLOADS_DELETE
+    );
     const contentDeleteRequest: ContentDeleteRequest = {
       contentDeleteList: emitedContents.selectedContents
     };
@@ -286,7 +292,12 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
       InteractType.TOUCH,
       InteractSubtype.SORT_OPTION_SELECTED,
       Environment.DOWNLOADS,
-      PageId.DOWNLOADS);
+      PageId.DOWNLOADS,
+      undefined,
+      undefined,
+      undefined,
+      featureIdMap.downloadManager.DOWNLOADS_SORT
+    );
     this.sortCriteria = [{
       sortOrder: SortOrder.DESC,
       sortAttribute: sortAttr
