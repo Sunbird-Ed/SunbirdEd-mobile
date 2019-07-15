@@ -10,7 +10,14 @@ import { PopoverController } from 'ionic-angular';
 import { SbGenericPopoverComponent } from '../popups/sb-generic-popup/sb-generic-popover';
 import { Content } from 'sunbird-sdk';
 import { ComingSoonMessageService } from "@app/service/coming-soon-message.service";
-import {Environment, InteractSubtype, InteractType, PageId} from "@app/service/telemetry-constants";
+import {
+  Environment,
+  ImpressionSubtype,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  PageId
+} from "@app/service/telemetry-constants";
 
 
 @Component({
@@ -19,6 +26,7 @@ import {Environment, InteractSubtype, InteractType, PageId} from "@app/service/t
 })
 export class CollectionChildComponent implements AfterViewInit {
     cardData: any;
+    parentId: any;
     // isTextbookTocPage: Boolean = false;
     @Input() childData: Content;
     @Input() index: any;
@@ -31,6 +39,9 @@ export class CollectionChildComponent implements AfterViewInit {
     @Input() activeMimeTypeFilter: any;
     @Input() rootUnitId: any;
     @Input() isTextbookTocPage: Boolean;
+    @Input() bookID: string;
+
+
 
     constructor(
         private navCtrl: NavController,
@@ -43,17 +54,19 @@ export class CollectionChildComponent implements AfterViewInit {
         private telemetryService: TelemetryGeneratorService
     ) {
         this.cardData = this.navParams.get('content');
+        this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
+        this.parentId = this.navParams.get('parentId');
     }
 
 
     setContentId(id: string) {
-        console.log('collection first child', id);
         if (this.navCtrl.getActive().component['pageName'] === 'TextBookTocPage') {
           const values = new Map();
           values['unitClicked'] = id;
+          values['parentId'] = this.parentId;
            this.telemetryService.generateInteractTelemetry(
             InteractType.TOUCH,
-            InteractSubtype.UNIT_CLICKED,
+            InteractSubtype.SUBUNIT_CLICKED,
             Environment.HOME,
             PageId.TEXTBOOK_TOC,
             undefined,
@@ -66,10 +79,10 @@ export class CollectionChildComponent implements AfterViewInit {
 
     navigateToDetailsPage(content: Content, depth) {
         if (this.navCtrl.getActive().component['pageName'] === 'TextBookTocPage') {
-            console.log('collection last child', depth, content);
             const values = new Map();
             values['contentClicked'] = content.identifier;
-            this.telemetryService.generateInteractTelemetry(
+            values['parentId'] = this.parentId;
+          this.telemetryService.generateInteractTelemetry(
             InteractType.TOUCH,
             InteractSubtype.CONTENT_CLICKED,
             Environment.HOME,
@@ -80,7 +93,9 @@ export class CollectionChildComponent implements AfterViewInit {
             this.navCtrl.pop();
         } else {
             const stateData = this.navParams.get('contentState');
-
+          const values = new Map();
+          values['contentClicked'] = content.identifier;
+          values['parentId'] = this.bookID;
             this.zone.run(() => {
                 if (content.contentType === ContentType.COURSE) {
                     this.navCtrl.push(EnrolledCourseDetailsPage, {
@@ -100,6 +115,15 @@ export class CollectionChildComponent implements AfterViewInit {
                         breadCrumb: this.breadCrumb
                     });
                 } else {
+                    this.textbookTocService.setTextbookIds({rootUnitId: this.rootUnitId, contentId: content.identifier});
+
+                    this.telemetryService.generateInteractTelemetry(
+                    InteractType.TOUCH,
+                    InteractSubtype.CONTENT_CLICKED,
+                    Environment.HOME,
+                    PageId.COLLECTION_DETAIL, undefined,
+                    values
+                    );
                     this.navCtrl.push(ContentDetailsPage, {
                         isChildContent: true,
                         content: content,
@@ -133,6 +157,12 @@ export class CollectionChildComponent implements AfterViewInit {
                 ev: event
             });
         }
+      this.telemetryService.generateImpressionTelemetry(
+        ImpressionType.VIEW,
+        ImpressionSubtype.COMINGSOON_POPUP,
+        PageId.TEXTBOOK_TOC,
+        Environment.HOME,
+      );
     }
 
     hasMimeType(activeMimeType: string[], mimeType: string, content): boolean {

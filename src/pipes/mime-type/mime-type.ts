@@ -15,12 +15,16 @@ export class MimeTypePipe implements PipeTransform {
       return true;
     } else {
       if (isTextbookTocPage && mimeTypes.indexOf('all') > -1) {
-        if (item.contentData.mimeType === MimeType.COLLECTION && !item.children) {
-            return false;
-        }
         return true;
       } else if (!isTextbookTocPage && mimeTypes.indexOf('all') > -1) {
-        return this.getFilteredItems(item.children, MimeType.ALL);
+        if (item.mimeType !== MimeType.COLLECTION && !item.children) {
+          return true;
+        } else {
+          return this.getFilteredItems(item.children, MimeType.ALL);
+        }
+      }
+      if (item.mimeType !== MimeType.COLLECTION && !item.children) {
+        return this.getFilteredItems([item], mimeTypes);
       }
       return this.getFilteredItems(item.children, mimeTypes);
     }

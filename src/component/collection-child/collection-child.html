@@ -38,6 +38,6 @@
     <!-- <div *ngIf="childData?.children && childData?.contentData?.mimeType === 'application/vnd.ekstep.content-collection'"
         class="sb-separator-line ml8 mtb-8"></div> -->
     <div *ngFor="let firstChildren of childData?.children; let j = index;" class="sb-collection-child-ftue">
-      <collection-child [childData]="firstChildren" [breadCrumb]="breadCrumb" [activeMimeTypeFilter] = "activeMimeTypeFilter" [rootUnitId]="rootUnitId" [isTextbookTocPage] = "isTextbookTocPage"></collection-child>
+      <collection-child [childData]="firstChildren" [breadCrumb]="breadCrumb" [activeMimeTypeFilter] = "activeMimeTypeFilter" [rootUnitId]="rootUnitId" [isTextbookTocPage] = "isTextbookTocPage" [bookID]="bookID"></collection-child>
     </div>
 </div>
