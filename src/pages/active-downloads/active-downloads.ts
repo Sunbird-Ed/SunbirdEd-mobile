@@ -18,6 +18,7 @@ import { SbPopoverComponent } from '@app/component';
 import { AppHeaderService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
 import { SbNoNetworkPopupComponent } from '@app/component/popups/sb-no-network-popup/sb-no-network-popup';
 import { SbInsufficientStoragePopupComponent } from '@app/component/popups/sb-insufficient-storage-popup/sb-insufficient-storage-popup';
+import {featureIdMap} from '@app/feature-id-map';
 
 @IonicPage()
 @Component({
@@ -97,7 +98,12 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
       InteractType.TOUCH,
       InteractSubtype.DOWNLOAD_CANCEL_ALL_CLICKED,
       Environment.DOWNLOADS,
-      PageId.ACTIVE_DOWNLOADS);
+      PageId.ACTIVE_DOWNLOADS,
+      undefined,
+      undefined,
+      undefined,
+      featureIdMap.downloadManager.ACTIVE_DOWNLOADS_CANCEL
+    );
     this.showCancelPopUp();
   }
 
@@ -106,7 +112,12 @@ export class ActiveDownloadsPage implements OnInit, OnDestroy, ActiveDownloadsIn
       InteractType.TOUCH,
       InteractSubtype.DOWNLOAD_CANCEL_CLICKED,
       Environment.DOWNLOADS,
-      PageId.ACTIVE_DOWNLOADS);
+      PageId.ACTIVE_DOWNLOADS,
+      undefined,
+      undefined,
+      undefined,
+      featureIdMap.downloadManager.ACTIVE_DOWNLOADS_CANCEL
+    );
     this.showCancelPopUp(downloadRequest);
   }
 
