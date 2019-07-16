@@ -30,7 +30,11 @@ import {
   fileSizePipeMock,
   buildParamServiceMock,
   alertControllerMock,
-  storageServiceMock
+  storageServiceMock,
+  profileSwitchHandlerMock,
+  appVersionMock,
+  ratingHandlerMock,
+  contentShareHandlerMock
 } from '../../__tests__/mocks';
 import { Observable, Subscription } from 'rxjs';
 import 'jest';
@@ -54,31 +58,29 @@ describe('ContentDetailsPage Component', () => {
       sharedPreferencesMock as any,
       playerServiceMock as any,
       storageServiceMock as any,
-      authServiceMock as any,
       navCtrlMock as any,
       navParamsMock as any,
       zoneMock as any,
       eventsMock as any,
       popoverCtrlMock as any,
-      socialSharingMock as any,
       platformMock as any,
       appGlobalServiceMock as any,
-      alertControllerMock as any,
       ionicAppMock as any,
       telemetryGeneratorServiceMock as any,
       commonUtilServiceMock as any,
       courseUtilServiceMock as any,
       canvasPlayerServiceMock as any,
       fileMock as any,
-      buildParamServiceMock as any,
-      containerServiceMock as any,
-      appMock as any,
+      utilityServiceMock as any,
       networkMock as any,
       toastControllerMock as any,
       fileSizePipeMock as any,
       translateServiceMock as any,
       appHeaderServiceMock as any,
-      appRatingServiceMock as any
+      contentShareHandlerMock as any,
+      appVersionMock as any,
+      profileSwitchHandlerMock as any,
+      ratingHandlerMock as any
     );
 
     jest.resetAllMocks();

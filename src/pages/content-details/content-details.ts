@@ -184,7 +184,6 @@ export class ContentDetailsPage {
     private fileSizePipe: FileSizePipe,
     private translate: TranslateService,
     private headerService: AppHeaderService,
-    private appRatingService: AppRatingService,
     private contentShareHandler: ContentShareHandler,
     private appVersion: AppVersion,
     private profileSwitchHandler: ProfileSwitchHandler,

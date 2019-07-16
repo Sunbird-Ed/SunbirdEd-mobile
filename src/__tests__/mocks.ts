@@ -16,7 +16,8 @@ import {
   EventsBusService,
   NotificationService,
   PlayerService,
-  StorageService
+  StorageService,
+  SearchHistoryService
 } from 'sunbird-sdk';
 import { CanvasPlayerService } from '../pages/player/canvas-player.service';
 import {
@@ -68,6 +69,9 @@ import { UtilityService } from "@app/service";
 import { FileSizePipe } from '../pipes/file-size/file-size';
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
 import { StatusBar } from '@ionic-native/status-bar';
+import { ProfileSwitchHandler } from '@app/service/user-groups/profile-switch-handler';
+import { ContentShareHandler } from '@app/service/content/content-share-handler';
+import { RatingHandler } from '@app/service/rating/rating-handler';
 
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
@@ -461,7 +465,8 @@ export const appHeaderServiceMock = createSpyObj<AppHeaderService>([
 export const utilityServiceMock = createSpyObj<UtilityService>([
   'openPlayStore',
   'getUtmInfo',
-  'clearUtmInfo'
+  'clearUtmInfo',
+  'getDeviceAPILevel'
 ]);
 export const appRatingServiceMock = createSpyObj<AppRatingService>([
   'setInitialDate',
@@ -548,3 +553,21 @@ export const changeDetectionRefMock = createSpyObj<ChangeDetectorRef>([
 
 export const storageServiceMock = createSpyObj<StorageService>([
 ]);
+
+export const profileSwitchHandlerMock = createSpyObj<ProfileSwitchHandler>([
+ 'switchUser'
+]);
+
+export const contentShareHandlerMock = createSpyObj<ContentShareHandler>([
+  'shareContent'
+ ]);
+
+ export const ratingHandlerMock = createSpyObj<RatingHandler>([
+  'showRatingPopup'
+ ]);
+
+ export const searchHistoryServiceMock = createSpyObj<SearchHistoryService>([
+  'addEntry',
+  'getEntries'
+ ]);
+
