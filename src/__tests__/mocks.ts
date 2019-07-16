@@ -466,7 +466,8 @@ export const utilityServiceMock = createSpyObj<UtilityService>([
   'openPlayStore',
   'getUtmInfo',
   'clearUtmInfo',
-  'getDeviceAPILevel'
+  'getDeviceAPILevel',
+  'checkAppAvailability'
 ]);
 export const appRatingServiceMock = createSpyObj<AppRatingService>([
   'setInitialDate',

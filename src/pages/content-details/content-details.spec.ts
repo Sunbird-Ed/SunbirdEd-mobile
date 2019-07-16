@@ -49,7 +49,8 @@ describe('ContentDetailsPage Component', () => {
     buildParamServiceMock.getBuildConfigValue.mockResolvedValue('SOME_URL');
     buildParamServiceMock.getDeviceAPILevel.mockResolvedValue('');
     buildParamServiceMock.checkAppAvailability.mockResolvedValue('org.xwalk.core');
-
+    utilityServiceMock.getDeviceAPILevel.mockResolvedValue('');
+    utilityServiceMock.checkAppAvailability.mockResolvedValue('');
 
     contentDetailsPage = new ContentDetailsPage(
       profileServiceMock as any,
@@ -89,6 +90,7 @@ describe('ContentDetailsPage Component', () => {
   it('test instance initiation', () => {
     expect(contentDetailsPage).toBeTruthy();
   });
+
   it('should create valid instance for ContentDetailsPage', () => {
     spyOn(contentDetailsPage, 'subscribePlayEvent').and.stub();
     spyOn(contentDetailsPage, 'checkLoggedInOrGuestUser').and.stub();
@@ -337,41 +339,6 @@ describe('ContentDetailsPage Component', () => {
     expect(appGlobalServiceMock.getGuestUserInfo).toHaveBeenCalled();
     expect(contentDetailsPage.profileType).toBe('');
   });
-
-  it('#checkBookmarkStatus should call showBookmarkMenu method', (done) => {
-    // arrange
-    sharedPreferencesMock.getString.mockReturnValue(Observable.of(false));
-    spyOn(contentDetailsPage, 'showBookmarkMenu');
-    // act
-    contentDetailsPage.checkBookmarkStatus();
-    // assert
-    setTimeout(() => {
-      expect(contentDetailsPage.showBookmarkMenu).toHaveBeenCalled();
-      done();
-    }, 0);
-  });
-
-  // it('#rateContent should call ', (done) => {
-  //   // arrange
-  //   contentDetailsPage.isContentPlayed = true;
-  //   contentDetailsPage.content = {
-  //     contentAccess: [1, 2]
-  //   };
-  //   const popupType = 'automatic' ;
-  //   appRatingServiceMock.checkReadFile.mockReturnValue(false);
-  //   sharedPreferencesMock.getString.mockReturnValue(Observable.of('2019/06/18 19:00'));
-  //   spyOn(contentDetailsPage, 'contentRating').and.stub();
-  //   spyOn(contentDetailsPage, 'validateAndCheckDateDiff');
-  //   // act
-  //   contentDetailsPage.rateContent(popupType);
-  //   // assert
-  //   expect(appRatingServiceMock.checkReadFile).toHaveBeenCalled();
-  //   setTimeout(() => {
-  //     expect(sharedPreferencesMock.getString).toHaveBeenCalled();
-  //     expect(contentDetailsPage.validateAndCheckDateDiff).toReturnWith(Promise.resolve());
-  //     done();
-  //   }, 0);
-  // });
 
 });
 

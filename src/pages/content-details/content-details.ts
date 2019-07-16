@@ -444,11 +444,6 @@ export class ContentDetailsPage {
 
           if (showRating) {
             this.isPlayerLaunched = false;
-            // if (this.userRating === 0) {
-            //   if (!this.appGlobalService.getSelectedUser()) {
-            //     this.rateContent('automatic');
-            //   }
-            // }
             this.ratingHandler.showRatingPopup(this.isContentPlayed, data, 'automatic', this.corRelationList, this.objRollup);
           }
         });
