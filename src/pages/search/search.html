@@ -45,7 +45,7 @@
       </ng-container>
 
       <ng-container *ngIf="searchHistory.length">
-        <div (tap)="searchKeywords = searchEntry.query; handleSearch()" *ngFor="let searchEntry of searchHistory"
+        <div (tap)="onSearchHistoryTap(searchEntry)" *ngFor="let searchEntry of searchHistory"
              class="sb-search-history-entry row">
           <div class="col-auto">
             <img src="assets/imgs/icon_recent.svg">
@@ -78,7 +78,7 @@
         <skeleton-item height="12px" width="75%"></skeleton-item>
         <skeleton-item height="12px" width="40%"></skeleton-item>
     </ion-item>
-    <ion-item *ngFor="let i of [0,1,2,3,4,5,6,7,8]">
+    <ion-item *ngFor="let i of [0,1,2,3,4,5,6,7,8,9,10,11,12,13]">
       <ion-avatar item-end>
         <skeleton-item height="56px" width="56px"></skeleton-item>
       </ion-avatar>

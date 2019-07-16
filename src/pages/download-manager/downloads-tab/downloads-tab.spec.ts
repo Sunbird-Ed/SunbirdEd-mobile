@@ -53,7 +53,7 @@ describe('Already downloaded content list', () => {
             expect(downloadsTabPage.unSelectAllContents).toHaveBeenCalled();
         });
 
-        it('should unSelect all contents on showDeletePopup() return null.', () => {
+        xit('should unSelect all contents on showDeletePopup() return null.', () => {
             // arrange
             popover.onDidDismiss = jest.fn(async (cb) => {
                 await cb(null);
