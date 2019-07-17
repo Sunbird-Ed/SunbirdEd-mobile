@@ -1,5 +1,5 @@
-import {ChangeDetectorRef, Component, Inject, NgZone, OnDestroy, QueryList, ViewChildren} from '@angular/core';
-import {IonicPage, NavController, NavParams} from 'ionic-angular';
+import {ChangeDetectorRef, Component, ElementRef, Inject, NgZone, OnDestroy, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {IonicPage, NavController, NavParams, Platform} from 'ionic-angular';
 import {AudienceFilter, Map, MimeType, Search} from "@app/app";
 import {Environment, InteractSubtype, InteractType, PageId} from "@app/service/telemetry-constants";
 import {
@@ -27,10 +27,10 @@ import {ContentDetailsPage} from "@app/pages/content-details/content-details";
     trigger('appear', [
       state('true', style({
         left: '{{left_indent}}',
-      }), { params: { left_indent: 0 } }), // default parameters values required
+      }), {params: {left_indent: 0}}), // default parameters values required
 
       transition('* => classAnimate', [
-        style({ width: 5, opacity: 0 }),
+        style({width: 5, opacity: 0}),
         group([
           animate('0.3s 0.2s ease', style({
             transform: 'translateX(0) scale(1.2)', width: '*',
@@ -64,6 +64,7 @@ import {ContentDetailsPage} from "@app/pages/content-details/content-details";
 })
 export class ExploreBooksPage implements OnDestroy {
 
+  @ViewChild('searchInput') public searchInputRef: ElementRef;
   @ViewChildren('filteredItems') public filteredItemsQueryList: QueryList<any>;
 
   categoryGradeLevels: any;
@@ -103,7 +104,7 @@ export class ExploreBooksPage implements OnDestroy {
   searchForm: FormGroup = new FormGroup({
     'framework': new FormControl(null, Validators.required),
     'grade': new FormControl([]),
-    'subject': new FormControl(['ALL']),
+    'subject': new FormControl([]),
     'query': new FormControl('', {updateOn: 'submit'}),
   });
 
@@ -187,25 +188,27 @@ export class ExploreBooksPage implements OnDestroy {
 
   private onSearchFormChange(): Observable<undefined> {
     return this.searchForm.valueChanges
-      .do(() => { console.log(this.searchForm.value) })
+      .do(() => {
+        console.log(this.searchForm.value)
+      })
       .debounceTime(200)
       .switchMap(() => {
         const searchCriteria: ContentSearchCriteria = {
-          ...this.searchForm.value,
+          ...this.searchForm.getRawValue(),
+          query: this.searchInputRef.nativeElement['value'],
           searchType: SearchType.SEARCH,
           contentTypes: this.contentType,
           facets: Search.FACETS,
           audience: this.audienceFilter,
           mode: 'soft',
           languageCode: this.selectedLanguageCode,
-          limit:50
         };
         this.showLoader = true;
         return this.contentService.searchContent(searchCriteria)
       })
       .do((result: ContentSearchResult) => {
         this.zone.run(() => {
-          if(result) {
+          if (result) {
             this.showLoader = false;
             this.contentSearchResult = result.contentDataList;
             console.log('result', this.contentSearchResult);
@@ -264,4 +267,10 @@ export class ExploreBooksPage implements OnDestroy {
   //     undefined,
   //     values);
   // }
+
+  ionViewWillLeave() {
+    if (this.headerObservable) {
+      this.headerObservable.unsubscribe();
+    }
+  }
 }
