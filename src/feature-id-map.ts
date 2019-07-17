@@ -3,41 +3,41 @@ export const featureIdMap = {
     DOWNLOADS_DELETE: [
       {
         id: "download_manager:downloads:delete",
-        type: "feature"
+        type: "Feature"
       },
       {
         id: "SB-3800",
-        type: "task"
+        type: "Task"
       }
     ],
     DOWNLOADS_SORT: [
       {
         id: "download_manager:downloads:sort",
-        type: "feature"
+        type: "Feature"
       },
       {
         id: "SB-3800",
-        type: "task"
+        type: "Task"
       }
     ],
     ACTIVE_DOWNLOADS_CANCEL: [
       {
         id: "download_manager:active_downloads:cancel",
-        type: "feature"
+        type: "Feature"
       },
       {
         id: "SB-3800",
-        type: "task"
+        type: "Task"
       }
     ],
     STORAGE_SETTINGS_TRANSFER: [
       {
         id: "download_manager:storage_settings:transfer",
-        type: "feature"
+        type: "Feature"
       },
       {
         id: "SB-3800",
-        type: "task"
+        type: "Task"
       }
     ],
   },
@@ -45,11 +45,11 @@ export const featureIdMap = {
     SEARCH_HISTORY_QUERY_FROM_HISTORY: [
       {
         id: "search_history:query_from_history",
-        type: "feature"
+        type: "Feature"
       },
       {
         id: "SB-13533",
-        type: "task"
+        type: "Task"
       }
     ],
   }
