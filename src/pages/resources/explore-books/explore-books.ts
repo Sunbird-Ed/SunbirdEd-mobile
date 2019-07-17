@@ -104,7 +104,7 @@ export class ExploreBooksPage implements OnDestroy {
     'framework': new FormControl(null, Validators.required),
     'grade': new FormControl([]),
     'subject': new FormControl(['ALL']),
-    'query': new FormControl(''),
+    'query': new FormControl('', {updateOn: 'submit'}),
   });
 
   constructor(
@@ -137,11 +137,16 @@ export class ExploreBooksPage implements OnDestroy {
 
     this.searchForm.get('framework').patchValue(await this.sharedPreferences.getString('sunbirdcurrent_framework_id').toPromise());
 
+  }
+
+  ionViewWillEnter() {
+
     this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
 
     this.headerService.showHeaderWithBackButton();
+
   }
 
   ngOnDestroy(): void {
