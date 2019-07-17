@@ -93,9 +93,6 @@ describe('ContentDetailsPage Component', () => {
 
   it('should create valid instance for ContentDetailsPage', () => {
     spyOn(contentDetailsPage, 'subscribePlayEvent').and.stub();
-    spyOn(contentDetailsPage, 'checkLoggedInOrGuestUser').and.stub();
-    spyOn(contentDetailsPage, 'checkCurrentUserType').and.stub();
-    spyOn(contentDetailsPage, 'handlePageResume').and.stub();
     spyOn(contentDetailsPage, 'checkDeviceAPILevel').and.stub();
     spyOn(contentDetailsPage, 'checkappAvailability').and.stub();
   });
@@ -162,16 +159,6 @@ describe('ContentDetailsPage Component', () => {
     // act
     contentDetailsPage.subscribePlayEvent();
     // assert
-  });
-
-  it('should be called checkLoggedInOrGuestUser()', () => {
-    // arrange
-    contentDetailsPage.isUserLoggedIn = false;
-    const userLoggedIn = !appGlobalServiceMock.isUserLoggedIn.mockReturnValue(true);
-    // act
-    contentDetailsPage.checkLoggedInOrGuestUser();
-    // assert
-    expect(contentDetailsPage.isUserLoggedIn).toBe(userLoggedIn);
   });
 
   it('#calculateAvailableUserCount should set userCount value to 1', (done) => {
@@ -312,32 +299,6 @@ describe('ContentDetailsPage Component', () => {
     contentDetailsPage.showSwitchUserAlert(false);
     // assert
     expect(contentDetailsPage.playContent).toHaveBeenCalled();
-  });
-
-  it('#checkCurrentUserType should call getGuestUserInfo and set profileType', (done) => {
-    // arrange
-    const userType = 'Student';
-    contentDetailsPage.isGuestUser = true;
-    appGlobalServiceMock.getGuestUserInfo.mockResolvedValue(userType);
-    // act
-    contentDetailsPage.checkCurrentUserType();
-    // assert
-    setTimeout(() => {
-      expect(appGlobalServiceMock.getGuestUserInfo).toHaveBeenCalled();
-      expect(contentDetailsPage.profileType).toBe(userType);
-      done();
-    }, 0);
-  });
-
-  it('#checkCurrentUserType should go to catch and set profileType to blank', () => {
-    // arrange
-    contentDetailsPage.isGuestUser = true;
-    appGlobalServiceMock.getGuestUserInfo.mockReturnValue(Promise.reject());
-    // act
-    contentDetailsPage.checkCurrentUserType();
-    // assert
-    expect(appGlobalServiceMock.getGuestUserInfo).toHaveBeenCalled();
-    expect(contentDetailsPage.profileType).toBe('');
   });
 
 });
