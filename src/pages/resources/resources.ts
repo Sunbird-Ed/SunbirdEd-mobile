@@ -1008,7 +1008,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.navCtrl.push(ExploreBooksPage, {
       subjects: this.subjects,
       categoryGradeLevels: this.categoryGradeLevels,
-      storyAndWorksheets: this.storyAndWorksheets
+      storyAndWorksheets: this.storyAndWorksheets,
+      contentType: ContentType.FOR_LIBRARY_TAB
     });
   }
 }

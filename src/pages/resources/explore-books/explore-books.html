@@ -1,53 +1,66 @@
 
 <ion-content no-padding>
+  <form [formGroup]="searchForm">
     <div class="sb-slider-pills-container">
       <div class="sb-pills-container sb-grade-pills-container" id="gradeScroll">
-        <div class="pill" *ngFor="let grade of categoryGradeLevels; let i = index; let first = first"
-             [ngClass]="{'active': grade?.selected, '': !grade?.selected}" attr.id="class{{i}}" (click)="classClick(i,'sendClassClickedTelemetry');">
+        <div class="pill"
+             *ngFor="let grade of categoryGradeLevels; let i = index; let first = first"
+             [class.active]="searchForm.get('grade').value[0] === grade.name"
+             attr.id="class{{i}}"
+             (click)="searchForm.get('grade').patchValue([grade.name])">
           {{grade?.name}}</div>
       </div>
     </div>
     <div class="sb-slider-pills-container">
       <div class="sb-pills-container sb-medium-pills-container">
-        <div class="pill" *ngFor="let item of subjects; let i = index;"
-             [ngClass]="{'active': item?.selected}" [@appear] (click)="mediumClick(item?.name,'sendMediumClickedTelemetry')">{{item?.name}}
+        <div class="pill"
+             *ngFor="let subject of subjects; let i = index;"
+             [class.active]="searchForm.get('subject').value[0] === subject.name"
+             [@appear]
+             (click)="searchForm.get('subject').patchValue([subject.name])">
+          {{subject?.name}}
         </div>
       </div>
     </div>
     <div class="sb-slider-pills-container">
       <div class="sb-pills-container sb-grade-pills-container">
-        <div class="pill" *ngFor="let type of mimeTypes; let i = index; let first = first"
-             [ngClass]="{'active': type?.selected, '': !type?.selected}" attr.id="class{{i}}"
-             (click)="onFilterMimeTypeChange(type.value, i, type.name);">
-            <span class="img-align" *ngIf="type?.iconNormal && type?.selected">
-              <img class="filter-icon" src="{{type?.iconActive}}" alt="">
+        <div class="pill" *ngFor="let mimeType of mimeTypes; let i = index; let first = first"
+             [ngClass]="{'active': mimeType?.selected, '': !mimeType?.selected}" attr.id="class{{i}}"
+             (click)="onFilterMimeTypeChange(mimeType.value, i, mimeType.name);">
+            <span class="img-align" *ngIf="mimeType?.iconNormal && mimeType?.selected">
+              <img class="filter-icon" src="{{mimeType?.iconActive}}" alt="">
             </span>
-          <span class="img-align" *ngIf="type?.iconNormal && !type?.selected">
-              <img class="filter-icon" src="{{type?.iconNormal}}" alt="">
+          <span class="img-align" *ngIf="mimeType?.iconNormal && !mimeType?.selected">
+              <img class="filter-icon" src="{{mimeType?.iconNormal}}" alt="">
             </span>
-          <span class="allign-middle">{{type?.name | translate}}</span>
+          <span class="allign-middle">{{mimeType?.name | translate}}</span>
 
         </div>
       </div>
     </div>
 
-  <div class="search-bar">
-    <label>
-      <input type="search" placeholder="{{'SEARCH_BOOK' | translate}}" [(ngModel)]="searchKeywords" (keyup.enter)="handleSearch()"/>
-    </label>
+    <div class="search-bar">
+      <label>
+        <input type="search"
+               placeholder="{{'SEARCH_BOOK' | translate}}"
+               [formControl]="searchForm.get('query')"/>
+      </label>
       <ion-icon name="search"></ion-icon>
+    </div>
+  </form>
+  <div class="spinner-container" *ngIf="showLoader">
+    <ion-spinner padding class="loader"></ion-spinner>
   </div>
-
-<div *ngFor="let items of storyAndWorksheets">
-  <div class="sb-textbook-container" *ngIf="items?.contents && items?.contents?.length">
-        <div class="sb-card-container sb-card-textbook-container">
-        <textbook-card *ngFor="let item of items?.contents; let i = index" [content]="item"
-                       [layoutName]='search' (click)="navigateToDetailPage(item, i, item.name)"></textbook-card>
+  <ng-container *ngFor="let content of contentSearchResult let i = index">
+<!--    <div *ngIf="content | hasMimeType: activeMimeTypeFilter">-->
+      <div class="sb-card-container sb-card-textbook-container">
+        <textbook-card [content]="content" [layoutName]='search'
+                       (click)="openContent(content, i)"></textbook-card>
       </div>
-  </div>
-</div>
+<!--    </div>-->
+  </ng-container>
 </ion-content>
 
-<ion-footer class="bottom-button">
-  <button ion-button block class="sort-by"> {{'SORT_BY' | translate}}</button>
-</ion-footer>
+<!--<ion-footer class="bottom-button">-->
+<!--  <button ion-button block class="sort-by"> {{'SORT_BY' | translate}}</button>-->
+<!--</ion-footer>-->

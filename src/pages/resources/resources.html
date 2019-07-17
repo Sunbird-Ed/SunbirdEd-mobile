@@ -146,7 +146,7 @@
         <button class="explore" style="background-color: #F3F7FA;" ion-button outline (click)="exploreOtherContents()">{{'DATA' | translate}} </button>
       </div>
     </div>
-    <div *ngIf="!showLoader && storyAndWorksheets && storyAndWorksheets.length === 0">
+    <div *ngIf="!searchApiLoader && storyAndWorksheets && storyAndWorksheets.length === 0">
       <div class="sb-nodownloads-container">
         <div class="text-center">
           <img style="width: 19.58%; height: 7.72%;" src="./assets/imgs/Group.svg" alt="">
