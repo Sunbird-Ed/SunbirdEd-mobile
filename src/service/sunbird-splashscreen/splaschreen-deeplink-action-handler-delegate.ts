@@ -42,26 +42,28 @@ export class SplaschreenDeeplinkActionHandlerDelegate implements SplashscreenAct
   onAction(type: string, action?: { identifier: string } ): Observable<undefined> {
     const navObj = this.app.getRootNavs()[0];
     const identifier: any = action !== undefined ? action.identifier : undefined;
-    switch (type) {
-      case 'content': {
-          return this.contentService.getContentDetails({
-            contentId: identifier || this.identifier
-          }).do(async (content: Content) => {
-            if (content.contentType === ContentType.COURSE.toLowerCase()) {
-              await navObj.push(EnrolledCourseDetailsPage, { content });
-            } else if (content.mimeType === MimeType.COLLECTION) {
-              await navObj.push(CollectionDetailsEtbPage, { content });
-            } else {
-              await navObj.push(ContentDetailsPage, { content });
-            }
-          }).mapTo(undefined) as any;
+    if (identifier) {
+      switch (type) {
+        case 'content': {
+            return this.contentService.getContentDetails({
+              contentId: identifier || this.identifier
+            }).do(async (content: Content) => {
+              if (content.contentType === ContentType.COURSE.toLowerCase()) {
+                await navObj.push(EnrolledCourseDetailsPage, { content });
+              } else if (content.mimeType === MimeType.COLLECTION) {
+                await navObj.push(CollectionDetailsEtbPage, { content });
+              } else {
+                await navObj.push(ContentDetailsPage, { content });
+              }
+            }).mapTo(undefined) as any;
+          }
+        case 'dial': {
+            navObj.push(SearchPage, { dialCode: identifier, source: PageId.HOME });
+            return Observable.of(undefined);
         }
-      case 'dial': {
-          navObj.push(SearchPage, { dialCode: identifier, source: PageId.HOME });
+        default: {
           return Observable.of(undefined);
-      }
-      default: {
-        return Observable.of(undefined);
+        }
       }
     }
   }
