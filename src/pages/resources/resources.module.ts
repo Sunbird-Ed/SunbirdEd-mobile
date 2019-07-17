@@ -5,6 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ComponentsModule } from '../../component/components.module';
 import { PlayerPageModule } from '../player/player.module';
 import { DirectivesModule } from '@app/directives/directives.module';
+import { ExploreBooksPageModule} from "../resources/explore-books/explore-books.module";
 import { NotificationsPageModule } from '../notifications/notifications.module';
 
 @NgModule({
@@ -17,6 +18,7 @@ import { NotificationsPageModule } from '../notifications/notifications.module';
     ComponentsModule,
     PlayerPageModule,
     DirectivesModule,
+    ExploreBooksPageModule,
     NotificationsPageModule
   ],
   exports: [
