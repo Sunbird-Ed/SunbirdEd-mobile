@@ -66,5 +66,6 @@ export class SplaschreenDeeplinkActionHandlerDelegate implements SplashscreenAct
         }
       }
     }
+    return Observable.of(undefined);
   }
 }

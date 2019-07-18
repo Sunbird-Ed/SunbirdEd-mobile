@@ -14,4 +14,7 @@ declare var buildconfigreader: {
 
   clearUtmInfo: (success:
     (callbackUrl: any) => void, error: (error: string) => void) => void;
+    
+  readFromAssets: (fileName: string, success:
+      (callbackUrl: string) => void, error: (error: any) => void) => void;
 };
