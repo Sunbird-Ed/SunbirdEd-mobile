@@ -685,7 +685,7 @@ export class SearchPage implements OnInit, OnDestroy {
 
     this.showLoader = true;
     if (this.showLoader) {
-      this.generateStartSheenAnimationTelemetry();
+      this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
     }
 
     (<any>window).cordova.plugins.Keyboard.close();
@@ -748,14 +748,14 @@ export class SearchPage implements OnInit, OnDestroy {
           this.showEmptyMessage = this.searchContentResult.length === 0;
           this.showLoader = false;
           if (!this.showLoader) {
-             this.generateEndSheenAnimationTelemetry();
+             this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
           }
         });
       }).catch(() => {
         this.zone.run(() => {
           this.showLoader = false;
           if (!this.showLoader) {
-            this.generateEndSheenAnimationTelemetry();
+            this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
          }
           if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
             this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
@@ -1479,19 +1479,5 @@ export class SearchPage implements OnInit, OnDestroy {
 
   scrollToTop() {
     this.contentView.scrollToTop();
-  }
-
-  generateStartSheenAnimationTelemetry() {
-    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-      InteractSubtype.SHEEN_ANIMATION_START,
-      Environment.HOME,
-      PageId.SEARCH);
-  }
-
-  generateEndSheenAnimationTelemetry() {
-    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-      InteractSubtype.SHEEN_ANIMATION_END,
-      Environment.HOME,
-      PageId.SEARCH);
   }
 }

@@ -318,7 +318,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     if (!hideLoaderFlag) {
       this.showLoader = true;
       if (this.showLoader) {
-        this.generateStartSheenAnimationTelemetry();
+        this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
       }
     }
     const requestParams: ContentRequest = {
@@ -350,7 +350,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           if (!hideLoaderFlag) {
             this.showLoader = false;
             if (!this.showLoader) {
-             this.generateEndSheenAnimationTelemetry();
+             this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
             }
           }
         });
@@ -360,7 +360,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           if (!hideLoaderFlag) {
             this.showLoader = false;
             if (!this.showLoader) {
-              this.generateEndSheenAnimationTelemetry();
+              this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
             }
           }
         });
@@ -377,7 +377,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     // this.noInternetConnection = false;
     const that = this;
     if (this.searchApiLoader) {
-      this.generateEndSheenAnimationTelemetry();
+      this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
     }
 
     if (!contentSearchCriteria) {
@@ -502,7 +502,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.refresh = false;
           this.searchApiLoader = false;
           if (!this.refresh || !this.searchApiLoader) {
-           this.generateEndSheenAnimationTelemetry();
+           this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
           }
           // this.noInternetConnection = false;
           this.generateExtraInfoTelemetry(newSections.length);
@@ -522,7 +522,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.refresh = false;
           this.searchApiLoader = false;
           if (!this.refresh || !this.searchApiLoader) {
-           this.generateEndSheenAnimationTelemetry();
+            this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
           }
           if (error === 'CONNECTION_ERROR') {
           } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
@@ -708,7 +708,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   swipeDownToRefresh(refresher?, avoidRefreshList?) {
     this.refresh = true;
     if (this.refresh) {
-      this.generateStartSheenAnimationTelemetry();
+      this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
     }
     this.storyAndWorksheets = [];
 
@@ -732,8 +732,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   async search() {
-    console.log("search");
-    
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.SEARCH_BUTTON_CLICKED,
       Environment.HOME,
@@ -1038,17 +1036,4 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   }
 
-  generateStartSheenAnimationTelemetry() {
-    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-      InteractSubtype.SHEEN_ANIMATION_START,
-      Environment.HOME,
-      PageId.LIBRARY);
-  }
-
-  generateEndSheenAnimationTelemetry() {
-    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-      InteractSubtype.SHEEN_ANIMATION_END,
-      Environment.HOME,
-      PageId.LIBRARY);
-  }
 }
