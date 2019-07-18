@@ -119,13 +119,13 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
   async getDownloadedContents(shouldGenerateTelemetry?, hideLoaderFlag?: boolean) {
     const profile: Profile = await this.appGlobalService.getCurrentUser();
 
-    if (!hideLoaderFlag) {
-      this.loader = this.commonUtilService.getLoader();
-      this.loader.present();
-      this.loader.onDidDismiss(() => {
-        this.loader = undefined;
-      });
-    }
+    // if (!hideLoaderFlag) {
+    //   this.loader = this.commonUtilService.getLoader();
+    //   this.loader.present();
+    //   this.loader.onDidDismiss(() => {
+    //     this.loader = undefined;
+    //   });
+    // }
     const defaultSortCriteria: ContentSortCriteria[] = [{
       sortAttribute: 'sizeOnDevice',
       sortOrder: SortOrder.DESC
@@ -164,16 +164,16 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
         });
         this.ngZone.run(() => {
           this.downloadedContents = data;
-          if (!hideLoaderFlag) {
-            this.loader.dismiss();
-          }
+          // if (!hideLoaderFlag) {
+          //   this.loader.dismiss();
+          // }
         });
       })
       .catch((e) => {
         this.ngZone.run(() => {
-          if (!hideLoaderFlag) {
-            this.loader.dismiss();
-          }
+          // if (!hideLoaderFlag) {
+          //   this.loader.dismiss();
+          // }
         });
       });
   }

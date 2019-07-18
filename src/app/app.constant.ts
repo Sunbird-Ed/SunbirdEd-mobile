@@ -53,18 +53,6 @@ export class ContentType {
         ContentType.TEXTBOOK_UNIT,
         ContentType.COURSE
     ];
-    // Other than mimeType collection. ContentType need not to pass recently viewded.
-    public static readonly FOR_RECENTLY_VIEWED = [
-        ContentType.STORY,
-        ContentType.WORKSHEET,
-        ContentType.GAME,
-        ContentType.RESOURCE,
-        ContentType.LESSON_PLAN,
-        ContentType.FOCUS_SPOT,
-        ContentType.LEARNING_OUTCOME_DEFINITION,
-        ContentType.PRACTICE_QUESTION_SET,
-        ContentType.CURIOSITY_QUESTIONS
-    ];
 }
 
 export class MimeType {
