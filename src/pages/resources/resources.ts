@@ -317,6 +317,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.recentlyViewedResources = [];
     if (!hideLoaderFlag) {
       this.showLoader = true;
+      if (this.showLoader) {
+        this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+      }
     }
     const requestParams: ContentRequest = {
       uid: this.profile ? this.profile.uid : undefined,
@@ -346,6 +349,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.recentlyViewedResources = data;
           if (!hideLoaderFlag) {
             this.showLoader = false;
+            if (!this.showLoader) {
+             this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+            }
           }
         });
       })
@@ -353,6 +359,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         this.ngZone.run(() => {
           if (!hideLoaderFlag) {
             this.showLoader = false;
+            if (!this.showLoader) {
+              this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+            }
           }
         });
       });
@@ -367,6 +376,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.searchApiLoader = true;
     // this.noInternetConnection = false;
     const that = this;
+    if (this.searchApiLoader) {
+      this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+    }
 
     if (!contentSearchCriteria) {
       contentSearchCriteria = {
@@ -489,6 +501,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.pageLoadedSuccess = true;
           this.refresh = false;
           this.searchApiLoader = false;
+          if (!this.refresh || !this.searchApiLoader) {
+           this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+          }
           // this.noInternetConnection = false;
           this.generateExtraInfoTelemetry(newSections.length);
           // this.checkEmptySearchResult(isAfterLanguageChange);
@@ -506,6 +521,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         this.ngZone.run(() => {
           this.refresh = false;
           this.searchApiLoader = false;
+          if (!this.refresh || !this.searchApiLoader) {
+            this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+          }
           if (error === 'CONNECTION_ERROR') {
           } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {
             if (!isAfterLanguageChange) {
@@ -689,6 +707,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
    */
   swipeDownToRefresh(refresher?, avoidRefreshList?) {
     this.refresh = true;
+    if (this.refresh) {
+      this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+    }
     this.storyAndWorksheets = [];
 
     this.getCategoryData();
@@ -1014,4 +1035,5 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     // this.contentView._scrollContent.nativeElement.scrollToTop();
 
   }
+
 }

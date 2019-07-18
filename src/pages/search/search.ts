@@ -684,6 +684,9 @@ export class SearchPage implements OnInit, OnDestroy {
     this.addSearchHistoryEntry();
 
     this.showLoader = true;
+    if (this.showLoader) {
+      this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+    }
 
     (<any>window).cordova.plugins.Keyboard.close();
 
@@ -744,10 +747,16 @@ export class SearchPage implements OnInit, OnDestroy {
           }
           this.showEmptyMessage = this.searchContentResult.length === 0;
           this.showLoader = false;
+          if (!this.showLoader) {
+             this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+          }
         });
       }).catch(() => {
         this.zone.run(() => {
           this.showLoader = false;
+          if (!this.showLoader) {
+            this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+         }
           if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
             this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
           }
