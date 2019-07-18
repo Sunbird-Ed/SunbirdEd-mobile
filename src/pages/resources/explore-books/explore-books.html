@@ -42,6 +42,7 @@
     <div class="search-bar">
       <label>
         <input type="search"
+               #searchInput
                placeholder="{{'SEARCH_BOOK' | translate}}"
                [formControl]="searchForm.get('query')"/>
       </label>
