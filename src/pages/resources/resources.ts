@@ -1011,5 +1011,17 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       storyAndWorksheets: this.storyAndWorksheets,
       contentType: ContentType.FOR_LIBRARY_TAB
     });
+    const values = new Map();
+    values['board'] = this.profile.board[0];
+    values['class'] = this.currentGrade.name;
+    values['medium'] = this.currentMedium;
+
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.SEE_MORE_CONTENT_CLICKED,
+      Environment.LIBRARY,
+      PageId.LIBRARY,
+      undefined,
+      values)
   }
 }
