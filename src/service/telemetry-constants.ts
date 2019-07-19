@@ -318,7 +318,8 @@ export enum InteractSubtype {
     DROPDOWN_CLICKED = 'drop-down-clicked',
     SUBUNIT_CLICKED = 'sub-unit-clicked',
     SEE_MORE_CONTENT_CLICKED = 'see-more-content-clicked',
-    SEARCH_CRITERIA = 'search-criteria'
+    SEARCH_CRITERIA = 'search-criteria',
+    SORT_BY_CLICKED = 'sort-by-clicked'
 }
 
 export enum ActionButtonType {
