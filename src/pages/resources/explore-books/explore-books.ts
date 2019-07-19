@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, ElementRef, Inject, NgZone, OnDestroy, QueryList, ViewChild, ViewChildren} from '@angular/core';
-import {IonicPage, NavController, NavParams, Platform} from 'ionic-angular';
+import {IonicPage, NavController, NavParams, Platform, ModalController, ViewController} from 'ionic-angular';
 import {AudienceFilter, Map, MimeType, Search} from "@app/app";
 import {Environment, InteractSubtype, InteractType, PageId} from "@app/service/telemetry-constants";
 import {
@@ -18,6 +18,8 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Observable, Subscription} from "rxjs";
 import {CollectionDetailsEtbPage} from "@app/pages/collection-details-etb/collection-details-etb";
 import {ContentDetailsPage} from "@app/pages/content-details/content-details";
+import { ExploreBooksSort } from '../explore-books-sort/explore-books-sort';
+
 
 @IonicPage()
 @Component({
@@ -105,12 +107,15 @@ export class ExploreBooksPage implements OnDestroy {
     'framework': new FormControl(null, Validators.required),
     'grade': new FormControl([]),
     'subject': new FormControl([]),
+    'board': new FormControl([]),
+    'medium': new FormControl([]),
     'query': new FormControl('', {updateOn: 'submit'}),
   });
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
+    public modalCtrl: ModalController,
     private zone: NgZone,
     private commonUtilService: CommonUtilService,
     private headerService: AppHeaderService,
@@ -220,9 +225,9 @@ export class ExploreBooksPage implements OnDestroy {
 
   openContent(content, index) {
 
-    if(content.mimeType === MimeType.COLLECTION) {
+    if (content.mimeType === MimeType.COLLECTION) {
       this.navCtrl.push(CollectionDetailsEtbPage,{
-        content:content
+        content: content
       });
     } else {
       this.navCtrl.push(ContentDetailsPage, {
@@ -272,5 +277,27 @@ export class ExploreBooksPage implements OnDestroy {
     if (this.headerObservable) {
       this.headerObservable.unsubscribe();
     }
+  }
+
+  openSortOptionsModal() {
+    const sortOptionsModal = this.modalCtrl.create(ExploreBooksSort, { searchForm: this.searchForm });
+    sortOptionsModal.onDidDismiss(data => {
+      console.log('ondismiss', data);
+      if (data) {
+        this.searchForm.patchValue({
+          'board': data.board,
+          'medium': data.medium
+        });
+      }
+    });
+    // this.telemetryGeneratorService.generateInteractTelemetry(
+    // InteractType.TOUCH,
+    // InteractSubtype.FILTER_CLICKED,
+    // Environment.HOME,
+    // PageId.COLLECTION_DETAIL,
+    // undefined,
+    // values);
+
+    sortOptionsModal.present();
   }
 }

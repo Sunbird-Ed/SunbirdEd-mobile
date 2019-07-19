@@ -1,3 +1,4 @@
+import { ExploreBooksSort } from './explore-books-sort/explore-books-sort';
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { ResourcesPage } from './resources';
@@ -10,7 +11,8 @@ import { NotificationsPageModule } from '../notifications/notifications.module';
 
 @NgModule({
   declarations: [
-    ResourcesPage
+    ResourcesPage,
+    ExploreBooksSort
   ],
   imports: [
     IonicPageModule.forChild(ResourcesPage),
@@ -24,7 +26,7 @@ import { NotificationsPageModule } from '../notifications/notifications.module';
   exports: [
     ResourcesPage
   ],
-  entryComponents: [],
+  entryComponents: [ExploreBooksSort],
   providers: []
 })
 export class ResourcesPageModule { }
