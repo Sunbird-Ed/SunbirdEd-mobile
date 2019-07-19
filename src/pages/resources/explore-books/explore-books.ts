@@ -311,15 +311,25 @@ export class ExploreBooksPage implements OnDestroy {
           'board': data.board,
           'medium': data.medium
         });
+        const values = new Map();
+        values['board'] = data.board;
+        values['medium'] = data.medium;
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.SORT_BY_CLICKED,
+          Environment.HOME,
+          PageId.EXPLORE_MORE_CONTENT,
+          undefined,
+          values
+        );
       }
     });
-    // this.telemetryGeneratorService.generateInteractTelemetry(
-    // InteractType.TOUCH,
-    // InteractSubtype.FILTER_CLICKED,
-    // Environment.HOME,
-    // PageId.COLLECTION_DETAIL,
-    // undefined,
-    // values);
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.SORT_BY_CLICKED,
+      Environment.HOME,
+      PageId.EXPLORE_MORE_CONTENT
+    );
 
     sortOptionsModal.present();
   }
