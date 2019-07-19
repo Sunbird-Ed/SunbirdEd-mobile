@@ -1,7 +1,14 @@
 import {ChangeDetectorRef, Component, ElementRef, Inject, NgZone, OnDestroy, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {IonicPage, NavController, NavParams, Platform} from 'ionic-angular';
 import {AudienceFilter, Map, MimeType, Search} from "@app/app";
-import {Environment, InteractSubtype, InteractType, PageId} from "@app/service/telemetry-constants";
+import {
+  Environment,
+  ImpressionSubtype,
+  ImpressionType,
+  InteractSubtype,
+  InteractType,
+  PageId
+} from "@app/service/telemetry-constants";
 import {
   Content,
   ContentSearchCriteria, ContentSearchResult,
@@ -128,7 +135,7 @@ export class ExploreBooksPage implements OnDestroy {
   async ionViewDidLoad() {
     this.categoryGradeLevels = this.navParams.get('categoryGradeLevels');
     this.subjects = this.navParams.get('subjects');
-    this.subjects.unshift({name: 'ALL', selected: true});
+    this.subjects.unshift({name: this.commonUtilService.translateMessage('ALL'), selected: true});
 
     this.contentType = this.navParams.get('contentType');
     this.selectedLanguageCode = this.translate.currentLang;
@@ -148,6 +155,12 @@ export class ExploreBooksPage implements OnDestroy {
 
     this.headerService.showHeaderWithBackButton();
 
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW,
+      ImpressionSubtype.EXPLORE_MORE_CONTENT,
+      PageId.EXPLORE_MORE_CONTENT,
+      Environment.HOME
+    )
   }
 
   ngOnDestroy(): void {
@@ -187,9 +200,10 @@ export class ExploreBooksPage implements OnDestroy {
   }
 
   private onSearchFormChange(): Observable<undefined> {
+    const value = new Map();
     return this.searchForm.valueChanges
       .do(() => {
-        console.log(this.searchForm.value)
+        value['currentFilters'] = this.searchForm.value;
       })
       .debounceTime(200)
       .switchMap(() => {
@@ -203,6 +217,8 @@ export class ExploreBooksPage implements OnDestroy {
           mode: 'soft',
           languageCode: this.selectedLanguageCode,
         };
+
+        value['searchCriteria'] = searchCriteria;
         this.showLoader = true;
         return this.contentService.searchContent(searchCriteria)
       })
@@ -211,9 +227,16 @@ export class ExploreBooksPage implements OnDestroy {
           if (result) {
             this.showLoader = false;
             this.contentSearchResult = result.contentDataList;
-            console.log('result', this.contentSearchResult);
+            value['searchResult'] = this.contentSearchResult.length;
           }
         });
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.SEARCH_CRITERIA,
+          Environment.HOME,
+          PageId.FILTER_CLICKED,
+          undefined,
+          value)
       })
       .mapTo(undefined);
   }
