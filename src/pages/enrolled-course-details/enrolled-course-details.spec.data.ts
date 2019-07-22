@@ -1,4 +1,27 @@
 export const mockRes = {
+    Batch: {
+        'identifier': 'SAMPLE_IDENTIFIER',
+        'id': '12344',
+        'createdFor': ['Sample_Creator', 'SAMPLE_CREATOR'],
+        'courseAdditionalInfo': 'CourseAdditonalInfo',
+        'endDate': 'SAmple_Date',
+        'description': 'Sample_Description',
+        'participant': 'any_participant',
+        'updatedDate': 'string',
+        'createdDate': 'string',
+        'mentors': ['test', 'test', 'test'],
+        'name': 'string',
+        'enrollmentType': 'string',
+        'courseId': 'string',
+        'startDate': 'string',
+        'hashTagId': 'string',
+        'status': 1234,
+        'courseCreator': 'string',
+        'createdBy': 'string',
+        'creatorFirstName': 'string',
+        'creatorLastName': 'string',
+        'enrollmentEndDate': 'string'
+    },
     enrollCourseEvent:
         { 'batchId': '1234', 'identifier': 'SAMPLE_ID' },
 

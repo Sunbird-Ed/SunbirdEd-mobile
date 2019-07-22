@@ -46,7 +46,7 @@
         }
     ],
     "constants": {
-        "charactersLeft": "Characters left",
+        "charactersLeft": "characters left",
         "explainMsg": "Could you explain the problem?",
         "faqMsg": "Frequently asked questions",
         "help": "Help",
