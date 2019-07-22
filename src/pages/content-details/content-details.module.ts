@@ -14,6 +14,9 @@ import { FileSizePipe } from '@app/pipes/file-size/file-size';
 import { ContentShareHandler } from '@app/service/content/content-share-handler';
 import { ProfileSwitchHandler } from '@app/service/user-groups/profile-switch-handler';
 import { RatingHandler } from '@app/service/rating/rating-handler';
+import { ContentPlayerHandler } from '@app/service/content/player/content-player-handler';
+import { ChildContentHandler } from '@app/service/content/child-content-handler';
+import { ContentDeleteHandler } from '@app/service/content/content-delete-handler';
 
 @NgModule({
   declarations: [
@@ -38,7 +41,10 @@ import { RatingHandler } from '@app/service/rating/rating-handler';
     FileSizePipe,
     ContentShareHandler,
     ProfileSwitchHandler,
-    RatingHandler
+    RatingHandler,
+    ContentPlayerHandler,
+    ChildContentHandler,
+    ContentDeleteHandler
   ],
   exports: [
     ContentDetailsPage
