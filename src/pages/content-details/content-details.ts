@@ -1,30 +1,20 @@
-import {Component, Inject, NgZone, ViewChild} from '@angular/core';
-import {
-  Events,
-  IonicApp,
-  IonicPage,
-  Navbar,
-  NavController,
-  NavParams,
-  Platform,
-  PopoverController,
-  ToastController
-} from 'ionic-angular';
+import { Component, Inject, NgZone, ViewChild } from '@angular/core';
+import { Events, IonicApp, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
-import {ContentConstants, EventTopics, PreferenceKey, StoreRating, XwalkConstants} from '../../app/app.constant';
+import { ContentConstants, EventTopics, PreferenceKey, StoreRating, XwalkConstants } from '../../app/app.constant';
 import { Map } from '@app/app';
 import {
   ConfirmAlertComponent,
   ContentActionsComponent,
   SbPopoverComponent
 } from '@app/component';
-import {AppGlobalService, AppHeaderService, AppRatingService, CourseUtilService, UtilityService} from '@app/service';
-import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
-import {Network} from '@ionic-native/network';
-import {UserAndGroupsPage} from '../user-and-groups/user-and-groups';
-import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
-import {CommonUtilService} from '../../service/common-util.service';
-import {DialogPopupComponent} from '../../component/dialog-popup/dialog-popup';
+import { AppGlobalService, AppHeaderService, AppRatingService, CourseUtilService, UtilityService } from '@app/service';
+import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
+import { Network } from '@ionic-native/network';
+import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { CommonUtilService } from '../../service/common-util.service';
+import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
 import {
   ChildContentRequest,
   Content,
@@ -48,10 +38,10 @@ import {
   StorageService,
   TelemetryObject
 } from 'sunbird-sdk';
-import {CanvasPlayerService} from '../player/canvas-player.service';
-import {PlayerPage} from '../player/player';
-import {File} from '@ionic-native/file';
-import {Subscription} from 'rxjs';
+import { CanvasPlayerService } from '../player/canvas-player.service';
+import { PlayerPage } from '../player/player';
+import { File } from '@ionic-native/file';
+import { Subscription } from 'rxjs';
 import {
   Environment,
   ImpressionType,
@@ -60,9 +50,9 @@ import {
   Mode,
   PageId,
 } from '../../service/telemetry-constants';
-import {FileSizePipe} from '@app/pipes/file-size/file-size';
-import {TranslateService} from '@ngx-translate/core';
-import {SbGenericPopoverComponent} from '@app/component/popups/sb-generic-popup/sb-generic-popover';
+import { FileSizePipe } from '@app/pipes/file-size/file-size';
+import { TranslateService } from '@ngx-translate/core';
+import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 import { ContentShareHandler } from '@app/service/content/content-share-handler';
 import { AppVersion } from '@ionic-native/app-version';
 import { ProfileSwitchHandler } from '@app/service/user-groups/profile-switch-handler';
@@ -192,13 +182,14 @@ export class ContentDetailsPage {
     this.checkappAvailability();
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
     this.defaultLicense = ContentConstants.DEFAULT_LICENSE;
+    this.ratingHandler.resetRating();
   }
 
   ionViewDidLoad() {
     this.appVersion.getAppName()
       .then((appName: any) => {
         this.appName = appName;
-    });
+      });
 
     if (!AppGlobalService.isPlayerLaunched) {
       this.calculateAvailableUserCount();
@@ -426,6 +417,10 @@ export class ContentDetailsPage {
         }
         this.navCtrl.pop();
       });
+  }
+
+  rateContent(popUpType: string) {
+    this.ratingHandler.showRatingPopup(this.isContentPlayed, this.content, popUpType, this.corRelationList, this.objRollup);
   }
 
   extractApiResponse(data: Content) {
@@ -958,7 +953,7 @@ export class ContentDetailsPage {
   openPlayAsPopup(isStreaming) {
     const profile = this.appGlobalService.getCurrentUser();
     this.isUsrGrpAlrtOpen = true;
-   // if (profile.board.length > 1) {
+    // if (profile.board.length > 1) {
     const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
       sbPopoverHeading: this.commonUtilService.translateMessage('PLAY_AS'),
       sbPopoverMainTitle: profile.handle,
