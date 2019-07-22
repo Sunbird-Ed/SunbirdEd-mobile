@@ -180,7 +180,7 @@ export class QrCodeResultPage implements OnDestroy {
   ionViewDidLoad() {
     this.telemetryGeneratorService.generateImpressionTelemetry(ImpressionType.VIEW, '',
       PageId.DIAL_CODE_SCAN_RESULT,
-      !this.appGlobalService.isProfileSettingsCompleted ? Environment.ONBOARDING : this.appGlobalService.getPageIdForTelemetry());
+      !this.appGlobalService.isProfileSettingsCompleted ? Environment.ONBOARDING : Environment.HOME);
     this.navBar.backButtonClick = () => {
       this.handleBackButton(InteractSubtype.NAV_BACK_CLICKED);
     };
