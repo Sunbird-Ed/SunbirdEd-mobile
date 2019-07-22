@@ -10,9 +10,11 @@ import {
   PageId
 } from "@app/service/telemetry-constants";
 import {
-  Content,
-  ContentSearchCriteria, ContentSearchResult,
+  ContentSearchCriteria,
+  ContentSearchFilter,
+  ContentSearchResult,
   ContentService,
+  FilterValue,
   FrameworkUtilService,
   ProfileType,
   SearchType,
@@ -25,7 +27,7 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Observable, Subscription} from "rxjs";
 import {CollectionDetailsEtbPage} from "@app/pages/collection-details-etb/collection-details-etb";
 import {ContentDetailsPage} from "@app/pages/content-details/content-details";
-import { ExploreBooksSort } from '../explore-books-sort/explore-books-sort';
+import {ExploreBooksSort} from '../explore-books-sort/explore-books-sort';
 
 
 @IonicPage()
@@ -99,8 +101,6 @@ export class ExploreBooksPage implements OnDestroy {
       iconNormal: './assets/imgs/touch.svg', iconActive: './assets/imgs/touch-active.svg'
     }
   ];
-  activeMimeTypeFilter = ['all'];
-  currentFilter: string;
   headerObservable: any;
   unregisterBackButton: any;
   selectedLanguageCode = '';
@@ -109,6 +109,7 @@ export class ExploreBooksPage implements OnDestroy {
   contentSearchResult: Array<any> = [];
   showLoader = false;
   searchFormSubscription?: Subscription;
+  mimeTypeValue: any;
 
   searchForm: FormGroup = new FormGroup({
     'framework': new FormControl(null, Validators.required),
@@ -117,7 +118,11 @@ export class ExploreBooksPage implements OnDestroy {
     'board': new FormControl([]),
     'medium': new FormControl([]),
     'query': new FormControl('', {updateOn: 'submit'}),
+    'mimeType': new FormControl([this.mimeTypeValue])
   });
+  layoutName = 'explore';
+  boardList: Array<FilterValue>;
+  mediumList: Array<FilterValue>;
 
   constructor(
     public navCtrl: NavController,
@@ -133,8 +138,9 @@ export class ExploreBooksPage implements OnDestroy {
     @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
     @Inject('SHARED_PREFERENCES') private sharedPreferences: SharedPreferences,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
+    private platform: Platform,
+
   ) {
-    this.handleBackButton();
   }
 
   async ionViewDidLoad() {
@@ -149,6 +155,8 @@ export class ExploreBooksPage implements OnDestroy {
     this.searchFormSubscription = this.onSearchFormChange().subscribe();
 
     this.searchForm.get('framework').patchValue(await this.sharedPreferences.getString('sunbirdcurrent_framework_id').toPromise());
+
+    this.handleBackButton();
 
   }
 
@@ -165,7 +173,7 @@ export class ExploreBooksPage implements OnDestroy {
       ImpressionSubtype.EXPLORE_MORE_CONTENT,
       PageId.EXPLORE_MORE_CONTENT,
       Environment.HOME
-    )
+    );
   }
 
   ngOnDestroy(): void {
@@ -175,17 +183,23 @@ export class ExploreBooksPage implements OnDestroy {
   }
 
   handleBackButton() {
-
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        InteractSubtype.DEVICE_BACK_CLICKED,
+        Environment.HOME,
+        PageId.EXPLORE_MORE_CONTENT,
+      );
+      this.navCtrl.pop();
+      this.unregisterBackButton();
+    }, 10);
   }
 
   handleHeaderEvents($event) {
-    switch ($event.name) {
-      case 'back':
-        // this.telemetryGeneratorService.generateBackClickedTelemetry(
-        // PageId.ONBOARDING_PROFILE_PREFERENCES, Environment.ONBOARDING, true);
-        // this.dismissPopup();
-        this.navCtrl.pop();
-        break;
+    if ($event.name === 'back') {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(
+      PageId.EXPLORE_MORE_CONTENT, Environment.HOME, true);
+      this.navCtrl.pop();
     }
   }
 
@@ -230,7 +244,11 @@ export class ExploreBooksPage implements OnDestroy {
       .do((result: ContentSearchResult) => {
         this.zone.run(() => {
           if (result) {
+            let facetFilters: Array<ContentSearchFilter>;
             this.showLoader = false;
+            facetFilters = result.filterCriteria.facetFilters;
+
+            this.fetchingBoardMediumList(facetFilters);
             this.contentSearchResult = result.contentDataList;
             value['searchResult'] = this.contentSearchResult.length;
           }
@@ -260,52 +278,24 @@ export class ExploreBooksPage implements OnDestroy {
 
   }
 
-  async onFilterMimeTypeChange(val, idx, currentFilter?) {
-    const values = new Map();
-    values['filter'] = currentFilter;
-    this.activeMimeTypeFilter = val;
-    this.currentFilter = this.commonUtilService.translateMessage(currentFilter);
-    this.mimeTypes.forEach((type) => {
-      type.selected = false;
-    });
-    this.mimeTypes[idx].selected = true;
-    this.filteredItemsQueryList.changes
-      .do((v) => {
-        this.changeDetectionRef.detectChanges();
-        values['contentLength'] = v.length;
-      })
-      .subscribe();
-    // this.telemetryGeneratorService.generateInteractTelemetry(
-    //   InteractType.TOUCH,
-    //   InteractSubtype.FILTER_CLICKED,
-    //   Environment.HOME,
-    //   PageId.COLLECTION_DETAIL,
-    //   undefined,
-    //   values);
-  }
-
-  // generateClassInteractTelemetry(currentClass: string, previousClass: string) {
-  //   const values = new Map();
-  //   values['currentSelected'] = currentClass;
-  //   values['previousSelected'] = previousClass;
-  //   this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-  //     InteractSubtype.CLASS_CLICKED,
-  //     Environment.HOME,
-  //     PageId.LIBRARY,
-  //     undefined,
-  //     values);
-  // }
-
   ionViewWillLeave() {
     if (this.headerObservable) {
       this.headerObservable.unsubscribe();
     }
+
+    if (this.unregisterBackButton) {
+      this.unregisterBackButton();
+    }
   }
 
   openSortOptionsModal() {
-    const sortOptionsModal = this.modalCtrl.create(ExploreBooksSort, { searchForm: this.searchForm });
+    const sortOptionsModal = this.modalCtrl.create(ExploreBooksSort,
+      {
+      searchForm: this.searchForm,
+      boardList: this.boardList,
+      mediumList: this.mediumList
+      });
     sortOptionsModal.onDidDismiss(data => {
-      console.log('ondismiss', data);
       if (data) {
         this.searchForm.patchValue({
           'board': data.board,
@@ -332,5 +322,26 @@ export class ExploreBooksPage implements OnDestroy {
     );
 
     sortOptionsModal.present();
+  }
+
+  onMimeTypeClicked(mimeType, index) {
+
+    this.mimeTypes.forEach((value) => {
+      value.selected = false;
+    });
+
+    this.mimeTypes[index].selected = true;
+  }
+
+  fetchingBoardMediumList(facetFilters) {
+    return facetFilters.filter(value => {
+      if(value.name === 'board') {
+        this.boardList = value.values;
+      }
+
+      if(value.name === 'medium') {
+        this.mediumList = value.values;
+      }
+    });
   }
 }
