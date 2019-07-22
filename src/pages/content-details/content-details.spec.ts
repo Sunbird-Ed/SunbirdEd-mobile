@@ -110,15 +110,6 @@ describe('ContentDetailsPage Component', () => {
     contentDetailsPage.ionViewWillEnter();
   });
 
-  it('#ionViewWillLeave', () => {
-    contentDetailsPage.headerObservable = {
-      unsubscribe: jest.fn()
-    };
-    spyOn(contentDetailsPage.headerObservable, 'unsubscribe');
-    contentDetailsPage.ionViewWillLeave();
-    expect(contentDetailsPage.headerObservable.unsubscribe).toHaveBeenCalledTimes(1);
-  });
-
   it('should be called handleNavBackButton()', () => {
     // arrange
     contentDetailsPage.cardData = { identifier: 'SAMPLE_IDENTIFIER' };

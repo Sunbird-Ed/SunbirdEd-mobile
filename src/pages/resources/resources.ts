@@ -318,7 +318,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     if (!hideLoaderFlag) {
       this.showLoader = true;
       if (this.showLoader) {
-        this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+        this.telemetryGeneratorService.generateStartSheenAnimationTelemetry();
       }
     }
     const requestParams: ContentRequest = {
@@ -377,7 +377,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     // this.noInternetConnection = false;
     const that = this;
     if (this.searchApiLoader) {
-      this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+      this.telemetryGeneratorService.generateStartSheenAnimationTelemetry();
     }
 
     if (!contentSearchCriteria) {
@@ -431,6 +431,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     } else {
       this.searchApiLoader = false;
     }
+    this.telemetryGeneratorService.generateStartSheenAnimationTelemetry();
     const reqvalues = new Map();
     reqvalues['pageReq'] = this.getGroupByPageReq;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
@@ -707,9 +708,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
    */
   swipeDownToRefresh(refresher?, avoidRefreshList?) {
     this.refresh = true;
-    if (this.refresh) {
-      this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
-    }
     this.storyAndWorksheets = [];
 
     this.getCategoryData();

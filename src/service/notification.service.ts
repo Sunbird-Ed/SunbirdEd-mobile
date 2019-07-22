@@ -1,10 +1,9 @@
-import { Injectable, Inject } from "@angular/core";
+import { Injectable, Inject } from '@angular/core';
 import { TelemetryGeneratorService } from '@app/service';
 import { File } from '@ionic-native/file';
-import { ProfileService, SharedPreferences } from "sunbird-sdk";
-import { PreferenceKey } from "@app/app";
-import { TranslateService } from '@ngx-translate/core';
-import { AppVersion } from "@ionic-native/app-version";
+import { ProfileService, SharedPreferences } from 'sunbird-sdk';
+import { AppVersion } from '@ionic-native/app-version';
+import { UtilityService } from './utility-service';
 
 declare const cordova;
 
@@ -20,7 +19,7 @@ export class NotificationService {
         @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
         private telemetryGeneratorService: TelemetryGeneratorService,
         private file: File,
-        private translate: TranslateService,
+        private utilityService: UtilityService,
         private appVersion: AppVersion
     ) {
         this.getAppName();
@@ -31,7 +30,7 @@ export class NotificationService {
             this.selectedLanguage = language;
             cordova.plugins.notification.local.cancelAll();
         }
-        this.file.readAsText(this.file.applicationDirectory + 'www/assets/data', 'local_notofocation_config.json').then(data => {
+        this.utilityService.readFileFromAssets('www/assets/data/local_notofocation_config.json').then(data => {
             this.configData = JSON.parse(data);
             cordova.plugins.notification.local.getScheduledIds((val) => {
                 if (this.configData.id !== val[val.length - 1]) {

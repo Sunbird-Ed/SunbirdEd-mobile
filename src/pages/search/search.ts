@@ -193,7 +193,7 @@ export class SearchPage implements OnInit, OnDestroy {
   }
 
   ionViewDidLoad() {
-    this.searchHistory$ = (this.searchBar as TextInput).ionChange
+      this.searchHistory$ = this.searchBar && (this.searchBar as TextInput).ionChange
       .map((e) => e.value)
       .share()
       .startWith('')
@@ -642,7 +642,7 @@ export class SearchPage implements OnInit, OnDestroy {
     this.showLoader = true;
     this.responseData.filterCriteria.mode = 'hard';
     this.responseData.filterCriteria.searchType = SearchType.FILTER;
-
+    this.telemetryGeneratorService.generateStartSheenAnimationTelemetry();
     this.contentService.searchContent(this.responseData.filterCriteria).toPromise()
       .then((responseData: ContentSearchResult) => {
 
@@ -666,6 +666,7 @@ export class SearchPage implements OnInit, OnDestroy {
           } else {
             this.isEmptyResult = true;
           }
+          this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
           this.showLoader = false;
         });
       }).catch(() => {
@@ -685,7 +686,7 @@ export class SearchPage implements OnInit, OnDestroy {
 
     this.showLoader = true;
     if (this.showLoader) {
-      this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+      this.telemetryGeneratorService.generateStartSheenAnimationTelemetry();
     }
 
     (<any>window).cordova.plugins.Keyboard.close();
@@ -930,6 +931,7 @@ export class SearchPage implements OnInit, OnDestroy {
     this.isDialCodeSearch = true;
 
     this.showLoader = true;
+    this.telemetryGeneratorService.generateStartSheenAnimationTelemetry();
 
     const contentTypes = await this.formAndFrameworkUtilService.getSupportedContentFilterConfig(
       ContentFilterConfig.NAME_DIALCODE);
@@ -957,6 +959,7 @@ export class SearchPage implements OnInit, OnDestroy {
             this.processDialCodeResult(sections);
             // this.updateFilterIcon();  // TO DO
           }
+          this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
           this.showLoader = false;
         });
       }).catch(error => {

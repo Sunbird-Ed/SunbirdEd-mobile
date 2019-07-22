@@ -325,12 +325,14 @@ export class TelemetryGeneratorService {
     isCollection(mimeType) {
         return mimeType === MimeType.COLLECTION;
     }
+
     generateStartSheenAnimationTelemetry() {
         this.generateInteractTelemetry(InteractType.OTHER,
           InteractSubtype.SHEEN_ANIMATION_START,
           Environment.HOME,
           PageId.LIBRARY);
       }
+
       generateEndSheenAnimationTelemetry() {
         this.generateInteractTelemetry(InteractType.OTHER,
           InteractSubtype.SHEEN_ANIMATION_END,
