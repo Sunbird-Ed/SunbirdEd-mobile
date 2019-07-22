@@ -17,6 +17,7 @@ import { CommonUtilService, TelemetryGeneratorService } from '@app/service';
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
 import { ContentDetailsPage } from '@app/pages/content-details/content-details';
 import { InteractSubtype, Environment, PageId } from '@app/service/telemetry-constants';
+import moment from 'moment';
 
 /**
  * Generated class for the EnrollmentDetailsPage page.
@@ -44,6 +45,7 @@ export class EnrollmentDetailsPage {
   pageName: any;
   env: any;
   courseId: any;
+  todayDate: string;
 
   constructor(
     @Inject('AUTH_SERVICE') private authService: AuthService,
@@ -60,6 +62,7 @@ export class EnrollmentDetailsPage {
     this.ongoingBatches = this.navParams.get('ongoingBatches');
     this.upcommingBatches = this.navParams.get('upcommingBatches');
     this.retiredBatched = this.navParams.get('retiredBatched');
+    this.todayDate =  moment(new Date()).format('YYYY-MM-DD');
     this.courseId = this.navParams.get('courseId');
     this.getUserId();
 

@@ -1,32 +1,20 @@
-import {Component, Inject, NgZone, ViewChild} from '@angular/core';
-import {
-  Events,
-  IonicApp,
-  IonicPage,
-  Navbar,
-  NavController,
-  NavParams,
-  Platform,
-  PopoverController,
-  ToastController
-} from 'ionic-angular';
+import { Component, Inject, NgZone, ViewChild } from '@angular/core';
+import { Events, IonicApp, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
-import {ContentConstants, EventTopics, PreferenceKey, StoreRating, XwalkConstants} from '../../app/app.constant';
+import { ContentConstants, EventTopics, XwalkConstants } from '../../app/app.constant';
 import { Map } from '@app/app';
 import {
   ConfirmAlertComponent,
-  ContentActionsComponent,
   SbPopoverComponent
 } from '@app/component';
-import {AppGlobalService, AppHeaderService, AppRatingService, CourseUtilService, UtilityService} from '@app/service';
-import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
-import {Network} from '@ionic-native/network';
-import {UserAndGroupsPage} from '../user-and-groups/user-and-groups';
-import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
-import {CommonUtilService} from '../../service/common-util.service';
-import {DialogPopupComponent} from '../../component/dialog-popup/dialog-popup';
+import { AppGlobalService, AppHeaderService, CourseUtilService, UtilityService } from '@app/service';
+import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
+import { Network } from '@ionic-native/network';
+import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { CommonUtilService } from '../../service/common-util.service';
+import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
 import {
-  ChildContentRequest,
   Content,
   ContentDeleteStatus,
   ContentDetailRequest,
@@ -48,10 +36,7 @@ import {
   StorageService,
   TelemetryObject
 } from 'sunbird-sdk';
-import {CanvasPlayerService} from '../player/canvas-player.service';
-import {PlayerPage} from '../player/player';
-import {File} from '@ionic-native/file';
-import {Subscription} from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import {
   Environment,
   ImpressionType,
@@ -60,16 +45,18 @@ import {
   Mode,
   PageId,
 } from '../../service/telemetry-constants';
-import {FileSizePipe} from '@app/pipes/file-size/file-size';
-import {TranslateService} from '@ngx-translate/core';
-import {SbGenericPopoverComponent} from '@app/component/popups/sb-generic-popup/sb-generic-popover';
+import { FileSizePipe } from '@app/pipes/file-size/file-size';
+import { TranslateService } from '@ngx-translate/core';
+import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 import { ContentShareHandler } from '@app/service/content/content-share-handler';
 import { AppVersion } from '@ionic-native/app-version';
 import { ProfileSwitchHandler } from '@app/service/user-groups/profile-switch-handler';
 import { RatingHandler } from '@app/service/rating/rating-handler';
 import { ContentUtil } from '@app/util/content-util';
-
-declare const cordova;
+import { ContentPlayerHandler } from '@app/service/content/player/content-player-handler';
+import { ChildContentHandler } from '@app/service/content/child-content-handler';
+import { ContentDeleteHandler } from '@app/service/content/content-delete-handler';
+import { ContentInfo } from '@app/service/content/content-info';
 
 @IonicPage()
 @Component({
@@ -78,7 +65,6 @@ declare const cordova;
 })
 export class ContentDetailsPage {
   appName: any;
-  [x: string]: any;
   apiLevel: number;
   appAvailability: string;
   content: Content;
@@ -87,8 +73,6 @@ export class ContentDetailsPage {
   contentDetails: any;
   identifier: string;
   headerObservable: any;
-  new: Boolean = true;
-
   /**
    * To hold previous state data
    */
@@ -126,9 +110,6 @@ export class ContentDetailsPage {
   isGuestUser = false;
   launchPlayer: boolean;
   isResumedCourse: boolean;
-  objId;
-  objType;
-  objVer;
   didViewLoad: boolean;
   contentDetail: any;
   backButtonFunc = undefined;
@@ -139,7 +120,6 @@ export class ContentDetailsPage {
   shouldGenerateTelemetry = true;
   playOnlineSpinner: boolean;
   defaultAppIcon: string;
-  @ViewChild(Navbar) navBar: Navbar;
   showMessage: any;
   localImage: any;
   isUsrGrpAlrtOpen: Boolean = false;
@@ -156,12 +136,12 @@ export class ContentDetailsPage {
   childPaths: Array<string> = [];
   breadCrumbData: any;
   networkSubscription: any;
+  telemetryObject: TelemetryObject;
+  contentDeleteObservable: any;
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     @Inject('EVENTS_BUS_SERVICE') private eventBusService: EventsBusService,
-    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
-    @Inject('PLAYER_SERVICE') private playerService: PlayerService,
     @Inject('STORAGE_SERVICE') private storageService: StorageService,
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -170,22 +150,21 @@ export class ContentDetailsPage {
     private popoverCtrl: PopoverController,
     private platform: Platform,
     private appGlobalService: AppGlobalService,
-    private ionicApp: IonicApp,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
     private courseUtilService: CourseUtilService,
-    private canvasPlayerService: CanvasPlayerService,
-    private file: File,
     private utilityService: UtilityService,
     private network: Network,
     public toastController: ToastController,
     private fileSizePipe: FileSizePipe,
-    private translate: TranslateService,
     private headerService: AppHeaderService,
     private contentShareHandler: ContentShareHandler,
     private appVersion: AppVersion,
     private profileSwitchHandler: ProfileSwitchHandler,
-    private ratingHandler: RatingHandler
+    private ratingHandler: RatingHandler,
+    private contentPlayerHandler: ContentPlayerHandler,
+    private childContentHandler: ChildContentHandler,
+    private contentDeleteHandler: ContentDeleteHandler
   ) {
     this.subscribePlayEvent();
     this.checkDeviceAPILevel();
@@ -198,7 +177,7 @@ export class ContentDetailsPage {
     this.appVersion.getAppName()
       .then((appName: any) => {
         this.appName = appName;
-    });
+      });
 
     if (!AppGlobalService.isPlayerLaunched) {
       this.calculateAvailableUserCount();
@@ -279,6 +258,9 @@ export class ContentDetailsPage {
         this.toast = undefined;
       }
     }
+    if (this.contentDeleteObservable) {
+      this.contentDeleteObservable.unsubscribe();
+    }
     if (this.backButtonFunc) {
       this.backButtonFunc();
     }
@@ -288,7 +270,7 @@ export class ContentDetailsPage {
     this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
       true, this.cardData.identifier, this.corRelationList);
     this.didViewLoad = false;
-    this.generateEndEvent(this.objId, this.objType, this.objVer);
+    this.generateEndEvent();
     if (this.shouldGenerateEndTelemetry) {
       this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
     }
@@ -300,9 +282,8 @@ export class ContentDetailsPage {
       this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
         false, this.cardData.identifier, this.corRelationList);
       this.didViewLoad = false;
-      this.dismissPopup();
       this.popToPreviousPage(false);
-      this.generateEndEvent(this.objId, this.objType, this.objVer);
+      this.generateEndEvent();
       if (this.shouldGenerateEndTelemetry) {
         this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
       }
@@ -430,7 +411,10 @@ export class ContentDetailsPage {
 
   extractApiResponse(data: Content) {
     if (this.isResumedCourse) {
-      this.setChildContents();
+      const resumedCourseCardData = this.navParams.get('resumedCourseCardData');
+      const parentIdentifier = resumedCourseCardData && resumedCourseCardData.contentId ?
+        resumedCourseCardData.contentId : resumedCourseCardData.identifier;
+      this.childContentHandler.setChildContents(parentIdentifier, 0, this.identifier);
     }
 
     this.content = data;
@@ -438,18 +422,8 @@ export class ContentDetailsPage {
     if (this.content.lastUpdatedTime !== 0) {
       this.playOnlineSpinner = false;
     }
-    if (this.content.contentData.appIcon) {
-      if (this.content.contentData.appIcon.startsWith('http')) {
-        if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-          this.content.contentData.appIcon = this.content.contentData.appIcon;
-        } else {
-          this.content.contentData.appIcon = this.defaultAppIcon;
-        }
-      } else if (data.basePath) {
-        this.content.contentData.appIcon = data.basePath + '/' + this.content.contentData.appIcon;
-        console.log('local Image', this.localImage);
-      }
-    }
+    this.content.contentData.appIcon = ContentUtil.getAppIcon(this.content.contentData.appIcon, data.basePath,
+      this.commonUtilService.networkInfo.isNetworkAvailable);
     this.content.contentAccess = data.contentAccess ? data.contentAccess : [];
     this.content.contentMarker = data.contentMarker ? data.contentMarker : [];
 
@@ -472,8 +446,7 @@ export class ContentDetailsPage {
     if (this.content.contentData.me_totalRatings) {
       this.content.contentData.me_totalRatings = parseInt(this.content.contentData.me_totalRatings, 10) + '';
     }
-    this.objId = this.content.identifier;
-    this.objVer = this.content.contentData.pkgVersion;
+    this.telemetryObject = ContentUtil.getTelemetryObject(this.content);
 
     // Check locally available
     if (Boolean(data.isAvailableLocally)) {
@@ -516,68 +489,12 @@ export class ContentDetailsPage {
     }
   }
 
-  /**
- * Function to set child contents
- */
-  setChildContents(): void {
-    this.showChildrenLoader = true;
-    // const option = new ChildContentRequest();
-    const resumedCourseCardData = this.navParams.get('resumedCourseCardData');
-    const option: ChildContentRequest = {
-      contentId: resumedCourseCardData && resumedCourseCardData.contentId ?
-        resumedCourseCardData.contentId : resumedCourseCardData.identifier,
-      hierarchyInfo: null,
-      level: !resumedCourseCardData ? 1 : 0,
-    };
-    option.hierarchyInfo = null;
-
-    if (resumedCourseCardData && !resumedCourseCardData.batchId) {
-      option.level = 1;
-    }
-    this.contentService.getChildContents(option).toPromise()
-      .then((data: any) => {
-        this.zone.run(() => {
-          if (data && data.children) {
-            this.hierarchyInfo = this.getHierarchyInfo(data);
-          }
-        });
-      })
-      .catch((error: string) => {
-        this.zone.run(() => {
-        });
-      });
-  }
-
-  getHierarchyInfo(childrenData) {
-    // step 1: if children.length != 0
-    // step 2: then, loopthrough and match identifier
-    // step 3: if matches, then, return hirearchy info
-    // step 4: else, step 1 again
-    let hierarchyInfo: any;
-    if (childrenData.children && childrenData.children.length) {
-      // hierarchyInfo = childrenData.children.find((ele) => {
-      // childrenData.children.forEach(ele => {
-      for (let i = 0; i < childrenData.children.length; i++) {
-        const ele = childrenData.children[i];
-        if (!hierarchyInfo && ele.identifier === this.identifier) {
-          return ele;
-        } else if (!hierarchyInfo) {
-          hierarchyInfo = this.getHierarchyInfo(ele);
-          if (hierarchyInfo) {
-            return hierarchyInfo;
-          }
-        }
-      }
-    }
-  }
-
   generateTelemetry() {
     if (!this.didViewLoad && !this.isContentPlayed) {
       this.objRollup = ContentUtil.generateRollUp(this.cardData.hierarchyInfo, this.identifier);
-      const contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;
-      this.objType = contentType;
-      this.generateImpressionEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
-      this.generateStartEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
+      this.telemetryObject = ContentUtil.getTelemetryObject(this.cardData);
+      this.generateImpressionEvent(this.cardData.identifier, this.telemetryObject.type, this.cardData.pkgVersion);
+      this.generateStartEvent();
     }
     this.didViewLoad = true;
   }
@@ -587,19 +504,12 @@ export class ContentDetailsPage {
     values['isUpdateAvailable'] = this.isUpdateAvail;
     values['isDownloaded'] = this.contentDownloadable[this.content.identifier];
     values['autoAfterDownload'] = this.downloadAndPlay ? true : false;
-    const contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;
-
-    const telemetryObject = new TelemetryObject(
-      this.content.identifier,
-      this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType,
-      this.content.contentData.pkgVersion,
-    );
 
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
       ImpressionType.DETAIL,
       Environment.HOME,
       PageId.CONTENT_DETAIL,
-      telemetryObject,
+      this.telemetryObject,
       values,
       this.objRollup,
       this.corRelationList);
@@ -617,23 +527,21 @@ export class ContentDetailsPage {
       this.corRelationList);
   }
 
-  generateStartEvent(objectId, objectType, objectVersion) {
-    const telemetryObject = new TelemetryObject(objectId, objectType, objectVersion);
+  generateStartEvent() {
     this.telemetryGeneratorService.generateStartTelemetry(
       PageId.CONTENT_DETAIL,
-      telemetryObject,
+      this.telemetryObject,
       this.objRollup,
       this.corRelationList);
   }
 
-  generateEndEvent(objectId, objectType, objectVersion) {
-    const telemetryObject = new TelemetryObject(objectId, objectType, objectVersion);
+  generateEndEvent() {
     this.telemetryGeneratorService.generateEndTelemetry(
-      objectType,
+      this.telemetryObject.type,
       Mode.PLAY,
       PageId.CONTENT_DETAIL,
       Environment.HOME,
-      telemetryObject,
+      this.telemetryObject,
       this.objRollup,
       this.corRelationList);
   }
@@ -649,19 +557,6 @@ export class ContentDetailsPage {
         telemetryObject,
         undefined,
         this.corRelationList);
-    }
-  }
-
-  /**
-   * It will Dismiss active popup
-   */
-  dismissPopup() {
-    const activePortal = this.ionicApp._modalPortal.getActive() || this.ionicApp._overlayPortal.getActive();
-
-    if (activePortal) {
-      activePortal.dismiss();
-    } else {
-      this.navCtrl.pop();
     }
   }
 
@@ -832,12 +727,11 @@ export class ContentDetailsPage {
         values['network-type'] = this.network.type;
         values['size'] = this.content.contentData.size;
         this.importContent([this.identifier], this.isChildContent);
-        const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
         this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
           this.isUpdateAvail ? InteractSubtype.UPDATE_INITIATE : InteractSubtype.DOWNLOAD_INITIATE,
           Environment.HOME,
           PageId.CONTENT_DETAIL,
-          telemetryObject,
+          this.telemetryObject,
           values,
           this.objRollup,
           this.corRelationList);
@@ -875,12 +769,11 @@ export class ContentDetailsPage {
       const values = new Map();
       const subtype: string = isStreaming ? InteractSubtype.PLAY_ONLINE : InteractSubtype.PLAY_FROM_DEVICE;
       values['networkType'] = this.network.type;
-      const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
       this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
         subtype,
         Environment.HOME,
         PageId.CONTENT_DETAIL,
-        telemetryObject,
+        this.telemetryObject,
         values,
         this.objRollup,
         this.corRelationList);
@@ -888,7 +781,6 @@ export class ContentDetailsPage {
 
     if (!AppGlobalService.isPlayerLaunched && this.userCount > 2 && this.network.type !== '2g') {
       this.openPlayAsPopup(isStreaming);
-      // alert.present();
     } else if (this.network.type === '2g' && !this.contentDownloadable[this.content.identifier]) {
       const popover = this.popoverCtrl.create(SbGenericPopoverComponent, {
         sbPopoverHeading: this.commonUtilService.translateMessage('LOW_BANDWIDTH'),
@@ -958,7 +850,7 @@ export class ContentDetailsPage {
   openPlayAsPopup(isStreaming) {
     const profile = this.appGlobalService.getCurrentUser();
     this.isUsrGrpAlrtOpen = true;
-   // if (profile.board.length > 1) {
+    // if (profile.board.length > 1) {
     const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
       sbPopoverHeading: this.commonUtilService.translateMessage('PLAY_AS'),
       sbPopoverMainTitle: profile.handle,
@@ -1000,82 +892,22 @@ export class ContentDetailsPage {
    * Play content
    */
   playContent(isStreaming: boolean) {
-    // set the boolean to true, so when the content player is closed, we get to know that
-    // we are back from content player
     if (this.apiLevel < 21 && this.appAvailability === 'false') {
       this.showPopupDialog();
     } else {
-      this.downloadAndPlay = false;
-      if (!AppGlobalService.isPlayerLaunched) {
-        AppGlobalService.isPlayerLaunched = true;
-      }
-      this.zone.run(() => {
-        this.isPlayerLaunched = true;
-        const values = new Map();
-
-        values['autoAfterDownload'] = this.downloadAndPlay ? true : false;
-        values['isStreaming'] = isStreaming;
-        const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
-        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-          InteractSubtype.CONTENT_PLAY,
-          Environment.HOME,
-          PageId.CONTENT_DETAIL,
-          telemetryObject,
-          values,
-          this.objRollup,
-          this.corRelationList);
-      });
-
-      if (isStreaming) {
-        const extraInfoMap = { hierarchyInfo: [] };
-        if (this.cardData && this.cardData.hierarchyInfo) {
-          extraInfoMap.hierarchyInfo = this.cardData.hierarchyInfo;
-        } else if (this.hierarchyInfo && this.hierarchyInfo.hierarchyInfo) {
-          extraInfoMap.hierarchyInfo = this.hierarchyInfo.hierarchyInfo;
-        }
-
-        const playContent = this.playingContent;
-      }
-      this.downloadAndPlay = false;
-      const request: any = {};
-      if (isStreaming) {
-        request.streaming = isStreaming;
-      }
-      request['correlationData'] = this.corRelationList;
-
+      const hierachyInfo = this.childContentHandler.contentHierarchyInfo;
+      const contentInfo: ContentInfo = {
+        telemetryObject: this.telemetryObject,
+        rollUp: this.objRollup,
+        correlationList: this.corRelationList,
+        hierachyInfo: hierachyInfo
+      };
       if (this.isResumedCourse) {
-        this.playingContent.hierarchyInfo = this.hierarchyInfo.hierarchyInfo;
+        this.playingContent.hierarchyInfo = hierachyInfo;
       }
-
-      this.playerService.getPlayerConfig(this.playingContent, request).subscribe((data) => {
-        data['data'] = {};
-        if (data.metadata.mimeType === 'application/vnd.ekstep.ecml-archive') {
-          if (!isStreaming) {
-            this.file.checkFile(`file://${data.metadata.basePath}/`, 'index.ecml').then((isAvailable) => {
-              this.canvasPlayerService.xmlToJSon(`${data.metadata.basePath}/index.ecml`).then((json) => {
-                data['data'] = json;
-
-                this.navCtrl.push(PlayerPage, { config: data });
-              }).catch((error) => {
-                console.error('error1', error);
-              });
-            }).catch((err) => {
-              console.error('err', err);
-              this.canvasPlayerService.readJSON(`${data.metadata.basePath}/index.json`).then((json) => {
-                data['data'] = json;
-                this.navCtrl.push(PlayerPage, { config: data });
-              }).catch((e) => {
-                console.error('readJSON error', e);
-              });
-            });
-          } else {
-            this.navCtrl.push(PlayerPage, { config: data });
-          }
-
-        } else {
-          this.navCtrl.push(PlayerPage, { config: data });
-        }
-      });
+      this.contentPlayerHandler.launchContentPlayer(this.playingContent, isStreaming, this.downloadAndPlay, contentInfo);
+      this.downloadAndPlay = false;
+      this.isPlayerLaunched = true;
     }
   }
 
@@ -1100,114 +932,20 @@ export class ContentDetailsPage {
   }
 
   showDeletePopup() {
-    const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
-    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-      InteractSubtype.KEBAB_MENU_CLICKED,
-      Environment.HOME,
-      PageId.CONTENT_DETAIL,
-      telemetryObject,
-      undefined,
-      this.objRollup,
-      this.corRelationList);
-    const confirm = this.popoverCtrl.create(SbPopoverComponent, {
-      content: this.content,
-      isChild: this.isChildContent,
-      objRollup: this.objRollup,
-      pageName: PageId.CONTENT_DETAIL,
-      corRelationList: this.corRelationList,
-      sbPopoverHeading: this.commonUtilService.translateMessage('DELETE'),
-      sbPopoverMainTitle: this.commonUtilService.translateMessage('CONTENT_DELETE'),
-      actionsButtons: [
-        {
-          btntext: this.commonUtilService.translateMessage('REMOVE'),
-          btnClass: 'popover-color'
-        },
-      ],
-      icon: null,
-      metaInfo: this.content.contentData.name,
-      sbPopoverContent: ' 1 item' + ' (' + this.fileSizePipe.transform(this.content.sizeOnDevice, 2) + ')',
-    }, {
-        cssClass: 'sb-popover danger',
-      });
-    confirm.present({
-      ev: event
+    this.contentDeleteObservable = this.contentDeleteHandler.contentDeleteCompleted$.subscribe(() => {
+      this.content.contentData.streamingUrl = this.streamingUrl;
+      this.contentDownloadable[this.content.identifier] = false;
+      const playContent = this.playingContent;
+      playContent.isAvailableLocally = false;
+      this.isDownloadStarted = false;
     });
-    confirm.onDidDismiss((canDelete: any) => {
-      if (canDelete) {
-        this.deleteContent();
-        // this.viewCtrl.dismiss();
-      }
-    });
-  }
-
-  /**
-* Construct content delete request body
-*/
-  getDeleteRequestBody() {
-    const apiParams = {
-      contentDeleteList: [{
-        contentId: (this.content && this.content.identifier) ? this.content.identifier : '',
-        isChildContent: this.isChild
-      }]
+    const contentInfo: ContentInfo = {
+      telemetryObject: this.telemetryObject,
+      rollUp: this.objRollup,
+      correlationList: this.corRelationList,
+      hierachyInfo: undefined
     };
-    return apiParams;
-  }
-
-  showToaster(message) {
-    const toast = this.toastController.create({
-      message: message,
-      duration: 2000,
-      position: 'bottom'
-    });
-    toast.present();
-  }
-
-  getMessageByConstant(constant: string) {
-    let msg = '';
-    this.translate.get(constant).subscribe(
-      (value: any) => {
-        msg = value;
-      }
-    );
-    return msg;
-  }
-
-  deleteContent() {
-    const telemetryObject: TelemetryObject = new TelemetryObject(this.content.identifier,
-      this.content.contentType, this.content.contentData.pkgVersion);
-    this.telemetryGeneratorService.generateInteractTelemetry(
-      InteractType.TOUCH,
-      InteractSubtype.DELETE_CLICKED,
-      Environment.HOME,
-      PageId.CONTENT_DETAIL,
-      telemetryObject,
-      undefined,
-      this.objRollup,
-      this.corRelationList);
-    const tmp = this.getDeleteRequestBody();
-    const loader = this.commonUtilService.getLoader();
-    loader.present();
-    this.contentService.deleteContent(tmp).toPromise().then((res: any) => {
-      loader.dismiss();
-      if (res && res.status === ContentDeleteStatus.NOT_FOUND) {
-        this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
-      } else {
-        // Publish saved resources update event
-        this.events.publish('savedResources:update', {
-          update: true
-        });
-        this.content.contentData.streamingUrl = this.streamingUrl;
-        this.contentDownloadable[this.content.identifier] = false;
-        const playContent = this.playingContent;
-        playContent.isAvailableLocally = false;
-        this.isDownloadStarted = false;
-        this.showToaster(this.getMessageByConstant('MSG_RESOURCE_DELETED'));
-      }
-    }).catch((error: any) => {
-      loader.dismiss();
-      console.log('delete response: ', error);
-      this.showToaster(this.getMessageByConstant('CONTENT_DELETE_FAILED'));
-    });
+    this.contentDeleteHandler.showContentDeletePopup(this.content, this.isChildContent, contentInfo, PageId.CONTENT_DETAIL);
   }
 
   /**
@@ -1240,13 +978,12 @@ export class ContentDetailsPage {
    * @param corRelationList correlation List
    */
   readLessorReadMore(param, objRollup, corRelationList) {
-    const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       param = 'read-more-clicked' === param ? InteractSubtype.READ_MORE_CLICKED : InteractSubtype.READ_LESS_CLICKED,
       Environment.HOME,
       PageId.CONTENT_DETAIL,
       undefined,
-      telemetryObject,
+      this.telemetryObject,
       objRollup,
       corRelationList
     );

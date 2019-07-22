@@ -1,4 +1,4 @@
-import { Rollup, ContentData } from 'sunbird-sdk';
+import { Rollup, ContentData, TelemetryObject } from 'sunbird-sdk';
 export class ContentUtil {
 
 
@@ -61,5 +61,17 @@ export class ContentUtil {
     }
     return appIcon;
   }
+
+  /**
+     * Returns TelemetryObject
+     * @param {any} content
+     * @returns {TelemetryObject}
+     */
+    public static getTelemetryObject(content): TelemetryObject {
+      const identifier = content.identifier;
+      const contentType = content.contentData ? content.contentData.contentType : content.contentType;
+      const pkgVersion = content.contentData ? content.contentData.pkgVersion : content.pkgVersion;
+      return new TelemetryObject(identifier, contentType, pkgVersion);
+    }
 
 }
