@@ -75,7 +75,6 @@ export class ExploreBooksPage implements OnDestroy {
   @ViewChild('searchInput') public searchInputRef: ElementRef;
   @ViewChildren('filteredItems') public filteredItemsQueryList: QueryList<any>;
 
-  JSON = JSON;
   categoryGradeLevels: any;
   subjects: any;
   mimeTypes = [
@@ -299,8 +298,7 @@ export class ExploreBooksPage implements OnDestroy {
   }
 
   onMimeTypeClicked(mimeType, index) {
-    console.log(mimeType);
-    console.log(this.searchForm.value);
+
     this.mimeTypes.forEach((value) => {
       value.selected = false;
     });

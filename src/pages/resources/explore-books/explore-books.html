@@ -25,8 +25,7 @@
     <div class="sb-slider-pills-container">
       <div class="sb-pills-container sb-grade-pills-container">
         <div class="pill" *ngFor="let mimeType of mimeTypes; let i = index; let first = first"
-             [class.active]="JSON.stringify(searchForm.get('mimeType').value) ?
-             JSON.stringify(searchForm.get('mimeType').value) === JSON.stringify(mimeType.value): mimeType.name === 'ALL'"
+             [class.active]="mimeType?.selected"
              (click)="searchForm.get('mimeType').patchValue(mimeType.value); onMimeTypeClicked(mimeType, i)">
             <span class="img-align" *ngIf="mimeType?.iconNormal && mimeType?.selected">
               <img class="filter-icon" src="{{mimeType?.iconActive}}" alt="">
