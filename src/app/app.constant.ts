@@ -97,7 +97,8 @@ export class BatchConstants {
         'creatorFirstName',
         'creatorLastName',
         'identifier',
-        'id'
+        'id',
+        'enrollmentEndDate'
     ];
     // createdFor ,courseAdditionalInfo, participant, updatedDate, createdDate, courseCreator, mentors
 }
