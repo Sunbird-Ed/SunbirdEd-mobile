@@ -1,3 +1,5 @@
+import { TextbookTocService } from './textbook-toc-service';
+import { TextBookTocPage } from './textbook-toc/textbook-toc';
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { CollectionDetailsEtbPage } from './collection-details-etb';
@@ -13,8 +15,9 @@ import { ContentShareHandler } from '@app/service/content/content-share-handler'
 @NgModule({
   declarations: [
     CollectionDetailsEtbPage,
+    TextBookTocPage
   ],
-  entryComponents: [],
+  entryComponents: [TextBookTocPage],
   imports: [
     IonicPageModule.forChild(CollectionDetailsEtbPage),
     TranslateModule.forChild(),
@@ -24,9 +27,12 @@ import { ContentShareHandler } from '@app/service/content/content-share-handler'
     Ionic2RatingModule,
     PipesModule
   ],
-  providers: [ContentShareHandler],
+  providers: [
+    ContentShareHandler, 
+    TextbookTocService],
   exports: [
-    CollectionDetailsEtbPage
+    CollectionDetailsEtbPage,
+    TextBookTocPage
   ]
 })
 export class CollectionDetailsEtbPageModule { }

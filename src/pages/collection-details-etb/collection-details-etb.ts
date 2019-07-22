@@ -1,9 +1,8 @@
+import { TextBookTocPage } from './textbook-toc/textbook-toc';
 import { ActiveDownloadsPage } from './../active-downloads/active-downloads';
-import { Component, Inject, NgZone, OnInit, ViewChild } from '@angular/core';
-import { Content as iContent } from 'ionic-angular';
-import {
-  Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController, ViewController
-} from 'ionic-angular';
+import {Component, Inject, NgZone, ViewChild, OnInit, ElementRef, ViewChildren, QueryList, ChangeDetectorRef} from '@angular/core';
+import { Content as iContent, ScrollEvent } from 'ionic-angular';
+import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController, ViewController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
@@ -31,6 +30,7 @@ import { FileSizePipe } from '@app/pipes/file-size/file-size';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 import { ComingSoonMessageService } from '@app/service/coming-soon-message.service';
 import { ContentShareHandler } from '@app/service/content/content-share-handler';
+import { TextbookTocService } from './textbook-toc-service';
 
 /**
  * Generated class for the CollectionDetailsEtbPage page.
@@ -47,6 +47,8 @@ declare const cordova;
 })
 export class CollectionDetailsEtbPage implements OnInit {
 
+  @ViewChildren('filteredItems') public filteredItemsQueryList: QueryList<any>;
+
   facets: any;
   selected: boolean;
   isSelected: boolean;
@@ -57,8 +59,20 @@ export class CollectionDetailsEtbPage implements OnInit {
   };
 
   contentDetail?: Content;
-  childrenData: Array<any>;
-
+  childrenData?: Array<any>;
+  mimeTypes = [
+    { name: 'ALL', selected: true, value: ['all'], iconNormal: '', iconActive: ''},
+    { name: 'VIDEOS', value: ['video/mp4', 'video/x-youtube', 'video/webm'], iconNormal: './assets/imgs/Play.svg',
+    iconActive: './assets/imgs/Play-active.svg'},
+    { name: 'DOCS', value: ['application/pdf', 'application/epub', 'application/msword'], iconNormal: './assets/imgs/Doc.svg',
+    iconActive: './assets/imgs/Doc-active.svg'},
+    { name: 'INTERACTION',
+      value: ['application/vnd.ekstep.ecml-archive', 'application/vnd.ekstep.h5p-archive', 'application/vnd.ekstep.html-archive'],
+      iconNormal: './assets/imgs/Touch.svg', iconActive: './assets/imgs/Touch-active.svg'
+    },
+    // { name: 'AUDIOS', value: MimeType.AUDIO, iconNormal: './assets/imgs/Audio.svg', iconActive: './assets/imgs/Audio-active.svg'},
+  ];
+  activeMimeTypeFilter = ['all'];
   /**
    * Show loader while importing content
    */
@@ -197,17 +211,21 @@ export class CollectionDetailsEtbPage implements OnInit {
   headerObservable: any;
   breadCrumb = new Map();
   scrollPosition = 0;
-
+  currentFilter: string = 'ALL';
   // Local Image
   localImage = '';
   @ViewChild(Navbar) navBar: Navbar;
   @ViewChild(iContent) ionContent: iContent;
+  @ViewChild('stickyPillsRef') stickyPillsRef: ElementRef;
   private eventSubscription: Subscription;
 
   showDownload: boolean;
   networkSubscription: any;
   toast: any;
   contentTypesCount: any;
+  stckyUnitTitle?: string;
+  isChapterVisible = false;
+
   constructor(
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     @Inject('EVENTS_BUS_SERVICE') private eventBusService: EventsBusService,
@@ -231,7 +249,9 @@ export class CollectionDetailsEtbPage implements OnInit {
     private fileSizePipe: FileSizePipe,
     private headerService: AppHeaderService,
     private comingSoonMessageService: ComingSoonMessageService,
-    private contentShareHandler: ContentShareHandler
+    private contentShareHandler: ContentShareHandler,
+    private changeDetectionRef: ChangeDetectorRef,
+    private textbookTocService: TextbookTocService
   ) {
     this.objRollup = new Rollup();
     this.checkLoggedInOrGuestUser();
@@ -249,6 +269,11 @@ export class CollectionDetailsEtbPage implements OnInit {
   ngOnInit() {
   }
 
+  ionViewDidLoad() {
+    window['scrollWindow'] = this.ionContent;
+    this.registerDeviceBackButton();
+  }
+
   /**
    * Ionic life cycle hook
    */
@@ -264,7 +289,6 @@ export class CollectionDetailsEtbPage implements OnInit {
       this.headerService.updatePageConfig(this.headerConfig);
       this.resetVariables();
       this.cardData = this.navParams.get('content');
-      console.log('this.cardData', this.cardData);
       this.corRelationList = this.navParams.get('corRelation');
       const depth = this.navParams.get('depth');
       this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
@@ -273,6 +297,7 @@ export class CollectionDetailsEtbPage implements OnInit {
       this.isAlreadyEnrolled = this.navParams.get('isAlreadyEnrolled');
       this.isChildClickable = this.navParams.get('isChildClickable');
       this.facets = this.facets = this.navParams.get('facets');
+      this.shownGroup = null;
 
       // check for parent content
       this.parentContent = this.navParams.get('parentContent');
@@ -356,11 +381,12 @@ export class CollectionDetailsEtbPage implements OnInit {
       isCollapsed = false;
       this.shownGroup = null;
     } else {
+      isCollapsed = false;
       this.shownGroup = group;
     }
     const values = new Map();
     values['isCollapsed'] = isCollapsed;
-    const telemetryObject = new TelemetryObject(content.identifier, ContentType.TEXTBOOK_UNIT, content.contentData.pkgVersion);
+    const telemetryObject = new TelemetryObject(content.identifier, ContentType.TEXTBOOK_UNIT, content.pkgVersion);
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.UNIT_CLICKED,
@@ -379,8 +405,6 @@ export class CollectionDetailsEtbPage implements OnInit {
   }
 
   changeValue(event, text) {
-    console.log('EVENT Thrown', event);
-    console.log('Tetx Inside ChnageValue', text);
     if (!text) {
       this.isSelected = false;
     } else {
@@ -452,8 +476,7 @@ export class CollectionDetailsEtbPage implements OnInit {
         .then((userType) => {
           this.profileType = userType;
         })
-        .catch((error) => {
-          console.error('Error Occurred', error);
+        .catch(() => {
           this.profileType = '';
         });
     }
@@ -482,8 +505,7 @@ export class CollectionDetailsEtbPage implements OnInit {
           });
         });
       })
-      .catch((error: any) => {
-        console.log('error while loading content details', error);
+      .catch(() => {
         loader.dismiss();
         this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
         this.navCtrl.pop();
@@ -707,7 +729,6 @@ export class CollectionDetailsEtbPage implements OnInit {
       })
       .catch((error: any) => {
         this.zone.run(() => {
-          console.log('error while loading content details', error);
           // if (this.isDownloadStarted) {
           this.showDownloadBtn = true;
           this.isDownloadStarted = false;
@@ -741,7 +762,11 @@ export class CollectionDetailsEtbPage implements OnInit {
         this.zone.run(() => {
           if (data && data.children) {
             this.breadCrumb.set(data.identifier, data.contentData.name);
+            if (this.textbookTocService.textbookIds.rootUnitId && this.activeMimeTypeFilter !== ['all']) {
+              this.onFilterMimeTypeChange(this.mimeTypes[0].value, 0, this.mimeTypes[0].name);
+            }
             this.childrenData = data.children;
+            this.changeDetectionRef.detectChanges();
           }
 
           if (!this.isDepthChild) {
@@ -750,6 +775,26 @@ export class CollectionDetailsEtbPage implements OnInit {
             this.getContentsSize(data.children || []);
           }
           this.showChildrenLoader = false;
+          const divElement = this.filteredItemsQueryList.find((f) => f.nativeElement.id);
+          let carouselIndex = this.childrenData
+            .findIndex((d: Content) => {
+                return divElement.nativeElement.id === d.identifier;
+            });
+
+          if (this.textbookTocService.textbookIds.rootUnitId) {
+            carouselIndex = this.childrenData.findIndex((content) => this.textbookTocService.textbookIds.rootUnitId === content.identifier);
+            // carouselIndex = carouselIndex > 0 ? carouselIndex : 0;
+          }
+          this.toggleGroup(carouselIndex, this.content);
+          if (this.textbookTocService.textbookIds.contentId) {
+            setTimeout(() => {
+              (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.add('sticky');
+              window['scrollWindow'].getScrollElement().scrollBy(0, 0);
+              document.getElementById(this.textbookTocService.textbookIds.contentId).scrollIntoView();
+              window['scrollWindow'].getScrollElement().scrollBy(0, -155);
+              this.textbookTocService.resetTextbookIds();
+            }, 0);
+          }
           this.telemetryGeneratorService.generateInteractTelemetry(
             InteractType.OTHER,
             InteractSubtype.IMPORT_COMPLETED,
@@ -763,7 +808,7 @@ export class CollectionDetailsEtbPage implements OnInit {
           this.showChildrenLoader = false;
         });
       });
-    this.ionContent.scrollTo(0, this.scrollPosition);
+    // this.ionContent.scrollTo(0, this.scrollPosition);
   }
 
   getContentsSize(data) {
@@ -861,7 +906,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     this.refreshHeader();
     this.downloadProgress = 0;
     this.cardData = '';
-    this.childrenData = [];
+    this.childrenData;
     this.contentDetail = undefined;
     this.showDownload = false;
     this.showDownloadBtn = false;
@@ -1279,9 +1324,8 @@ export class CollectionDetailsEtbPage implements OnInit {
         this.commonUtilService.showToast('MSG_RESOURCE_DELETED');
         this.viewCtrl.dismiss('delete.success');
       }
-    }).catch((error: any) => {
+    }).catch(() => {
       loader.dismiss();
-      console.log('delete response: ', error);
       this.commonUtilService.showToast('CONTENT_DELETE_FAILED');
       this.viewCtrl.dismiss();
     });
@@ -1314,5 +1358,69 @@ export class CollectionDetailsEtbPage implements OnInit {
       Environment.HOME,
       PageId.COLLECTION_DETAIL);
     this.navCtrl.push(ActiveDownloadsPage);
+  }
+
+  async onFilterMimeTypeChange(val, idx, currentFilter?) {
+    const values = new Map();
+    values['filter'] = currentFilter;
+    this.activeMimeTypeFilter = val;
+    this.currentFilter = this.commonUtilService.translateMessage(currentFilter);
+    this.mimeTypes.forEach((type) => {
+      type.selected = false;
+    });
+    this.mimeTypes[idx].selected = true;
+    this.filteredItemsQueryList.changes
+      .do((v) => {
+        this.changeDetectionRef.detectChanges();
+        values['contentLength'] = v.length;
+      })
+      .subscribe();
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.FILTER_CLICKED,
+      Environment.HOME,
+      PageId.COLLECTION_DETAIL,
+      undefined,
+      values);
+  }
+
+  openTextbookToc() {
+    this.shownGroup = null;
+    this.navCtrl.push(TextBookTocPage, {
+      childrenData: this.childrenData,
+      parentId: this.identifier
+    });
+    const values = new Map();
+    values['selectChapterVisible'] = this.isChapterVisible;
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.DROPDOWN_CLICKED,
+      Environment.HOME,
+      PageId.COLLECTION_DETAIL,
+      undefined,
+      values
+    );
+  }
+
+  onScroll(event: ScrollEvent) {
+    const titles = document.querySelectorAll('[data-sticky-unit]');
+
+    const currentTitle = Array.from(titles).filter((title) => {
+      return title.getBoundingClientRect().top < 150;
+    }).slice(-1)[0];
+
+    if (currentTitle) {
+      this.isChapterVisible = true;
+      this.zone.run(() => {
+        this.stckyUnitTitle = currentTitle.getAttribute('data-sticky-unit');
+      });
+    }
+
+    if (event.scrollTop >= 205) {
+      (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.add('sticky');
+      return;
+    }
+
+    (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.remove('sticky');
   }
 }
