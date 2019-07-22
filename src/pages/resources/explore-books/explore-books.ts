@@ -1,14 +1,4 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  Inject,
-  NgZone,
-  OnDestroy,
-  QueryList,
-  ViewChild,
-  ViewChildren
-} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, Inject, NgZone, OnDestroy, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {IonicPage, NavController, NavParams, Platform, ModalController, ViewController} from 'ionic-angular';
 import {AudienceFilter, Map, MimeType, Search} from "@app/app";
 import {
@@ -109,8 +99,6 @@ export class ExploreBooksPage implements OnDestroy {
       iconNormal: './assets/imgs/touch.svg', iconActive: './assets/imgs/touch-active.svg'
     }
   ];
-  activeMimeTypeFilter = ['all'];
-  currentFilter: string;
   headerObservable: any;
   unregisterBackButton: any;
   selectedLanguageCode = '';
@@ -269,10 +257,6 @@ export class ExploreBooksPage implements OnDestroy {
         content: content
       });
     }
-
-  }
-
-  onFilterMimeTypeChange(val, idx, currentFilter?) {
 
   }
 
