@@ -10,8 +10,11 @@ import {
   PageId
 } from "@app/service/telemetry-constants";
 import {
-  ContentSearchCriteria, ContentSearchResult,
+  ContentSearchCriteria,
+  ContentSearchFilter,
+  ContentSearchResult,
   ContentService,
+  FilterValue,
   FrameworkUtilService,
   ProfileType,
   SearchType,
@@ -117,6 +120,9 @@ export class ExploreBooksPage implements OnDestroy {
     'query': new FormControl('', {updateOn: 'submit'}),
     'mimeType': new FormControl([this.mimeTypeValue])
   });
+  layoutName = 'explore';
+  boardList: Array<FilterValue>;
+  mediumList: Array<FilterValue>;
 
   constructor(
     public navCtrl: NavController,
@@ -132,8 +138,9 @@ export class ExploreBooksPage implements OnDestroy {
     @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
     @Inject('SHARED_PREFERENCES') private sharedPreferences: SharedPreferences,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
+    private platform: Platform,
+
   ) {
-    this.handleBackButton();
   }
 
   async ionViewDidLoad() {
@@ -148,6 +155,8 @@ export class ExploreBooksPage implements OnDestroy {
     this.searchFormSubscription = this.onSearchFormChange().subscribe();
 
     this.searchForm.get('framework').patchValue(await this.sharedPreferences.getString('sunbirdcurrent_framework_id').toPromise());
+
+    this.handleBackButton();
 
   }
 
@@ -164,7 +173,7 @@ export class ExploreBooksPage implements OnDestroy {
       ImpressionSubtype.EXPLORE_MORE_CONTENT,
       PageId.EXPLORE_MORE_CONTENT,
       Environment.HOME
-    )
+    );
   }
 
   ngOnDestroy(): void {
@@ -174,17 +183,23 @@ export class ExploreBooksPage implements OnDestroy {
   }
 
   handleBackButton() {
-
+    this.unregisterBackButton = this.platform.registerBackButtonAction(() => {
+      this.telemetryGeneratorService.generateInteractTelemetry(
+        InteractType.TOUCH,
+        InteractSubtype.DEVICE_BACK_CLICKED,
+        Environment.HOME,
+        PageId.EXPLORE_MORE_CONTENT,
+      );
+      this.navCtrl.pop();
+      this.unregisterBackButton();
+    }, 10);
   }
 
   handleHeaderEvents($event) {
-    switch ($event.name) {
-      case 'back':
-        // this.telemetryGeneratorService.generateBackClickedTelemetry(
-        // PageId.ONBOARDING_PROFILE_PREFERENCES, Environment.ONBOARDING, true);
-        // this.dismissPopup();
-        this.navCtrl.pop();
-        break;
+    if ($event.name === 'back') {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(
+      PageId.EXPLORE_MORE_CONTENT, Environment.HOME, true);
+      this.navCtrl.pop();
     }
   }
 
@@ -229,7 +244,11 @@ export class ExploreBooksPage implements OnDestroy {
       .do((result: ContentSearchResult) => {
         this.zone.run(() => {
           if (result) {
+            let facetFilters: Array<ContentSearchFilter>;
             this.showLoader = false;
+            facetFilters = result.filterCriteria.facetFilters;
+
+            this.fetchingBoardMediumList(facetFilters);
             this.contentSearchResult = result.contentDataList;
             value['searchResult'] = this.contentSearchResult.length;
           }
@@ -263,12 +282,20 @@ export class ExploreBooksPage implements OnDestroy {
     if (this.headerObservable) {
       this.headerObservable.unsubscribe();
     }
+
+    if (this.unregisterBackButton) {
+      this.unregisterBackButton();
+    }
   }
 
   openSortOptionsModal() {
-    const sortOptionsModal = this.modalCtrl.create(ExploreBooksSort, {searchForm: this.searchForm});
+    const sortOptionsModal = this.modalCtrl.create(ExploreBooksSort,
+      {
+      searchForm: this.searchForm,
+      boardList: this.boardList,
+      mediumList: this.mediumList
+      });
     sortOptionsModal.onDidDismiss(data => {
-      console.log('ondismiss', data);
       if (data) {
         this.searchForm.patchValue({
           'board': data.board,
@@ -304,5 +331,17 @@ export class ExploreBooksPage implements OnDestroy {
     });
 
     this.mimeTypes[index].selected = true;
+  }
+
+  fetchingBoardMediumList(facetFilters) {
+    return facetFilters.filter(value => {
+      if(value.name === 'board') {
+        this.boardList = value.values;
+      }
+
+      if(value.name === 'medium') {
+        this.mediumList = value.values;
+      }
+    });
   }
 }

@@ -55,7 +55,7 @@
   <ng-container *ngFor="let content of contentSearchResult let i = index">
 <!--    <div *ngIf="content | hasMimeType: activeMimeTypeFilter">-->
       <div class="sb-card-container sb-card-textbook-container">
-        <textbook-card [content]="content" [layoutName]='search'
+        <textbook-card [content]="content" [layoutName]='layoutName'
                        (click)="openContent(content, i)"></textbook-card>
       </div>
 <!--    </div>-->
