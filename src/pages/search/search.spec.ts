@@ -16,10 +16,16 @@ import {
   zoneMock,
   appHeaderServiceMock,
   courseServiceMock,
-  popoverCtrlMock
+  popoverCtrlMock,
+  eventBusServiceMock,
+  profileServiceMock,
+  frameworkServiceMock,
+  appVersionMock,
+  changeDetectionRefMock,
+  searchHistoryServiceMock
 } from '../../__tests__/mocks';
 import {SearchPage} from './search';
-import {ProfileType} from 'sunbird';
+import {ProfileType} from 'sunbird-sdk';
 import {FilterPage} from './filters/filter';
 import {AudienceFilter, ContentType, MimeType} from '../../app/app.constant';
 import {EnrolledCourseDetailsPage} from '../enrolled-course-details/enrolled-course-details';
@@ -38,6 +44,15 @@ describe.only('SearchPage', () => {
         searchPage = new SearchPage(
             contentServiceMock as any,
             pageAssembleServiceMock as any,
+            eventBusServiceMock as any,
+            sharedPreferencesMock as any,
+            profileServiceMock as any,
+            frameworkServiceMock as any,
+            formAndFrameworkUtilServiceMock as any,
+            courseServiceMock as any,
+            searchHistoryServiceMock as any,
+            appVersionMock as any,
+            changeDetectionRefMock as any,
             navParamsMock as any,
             navCtrlMock as any,
             zoneMock as any,
@@ -46,13 +61,10 @@ describe.only('SearchPage', () => {
             eventsMock as any,
             appGlobalServiceMock as any,
             platformMock as any,
-            formAndFrameworkUtilServiceMock as any,
             commonUtilServiceMock as any,
             telemetryGeneratorServiceMock as any,
-            sharedPreferencesMock as any,
             translateServiceMock as any,
             appHeaderServiceMock as any,
-            courseServiceMock as any,
             popoverCtrlMock as any
         );
         searchPage.loader = {

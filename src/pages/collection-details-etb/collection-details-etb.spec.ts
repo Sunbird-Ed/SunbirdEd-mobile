@@ -15,35 +15,65 @@ import {
   socialSharingMock,
   telemetryGeneratorServiceMock,
   translateServiceMock,
-  zoneMock
+  zoneMock,
+  comingSoonMessageServiceMock
 } from '@app/__tests__/mocks';
 import {mockRes} from '@app/pages/collection-details-etb/collection-details-etb.spec.data';
 import {ShareUrl} from '@app/app';
 import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
 import {ContentDetailsPage} from '@app/pages/content-details/content-details';
 import 'jest';
+import { utilityServiceMock,
+   viewControllerMock,
+   toastControllerMock,
+   fileSizePipeMock,
+   headerServiceMock,
+   contentShareHandlerMock,
+   eventBusServiceMock,
+   profileServiceMock,
+   storageServiceMock} from '../../__tests__/mocks';
 
 describe('CollectionDetailsPage Component', () => {
   let collectionDetailsPage: CollectionDetailsEtbPage;
 
   beforeEach(() => {
     appGlobalServiceMock.isUserLoggedIn.mockReturnValue(true);
-    buildParamServiceMock.getBuildConfigParam.mockResolvedValue('SOME_URL');
+    // buildParamServiceMock.getBuildConfigParam.mockResolvedValue('SOME_URL');
 
-    collectionDetailsPage = new CollectionDetailsEtbPage(navCtrlMock as any, navParamsMock as any,
-      contentServiceMock as any, zoneMock as any, eventsMock as any, popoverCtrlMock as any, fileUtilMock as any,
-      platformMock as any, translateServiceMock as any, socialSharingMock as any, shareUtilMock as any,
-      buildParamServiceMock as any, appGlobalServiceMock as any, commonUtilServiceMock as any,
-      telemetryGeneratorServiceMock as any, courseUtilServiceMock as any);
+    collectionDetailsPage = new CollectionDetailsEtbPage(
+      contentServiceMock as any,
+      eventBusServiceMock as any,
+      profileServiceMock as any,
+      storageServiceMock as any,
+      navCtrlMock as any,
+      navParamsMock as any,
+      zoneMock as any,
+      eventsMock as any,
+      popoverCtrlMock as any,
+      platformMock as any,
+      translateServiceMock as any,
+      socialSharingMock as any,
+      appGlobalServiceMock as any,
+      commonUtilServiceMock as any,
+      telemetryGeneratorServiceMock as any,
+      courseUtilServiceMock as any,
+      utilityServiceMock as any,
+      viewControllerMock as any,
+      toastControllerMock as any,
+      fileSizePipeMock as any,
+      headerServiceMock as any,
+      comingSoonMessageServiceMock as any,
+      contentShareHandlerMock as any
+      );
 
     jest.resetAllMocks();
   });
 
   it('should create a valid instance of CollectionDetailsPage', () => {
-    expect(collectionDetailsPage).not.toBeFalsy();
+    expect(collectionDetailsPage).toBeTruthy();
   });
 
-  it('should set content details', () => {
+  it.only('should set content details', () => {
     // arrange
     spyOn(collectionDetailsPage, 'resetVariables').and.stub();
     spyOn(collectionDetailsPage, 'subscribeSdkEvent').and.stub();
@@ -65,7 +95,7 @@ describe('CollectionDetailsPage Component', () => {
     expect(collectionDetailsPage.setContentDetails).toHaveBeenCalledWith('SOME_IDENTIFIER', true);
   });
 
-  it('should extract content details api response: when content locally available', (done) => {
+  it.only('should extract content details api response: when content locally available', (done) => {
     // arrange
     spyOn(collectionDetailsPage, 'importContent').and.stub();
     spyOn(collectionDetailsPage, 'setChildContents').and.stub();

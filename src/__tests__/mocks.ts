@@ -72,6 +72,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { ProfileSwitchHandler } from '@app/service/user-groups/profile-switch-handler';
 import { ContentShareHandler } from '@app/service/content/content-share-handler';
 import { RatingHandler } from '@app/service/rating/rating-handler';
+import { ComingSoonMessageService } from '@app/src/service';
 
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
@@ -93,7 +94,8 @@ export const courseServiceMock = createSpyObj<CourseService>([
   'getCourseBatches',
   'getBatchDetails',
   'getContentState',
-  'unenrolCourse'
+  'unenrollCourse',
+  'subscribe'
 ]);
 
 export const navCtrlMock = createSpyObj<NavController>([
@@ -192,7 +194,8 @@ export const contentServiceMock = createSpyObj<ContentService>([
   'getContentSpaceUsageSummary',
   'clearContentDeleteQueue',
   'enqueueContentDelete',
-  'getContentDeleteQueue'
+  'getContentDeleteQueue',
+  'getContentDetails'
 ]);
 
 export const popoverCtrlMock = createSpyObj<PopoverController>([
@@ -233,7 +236,8 @@ export const shareUtilMock = createSpyObj<UtilityService>([
 export const buildParamServiceMock = createSpyObj<UtilityService>([
   'getBuildConfigValue',
   'getDeviceAPILevel',
-  'checkAppAvailability'
+  'checkAppAvailability',
+  'getBuildConfigParam'
 ]);
 export const headerServiceMock = createSpyObj<AppHeaderService>([
   'showHeaderWithBackButton',
@@ -317,7 +321,8 @@ export const formAndFrameworkUtilServiceMock = createSpyObj<FormAndFrameworkUtil
   'getCourseFrameworkId',
   'getRootOrganizations',
   'getCustodianOrgId',
-  'getConsumptionFaqsUrl'
+  'getConsumptionFaqsUrl',
+  'getSupportedContentFilterConfig'
 ]);
 
 export const loadingControllerMock = createSpyObj<LoadingController>([
@@ -467,7 +472,9 @@ export const utilityServiceMock = createSpyObj<UtilityService>([
   'getUtmInfo',
   'clearUtmInfo',
   'getDeviceAPILevel',
-  'checkAppAvailability'
+  'checkAppAvailability',
+  'getBuildConfigParam',
+  'getBuildConfigValue'
 ]);
 export const appRatingServiceMock = createSpyObj<AppRatingService>([
   'setInitialDate',
@@ -572,3 +579,6 @@ export const contentShareHandlerMock = createSpyObj<ContentShareHandler>([
   'getEntries'
  ]);
 
+ export const comingSoonMessageServiceMock = createSpyObj<ComingSoonMessageService>([
+   'getComingSoonMessage'
+ ]);
