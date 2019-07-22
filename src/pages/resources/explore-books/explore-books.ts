@@ -1,4 +1,14 @@
-import {ChangeDetectorRef, Component, ElementRef, Inject, NgZone, OnDestroy, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Inject,
+  NgZone,
+  OnDestroy,
+  QueryList,
+  ViewChild,
+  ViewChildren
+} from '@angular/core';
 import {IonicPage, NavController, NavParams, Platform, ModalController, ViewController} from 'ionic-angular';
 import {AudienceFilter, Map, MimeType, Search} from "@app/app";
 import {
@@ -10,7 +20,6 @@ import {
   PageId
 } from "@app/service/telemetry-constants";
 import {
-  Content,
   ContentSearchCriteria, ContentSearchResult,
   ContentService,
   FrameworkUtilService,
@@ -25,7 +34,7 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Observable, Subscription} from "rxjs";
 import {CollectionDetailsEtbPage} from "@app/pages/collection-details-etb/collection-details-etb";
 import {ContentDetailsPage} from "@app/pages/content-details/content-details";
-import { ExploreBooksSort } from '../explore-books-sort/explore-books-sort';
+import {ExploreBooksSort} from '../explore-books-sort/explore-books-sort';
 
 
 @IonicPage()
@@ -76,6 +85,7 @@ export class ExploreBooksPage implements OnDestroy {
   @ViewChild('searchInput') public searchInputRef: ElementRef;
   @ViewChildren('filteredItems') public filteredItemsQueryList: QueryList<any>;
 
+  JSON = JSON;
   categoryGradeLevels: any;
   subjects: any;
   mimeTypes = [
@@ -109,6 +119,7 @@ export class ExploreBooksPage implements OnDestroy {
   contentSearchResult: Array<any> = [];
   showLoader = false;
   searchFormSubscription?: Subscription;
+  mimeTypeValue: any;
 
   searchForm: FormGroup = new FormGroup({
     'framework': new FormControl(null, Validators.required),
@@ -117,6 +128,7 @@ export class ExploreBooksPage implements OnDestroy {
     'board': new FormControl([]),
     'medium': new FormControl([]),
     'query': new FormControl('', {updateOn: 'submit'}),
+    'mimeType': new FormControl([this.mimeTypeValue])
   });
 
   constructor(
@@ -260,41 +272,9 @@ export class ExploreBooksPage implements OnDestroy {
 
   }
 
-  async onFilterMimeTypeChange(val, idx, currentFilter?) {
-    const values = new Map();
-    values['filter'] = currentFilter;
-    this.activeMimeTypeFilter = val;
-    this.currentFilter = this.commonUtilService.translateMessage(currentFilter);
-    this.mimeTypes.forEach((type) => {
-      type.selected = false;
-    });
-    this.mimeTypes[idx].selected = true;
-    this.filteredItemsQueryList.changes
-      .do((v) => {
-        this.changeDetectionRef.detectChanges();
-        values['contentLength'] = v.length;
-      })
-      .subscribe();
-    // this.telemetryGeneratorService.generateInteractTelemetry(
-    //   InteractType.TOUCH,
-    //   InteractSubtype.FILTER_CLICKED,
-    //   Environment.HOME,
-    //   PageId.COLLECTION_DETAIL,
-    //   undefined,
-    //   values);
-  }
+  onFilterMimeTypeChange(val, idx, currentFilter?) {
 
-  // generateClassInteractTelemetry(currentClass: string, previousClass: string) {
-  //   const values = new Map();
-  //   values['currentSelected'] = currentClass;
-  //   values['previousSelected'] = previousClass;
-  //   this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-  //     InteractSubtype.CLASS_CLICKED,
-  //     Environment.HOME,
-  //     PageId.LIBRARY,
-  //     undefined,
-  //     values);
-  // }
+  }
 
   ionViewWillLeave() {
     if (this.headerObservable) {
@@ -303,7 +283,7 @@ export class ExploreBooksPage implements OnDestroy {
   }
 
   openSortOptionsModal() {
-    const sortOptionsModal = this.modalCtrl.create(ExploreBooksSort, { searchForm: this.searchForm });
+    const sortOptionsModal = this.modalCtrl.create(ExploreBooksSort, {searchForm: this.searchForm});
     sortOptionsModal.onDidDismiss(data => {
       console.log('ondismiss', data);
       if (data) {
@@ -332,5 +312,15 @@ export class ExploreBooksPage implements OnDestroy {
     );
 
     sortOptionsModal.present();
+  }
+
+  onMimeTypeClicked(mimeType, index) {
+    console.log(mimeType);
+    console.log(this.searchForm.value);
+    this.mimeTypes.forEach((value) => {
+      value.selected = false;
+    });
+
+    this.mimeTypes[index].selected = true;
   }
 }
