@@ -13,7 +13,7 @@ import {
 } from '@app/__tests__/mocks';
 import {PreferenceKey} from '@app/app';
 
-import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from 'sunbird';
+import {Environment, ImpressionType, InteractSubtype, InteractType, PageId} from '@app/service/telemetry-constants';
 import {OnboardingPage} from '@app/pages/onboarding/onboarding';
 import {UserTypeSelectionPage} from '@app/pages/user-type-selection';
 
@@ -158,7 +158,7 @@ describe('LanguageSettingsPage', () => {
   });
 
   describe('onLanguageSelected', () => {
-    it('should set button color to #8FC4FF if language not selected', () => {
+    it('should set button color to #8FC4FF if language selected', () => {
       // arrange
       languageSettingsPage.language = false;
 
@@ -170,7 +170,7 @@ describe('LanguageSettingsPage', () => {
       expect(languageSettingsPage.btnColor).toEqual('#8FC4FF');
     });
 
-    it('should set button color to #8FC4FF if language not selected', () => {
+    it('should set button color to #006DE5 if language not selected', () => {
       // arrange
       languageSettingsPage.language = true;
 
