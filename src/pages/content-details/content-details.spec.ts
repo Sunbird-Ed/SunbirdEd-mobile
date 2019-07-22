@@ -5,8 +5,6 @@ import {
   zoneMock,
   eventsMock,
   popoverCtrlMock,
-  sharedPreferencesMock,
-  socialSharingMock,
   platformMock,
   appGlobalServiceMock,
   ionicAppMock,
@@ -34,12 +32,16 @@ import {
   profileSwitchHandlerMock,
   appVersionMock,
   ratingHandlerMock,
-  contentShareHandlerMock
+  contentShareHandlerMock,
+  contentPlayerHandlerMock,
+  childContentHandlerMock,
+  contentDeleteHandlerMock
 } from '../../__tests__/mocks';
 import { Observable, Subscription } from 'rxjs';
 import 'jest';
 import { PreferenceKey } from '../../app';
 import { ContentDetailsPage } from './content-details';
+import { TelemetryObject } from 'sunbird-sdk';
 
 describe('ContentDetailsPage Component', () => {
   let contentDetailsPage: ContentDetailsPage;
@@ -56,8 +58,6 @@ describe('ContentDetailsPage Component', () => {
       profileServiceMock as any,
       contentServiceMock as any,
       eventBusServiceMock as any,
-      sharedPreferencesMock as any,
-      playerServiceMock as any,
       storageServiceMock as any,
       navCtrlMock as any,
       navParamsMock as any,
@@ -66,22 +66,21 @@ describe('ContentDetailsPage Component', () => {
       popoverCtrlMock as any,
       platformMock as any,
       appGlobalServiceMock as any,
-      ionicAppMock as any,
       telemetryGeneratorServiceMock as any,
       commonUtilServiceMock as any,
       courseUtilServiceMock as any,
-      canvasPlayerServiceMock as any,
-      fileMock as any,
       utilityServiceMock as any,
       networkMock as any,
       toastControllerMock as any,
       fileSizePipeMock as any,
-      translateServiceMock as any,
       appHeaderServiceMock as any,
       contentShareHandlerMock as any,
       appVersionMock as any,
       profileSwitchHandlerMock as any,
-      ratingHandlerMock as any
+      ratingHandlerMock as any,
+      contentPlayerHandlerMock as any,
+      childContentHandlerMock as any,
+      contentDeleteHandlerMock as any
     );
 
     jest.resetAllMocks();
@@ -113,6 +112,7 @@ describe('ContentDetailsPage Component', () => {
   it('should be called handleNavBackButton()', () => {
     // arrange
     contentDetailsPage.cardData = { identifier: 'SAMPLE_IDENTIFIER' };
+    contentDetailsPage.telemetryObject = new TelemetryObject('SAMPLE_ID', 'Resource', '1');
     // act
     contentDetailsPage.shouldGenerateEndTelemetry = true;
     contentDetailsPage.handleNavBackButton();
@@ -124,14 +124,9 @@ describe('ContentDetailsPage Component', () => {
 
   it('should be called handleDeviceBackButton()', () => {
     // arrange
-    ionicAppMock._modalPortal = {
-      getActive: jest.fn()
-    };
-    ionicAppMock._overlayPortal = {
-      getActive: jest.fn()
-    };
     platformMock.registerBackButtonAction.mockReturnValue(jest.fn());
     contentDetailsPage.cardData = { identifier: 'SAMPLE_IDENTIFIER' };
+    contentDetailsPage.telemetryObject = new TelemetryObject('SAMPLE_ID', 'Resource', '1');
     contentDetailsPage.shouldGenerateEndTelemetry = true;
     // spyOn(contentDetail).and.stub();
 
