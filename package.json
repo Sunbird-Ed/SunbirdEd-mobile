@@ -254,6 +254,7 @@
       "src/pages/user-and-groups/group-details/group-details.spec.ts",
       "src/pages/collection-details-etb/collection-details-etb.spec.ts",
       "src/pages/collection-details/collection-details.spec.ts",
+      "src/pages/download-manager/download-manager.spec.ts",
       "src/pages/search/filters/options/option.spec.ts"
     ],
     "testMatch": [
