@@ -1009,7 +1009,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       subjects: this.subjects,
       categoryGradeLevels: this.categoryGradeLevels,
       storyAndWorksheets: this.storyAndWorksheets,
-      contentType: ContentType.FOR_LIBRARY_TAB
+      contentType: ContentType.FOR_LIBRARY_TAB,
+      selectedGrade: this.getGroupByPageReq.grade,
+      selectedMedium: this.getGroupByPageReq.medium
     });
     const values = new Map();
     values['board'] = this.profile.board[0];
@@ -1022,6 +1024,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       Environment.LIBRARY,
       PageId.LIBRARY,
       undefined,
-      values)
+      values);
   }
 }

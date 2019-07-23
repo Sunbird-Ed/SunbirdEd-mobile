@@ -78,7 +78,7 @@ export class ExploreBooksPage implements OnDestroy {
   @ViewChild('searchInput') public searchInputRef: ElementRef;
   @ViewChildren('filteredItems') public filteredItemsQueryList: QueryList<any>;
 
-  categoryGradeLevels: any;
+  categoryGradeLevels: Array<any>;
   subjects: any;
   mimeTypes = [
     {name: 'ALL', selected: true, value: ['all'], iconNormal: '', iconActive: ''},
@@ -110,6 +110,8 @@ export class ExploreBooksPage implements OnDestroy {
   showLoader = false;
   searchFormSubscription?: Subscription;
   mimeTypeValue: any;
+  selectedGrade: string;
+  selectedMedium: string;
 
   searchForm: FormGroup = new FormGroup({
     'framework': new FormControl(null, Validators.required),
@@ -144,7 +146,10 @@ export class ExploreBooksPage implements OnDestroy {
   }
 
   async ionViewDidLoad() {
+    this.selectedGrade = this.navParams.get('selectedGrade');
+    this.selectedMedium = this.navParams.get('selectedMedium');
     this.categoryGradeLevels = this.navParams.get('categoryGradeLevels');
+    // this.categoryGradeLevels.sort((a, b) => b.count - a.count);
     this.subjects = this.navParams.get('subjects');
     this.subjects.unshift({name: this.commonUtilService.translateMessage('ALL'), selected: true});
 
@@ -154,10 +159,13 @@ export class ExploreBooksPage implements OnDestroy {
 
     this.searchFormSubscription = this.onSearchFormChange().subscribe();
 
-    this.searchForm.get('framework').patchValue(await this.sharedPreferences.getString('sunbirdcurrent_framework_id').toPromise());
-
     this.handleBackButton();
 
+    this.searchForm.patchValue({
+      'grade': this.selectedGrade,
+      'medium': this.selectedMedium,
+      'framework': await this.sharedPreferences.getString('sunbirdcurrent_framework_id').toPromise()
+    });
   }
 
   ionViewWillEnter() {
@@ -218,6 +226,13 @@ export class ExploreBooksPage implements OnDestroy {
     }
   }
 
+  union(arrA: {name: string}[], arrB: {name: string}[]): {name: string}[] {
+    return [
+      ...arrA, ...arrB.filter((bItem) => !arrA.find((aItem) => bItem.name === aItem.name))
+    ];
+  }
+
+
   private onSearchFormChange(): Observable<undefined> {
     const value = new Map();
     return this.searchForm.valueChanges
@@ -239,7 +254,7 @@ export class ExploreBooksPage implements OnDestroy {
 
         value['searchCriteria'] = searchCriteria;
         this.showLoader = true;
-        return this.contentService.searchContent(searchCriteria)
+        return this.contentService.searchContent(searchCriteria);
       })
       .do((result: ContentSearchResult) => {
         this.zone.run(() => {
@@ -249,6 +264,15 @@ export class ExploreBooksPage implements OnDestroy {
             facetFilters = result.filterCriteria.facetFilters;
 
             this.fetchingBoardMediumList(facetFilters);
+            this.showLoader = false;
+            // this.categoryGradeLevels
+            const gradeLevel =  result.filterCriteria.facetFilters.find((f) => f.name === 'gradeLevel').values;
+            gradeLevel.sort((a, b) => b.count - a.count);
+            this.categoryGradeLevels = this.union(this.categoryGradeLevels, gradeLevel);
+            const index = this.categoryGradeLevels.findIndex((grade) => grade.name === this.searchForm.value['grade'][0]);
+            this.classClick(index);
+            this.subjects = result.filterCriteria.facetFilters.find((f) => f.name === 'subject').values;
+            this.subjects.unshift({name: this.commonUtilService.translateMessage('ALL'), selected: true});
             this.contentSearchResult = result.contentDataList;
             value['searchResult'] = this.contentSearchResult.length;
           }
@@ -259,7 +283,7 @@ export class ExploreBooksPage implements OnDestroy {
           Environment.HOME,
           PageId.FILTER_CLICKED,
           undefined,
-          value)
+          value);
       })
       .mapTo(undefined);
   }
@@ -335,13 +359,34 @@ export class ExploreBooksPage implements OnDestroy {
 
   fetchingBoardMediumList(facetFilters) {
     return facetFilters.filter(value => {
-      if(value.name === 'board') {
+      if (value.name === 'board') {
         this.boardList = value.values;
       }
 
-      if(value.name === 'medium') {
+      if (value.name === 'medium') {
         this.mediumList = value.values;
       }
     });
+  }
+
+  classClick(index) {
+    for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
+      if (i === index) {
+        this.categoryGradeLevels[i].selected = 'classAnimate';
+      } else {
+        this.categoryGradeLevels[i].selected = '';
+      }
+    }
+    let el: HTMLElement | null = document.getElementById('class' + index);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'start' });
+    } else {
+      setTimeout(() => {
+        el = document.getElementById('class' + index);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'start' });
+        }
+      }, 1000);
+    }
   }
 }
