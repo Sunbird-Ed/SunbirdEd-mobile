@@ -82,7 +82,7 @@ export class ExploreBooksPage implements OnDestroy {
   subjects: any;
   mimeTypes = [
     {name: 'ALL', selected: true, value: ['all'], iconNormal: '', iconActive: ''},
-    {name: 'TEXTBOOK', value: [], iconNormal: './assets/imgs/book.svg', iconActive: './assets/imgs/book-active.svg'},
+    {name: 'TEXTBOOK', value: [MimeType.COLLECTION], iconNormal: './assets/imgs/book.svg', iconActive: './assets/imgs/book-active.svg'},
     {
       name: 'VIDEOS',
       value: ['video/mp4', 'video/x-youtube', 'video/webm'],
@@ -272,6 +272,7 @@ export class ExploreBooksPage implements OnDestroy {
             const index = this.categoryGradeLevels.findIndex((grade) => grade.name === this.searchForm.value['grade'][0]);
             this.classClick(index);
             this.subjects = result.filterCriteria.facetFilters.find((f) => f.name === 'subject').values;
+            this.subjects.sort((a, b) => b.count - a.count);
             this.subjects.unshift({name: this.commonUtilService.translateMessage('ALL'), selected: true});
             this.contentSearchResult = result.contentDataList;
             value['searchResult'] = this.contentSearchResult.length;
