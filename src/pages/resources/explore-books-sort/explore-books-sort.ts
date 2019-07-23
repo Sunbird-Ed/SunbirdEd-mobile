@@ -1,6 +1,6 @@
 import { FormGroup, FormBuilder } from '@angular/forms';
-import {Component, Inject} from '@angular/core';
-import {NavParams, ViewController, Platform} from 'ionic-angular';
+import {Component, Inject, ViewChild} from '@angular/core';
+import {NavParams, ViewController, Platform, Select} from 'ionic-angular';
 import {TranslateService} from '@ngx-translate/core';
 import { CommonUtilService } from '@app/service/common-util.service';
 import {FilterValue
@@ -11,6 +11,9 @@ import {FilterValue
     templateUrl: 'explore-books-sort.html'
 })
 export class ExploreBooksSort {
+
+    @ViewChild('boardSelect') boardSelect: Select;
+    @ViewChild('mediumSelect') mediumSelect: Select;
 
     categories;
     backButtonFunc = undefined;
@@ -38,6 +41,8 @@ export class ExploreBooksSort {
     }
     ionViewDidLoad() {
         this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+            this.boardSelect.close();
+            this.mediumSelect.close();
             this.viewCtrl.dismiss(null);
             this.backButtonFunc();
         }, 10);
