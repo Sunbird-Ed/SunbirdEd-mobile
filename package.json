@@ -227,6 +227,7 @@
       "src/pages/reports/reports.spec.ts",
       "src/pages/user-type-selection/user-type-selection.spec.ts",
       "src/pages/user-and-groups/share-user-and-groups/share-user-and-groups.spec.ts",
+      "src/pages/language-settings/language-settings.spec.ts",
       "src/pages/settings/datasync/datasync.spec.ts",
       "src/pages/qr-code-result/qr-code-result.spec.ts",
       "src/pages/settings/settings.spec.ts",
@@ -251,6 +252,7 @@
       "src/pages/enrolled-course-details/enrollment-details/enrollment-details.spec.ts",
       "src/component/content-actions/content-actions.component.spec.ts",
       "src/pages/user-and-groups/group-details/group-details.spec.ts",
+      "src/pages/collection-details-etb/collection-details-etb.spec.ts",
       "src/pages/collection-details/collection-details.spec.ts",
       "src/pages/search/filters/options/option.spec.ts"
     ],
