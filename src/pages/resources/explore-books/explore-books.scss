@@ -18,24 +18,29 @@ page-explore-books {
   }
 
   .search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: stretch;
+
     position: relative;
-    padding: 2px 1em;
+    padding: 8px 8px;
+    margin: 1rem 1rem;
+
+    border: 1px solid #80A7CE;
+    border-radius: 4px;
+    background-color: #FFFFFF;
 
     input {
-      width: 100%;
-      border: 1px solid #80A7CE;
-      border-radius: 4px;
-      background-color: #FFFFFF;
-      padding: 8px;
-      margin: 15px 0;
+      border: none;
+      flex-grow: 1;
     }
 
-    ion-icon {
-      position: absolute;
-      right: 0;
-      top: 29px;
-      margin-right: 2em;
-      color: #999999;
+    button {
+      flex-shrink: 0;
+
+      ion-icon {
+        color: #999999;
+      }
     }
   }
 

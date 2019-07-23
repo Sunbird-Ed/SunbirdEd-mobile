@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, ElementRef, Inject, NgZone, OnDestroy, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {IonicPage, NavController, NavParams, Platform, ModalController, ViewController} from 'ionic-angular';
-import {AudienceFilter, Map, MimeType, Search} from "@app/app";
+import {AudienceFilter, ContentType, Map, MimeType, Search} from "@app/app";
 import {
   Environment,
   ImpressionSubtype,
@@ -112,6 +112,7 @@ export class ExploreBooksPage implements OnDestroy {
   mimeTypeValue: any;
   selectedGrade: string;
   selectedMedium: string;
+  selectedContentType = 'all';
 
   searchForm: FormGroup = new FormGroup({
     'framework': new FormControl(null, Validators.required),
@@ -245,13 +246,12 @@ export class ExploreBooksPage implements OnDestroy {
           ...this.searchForm.getRawValue(),
           query: this.searchInputRef.nativeElement['value'],
           searchType: SearchType.SEARCH,
-          contentTypes: this.contentType,
+          contentTypes: this.selectedContentType === ContentType.TEXTBOOK ? [ContentType.TEXTBOOK] : this.contentType,
           facets: Search.FACETS,
           audience: this.audienceFilter,
           mode: 'soft',
           languageCode: this.selectedLanguageCode,
         };
-
         value['searchCriteria'] = searchCriteria;
         this.showLoader = true;
         return this.contentService.searchContent(searchCriteria);
@@ -274,7 +274,7 @@ export class ExploreBooksPage implements OnDestroy {
             const subjects = result.filterCriteria.facetFilters.find((f) => f.name === 'subject').values;
             subjects.sort((a, b) => b.count - a.count);
             this.subjects = this.union(this.subjects, subjects);
-            this.contentSearchResult = result.contentDataList;
+            this.contentSearchResult = result.contentDataList || [];
             value['searchResult'] = this.contentSearchResult.length;
           }
         });
@@ -356,6 +356,14 @@ export class ExploreBooksPage implements OnDestroy {
     });
 
     this.mimeTypes[index].selected = true;
+
+    const idx = this.mimeTypes.findIndex((value) => value.name === 'TEXTBOOK');
+    if(idx === index) {
+      this.selectedContentType = ContentType.TEXTBOOK;
+    } else {
+      this.selectedContentType = 'all';
+    }
+
   }
 
   fetchingBoardMediumList(facetFilters) {
