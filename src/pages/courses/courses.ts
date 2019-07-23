@@ -726,7 +726,8 @@ export class CoursesPage implements OnInit, AfterViewInit {
       },
       isResumedCourse: true,
       isChildContent: true,
-      resumedCourseCardData: content
+      resumedCourseCardData: content,
+      isCourse : true
     });
   }
 

@@ -188,7 +188,7 @@ export class CollectionDetailsPage {
   public baseUrl = '';
   guestUser = false;
   profileType = '';
-  
+
   public corRelationList: Array<CorrelationData>;
   public shouldGenerateEndTelemetry = false;
   public source = '';
@@ -683,7 +683,8 @@ export class CollectionDetailsPage {
           content: content,
           depth: depth,
           contentState: stateData,
-          corRelation: this.corRelationList
+          corRelation: this.corRelationList,
+          isCourse : true
         });
       }
     });
