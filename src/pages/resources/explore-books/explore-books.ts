@@ -271,9 +271,9 @@ export class ExploreBooksPage implements OnDestroy {
             this.categoryGradeLevels = this.union(this.categoryGradeLevels, gradeLevel);
             const index = this.categoryGradeLevels.findIndex((grade) => grade.name === this.searchForm.value['grade'][0]);
             this.classClick(index);
-            this.subjects = result.filterCriteria.facetFilters.find((f) => f.name === 'subject').values;
-            this.subjects.sort((a, b) => b.count - a.count);
-            this.subjects.unshift({name: this.commonUtilService.translateMessage('ALL'), selected: true});
+            const subjects = result.filterCriteria.facetFilters.find((f) => f.name === 'subject').values;
+            subjects.sort((a, b) => b.count - a.count);
+            this.subjects = this.union(this.subjects, subjects);
             this.contentSearchResult = result.contentDataList;
             value['searchResult'] = this.contentSearchResult.length;
           }
