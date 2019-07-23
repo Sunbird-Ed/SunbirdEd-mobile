@@ -7,7 +7,7 @@
              *ngFor="let grade of categoryGradeLevels; let i = index; let first = first"
              [class.active]="searchForm.get('grade').value[0] === grade.name"
              attr.id="class{{i}}"
-             (click)="searchForm.get('grade').patchValue([grade.name])">
+             (click)="searchForm.get('grade').patchValue([grade.name]); classClick(i)">
           {{grade?.name}}</div>
       </div>
     </div>
