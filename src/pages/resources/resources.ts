@@ -630,10 +630,13 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   ionViewDidLoad() {
     this.appGlobalService.generateConfigInteractEvent(PageId.LIBRARY, this.isOnBoardingCardCompleted);
+
+    this.events.subscribe('tab.change', () => {
+      this.scrollToTop();
+    });
   }
 
   ionViewDidEnter() {
-    this.scrollToTop();
     this.preferences.getBoolean('coach_mark_seen').toPromise()
       .then((value) => {
         if (!value) {
