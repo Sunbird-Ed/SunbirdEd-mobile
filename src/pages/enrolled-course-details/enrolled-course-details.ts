@@ -1067,7 +1067,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
               }
             } else {
               this.course.isAvailableLocally = true;
-              this.setChildContents();
+              this.setContentDetails(this.identifier);
             }
           }
 
@@ -1097,7 +1097,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
     if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
     }
-    if(this.headerObservable) {
+    if (this.headerObservable) {
       this.headerObservable.unsubscribe();
     }
     if (this.backButtonFunc) {
