@@ -58,6 +58,8 @@ declare const cordova;
 })
 export class SearchPage implements OnInit, OnDestroy {
 
+  console = console
+
   public searchHistory$: Observable<SearchEntry[]>;
 
   appName: string;
@@ -673,6 +675,14 @@ export class SearchPage implements OnInit, OnDestroy {
           this.showLoader = false;
         });
       });
+  }
+
+  handleCancel() {
+    this.searchKeywords = '';
+    this.searchBar.setFocus();
+    this.searchContentResult = undefined;
+    this.filterIcon = false;
+    this.isEmptyResult = false;
   }
 
   handleSearch() {
