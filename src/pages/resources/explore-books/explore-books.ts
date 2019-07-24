@@ -287,7 +287,7 @@ export class ExploreBooksPage implements OnDestroy {
           InteractType.TOUCH,
           InteractSubtype.SEARCH_CRITERIA,
           Environment.HOME,
-          PageId.FILTER_CLICKED,
+          PageId.EXPLORE_MORE_CONTENT,
           undefined,
           value);
       })
