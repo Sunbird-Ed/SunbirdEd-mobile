@@ -159,7 +159,14 @@ export class ExploreBooksPage implements OnDestroy {
     this.selectedLanguageCode = this.translate.currentLang;
     this.checkUserSession();
 
-    this.searchFormSubscription = this.onSearchFormChange().subscribe();
+    this.searchFormSubscription = this.onSearchFormChange().subscribe(() => {}, () => {
+      this.zone.run(() => {
+        this.showLoader = false;
+        if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
+          this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
+        }
+      });
+    });
 
     this.handleBackButton();
 
