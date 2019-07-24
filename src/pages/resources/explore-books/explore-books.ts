@@ -166,6 +166,8 @@ export class ExploreBooksPage implements OnDestroy {
       'medium': this.selectedMedium,
       'framework': await this.sharedPreferences.getString('sunbirdcurrent_framework_id').toPromise()
     });
+    const index = this.categoryGradeLevels.findIndex((grade) => grade.name === this.searchForm.value['grade'][0]);
+    this.classClick(index);
   }
 
   ionViewWillEnter() {
@@ -269,8 +271,6 @@ export class ExploreBooksPage implements OnDestroy {
             const gradeLevel =  result.filterCriteria.facetFilters.find((f) => f.name === 'gradeLevel').values;
             gradeLevel.sort((a, b) => b.count - a.count);
             this.categoryGradeLevels = this.union(this.categoryGradeLevels, gradeLevel);
-            const index = this.categoryGradeLevels.findIndex((grade) => grade.name === this.searchForm.value['grade'][0]);
-            this.classClick(index);
             const subjects = result.filterCriteria.facetFilters.find((f) => f.name === 'subject').values;
             subjects.sort((a, b) => b.count - a.count);
             this.subjects = this.union(this.subjects, subjects);
@@ -371,23 +371,11 @@ export class ExploreBooksPage implements OnDestroy {
   }
 
   classClick(index) {
-    for (let i = 0, len = this.categoryGradeLevels.length; i < len; i++) {
-      if (i === index) {
-        this.categoryGradeLevels[i].selected = 'classAnimate';
-      } else {
-        this.categoryGradeLevels[i].selected = '';
+    const el: HTMLElement | null = document.getElementById('gradeLevel' + index);
+    setTimeout(() => {
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'start' });
       }
-    }
-    let el: HTMLElement | null = document.getElementById('class' + index);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'start' });
-    } else {
-      setTimeout(() => {
-        el = document.getElementById('class' + index);
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'start' });
-        }
-      }, 1000);
-    }
+    }, 0);
   }
 }
