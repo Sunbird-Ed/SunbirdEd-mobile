@@ -69,6 +69,6 @@
   </ng-container>
 </ion-content>
 
-<ion-footer class="bottom-button" *ngIf="!this.showLoader">
+<ion-footer class="bottom-button" *ngIf="!showLoader && contentSearchResult.length">
   <button ion-button block class="sort-by" (click)="openSortOptionsModal()"> {{'SORT_BY' | translate}}</button>
 </ion-footer>

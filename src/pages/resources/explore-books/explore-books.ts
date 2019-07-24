@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, ElementRef, Inject, NgZone, OnDestroy, QueryList, ViewChild, ViewChildren} from '@angular/core';
-import {IonicPage, NavController, NavParams, Platform, ModalController, ViewController} from 'ionic-angular';
+import {IonicPage, NavController, NavParams, Platform, ModalController} from 'ionic-angular';
 import {AudienceFilter, ContentType, Map, MimeType, Search} from "@app/app";
 import {
   Environment,
@@ -14,6 +14,7 @@ import {
   ContentSearchFilter,
   ContentSearchResult,
   ContentService,
+  CorrelationData,
   FilterValue,
   FrameworkUtilService,
   ProfileType,
@@ -28,7 +29,6 @@ import {Observable, Subscription} from "rxjs";
 import {CollectionDetailsEtbPage} from "@app/pages/collection-details-etb/collection-details-etb";
 import {ContentDetailsPage} from "@app/pages/content-details/content-details";
 import {ExploreBooksSort} from '../explore-books-sort/explore-books-sort';
-
 
 @IonicPage()
 @Component({
@@ -81,7 +81,7 @@ export class ExploreBooksPage implements OnDestroy {
   categoryGradeLevels: Array<any>;
   subjects: any;
   mimeTypes = [
-    {name: 'ALL', selected: true, value: ['all'], iconNormal: '', iconActive: ''},
+    {name: 'ALL', selected: true, value: [], iconNormal: '', iconActive: ''},
     {name: 'TEXTBOOK', value: [MimeType.COLLECTION], iconNormal: './assets/imgs/book.svg', iconActive: './assets/imgs/book-active.svg'},
     {
       name: 'VIDEOS',
@@ -126,6 +126,7 @@ export class ExploreBooksPage implements OnDestroy {
   layoutName = 'explore';
   boardList: Array<FilterValue>;
   mediumList: Array<FilterValue>;
+  corRelationList: Array<CorrelationData>;
 
   constructor(
     public navCtrl: NavController,
@@ -256,7 +257,11 @@ export class ExploreBooksPage implements OnDestroy {
         };
         value['searchCriteria'] = searchCriteria;
         this.showLoader = true;
+        this.contentSearchResult = [];
         return this.contentService.searchContent(searchCriteria);
+      })
+      .do(() => {
+        (<any>window).cordova.plugins.Keyboard.close();
       })
       .do((result: ContentSearchResult) => {
         this.zone.run(() => {
@@ -282,7 +287,7 @@ export class ExploreBooksPage implements OnDestroy {
           InteractType.TOUCH,
           InteractSubtype.SEARCH_CRITERIA,
           Environment.HOME,
-          PageId.FILTER_CLICKED,
+          PageId.EXPLORE_MORE_CONTENT,
           undefined,
           value);
       })
@@ -290,16 +295,32 @@ export class ExploreBooksPage implements OnDestroy {
   }
 
   openContent(content, index) {
+    const identifier = content.contentId || content.identifier;
+    const value = new Map();
+    value['identifier'] = identifier;
+    this.corRelationList = [{
+      id: 'explore',
+      type: 'Source'
+    }];
 
     if (content.mimeType === MimeType.COLLECTION) {
       this.navCtrl.push(CollectionDetailsEtbPage,{
-        content: content
+        content: content,
+        corRelation: this.corRelationList
       });
     } else {
       this.navCtrl.push(ContentDetailsPage, {
-        content: content
+        content: content,
+        corRelation: this.corRelationList
       });
     }
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.CONTENT_CLICKED,
+      Environment.HOME,
+      PageId.EXPLORE_MORE_CONTENT,
+      undefined,
+      value);
 
   }
 

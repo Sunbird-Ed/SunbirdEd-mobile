@@ -112,7 +112,6 @@ export enum PageId {
     DIAL_SEARCH = 'dial-book-result',
     TEXTBOOK_TOC = 'textbook-toc',
     EXPLORE_MORE_CONTENT = 'explore-more-content',
-    FILTER_CLICKED = 'explore-books-filter-clicked'
 
 }
 export enum LogType {
