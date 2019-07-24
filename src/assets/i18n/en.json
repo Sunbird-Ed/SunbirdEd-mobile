@@ -295,7 +295,7 @@
   "MY_BADGES": "My Badge(s)",
   "NAME": "NAME",
   "NAME_HINT": "Enter name",
-  "NEED_INTERNET_TO_CHANGE": "No internet connectivity, turn on WiFi or mobile data and try again",
+  "NEED_INTERNET_TO_CHANGE": "Turn on WiFi or mobile data and try again",
   "NEW": "New",
   "NEW_NOTIFICATIONS": "{{%s}} New Notification(s)",
   "NEXT": "Next",
@@ -560,5 +560,5 @@
   "WELCOME_BACK": "WELCOME BACK {{%s}}",
   "YES": "Yes",
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
-  "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "You are not connected to the internet"
+  "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "You are not connected to the Internet"
 }
