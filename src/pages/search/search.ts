@@ -58,8 +58,6 @@ declare const cordova;
 })
 export class SearchPage implements OnInit, OnDestroy {
 
-  console = console
-
   public searchHistory$: Observable<SearchEntry[]>;
 
   appName: string;
