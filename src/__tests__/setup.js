@@ -1,4 +1,5 @@
 require('reflect-metadata');
+require('babel-polyfill');
 
 global.cordova = {
     plugins: {

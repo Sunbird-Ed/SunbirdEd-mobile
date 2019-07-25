@@ -69,10 +69,13 @@ import { UtilityService } from "@app/service";
 import { FileSizePipe } from '../pipes/file-size/file-size';
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
 import { StatusBar } from '@ionic-native/status-bar';
-import { ProfileSwitchHandler } from '@app/service/user-groups/profile-switch-handler';
-import { ContentShareHandler } from '@app/service/content/content-share-handler';
-import { RatingHandler } from '@app/service/rating/rating-handler';
-import { ComingSoonMessageService } from '@app/src/service';
+import { ProfileSwitchHandler } from '../service/user-groups/profile-switch-handler';
+import { ContentShareHandler } from '../service/content/content-share-handler';
+import { ContentPlayerHandler } from '../service/content/player/content-player-handler';
+import { ChildContentHandler } from '../service/content/child-content-handler';
+import { ContentDeleteHandler } from '../service/content/content-delete-handler';
+import { RatingHandler } from '../service/rating/rating-handler';
+import { ComingSoonMessageService } from '../src/service';
 
 export type Mockify<T> = {
   [P in keyof T]: jest.Mock<{}>;
@@ -574,6 +577,18 @@ export const contentShareHandlerMock = createSpyObj<ContentShareHandler>([
 
  export const ratingHandlerMock = createSpyObj<RatingHandler>([
   'showRatingPopup'
+ ]);
+
+ export const contentPlayerHandlerMock = createSpyObj<ContentPlayerHandler>([
+  'launchContentPlayer'
+ ]);
+
+ export const childContentHandlerMock = createSpyObj<ChildContentHandler>([
+  'setChildContents'
+ ]);
+
+ export const contentDeleteHandlerMock = createSpyObj<ContentDeleteHandler>([
+  'showContentDeletePopup'
  ]);
 
  export const searchHistoryServiceMock = createSpyObj<SearchHistoryService>([
