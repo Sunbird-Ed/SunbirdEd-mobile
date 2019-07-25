@@ -65,7 +65,6 @@ import { ContentInfo } from '@app/service/content/content-info';
 })
 export class ContentDetailsPage {
   appName: any;
-  [x: string]: any;
   isCourse: Boolean = false;
   apiLevel: number;
   appAvailability: string;
