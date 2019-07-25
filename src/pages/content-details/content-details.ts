@@ -65,6 +65,7 @@ import { ContentInfo } from '@app/service/content/content-info';
 })
 export class ContentDetailsPage {
   appName: any;
+  isCourse: Boolean = false;
   apiLevel: number;
   appAvailability: string;
   content: Content;
@@ -202,6 +203,7 @@ export class ContentDetailsPage {
    */
   ionViewWillEnter(): void {
     this.headerService.hideHeader();
+    this.isCourse = this.navParams.get('isCourse') === true ? true : false;
     this.cardData = this.navParams.get('content');
     this.isChildContent = this.navParams.get('isChildContent');
     this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');
@@ -779,7 +781,7 @@ export class ContentDetailsPage {
         this.corRelationList);
     }
 
-    if (!AppGlobalService.isPlayerLaunched && this.userCount > 2 && this.network.type !== '2g') {
+    if (!AppGlobalService.isPlayerLaunched && this.userCount > 2 && this.network.type !== '2g' && !this.isCourse) {
       this.openPlayAsPopup(isStreaming);
     } else if (this.network.type === '2g' && !this.contentDownloadable[this.content.identifier]) {
       const popover = this.popoverCtrl.create(SbGenericPopoverComponent, {
@@ -811,7 +813,7 @@ export class ContentDetailsPage {
           return;
         }
         if (leftBtnClicked) {
-          if (!AppGlobalService.isPlayerLaunched && this.userCount > 2) {
+          if (!AppGlobalService.isPlayerLaunched && this.userCount > 2 && !this.isCourse) {
             this.openPlayAsPopup(isStreaming);
           } else {
             this.playContent(isStreaming);
