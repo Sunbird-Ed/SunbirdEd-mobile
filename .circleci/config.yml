@@ -25,4 +25,6 @@ jobs:
          name: Run Tests
          command: npm run test:ci
      - store_artifacts:
-         path: coverage
+         path: /coverage
+     - store_test_results:
+         path: /coverage
