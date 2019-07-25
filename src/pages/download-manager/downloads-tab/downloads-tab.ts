@@ -2,9 +2,9 @@ import { ContentDetailsPage } from './../../content-details/content-details';
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
 import { ContentType, MimeType, MenuOverflow } from '@app/app/app.constant';
 import { OverflowMenuComponent } from '@app/pages/profile';
-import { CommonUtilService, TelemetryGeneratorService } from '@app/service';
+import { AppHeaderService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
 import { SbPopoverComponent } from '../../../component/popups/sb-popover/sb-popover';
-import { Component, Input, EventEmitter, Output } from '@angular/core';
+import { Component, Input, EventEmitter, Output, OnInit } from '@angular/core';
 import { NavController, PopoverController, Popover, Events } from 'ionic-angular';
 import { InteractType, TelemetryObject, Content, ContentDelete } from 'sunbird-sdk';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
@@ -16,7 +16,7 @@ import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
     selector: 'downloads-tab',
     templateUrl: 'downloads-tab.html',
 })
-export class DownloadsTabPage {
+export class DownloadsTabPage implements OnInit {
 
     @Input() downloadedContents: Content[] = [];
     @Output() deleteContents = new EventEmitter();
@@ -39,7 +39,16 @@ export class DownloadsTabPage {
         private popoverCtrl: PopoverController,
         private commonUtilService: CommonUtilService,
         private events: Events,
-        private telemetryGeneratorService: TelemetryGeneratorService) {
+        private telemetryGeneratorService: TelemetryGeneratorService,
+        private headerService: AppHeaderService
+    ) {}
+
+    ngOnInit(): void {
+      this.headerService.headerEventEmitted$.subscribe(() => {
+        if (this.deleteAllPopupPresent) {
+          this.deleteAllConfirm.dismiss();
+        }
+      });
     }
 
     showDeletePopup(identifier?) {

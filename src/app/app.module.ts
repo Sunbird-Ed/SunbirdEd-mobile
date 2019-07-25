@@ -203,6 +203,8 @@ export const sunbirdSdkServicesProvidersFactory: () => Provider[] = sdkDriverFac
 export const sunbirdSdkFactory =
   () => {
     return async () => {
+      await new Promise((resolve) => document.addEventListener("deviceready", resolve, false));
+
       const buildConfigValues = JSON.parse(await new Promise<string>((resolve, reject) => {
         buildconfigreader.getBuildConfigValues('org.sunbird.app', (v) => {
           resolve(v);
