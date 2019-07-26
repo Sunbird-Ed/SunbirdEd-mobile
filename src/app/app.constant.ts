@@ -157,6 +157,24 @@ export class ProfileConstants {
     public static readonly CONTACT_TYPE_EMAIL = 'email';
 }
 
+export class ExploreConstants {
+  public static readonly REQUIRED_FIELDS = [
+    'name',
+    'downloadUrl',
+    'variants',
+    'mimeType',
+    'contentType',
+    'resourceType',
+    'board',
+    'medium',
+    'gradeLevel',
+    'subject',
+    'streamingUrl',
+    'framework',
+    'appIcon'
+  ]
+}
+
 export class AudienceFilter {
     public static readonly GUEST_TEACHER = ['instructor', 'learner'];
     public static readonly GUEST_STUDENT = ['learner'];
