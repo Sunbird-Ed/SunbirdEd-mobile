@@ -158,33 +158,6 @@ export class ExploreBooksPage implements OnDestroy {
     this.selectedLanguageCode = this.translate.currentLang;
     this.checkUserSession();
 
-    this.handleBackButton();
-
-    this.searchFormSubscription = this.onSearchFormChange()
-      .subscribe(() => {}, () => {
-        this.zone.run(() => {
-          this.showLoader = false;
-          if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
-            this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
-          }
-        });
-      });
-
-    this.searchForm.patchValue({
-      'grade': this.selectedGrade,
-      'medium': this.selectedMedium
-    });
-    const index = this.categoryGradeLevels.findIndex((grade) => grade.name === this.searchForm.value['grade'][0]);
-    this.classClick(index);
-  }
-
-  ionViewWillEnter() {
-
-    this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
-      this.handleHeaderEvents(eventName);
-    });
-
-    this.headerService.showHeaderWithBackButton();
     this.corRelationList= [{
       id: this.selectedGrade,
       type: 'Grade'
@@ -203,6 +176,36 @@ export class ExploreBooksPage implements OnDestroy {
       undefined,
       undefined,
       this.corRelationList);
+
+  }
+
+  ionViewWillEnter() {
+
+    this.searchFormSubscription = this.onSearchFormChange()
+      .subscribe(() => {}, () => {
+        this.zone.run(() => {
+          this.showLoader = false;
+          if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
+            this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
+          }
+        });
+      });
+
+    this.searchForm.patchValue({
+      'grade': this.selectedGrade,
+      'medium': this.selectedMedium
+    });
+    const index = this.categoryGradeLevels.findIndex((grade) => grade.name === this.searchForm.value['grade'][0]);
+
+    this.classClick(index);
+
+    this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
+      this.handleHeaderEvents(eventName);
+    });
+
+    this.handleBackButton();
+
+    this.headerService.showHeaderWithBackButton();
   }
 
   ngOnDestroy(): void {
