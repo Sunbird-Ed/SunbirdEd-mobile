@@ -137,6 +137,7 @@ export class CourseBatchesPage implements OnInit {
         });
       }, (error) => {
         this.zone.run(() => {
+          loader.dismiss();
           if (error && error.code === 'NETWORK_ERROR') {
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NO_INTERNET_MESSAGE'));
           } else if (error && error.response
