@@ -676,6 +676,14 @@ export class SearchPage implements OnInit, OnDestroy {
       });
   }
 
+  handleCancel() {
+    this.searchKeywords = '';
+    this.searchBar.setFocus();
+    this.searchContentResult = undefined;
+    this.filterIcon = false;
+    this.isEmptyResult = false;
+  }
+
   handleSearch() {
     this.scrollToTop();
     if (this.searchKeywords.length < 3) {

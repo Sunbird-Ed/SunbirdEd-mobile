@@ -33,45 +33,43 @@ export class RatingHandler {
             this.userComment = contentFeedback[0].comments;
         }
 
-        if (this.userRating === 0 && !this.appGlobalService.getSelectedUser()) {
-            if (isContentPlayed || content.contentAccess.length) {
-                if (popupType === 'automatic') {
-                    if (!(await this.readRatingFile())) {
-                        this.preferences.getString(PreferenceKey.APP_RATING_DATE).toPromise().then(async res => {
-                            if (await this.shouldShowAppRating(res)) {
-                                paramsMap['isPlayed'] = 'N';
-                                this.showAppRatingPopup();
-                            } else {
-                                paramsMap['isPlayed'] = 'Y';
-                                this.showContentRatingPopup(content, popupType);
-                            }
-                        }).catch(err => {
+        if (isContentPlayed || content.contentAccess.length) {
+            if (popupType === 'automatic' && (this.userRating === 0 && !this.appGlobalService.getSelectedUser())) {
+                if (!(await this.readRatingFile())) {
+                    this.preferences.getString(PreferenceKey.APP_RATING_DATE).toPromise().then(async res => {
+                        if (await this.shouldShowAppRating(res)) {
+                            paramsMap['isPlayed'] = 'N';
+                            this.showAppRatingPopup();
+                        } else {
                             paramsMap['isPlayed'] = 'Y';
                             this.showContentRatingPopup(content, popupType);
-                        });
-                    } else {
+                        }
+                    }).catch(err => {
                         paramsMap['isPlayed'] = 'Y';
                         this.showContentRatingPopup(content, popupType);
-                    }
-                } else if (popupType === 'manual') {
+                    });
+                } else {
                     paramsMap['isPlayed'] = 'Y';
                     this.showContentRatingPopup(content, popupType);
                 }
-
-            } else {
-                paramsMap['isPlayed'] = 'N';
-                this.commonUtilService.showToast('TRY_BEFORE_RATING');
+            } else if (popupType === 'manual') {
+                paramsMap['isPlayed'] = 'Y';
+                this.showContentRatingPopup(content, popupType);
             }
-            this.telemetryGeneratorService.generateInteractTelemetry(
-                InteractType.TOUCH,
-                InteractSubtype.RATING_CLICKED,
-                Environment.HOME,
-                PageId.CONTENT_DETAIL,
-                undefined,
-                paramsMap,
-                rollUp,
-                corRelationList);
+
+        } else {
+            paramsMap['isPlayed'] = 'N';
+            this.commonUtilService.showToast('TRY_BEFORE_RATING');
         }
+        this.telemetryGeneratorService.generateInteractTelemetry(
+            InteractType.TOUCH,
+            InteractSubtype.RATING_CLICKED,
+            Environment.HOME,
+            PageId.CONTENT_DETAIL,
+            undefined,
+            paramsMap,
+            rollUp,
+            corRelationList);
 
     }
 
@@ -97,6 +95,11 @@ export class RatingHandler {
                 this.userComment = data.comment;
             }
         });
+    }
+
+    public resetRating() {
+        this.userRating = 0;
+        this.userComment = '';
     }
 
     private showAppRatingPopup() {

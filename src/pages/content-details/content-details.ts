@@ -1,12 +1,9 @@
-import { Component, Inject, NgZone, ViewChild } from '@angular/core';
-import { Events, IonicApp, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController } from 'ionic-angular';
+import { Component, Inject, NgZone } from '@angular/core';
+import { Events, IonicPage, NavController, NavParams, Platform, PopoverController, ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ContentConstants, EventTopics, XwalkConstants } from '../../app/app.constant';
 import { Map } from '@app/app';
-import {
-  ConfirmAlertComponent,
-  SbPopoverComponent
-} from '@app/component';
+import { ConfirmAlertComponent } from '@app/component';
 import { AppGlobalService, AppHeaderService, CourseUtilService, UtilityService } from '@app/service';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { Network } from '@ionic-native/network';
@@ -16,7 +13,6 @@ import { CommonUtilService } from '../../service/common-util.service';
 import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
 import {
   Content,
-  ContentDeleteStatus,
   ContentDetailRequest,
   ContentEventType,
   ContentImport,
@@ -29,14 +25,12 @@ import {
   EventsBusEvent,
   EventsBusService,
   GetAllProfileRequest,
-  PlayerService,
   ProfileService,
   Rollup,
-  SharedPreferences,
   StorageService,
   TelemetryObject
 } from 'sunbird-sdk';
-import { Subscription, Observable } from 'rxjs';
+import { Subscription } from 'rxjs';
 import {
   Environment,
   ImpressionType,
@@ -46,7 +40,6 @@ import {
   PageId,
 } from '../../service/telemetry-constants';
 import { FileSizePipe } from '@app/pipes/file-size/file-size';
-import { TranslateService } from '@ngx-translate/core';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 import { ContentShareHandler } from '@app/service/content/content-share-handler';
 import { AppVersion } from '@ionic-native/app-version';
@@ -172,6 +165,7 @@ export class ContentDetailsPage {
     this.checkappAvailability();
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
     this.defaultLicense = ContentConstants.DEFAULT_LICENSE;
+    this.ratingHandler.resetRating();
   }
 
   ionViewDidLoad() {
@@ -409,6 +403,10 @@ export class ContentDetailsPage {
         }
         this.navCtrl.pop();
       });
+  }
+
+  rateContent(popUpType: string) {
+    this.ratingHandler.showRatingPopup(this.isContentPlayed, this.content, popUpType, this.corRelationList, this.objRollup);
   }
 
   extractApiResponse(data: Content) {

@@ -200,6 +200,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     });
 
     this.events.subscribe('tab.change', (data: string) => {
+      this.scrollToTop();
       // this.ngZone.run(() => {
       if (data.trim().toUpperCase() === 'LIBRARY') {
         if (this.appliedFilter) {
@@ -633,7 +634,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ionViewDidEnter() {
-    this.scrollToTop();
     this.preferences.getBoolean('coach_mark_seen').toPromise()
       .then((value) => {
         if (!value) {

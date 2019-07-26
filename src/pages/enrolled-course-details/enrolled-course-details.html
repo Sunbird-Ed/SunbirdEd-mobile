@@ -55,10 +55,10 @@
 					<span class="text-gray-color">{{course?.license}}</span>
 					<!-- </span> -->
 				</div>
-				<div *ngIf="course?.owner" margin-top>
+				<div *ngIf="course?.copyright" margin-top>
 					<div class="content-meta-title" text-uppercase>{{ 'COPYRIGHT' | translate }}</div>
 					<!-- <span *ngFor="let grade of course.gradeLevel"> -->
-					<span class="text-gray-color">{{course?.owner}}</span>
+					<span class="text-gray-color">{{course?.copyright}}</span>
 					<!-- </span> -->
 				</div>
 				<!-- Batch details - only for enrolled courses -->
@@ -140,7 +140,7 @@
 		</div>
 		<br />
 		<br />
-		<div class="license-section padding-10 background-gray" *ngIf="course?.license">
+		<!-- <div class="license-section padding-10 background-gray" *ngIf="course?.license">
 			<div class="row" *ngIf="showLicense">
 				<span>
 					<div class="size_txt content-meta-title">{{ 'LICENSE' | translate }}</div>
@@ -157,7 +157,7 @@
 					<ion-icon name="ios-arrow-down"></ion-icon>
 				</span>
 			</span>
-		</div>
+		</div> -->
 		<div padding-top></div>
 	</div>
 </ion-content>

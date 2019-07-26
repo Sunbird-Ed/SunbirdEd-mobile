@@ -13,6 +13,7 @@ export class ContentUtil {
     let displayStr: string;
     properties.forEach( ele => {
       if (contentData[ele]) {
+        contentData[ele] = this.arrayEmptyStringCheck(contentData[ele]);
         if (displayStr) {
           displayStr = displayStr + ', ' + contentData[ele];
         } else {
@@ -21,6 +22,18 @@ export class ContentUtil {
       }
     });
     return displayStr;
+  }
+
+  public static arrayEmptyStringCheck(value: Array<string | number>): Array<string> | string | object {
+    let returnValue: Array<string | number>;
+    if (value.constructor === Array) {
+      returnValue = value.filter((el) => {
+        return el !== null && el !== '';
+      });
+      return returnValue;
+    } else {
+      return value;
+    }
   }
 
   /**
