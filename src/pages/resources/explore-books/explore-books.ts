@@ -158,6 +158,25 @@ export class ExploreBooksPage implements OnDestroy {
     this.selectedLanguageCode = this.translate.currentLang;
     this.checkUserSession();
 
+    this.corRelationList= [{
+      id: this.selectedGrade,
+      type: 'Grade'
+    }, {
+      id: this.selectedMedium,
+      type: 'Medium'
+    }];
+
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW,
+      ImpressionSubtype.EXPLORE_MORE_CONTENT,
+      PageId.EXPLORE_MORE_CONTENT,
+      Environment.HOME,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      this.corRelationList);
+
   }
 
   ionViewWillEnter() {
@@ -187,24 +206,6 @@ export class ExploreBooksPage implements OnDestroy {
     this.handleBackButton();
 
     this.headerService.showHeaderWithBackButton();
-    this.corRelationList= [{
-      id: this.selectedGrade,
-      type: 'Grade'
-    }, {
-      id: this.selectedMedium,
-      type: 'Medium'
-    }];
-
-    this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.VIEW,
-      ImpressionSubtype.EXPLORE_MORE_CONTENT,
-      PageId.EXPLORE_MORE_CONTENT,
-      Environment.HOME,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      this.corRelationList);
   }
 
   ngOnDestroy(): void {
