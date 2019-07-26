@@ -158,7 +158,9 @@ export class ExploreBooksPage implements OnDestroy {
     this.selectedLanguageCode = this.translate.currentLang;
     this.checkUserSession();
 
-    this.handleBackButton();
+  }
+
+  ionViewWillEnter() {
 
     this.searchFormSubscription = this.onSearchFormChange()
       .subscribe(() => {}, () => {
@@ -175,14 +177,14 @@ export class ExploreBooksPage implements OnDestroy {
       'medium': this.selectedMedium
     });
     const index = this.categoryGradeLevels.findIndex((grade) => grade.name === this.searchForm.value['grade'][0]);
-    this.classClick(index);
-  }
 
-  ionViewWillEnter() {
+    this.classClick(index);
 
     this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
+
+    this.handleBackButton();
 
     this.headerService.showHeaderWithBackButton();
     this.corRelationList= [{
