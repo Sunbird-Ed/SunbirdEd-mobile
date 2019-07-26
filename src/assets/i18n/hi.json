@@ -430,7 +430,7 @@
   "SCORED": "प्राप्तांक",
   "SD_CARD": "SD कार्ड",
   "SEARCH_HINT": "खोजें",
-  "SEARCH_PLACEHOLDER": "कंटेंट खोजने के लिए यहाँ लिखे",
+  "SEARCH_PLACEHOLDER": "कंटेंट खोजने के लिए यहाँ लिखे। उदाहरण- पोलिओ",
   "SEARCH_TO_FIND_CONTENT": "कंटेंट खोजने के लिए {{%s}} देखें",
   "SEE_ALL_RESULTS_FOR": "\"{{%s}}\" के सभी परीणाम",
   "SELECT": "चुनिये",
@@ -560,5 +560,5 @@
   "WELCOME_BACK": "{{%s}} आपका फिर से स्वागत है",
   "YES": "हाँ",
   "YOUR_PROGRESS": "आपकी प्रगति : {{%s}}%",
-  "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "आप इन्टरनेट से जुड़े हुए नहीं हैं"
+  "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "आप इंटरनेट से जुड़े हुए नहीं हैं"
 }
