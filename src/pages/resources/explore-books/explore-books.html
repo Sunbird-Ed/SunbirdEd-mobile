@@ -7,7 +7,7 @@
              *ngFor="let grade of categoryGradeLevels; let i = index; let first = first"
              [class.active]="searchForm.get('grade').value[0] === grade.name"
              attr.id="gradeLevel{{i}}"
-             (click)="searchForm.get('grade').patchValue([grade.name]); classClick(i)">
+             (click)="searchForm.get('grade').patchValue([grade.name]); classClick(i); classClickedForTelemetry(grade.name)">
           {{grade?.name}}</div>
       </div>
     </div>
@@ -17,7 +17,7 @@
              *ngFor="let subject of subjects; let i = index;"
              [class.active]="searchForm.get('subject').value[0] ? searchForm.get('subject').value[0] === subject.name : subject.name === 'All'"
              [@appear]
-             (click)="searchForm.get('subject').patchValue([subject.name])">
+             (click)="searchForm.get('subject').patchValue([subject.name]); subjectClicked(i, subject.name)">
           {{subject?.name}}
         </div>
       </div>

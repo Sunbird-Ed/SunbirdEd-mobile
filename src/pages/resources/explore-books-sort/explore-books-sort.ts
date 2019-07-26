@@ -5,6 +5,8 @@ import {TranslateService} from '@ngx-translate/core';
 import { CommonUtilService } from '@app/service/common-util.service';
 import {FilterValue
 } from 'sunbird-sdk';
+import {Environment, InteractSubtype, InteractType, PageId} from "@app/service/telemetry-constants";
+import {TelemetryGeneratorService} from "@app/service";
 
 @Component({
     selector: 'explore-books-sort',
@@ -35,6 +37,7 @@ export class ExploreBooksSort {
     private navParams: NavParams,
     private platform: Platform,
     private commonUtilService: CommonUtilService,
+    private telemetryGeneratorService: TelemetryGeneratorService,
     private fb: FormBuilder
     ) {
         this.initForm();
@@ -44,6 +47,14 @@ export class ExploreBooksSort {
             this.boardSelect.close();
             this.mediumSelect.close();
             this.viewCtrl.dismiss(null);
+
+            this.telemetryGeneratorService.generateInteractTelemetry(
+            InteractType.TOUCH,
+            InteractSubtype.DEVICE_BACK_CLICKED,
+            Environment.HOME,
+            PageId.EXPLORE_MORE_CONTENT,
+            );
+
             this.backButtonFunc();
         }, 10);
     }

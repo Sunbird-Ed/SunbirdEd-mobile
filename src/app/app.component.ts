@@ -555,6 +555,7 @@ export class MyApp implements OnInit, AfterViewInit {
         || ((<any>activeView).instance instanceof QrCodeResultPage)
         || ((<any>activeView).instance instanceof FaqPage)
         || ((<any>activeView).instance['pageId'] === 'ProfileSettingsPage')
+        || ((<any>activeView).instance['pageId'] === 'ExploreBooksPage')
       ) {
         this.headerServie.sidebarEvent($event);
         return;
