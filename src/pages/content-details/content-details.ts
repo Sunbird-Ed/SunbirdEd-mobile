@@ -767,6 +767,10 @@ export class ContentDetailsPage {
         if (event.payload && event.type === ContentEventType.UPDATE) {
           this.zone.run(() => {
             this.isUpdateAvail = true;
+            if (event.payload.size) {
+              this.content.contentData.size = event.payload.size;
+            }
+
           });
         }
 
