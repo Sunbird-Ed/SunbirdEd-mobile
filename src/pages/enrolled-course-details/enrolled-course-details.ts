@@ -69,6 +69,7 @@ import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popu
 import { BatchConstants } from '@app/app';
 import { ContentShareHandler } from '@app/service/content/content-share-handler';
 import { AppVersion } from '@ionic-native/app-version';
+import { ContentUtil } from '@app/util/content-util';
 
 declare const cordova;
 
@@ -854,6 +855,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
    * @param depth
    */
   navigateToChildrenDetailsPage(content: Content, depth): void {
+    let subtype = InteractSubtype.CONTENT_CLICKED;
     const contentState: ContentState = {
       batchId: this.courseCardData.batchId ? this.courseCardData.batchId : '',
       courseId: this.identifier
@@ -866,6 +868,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
           contentState: contentState
         });
       } else if (content.mimeType === MimeType.COLLECTION) {
+        subtype = InteractSubtype.UNIT_CLICKED;
         let isChildClickable = true;
         if (this.isAlreadyEnrolled && this.isBatchNotStarted) {
           isChildClickable = false;
@@ -886,6 +889,14 @@ export class EnrolledCourseDetailsPage implements OnInit {
           isChildContent: true
         });
       }
+      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+        subtype,
+        Environment.HOME,
+        PageId.COURSE_DETAIL,
+        ContentUtil.getTelemetryObject(content),
+        undefined,
+        undefined,
+        this.corRelationList);
     });
   }
 
