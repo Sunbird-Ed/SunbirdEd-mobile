@@ -992,7 +992,7 @@ export class CollectionDetailsEtbPage implements OnInit {
         }
 
         if(event.type === ContentEventType.IMPORT_PROGRESS){
-          this.importProgressMessage = 'Extracting content ' +
+          this.importProgressMessage =  this.commonUtilService.translateMessage('EXTRACTING_CONTENT') + ' ' +
                                         Math.floor((event.payload.currentCount / event.payload.totalCount)*100) +
                                         '% (' + event.payload.currentCount + ' / ' + event.payload.totalCount + ')';
         }

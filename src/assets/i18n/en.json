@@ -560,5 +560,6 @@
   "NO_BOOKS_AVAILABLE": "Board is adding books",
   "MORE_CONTENT": "Find more books and content on {{%s}} below.",
   "SEARCH_BOOK": "Search for content (Eg: ’English Stories’)",
-  "TEXTBOOK": "Textbooks"
+  "TEXTBOOK": "Textbooks",
+  "EXTRACTING_CONTENT": "Extracting content"
 }

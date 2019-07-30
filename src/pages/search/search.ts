@@ -1003,7 +1003,7 @@ export class SearchPage implements OnDestroy {
           }
         }
         if (event.type === ContentEventType.IMPORT_PROGRESS) {
-          this.loadingDisplayText = 'Extracting content ' +
+          this.loadingDisplayText = this.commonUtilService.translateMessage('EXTRACTING_CONTENT') + ' ' +
             Math.floor((event.payload.currentCount / event.payload.totalCount) * 100) +
             '% (' + event.payload.currentCount + ' / ' + event.payload.totalCount + ')';
         }
