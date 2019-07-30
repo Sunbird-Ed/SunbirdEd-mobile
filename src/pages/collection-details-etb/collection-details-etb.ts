@@ -20,7 +20,7 @@ import {
   ContentExportRequest, ContentExportResponse, ContentImport, ContentImportCompleted, ContentImportRequest,
   ContentImportResponse, ContentImportStatus, ContentMarkerRequest, ContentService, ContentUpdate, CorrelationData,
   DownloadEventType, DownloadProgress, EventsBusEvent, EventsBusService, MarkerType, Profile, ProfileService,
-  ProfileType, Rollup, StorageService, TelemetryErrorCode, TelemetryObject
+  ProfileType, Rollup, StorageService, TelemetryErrorCode, TelemetryObject, ContentImportProgress
 } from 'sunbird-sdk';
 import { Subscription } from 'rxjs';
 import {
@@ -224,6 +224,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   contentTypesCount: any;
   stckyUnitTitle?: string;
   isChapterVisible = false;
+  importProgressMessage: string;
 
   constructor(
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
@@ -988,6 +989,12 @@ export class CollectionDetailsEtbPage implements OnInit {
 
             }
           }
+        }
+
+        if(event.type === ContentEventType.IMPORT_PROGRESS){
+          this.importProgressMessage = 'Extracting content ' +
+                                        Math.floor((event.payload.currentCount / event.payload.totalCount)*100) +
+                                        '% (' + event.payload.currentCount + ' / ' + event.payload.totalCount + ')';
         }
 
         // For content update available
