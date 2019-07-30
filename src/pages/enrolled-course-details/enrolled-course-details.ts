@@ -523,7 +523,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
     } else {
       this.showLoading = true;
       this.headerService.hideHeader();
-      this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.course, true);
+      this.telemetryGeneratorService.generateSpineLoadingTelemetry(data, true);
       this.importContent([this.identifier], false);
     }
 
@@ -1204,7 +1204,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
   }
 
   share() {
-    this.contentShareHandler.shareContent(this.course, this.corRelationList);
+    this.contentShareHandler.shareContent(this.content, this.corRelationList);
   }
 
   ionViewDidLoad() {
