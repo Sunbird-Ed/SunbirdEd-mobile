@@ -19,7 +19,8 @@ import {
   SdkConfig,
   SignInError,
   ServerProfileDetailsRequest,
-  SharedPreferences
+  SharedPreferences,
+  GroupService
 } from 'sunbird-sdk';
 import {
   Environment,
@@ -51,6 +52,7 @@ export class SignInCardComponent {
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    @Inject('GROUP_SERVICE') private groupService: GroupService,
     @Inject('AUTH_SERVICE') private authService: AuthService,
     @Inject('API_SERVICE') private apiService: ApiService,
     @Inject('SDK_CONFIG') private sdkConfig: SdkConfig,
@@ -154,6 +156,11 @@ export class SignInCardComponent {
                 this.profileService.createProfile(profile, ProfileSource.SERVER)
                   .toPromise()
                   .then(() => {
+                    that.groupService.removeActiveGroupSession()
+                    .subscribe(() => {
+                    },
+                      () => {
+                      });
                     that.profileService.setActiveSessionForProfile(profile.uid).toPromise()
                       .then(() => {
                         that.formAndFrameworkUtilService.updateLoggedInUser(success, profile)
