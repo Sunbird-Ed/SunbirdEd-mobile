@@ -355,7 +355,7 @@
   "OVERLAY_INFO_TEXT_TAKE_COURSE": "सभी कोर्स पंजीकृत उपयोगकर्ताओं के लिए हैं| कोर्स तक पहुँचने के लिए साइन इन करें|",
   "OVERLAY_LABEL_COMMON": "{{%s}} मे असीमित पहुंच प्राप्त करें",
   "OVERLAY_LABEL_HOME": "आपका व्यक्तिगत होम टैब",
-  "OVERLAY_LABEL_TAKE_COURSE": "इस कोर्स के लिए साइन इन करें",
+  "OVERLAY_LABEL_TAKE_COURSE": "इस कोर्स में नामांकन के लिए साइन इन करें",
   "OVERLAY_SIGN_IN": "साइन इन करें",
   "OVER_WIFI": "वाई-फ़ाई पर उपलब्ध",
   "PASSWORD": "पासवर्ड",
