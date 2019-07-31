@@ -1002,7 +1002,11 @@ export class SearchPage implements OnDestroy {
             this.loadingDisplayText = 'Loading content ';
           }
         }
-
+        if (event.type === ContentEventType.IMPORT_PROGRESS) {
+          this.loadingDisplayText = this.commonUtilService.translateMessage('EXTRACTING_CONTENT') + ' ' +
+            Math.floor((event.payload.currentCount / event.payload.totalCount) * 100) +
+            '% (' + event.payload.currentCount + ' / ' + event.payload.totalCount + ')';
+        }
         // if (event.payload && event.payload.status === 'IMPORT_COMPLETED' && event.type === 'contentImport') {
         if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {
