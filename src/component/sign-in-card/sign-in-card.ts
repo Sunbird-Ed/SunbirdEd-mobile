@@ -20,7 +20,8 @@ import {
   SignInError,
   ServerProfileDetailsRequest,
   SharedPreferences,
-  GroupService
+  GroupService,
+  TenantInfoRequest
 } from 'sunbird-sdk';
 import {
   Environment,
@@ -188,12 +189,13 @@ export class SignInCardComponent {
   }
 
   refreshTenantData(slug: string, title: string) {
+    const tenantInfoRequest: TenantInfoRequest = {slug: slug};
     return new Promise((resolve, reject) => {
-      this.profileService.getTenantInfo().toPromise()
+      this.profileService.getTenantInfo(tenantInfoRequest).toPromise()
         .then((res) => {
-          this.preferences.putString(PreferenceKey.APP_LOGO, res.logo).toPromise().then();
+          this.preferences.putString(PreferenceKey.APP_LOGO, res.appLogo).toPromise().then();
           this.preferences.putString(PreferenceKey.APP_NAME, title).toPromise().then();
-          (<any>window).splashscreen.setContent(title, res.logo);
+          (<any>window).splashscreen.setContent(title, res.appLogo);
           resolve();
         }).catch(() => {
           resolve(); // ignore

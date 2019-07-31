@@ -163,17 +163,17 @@ export class OnboardingPage {
 
   refreshTenantData() {
     const that = this;
-    return new Promise((resolve, reject) => {
-      this.profileService.getTenantInfo().toPromise()
-      .then((res) => {
-          this.preferences.putString(PreferenceKey.APP_LOGO, res.logo).toPromise().then();
-          this.preferences.putString(PreferenceKey.APP_NAME, that.orgName).toPromise().then();
-          (<any>window).splashscreen.setContent(that.orgName, res.logo);
-          resolve();
-        }).catch(() => {
-        resolve(); // ignore
-      });
-    });
+    // return new Promise((resolve, reject) => {
+    //   this.profileService.getTenantInfo().toPromise()
+    //   .then((res) => {
+    //       this.preferences.putString(PreferenceKey.APP_LOGO, res.logo).toPromise().then();
+    //       this.preferences.putString(PreferenceKey.APP_NAME, that.orgName).toPromise().then();
+    //       (<any>window).splashscreen.setContent(that.orgName, res.logo);
+    //       resolve();
+    //     }).catch(() => {
+    //     resolve(); // ignore
+    //   });
+    // });
   }
 
   refreshProfileData() {
