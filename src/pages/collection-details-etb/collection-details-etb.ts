@@ -991,22 +991,19 @@ export class CollectionDetailsEtbPage implements OnInit {
           }
         }
 
-        if(event.type === ContentEventType.IMPORT_PROGRESS){
+        if (event.type === ContentEventType.IMPORT_PROGRESS) {
           this.importProgressMessage =  this.commonUtilService.translateMessage('EXTRACTING_CONTENT') + ' ' +
-            Math.floor((event.payload.currentCount / event.payload.totalCount)*100) +
+            Math.floor((event.payload.currentCount / event.payload.totalCount) * 100) +
             '% (' + event.payload.currentCount + ' / ' + event.payload.totalCount + ')';
-            if(event.payload.currentCount === event.payload.totalCount){
+            if (event.payload.currentCount === event.payload.totalCount) {
               let timer = 30;
               const interval = setInterval(() => {
-                console.log('timer', timer);
                 this.importProgressMessage = `Getting things ready in ${timer--}  seconds`;
-                console.log('this.importProgressMessage', this.importProgressMessage);
-                if(timer === 0){
+                if (timer === 0) {
                   this.importProgressMessage = 'Getting things ready';
                   clearInterval(interval);
                 }
-              },1000);
-              
+              }, 1000);
             }
         }
 

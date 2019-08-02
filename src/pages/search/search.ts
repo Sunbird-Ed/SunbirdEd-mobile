@@ -1006,6 +1006,16 @@ export class SearchPage implements OnDestroy {
           this.loadingDisplayText = this.commonUtilService.translateMessage('EXTRACTING_CONTENT') + ' ' +
             Math.floor((event.payload.currentCount / event.payload.totalCount) * 100) +
             '% (' + event.payload.currentCount + ' / ' + event.payload.totalCount + ')';
+            if (event.payload.currentCount === event.payload.totalCount) {
+              let timer = 30;
+              const interval = setInterval(() => {
+                this.loadingDisplayText = `Getting things ready in ${timer--}  seconds`;
+                if (timer === 0) {
+                  this.loadingDisplayText = 'Getting things ready';
+                  clearInterval(interval);
+                }
+              }, 1000);
+            }
         }
         // if (event.payload && event.payload.status === 'IMPORT_COMPLETED' && event.type === 'contentImport') {
         if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
