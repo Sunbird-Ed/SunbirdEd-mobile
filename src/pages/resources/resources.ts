@@ -34,7 +34,7 @@ import { AppHeaderService } from '@app/service';
 import { NotificationsPage } from '../notifications/notifications';
 import { TextbookViewMorePage } from '../textbook-view-more/textbook-view-more';
 import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
-import { ExploreBooksPage } from "../resources/explore-books/explore-books";
+import { ExploreBooksPage } from '../resources/explore-books/explore-books';
 
 @Component({
   selector: 'page-resources',
@@ -149,7 +149,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     public toastController: ToastController,
     public menuCtrl: MenuController,
-    private headerServie: AppHeaderService,
+    private headerService: AppHeaderService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService
   ) {
     this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
@@ -513,9 +513,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           // this.checkEmptySearchResult(isAfterLanguageChange);
           if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable) {
             if (this.tabs.getSelected().tabTitle === 'LIBRARY‌' && !avoidRefreshList) {
-              // this.commonUtilService.showToast(
-              //   this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
-              //   `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
             }
           }
         });
@@ -534,9 +531,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
               this.commonUtilService.showToast('ERROR_FETCHING_DATA');
             }
           } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable  && !avoidRefreshList) {
-            // this.commonUtilService.showToast(
-            //   this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
-            //     `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
           }
           const errvalues = new Map();
           errvalues['isNetworkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
@@ -758,7 +752,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .then((res: CategoryTerm[]) => {
         this.subjects = res;
       })
-      .catch(() => {})
+      .catch(() => {});
   }
 
   getMediumData(frameworkId, categories): any {
