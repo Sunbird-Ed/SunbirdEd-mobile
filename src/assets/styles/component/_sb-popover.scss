@@ -77,7 +77,7 @@
     //sb popover content
     .sb-popover-container{
         text-align: center;
-        
+        padding: 1px !important;
         .sb-popover-items {
             padding: ($base-block-space + 4);
             .icon-container{
