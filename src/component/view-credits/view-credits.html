@@ -16,7 +16,7 @@
         {{ 'CREATORS' | translate:{'%s': appName} }}
       </ion-row>
       <ion-row class="content">
-        {{mergeProperties('creators', 'creator')}}
+        {{mergeProperties(['creators', 'creator'])}}
       </ion-row>
     </div>
     <div *ngIf="content?.contributors || content?.owner">
@@ -24,7 +24,7 @@
         {{ 'CONTRIBUTORS' | translate }}
       </ion-row>
       <ion-row class="content">
-        {{mergeProperties('contributors', 'owner')}}
+        {{mergeProperties(['contributors', 'owner'])}}
       </ion-row>
     </div>
     <div *ngIf="content?.attributions">
@@ -32,7 +32,7 @@
         {{ 'ATTRIBUTIONS' | translate }}
       </ion-row>
       <ion-row class="content">
-       {{content?.attributions}}
+        {{mergeProperties(['attributions', 'contributors', 'creators', 'creator'])}}
       </ion-row>
     </div>
   </ion-grid>

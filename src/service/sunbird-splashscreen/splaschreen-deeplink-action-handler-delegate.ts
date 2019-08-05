@@ -10,13 +10,15 @@ import { App } from 'ionic-angular';
 import { AppGlobalService } from '@app/service';
 import { SearchPage } from '@app/pages/search';
 import { PageId } from '../telemetry-constants';
+import { CommonUtilService } from '../common-util.service';
 
 @Injectable()
 export class SplaschreenDeeplinkActionHandlerDelegate implements SplashscreenActionHandlerDelegate {
   identifier: any;
   constructor(@Inject('CONTENT_SERVICE') private contentService: ContentService,
     private appGlobalServices: AppGlobalService,
-    private app: App) {
+    private app: App,
+    private commonUtilService: CommonUtilService) {
   }
 
   handleNotification(data) {
@@ -39,27 +41,33 @@ export class SplaschreenDeeplinkActionHandlerDelegate implements SplashscreenAct
     }
   }
 
-  onAction(type: string, action?: { identifier: string } ): Observable<undefined> {
+  onAction(type: string, action?: { identifier: string }): Observable<undefined> {
     const navObj = this.app.getRootNavs()[0];
     const identifier: any = action !== undefined ? action.identifier : undefined;
     if (identifier) {
       switch (type) {
         case 'content': {
-            return this.contentService.getContentDetails({
-              contentId: identifier || this.identifier
-            }).do(async (content: Content) => {
-              if (content.contentType === ContentType.COURSE.toLowerCase()) {
-                await navObj.push(EnrolledCourseDetailsPage, { content });
-              } else if (content.mimeType === MimeType.COLLECTION) {
-                await navObj.push(CollectionDetailsEtbPage, { content });
-              } else {
-                await navObj.push(ContentDetailsPage, { content });
-              }
-            }).mapTo(undefined) as any;
-          }
-        case 'dial': {
-            navObj.push(SearchPage, { dialCode: identifier, source: PageId.HOME });
+          const loader = this.commonUtilService.getLoader();
+          loader.present();
+          return this.contentService.getContentDetails({
+            contentId: identifier || this.identifier
+          }).catch(() => {
+            loader.dismiss();
             return Observable.of(undefined);
+          }).do(async (content: Content) => {
+            loader.dismiss();
+            if (content.contentType === ContentType.COURSE.toLowerCase()) {
+              await navObj.push(EnrolledCourseDetailsPage, { content });
+            } else if (content.mimeType === MimeType.COLLECTION) {
+              await navObj.push(CollectionDetailsEtbPage, { content });
+            } else {
+              await navObj.push(ContentDetailsPage, { content });
+            }
+          }).mapTo(undefined) as any;
+        }
+        case 'dial': {
+          navObj.push(SearchPage, { dialCode: identifier, source: PageId.HOME });
+          return Observable.of(undefined);
         }
         default: {
           return Observable.of(undefined);

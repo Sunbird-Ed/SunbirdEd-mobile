@@ -34,6 +34,7 @@ import { AppHeaderService } from '@app/service';
 import { NotificationsPage } from '../notifications/notifications';
 import { TextbookViewMorePage } from '../textbook-view-more/textbook-view-more';
 import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
+import { ExploreBooksPage } from '../resources/explore-books/explore-books';
 
 @Component({
   selector: 'page-resources',
@@ -126,6 +127,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   networkSubscription: Subscription;
   headerObservable: any;
   scrollEventRemover: any;
+  subjects: any;
   @ViewChild('contentView') contentView: ContentView;
 
   constructor(
@@ -147,7 +149,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     public toastController: ToastController,
     public menuCtrl: MenuController,
-    private headerServie: AppHeaderService,
+    private headerService: AppHeaderService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService
   ) {
     this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
@@ -511,9 +513,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           // this.checkEmptySearchResult(isAfterLanguageChange);
           if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable) {
             if (this.tabs.getSelected().tabTitle === 'LIBRARY‌' && !avoidRefreshList) {
-              this.commonUtilService.showToast(
-                this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
-                `${this.getGroupByPageReq.grade} (${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')})`));
             }
           }
         });
@@ -531,13 +530,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             if (!isAfterLanguageChange) {
               this.commonUtilService.showToast('ERROR_FETCHING_DATA');
             }
-          } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable && !avoidRefreshList) {
-            this.commonUtilService.showToast(
-              this.commonUtilService.translateMessage('EMPTY_LIBRARY_TEXTBOOK_FILTER',
-                {
-                  '%grade': this.getGroupByPageReq.grade,
-                  '%medium': `${this.getGroupByPageReq.medium} ${this.commonUtilService.translateMessage('MEDIUM')}`
-                }));
+          } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable  && !avoidRefreshList) {
           }
           const errvalues = new Map();
           errvalues['isNetworkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
@@ -651,12 +644,12 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   ionViewWillEnter() {
     this.events.subscribe('update_header', (data) => {
-      this.headerServie.showHeaderWithHomeButton(['search', 'download', 'notification']);
+      this.headerService.showHeaderWithHomeButton(['search', 'download', 'notification']);
     });
-    this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
+    this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
-    this.headerServie.showHeaderWithHomeButton(['search', 'download', 'notification']);
+    this.headerService.showHeaderWithHomeButton(['search', 'download', 'notification']);
 
     this.getCategoryData();
 
@@ -745,6 +738,21 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     const categories: Array<FrameworkCategoryCode> = FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES;
     this.getMediumData(frameworkId, categories);
     this.getGradeLevelData(frameworkId, categories);
+    this.getSubjectData(frameworkId, categories);
+  }
+
+  getSubjectData(frameworkId, categories): any {
+    const req: GetFrameworkCategoryTermsRequest = {
+      currentCategoryCode: FrameworkCategoryCode.SUBJECT,
+      language: this.translate.currentLang,
+      requiredCategories: categories,
+      frameworkId: frameworkId
+    };
+    this.frameworkUtilService.getFrameworkCategoryTerms(req).toPromise()
+      .then((res: CategoryTerm[]) => {
+        this.subjects = res;
+      })
+      .catch(() => {});
   }
 
   getMediumData(frameworkId, categories): any {
@@ -926,7 +934,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     const identifier = item.contentId || item.identifier;
     let telemetryObject: TelemetryObject;
     telemetryObject = new TelemetryObject(identifier, item.contentType, undefined);
-
     const values = new Map();
     values['sectionName'] = item.subject;
     values['positionClicked'] = index;
@@ -1033,5 +1040,26 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     // this.contentView._scrollContent.nativeElement.scrollToTop();
 
   }
+  exploreOtherContents() {
+    this.navCtrl.push(ExploreBooksPage, {
+      subjects: this.subjects,
+      categoryGradeLevels: this.categoryGradeLevels,
+      storyAndWorksheets: this.storyAndWorksheets,
+      contentType: ContentType.FOR_LIBRARY_TAB,
+      selectedGrade: this.getGroupByPageReq.grade,
+      selectedMedium: this.getGroupByPageReq.medium
+    });
+    const values = new Map();
+    values['board'] = this.profile.board[0];
+    values['class'] = this.currentGrade.name;
+    values['medium'] = this.currentMedium;
 
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.SEE_MORE_CONTENT_CLICKED,
+      Environment.LIBRARY,
+      PageId.LIBRARY,
+      undefined,
+      values);
+  }
 }

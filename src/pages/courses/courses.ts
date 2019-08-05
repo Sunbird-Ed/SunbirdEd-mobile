@@ -19,9 +19,9 @@ import { TelemetryGeneratorService } from '../../service/telemetry-generator.ser
 import {
   Content, ContentEventType, ContentImportRequest, ContentImportResponse, ContentImportStatus, ContentService, Course,
   CourseService, DownloadEventType, DownloadProgress, EventsBusEvent, EventsBusService, FetchEnrolledCourseRequest,
-  PageAssembleCriteria, PageAssembleService, PageName, ProfileType, SharedPreferences, NetworkError
+  PageAssembleCriteria, PageAssembleService, PageName, ProfileType, SharedPreferences, NetworkError, CorrelationData
 } from 'sunbird-sdk';
-import { Environment, InteractSubtype, InteractType, PageId } from '../../service/telemetry-constants';
+import { Environment, InteractSubtype, InteractType, PageId, CorReleationDataType } from '../../service/telemetry-constants';
 import { Subscription } from 'rxjs';
 import { AppHeaderService } from '@app/service';
 
@@ -88,6 +88,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
   private mode = 'soft';
   private eventSubscription: Subscription;
   headerObservable: any;
+  private corRelationList: Array<CorrelationData>;
 
   /**
    * Default method of class CoursesPage
@@ -658,6 +659,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
 
   getContentDetails(content) {
     const identifier = content.contentId || content.identifier;
+    this.corRelationList = [{id: content.batchId, type: CorReleationDataType.COURSE_BATCH}];
     this.contentService.getContentDetails({ contentId: identifier }).toPromise()
       .then((data: Content) => {
         if (data && data.isAvailableLocally) {
@@ -727,7 +729,8 @@ export class CoursesPage implements OnInit, AfterViewInit {
       isResumedCourse: true,
       isChildContent: true,
       resumedCourseCardData: content,
-      isCourse : true
+      isCourse : true,
+      corRelation: this.corRelationList
     });
   }
 
