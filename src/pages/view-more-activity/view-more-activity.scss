@@ -1,6 +1,7 @@
 page-view-more-activity {
     .scroll-content{
         padding-bottom: 55px !important;
+        contain: unset; 
     }
     button {
         border-radius: 5px !important;
