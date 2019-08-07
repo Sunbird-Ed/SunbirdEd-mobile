@@ -202,7 +202,8 @@ export class CourseCard implements OnInit {
       }
     if (layoutName === this.layoutInProgress || content.contentType === ContentType.COURSE) {
       this.navCtrl.push(EnrolledCourseDetailsPage, {
-        content: content
+        content: content,
+        isCourse: true
       });
     } else if (content.mimeType === MimeType.COLLECTION) {
       // this.navCtrl.push(CollectionDetailsPage, {
@@ -247,7 +248,8 @@ export class CourseCard implements OnInit {
         });
       } else {
         this.navCtrl.push(EnrolledCourseDetailsPage, {
-          content: content
+          content: content,
+          isCourse: true
         });
       }
     });
