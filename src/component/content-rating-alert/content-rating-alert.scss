@@ -3,7 +3,7 @@ content-rating-alert {
 ul {
     @include padding($base-block-space);
       &.rating li {
-        @include padding($base-block-space * 2 !important);
+        @include padding((($base-block-space * 2) - 4) !important);
         background: none;
         color: $info-color;
         ion-icon {
