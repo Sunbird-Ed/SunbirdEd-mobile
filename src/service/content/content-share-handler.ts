@@ -19,7 +19,7 @@ export class ContentShareHandler {
     public async shareContent(content: Content, corRelationList?: CorrelationData[], rollup?: Rollup) {
         this.generateShareInteractEvents(InteractType.TOUCH,
             InteractSubtype.SHARE_LIBRARY_INITIATED,
-            content.contentType, corRelationList, rollup);
+            content.contentData.contentType, corRelationList, rollup);
         const loader = this.commonUtilService.getLoader();
         loader.present();
         const baseUrl = await this.utilityService.getBuildConfigValue('BASE_URL');
@@ -33,7 +33,7 @@ export class ContentShareHandler {
                 .then((response: ContentExportResponse) => {
                     loader.dismiss();
                     this.generateShareInteractEvents(InteractType.OTHER,
-                        InteractSubtype.SHARE_LIBRARY_SUCCESS, content.contentType, corRelationList, rollup);
+                        InteractSubtype.SHARE_LIBRARY_SUCCESS, content.contentData.contentType, corRelationList, rollup);
                     this.social.share('', '', '' + response.exportedFilePath, url);
                 }).catch(() => {
                     loader.dismiss();

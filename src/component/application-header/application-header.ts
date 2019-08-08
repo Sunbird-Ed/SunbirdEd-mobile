@@ -149,6 +149,7 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
 
   toggleMenu() {
     this.menuCtrl.toggle();
+    this.headerEvents.emit({ name: 'MENU_TOGGLE' });
   }
 
   emitEvent($event, name) {

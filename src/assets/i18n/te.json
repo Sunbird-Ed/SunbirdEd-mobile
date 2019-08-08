@@ -49,7 +49,7 @@
   "BATCHES_FOR_THIS_COURSE": "ఈ కోర్సుకు సంబంధించిన బేచ్‌లు",
   "BATCH_CREATED_BY": "తయారుచేసినది",
   "BATCH_DETAILS": "బేచ్ వివరాలు",
-  "BATCH_ENROLLMENT_ENDED": "ఈ బ్యాచ్ ఎక్కువ మంది పాల్గొనేవారిని అంగీకరించడం లేదు",
+  "BATCH_ENROLLMENT_ENDED": "ఈ బ్యాచ్ నమోదు ప్రక్రియ ముగిసింది",
   "BATCH_EXPIRED": "బాచ్ సమయం ముగిసిపోయింది",
   "BATCH_EXPIRED_BUTTON": "సరే",
   "BATCH_EXPIRED_DESCRIPTION": "కోర్సు ముగిసింది. కానీ ఇంకేమైనా కంటెంటు మిగిలిపోయి ఉంటే మీరు పూర్తిచేయవచ్చు.",
@@ -115,7 +115,7 @@
   "COURSES_BNAV": "కోర్సులు",
   "COURSES_IN_PROGRESS": "నా కోర్సులు",
   "COURSES_LW": "కోర్సులు",
-  "COURSE_ENROLLED": "కోర్సులో నమోదు అయ్యారు",
+  "COURSE_ENROLLED": "నమోదు కాబడిన కోర్సులు",
   "COURSE_NOT_AVAILABLE": "ఈ కోర్సు ఇకపై అందుబాటులో లేదు",
   "COURSE_PROGRESS_COMPLETED": "{{%s}} % పూర్తయింది",
   "COURSE_UNENROLLED": "విజయవంతంగా కోర్సు నుండి తీసివేయబడింది",
@@ -139,7 +139,6 @@
   "DELETE_GROUP": "గుంపును తొలగించాలి",
   "DELETE_PROGRESS": "ఎంచుకున్న కంటెంట్ తొలగిస్తోంది",
   "DESCRIPTION": "వివరణ",
-  "DETECTED": "కనుగొనబడింది",
   "DEVICE_ID": "పరికరం యొక్క ఐడి",
   "DEVICE_TAGS": "డివైస్ టాగ్స్ ",
   "DEVICE_TAGS_SUB": "డివైస్ టాగులు మార్చండి",
@@ -356,7 +355,7 @@
   "OVERLAY_INFO_TEXT_TAKE_COURSE": "రిజిస్టర్ అయిన వాడకందారులు మాత్రమే కోర్సులు తీసుకోవచ్చు. దయచేసి లాగిన్ అవ్వండి.",
   "OVERLAY_LABEL_COMMON": "{{%s}} పూర్తి ప్రయోజనం పొందాలంటే",
   "OVERLAY_LABEL_HOME": "మీ మొదటి పేజీ",
-  "OVERLAY_LABEL_TAKE_COURSE": "ఈ కోర్సు తీసుకోవాలంటే  లాగిన్ అవ్వండి",
+  "OVERLAY_LABEL_TAKE_COURSE": "ఈ కోర్సు నమోదుకోసం  లాగిన్ అవ్వండి",
   "OVERLAY_SIGN_IN": "లాగిన్ ",
   "OVER_WIFI": "వైఫై ద్వారా",
   "PASSWORD": "పాస్‌వర్డ్",
@@ -561,5 +560,5 @@
   "WELCOME_BACK": "మీకు తిరిగి స్వాగతం {{%s}}",
   "YES": "అవును",
   "YOUR_PROGRESS": "మీ పురోగతి: {{%s}}%",
-  "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "మీరు ఇంటర్నెట్కు కనెక్ట్ కాలేదు"
+  "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "మీరు ఇంటర్నెట్ కు  కనెక్ట్ కాలేదు"
 }

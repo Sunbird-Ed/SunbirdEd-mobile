@@ -5,16 +5,22 @@ upgrade-popover {
         overflow-y: visible;
     }
     ion-app.md [padding-horizontal] .scroll-content {
-        @include padding(null, 0 !important);
+        @include padding(null, 1px !important);
     }
     ion-app.md [padding-top] .scroll-content {
         padding-top: 0 !important;
     }
+
+    
 }
 .upgradePopover { 
     height: auto;
     max-height: 65vh;
+    ion-content {
+        padding: 1px 16px !important;
+    }
     .popover-content {
+        padding: 1px !important;
         top: 20vh !important;
         width: 80vw !important;
         @include ltr() {

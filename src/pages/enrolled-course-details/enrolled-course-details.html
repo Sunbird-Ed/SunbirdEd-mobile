@@ -7,9 +7,9 @@
 				<span class="text-gray-color">{{ 'CONTENT_CREATED_BY' | translate }}</span>
 				<span class="content-meta-title">{{ course?.creator || course?.owner }}</span>
 			</div>
-			<ion-row class="padding-top-10 credits" (click)="viewCredits()" *ngIf="course?.creators || course?.attributions || course?.contributors">
+			<!-- <ion-row class="padding-top-10 credits" (click)="viewCredits()" *ngIf="course?.creators || course?.creator || course?.attributions || course?.contributors">
 				{{ 'CREDITS' | translate }}
-			</ion-row>
+			</ion-row> -->
 			<ion-row class="padding-top-101">
 				<ion-col class="padding-0">
 					<div class="size_txt padding-bottom-5" no-margin *ngIf="courseCardData?.batchId">
@@ -28,7 +28,7 @@
 			</ion-row>
 		</ion-grid>
 		<br />
-		<div class="about-section" *ngIf="course?.description || course?.gradeLevel || course?.subject || course?.board">
+		<div class="about-section" *ngIf="course?.description">
 			<h6 class="padding-10 background-gray font-size-20">{{ 'ABOUT' | translate }}</h6>
 			<p *ngIf="!showMoreFlag" class="text-gray-color">
 				{{ (course && course.description && course.description.length > 100) ? (course?.description | slice:0:100) + '...' : (course?.description)
@@ -55,10 +55,10 @@
 					<span class="text-gray-color">{{course?.license}}</span>
 					<!-- </span> -->
 				</div>
-				<div *ngIf="course?.owner" margin-top>
+				<div *ngIf="course?.copyright" margin-top>
 					<div class="content-meta-title" text-uppercase>{{ 'COPYRIGHT' | translate }}</div>
 					<!-- <span *ngFor="let grade of course.gradeLevel"> -->
-					<span class="text-gray-color">{{course?.owner}}</span>
+					<span class="text-gray-color">{{course?.copyright}}</span>
 					<!-- </span> -->
 				</div>
 				<!-- Batch details - only for enrolled courses -->
@@ -78,7 +78,8 @@
 
 			</div>
 
-			<div class="read-more" *ngIf="course && course.description && course.description.length > 100 || course?.gradeLevel || course?.subject" (click)="showMoreFlag = !showMoreFlag">
+			<div class="read-more" *ngIf="course && course.description && course.description.length > 100 || course?.author || course?.organisation || course?.license || course?.copyright || batchDetails?.name"
+				(click)="showMoreFlag = !showMoreFlag">
 				<div *ngIf="showMoreFlag" class="padding-top-10" (click)="readLessorReadMore('read-less-clicked')">
 					{{ 'READ_LESS' | translate }}
 					<ion-icon name="ios-arrow-up"></ion-icon>
@@ -140,7 +141,7 @@
 		</div>
 		<br />
 		<br />
-		<div class="license-section padding-10 background-gray" *ngIf="course?.license">
+		<!-- <div class="license-section padding-10 background-gray" *ngIf="course?.license">
 			<div class="row" *ngIf="showLicense">
 				<span>
 					<div class="size_txt content-meta-title">{{ 'LICENSE' | translate }}</div>
@@ -157,7 +158,7 @@
 					<ion-icon name="ios-arrow-down"></ion-icon>
 				</span>
 			</span>
-		</div>
+		</div> -->
 		<div padding-top></div>
 	</div>
 </ion-content>

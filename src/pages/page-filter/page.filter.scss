@@ -22,6 +22,9 @@ page-filter {
     max-height: 50vh !important;
     padding-bottom: 10vh !important;
   }
+  ion-content {
+    padding: 1px;
+  }
   .item-inner>ion-icon {
     min-height: 2rem !important;
     font-size: 2rem !important;

@@ -20,7 +20,7 @@ import {
   ContentExportRequest, ContentExportResponse, ContentImport, ContentImportCompleted, ContentImportRequest,
   ContentImportResponse, ContentImportStatus, ContentMarkerRequest, ContentService, ContentUpdate, CorrelationData,
   DownloadEventType, DownloadProgress, EventsBusEvent, EventsBusService, MarkerType, Profile, ProfileService,
-  ProfileType, Rollup, StorageService, TelemetryErrorCode, TelemetryObject
+  ProfileType, Rollup, StorageService, TelemetryErrorCode, TelemetryObject, ContentImportProgress
 } from 'sunbird-sdk';
 import { Subscription } from 'rxjs';
 import {
@@ -62,15 +62,15 @@ export class CollectionDetailsEtbPage implements OnInit {
   childrenData?: Array<any>;
   mimeTypes = [
     { name: 'ALL', selected: true, value: ['all'], iconNormal: '', iconActive: ''},
-    { name: 'VIDEOS', value: ['video/mp4', 'video/x-youtube', 'video/webm'], iconNormal: './assets/imgs/Play.svg',
-    iconActive: './assets/imgs/Play-active.svg'},
-    { name: 'DOCS', value: ['application/pdf', 'application/epub', 'application/msword'], iconNormal: './assets/imgs/Doc.svg',
-    iconActive: './assets/imgs/Doc-active.svg'},
+    { name: 'VIDEOS', value: ['video/mp4', 'video/x-youtube', 'video/webm'], iconNormal: './assets/imgs/play.svg',
+    iconActive: './assets/imgs/play-active.svg'},
+    { name: 'DOCS', value: ['application/pdf', 'application/epub', 'application/msword'], iconNormal: './assets/imgs/doc.svg',
+    iconActive: './assets/imgs/doc-active.svg'},
     { name: 'INTERACTION',
       value: ['application/vnd.ekstep.ecml-archive', 'application/vnd.ekstep.h5p-archive', 'application/vnd.ekstep.html-archive'],
-      iconNormal: './assets/imgs/Touch.svg', iconActive: './assets/imgs/Touch-active.svg'
+      iconNormal: './assets/imgs/touch.svg', iconActive: './assets/imgs/touch-active.svg'
     },
-    // { name: 'AUDIOS', value: MimeType.AUDIO, iconNormal: './assets/imgs/Audio.svg', iconActive: './assets/imgs/Audio-active.svg'},
+    // { name: 'AUDIOS', value: MimeType.AUDIO, iconNormal: './assets/imgs/audio.svg', iconActive: './assets/imgs/audio-active.svg'},
   ];
   activeMimeTypeFilter = ['all'];
   /**
@@ -225,6 +225,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   contentTypesCount: any;
   stckyUnitTitle?: string;
   isChapterVisible = false;
+  importProgressMessage: string;
 
   constructor(
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
@@ -981,6 +982,22 @@ export class CollectionDetailsEtbPage implements OnInit {
 
             }
           }
+        }
+
+        if (event.type === ContentEventType.IMPORT_PROGRESS) {
+          this.importProgressMessage =  this.commonUtilService.translateMessage('EXTRACTING_CONTENT') + ' ' +
+            Math.floor((event.payload.currentCount / event.payload.totalCount) * 100) +
+            '% (' + event.payload.currentCount + ' / ' + event.payload.totalCount + ')';
+            if (event.payload.currentCount === event.payload.totalCount) {
+              let timer = 30;
+              const interval = setInterval(() => {
+                this.importProgressMessage = `Getting things ready in ${timer--}  seconds`;
+                if (timer === 0) {
+                  this.importProgressMessage = 'Getting things ready';
+                  clearInterval(interval);
+                }
+              }, 1000);
+            }
         }
 
         // For content update available

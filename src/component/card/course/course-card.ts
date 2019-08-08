@@ -211,7 +211,8 @@ export class CourseCard implements OnInit {
       });
     } else {
       this.navCtrl.push(ContentDetailsPage, {
-        content: content
+        content: content,
+        isCourse: true
       });
     }
   }

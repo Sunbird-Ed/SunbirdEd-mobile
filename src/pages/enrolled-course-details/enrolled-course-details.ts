@@ -69,6 +69,7 @@ import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popu
 import { BatchConstants } from '@app/app';
 import { ContentShareHandler } from '@app/service/content/content-share-handler';
 import { AppVersion } from '@ionic-native/app-version';
+import { ContentUtil } from '@app/util/content-util';
 
 declare const cordova;
 
@@ -523,7 +524,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
     } else {
       this.showLoading = true;
       this.headerService.hideHeader();
-      this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.course, true);
+      this.telemetryGeneratorService.generateSpineLoadingTelemetry(data, true);
       this.importContent([this.identifier], false);
     }
 
@@ -854,6 +855,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
    * @param depth
    */
   navigateToChildrenDetailsPage(content: Content, depth): void {
+    let subtype = InteractSubtype.CONTENT_CLICKED;
     const contentState: ContentState = {
       batchId: this.courseCardData.batchId ? this.courseCardData.batchId : '',
       courseId: this.identifier
@@ -863,9 +865,11 @@ export class EnrolledCourseDetailsPage implements OnInit {
         this.navCtrl.push(EnrolledCourseDetailsPage, {
           content: content,
           depth: depth,
-          contentState: contentState
+          contentState: contentState,
+          corRelation: this.corRelationList
         });
       } else if (content.mimeType === MimeType.COLLECTION) {
+        subtype = InteractSubtype.UNIT_CLICKED;
         let isChildClickable = true;
         if (this.isAlreadyEnrolled && this.isBatchNotStarted) {
           isChildClickable = false;
@@ -876,16 +880,26 @@ export class EnrolledCourseDetailsPage implements OnInit {
           contentState: contentState,
           fromCoursesPage: true,
           isAlreadyEnrolled: this.isAlreadyEnrolled,
-          isChildClickable: isChildClickable
+          isChildClickable: isChildClickable,
+          corRelation: this.corRelationList
         });
       } else {
         this.navCtrl.push(ContentDetailsPage, {
           content: content,
           depth: depth,
           contentState: contentState,
-          isChildContent: true
+          isChildContent: true,
+          corRelation: this.corRelationList
         });
       }
+      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+        subtype,
+        Environment.HOME,
+        PageId.COURSE_DETAIL,
+        ContentUtil.getTelemetryObject(content),
+        undefined,
+        undefined,
+        this.corRelationList);
     });
   }
 
@@ -933,7 +947,8 @@ export class EnrolledCourseDetailsPage implements OnInit {
       },
       isResumedCourse: true,
       isChildContent: true,
-      resumedCourseCardData: this.courseCardData
+      resumedCourseCardData: this.courseCardData,
+      corRelation: this.corRelationList
     });
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.RESUME_CLICKED,
@@ -1001,7 +1016,6 @@ export class EnrolledCourseDetailsPage implements OnInit {
       this.corRelationList = [];
       this.corRelationList.push({id: batchId, type: CorReleationDataType.COURSE_BATCH});
     }
-    console.log('Correlation list', this.corRelationList);
   }
 
   isCourseEnrolled(identifier: string) {
@@ -1067,7 +1081,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
               }
             } else {
               this.course.isAvailableLocally = true;
-              this.setChildContents();
+              this.setContentDetails(this.identifier);
             }
           }
 
@@ -1097,7 +1111,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
     if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
     }
-    if(this.headerObservable) {
+    if (this.headerObservable) {
       this.headerObservable.unsubscribe();
     }
     if (this.backButtonFunc) {
@@ -1201,7 +1215,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
   }
 
   share() {
-    this.contentShareHandler.shareContent(this.course, this.corRelationList);
+    this.contentShareHandler.shareContent(this.content, this.corRelationList);
   }
 
   ionViewDidLoad() {

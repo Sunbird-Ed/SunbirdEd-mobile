@@ -1,16 +1,6 @@
 import { BatchConstants, ContentFilterConfig } from './../../app/app.constant';
 import { ChangeDetectorRef, Component, Inject, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import {
-  Events,
-  IonicPage,
-  Navbar,
-  NavController,
-  NavParams,
-  Platform,
-  PopoverController,
-  Loading,
-  TextInput
-} from 'ionic-angular';
+import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, Loading, TextInput } from 'ionic-angular';
 import { Content as ContentView } from 'ionic-angular';
 import {
   CachedItemRequestSourceFrom, Content, ContentDetailRequest, ContentEventType, ContentImport, ContentImportRequest,
@@ -47,7 +37,7 @@ import { AppHeaderService } from '@app/service';
 import { EnrollmentDetailsPage } from '../enrolled-course-details/enrollment-details/enrollment-details';
 import { SearchHistoryNamespaces } from '@app/config/search-history-namespaces';
 import { AppVersion } from '@ionic-native/app-version';
-import {featureIdMap} from '@app/feature-id-map';
+import { featureIdMap } from '@app/feature-id-map';
 
 declare const cordova;
 
@@ -193,7 +183,7 @@ export class SearchPage implements OnInit, OnDestroy {
   }
 
   ionViewDidLoad() {
-      this.searchHistory$ = this.searchBar && (this.searchBar as TextInput).ionChange
+    this.searchHistory$ = this.searchBar && (this.searchBar as TextInput).ionChange
       .map((e) => e.value)
       .share()
       .startWith('')
@@ -492,9 +482,10 @@ export class SearchPage implements OnInit, OnDestroy {
           res.forEach(element => {
             // checking whether content data framework Id exists/valid in syllabus list
             if (data.framework === element.identifier || data.board.indexOf(element.name) !== -1) {
+              data.framework = element.identifier;
               this.isProfileUpdated = true;
               const frameworkDetailsRequest: FrameworkDetailsRequest = {
-                frameworkId: data.framework,
+                frameworkId: element.identifier,
                 requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
               };
               this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
@@ -676,6 +667,14 @@ export class SearchPage implements OnInit, OnDestroy {
       });
   }
 
+  handleCancel() {
+    this.searchKeywords = '';
+    this.searchBar.setFocus();
+    this.searchContentResult = undefined;
+    this.filterIcon = false;
+    this.isEmptyResult = false;
+  }
+
   handleSearch() {
     this.scrollToTop();
     if (this.searchKeywords.length < 3) {
@@ -749,7 +748,7 @@ export class SearchPage implements OnInit, OnDestroy {
           this.showEmptyMessage = this.searchContentResult.length === 0;
           this.showLoader = false;
           if (!this.showLoader) {
-             this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+            this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
           }
         });
       }).catch(() => {
@@ -757,7 +756,7 @@ export class SearchPage implements OnInit, OnDestroy {
           this.showLoader = false;
           if (!this.showLoader) {
             this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
-         }
+          }
           if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
             this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
           }
@@ -1326,7 +1325,21 @@ export class SearchPage implements OnInit, OnDestroy {
             this.loadingDisplayText = 'Loading content ';
           }
         }
-
+        if (event.type === ContentEventType.IMPORT_PROGRESS) {
+          this.loadingDisplayText = this.commonUtilService.translateMessage('EXTRACTING_CONTENT') + ' ' +
+            Math.floor((event.payload.currentCount / event.payload.totalCount) * 100) +
+            '% (' + event.payload.currentCount + ' / ' + event.payload.totalCount + ')';
+            if (event.payload.currentCount === event.payload.totalCount) {
+              let timer = 30;
+              const interval = setInterval(() => {
+                this.loadingDisplayText = `Getting things ready in ${timer--}  seconds`;
+                if (timer === 0) {
+                  this.loadingDisplayText = 'Getting things ready';
+                  clearInterval(interval);
+                }
+              }, 1000);
+            }
+        }
         // if (event.payload && event.payload.status === 'IMPORT_COMPLETED' && event.type === 'contentImport') {
         if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {

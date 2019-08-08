@@ -265,7 +265,7 @@ export class ContentActionsComponent {
       return isEnrolledDisabled;
     }
     if ((!(this.batchDetails && this.batchDetails.hasOwnProperty('endDate')) ||
-      (this.batchDetails.endDate > todayDate)) &&
+      (this.batchDetails.endDate >= todayDate)) &&
       (this.batchDetails.enrollmentType === 'open') &&
       (progress !== 100)) {
       isEnrolledDisabled = false;

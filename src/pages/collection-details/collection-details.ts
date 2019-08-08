@@ -51,6 +51,7 @@ import {
 } from '../../service/telemetry-constants';
 import {Subscription} from 'rxjs';
 import { ContentShareHandler } from '@app/service/content/content-share-handler';
+import { ContentUtil } from '@app/util/content-util';
 
 declare const cordova;
 @IonicPage()
@@ -188,7 +189,7 @@ export class CollectionDetailsPage {
   public baseUrl = '';
   guestUser = false;
   profileType = '';
-  
+
   public corRelationList: Array<CorrelationData>;
   public shouldGenerateEndTelemetry = false;
   public source = '';
@@ -659,6 +660,7 @@ export class CollectionDetailsPage {
   }
 
   navigateToDetailsPage(content: any, depth) {
+    let subtype = InteractSubtype.CONTENT_CLICKED;
     const stateData = this.navParams.get('contentState');
 
     this.zone.run(() => {
@@ -670,6 +672,7 @@ export class CollectionDetailsPage {
           corRelation: this.corRelationList
         });
       } else if (content.mimeType === MimeType.COLLECTION) {
+        subtype = InteractSubtype.UNIT_CLICKED;
         this.isDepthChild = true;
         this.navCtrl.push(CollectionDetailsPage, {
           content: content,
@@ -683,9 +686,18 @@ export class CollectionDetailsPage {
           content: content,
           depth: depth,
           contentState: stateData,
-          corRelation: this.corRelationList
+          corRelation: this.corRelationList,
+          isCourse : true
         });
       }
+      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+        subtype,
+        Environment.HOME,
+        PageId.COLLECTION_DETAIL,
+        ContentUtil.getTelemetryObject(content),
+        undefined,
+        undefined,
+        this.corRelationList);
     });
   }
 

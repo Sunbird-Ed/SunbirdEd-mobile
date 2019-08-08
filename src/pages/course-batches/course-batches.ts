@@ -111,7 +111,6 @@ export class CourseBatchesPage implements OnInit {
       batchId: item.id,
       courseId: item.courseId,
       userId: this.userId,
-      contentId: item.courseId,
       batchStatus: item.status
     };
     const loader = this.commonUtilService.getLoader();
@@ -137,6 +136,7 @@ export class CourseBatchesPage implements OnInit {
         });
       }, (error) => {
         this.zone.run(() => {
+          loader.dismiss();
           if (error && error.code === 'NETWORK_ERROR') {
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NO_INTERNET_MESSAGE'));
           } else if (error && error.response
