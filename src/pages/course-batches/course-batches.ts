@@ -120,7 +120,6 @@ export class CourseBatchesPage implements OnInit {
         batchId: item.id,
         courseId: item.courseId,
         userId: this.userId,
-        contentId: item.courseId,
         batchStatus: item.status
       };
       const loader = this.commonUtilService.getLoader();

@@ -69,21 +69,27 @@ export class SplaschreenDeeplinkActionHandlerDelegate implements SplashscreenAct
     if (identifier) {
       switch (type) {
         case 'content': {
-            return this.contentService.getContentDetails({
-              contentId: identifier || this.identifier
-            }).do(async (content: Content) => {
-              if (content.contentType === ContentType.COURSE.toLowerCase()) {
-                await navObj.push(EnrolledCourseDetailsPage, { content });
-              } else if (content.mimeType === MimeType.COLLECTION) {
-                await navObj.push(CollectionDetailsEtbPage, { content });
-              } else {
-                await navObj.push(ContentDetailsPage, { content });
-              }
-            }).mapTo(undefined) as any;
-          }
-        case 'dial': {
-            navObj.push(SearchPage, { dialCode: identifier, source: PageId.HOME });
+          const loader = this.commonUtilService.getLoader();
+          loader.present();
+          return this.contentService.getContentDetails({
+            contentId: identifier || this.identifier
+          }).catch(() => {
+            loader.dismiss();
             return Observable.of(undefined);
+          }).do(async (content: Content) => {
+            loader.dismiss();
+            if (content.contentType === ContentType.COURSE.toLowerCase()) {
+              await navObj.push(EnrolledCourseDetailsPage, { content });
+            } else if (content.mimeType === MimeType.COLLECTION) {
+              await navObj.push(CollectionDetailsEtbPage, { content });
+            } else {
+              await navObj.push(ContentDetailsPage, { content });
+            }
+          }).mapTo(undefined) as any;
+        }
+        case 'dial': {
+          navObj.push(SearchPage, { dialCode: identifier, source: PageId.HOME });
+          return Observable.of(undefined);
         }
         default: {
           return Observable.of(undefined);
@@ -117,7 +123,6 @@ export class SplaschreenDeeplinkActionHandlerDelegate implements SplashscreenAct
         batchId: batch.id,
         courseId: batch.courseId,
         userId: this.userId,
-        contentId: batch.courseId,
         batchStatus: batch.status
       };
       const loader = this.commonUtilService.getLoader();

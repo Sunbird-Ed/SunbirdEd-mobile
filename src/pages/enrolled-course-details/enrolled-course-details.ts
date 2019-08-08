@@ -524,7 +524,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
     } else {
       this.showLoading = true;
       this.headerService.hideHeader();
-      this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.course, true);
+      this.telemetryGeneratorService.generateSpineLoadingTelemetry(data, true);
       this.importContent([this.identifier], false);
     }
 
@@ -865,7 +865,8 @@ export class EnrolledCourseDetailsPage implements OnInit {
         this.navCtrl.push(EnrolledCourseDetailsPage, {
           content: content,
           depth: depth,
-          contentState: contentState
+          contentState: contentState,
+          corRelation: this.corRelationList
         });
       } else if (content.mimeType === MimeType.COLLECTION) {
         subtype = InteractSubtype.UNIT_CLICKED;
@@ -879,14 +880,16 @@ export class EnrolledCourseDetailsPage implements OnInit {
           contentState: contentState,
           fromCoursesPage: true,
           isAlreadyEnrolled: this.isAlreadyEnrolled,
-          isChildClickable: isChildClickable
+          isChildClickable: isChildClickable,
+          corRelation: this.corRelationList
         });
       } else {
         this.navCtrl.push(ContentDetailsPage, {
           content: content,
           depth: depth,
           contentState: contentState,
-          isChildContent: true
+          isChildContent: true,
+          corRelation: this.corRelationList
         });
       }
       this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
@@ -944,7 +947,8 @@ export class EnrolledCourseDetailsPage implements OnInit {
       },
       isResumedCourse: true,
       isChildContent: true,
-      resumedCourseCardData: this.courseCardData
+      resumedCourseCardData: this.courseCardData,
+      corRelation: this.corRelationList
     });
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.RESUME_CLICKED,
@@ -1012,7 +1016,6 @@ export class EnrolledCourseDetailsPage implements OnInit {
       this.corRelationList = [];
       this.corRelationList.push({id: batchId, type: CorReleationDataType.COURSE_BATCH});
     }
-    console.log('Correlation list', this.corRelationList);
   }
 
   isCourseEnrolled(identifier: string) {
@@ -1210,7 +1213,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
   }
 
   share() {
-    this.contentShareHandler.shareContent(this.course, this.corRelationList);
+    this.contentShareHandler.shareContent(this.content, this.corRelationList);
   }
 
   ionViewDidLoad() {
