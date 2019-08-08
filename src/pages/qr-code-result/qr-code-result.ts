@@ -257,7 +257,7 @@ export class QrCodeResultPage implements OnDestroy {
             this.navCtrl.pop();
             } else {
               this.showComingSoonPopUp(data);
-              this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 2));
+              this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length() - 3));
         }
       }
       })
