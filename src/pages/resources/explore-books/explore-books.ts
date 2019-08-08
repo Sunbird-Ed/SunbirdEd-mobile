@@ -182,14 +182,7 @@ export class ExploreBooksPage implements OnDestroy {
   ionViewWillEnter() {
 
     this.searchFormSubscription = this.onSearchFormChange()
-      .subscribe(() => {}, () => {
-        this.zone.run(() => {
-          this.showLoader = false;
-          if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
-            this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
-          }
-        });
-      });
+      .subscribe(() => {});
 
     this.searchForm.patchValue({
       'grade': this.selectedGrade,
@@ -285,12 +278,22 @@ export class ExploreBooksPage implements OnDestroy {
           values);
         this.showLoader = true;
         this.contentSearchResult = [];
-        return this.contentService.searchContent(searchCriteria);
+        return this.contentService.searchContent(searchCriteria)
+          .catch(() => {
+            this.zone.run(() => {
+              this.showLoader = false;
+              if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
+                this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
+              }
+            });
+
+            return Observable.of(undefined);
+          });
       })
       .do(() => {
         (<any>window).cordova.plugins.Keyboard.close();
       })
-      .do((result: ContentSearchResult) => {
+      .do((result?: ContentSearchResult) => {
         this.zone.run(() => {
           if (result) {
             let facetFilters: Array<ContentSearchFilter>;
