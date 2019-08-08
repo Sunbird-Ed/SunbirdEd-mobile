@@ -372,10 +372,8 @@ export class MyApp implements OnInit, AfterViewInit {
 
           const display_cat_page: string = await this.utilityService
             .getBuildConfigValue(GenericAppConfig.DISPLAY_ONBOARDING_CATEGORY_PAGE);
-
           if (display_cat_page === 'false') {
             await this.nav.setRoot(TabsPage);
-            this.splaschreenDeeplinkActionHandlerDelegate.onAction('content').toPromise();
           } else {
             const profile = await this.profileService.getActiveSessionProfile({ requiredFields: ProfileConstants.REQUIRED_FIELDS })
               .toPromise();
@@ -388,7 +386,6 @@ export class MyApp implements OnInit, AfterViewInit {
             ) {
               this.appGlobalService.isProfileSettingsCompleted = true;
               await this.nav.setRoot(TabsPage);
-              this.splaschreenDeeplinkActionHandlerDelegate.onAction('content').toPromise();
             } else {
               this.appGlobalService.isProfileSettingsCompleted = false;
               try {
@@ -428,7 +425,7 @@ export class MyApp implements OnInit, AfterViewInit {
               this.commonUtilService
                 .showToast(this.commonUtilService.translateMessage('WELCOME_BACK', serverProfile.firstName));
             }
-
+            
             this.rootPage = TabsPage;
           } else {
             const serverProfile = await this.profileService.getServerProfilesDetails({
