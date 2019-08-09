@@ -889,7 +889,8 @@ export class EnrolledCourseDetailsPage implements OnInit {
           depth: depth,
           contentState: contentState,
           isChildContent: true,
-          corRelation: this.corRelationList
+          corRelation: this.corRelationList,
+          isCourse: true
         });
       }
       this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
@@ -1144,36 +1145,34 @@ export class EnrolledCourseDetailsPage implements OnInit {
       reqvalues);
 
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-      if (!this.guestUser) {
-        loader.present();
-        this.courseService.getCourseBatches(courseBatchesRequest).toPromise()
-          .then((data: Batch[]) => {
-            this.zone.run(() => {
-              this.batches = data;
-              if (this.batches.length) {
-                _.forEach(this.batches, (batch, key) => {
-                  if (batch.status === 1) {
-                    ongoingBatches.push(batch);
-                  } else {
-                    upcommingBatches.push(batch);
-                  }
-                });
-                loader.dismiss();
-                this.navCtrl.push(CourseBatchesPage, {
-                  ongoingBatches: ongoingBatches,
-                  upcommingBatches: upcommingBatches
-                });
-              } else {
-                loader.dismiss();
-                this.commonUtilService.showToast('NO_BATCHES_AVAILABLE');
-              }
-            });
-          })
-          .catch((error: any) => {
+      loader.present();
+      this.courseService.getCourseBatches(courseBatchesRequest).toPromise()
+        .then((data: Batch[]) => {
+          this.zone.run(() => {
+            this.batches = data;
+            if (this.batches.length) {
+              _.forEach(this.batches, (batch, key) => {
+                if (batch.status === 1) {
+                  ongoingBatches.push(batch);
+                } else {
+                  upcommingBatches.push(batch);
+                }
+              });
+              loader.dismiss();
+              this.navCtrl.push(CourseBatchesPage, {
+                ongoingBatches: ongoingBatches,
+                upcommingBatches: upcommingBatches,
+                course: this.course
+              });
+            } else {
+              loader.dismiss();
+              this.commonUtilService.showToast('NO_BATCHES_AVAILABLE');
+            }
           });
-      } else {
-        this.navCtrl.push(CourseBatchesPage);
-      }
+        })
+        .catch((error: any) => {
+          console.log('Error while fetching Batch Details', error);
+        });
     } else {
       this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
     }

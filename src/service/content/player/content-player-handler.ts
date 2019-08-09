@@ -29,9 +29,11 @@ export class ContentPlayerHandler {
      *  @param {boolean} isStreaming
      *  @param {boolean} shouldDownloadnPlay
      *  @param {ContentInfo} contentInfo
+     * @param {boolean} isCourse
      *  @returns {void}
      */
-    public launchContentPlayer(content: Content, isStreaming: boolean, shouldDownloadnPlay: boolean, contentInfo: ContentInfo) {
+    public launchContentPlayer(content: Content, isStreaming: boolean, shouldDownloadnPlay: boolean,
+         contentInfo: ContentInfo, isCourse: boolean) {
         if (!AppGlobalService.isPlayerLaunched) {
             AppGlobalService.isPlayerLaunched = true;
         }
@@ -58,6 +60,12 @@ export class ContentPlayerHandler {
         request['correlationData'] = contentInfo.correlationList;
         this.playerService.getPlayerConfig(content, request).subscribe((data) => {
             data['data'] = {};
+            if (isCourse) {
+                data.config.overlay.enableUserSwitcher = false;
+                data.config.overlay.showUser = false;
+            } else {
+                data.config.overlay.enableUserSwitcher = true;
+            }
             if (data.metadata.mimeType === 'application/vnd.ekstep.ecml-archive') {
                 if (!isStreaming) {
                     this.file.checkFile(`file://${data.metadata.basePath}/`, 'index.ecml').then((isAvailable) => {
