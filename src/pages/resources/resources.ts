@@ -34,6 +34,7 @@ import { AppHeaderService } from '@app/service';
 import { NotificationsPage } from '../notifications/notifications';
 import { TextbookViewMorePage } from '../textbook-view-more/textbook-view-more';
 import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
+import { SplaschreenDeeplinkActionHandlerDelegate } from '@app/service/sunbird-splashscreen/splaschreen-deeplink-action-handler-delegate';
 import { ExploreBooksPage } from '../resources/explore-books/explore-books';
 
 @Component({
@@ -149,8 +150,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     public toastController: ToastController,
     public menuCtrl: MenuController,
-    private headerService: AppHeaderService,
-    private formAndFrameworkUtilService: FormAndFrameworkUtilService
+    private headerServie: AppHeaderService,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
+    private splaschreenDeeplinkActionHandlerDelegate: SplaschreenDeeplinkActionHandlerDelegate
   ) {
     this.preferences.getString(PreferenceKey.SELECTED_LANGUAGE_CODE).toPromise()
       .then(val => {
@@ -624,6 +626,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
   ionViewDidLoad() {
     this.appGlobalService.generateConfigInteractEvent(PageId.LIBRARY, this.isOnBoardingCardCompleted);
+    this.splaschreenDeeplinkActionHandlerDelegate.onAction('content').toPromise();
   }
 
   ionViewDidEnter() {
