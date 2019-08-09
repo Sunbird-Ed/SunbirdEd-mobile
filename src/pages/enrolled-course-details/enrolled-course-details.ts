@@ -1086,7 +1086,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
             this.zone.run(() => {
               this.showLoading = true;
               this.headerService.hideHeader();
-              this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.course, false);
+              this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.content, false);
               this.importContent([this.identifier], false);
             });
           }
