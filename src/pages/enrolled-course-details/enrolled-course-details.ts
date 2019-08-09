@@ -889,7 +889,8 @@ export class EnrolledCourseDetailsPage implements OnInit {
           depth: depth,
           contentState: contentState,
           isChildContent: true,
-          corRelation: this.corRelationList
+          corRelation: this.corRelationList,
+          isCourse: true
         });
       }
       this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,

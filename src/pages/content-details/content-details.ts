@@ -58,7 +58,7 @@ import { ContentInfo } from '@app/service/content/content-info';
 })
 export class ContentDetailsPage {
   appName: any;
-  isCourse: Boolean = false;
+  isCourse = false;
   apiLevel: number;
   appAvailability: string;
   content: Content;
@@ -909,7 +909,7 @@ export class ContentDetailsPage {
       if (this.isResumedCourse) {
         this.playingContent.hierarchyInfo = hierachyInfo;
       }
-      this.contentPlayerHandler.launchContentPlayer(this.playingContent, isStreaming, this.downloadAndPlay, contentInfo);
+      this.contentPlayerHandler.launchContentPlayer(this.playingContent, isStreaming, this.downloadAndPlay, contentInfo, this.isCourse);
       this.downloadAndPlay = false;
       this.isPlayerLaunched = true;
     }
