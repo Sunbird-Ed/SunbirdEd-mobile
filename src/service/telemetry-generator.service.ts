@@ -195,7 +195,8 @@ export class TelemetryGeneratorService {
         values['isFirstTime'] = isFirstTime;
         values['size'] = content.size;
         const telemetryObject = new TelemetryObject(content.identifier || content.contentId,
-            content.contentType,  content.pkgVersion);
+            content.contentData ? content.contentData.contentType : content.contentType,
+            content.contentData ? content.contentData.pkgVersion : content.pkgVersion);
         this.generateInteractTelemetry(
             InteractType.OTHER,
             InteractSubtype.LOADING_SPINE,
