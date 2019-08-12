@@ -2,13 +2,13 @@
 <!-- <ion-header class="sb-header">
     <ion-navbar class="sb-header-navbar" #content>
       <ion-toolbar class="sb-header-toolbar">
-  
+
         <ion-buttons class="sb-hamburger" start *ngIf="headerConfig?.showBurgerMenu">
           <button class="sb-hamburger-menu sb-hamburger-icon" ion-button icon-only (click)="toggleMenu()">
              <img src="./assets/imgs/ic_burger_menu.png" class="tool-icon" >
           </button>
         </ion-buttons>
-  
+
         <ion-buttons class="sb-header-btn-group" end>
           <button ion-button icon-only *ngIf="headerConfig?.actionButtons?.indexOf('notification') >=0" (click)="emitEvent($event, 'notification');">
             <ion-icon name="notifications-outline"></ion-icon>
@@ -26,11 +26,11 @@
               <img src="./assets/imgs/ic_action_filter_applied.png" class="tool-icon" >
           </button>
         </ion-buttons>
-  
+
       </ion-toolbar>
     </ion-navbar>
   </ion-header>
-  
+
   <ion-menu [content]="content" class="sb-side-menu" persistent="true" >
       <ion-header>
         <ion-toolbar>
@@ -153,8 +153,8 @@
 						</span>
 					</div>
 					<!-- Card style -->
-					<div class="sb-card-container sb-card-textbook-container"> 
-						<div class="sb-card-textbook" *ngFor="let item of items?.contents; let i = index"> 
+					<div class="sb-card-container sb-card-textbook-container">
+						<div class="sb-card-textbook" *ngFor="let item of items?.contents; let i = index">
 						<textbook-card *ngIf ="i < 3" [content]="item"
 							[layoutName]='layoutName' (click)="navigateToDetailPage(item, i, item.name)"></textbook-card>
 						</div>
@@ -164,13 +164,13 @@
 			</div>
 		</div>
     <div *ngIf="storyAndWorksheets && storyAndWorksheets.length !== 0">
-      <div class="text-center">
+      <div class="text-center" *ngIf="commonUtilService?.networkInfo?.isNetworkAvailable">
         <p class="information">{{'MORE_CONTENT' | translate:{'%s': appLabel} }}</p>
         <button class="explore" style="background-color: #F3F7FA;" ion-button outline (click)="exploreOtherContents()">{{'DATA' | translate}} </button>
       </div>
     </div>
     <div *ngIf="!searchApiLoader && storyAndWorksheets && storyAndWorksheets.length === 0">
-      <div class="sb-nodownloads-container">
+      <div class="sb-nodownloads-container" *ngIf="commonUtilService?.networkInfo?.isNetworkAvailable">
         <div class="text-center">
           <img style="width: 19.58%; height: 7.72%;" src="./assets/imgs/group.svg" alt="">
         </div>

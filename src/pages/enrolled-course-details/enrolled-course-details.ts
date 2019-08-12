@@ -962,10 +962,12 @@ export class EnrolledCourseDetailsPage implements OnInit {
     this.source = this.navParams.get('source');
     this.identifier = this.courseCardData.contentId || this.courseCardData.identifier;
 
-    this.updatedCourseCardData = await this.courseService.getEnrolledCourses
-    ({userId: this.userId, returnFreshCourses: true}).toPromise().then((data) => {
-      return data.find((element) => element.courseId === this.identifier)
-    });
+    if(!this.guestUser){
+      this.updatedCourseCardData = await this.courseService.getEnrolledCourses
+      ({userId: this.userId, returnFreshCourses: true}).toPromise().then((data) => {
+        return data.find((element) => element.courseId === this.identifier)
+      });
+    }
 
     // check if the course is already enrolled
     this.isCourseEnrolled(this.identifier);
