@@ -707,21 +707,21 @@ export class SearchPage implements OnInit, OnDestroy {
     this.dialCodeResult = undefined;
     this.corRelationList = [];
 
-    // if (this.profile) {
+    if (this.profile) {
 
-    //   if (this.profile.board && this.profile.board.length) {
-    //     contentSearchRequest.board = this.applyProfileFilter(this.profile.board, contentSearchRequest.board, 'board');
-    //   }
+      if (this.profile.board && this.profile.board.length) {
+        contentSearchRequest.board = this.applyProfileFilter(this.profile.board, contentSearchRequest.board, 'board');
+      }
 
-    //   if (this.profile.medium && this.profile.medium.length) {
-    //     contentSearchRequest.medium = this.applyProfileFilter(this.profile.medium, contentSearchRequest.medium, 'medium');
-    //   }
+      if (this.profile.medium && this.profile.medium.length) {
+        contentSearchRequest.medium = this.applyProfileFilter(this.profile.medium, contentSearchRequest.medium, 'medium');
+      }
 
-    //   if (this.profile.grade && this.profile.grade.length) {
-    //     contentSearchRequest.grade = this.applyProfileFilter(this.profile.grade, contentSearchRequest.grade, 'gradeLevel');
-    //   }
+      if (this.profile.grade && this.profile.grade.length) {
+        contentSearchRequest.grade = this.applyProfileFilter(this.profile.grade, contentSearchRequest.grade, 'gradeLevel');
+      }
 
-    // }
+    }
 
     this.contentService.searchContent(contentSearchRequest).toPromise()
       .then((response: ContentSearchResult) => {
@@ -1416,12 +1416,10 @@ export class SearchPage implements OnInit, OnDestroy {
       } else if (userType === ProfileType.TEACHER) {
         this.audienceFilter = AudienceFilter.GUEST_TEACHER;
       }
-
-      this.profile = this.appGlobalService.getCurrentUser();
     } else {
       this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
-      this.profile = undefined;
     }
+    this.profile = this.appGlobalService.getCurrentUser();
   }
 
   private addCorRelation(id: string, type: string) {
