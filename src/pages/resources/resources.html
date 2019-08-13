@@ -163,7 +163,7 @@
 				</div>
 			</div>
 		</div>
-    <div *ngIf="storyAndWorksheets && storyAndWorksheets.length !== 0">
+    <div class="sb-explore-container" *ngIf="storyAndWorksheets && storyAndWorksheets.length !== 0">
       <div class="text-center" *ngIf="commonUtilService?.networkInfo?.isNetworkAvailable">
         <p class="information">{{'MORE_CONTENT' | translate:{'%s': appLabel} }}</p>
         <button class="explore" style="background-color: #F3F7FA;" ion-button outline (click)="exploreOtherContents()">{{'DATA' | translate}} </button>
