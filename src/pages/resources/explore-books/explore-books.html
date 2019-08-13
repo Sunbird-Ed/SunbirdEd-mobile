@@ -67,6 +67,15 @@
       </div>
 <!--    </div>-->
   </ng-container>
+
+  <div padding text-center class="mt-32 mb-32" *ngIf="!commonUtilService?.networkInfo?.isNetworkAvailable">
+    <img src="assets/imgs/outline-cloud_off.svg" />
+    <h6 class="offline-header" ion-text>
+      <b>{{ 'NO_INTERNET_TITLE' | translate }}</b>
+    </h6>
+    <p class="offline-content">{{ 'OFFLINE_WARNING_ETBUI' | translate }}</p>
+  </div>
+
 </ion-content>
 
 <ion-footer class="bottom-button" *ngIf="!showLoader && contentSearchResult.length">
