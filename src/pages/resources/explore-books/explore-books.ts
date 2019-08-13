@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, ElementRef, Inject, NgZone, OnDestroy, QueryList, ViewChild, ViewChildren} from '@angular/core';
-import {IonicPage, NavController, NavParams, Platform, ModalController, ToastController} from 'ionic-angular';
+import {IonicPage, NavController, NavParams, Platform, ModalController} from 'ionic-angular';
 import {AudienceFilter, ContentType, Map, MimeType, Search, ExploreConstants} from "@app/app";
 import {
   Environment,
@@ -126,7 +126,6 @@ export class ExploreBooksPage implements OnDestroy {
   boardList: Array<FilterValue>;
   mediumList: Array<FilterValue>;
   corRelationList: Array<CorrelationData>;
-  networkSubscription: Subscription;
 
   constructor(
     public navCtrl: NavController,
@@ -150,7 +149,6 @@ export class ExploreBooksPage implements OnDestroy {
     this.selectedGrade = this.navParams.get('selectedGrade');
     this.selectedMedium = this.navParams.get('selectedMedium');
     this.categoryGradeLevels = this.navParams.get('categoryGradeLevels');
-    // this.categoryGradeLevels.sort((a, b) => b.count - a.count);
     this.subjects = this.navParams.get('subjects');
     this.subjects.unshift({name: this.commonUtilService.translateMessage('ALL'), selected: true});
 
