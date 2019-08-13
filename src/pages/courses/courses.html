@@ -17,7 +17,7 @@
       no-padding>
       <div class="inner inprogress-courses">
         <course-card *ngFor="let course of enrolledCourses; let i=index" [env]="'home'" [index]="i"
-          [sectionName]="inProgressSection" [pageName]="'course'" [course]="course" [guestUser]="guestUser"
+          [sectionName]="inProgressSection" [pageName]="'courses'" [course]="course" [guestUser]="guestUser"
           [layoutName]="layoutInProgress"></course-card>
       </div>
     </ion-scroll>
@@ -38,7 +38,7 @@
         <ion-scroll scrollX="true" style="width: 100%; height: 166px;" no-padding>
           <div class="inner">
             <course-card *ngFor="let item of course.contents; let i=index" [env]="'home'" [index]="i"
-              [sectionName]="course.name" [enrolledCourses]="enrolledCourses" [pageName]="'course'" [course]="item"
+              [sectionName]="course.name" [enrolledCourses]="enrolledCourses" [pageName]="'courses'" [course]="item"
               [layoutName]="layoutPopular" [guestUser]="guestUser">
             </course-card>
           </div>

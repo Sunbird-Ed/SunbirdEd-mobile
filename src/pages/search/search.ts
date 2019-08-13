@@ -30,7 +30,7 @@ import { QrCodeResultPage } from '../qr-code-result/qr-code-result';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Subscription } from 'rxjs';
 import {
-  Environment, ImpressionType, InteractSubtype, InteractType, LogLevel, Mode, PageId
+  Environment, ImpressionType, InteractSubtype, InteractType, LogLevel, Mode, PageId, CorReleationDataType
 } from '../../service/telemetry-constants';
 import { TabsPage } from '@app/pages/tabs/tabs';
 import { AppHeaderService } from '@app/service';
@@ -984,7 +984,13 @@ export class SearchPage implements OnInit, OnDestroy {
       values['root'] = false;
     }
     const telemetryObject = new TelemetryObject(identifier, contentType, pkgVersion);
-
+    if (!this.corRelationList) {
+      this.corRelationList = [];
+    }
+    this.corRelationList.push({
+      id: 'SearchResult',
+      type: 'Section'
+    });
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.CONTENT_CLICKED,
       !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
@@ -1329,16 +1335,16 @@ export class SearchPage implements OnInit, OnDestroy {
           this.loadingDisplayText = this.commonUtilService.translateMessage('EXTRACTING_CONTENT') + ' ' +
             Math.floor((event.payload.currentCount / event.payload.totalCount) * 100) +
             '% (' + event.payload.currentCount + ' / ' + event.payload.totalCount + ')';
-            if (event.payload.currentCount === event.payload.totalCount) {
-              let timer = 30;
-              const interval = setInterval(() => {
-                this.loadingDisplayText = `Getting things ready in ${timer--}  seconds`;
-                if (timer === 0) {
-                  this.loadingDisplayText = 'Getting things ready';
-                  clearInterval(interval);
-                }
-              }, 1000);
-            }
+          if (event.payload.currentCount === event.payload.totalCount) {
+            let timer = 30;
+            const interval = setInterval(() => {
+              this.loadingDisplayText = `Getting things ready in ${timer--}  seconds`;
+              if (timer === 0) {
+                this.loadingDisplayText = 'Getting things ready';
+                clearInterval(interval);
+              }
+            }, 1000);
+          }
         }
         // if (event.payload && event.payload.status === 'IMPORT_COMPLETED' && event.type === 'contentImport') {
         if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {

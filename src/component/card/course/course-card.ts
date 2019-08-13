@@ -9,7 +9,7 @@ import {ContentCard, ContentType, MimeType, PreferenceKey} from '../../../app/ap
 import {CourseUtilService} from '../../../service/course-util.service';
 import {TelemetryGeneratorService} from '../../../service/telemetry-generator.service';
 import {SharedPreferences, TelemetryObject,
-CourseService, CourseBatchesRequest, CourseEnrollmentType, CourseBatchStatus, GetContentStateRequest} from 'sunbird-sdk';
+CourseService, CourseBatchesRequest, CourseEnrollmentType, CourseBatchStatus, GetContentStateRequest, CorrelationData} from 'sunbird-sdk';
 import {InteractSubtype, InteractType, Environment, PageId} from '../../../service/telemetry-constants';
 import { CommonUtilService } from '@app/service';
 import { EnrollmentDetailsPage } from '@app/pages/enrolled-course-details/enrollment-details/enrollment-details';
@@ -186,7 +186,10 @@ export class CourseCard implements OnInit {
       telemetryObject = new TelemetryObject(identifier, objectType, undefined);
     }
 
-
+    const corRelationList: Array<CorrelationData> = [{
+      id: this.sectionName,
+      type: 'Section'
+    }];
     const values = new Map();
     values['sectionName'] = this.sectionName;
     values['positionClicked'] = this.index;
@@ -196,22 +199,27 @@ export class CourseCard implements OnInit {
       this.env,
       this.pageName ? this.pageName : this.layoutName,
       telemetryObject,
-      values);
+      values,
+      undefined,
+      corRelationList);
       if (this.loader) {
         this.loader.dismiss();
       }
     if (layoutName === this.layoutInProgress || content.contentType === ContentType.COURSE) {
       this.navCtrl.push(EnrolledCourseDetailsPage, {
-        content: content
+        content: content,
+        corRelation: corRelationList
       });
     } else if (content.mimeType === MimeType.COLLECTION) {
       // this.navCtrl.push(CollectionDetailsPage, {
       this.navCtrl.push(CollectionDetailsEtbPage, {
-        content: content
+        content: content,
+        corRelation: corRelationList
       });
     } else {
       this.navCtrl.push(ContentDetailsPage, {
-        content: content
+        content: content,
+        corRelation: corRelationList
       });
     }
   }
