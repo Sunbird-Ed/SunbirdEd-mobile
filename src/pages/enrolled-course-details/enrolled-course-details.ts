@@ -183,6 +183,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
   content: Content;
   appName: any;
   updatedCourseCardData: Course;
+  importProgressMessage: string;
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
@@ -1076,6 +1077,22 @@ export class EnrolledCourseDetailsPage implements OnInit {
             } else {
               this.course.isAvailableLocally = true;
               this.setContentDetails(this.identifier);
+            }
+          }
+
+          if (event.type === ContentEventType.IMPORT_PROGRESS) {
+            this.importProgressMessage =  this.commonUtilService.translateMessage('EXTRACTING_CONTENT') + ' ' +
+              Math.floor((event.payload.currentCount / event.payload.totalCount) * 100) +
+              '% (' + event.payload.currentCount + ' / ' + event.payload.totalCount + ')';
+            if (event.payload.currentCount === event.payload.totalCount) {
+              let timer = 30;
+              const interval = setInterval(() => {
+                this.importProgressMessage = `Getting things ready in ${timer--}  seconds`;
+                if (timer === 0) {
+                  this.importProgressMessage = 'Getting things ready';
+                  clearInterval(interval);
+                }
+              }, 1000);
             }
           }
 
