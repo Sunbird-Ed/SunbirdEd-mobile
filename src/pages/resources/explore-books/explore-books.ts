@@ -142,7 +142,6 @@ export class ExploreBooksPage implements OnDestroy {
     @Inject('SHARED_PREFERENCES') private sharedPreferences: SharedPreferences,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private platform: Platform,
-
   ) {
   }
 
@@ -150,7 +149,6 @@ export class ExploreBooksPage implements OnDestroy {
     this.selectedGrade = this.navParams.get('selectedGrade');
     this.selectedMedium = this.navParams.get('selectedMedium');
     this.categoryGradeLevels = this.navParams.get('categoryGradeLevels');
-    // this.categoryGradeLevels.sort((a, b) => b.count - a.count);
     this.subjects = this.navParams.get('subjects');
     this.subjects.unshift({name: this.commonUtilService.translateMessage('ALL'), selected: true});
 
