@@ -127,7 +127,6 @@ export class ExploreBooksPage implements OnDestroy {
   mediumList: Array<FilterValue>;
   corRelationList: Array<CorrelationData>;
   networkSubscription: Subscription;
-  toast: any;
 
   constructor(
     public navCtrl: NavController,
@@ -144,8 +143,6 @@ export class ExploreBooksPage implements OnDestroy {
     @Inject('SHARED_PREFERENCES') private sharedPreferences: SharedPreferences,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private platform: Platform,
-    public toastController: ToastController,
-
   ) {
   }
 
@@ -202,17 +199,6 @@ export class ExploreBooksPage implements OnDestroy {
     this.handleBackButton();
 
     this.headerService.showHeaderWithBackButton();
-
-    this.networkSubscription = this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
-      if (available) {
-        if (this.toast) {
-          this.toast.dismiss();
-          this.toast = undefined;
-        }
-      } else {
-        this.presentToastForOffline('NO_INTERNET_TITLE');
-      }
-    });
   }
 
   ngOnDestroy(): void {
@@ -383,14 +369,6 @@ export class ExploreBooksPage implements OnDestroy {
     if(this.searchFormSubscription) {
       this.searchFormSubscription.unsubscribe();
     }
-
-    if (this.networkSubscription) {
-      this.networkSubscription.unsubscribe();
-      if (this.toast) {
-        this.toast.dismiss();
-        this.toast = undefined;
-      }
-    }
   }
 
   openSortOptionsModal() {
@@ -525,20 +503,5 @@ export class ExploreBooksPage implements OnDestroy {
       undefined,
       undefined,
       this.corRelationList);
-  }
-
-  presentToastForOffline(msg: string) {
-    this.toast = this.toastController.create({
-      duration: 3000,
-      message: this.commonUtilService.translateMessage(msg),
-      showCloseButton: true,
-      position: 'top',
-      closeButtonText: '',
-      cssClass: 'toastHeader'
-    });
-    this.toast.present();
-    this.toast.onDidDismiss(() => {
-      this.toast = undefined;
-    });
   }
 }
