@@ -150,7 +150,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     public toastController: ToastController,
     public menuCtrl: MenuController,
-    private headerServie: AppHeaderService,
+    private headerService: AppHeaderService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private splaschreenDeeplinkActionHandlerDelegate: SplaschreenDeeplinkActionHandlerDelegate
   ) {
