@@ -1,7 +1,6 @@
 import { Component, Inject, NgZone, ViewChild, OnInit } from '@angular/core';
-import { AlertController, Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController } from 'ionic-angular';
+import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController } from 'ionic-angular';
 import * as _ from 'lodash';
-import { SocialSharing } from '@ionic-native/social-sharing';
 
 import { ContentActionsComponent, ContentRatingAlertComponent } from '@app/component';
 import { CollectionDetailsPage } from '@app/pages/collection-details/collection-details';
@@ -23,8 +22,6 @@ import {
   Content,
   ContentDetailRequest,
   ContentEventType,
-  ContentExportRequest,
-  ContentExportResponse,
   ContentImport,
   ContentImportCompleted,
   ContentImportRequest,
@@ -34,7 +31,7 @@ import {
   ContentState,
   ContentStateResponse,
   ContentUpdate,
-  CorrelationData,
+  CorrelationData, Course,
   CourseBatchesRequest,
   CourseBatchStatus,
   CourseEnrollmentType,
@@ -186,6 +183,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
   headerObservable: any;
   content: Content;
   appName: any;
+  updatedCourseCardData: Course;
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
@@ -210,7 +208,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
     private appVersion: AppVersion
   ) {
 
-    this.appGlobalService.getUserId();
+    this.userId = this.appGlobalService.getUserId();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
   }
@@ -966,7 +964,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
   /**
    * Ionic life cycle hook
    */
-  ionViewWillEnter(): void {
+  async ionViewWillEnter() {
     this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
@@ -975,6 +973,12 @@ export class EnrolledCourseDetailsPage implements OnInit {
     this.corRelationList = this.navParams.get('corRelation');
     this.source = this.navParams.get('source');
     this.identifier = this.courseCardData.contentId || this.courseCardData.identifier;
+
+    this.updatedCourseCardData = await this.courseService.getEnrolledCourses
+    ({userId: this.userId, returnFreshCourses: true}).toPromise().then((data) => {
+      return data.find((element) => element.courseId === this.identifier)
+    });
+
     // check if the course is already enrolled
     this.isCourseEnrolled(this.identifier);
     if (this.batchId) {
@@ -1038,8 +1042,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
 
   getCourseProgress() {
     if (this.courseCardData.batchId) {
-      this.course.progress = this.courseUtilService.getCourseProgress(this.courseCardData.leafNodesCount, this.courseCardData.progress);
-      this.course.progress = parseInt(this.course.progress, 10);
+      this.course.progress = this.updatedCourseCardData.completionPercentage;
     }
   }
 
@@ -1095,7 +1098,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
             this.zone.run(() => {
               this.showLoading = true;
               this.headerService.hideHeader();
-              this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.course, false);
+              this.telemetryGeneratorService.generateSpineLoadingTelemetry(this.content, false);
               this.importContent([this.identifier], false);
             });
           }
