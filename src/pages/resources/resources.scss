@@ -29,7 +29,8 @@ ion-spinner {
     padding-top: 30px;
   } 
   .scrollable-container{
-   margin-top:112px;
+    margin-top:112px;
+    margin-bottom: 50px;
   }
   .fixed-container{
     width: 100%;
@@ -53,7 +54,9 @@ ion-spinner {
   #couchMark {
     position: fixed;
   }
-
+  .sb-explore-container{
+    padding-bottom: 30px;
+  }
   .sb-nodownloads-title {
     & {
       margin: 0;
@@ -66,7 +69,9 @@ ion-spinner {
   }
   .sb-nodownloads-container {
     & {
-      padding-top: 5em;
+      padding-top: 10px;
+      padding-bottom: 30px;
+      // padding-top: 5em;
     }
   }
   .sub-heading {

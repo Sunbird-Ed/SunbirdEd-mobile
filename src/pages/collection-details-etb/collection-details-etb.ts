@@ -790,9 +790,8 @@ export class CollectionDetailsEtbPage implements OnInit {
           if (this.textbookTocService.textbookIds.contentId) {
             setTimeout(() => {
               (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.add('sticky');
-              window['scrollWindow'].getScrollElement().scrollBy(0, 0);
-              document.getElementById(this.textbookTocService.textbookIds.contentId).scrollIntoView();
-              window['scrollWindow'].getScrollElement().scrollBy(0, -155);
+              window['scrollWindow'].getScrollElement()
+              .scrollBy(0, document.getElementById(this.textbookTocService.textbookIds.contentId).offsetTop - 165);
               this.textbookTocService.resetTextbookIds();
             }, 0);
           }
