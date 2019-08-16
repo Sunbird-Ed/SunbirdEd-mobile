@@ -67,6 +67,7 @@
   <div *ngIf="showSignInCard" class="signin-card-bg">
     <sign-in-card [source]="'courses'" (valueChange)="showOfflineWarning($event)"></sign-in-card>
   </div>
+  <div class="bottom-cover"></div>
 </ion-content>
 <ion-backdrop class="loading-backdrop" *ngIf="showOverlay" text-center>
   <div class="backdrop-container">
