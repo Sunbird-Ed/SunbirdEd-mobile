@@ -494,7 +494,7 @@ async showComingSoonPopUp(data) {
   importContent(identifiers: Array<string>, isChild: boolean, isDownloadAllClicked?) {
     const option: ContentImportRequest = {
       contentImportArray: this.getImportContentRequestBody(identifiers, isChild),
-      contentStatusArray: [],
+      contentStatusArray: ['Live'],
       fields: ['appIcon', 'name', 'subject', 'size', 'gradeLevel']
     };
 

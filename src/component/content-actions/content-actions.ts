@@ -266,10 +266,17 @@ export class ContentActionsComponent {
         progress = this.data.courseProgress ? Math.round(this.data.courseProgress) : 0;
       }
 
-      if (this.batchDetails.enrollmentType === 'open' && progress !== 100) {
-        return false;
+      return !(this.batchDetails.enrollmentType === 'open' && progress !== 100);
+    } else {
+      if (moment(this.batchDetails.endDate).diff(moment(new Date())) !== 0) {
+        let progress;
+
+        if (this.data && this.data.courseProgress) {
+          progress = this.data.courseProgress ? Math.round(this.data.courseProgress) : 0;
+        }
+
+        return !(this.batchDetails.enrollmentType === 'open' && progress !== 100);
       }
-      else return moment(this.batchDetails.endDate).diff(moment(new Date())) !== 0;
     }
   }
 
