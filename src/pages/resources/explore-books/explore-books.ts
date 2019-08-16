@@ -504,11 +504,11 @@ export class ExploreBooksPage implements OnDestroy {
       this.corRelationList);
   }
 
-  showSortByButton() {
+  hideSortByButton() {
     this.checkedSortByButton = false;
   }
 
-  hideSortByButton() {
+  showSortByButton() {
     this.checkedSortByButton = true;
   }
 }
