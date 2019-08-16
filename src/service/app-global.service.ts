@@ -366,6 +366,7 @@ export class AppGlobalService implements OnDestroy {
 
         this.authService.getSession().toPromise().then((session) => {
             if (!session) {
+              this.session = session;
                 this.getGuestUserInfo();
             } else {
                 this.guestProfileType = undefined;
