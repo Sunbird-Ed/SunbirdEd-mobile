@@ -418,7 +418,7 @@ export class ViewMoreActivityPage implements OnInit {
     this.queuedIdentifiers.length = 0;
     const option: ContentImportRequest = {
       contentImportArray: this.courseUtilService.getImportContentRequestBody(identifiers, isChild),
-      contentStatusArray: [],
+      contentStatusArray: ['Live'],
       fields: ['appIcon', 'name', 'subject', 'size', 'gradeLevel']
     };
 

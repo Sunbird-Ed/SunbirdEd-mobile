@@ -1270,7 +1270,7 @@ export class SearchPage implements OnInit, OnDestroy {
 
     const option: ContentImportRequest = {
       contentImportArray: this.getImportContentRequestBody([parent.identifier], false),
-      contentStatusArray: [],
+      contentStatusArray: ['Live'],
       fields: ['appIcon', 'name', 'subject', 'size', 'gradeLevel']
     };
     // Call content service

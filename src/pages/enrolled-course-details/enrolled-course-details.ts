@@ -668,7 +668,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
     this.showChildrenLoader = this.downloadIdentifiers.length === 0;
     const option: ContentImportRequest = {
       contentImportArray: this.getImportContentRequestBody(identifiers, isChild),
-      contentStatusArray: [],
+      contentStatusArray: ['Live'],
       fields: ['appIcon', 'name', 'subject', 'size', 'gradeLevel']
     };
 
