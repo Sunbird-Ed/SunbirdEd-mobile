@@ -126,6 +126,7 @@ export class ExploreBooksPage implements OnDestroy {
   boardList: Array<FilterValue>;
   mediumList: Array<FilterValue>;
   corRelationList: Array<CorrelationData>;
+  checkedSortByButton = true;
 
   constructor(
     public navCtrl: NavController,
@@ -501,5 +502,13 @@ export class ExploreBooksPage implements OnDestroy {
       undefined,
       undefined,
       this.corRelationList);
+  }
+
+  hideSortByButton() {
+    this.checkedSortByButton = false;
+  }
+
+  showSortByButton() {
+    this.checkedSortByButton = true;
   }
 }
