@@ -40,7 +40,7 @@
               </ng-template>
           </p>
         </div>
-        <button class="enroll-btn" ion-button clear item-end (click)="enrollIntoBatch(batch)" [disabled]="(batch.enrollmentEndDate && (todayDate > batch.enrollmentEndDate))"
+        <button class="enroll-btn" ion-button item-end (click)="enrollIntoBatch(batch)" [disabled]="(batch.enrollmentEndDate && (todayDate > batch.enrollmentEndDate))"
           [ngClass]="{'enroll-style' : (batch.enrollmentEndDate && (todayDate > batch.enrollmentEndDate))}">
           {{ 'ENROLL' | translate }}
         </button>
