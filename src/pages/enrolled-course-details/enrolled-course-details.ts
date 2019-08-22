@@ -948,7 +948,8 @@ export class EnrolledCourseDetailsPage implements OnInit {
       isResumedCourse: true,
       isChildContent: true,
       resumedCourseCardData: this.courseCardData,
-      corRelation: this.corRelationList
+      corRelation: this.corRelationList,
+      isCourse: true
     });
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.RESUME_CLICKED,
