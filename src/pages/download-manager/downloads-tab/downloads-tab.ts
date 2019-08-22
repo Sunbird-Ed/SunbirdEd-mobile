@@ -1,19 +1,16 @@
 import { ContentDetailsPage } from './../../content-details/content-details';
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
-import { ContentType, MimeType } from '@app/app/app.constant';
-import { MenuOverflow } from '../../../app/app.constant';
+import { ContentType, MimeType, MenuOverflow } from '@app/app/app.constant';
 import { OverflowMenuComponent } from '@app/pages/profile';
-import { ViewController } from 'ionic-angular/navigation/view-controller';
 import { CommonUtilService, TelemetryGeneratorService } from '@app/service';
 import { SbPopoverComponent } from '../../../component/popups/sb-popover/sb-popover';
 import { Component, Input, EventEmitter, Output } from '@angular/core';
-import { NavController, NavParams, PopoverController, Popover, Events } from 'ionic-angular';
-import { InteractType, TelemetryObject } from 'sunbird-sdk';
-import { Content, ContentDelete } from 'sunbird-sdk';
+import { NavController, PopoverController, Popover, Events } from 'ionic-angular';
+import { InteractType, TelemetryObject, Content, ContentDelete } from 'sunbird-sdk';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
 import { InteractSubtype, Environment, PageId, ActionButtonType } from '@app/service/telemetry-constants';
 import { EmitedContents } from '../download-manager.interface';
-
+import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 
 @Component({
     selector: 'downloads-tab',
@@ -24,29 +21,25 @@ export class DownloadsTabPage {
     @Input() downloadedContents: Content[] = [];
     @Output() deleteContents = new EventEmitter();
     @Output() sortCriteriaChanged = new EventEmitter();
-    showLoader = false;
-    selectedContents: ContentDelete[] = [];
+
     showDeleteButton: Boolean = true;
-    deleteAllPopupPresent: Boolean = false;
     showSelectAll: Boolean = true;
     selectedFilter: string = MenuOverflow.DOWNLOAD_FILTERS[0];
-    deleteAllConfirm: Popover;
-    selectedContentsInfo = {
+
+    private deleteAllPopupPresent: Boolean = false;
+    private selectedContents: ContentDelete[] = [];
+    private deleteAllConfirm: Popover;
+    private selectedContentsInfo = {
         totalSize: 0,
         count: 0
     };
 
-
     constructor(
-        public navCtrl: NavController,
-        public navParams: NavParams,
+        private navCtrl: NavController,
         private popoverCtrl: PopoverController,
         private commonUtilService: CommonUtilService,
         private events: Events,
         private telemetryGeneratorService: TelemetryGeneratorService) {
-    }
-
-    ionViewDidLoad() {
     }
 
     showDeletePopup(identifier?) {
@@ -72,15 +65,13 @@ export class DownloadsTabPage {
                 },
             ],
             icon: null,
-            // mshowDeletePopupshowDeletePopupetaInfo: this.content.contentData.name,
+            // metaInfo: this.content.contentData.name,
             sbPopoverContent: identifier ? this.commonUtilService.translateMessage('DELETE_CONTENT_WARNING')
                 : this.commonUtilService.translateMessage('DELETE_ALL_CONTENT_WARNING')
         }, {
                 cssClass: 'sb-popover danger',
             });
-        deleteConfirm.present({
-            ev: event
-        });
+        deleteConfirm.present();
         deleteConfirm.onDidDismiss((canDelete: any) => {
             switch (canDelete) {
                 case undefined:
@@ -92,7 +83,9 @@ export class DownloadsTabPage {
                         PageId.SINGLE_DELETE_CONFIRMATION_POPUP);
                     break;
                 case null:
-                    this.unSelectAllContents();
+                    if (identifier) {
+                        this.unSelectAllContents();
+                    }
                     this.telemetryGeneratorService.generateInteractTelemetry(
                         InteractType.TOUCH,
                         InteractSubtype.OUTSIDE_POPUP_AREA_CLICKED,
@@ -114,15 +107,15 @@ export class DownloadsTabPage {
         });
     }
 
-    deleteContent() {
+    private deleteContent() {
         const emitedContents: EmitedContents = {
             selectedContentsInfo: this.selectedContentsInfo,
-            selectedContents : this.selectedContents
+            selectedContents: this.selectedContents
         };
         this.deleteContents.emit(emitedContents);
     }
 
-    showSortOptions(event) {
+    showSortOptions(event: Event) {
         this.telemetryGeneratorService.generateInteractTelemetry(
             InteractType.TOUCH,
             InteractSubtype.SORT_OPTION_CLICKED,
@@ -151,6 +144,11 @@ export class DownloadsTabPage {
     }
 
     selectAllContents() {
+        this.telemetryGeneratorService.generateInteractTelemetry(
+            InteractType.TOUCH,
+            InteractSubtype.SELECT_ALL_CLICKED,
+            Environment.DOWNLOADS,
+            PageId.DOWNLOADS);
         this.downloadedContents.forEach(element => {
             element['isSelected'] = true;
         });
@@ -160,6 +158,11 @@ export class DownloadsTabPage {
     }
 
     unSelectAllContents() {
+        this.telemetryGeneratorService.generateInteractTelemetry(
+            InteractType.TOUCH,
+            InteractSubtype.UNSELECT_ALL_CLICKED,
+            Environment.DOWNLOADS,
+            PageId.DOWNLOADS);
         this.downloadedContents.forEach(element => {
             element['isSelected'] = false;
         });
@@ -185,11 +188,13 @@ export class DownloadsTabPage {
             this.deleteAllContents();
         } else {
             this.showDeleteButton = true;
-            this.deleteAllConfirm.dismiss(null);
+            if (this.deleteAllPopupPresent) {
+                this.deleteAllConfirm.dismiss(null);
+            }
         }
     }
 
-    deleteAllContents() {
+    private deleteAllContents() {
         this.selectedContentsInfo = {
             totalSize: 0,
             count: 0
@@ -231,15 +236,13 @@ export class DownloadsTabPage {
                     showBackdrop: false,
                     enableBackdropDismiss: false
                 });
-            this.deleteAllConfirm.present({
-                ev: event
-            });
+            this.deleteAllConfirm.present();
             this.deleteAllPopupPresent = true;
         }
-        this.deleteAllConfirm.onDidDismiss((leftBtnClicked: any) => {
+        this.deleteAllConfirm.onDidDismiss((cancelBtnClicked: any) => {
             this.deleteAllPopupPresent = false;
             const valuesMap = {};
-            if (leftBtnClicked == null) {
+            if (cancelBtnClicked == null) {                                 /* -cancelBtnClicked = null */
                 this.unSelectAllContents();
                 this.telemetryGeneratorService.generateInteractTelemetry(
                     InteractType.TOUCH,
@@ -247,10 +250,10 @@ export class DownloadsTabPage {
                     Environment.DOWNLOADS,
                     PageId.BULK_DELETE_POPUP);
                 return;
-            } else if (leftBtnClicked) {
+            } else if (cancelBtnClicked) {                                  /* -cancelBtnClicked = true */
                 valuesMap['type'] = ActionButtonType.NEGATIVE;
                 this.unSelectAllContents();
-            } else {
+            } else {                                                        /* -cancelBtnClicked = false (Delete all items) */
                 valuesMap['type'] = ActionButtonType.POSITIVE;
                 this.telemetryGeneratorService.generateInteractTelemetry(
                     InteractType.TOUCH,
@@ -279,14 +282,19 @@ export class DownloadsTabPage {
             PageId.DOWNLOADS,
             telemetryObject);
         if (!this.selectedContents.length) {
-            switch (content.mimeType) {
-
-                case MimeType.COLLECTION: this.navCtrl.push(CollectionDetailsEtbPage, { content: content });
-                    break;
-                default: this.navCtrl.push(ContentDetailsPage, { content: content });
+            if (content.contentData && content.contentData.contentType === ContentType.COURSE) {
+                this.navCtrl.push(EnrolledCourseDetailsPage, {
+                    content: content
+                });
+            } else if (content.mimeType === MimeType.COLLECTION) {
+                this.navCtrl.push(CollectionDetailsEtbPage, {
+                    content: content
+                });
+            } else {
+                this.navCtrl.push(ContentDetailsPage, {
+                    content: content
+                });
             }
         }
-
     }
-
 }

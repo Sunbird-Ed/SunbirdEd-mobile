@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { Content, ContentDetailRequest, ContentService, CorrelationData, TelemetryObject, } from 'sunbird-sdk';
+import { Content, ContentDetailRequest, ContentService, CorrelationData, TelemetryObject } from 'sunbird-sdk';
 import { SearchPage } from '../search/search';
 import { ContentType, MimeType } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
@@ -9,14 +9,7 @@ import { CollectionDetailsPage } from '../collection-details/collection-details'
 import { CommonUtilService } from '../../service/common-util.service';
 import { App } from 'ionic-angular';
 import {
-  Environment,
-  ImpressionSubtype,
-  ImpressionType,
-  InteractSubtype,
-  InteractType,
-  Mode,
-  PageId,
-  CorReleationDataType,
+  Environment, ImpressionSubtype, ImpressionType, InteractSubtype, InteractType, Mode, PageId, CorReleationDataType
 } from '../../service/telemetry-constants';
 import { AppGlobalService } from '@app/service';
 
@@ -131,7 +124,6 @@ export class QRScannerResultHandler {
         corRelation: corRelationList,
         source: this.source,
         shouldGenerateEndTelemetry: true
-
       });
     } else {
       this.app.getActiveNavs()[0].push(ContentDetailsPage, {

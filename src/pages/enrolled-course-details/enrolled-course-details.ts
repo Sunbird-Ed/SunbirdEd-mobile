@@ -245,24 +245,6 @@ export class EnrolledCourseDetailsPage implements OnInit {
       // delete this.batchDetails; // to show 'Enroll in Course' button courseCardData should be undefined/null
       this.isAlreadyEnrolled = false; // and isAlreadyEnrolled should be false
     });
-
-    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
-      this.telemetryGeneratorService.generateBackClickedTelemetry(
-        PageId.CONTENT_DETAIL,
-        Environment.HOME,
-        false,
-        this.identifier,
-        this.corRelationList
-      );
-      this.didViewLoad = false;
-      this.generateEndEvent(this.objId, this.objType, this.objVer);
-
-      if (this.shouldGenerateEndTelemetry) {
-        this.generateQRSessionEndEvent(this.source, this.course.identifier);
-      }
-      this.navCtrl.pop();
-      this.backButtonFunc();
-    }, 10);
   }
 
   updateEnrolledCourseList(unenrolledCourse) {
@@ -393,7 +375,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
       data: data,
       content: contentData,
       batchDetails: this.batchDetails,
-      pageName: 'course'
+      pageName: PageId.COURSE_DETAIL
     }, {
         cssClass: 'content-action'
       });
@@ -939,7 +921,6 @@ export class EnrolledCourseDetailsPage implements OnInit {
    * @param {string} identifier
    */
   resumeContent(identifier): void {
-    this.showResumeBtn = false;
     this.navCtrl.push(ContentDetailsPage, {
       content: { identifier: identifier },
       depth: '1', // Needed to handle some UI elements.
@@ -951,6 +932,15 @@ export class EnrolledCourseDetailsPage implements OnInit {
       isChildContent: true,
       resumedCourseCardData: this.courseCardData
     });
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.RESUME_CLICKED,
+      Environment.HOME,
+      PageId.COURSE_DETAIL,
+      undefined,
+      undefined,
+      undefined,
+      this.corRelationList
+      );
   }
 
 
@@ -977,6 +967,27 @@ export class EnrolledCourseDetailsPage implements OnInit {
     // If courseCardData does not have a batch id then it is not a enrolled course
     this.subscribeSdkEvent();
     this.populateCorRelationData( this.courseCardData.batchId);
+    this.handleBackButton();
+  }
+
+  handleBackButton() {
+    this.backButtonFunc = this.platform.registerBackButtonAction(() => {
+      this.telemetryGeneratorService.generateBackClickedTelemetry(
+        PageId.COURSE_DETAIL,
+        Environment.HOME,
+        false,
+        this.identifier,
+        this.corRelationList
+      );
+      this.didViewLoad = false;
+      this.generateEndEvent(this.objId, this.objType, this.objVer);
+
+      if (this.shouldGenerateEndTelemetry) {
+        this.generateQRSessionEndEvent(this.source, this.course.identifier);
+      }
+      this.navCtrl.pop();
+      this.backButtonFunc();
+    }, 10);
   }
 
   populateCorRelationData(batchId) {
@@ -993,7 +1004,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
     if (enrolledCourses && enrolledCourses.length > 0) {
       for (const course of enrolledCourses) {
         if (course.courseId === identifier) {
-          if (this.courseCardData.batch && course.batch === this.courseCardData.batch) {
+          if (this.courseCardData.batch && course.batchId === this.courseCardData.batchId) {
             this.isAlreadyEnrolled = true;
             this.courseCardData = course;
           } else if (!this.courseCardData.batch) {
@@ -1080,7 +1091,9 @@ export class EnrolledCourseDetailsPage implements OnInit {
     if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
     }
-    this.headerObservable.unsubscribe();
+    if(this.headerObservable) {
+      this.headerObservable.unsubscribe();
+    }
     if (this.backButtonFunc) {
       this.backButtonFunc();
     }
@@ -1163,6 +1176,15 @@ export class EnrolledCourseDetailsPage implements OnInit {
    * Get executed when user click on start button
    */
   startContent() {
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+      InteractSubtype.START_CLICKED,
+      Environment.HOME,
+      PageId.COURSE_DETAIL,
+      undefined,
+      undefined,
+      undefined,
+      this.corRelationList
+    );
     if (this.startData && this.startData.length && !this.isBatchNotStarted) {
       this.firstChild = this.loadFirstChildren(this.childContentsData);
       this.navigateToChildrenDetailsPage(this.firstChild, 1);
@@ -1342,7 +1364,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
         break;
       case 'more': this.showOverflowMenu($event);
         break;
-      case 'back': this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
+      case 'back': this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COURSE_DETAIL, Environment.HOME,
         true, this.identifier, this.corRelationList);
         this.handleNavBackButton();
         break;

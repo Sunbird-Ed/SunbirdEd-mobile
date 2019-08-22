@@ -1,4 +1,4 @@
-import { Component, Inject, NgZone, ViewChild } from '@angular/core';
+import {Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {
   AlertController,
   App,
@@ -10,29 +10,31 @@ import {
   NavParams,
   Platform,
   PopoverController,
-  ToastController,
-  ViewController
+  ToastController
 } from 'ionic-angular';
-import { SocialSharing } from '@ionic-native/social-sharing';
+import {SocialSharing} from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
-import { EventTopics, PreferenceKey, XwalkConstants, ContentConstants, StoreRating } from '../../app/app.constant';
-import { GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, Map, ShareUrl } from '@app/app';
+import {ContentConstants, EventTopics, PreferenceKey, StoreRating, XwalkConstants} from '../../app/app.constant';
+import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, Map, ShareUrl} from '@app/app';
 import {
-  BookmarkComponent, ContentActionsComponent,
-  ContentRatingAlertComponent, ConfirmAlertComponent, SbPopoverComponent
+  BookmarkComponent,
+  ConfirmAlertComponent,
+  ContentActionsComponent,
+  ContentRatingAlertComponent,
+  SbPopoverComponent
 } from '@app/component';
-import { AppGlobalService, CourseUtilService, UtilityService, AppHeaderService, AppRatingService } from '@app/service';
-import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
-import { Network } from '@ionic-native/network';
-import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
-import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { CommonUtilService } from '../../service/common-util.service';
-import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
+import {AppGlobalService, AppHeaderService, AppRatingService, CourseUtilService, UtilityService} from '@app/service';
+import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
+import {Network} from '@ionic-native/network';
+import {UserAndGroupsPage} from '../user-and-groups/user-and-groups';
+import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
+import {CommonUtilService} from '../../service/common-util.service';
+import {DialogPopupComponent} from '../../component/dialog-popup/dialog-popup';
 import {
   AuthService,
+  ChildContentRequest,
   Content,
-  ContentAccess,
-  ContentAccessStatus,
+  ContentDeleteStatus,
   ContentDetailRequest,
   ContentEventType,
   ContentExportRequest,
@@ -40,7 +42,6 @@ import {
   ContentImport,
   ContentImportRequest,
   ContentImportResponse,
-  ContentMarkerRequest,
   ContentService,
   CorrelationData,
   DownloadEventType,
@@ -48,20 +49,18 @@ import {
   EventsBusEvent,
   EventsBusService,
   GetAllProfileRequest,
-  MarkerType,
   PlayerService,
   ProfileService,
   ProfileType,
   Rollup,
   SharedPreferences,
-  TelemetryObject,
-  ChildContentRequest,
-  ContentDeleteStatus
+  StorageService,
+  TelemetryObject
 } from 'sunbird-sdk';
-import { CanvasPlayerService } from '../player/canvas-player.service';
-import { PlayerPage } from '../player/player';
-import { File } from '@ionic-native/file';
-import { Subscription } from 'rxjs';
+import {CanvasPlayerService} from '../player/canvas-player.service';
+import {PlayerPage} from '../player/player';
+import {File} from '@ionic-native/file';
+import {Subscription} from 'rxjs';
 import {
   Environment,
   ImpressionType,
@@ -70,12 +69,12 @@ import {
   Mode,
   PageId,
 } from '../../service/telemetry-constants';
-import { TabsPage } from '../tabs/tabs';
-import { ContainerService } from '@app/service/container.services';
-import { FileSizePipe } from '@app/pipes/file-size/file-size';
-import { TranslateService } from '@ngx-translate/core';
-import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
-import { AppRatingAlertComponent } from '@app/component/app-rating-alert/app-rating-alert';
+import {TabsPage} from '../tabs/tabs';
+import {ContainerService} from '@app/service/container.services';
+import {FileSizePipe} from '@app/pipes/file-size/file-size';
+import {TranslateService} from '@ngx-translate/core';
+import {SbGenericPopoverComponent} from '@app/component/popups/sb-generic-popup/sb-generic-popover';
+import {AppRatingAlertComponent} from '@app/component/app-rating-alert/app-rating-alert';
 import moment from 'moment';
 
 declare const cordova;
@@ -96,7 +95,6 @@ export class ContentDetailsPage {
   identifier: string;
   headerObservable: any;
   new: Boolean = true;
-  showMoreFlag: Boolean = false;
 
   /**
    * To hold previous state data
@@ -159,19 +157,25 @@ export class ContentDetailsPage {
   private ratingComment = '';
   private corRelationList: Array<CorrelationData>;
   private eventSubscription: Subscription;
-
+  defaultLicense: string;
+  showChildrenLoader: any;
+  showLoading: any;
+  hierarchyInfo: any;
   showDownload: boolean;
   contentPath: Array<any>[];
   FileSizePipe: any;
   toast: any;
   childPaths: Array<string> = [];
   breadCrumbData: any;
+  networkSubscription: any;
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     @Inject('EVENTS_BUS_SERVICE') private eventBusService: EventsBusService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     @Inject('PLAYER_SERVICE') private playerService: PlayerService,
+    @Inject('STORAGE_SERVICE') private storageService: StorageService,
+    @Inject('AUTH_SERVICE') private authService: AuthService,
     private navCtrl: NavController,
     private navParams: NavParams,
     private zone: NgZone,
@@ -190,12 +194,10 @@ export class ContentDetailsPage {
     private utilityService: UtilityService,
     private container: ContainerService,
     private app: App,
-    @Inject('AUTH_SERVICE') private authService: AuthService,
     private network: Network,
     public toastController: ToastController,
     private fileSizePipe: FileSizePipe,
     private translate: TranslateService,
-    private viewCtrl: ViewController,
     private headerService: AppHeaderService,
     private appRatingService: AppRatingService
   ) {
@@ -213,13 +215,6 @@ export class ContentDetailsPage {
   }
 
   ionViewDidLoad() {
-    // this.navBar.backButtonClick = (e: UIEvent) => {
-    //   this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
-    //     true, this.cardData.identifier, this.corRelationList);
-    //   this.handleNavBackButton();
-    // };
-    // this.handleDeviceBackButton();
-
     if (!AppGlobalService.isPlayerLaunched) {
       this.calculateAvailableUserCount();
     }
@@ -253,8 +248,7 @@ export class ContentDetailsPage {
     this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
-    // this.headerService.hideHeader();
-    this.headerService.showHeaderWithBackButton();
+    this.headerService.hideHeader();
     this.cardData = this.navParams.get('content');
     this.isChildContent = this.navParams.get('isChildContent');
     this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');
@@ -296,6 +290,7 @@ export class ContentDetailsPage {
         this.presentToastForOffline();
       }
     });
+    this.handleDeviceBackButton();
   }
 
   /**
@@ -313,9 +308,14 @@ export class ContentDetailsPage {
         this.toast = undefined;
       }
     }
+    if (this.backButtonFunc) {
+      this.backButtonFunc();
+    }
   }
 
   handleNavBackButton() {
+    this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
+      true, this.cardData.identifier, this.corRelationList);
     this.didViewLoad = false;
     this.generateEndEvent(this.objId, this.objType, this.objVer);
     if (this.shouldGenerateEndTelemetry) {
@@ -331,12 +331,12 @@ export class ContentDetailsPage {
         false, this.cardData.identifier, this.corRelationList);
       this.didViewLoad = false;
       this.dismissPopup();
-      this.popToPreviousPage(true);
+      this.popToPreviousPage(false);
       this.generateEndEvent(this.objId, this.objType, this.objVer);
       if (this.shouldGenerateEndTelemetry) {
         this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
       }
-      // this.backButtonFunc();
+      this.backButtonFunc();
     }, 11);
   }
 
@@ -542,7 +542,9 @@ export class ContentDetailsPage {
   }
 
   appRating() {
-    const popover = this.popoverCtrl.create(AppRatingAlertComponent, {}, {
+    const popover = this.popoverCtrl.create(AppRatingAlertComponent, {
+      pageId: PageId.CONTENT_DETAIL,
+    }, {
       cssClass: 'sb-popover'
     });
     popover.present({
@@ -928,7 +930,7 @@ export class ContentDetailsPage {
     _.forEach(identifiers, (value) => {
       requestParams.push({
         isChildContent: isChild,
-        destinationFolder: cordova.file.externalDataDirectory,
+        destinationFolder: this.storageService.getStorageDestinationDirectoryPath(),
         contentId: value,
         correlationData: this.corRelationList !== undefined ? this.corRelationList : []
       });
@@ -983,6 +985,9 @@ export class ContentDetailsPage {
             this.isDownloadStarted = true;
             this.downloadProgress = downloadEvent.payload.progress === -1 ? '0' : downloadEvent.payload.progress;
             this.downloadProgress = Math.round(this.downloadProgress);
+            if (isNaN(this.downloadProgress)) {
+              this.downloadProgress = 0;
+            }
             if (this.downloadProgress === 100) {
               this.showLoading = false;
               this.showDownload = false;
@@ -1148,7 +1153,7 @@ export class ContentDetailsPage {
         this.corRelationList);
     }
 
-    if (!AppGlobalService.isPlayerLaunched && this.userCount > 1 && this.network.type !== '2g') {
+    if (!AppGlobalService.isPlayerLaunched && this.userCount > 2 && this.network.type !== '2g') {
       this.openPlayAsPopup(isStreaming);
       // alert.present();
     } else if (this.network.type === '2g' && !this.contentDownloadable[this.content.identifier]) {
@@ -1175,15 +1180,13 @@ export class ContentDetailsPage {
       }, {
           cssClass: 'sb-popover warning',
         });
-      popover.present({
-        ev: event
-      });
+      popover.present();
       popover.onDidDismiss((leftBtnClicked: any) => {
         if (leftBtnClicked == null) {
           return;
         }
         if (leftBtnClicked) {
-          if (!AppGlobalService.isPlayerLaunched && this.userCount > 1) {
+          if (!AppGlobalService.isPlayerLaunched && this.userCount > 2) {
             this.openPlayAsPopup(isStreaming);
           } else {
             this.playContent(isStreaming);
@@ -1222,6 +1225,7 @@ export class ContentDetailsPage {
   openPlayAsPopup(isStreaming) {
     const profile = this.appGlobalService.getCurrentUser();
     this.isUsrGrpAlrtOpen = true;
+   // if (profile.board.length > 1) {
     const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
       sbPopoverHeading: this.commonUtilService.translateMessage('PLAY_AS'),
       sbPopoverMainTitle: profile.handle,
@@ -1478,7 +1482,7 @@ export class ContentDetailsPage {
       InteractType.TOUCH,
       InteractSubtype.DELETE_CLICKED,
       Environment.HOME,
-      this.pageName,
+      PageId.CONTENT_DETAIL,
       telemetryObject,
       undefined,
       this.objRollup,
@@ -1541,7 +1545,7 @@ export class ContentDetailsPage {
     if (this.contentDownloadable[this.content.identifier]) {
       const exportContentRequest: ContentExportRequest = {
         contentIds: [this.content.identifier],
-        destinationFolder: cordova.file.externalDataDirectory
+        destinationFolder: this.storageService.getStorageDestinationDirectoryPath()
       };
       this.contentService.exportContent(exportContentRequest).toPromise()
         .then((response: ContentExportResponse) => {
@@ -1605,7 +1609,7 @@ export class ContentDetailsPage {
   readLessorReadMore(param, objRollup, corRelationList) {
     const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-      param = 'READ_MORE' === param ? InteractSubtype.READ_MORE_CLICKED : InteractSubtype.READ_LESS_CLICKED,
+      param = 'read-more-clicked' === param ? InteractSubtype.READ_MORE_CLICKED : InteractSubtype.READ_LESS_CLICKED,
       Environment.HOME,
       PageId.CONTENT_DETAIL,
       undefined,
@@ -1668,15 +1672,15 @@ export class ContentDetailsPage {
 
   handleHeaderEvents($event) {
     switch ($event.name) {
-      case 'back': this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
-        true, this.cardData.identifier, this.corRelationList);
+      case 'back':
+      
         this.handleNavBackButton();
         break;
     }
   }
 
   findHierarchyOfContent() {
-    if (this.cardData && this.cardData.hierarchyInfo) {
+    if (this.cardData && this.cardData.hierarchyInfo && this.breadCrumbData) {
       this.cardData.hierarchyInfo.forEach((element) => {
         const contentName = this.breadCrumbData.get(element.identifier);
         this.childPaths.push(contentName);
@@ -1689,12 +1693,5 @@ export class ContentDetailsPage {
     if (index !== (length - 1)) {
       this.navCtrl.pop();
     }
-  }
-
-  toggleShowMore(val) {
-    this.zone.run(() => {
-      this.showMoreFlag = val;
-      console.log('this.showMoreFlag', this.showMoreFlag);
-    });
   }
 }

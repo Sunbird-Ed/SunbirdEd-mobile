@@ -5,7 +5,8 @@ export enum Environment {
     DOWNLOADS = 'downloads',
     USER = 'user',
     SETTINGS = 'settings',
-    ONBOARDING = 'onboarding'
+    ONBOARDING = 'onboarding',
+    NOTIFICATION = 'notification'
 }
 
 export enum ErrorCode {
@@ -33,6 +34,7 @@ export enum PageId {
     SIGNUP = 'signup',
     ONBOARDING = 'onboarding',
     USER_TYPE_SELECTION = 'user-type-selection',
+    PERMISSION = 'permission',
     HOME = 'home',
     COURSES = 'courses',
     LIBRARY = 'library',
@@ -99,6 +101,14 @@ export enum PageId {
     ACTIVE_DOWNLOADS = 'active-downloads',
     SINGLE_CANCEL_CONFIRMATION_POPUP = 'single-cancel-confirmation-popup',
     BULK_CANCEL_CONFIRMATION_POPUP = 'bulk-cancel-confirmation-popup',
+    NOTIFICATION = 'notification',
+    SPLASH = 'splash',
+    TRANSFER_CONTENT_CONFIRMATION_POPUP = 'transfer-content-confirmation-popup',
+    TRANSFERING_CONTENT_POPUP = 'transfering-content-popup',
+    RETRY_CONTENT_TRANSFER_POPUP = 'retry-content-transfer-popup',
+    SHOW_DUPLICATE_CONTENT_POPUP = 'show-duplicate-content-popup',
+    CONTENT_TRANSFER_SUCCEED_POPUP = 'content-transfer-succeed-popup',
+    CANCELLING_CONTENT_TRANSFER_POPUP = 'cancelling-content-transfer-popup',
     DIAL_SEARCH = 'dial-book-result'
 }
 export enum LogType {
@@ -146,6 +156,8 @@ export enum InteractSubtype {
     LOGOUT_SUCCESS = 'logout-success',
     BROWSE_AS_GUEST_CLICKED = 'browse-as-guest-clicked',
     CONTINUE_CLICKED = 'continue-clicked',
+    GRANT_ACCESS_CLICKED = 'grant-access-clicked',
+    APP_PERMISSION_SETTING_CLICKED = 'app-permission-setting-clicked',
     TAB_CLICKED = 'tab-clicked',
     SECTION_VIEWED = 'section-viewed',
     CONTENT_CLICKED = 'content-clicked',
@@ -170,6 +182,8 @@ export enum InteractSubtype {
     ANNOUNCEMENT_CLICKED = 'announcement-clicked',
     SIGNIN_OVERLAY_CLICKED = 'signin-overlay-clicked',
     SETTINGS_CLICKED = 'settings-clicked',
+    PERMISSION_POPOVER_NOT_NOW_CLICKED = 'permission-popover-not-now-clicked',
+    PERMISSION_POPOVER_ALLOW_CLICKED = 'permission-popover-allow-clicked',
     LANGUAGE_CLICKED = 'language-clicked',
     HELP_CLICKED = 'help-clicked',
     DATA_SYNC_CLICKED = 'data-sync-clicked',
@@ -263,6 +277,8 @@ export enum InteractSubtype {
     APP_INTIATED = 'app-initiated',
     ACTIVE_DOWNLOADS_CLICKED = 'active-downloads-clicked',
     SORT_OPTION_CLICKED = 'sort-option-clicked',
+    SELECT_ALL_CLICKED = 'select-all-clicked',
+    UNSELECT_ALL_CLICKED = 'unselect-all-clicked',
     SORT_OPTION_SELECTED = 'sort-options-selected',
     ACTION_BUTTON_CLICKED = 'action-button-clicked',
     OUTSIDE_POPUP_AREA_CLICKED = 'outside-popup-area-clicked',
@@ -273,6 +289,16 @@ export enum InteractSubtype {
     PLAY_STORE_BUTTON_CLICKED = 'play-store-button-clicked',
     HELP_SECTION_CLICKED = 'help-section-clicked',
     APP_RATING_APPEARED = 'app-rating-appeared',
+    START_CLICKED = 'start-clicked',
+    UTM_INFO = 'utm-info',
+    CLEAR_NOTIFICATIONS_CLICKED = 'clear-all-notifications-clicked',
+    NOTIFICATION_READ = 'notification-read',
+    NOTIFICATION_DESCRIPTION_TOGGLE_EXPAND = 'notification-description-toggle-expand',
+    OPENRAP_DEVICE_CONNECTED = 'openrap-device-connected',
+    OPENRAP_DEVICE_DISCONNECTED = 'openrap-device-disconnected',
+    UNDO_CLICKED = 'undo-clicked',
+    RETRY_CLICKED = 'retry-clicked',
+    OK_CLICKED = 'ok-clicked',
     USER_TYPE_SELECTED = 'user-type-selected',
     QR_CODE_INVALID = 'qr-code-invalid',
     QR_CODE_COMINGSOON = 'qr-code-comingsoon',

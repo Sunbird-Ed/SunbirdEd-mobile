@@ -1,11 +1,9 @@
-import { AppVersion } from '@ionic-native/app-version';
-import { AppGlobalService, AppHeaderService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
-import { AppStorageInfo, DownloadManagerPageInterface, EmitedContents } from './download-manager.interface';
-import { AudienceFilter, ContentType } from './../../app/app.constant';
-import { ViewController } from 'ionic-angular/navigation/view-controller';
-import { Component, Inject, NgZone, OnInit } from '@angular/core';
-import { Events, IonicPage, Loading, NavController, NavParams, Popover, PopoverController } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
+import {AppVersion} from '@ionic-native/app-version';
+import {AppGlobalService, AppHeaderService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
+import {AppStorageInfo, DownloadManagerPageInterface, EmitedContents} from './download-manager.interface';
+import {ContentType} from './../../app/app.constant';
+import {Component, Inject, NgZone, OnInit} from '@angular/core';
+import {Events, IonicPage, Loading, NavController, NavParams, Popover, PopoverController} from 'ionic-angular';
 import {
   Content,
   ContentDeleteRequest,
@@ -18,12 +16,18 @@ import {
   ContentSpaceUsageSummaryResponse,
   DeviceInfo,
   Profile,
-  ProfileType,
-  SortOrder
+  SortOrder,
+  StorageService,
+  StorageDestination
 } from 'sunbird-sdk';
-import { SbPopoverComponent } from '@app/component';
-import { ActiveDownloadsPage } from '../active-downloads/active-downloads';
-import { PageId, InteractType, Environment, InteractSubtype } from '@app/service/telemetry-constants';
+import {SbPopoverComponent} from '@app/component';
+import {ActiveDownloadsPage} from '../active-downloads/active-downloads';
+import {Environment, InteractSubtype, InteractType, PageId} from '@app/service/telemetry-constants';
+import {StorageSettingsPage} from '../storage-settings/storage-settings';
+import {BehaviorSubject} from 'rxjs';
+import { SbNoNetworkPopupComponent } from '@app/component/popups/sb-no-network-popup/sb-no-network-popup';
+import { FileSizePipe } from '@app/pipes/file-size/file-size';
+import { SbInsufficientStoragePopupComponent } from '@app/component/popups/sb-insufficient-storage-popup/sb-insufficient-storage-popup';
 
 /**
  * Generated class for the DownloadManagerPage page.
@@ -39,6 +43,7 @@ import { PageId, InteractType, Environment, InteractSubtype } from '@app/service
 })
 export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit {
   headerObservable: any;
+  _toast: any;
 
   storageInfo: AppStorageInfo;
   downloadedContents: Content[] = [];
@@ -47,6 +52,9 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
   deleteAllConfirm: Popover;
   appName: string;
   sortCriteria: ContentSortCriteria[];
+  storageDestination: any;
+
+  private deletedContentListTitle$?: BehaviorSubject<string>;
 
   constructor(
     public navCtrl: NavController,
@@ -58,9 +66,11 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     private events: Events,
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
+    private telemetryGeneratorService: TelemetryGeneratorService,
+    private fileSizePipe: FileSizePipe,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
-    private telemetryGeneratorService: TelemetryGeneratorService,
+    @Inject('STORAGE_SERVICE') private storageService: StorageService
   ) {
   }
 
@@ -74,15 +84,21 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
 
   ionViewWillEnter() {
     this.events.subscribe('update_header', () => {
-      this.headerServie.showHeaderWithHomeButton(['download']);
+      this.headerServie.showHeaderWithHomeButton(['download', 'settings']);
     });
     this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
 
-    this.headerServie.showHeaderWithHomeButton(['download']);
+    this.headerServie.showHeaderWithHomeButton(['download', 'settings']);
     this.getAppStorageInfo();
     this.getDownloadedContents();
+    this.checkAvailableSpace();
+    this.fetchStorageDestination();
+  }
+
+  ionViewDidLoad() {
+    //  this.checkAvailableSpace();
   }
 
   private async getAppName() {
@@ -94,8 +110,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
 
 
   private async getAppStorageInfo(): Promise<AppStorageInfo> {
-
-    const req: ContentSpaceUsageSummaryRequest = { paths: [cordova.file.externalDataDirectory] };
+    const req: ContentSpaceUsageSummaryRequest = {paths: [this.storageService.getStorageDestinationDirectoryPath()]};
     return this.contentService.getContentSpaceUsageSummary(req).toPromise()
       .then((res: ContentSpaceUsageSummaryResponse[]) => {
        return  this.deviceInfo.getAvailableInternalMemorySize().toPromise()
@@ -110,21 +125,23 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
 
   }
 
-  async getDownloadedContents(shouldGenerateTelemetry?) {
+  async getDownloadedContents(shouldGenerateTelemetry?, hideLoaderFlag?: boolean) {
     const profile: Profile = await this.appGlobalService.getCurrentUser();
 
-    this.loader = this.commonUtilService.getLoader();
-    this.loader.present();
-    this.loader.onDidDismiss(() => {
-      this.loader = undefined;
-    });
+    if (!hideLoaderFlag) {
+      this.loader = this.commonUtilService.getLoader();
+      this.loader.present();
+      this.loader.onDidDismiss(() => {
+        this.loader = undefined;
+      });
+    }
     const defaultSortCriteria: ContentSortCriteria[] = [{
       sortAttribute: 'sizeOnDevice',
       sortOrder: SortOrder.DESC
     }];
     const requestParams: ContentRequest = {
       uid: profile.uid,
-      contentTypes: ContentType.FOR_LIBRARY_TAB,
+      contentTypes: ContentType.FOR_DOWNLOADED_TAB,
       audience: [],
       sortCriteria: this.sortCriteria || defaultSortCriteria
     };
@@ -152,12 +169,16 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
         });
         this.ngZone.run(() => {
           this.downloadedContents = data;
-          this.loader.dismiss();
+          if (!hideLoaderFlag) {
+            this.loader.dismiss();
+          }
         });
       })
       .catch((e) => {
         this.ngZone.run(() => {
-          this.loader.dismiss();
+          if (!hideLoaderFlag) {
+            this.loader.dismiss();
+          }
         });
       });
   }
@@ -215,6 +236,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     const contentDeleteRequest: ContentDeleteRequest = {
       contentDeleteList: emitedContents.selectedContents
     };
+    this.deletedContentListTitle$ = new BehaviorSubject('0/' + contentDeleteRequest.contentDeleteList.length);
     this.deleteAllConfirm = this.popoverCtrl.create(SbPopoverComponent, {
       sbPopoverHeading: this.commonUtilService.translateMessage('DELETE_PROGRESS'),
       actionsButtons: [
@@ -224,8 +246,8 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
         },
       ],
       icon: null,
-      sbPopoverMainTitle: '0/' + contentDeleteRequest.contentDeleteList.length,
       metaInfo: this.commonUtilService.translateMessage('FILES_DELETED'),
+      sbPopoverDynamicMainTitle: this.deletedContentListTitle$
       // sbPopoverContent: this.commonUtilService.translateMessage('FILES_DELETED')
     }, {
         cssClass: 'sb-popover danger sb-popover-cancel-delete',
@@ -239,12 +261,8 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     this.contentService.enqueueContentDelete(contentDeleteRequest).toPromise();
     this.contentService.getContentDeleteQueue().skip(1).takeWhile((list) => !!list.length)
       .finally(() => {
-        this.events.publish('deletedContentList:changed', {
-          deletedContentsInfo: {
-            totalCount: contentDeleteRequest.contentDeleteList.length,
-            deletedCount: contentDeleteRequest.contentDeleteList.length
-          }
-        });
+        this.deletedContentListTitle$
+          .next(`${contentDeleteRequest.contentDeleteList.length}/${contentDeleteRequest.contentDeleteList.length}`);
 
         this.deleteAllConfirm.dismiss();
 
@@ -255,12 +273,8 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
         });
       })
       .subscribe((list) => {
-        this.events.publish('deletedContentList:changed', {
-          deletedContentsInfo: {
-            totalCount: contentDeleteRequest.contentDeleteList.length,
-            deletedCount: contentDeleteRequest.contentDeleteList.length - list.length
-          }
-        });
+        this.deletedContentListTitle$
+          .next(`${contentDeleteRequest.contentDeleteList.length - list.length}/${contentDeleteRequest.contentDeleteList.length}`);
       });
   }
 
@@ -295,7 +309,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
   private subscribeContentUpdateEvents() {
     this.events.subscribe('savedResources:update', (res) => {
       if (res && res.update) {
-        this.getDownloadedContents(false);
+        this.getDownloadedContents(false, true);
         this.getAppStorageInfo();
       }
     });
@@ -306,6 +320,9 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     switch ($event.name) {
       case 'download':
         this.redirectToActivedownloads();
+        break;
+      case 'settings':
+        this.redirectToSettings();
         break;
     }
   }
@@ -318,5 +335,37 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
       PageId.DOWNLOADS);
     this.navCtrl.push(ActiveDownloadsPage);
   }
+  private redirectToSettings() {
+    this.navCtrl.push(StorageSettingsPage);
+  }
+
+  private async fetchStorageDestination() {
+    this.storageDestination = await this.storageService.getStorageDestination().toPromise();
+  }
+
+  private async presentPopupForLessStorageSpace() {
+   console.log('STORAGEDEST', this.storageDestination);
+    this._toast = this.popoverCtrl.create(SbInsufficientStoragePopupComponent, {
+      sbPopoverHeading: this.commonUtilService.translateMessage('INSUFFICIENT_STORAGE'),
+      sbPopoverMessage: this.storageDestination === StorageDestination.INTERNAL_STORAGE ?
+      this.commonUtilService.translateMessage('MOVE_FILES_TO_OTHER_DESTINATION', this.commonUtilService.translateMessage('SD_CARD')) :
+      this.commonUtilService.translateMessage('MOVE_FILES_TO_OTHER_DESTINATION', this.commonUtilService.translateMessage(
+        'INTERNAL_MEMORY'
+      )),
+    }, {
+        cssClass: 'sb-popover no-network',
+      });
+    this._toast.present();
+  }
+
+  private checkAvailableSpace() {
+    this.storageService.getStorageDestinationVolumeInfo()
+    .do((volumeInfo) => {
+     if (volumeInfo.info.availableSize < 209715200) {
+       this.presentPopupForLessStorageSpace();
+     }
+    })
+    .subscribe();
+   }
 
 }

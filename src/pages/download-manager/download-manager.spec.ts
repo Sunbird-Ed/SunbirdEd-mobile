@@ -1,4 +1,3 @@
-import { ActiveDownloadsPage } from './../active-downloads/active-downloads';
 import { DownloadManagerPage } from './download-manager';
 import {
     appGlobalServiceMock,
@@ -13,16 +12,15 @@ import {
     deviceInfoServiceMock,
     navParamsMock,
     popoverCtrlMock
-  } from './../../__tests__/mocks';
-import { SbPopoverComponent } from './../../component/popups/sb-popover/sb-popover';
+} from './../../__tests__/mocks';
 import { profileDataMock, downloadsDataMock, appStorageInfo } from './downloads-manager.spec.data';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { EmitedContents } from './download-manager.interface';
 
 describe('DownloadManager', () => {
     let downloadManagerPage: DownloadManagerPage;
 
-    beforeEach( () => {
+    beforeEach(() => {
 
         downloadManagerPage = new DownloadManagerPage(
             navCtrlMock as any,
@@ -46,12 +44,12 @@ describe('DownloadManager', () => {
     });
 
     it('should construct valid downloadManagerPage instance', () => {
-          expect(downloadManagerPage).toBeTruthy();
+        expect(downloadManagerPage).toBeTruthy();
     });
 
     describe('OnInit', () => {
         let loader;
-        beforeEach( () => {
+        beforeEach(() => {
             loader = {
                 present: jest.fn(),
                 dismiss: jest.fn(),
@@ -91,7 +89,7 @@ describe('DownloadManager', () => {
             // arrange
             spyOn(downloadManagerPage, 'getDownloadedContents');
             eventsMock.subscribe.mockImplementation((namespace, cb) => {
-                cb({update: true});
+                cb({ update: true });
                 return {};
             });
             // act
@@ -105,10 +103,10 @@ describe('DownloadManager', () => {
         let emitedContents: EmitedContents;
         let loader;
         let popover;
-        beforeEach( () => {
+        beforeEach(() => {
             emitedContents = {
-                selectedContentsInfo: { count: 10},
-                selectedContents: [{identifier: 'sampleid'}] as any
+                selectedContentsInfo: { count: 10 },
+                selectedContents: [{ identifier: 'sampleid' }] as any
             };
             loader = {
                 present: jest.fn(),
@@ -163,7 +161,7 @@ describe('DownloadManager', () => {
         it('should call enqueueContentDelete on DeleteContents()', () => {
             // arrange
             // contentServiceMock.deleteContent.mockReturnValue(Observable.of({}));
-            emitedContents.selectedContents = [{identifier: 'sampleid1'}, {identifier: 'sampleid2'}] as any;
+            emitedContents.selectedContents = [{ identifier: 'sampleid1' }, { identifier: 'sampleid2' }] as any;
             // act
             downloadManagerPage.deleteContents(emitedContents);
             // assert
@@ -175,7 +173,7 @@ describe('DownloadManager', () => {
         it('should delete the downloaded contents when popover onDidDismiss()', (done) => {
             // arrange
             // contentServiceMock.deleteContent.mockReturnValue(Observable.of({}));
-            emitedContents.selectedContents = [{identifier: 'sampleid1'}, {identifier: 'sampleid2'}] as any;
+            emitedContents.selectedContents = [{ identifier: 'sampleid1' }, { identifier: 'sampleid2' }] as any;
             // act
             downloadManagerPage.deleteContents(emitedContents);
             // assert
@@ -191,7 +189,7 @@ describe('DownloadManager', () => {
 
         it('should sort the list based on sizeOnDevice', () => {
             // arrange
-            const sortCriteria = {content: 'Content size'};
+            const sortCriteria = { content: 'Content size' };
             spyOn(downloadManagerPage, 'getDownloadedContents');
             // act
             downloadManagerPage.onSortCriteriaChange(sortCriteria);
@@ -207,7 +205,7 @@ describe('DownloadManager', () => {
 
         it('should sort the list based on last viewed content', () => {
             // arrange
-            const sortCriteria = {content: 'Last viewed'};
+            const sortCriteria = { content: 'Last viewed' };
             spyOn(downloadManagerPage, 'getDownloadedContents');
             // act
             downloadManagerPage.onSortCriteriaChange(sortCriteria);
@@ -227,14 +225,14 @@ describe('DownloadManager', () => {
 
         beforeEach(() => {
             // arrange
-            appHeaderServiceMock.headerEventEmitted$ = Observable.from([{name: 'download'}]) as any;
+            appHeaderServiceMock.headerEventEmitted$ = Observable.from([{ name: 'download' }]) as any;
             contentServiceMock.getContentSpaceUsageSummary.mockReturnValue(Observable.of(appStorageInfo));
             deviceInfoServiceMock.getAvailableInternalMemorySize.mockReturnValue(Observable.of(['123456']));
         });
 
         it('should configure the app header ionViewWillEnter()', (done) => {
             // arrange
-            appHeaderServiceMock.headerEventEmitted$ = Observable.from([{name: 'download'}]) as any;
+            appHeaderServiceMock.headerEventEmitted$ = Observable.from([{ name: 'download' }]) as any;
             // act
             downloadManagerPage.ionViewWillEnter();
             // assert
@@ -250,7 +248,7 @@ describe('DownloadManager', () => {
 
     it('should unsubscribe methods on ionViewWillLeave()', () => {
         // arrange
-        downloadManagerPage.headerObservable =  Observable.of([{name: 'download'}]).subscribe();
+        downloadManagerPage.headerObservable = Observable.of([{ name: 'download' }]).subscribe();
         spyOn(downloadManagerPage, 'ionViewWillLeave').and.callThrough();
         // act
         downloadManagerPage.ionViewWillLeave();

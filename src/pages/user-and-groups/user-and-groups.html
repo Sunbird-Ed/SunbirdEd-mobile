@@ -155,7 +155,7 @@
         </div>
   </ion-row>
   <ion-row padding>
-    <ion-col col-md-10 offset-md-1>
+    <ion-col col-md-10 offset-md-1 *ngIf="!isLoggedIn; else disableSwitchButton">
       <div *ngIf="selectedUserIndex !== -1; else enableCreateButton">
         <button *ngIf="!playConfig" ion-button block center (click)="switchAccountConfirmBox()" [disabled]="!selectedUsername">
           {{'SWITCH_ACCOUNT' | translate}}
@@ -172,5 +172,15 @@
           | translate}}</button>
       </ng-template>
     </ion-col>
+      <ng-template #disableSwitchButton>
+        <ion-col>
+        <button *ngIf="!playConfig" ion-button block center [disabled]="selectedUsername">
+          {{'SWITCH_ACCOUNT' | translate}}
+        </button>
+        <button *ngIf="playConfig" ion-button block [disabled]="isCurUserSelected">
+            {{'PLAY' | translate}}
+          </button>
+      </ion-col>
+      </ng-template>
   </ion-row>
 </ion-footer>

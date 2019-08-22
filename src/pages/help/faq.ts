@@ -53,15 +53,18 @@ export class FaqPage {
     private headerService: AppHeaderService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private platform: Platform,
-    private navCtrl: NavController,
-    private headerServie: AppHeaderService,
-    ) {
+    private navCtrl: NavController
+  ) {
     this.messageListener = (event) => {
       this.receiveMessage(event);
     };
   }
 
   ionViewDidLoad() {
+    this.appVersion.getAppName()
+      .then((appName) => {
+        this.appName = appName;
+      });
     window.addEventListener('message', this.messageListener, false);
   }
 
@@ -80,12 +83,8 @@ export class FaqPage {
 
   async ionViewWillEnter() {
     this.headerService.showHeaderWithBackButton();
-    this.appVersion.getAppName()
-      .then((appName) => {
-        this.appName = appName;
-      });
     await this.createAndPresentLoadingSpinner();
-    this.headerObservable = this.headerServie.headerEventEmitted$.subscribe(eventName => {
+    this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
       this.handleHeaderEvents(eventName);
     });
     this.registerDeviceBackButton();
@@ -97,19 +96,27 @@ export class FaqPage {
         })[0].code;
       });
 
-    await this.formAndFrameworkUtilService.getConsumptionFaqsUrl().then( (url: string) => {
+    await this.formAndFrameworkUtilService.getConsumptionFaqsUrl().then((url: string) => {
       if (this.selectedLanguage && this.commonUtilService.networkInfo.isNetworkAvailable) {
-          url += '?selectedlang=' + this.selectedLanguage + '&randomid=' + Math.random();
-          this.faq.url = url;
+        url += '?selectedlang=' + this.selectedLanguage + '&randomid=' + Math.random();
+        this.faq.url = url;
+        this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
+      } else {
+        this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
+
       }
+    }).catch((error) => {
+      console.log('In error', error);
+      this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
     });
-    this.consumptionFaqUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.faq.url);
   }
 
   private handleHeaderEvents($event) {
     switch ($event.name) {
       case 'back':
-        this.handleBackButton();
+        setTimeout(() => {
+          this.handleBackButton();
+        }, 100);
         break;
     }
   }
@@ -118,25 +125,29 @@ export class FaqPage {
       this.handleBackButton();
     }, 10);
   }
+
   handleBackButton() {
     const length = this.iframe.nativeElement.contentWindow.location.href.split('/').length;
     if (this.iframe.nativeElement.contentWindow.location.href.split('/')[length - 1].startsWith('consumption') ||
-        this.iframe.nativeElement.contentWindow.history.length === 1) {
+      this.iframe.nativeElement.contentWindow.history.length === 1) {
       this.navCtrl.pop();
       this.backButtonFunc();
     } else {
       this.iframe.nativeElement.contentWindow.history.go(-1);
     }
   }
+
   onLoad() {
     const element = document.getElementsByTagName('iframe')[0];
     if (element) {
-      if (element.contentDocument.documentElement.getElementsByTagName('body')[0].innerHTML.length !== 0 && this.loading ) {
-          this.loading.dismissAll();
+      if (element.contentDocument.documentElement.getElementsByTagName('body')[0].innerHTML.length !== 0 && this.loading) {
+        const appData = { appName: this.appName };
+        element.contentWindow.postMessage(appData, '*');
+        this.loading.dismissAll();
       }
       if (element.contentDocument.documentElement.getElementsByTagName('body').length === 0 ||
-          element['contentWindow'].location.href.startsWith('chrome-error:')
-          ) {
+        element['contentWindow'].location.href.startsWith('chrome-error:')
+      ) {
         this.onError();
       }
     }
@@ -181,8 +192,8 @@ export class FaqPage {
       ticketSummary = '.<br> <br> <b>' + this.commonUtilService.translateMessage('MORE_DETAILS') + '</b> <br> <br>';
     }
     const userDetails: string = 'From: ' + userProfile.profileType[0].toUpperCase() + userProfile.profileType.slice(1) + ', ' +
-                                  this.appGlobalService.getSelectedBoardMediumGrade() +
-                                  ticketSummary;
+      this.appGlobalService.getSelectedBoardMediumGrade() +
+      ticketSummary;
     return userDetails;
   }
   generateInteractTelemetry(interactSubtype, values) {
@@ -202,7 +213,7 @@ export class FaqPage {
       server: true
     };
     const contentRequest: ContentRequest = {
-      contentTypes: ContentType.FOR_LIBRARY_TAB,
+      contentTypes: ContentType.FOR_DOWNLOADED_TAB,
       audience: AudienceFilter.GUEST_TEACHER
     };
     const getUserCount = await this.profileService.getAllProfiles(allUserProfileRequest).map((profile) => profile.length).toPromise();

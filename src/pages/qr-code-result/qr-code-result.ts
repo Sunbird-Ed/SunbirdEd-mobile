@@ -47,6 +47,8 @@ import {CanvasPlayerService} from '../player/canvas-player.service';
 import {File} from '@ionic-native/file';
 import { AppHeaderService } from '@app/service';
 import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
+import {ComingSoonMessageService} from "@app/service/coming-soon-message.service";
+import { SbGenericPopoverComponent } from '../../component/popups/sb-generic-popup/sb-generic-popover';
 
 declare const cordova;
 
@@ -133,7 +135,9 @@ export class QrCodeResultPage implements OnDestroy {
     @Inject('PLAYER_SERVICE') private playerService: PlayerService,
     private canvasPlayerService: CanvasPlayerService,
     private file: File,
-    private headerService: AppHeaderService
+    private headerService: AppHeaderService,
+    private comingSoonMessageService: ComingSoonMessageService,
+    private popoverCtrl: PopoverController,
   ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
   }
@@ -243,8 +247,10 @@ export class QrCodeResultPage implements OnDestroy {
             '',
             PageId.DIAL_LINKED_NO_CONTENT,
             Environment.HOME);
-          this.commonUtilService.showContentComingSoonAlert(this.source);
-          this.navCtrl.pop();
+
+           // this.commonUtilService.showContentComingSoonAlert(this.source);
+             this.showComingSoonPopUp(data);
+            this.navCtrl.pop();
         }
 
       })
@@ -256,6 +262,28 @@ export class QrCodeResultPage implements OnDestroy {
         this.navCtrl.pop();
       });
 
+  }
+
+async showComingSoonPopUp(data) {
+    const message = await this.comingSoonMessageService.getComingSoonMessage(data);
+      if (data.contentData.mimeType === 'application/vnd.ekstep.content-collection') {
+          const popover = this.popoverCtrl.create(SbGenericPopoverComponent, {
+              sbPopoverHeading: this.commonUtilService.translateMessage('CONTENT_COMMING_SOON'),
+              sbPopoverMainTitle: message ? this.commonUtilService.translateMessage(message) :
+                this.commonUtilService.translateMessage('CONTENT_IS_BEEING_ADDED') + data.contentData.name,
+              actionsButtons: [
+                  {
+                      btntext: this.commonUtilService.translateMessage('OKAY'),
+                      btnClass: 'popover-color'
+                  }
+              ],
+          }, {
+              cssClass: 'sb-popover warning',
+          });
+          popover.present({
+              ev: event
+          });
+      }
   }
 
   calculateAvailableUserCount() {
@@ -544,10 +572,10 @@ export class QrCodeResultPage implements OnDestroy {
           let isProfileUpdated = false;
           res.forEach(element => {
             // checking whether content data framework Id exists/valid in syllabus list
-            if (data.framework === element.identifier) {
+            if (data.framework === element.identifier || data.board.indexOf(element.name) !== -1) {
               isProfileUpdated = true;
               const frameworkDetailsRequest: FrameworkDetailsRequest = {
-                frameworkId: data.framework,
+                frameworkId: element.identifier,
                 requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
               };
               this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()

@@ -6,49 +6,27 @@ import { GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, LOGIN_TEACHER_TABS } 
 import { LanguageSettingsPage } from '../pages/language-settings/language-settings';
 import { ImageLoaderConfig } from 'ionic-image-loader';
 import { TranslateService } from '@ngx-translate/core';
-import { SearchPage } from '@app/pages/search';
 import { CollectionDetailsPage } from '../pages/collection-details/collection-details';
 import { ContentDetailsPage } from '../pages/content-details/content-details';
-import { ContentType, EventTopics, GenericAppConfig, MimeType, PreferenceKey, ProfileConstants } from './app.constant';
+import { GenericAppConfig, PreferenceKey, ProfileConstants } from './app.constant';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
-import { FormAndFrameworkUtilService, GuestProfilePage } from '@app/pages/profile';
+import { FormAndFrameworkUtilService } from '@app/pages/profile';
 import {
-  AppGlobalService,
-  CommonUtilService,
-  TelemetryGeneratorService,
-  UtilityService,
-  AppHeaderService,
-  AppRatingService
+  AppGlobalService, CommonUtilService, TelemetryGeneratorService, UtilityService, AppHeaderService, AppRatingService
 } from '@app/service';
 import { UserTypeSelectionPage } from '@app/pages/user-type-selection';
 import { CategoriesEditPage } from '@app/pages/categories-edit/categories-edit';
 import { TncUpdateHandlerService } from '@app/service/handlers/tnc-update-handler.service';
 import {
-  AuthService,
-  ErrorEventType,
-  EventNamespace,
-  EventsBusService,
-  OAuthSession,
-  ProfileService,
-  ProfileType,
-  SharedPreferences,
-  SunbirdSdk,
-  TelemetryAutoSyncUtil,
-  TelemetryService,
+  AuthService, ErrorEventType, EventNamespace, EventsBusService, ProfileService, ProfileType, SharedPreferences,
+  SunbirdSdk, TelemetryAutoSyncUtil, TelemetryService, NotificationService
 } from 'sunbird-sdk';
 import { tap } from 'rxjs/operators';
 import {
-  Environment,
-  InteractSubtype,
-  InteractType,
-  PageId,
-  ImpressionType,
-  ImpressionSubtype
+  Environment, InteractSubtype, InteractType, PageId, ImpressionType
 } from '../service/telemetry-constants';
 import { TabsPage } from '@app/pages/tabs/tabs';
 import { ContainerService } from '@app/service/container.services';
-import { AndroidPermissionsService } from '../service/android-permissions/android-permissions.service';
-import { AndroidPermission, AndroidPermissionsStatus } from '@app/service/android-permissions/android-permission';
 import { SplashcreenTelemetryActionHandlerDelegate } from '@app/service/sunbird-splashscreen/splashcreen-telemetry-action-handler-delegate';
 import { SplashscreenImportActionHandlerDelegate } from '@app/service/sunbird-splashscreen/splashscreen-import-action-handler-delegate';
 import { OnboardingPage } from '@app/pages/onboarding/onboarding';
@@ -57,14 +35,12 @@ import { ReportsPage } from '@app/pages/reports';
 import { UserAndGroupsPage } from '@app/pages/user-and-groups';
 import { LogoutHandlerService } from '@app/service/handlers/logout-handler.service';
 import { Network } from '@ionic-native/network';
-import { ResourcesPage } from '@app/pages/resources/resources';
-import { CoursesPage } from '@app/pages/courses/courses';
-import { ProfilePage } from '@app/pages/profile/profile';
 import { CollectionDetailsEtbPage } from '@app/pages/collection-details-etb/collection-details-etb';
 import { QrCodeResultPage } from '@app/pages/qr-code-result';
 import { FaqPage } from '@app/pages/help/faq';
-import { NotificationService } from '@app/service/notification.service';
-import {SplaschreenDeeplinkActionHandlerDelegate} from '@app/service/sunbird-splashscreen/splaschreen-deeplink-action-handler-delegate';
+import { NotificationService as localNotification } from '@app/service/notification.service';
+import { SplaschreenDeeplinkActionHandlerDelegate } from '@app/service/sunbird-splashscreen/splaschreen-deeplink-action-handler-delegate';
+import { ActivePageService } from '@app/service/active-page/active-page-service';
 
 @Component({
   templateUrl: 'app.html',
@@ -86,10 +62,6 @@ export class MyApp implements OnInit, AfterViewInit {
   public sideMenuEvent = new EventEmitter;
   public showWalkthroughBackDrop = false;
 
-  readonly permissionList = [
-    AndroidPermission.WRITE_EXTERNAL_STORAGE,
-    AndroidPermission.RECORD_AUDIO,
-    AndroidPermission.CAMERA];
   private telemetryAutoSyncUtil: TelemetryAutoSyncUtil;
 
   profile: any = {};
@@ -101,18 +73,17 @@ export class MyApp implements OnInit, AfterViewInit {
     @Inject('AUTH_SERVICE') private authService: AuthService,
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
+    @Inject('NOTIFICATION_SERVICE') private notificationServices: NotificationService,
     private platform: Platform,
     private statusBar: StatusBar,
     private toastCtrl: ToastController,
     private containerService: ContainerService,
-    private permission: AndroidPermissionsService,
     private imageLoaderConfig: ImageLoaderConfig,
     private app: App,
     private translate: TranslateService,
     private events: Events,
     private zone: NgZone,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
-    private event: Events,
     private appGlobalService: AppGlobalService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
@@ -126,24 +97,23 @@ export class MyApp implements OnInit, AfterViewInit {
     private logoutHandlerService: LogoutHandlerService,
     private network: Network,
     private appRatingService: AppRatingService,
-    private notificationSrc: NotificationService
+    private activePageService: ActivePageService,
+    private notificationSrc: localNotification
   ) {
     this.telemetryAutoSyncUtil = new TelemetryAutoSyncUtil(this.telemetryService);
     platform.ready().then(async () => {
+      this.fcmTokenWatcher(); // Notification related
+      this.receiveNotification();
       this.imageLoaderConfig.enableDebugMode();
       this.imageLoaderConfig.setMaximumCacheSize(100 * 1024 * 1024);
       this.telemetryGeneratorService.genererateAppStartTelemetry(await utilityService.getDeviceSpec());
       this.generateNetworkTelemetry();
       this.autoSyncTelemetry();
       this.subscribeEvents();
-
-
-      this.registerDeeplinks();
+      this.showAppWalkThroughScreen();
       this.startOpenrapDiscovery();
       this.saveDefaultSyncSetting();
-      this.showAppWalkThroughScreen();
       this.checkAppUpdateAvailable();
-      this.requestAppPermissions();
       this.makeEntryInSupportFolder();
       this.checkForTncUpdate();
       this.handleAuthErrors();
@@ -155,7 +125,74 @@ export class MyApp implements OnInit, AfterViewInit {
       this.statusBar.styleBlackTranslucent();
       this.handleBackButton();
       this.appRatingService.checkInitialDate();
+      this.getUtmParameter();
     });
+  }
+
+  /* Generates new FCM Token if not available
+   * if available then on token refresh updates FCM token
+   */
+  async fcmTokenWatcher() {
+    const fcmToken = await this.preferences.getString('fcm_token').toPromise();
+    if (!fcmToken) {
+      FCMPlugin.getToken((token) => {
+        this.storeFCMToken(token);
+        SunbirdSdk.instance.updateTelemetryConfig({ fcmToken: token });
+      });
+    }
+    FCMPlugin.onTokenRefresh((token) => {
+      this.storeFCMToken(token);
+      SunbirdSdk.instance.updateTelemetryConfig({ fcmToken: token });
+    });
+  }
+
+  storeFCMToken(token: string) {
+    this.preferences.putString('fcm_token', token).toPromise();
+  }
+
+  handleNotification(data) {
+    switch (data.actionData.actionType) {
+      case 'updateApp':
+        console.log('updateApp');
+        break;
+      case 'contentUpdate':
+        console.log('contentUpdate');
+        break;
+      case 'bookUpdate':
+        console.log('bookUpdate');
+        break;
+      default:
+        console.log('Default Called');
+        break;
+    }
+  }
+
+
+  /* Notification data will be received in data variable
+   * can take action on data variable
+   */
+  receiveNotification() {
+    FCMPlugin.onNotification((data) => {
+      if (data.wasTapped) {
+        // Notification was received on device tray and tapped by the user.
+      } else {
+        // Notification was received in foreground. Maybe the user needs to be notified.
+      }
+      data['isRead'] = data.wasTapped ? 1 : 0;
+      data['actionData'] = JSON.parse(data['actionData']);
+      this.notificationServices.addNotification(data).subscribe((status) => {
+        this.events.publish('notification:received');
+        this.events.publish('notification-status:update', { isUnreadNotifications: true });
+      });
+    },
+      (sucess) => {
+        console.log('Notification Sucess Callback');
+        console.log(sucess);
+      },
+      (err) => {
+        console.log('Notification Error Callback');
+        console.log(err);
+      });
   }
 
   /**
@@ -168,8 +205,8 @@ export class MyApp implements OnInit, AfterViewInit {
 
     this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
       const navObj: NavControllerBase = this.app.getActiveNavs()[0];
-        const activeView: ViewController = navObj.getActive();
-        const pageId: string = this.computePageId((<any>activeView).instance);
+      const activeView: ViewController = navObj.getActive();
+      const pageId: string = this.activePageService.computePageId((<any>activeView).instance);
       if (available) {
         this.addNetworkTelemetry(InteractSubtype.INTERNET_CONNECTED, pageId);
       } else {
@@ -181,11 +218,11 @@ export class MyApp implements OnInit, AfterViewInit {
 
   addNetworkTelemetry(subtype: string, pageId: string) {
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-        subtype,
-        Environment.HOME,
-        pageId, undefined
+      subtype,
+      Environment.HOME,
+      pageId, undefined
     );
-}
+  }
   ngAfterViewInit(): void {
     this.platform.resume.subscribe(() => {
       this.telemetryGeneratorService.generateInterruptTelemetry('resume', '');
@@ -197,10 +234,8 @@ export class MyApp implements OnInit, AfterViewInit {
     });
   }
 
-
   handleBackButton() {
     this.platform.registerBackButtonAction(() => {
-
       let navObj = this.app.getRootNavs()[0];
       let currentPage = navObj.getActive().name;
       const activeView: ViewController = this.nav.getActive();
@@ -212,7 +247,7 @@ export class MyApp implements OnInit, AfterViewInit {
       if (navObj.canGoBack()) {
         return navObj.pop();
       } else {
-        this.commonUtilService.showExitPopUp(this.computePageId((<any>activeView).instance), Environment.HOME, false);
+        this.commonUtilService.showExitPopUp(this.appGlobalService.getPageIdForTelemetry(), Environment.HOME, false);
       }
     });
   }
@@ -221,32 +256,11 @@ export class MyApp implements OnInit, AfterViewInit {
     const value = new Map();
     value['network-type'] = this.network.type;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-      InteractSubtype.NETWORK_STATUS, Environment.HOME, PageId.SPLASH_SCREEN, undefined, value) ;
-  }
-  computePageId(page): string {
-    let pageId = '';
-    if (page instanceof ResourcesPage) {
-      pageId = PageId.LIBRARY;
-    } else if (page instanceof CoursesPage) {
-      pageId = PageId.COURSES;
-    } else if (page instanceof ProfilePage) {
-      pageId = PageId.PROFILE;
-    } else if (page instanceof GuestProfilePage) {
-      pageId = PageId.GUEST_PROFILE;
-    }  else if (page instanceof CollectionDetailsEtbPage) {
-      pageId = PageId.COLLECTION_DETAIL;
-  } else if (page instanceof ContentDetailsPage) {
-      pageId = PageId.CONTENT_DETAIL;
-  } else if (page instanceof QrCodeResultPage) {
-      pageId = PageId.DIAL_CODE_SCAN_RESULT;
-  } else if (page instanceof CollectionDetailsPage) {
-      pageId = PageId.COLLECTION_DETAIL;
-  }
-    return pageId;
+      InteractSubtype.NETWORK_STATUS, Environment.HOME, PageId.SPLASH_SCREEN, undefined, value);
   }
 
   subscribeEvents() {
-    this.events.subscribe('show-qr-walkthrough', (data) => {
+    this.events.subscribe('coach_mark_seen', (data) => {
       this.showWalkthroughBackDrop = data.showWalkthroughBackDrop;
       this.appName = data.appName;
     });
@@ -255,66 +269,6 @@ export class MyApp implements OnInit, AfterViewInit {
         this.generateInteractEvent(data);
         // Added below code to generate Impression Before Interact for Library,Courses,Profile
         this.generateImpressionEvent(data);
-      });
-    });
-
-    this.events.subscribe('generic.event', (data) => {
-      this.zone.run(() => {
-        const response = JSON.parse(data);
-        let action;
-        try {
-          action = JSON.parse(response.data.action);
-        } catch (Error) {
-        }
-        const values = new Map();
-        values['openrapInfo'] = action;
-        if (response && response.data.action && response.data.action === 'logout') {
-          this.authService.getSession().toPromise().then((session: OAuthSession) => {
-            if (session) {
-              this.authService.resignSession().subscribe();
-              (<any>window).splashscreen.clearPrefs();
-            }
-            this.profileService.getActiveSessionProfile({
-              requiredFields: ProfileConstants.REQUIRED_FIELDS
-            }).toPromise()
-              .then((currentUser: any) => {
-
-                if (currentUser.profileType === ProfileType.STUDENT) {
-                  initTabs(this.containerService, GUEST_STUDENT_TABS);
-                  this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise().then();
-                } else {
-                  initTabs(this.containerService, GUEST_TEACHER_TABS);
-                  this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();
-                }
-
-                this.event.publish('refresh:profile');
-                this.event.publish(AppGlobalService.USER_INFO_UPDATED);
-
-                this.app.getRootNav().setRoot(TabsPage);
-
-              }).catch(() => {
-              });
-
-          });
-        } else if (response && action && action.actionType === 'connected') {
-          console.log('connected to openrap device with the IP ' + action.ip);
-          this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-            'openrap-device-connected',
-            Environment.HOME,
-            Environment.HOME, undefined,
-            values);
-        } else if (response && action && action.actionType === 'disconnected') {
-          console.log('disconnected from openrap device with the IP ' + action.ip);
-          this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-            'openrap-device-disconnected',
-            Environment.HOME,
-            Environment.HOME, undefined,
-            values);
-        } else if (response && response.data.action && response.data.action === EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY) {
-          this.events.publish(EventTopics.COURSE_STATUS_UPDATED_SUCCESSFULLY, {
-            update: true
-          });
-        }
       });
     });
 
@@ -459,36 +413,6 @@ export class MyApp implements OnInit, AfterViewInit {
     }
   }
 
-  private async requestAppPermissions() {
-    return this.permission.checkPermissions(this.permissionList)
-      .mergeMap((statusMap: { [key: string]: AndroidPermissionsStatus }) => {
-        const toRequest: AndroidPermission[] = [];
-        for (const permission in statusMap) {
-          if (!statusMap[permission].hasPermission) {
-            const values = new Map();
-            values['permission'] = permission;
-            values['permissionStatus'] = statusMap[permission];
-            this.telemetryGeneratorService.generateInteractTelemetry(
-              InteractType.OTHER,
-              InteractSubtype.PERMISSION_POPUP,
-              Environment.HOME,
-              PageId.ONBOARDING_LANGUAGE_SETTING,
-              undefined,
-              values
-            );
-            toRequest.push(permission as AndroidPermission);
-          }
-        }
-
-        if (!toRequest.length) {
-          return Observable.of(undefined);
-        }
-
-        return this.permission.requestPermissions(toRequest);
-      }).toPromise();
-  }
-
-
   private async makeEntryInSupportFolder() {
     return new Promise((resolve => {
       (<any>window).supportfile.makeEntryInSunbirdSupportFile((result) => {
@@ -508,73 +432,21 @@ export class MyApp implements OnInit, AfterViewInit {
       });
   }
 
-  private async registerDeeplinks() {
-    (<any>window).splashscreen.onDeepLink(deepLinkResponse => {
-      setTimeout(() => {
-        const response = deepLinkResponse;
-
-        if (response.type === 'dialcode') {
-          const results = response.code.split('/');
-          const dialCode = results[results.length - 1];
-          this.nav.push(SearchPage, { dialCode: dialCode });
-        } else if (response.type === 'contentDetails') {
-          const hierarchyInfo = JSON.parse(response.hierarchyInfo);
-
-          const content = {
-            identifier: response.id,
-            hierarchyInfo: hierarchyInfo
-          };
-
-          const navObj = this.app.getActiveNavs()[0];
-
-          navObj.push(ContentDetailsPage, {
-            content: content
-          });
-        } else if (response.result) {
-          this.navigateToContentDetails(response.result);
-        }
-      }, 300);
-    });
-  }
-
-  private generateInteractEvent(pageid: string) {
+  private generateInteractEvent(pageId: string) {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.TAB_CLICKED,
       Environment.HOME,
-      pageid.toLowerCase(),
-      null,
-      undefined,
-      undefined
-    );
-  }
-  private generateImpressionEvent(pageid: string) {
-    pageid = pageid.toLowerCase();
-    const env = pageid.localeCompare(PageId.PROFILE) ? Environment.HOME : Environment.USER;
-    this.telemetryGeneratorService.generateImpressionTelemetry(
-      ImpressionType.VIEW, '',
-      pageid,
-      env);
-  }
-  private navigateToContentDetails(content) {
-    if (content.contentData.contentType === ContentType.COURSE) {
-      this.nav.push(EnrolledCourseDetailsPage, {
-        content: content
-      });
-    } else if (content.mimeType === MimeType.COLLECTION) {
-      this.nav.push(CollectionDetailsPage, {
-        content: content
-      });
-    } else {
-      this.nav.push(ContentDetailsPage, {
-        content: content
-      });
-    }
+      pageId ? pageId.toLowerCase() : PageId.QRCodeScanner);
   }
 
-  private async showAppWalkThroughScreen() {
-    const showAppWalkthrough = (await this.preferences.getString('show_app_walkthrough_screen').toPromise()) === '' ? 'true' : 'false';
-    await this.preferences.putString('show_app_walkthrough_screen', showAppWalkthrough).toPromise();
+  private generateImpressionEvent(pageId: string) {
+    pageId = pageId.toLowerCase();
+    const env = pageId.localeCompare(PageId.PROFILE) ? Environment.HOME : Environment.USER;
+    this.telemetryGeneratorService.generateImpressionTelemetry(
+      ImpressionType.VIEW, '',
+      pageId ? pageId.toLowerCase() : PageId.QRCodeScanner,
+      env);
   }
 
   private async startOpenrapDiscovery(): Promise<undefined> {
@@ -591,7 +463,7 @@ export class MyApp implements OnInit, AfterViewInit {
         const values = new Map();
         values['openrapInfo'] = response;
         this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-          response.actionType === 'connected' ? 'openrap-device-connected' : 'openrap-device-disconnected',
+          response.actionType === 'connected' ? InteractSubtype.OPENRAP_DEVICE_CONNECTED : InteractSubtype.OPENRAP_DEVICE_DISCONNECTED,
           Environment.HOME,
           Environment.HOME, undefined,
           values);
@@ -643,7 +515,7 @@ export class MyApp implements OnInit, AfterViewInit {
           break;
         }
         case 'DEEPLINK': {
-          await this.splaschreenDeeplinkActionHandlerDelegate.onAction(action.type, action.payload).toPromise();
+          await this.splaschreenDeeplinkActionHandlerDelegate.onAction(action.payload.type, action.payload).toPromise();
           break;
         }
         default:
@@ -668,18 +540,12 @@ export class MyApp implements OnInit, AfterViewInit {
 
   handleHeaderEvents($event) {
     if ($event.name === 'back') {
-      // this.handleBackButton();
       let navObj = this.app.getRootNavs()[0];
       let activeView: ViewController = this.nav.getActive();
       if (activeView != null && ((<any>activeView).instance instanceof TabsPage)) {
         navObj = this.app.getActiveNavs()[0];
         activeView = navObj.getActive();
-        // currentPage = navObj.getActive().name;
       }
-      // if (currentPage === 'TabsPage') {
-      //   navObj = this.app.getActiveNavs()[0];
-      //   currentPage = navObj.getActive().name;
-      // }
       if (((<any>activeView).instance instanceof UserTypeSelectionPage)
         || ((<any>activeView).instance instanceof EnrolledCourseDetailsPage)
         || ((<any>activeView).instance instanceof CollectionDetailsPage)
@@ -689,14 +555,14 @@ export class MyApp implements OnInit, AfterViewInit {
         || ((<any>activeView).instance instanceof QrCodeResultPage)
         || ((<any>activeView).instance instanceof FaqPage)
         || ((<any>activeView).instance['pageId'] === 'ProfileSettingsPage')
-        ) {
+      ) {
         this.headerServie.sidebarEvent($event);
         return;
       }
       if (navObj.canGoBack()) {
         return navObj.pop();
       } else {
-        this.commonUtilService.showExitPopUp(this.computePageId((<any>activeView).instance), Environment.HOME, false);
+        this.commonUtilService.showExitPopUp(this.appGlobalService.getPageIdForTelemetry(), Environment.HOME, false);
       }
     } else {
       this.headerServie.sidebarEvent($event);
@@ -722,8 +588,7 @@ export class MyApp implements OnInit, AfterViewInit {
           InteractType.TOUCH,
           InteractSubtype.REPORTS_CLICKED,
           Environment.USER,
-          PageId.PROFILE
-        );
+          PageId.PROFILE);
         if (this.app.getRootNavs().length > 0) {
           this.app.getRootNavs()[0].push(ReportsPage, { profile: this.profile });
         }
@@ -734,11 +599,7 @@ export class MyApp implements OnInit, AfterViewInit {
           InteractType.TOUCH,
           InteractSubtype.SETTINGS_CLICKED,
           Environment.USER,
-          PageId.PROFILE,
-          null,
-          undefined,
-          undefined
-        );
+          PageId.PROFILE);
         if (this.app.getRootNavs().length > 0) {
           this.app.getRootNavs()[0].push(SettingsPage);
         }
@@ -749,11 +610,7 @@ export class MyApp implements OnInit, AfterViewInit {
           InteractType.TOUCH,
           InteractSubtype.LANGUAGE_CLICKED,
           Environment.USER,
-          PageId.PROFILE,
-          null,
-          undefined,
-          undefined
-        );
+          PageId.PROFILE);
         if (this.app.getRootNavs().length > 0) {
           this.app.getRootNavs()[0].push(LanguageSettingsPage, {
             isFromSettings: true
@@ -766,11 +623,7 @@ export class MyApp implements OnInit, AfterViewInit {
           InteractType.TOUCH,
           InteractSubtype.HELP_CLICKED,
           Environment.USER,
-          PageId.PROFILE,
-          null,
-          undefined,
-          undefined
-        );
+          PageId.PROFILE);
         if (this.app.getRootNavs().length > 0) {
           this.app.getRootNavs()[0].push(FaqPage, {
             isFromSettings: true
@@ -796,6 +649,26 @@ export class MyApp implements OnInit, AfterViewInit {
         this.logoutHandlerService.onLogout();
       });
   }
+  getUtmParameter() {
+    this.utilityService.getUtmInfo().then(response => {
+      if (response) {
+        const utmTelemetry = new Map();
+        utmTelemetry['utm_data'] = response;
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.OTHER,
+          InteractSubtype.UTM_INFO,
+          Environment.HOME,
+          PageId.HOME,
+          undefined,
+          utmTelemetry);
+        this.utilityService.clearUtmInfo();
+      }
+    })
+      .catch(error => {
+        console.log('Error is', error);
+      });
+  }
+
   private qrWalkthroughBackdropClicked() {
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
@@ -804,6 +677,7 @@ export class MyApp implements OnInit, AfterViewInit {
       PageId.LIBRARY,
     );
   }
+
   private onConfirmationClicked(event) {
     event.stopPropagation();
     this.showWalkthroughBackDrop = false;
@@ -813,5 +687,10 @@ export class MyApp implements OnInit, AfterViewInit {
       Environment.ONBOARDING,
       PageId.LIBRARY
     );
+  }
+
+  private async showAppWalkThroughScreen() {
+    const showAppWalkthrough: boolean = await this.preferences.getBoolean('coach_mark_seen').toPromise();
+    await this.preferences.putBoolean('coach_mark_seen', showAppWalkthrough).toPromise();
   }
 }

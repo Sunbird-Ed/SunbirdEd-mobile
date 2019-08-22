@@ -284,7 +284,8 @@ export class GuestEditProfilePage {
     this.loader.present();
     const getSuggestedFrameworksRequest: GetSuggestedFrameworksRequest = {
       language: this.translate.currentLang,
-      requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
+      requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES,
+      ignoreActiveChannel: true
     };
     this.frameworkUtilService.getActiveChannelSuggestedFrameworkList(getSuggestedFrameworksRequest).toPromise()
       .then((result: Framework[]) => {
@@ -349,6 +350,8 @@ export class GuestEditProfilePage {
               });
               this.resetForm(1, false);
             }
+          } else {
+            this.isEditData = false;
           }
         } else if (this.isEditData) {
           this.isEditData = false;

@@ -1,6 +1,6 @@
 import { AppGlobalService } from './../../service/app-global.service';
 
-import { Component, ViewChild, Inject, OnInit } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ContainerService } from '../../service/container.services';
 import { Tabs, Tab, Events, ToastController } from 'ionic-angular';
 import { TelemetryGeneratorService } from '@app/service';
@@ -14,19 +14,23 @@ export class TabsPage {
   configData: any;
 
   @ViewChild('myTabs') tabRef: Tabs;
+
   tabIndex = 0;
+
   tabs = [];
+
   headerConfig = {
-    showHeader : true,
+    showHeader: true,
     showBurgerMenu: true,
     actionButtons: ['search', 'filter'],
   };
+
   selectedLanguage: string;
+
   constructor(
     private container: ContainerService,
     private events: Events,
     public toastCtrl: ToastController,
-    private telemetryGeneratorService: TelemetryGeneratorService,
     private appGlobalService: AppGlobalService
   ) {}
 
@@ -40,6 +44,7 @@ export class TabsPage {
         tabIndex = index;
       }
     });
+
     this.events.publish('update_header', { index: tabIndex });
     // Raise an Event
     setTimeout(() => {
@@ -55,11 +60,13 @@ export class TabsPage {
         if (tabTo.isSelected === true) {
           tabTo.isSelected = false;
         }
+
         if (index === tab.index) {
           tabTo.isSelected = true;
         }
       });
     }
+
     this.events.publish('tab.change', tab.tabTitle);
   }
 
@@ -76,6 +83,7 @@ export class TabsPage {
       });
       toast.present();
     }
+
     if (tab.disabled && !tab.availableLater) {
       const toast = this.toastCtrl.create({
         message: 'Available for teachers only',

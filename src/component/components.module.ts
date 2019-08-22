@@ -15,7 +15,6 @@ import { IonicImageLoader } from 'ionic-image-loader';
 import { SignInCardComponent } from './sign-in-card/sign-in-card';
 import { PBHorizontal } from './pbhorizontal/pb-horizontal';
 import { ConfirmAlertComponent } from './confirm-alert/confirm-alert';
-import { ReportIssuesComponent } from './report-issues/report-issues';
 import { FormAndFrameworkUtilService } from '../pages/profile/formandframeworkutil.service';
 import { AssessmentDetailsComponent } from './assessment-details/assessment-details';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
@@ -38,6 +37,8 @@ import { SideMenuComponent } from './side-menu/side-menu';
 import { DirectivesModule } from '@app/directives/directives.module';
 import { AppRatingAlertComponent } from './app-rating-alert/app-rating-alert';
 import { SbNoNetworkPopupComponent } from './popups/sb-no-network-popup/sb-no-network-popup';
+import { NotificationItemComponent } from './notification-item/notification-item';
+import { SbInsufficientStoragePopupComponent } from '@app/component/popups/sb-insufficient-storage-popup/sb-insufficient-storage-popup';
 
 @NgModule({
     declarations: [
@@ -66,12 +67,13 @@ import { SbNoNetworkPopupComponent } from './popups/sb-no-network-popup/sb-no-ne
         CollectionChildComponent,
         ApplicationHeaderComponent,
         SbPopoverComponent,
-        ReportIssuesComponent,
         SbDownloadPopupComponent,
         SbGenericPopoverComponent,
         SideMenuComponent,
         AppRatingAlertComponent,
-        SbNoNetworkPopupComponent
+        SbNoNetworkPopupComponent,
+        NotificationItemComponent,
+        SbInsufficientStoragePopupComponent
     ],
     imports: [
         IonicPageModule.forChild(CourseCard),
@@ -97,7 +99,6 @@ import { SbNoNetworkPopupComponent } from './popups/sb-no-network-popup/sb-no-ne
         ViewCreditsComponent,
         ProfileAvatarComponent,
         DialogPopupComponent,
-        ReportIssuesComponent,
         BookmarkComponent,
         UnenrollAlertComponent,
         EditContactDetailsPopupComponent,
@@ -115,7 +116,9 @@ import { SbNoNetworkPopupComponent } from './popups/sb-no-network-popup/sb-no-ne
         SbGenericPopoverComponent,
         SideMenuComponent,
         AppRatingAlertComponent,
-        SbNoNetworkPopupComponent
+        SbNoNetworkPopupComponent,
+        NotificationItemComponent,
+        SbInsufficientStoragePopupComponent
     ],
     entryComponents: [
         ConfirmAlertComponent,
@@ -130,7 +133,8 @@ import { SbNoNetworkPopupComponent } from './popups/sb-no-network-popup/sb-no-ne
         SbDownloadPopupComponent,
         SbGenericPopoverComponent,
         AppRatingAlertComponent,
-        SbNoNetworkPopupComponent
+        SbNoNetworkPopupComponent,
+        SbInsufficientStoragePopupComponent
     ],
     providers: [
         FormAndFrameworkUtilService

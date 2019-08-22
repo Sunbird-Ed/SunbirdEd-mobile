@@ -1,4 +1,4 @@
-import {Component, Inject, NgZone, ViewChild, OnInit} from '@angular/core';
+import {Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController} from 'ionic-angular';
 import {TranslateService} from '@ngx-translate/core';
 import {SocialSharing} from '@ionic-native/social-sharing';
@@ -9,11 +9,11 @@ import {ContentType, MimeType, ShareUrl} from '@app/app';
 import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
 import {
   AppGlobalService,
+  AppHeaderService,
   CommonUtilService,
   CourseUtilService,
   TelemetryGeneratorService,
-  UtilityService,
-  AppHeaderService
+  UtilityService
 } from '@app/service';
 import {
   ChildContentRequest,
@@ -36,6 +36,7 @@ import {
   EventsBusService,
   ProfileType,
   Rollup,
+  StorageService,
   TelemetryErrorCode,
   TelemetryObject
 } from 'sunbird-sdk';
@@ -196,12 +197,13 @@ export class CollectionDetailsPage {
 
   headerObservable: any;
   constructor(
+    @Inject('STORAGE_SERVICE') private storageService: StorageService,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     private navCtrl: NavController,
     private navParams: NavParams,
-    @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private zone: NgZone,
     private events: Events,
-    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     private popoverCtrl: PopoverController,
     private platform: Platform,
     private translate: TranslateService,
@@ -218,15 +220,6 @@ export class CollectionDetailsPage {
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
     this.getBaseURL();
-  }
-
-  ionViewDidLoad() {
-    /*this.navBar.backButtonClick = () => {
-      this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COLLECTION_DETAIL, Environment.HOME,
-        true, this.cardData.identifier, this.corRelationList);
-      this.handleBackButton();
-    };*/
-    this.registerDeviceBackButton();
   }
 
   /**
@@ -286,6 +279,7 @@ export class CollectionDetailsPage {
       this.didViewLoad = true;
       this.setContentDetails(this.identifier, true);
       this.subscribeSdkEvent();
+      this.registerDeviceBackButton();
     });
   }
 
@@ -557,7 +551,7 @@ export class CollectionDetailsPage {
     _.forEach(identifiers, (value) => {
       requestParams.push({
         isChildContent: isChild,
-        destinationFolder: cordova.file.externalDataDirectory,
+        destinationFolder: this.storageService.getStorageDestinationDirectoryPath(),
         contentId: value,
         correlationData: this.corRelationList !== undefined ? this.corRelationList : []
       });
@@ -860,7 +854,7 @@ export class CollectionDetailsPage {
     if (this.contentDetail.isAvailableLocally) {
       const exportContentRequest: ContentExportRequest = {
         contentIds: [this.contentDetail.identifier],
-        destinationFolder: cordova.file.externalDataDirectory
+        destinationFolder: this.storageService.getStorageDestinationDirectoryPath()
       };
       this.contentService.exportContent(exportContentRequest).toPromise()
         .then((contentExportResponse: ContentExportResponse) => {
@@ -1048,11 +1042,13 @@ export class CollectionDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillLeave(): void {
-    // this.downloadProgress = '';
     this.headerObservable.unsubscribe();
     this.downloadProgress = 0;
     if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
+    }
+    if (this.backButtonFunc) {
+     this.backButtonFunc();
     }
   }
 

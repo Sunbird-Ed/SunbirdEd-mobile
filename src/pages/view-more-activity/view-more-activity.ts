@@ -1,32 +1,18 @@
-import {Events, IonicPage, NavController, NavParams} from 'ionic-angular';
-import {Component, Inject, NgZone, OnInit, Input} from '@angular/core';
+import { Events, IonicPage, NavController, NavParams } from 'ionic-angular';
+import { Component, Inject, NgZone, OnInit, Input } from '@angular/core';
 import {
-  Content,
-  ContentEventType,
-  ContentImportRequest,
-  ContentImportResponse,
-  ContentImportStatus,
-  ContentRequest,
-  ContentSearchCriteria,
-  ContentSearchResult,
-  ContentService,
-  Course,
-  CourseService,
-  DownloadEventType,
-  DownloadProgress,
-  EventsBusEvent,
-  EventsBusService,
-  SearchType,
-  TelemetryObject
+  Content, ContentEventType, ContentImportRequest, ContentImportResponse, ContentImportStatus, ContentRequest,
+  ContentSearchCriteria, ContentSearchResult, ContentService, Course, CourseService, DownloadEventType,
+  DownloadProgress, EventsBusEvent, EventsBusService, SearchType, TelemetryObject
 } from 'sunbird-sdk';
 import * as _ from 'lodash';
-import {ContentType, ViewMore, MimeType} from '../../app/app.constant';
-import {ContentDetailsPage} from '../content-details/content-details';
-import {CourseUtilService} from '../../service/course-util.service';
-import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
-import {CommonUtilService} from '../../service/common-util.service';
-import {Environment, ImpressionType, LogLevel, PageId, InteractType, InteractSubtype} from '../../service/telemetry-constants';
-import {Subscription} from 'rxjs';
+import { ContentType, ViewMore, MimeType } from '../../app/app.constant';
+import { ContentDetailsPage } from '../content-details/content-details';
+import { CourseUtilService } from '../../service/course-util.service';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { CommonUtilService } from '../../service/common-util.service';
+import { Environment, ImpressionType, LogLevel, PageId, InteractType, InteractSubtype } from '../../service/telemetry-constants';
+import { Subscription } from 'rxjs';
 import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
 import { AppHeaderService } from '@app/service';
 
@@ -193,10 +179,9 @@ export class ViewMoreActivityPage implements OnInit {
     await this.events.subscribe('savedResources:update', async (res) => {
       if (res && res.update) {
         if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_SAVED) {
-          this.getLocalContents(false, this.downloadsOnlyToggle);
+          this.getLocalContents(false, this.downloadsOnlyToggle, true);
         } else if (this.navParams.get('pageName') === ViewMore.PAGE_RESOURCE_RECENTLY_VIEWED) {
-          await this.getLocalContents(true, this.downloadsOnlyToggle);
-          this.getLocalContents();
+          await this.getLocalContents(true, this.downloadsOnlyToggle, true);
         }
       }
     });
@@ -286,7 +271,6 @@ export class ViewMoreActivityPage implements OnInit {
         this.loadMoreBtn = false;
         this.localContentsCard = true;
         await this.getLocalContents(true);
-        this.getLocalContents();
         break;
 
       default:
@@ -326,10 +310,11 @@ export class ViewMoreActivityPage implements OnInit {
   /**
 	 * Get local content
 	 */
-  async getLocalContents(recentlyViewed?: boolean, downloaded?: boolean) {
+  async getLocalContents(recentlyViewed?: boolean, downloaded?: boolean, hideLoaderFlag?: boolean) {
     const loader = this.commonUtilService.getLoader();
-    loader.present();
-
+    if (!hideLoaderFlag) {
+      loader.present();
+    }
     const requestParams: ContentRequest = {
       uid: this.uid,
       audience: this.audience,
@@ -377,22 +362,26 @@ export class ViewMoreActivityPage implements OnInit {
             this.searchList.push(...this.savedResources);
           }
           console.log('content data is =>', contentData);
-          loader.dismiss();
+          if (!hideLoaderFlag) {
+            loader.dismiss();
+          }
           this.loadMoreBtn = false;
         });
       })
       .catch(() => {
-        loader.dismiss();
+        if (!hideLoaderFlag) {
+          loader.dismiss();
+        }
       });
   }
 
   getContentDetails(content) {
     const identifier = content.contentId || content.identifier;
-    this.contentService.getContentDetails({contentId: identifier}).toPromise()
+    this.contentService.getContentDetails({ contentId: identifier }).toPromise()
       .then((data: Content) => {
         if (Boolean(data.isAvailableLocally)) {
           this.navCtrl.push(ContentDetailsPage, {
-            content: {identifier: content.lastReadContentId},
+            content: { identifier: content.lastReadContentId },
             depth: '1',
             contentState: {
               batchId: content.batchId ? content.batchId : '',
@@ -457,7 +446,7 @@ export class ViewMoreActivityPage implements OnInit {
         if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED && this.downloadPercentage === 100) {
           this.showOverlay = false;
           this.navCtrl.push(ContentDetailsPage, {
-            content: {identifier: this.resumeContentData.lastReadContentId},
+            content: { identifier: this.resumeContentData.lastReadContentId },
             depth: '1',
             contentState: {
               batchId: this.resumeContentData.batchId ? this.resumeContentData.batchId : '',
@@ -476,13 +465,12 @@ export class ViewMoreActivityPage implements OnInit {
     this.ngZone.run(() => {
       this.contentService.cancelDownload(this.resumeContentData.contentId || this.resumeContentData.identifier)
         .toPromise().then(() => {
-        this.showOverlay = false;
-      }).catch(() => {
-        this.showOverlay = false;
-      });
+          this.showOverlay = false;
+        }).catch(() => {
+          this.showOverlay = false;
+        });
     });
   }
-
 
   showDisabled(resource) {
     return !resource.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable;
@@ -523,6 +511,7 @@ export class ViewMoreActivityPage implements OnInit {
         ImpressionType.SEARCH, params);
     }
   }
+
   navigateToDetailPage(content: any): boolean {
     if (!content.isAvailableLocally && !this.commonUtilService.networkInfo.isNetworkAvailable) {
       return false;

@@ -1,0 +1,22 @@
+.permissionSettingToast {
+  .toast-message {
+    color: #f2f2f2;
+    font-size: 12px;
+    line-height: 16px;
+  }
+  .toast-button:before {
+    content: url("../assets/imgs/ic_settings_error.png");
+    left: 0;
+    z-index: 999;
+    position: absolute;
+    transform: scale(0.9) translate(0, -50%);
+  }
+  .button-inner {
+    font-size: 12px;
+    line-height: 18px;
+    color: #ffffff;
+  }
+  .toast-button {
+    padding-left: 26px;
+  }
+}

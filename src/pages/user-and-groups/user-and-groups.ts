@@ -1,20 +1,8 @@
-import {GroupDetailsPage} from './group-details/group-details';
-import {TranslateService} from '@ngx-translate/core';
-import {Component, Inject, NgZone, ViewChild} from '@angular/core';
-import {
-  AlertController,
-  App,
-  Content,
-  Events,
-  IonicApp,
-  IonicPage,
-  LoadingController,
-  NavController,
-  NavParams,
-  Platform,
-  PopoverController
-} from 'ionic-angular';
-import {PopoverPage} from './popover/popover';
+import { GroupDetailsPage } from './group-details/group-details';
+import { TranslateService } from '@ngx-translate/core';
+import { Component, Inject, NgZone, ViewChild } from '@angular/core';
+import { AlertController, App, Content, Events, IonicApp, IonicPage, LoadingController, NavController, NavParams, Platform, PopoverController } from 'ionic-angular';
+import { PopoverPage } from './popover/popover';
 import {
   AuthService,
   GetAllProfileRequest,
@@ -26,10 +14,10 @@ import {
   SharedPreferences,
   TelemetryObject
 } from 'sunbird-sdk';
-import {GuestEditProfilePage} from '../profile/guest-edit.profile/guest-edit.profile';
-import {ShareUserAndGroupPage} from './share-user-and-groups/share-user-and-groups';
-import {AppGlobalService} from '../../service/app-global.service';
-import {CommonUtilService} from '../../service/common-util.service';
+import { GuestEditProfilePage } from '../profile/guest-edit.profile/guest-edit.profile';
+import { ShareUserAndGroupPage } from './share-user-and-groups/share-user-and-groups';
+import { AppGlobalService } from '../../service/app-global.service';
+import { CommonUtilService } from '../../service/common-util.service';
 import {
   GUEST_STUDENT_SWITCH_TABS,
   GUEST_STUDENT_TABS,
@@ -37,10 +25,10 @@ import {
   GUEST_TEACHER_TABS,
   initTabs
 } from '../../app/module.service';
-import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
-import {Map} from '../../app/telemetryutil';
-import {PreferenceKey} from '../../app/app.constant';
-import {CreateGroupPage} from './create-group/create-group';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { Map } from '../../app/telemetryutil';
+import { PreferenceKey } from '../../app/app.constant';
+import { CreateGroupPage } from './create-group/create-group';
 import {
   Environment,
   ImpressionType,
@@ -85,6 +73,7 @@ export class UserAndGroupsPage {
   selectedUsername: string;
   isCurUserSelected: boolean;
   ProfileType = ProfileType;
+  isLoggedIn = false;
 
   constructor(
     private navCtrl: NavController,
@@ -350,22 +339,23 @@ export class UserAndGroupsPage {
         PageId.USERS_GROUPS
       );
       // this.zone.run(() => {
-        this.navCtrl.push(GuestEditProfilePage, {
-          isNewUser: true,
-          lastCreatedProfile: this.lastCreatedProfileData
-        });
+      this.navCtrl.push(GuestEditProfilePage, {
+        isNewUser: true,
+        lastCreatedProfile: this.lastCreatedProfileData
+      });
       // });
     }).catch((error) => {
       // this.zone.run(() => {
-        this.navCtrl.push(GuestEditProfilePage, {
-          isNewUser: true
-        });
+      this.navCtrl.push(GuestEditProfilePage, {
+        isNewUser: true
+      });
       // });
     });
   }
 
   selectUser(index: number, uid?: string, name?: string) {
     this.isCurUserSelected = this.appGlobalService.getCurrentUser().uid === uid;
+       this.isLoggedIn = (this.currentUserId === uid);
     this.zone.run(() => {
       this.selectedUserIndex = (this.selectedUserIndex === index) ? -1 : index;
     });
@@ -446,7 +436,7 @@ export class UserAndGroupsPage {
     });*/
     const confirm = this.popOverCtrl.create(SbGenericPopoverComponent, {
       sbPopoverHeading: this.commonUtilService.translateMessage('SWITCH_ACCOUNT_CONFIRMATION'),
-      sbPopoverMainTitle: this.commonUtilService.translateMessage('USER_DELETE_CONFIRM_SECOND_MESSAGE'),
+      sbPopoverMainTitle: this.commonUtilService.translateMessage('SIGNED_OUT_ACCOUNT_MESSAGE'),
       actionsButtons: [
         {
           btntext: this.commonUtilService.translateMessage('CANCEL'),
@@ -458,8 +448,8 @@ export class UserAndGroupsPage {
       ],
       icon: null
     }, {
-      cssClass: 'sb-popover',
-    });
+        cssClass: 'sb-popover',
+      });
     confirm.onDidDismiss((leftBtnClicked: boolean = false) => {
       if (leftBtnClicked == null) {
         return;
@@ -490,18 +480,14 @@ export class UserAndGroupsPage {
   // method below fetches the last created user
   getLastCreatedProfile() {
     return new Promise((resolve, reject) => {
-      const req = {
-        local: true,
-        latestCreatedProfile: true
-      };
-      this.profileService.getAllProfiles(req)
+      this.profileService.getAllProfiles({local: true})
         .map((profiles) => (profiles.sort((p1, p2) => p2.createdAt - p1.createdAt))[0])
         .toPromise().then((lastCreatedProfile: any) => {
-        this.lastCreatedProfileData = lastCreatedProfile;
-        resolve(lastCreatedProfile);
-      }).catch(() => {
-        reject(null);
-      });
+          this.lastCreatedProfileData = lastCreatedProfile;
+          resolve(lastCreatedProfile);
+        }).catch(() => {
+          reject(null);
+        });
     });
   }
 
@@ -592,8 +578,8 @@ export class UserAndGroupsPage {
       ],
       icon: null
     }, {
-      cssClass: 'sb-popover',
-    });
+        cssClass: 'sb-popover',
+      });
     confirm.present({
       ev: event
     });
@@ -680,8 +666,8 @@ export class UserAndGroupsPage {
       ],
       icon: null
     }, {
-      cssClass: 'sb-popover',
-    });
+        cssClass: 'sb-popover',
+      });
     confirm.present({
       ev: event
     });
@@ -791,7 +777,7 @@ export class UserAndGroupsPage {
           }
           this.event.publish('refresh:profile');
           this.event.publish(AppGlobalService.USER_INFO_UPDATED);
-          this.app.getRootNav().setRoot(TabsPage);
+          this.app.getRootNavs()[0].push(TabsPage);
         }
 
       }, 1000);

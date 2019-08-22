@@ -109,7 +109,7 @@
 					<div class="sb-card-scroll-container" (scroll)='onScroll($event)'>
 						<!-- Card style -->
 						<div class="sb-card-container sb-card-recently-container">
-							<new-course-card *ngFor="let course of recentlyViewedResources" [course]="course" [env]="'home'"
+							<new-course-card *ngFor="let course of recentlyViewedResources" [course]="course" [pageName]="library" [env]="'home'"
 								[index]="i" [sectionName]="recentViewedSection" [layoutName]="layoutSavedContent"></new-course-card>
 						</div>
 					</div>
@@ -148,7 +148,7 @@
 		</div>
 
 		<div padding text-center class="mt-32 mb-32" *ngIf="!commonUtilService?.networkInfo?.isNetworkAvailable">
-			<img src="assets/imgs/ic_offline_orange_lg.png" />
+			<img src="assets/imgs/outline-cloud_off.svg" />
 			<h6 class="offline-header" ion-text>
 				<b>{{ 'NO_INTERNET_TITLE' | translate }}</b>
 			</h6>
