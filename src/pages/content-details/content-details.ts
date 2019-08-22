@@ -221,7 +221,7 @@ export class ContentDetailsPage {
     } else {
       this.generateTelemetry();
     }
-    this.isCourseOrTextBook();
+    this.isPlayedFromCourse();
     this.setContentDetails(this.identifier, true, this.isPlayerLaunched);
     this.subscribeSdkEvent();
     this.findHierarchyOfContent();
@@ -1017,9 +1017,9 @@ export class ContentDetailsPage {
     }
   }
 
-  isCourseOrTextBook() {
-    this.isCourse = this.navParams.get('isCourse') === true ? true : false;
-    if (this.cardData.hierarchyInfo) {
+  isPlayedFromCourse() {
+    this.isCourse = Boolean(this.navParams.get('isCourse'));
+    if (this.cardData.hierarchyInfo.length) {
       if (this.cardData.hierarchyInfo[0].contentType === 'course') {
         this.isCourse = true;
       }
