@@ -1019,10 +1019,8 @@ export class ContentDetailsPage {
 
   isPlayedFromCourse() {
     this.isCourse = Boolean(this.navParams.get('isCourse'));
-    if (this.cardData.hierarchyInfo.length) {
-      if (this.cardData.hierarchyInfo[0].contentType === 'course') {
-        this.isCourse = true;
-      }
+    if (this.cardData.hierarchyInfo && this.cardData.hierarchyInfo.length && this.cardData.hierarchyInfo[0].contentType === 'course') {
+      this.isCourse = true;
     }
   }
 
