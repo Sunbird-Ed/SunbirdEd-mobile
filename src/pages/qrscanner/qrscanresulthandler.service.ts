@@ -1,29 +1,35 @@
 import { Inject, Injectable } from '@angular/core';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
-import { Content, ContentDetailRequest, ContentService, CorrelationData, TelemetryObject } from 'sunbird-sdk';
+import { Content, ContentDetailRequest, ContentService, CorrelationData, TelemetryObject, TelemetryService } from 'sunbird-sdk';
 import { SearchPage } from '../search/search';
 import { ContentType, MimeType } from '../../app/app.constant';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details/enrolled-course-details';
 import { ContentDetailsPage } from '../content-details/content-details';
 import { CollectionDetailsPage } from '../collection-details/collection-details';
 import { CommonUtilService } from '../../service/common-util.service';
-import { App } from 'ionic-angular';
+import { App, Events } from 'ionic-angular';
 import {
   Environment, ImpressionSubtype, ImpressionType, InteractSubtype, InteractType, Mode, PageId, CorReleationDataType
 } from '../../service/telemetry-constants';
 import { AppGlobalService } from '@app/service';
+import { CertsValidationPage } from '../certs/certsvalidation';
+import { SunbirdQRScanner } from './sunbirdqrscanner.service';
+
+declare var cordova;
 
 @Injectable()
 export class QRScannerResultHandler {
   private static readonly CORRELATION_TYPE = 'qr';
   source: string;
+  inAppBrowserRef: any;
 
   constructor(
     private app: App,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
+    @Inject('TELEMETRY_SERVICE') private telemetryService: TelemetryService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private appgloabalService: AppGlobalService) {
+    private events: Events) {
   }
 
   isDialCode(scannedData: string): boolean {
@@ -89,6 +95,21 @@ export class QRScannerResultHandler {
           );
         }
       });
+  }
+
+  handleCertsQR(source: string, scannedData: string) {
+    this.telemetryService.buildContext().subscribe(context => {
+      scannedData = scannedData + '?clientId=android&&context=' + encodeURIComponent(JSON.stringify(context));
+      this.inAppBrowserRef = cordova.InAppBrowser.open(scannedData, '_blank', 'zoom=no');
+      this.inAppBrowserRef.addEventListener('loadstart', (event) => {
+        if (event.url) {
+          if (event.url.includes('explore-course')) {
+            this.inAppBrowserRef.close();
+            this.events.publish('return_course');
+          }
+        }
+      });
+    });
   }
 
   handleInvalidQRCode(source: string, scannedData: string) {
