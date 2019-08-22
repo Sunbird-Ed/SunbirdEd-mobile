@@ -184,6 +184,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
   content: Content;
   appName: any;
   updatedCourseCardData: Course;
+  importProgressMessage: string;
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
@@ -667,7 +668,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
     this.showChildrenLoader = this.downloadIdentifiers.length === 0;
     const option: ContentImportRequest = {
       contentImportArray: this.getImportContentRequestBody(identifiers, isChild),
-      contentStatusArray: [],
+      contentStatusArray: ['Live'],
       fields: ['appIcon', 'name', 'subject', 'size', 'gradeLevel']
     };
 
@@ -974,10 +975,12 @@ export class EnrolledCourseDetailsPage implements OnInit {
     this.source = this.navParams.get('source');
     this.identifier = this.courseCardData.contentId || this.courseCardData.identifier;
 
-    this.updatedCourseCardData = await this.courseService.getEnrolledCourses
-    ({userId: this.userId, returnFreshCourses: true}).toPromise().then((data) => {
-      return data.find((element) => element.courseId === this.identifier)
-    });
+    if(!this.guestUser){
+      this.updatedCourseCardData = await this.courseService.getEnrolledCourses
+      ({userId: this.userId, returnFreshCourses: true}).toPromise().then((data) => {
+        return data.find((element) => element.courseId === this.identifier)
+      });
+    }
 
     // check if the course is already enrolled
     this.isCourseEnrolled(this.identifier);
@@ -1086,6 +1089,22 @@ export class EnrolledCourseDetailsPage implements OnInit {
             } else {
               this.course.isAvailableLocally = true;
               this.setContentDetails(this.identifier);
+            }
+          }
+
+          if (event.type === ContentEventType.IMPORT_PROGRESS) {
+            this.importProgressMessage =  this.commonUtilService.translateMessage('EXTRACTING_CONTENT') + ' ' +
+              Math.floor((event.payload.currentCount / event.payload.totalCount) * 100) +
+              '% (' + event.payload.currentCount + ' / ' + event.payload.totalCount + ')';
+            if (event.payload.currentCount === event.payload.totalCount) {
+              let timer = 30;
+              const interval = setInterval(() => {
+                this.importProgressMessage = `Getting things ready in ${timer--}  seconds`;
+                if (timer === 0) {
+                  this.importProgressMessage = 'Getting things ready';
+                  clearInterval(interval);
+                }
+              }, 1000);
             }
           }
 

@@ -15,7 +15,7 @@
     "build-rel": "ionic cordova build android --release --prod --device --generateSourceMap=false",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "test:ci": "jest --ci --collectCoverage=true --reporters=jest-junit --forceExit --detectOpenHandles --maxWorkers=2"
+    "test:ci": "jest --ci --collectCoverage=true --coverageReporters=lcov --forceExit --detectOpenHandles --maxWorkers=2"
   },
   "config": {
     "ionic_source_map_type": "inline-source-map",
@@ -103,7 +103,7 @@
     "rxjs": "5.5.2",
     "sb-cordova-plugin-customtabs": "https://github.com/Sunbird-Ed/sb-cordova-plugin-customtabs.git",
     "sb-cordova-plugin-db": "git+https://github.com/swayangjit/sb-cordova-plugin-db.git",
-    "sunbird-sdk": "git+https://github.com/Sunbird-Ed/sunbird-mobile-sdk.git#v2.3.1",
+    "sunbird-sdk": "git+https://github.com/Sunbird-Ed/sunbird-mobile-sdk.git#v2.3.4",
     "sw-toolbox": "3.6.0",
     "typescript-collections": "^1.3.2",
     "x2js": "^3.2.6",
@@ -127,7 +127,6 @@
     "html-loader": "^0.5.5",
     "ionic-mocks": "^1.3.0",
     "jest": "^24.8.0",
-    "jest-junit": "^7.0.0",
     "jsonwebtoken": "^8.4.0",
     "moment": "^2.23.0",
     "null-loader": "^0.1.1",

@@ -30,7 +30,7 @@ import { QrCodeResultPage } from '../qr-code-result/qr-code-result';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Subscription } from 'rxjs';
 import {
-  Environment, ImpressionType, InteractSubtype, InteractType, LogLevel, Mode, PageId
+  Environment, ImpressionType, InteractSubtype, InteractType, LogLevel, Mode, PageId, CorReleationDataType
 } from '../../service/telemetry-constants';
 import { TabsPage } from '@app/pages/tabs/tabs';
 import { AppHeaderService } from '@app/service';
@@ -707,21 +707,21 @@ export class SearchPage implements OnInit, OnDestroy {
     this.dialCodeResult = undefined;
     this.corRelationList = [];
 
-    // if (this.profile) {
+    if (this.profile) {
 
-    //   if (this.profile.board && this.profile.board.length) {
-    //     contentSearchRequest.board = this.applyProfileFilter(this.profile.board, contentSearchRequest.board, 'board');
-    //   }
+      if (this.profile.board && this.profile.board.length) {
+        contentSearchRequest.board = this.applyProfileFilter(this.profile.board, contentSearchRequest.board, 'board');
+      }
 
-    //   if (this.profile.medium && this.profile.medium.length) {
-    //     contentSearchRequest.medium = this.applyProfileFilter(this.profile.medium, contentSearchRequest.medium, 'medium');
-    //   }
+      if (this.profile.medium && this.profile.medium.length) {
+        contentSearchRequest.medium = this.applyProfileFilter(this.profile.medium, contentSearchRequest.medium, 'medium');
+      }
 
-    //   if (this.profile.grade && this.profile.grade.length) {
-    //     contentSearchRequest.grade = this.applyProfileFilter(this.profile.grade, contentSearchRequest.grade, 'gradeLevel');
-    //   }
+      if (this.profile.grade && this.profile.grade.length) {
+        contentSearchRequest.grade = this.applyProfileFilter(this.profile.grade, contentSearchRequest.grade, 'gradeLevel');
+      }
 
-    // }
+    }
 
     this.contentService.searchContent(contentSearchRequest).toPromise()
       .then((response: ContentSearchResult) => {
@@ -984,7 +984,13 @@ export class SearchPage implements OnInit, OnDestroy {
       values['root'] = false;
     }
     const telemetryObject = new TelemetryObject(identifier, contentType, pkgVersion);
-
+    if (!this.corRelationList) {
+      this.corRelationList = [];
+    }
+    this.corRelationList.push({
+      id: 'SearchResult',
+      type: 'Section'
+    });
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.CONTENT_CLICKED,
       !this.appGlobalService.isOnBoardingCompleted ? Environment.ONBOARDING : Environment.HOME,
@@ -1264,7 +1270,7 @@ export class SearchPage implements OnInit, OnDestroy {
 
     const option: ContentImportRequest = {
       contentImportArray: this.getImportContentRequestBody([parent.identifier], false),
-      contentStatusArray: [],
+      contentStatusArray: ['Live'],
       fields: ['appIcon', 'name', 'subject', 'size', 'gradeLevel']
     };
     // Call content service
@@ -1329,16 +1335,16 @@ export class SearchPage implements OnInit, OnDestroy {
           this.loadingDisplayText = this.commonUtilService.translateMessage('EXTRACTING_CONTENT') + ' ' +
             Math.floor((event.payload.currentCount / event.payload.totalCount) * 100) +
             '% (' + event.payload.currentCount + ' / ' + event.payload.totalCount + ')';
-            if (event.payload.currentCount === event.payload.totalCount) {
-              let timer = 30;
-              const interval = setInterval(() => {
-                this.loadingDisplayText = `Getting things ready in ${timer--}  seconds`;
-                if (timer === 0) {
-                  this.loadingDisplayText = 'Getting things ready';
-                  clearInterval(interval);
-                }
-              }, 1000);
-            }
+          if (event.payload.currentCount === event.payload.totalCount) {
+            let timer = 30;
+            const interval = setInterval(() => {
+              this.loadingDisplayText = `Getting things ready in ${timer--}  seconds`;
+              if (timer === 0) {
+                this.loadingDisplayText = 'Getting things ready';
+                clearInterval(interval);
+              }
+            }, 1000);
+          }
         }
         // if (event.payload && event.payload.status === 'IMPORT_COMPLETED' && event.type === 'contentImport') {
         if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
@@ -1416,12 +1422,10 @@ export class SearchPage implements OnInit, OnDestroy {
       } else if (userType === ProfileType.TEACHER) {
         this.audienceFilter = AudienceFilter.GUEST_TEACHER;
       }
-
-      this.profile = this.appGlobalService.getCurrentUser();
     } else {
       this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
-      this.profile = undefined;
     }
+    this.profile = this.appGlobalService.getCurrentUser();
   }
 
   private addCorRelation(id: string, type: string) {
