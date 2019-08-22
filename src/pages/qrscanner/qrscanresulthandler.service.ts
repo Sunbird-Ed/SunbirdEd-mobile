@@ -11,9 +11,6 @@ import { App, Events } from 'ionic-angular';
 import {
   Environment, ImpressionSubtype, ImpressionType, InteractSubtype, InteractType, Mode, PageId, CorReleationDataType
 } from '../../service/telemetry-constants';
-import { AppGlobalService } from '@app/service';
-import { CertsValidationPage } from '../certs/certsvalidation';
-import { SunbirdQRScanner } from './sunbirdqrscanner.service';
 
 declare var cordova;
 
