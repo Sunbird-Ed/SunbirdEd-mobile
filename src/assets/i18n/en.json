@@ -567,5 +567,12 @@
   "MORE_CONTENT": "Find more books and content on {{%s}} below.",
   "SEARCH_BOOK": "Search for content (Eg: ’English Stories’)",
   "TEXTBOOK": "Textbooks",
-  "EXTRACTING_CONTENT": "Extracting content"
+  "EXTRACTING_CONTENT": "Extracting content",
+  "MERGE_ACCOUNT": "Merge Account",
+  "ACCOUNT_MERGE_CONFIRMATION_HEADING": "Merge Account",
+  "ACCOUNT_MERGE_CONFIRMATION_CONTENT": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dictum est eu orci sollicitudin faucibus.",
+  "ACCOUNT_MERGE_CONFIRMATION_CANCEL": "Cancel",
+  "ACCOUNT_MERGE_CONFIRMATION_OK": "OK",
+  "ACCOUNT_MERGE_FAILED": "Merge account failed",
+  "ACCOUNT_MERGE_SUCCESS": "Merge account successful"
 }
