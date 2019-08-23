@@ -1,7 +1,7 @@
 import { TelemetryGeneratorService } from './../../service/telemetry-generator.service';
 import {Component, Inject, NgZone, OnInit} from '@angular/core';
 import {AuthService, Batch, CourseService, EnrollCourseRequest, OAuthSession, SharedPreferences} from 'sunbird-sdk';
-import {Events, IonicPage, NavController, NavParams} from 'ionic-angular';
+import {Events, IonicPage, NavController, NavParams, ToastController} from 'ionic-angular';
 import {EventTopics} from '../../app/app.constant';
 import {CommonUtilService} from '../../service/common-util.service';
 import { InteractType, InteractSubtype, Environment, PageId } from '@app/service/telemetry-constants';
@@ -88,7 +88,8 @@ export class CourseBatchesPage implements OnInit {
     private commonUtilService: CommonUtilService,
     private events: Events,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private headerService: AppHeaderService
+    private headerService: AppHeaderService,
+    public toastController: ToastController,
   ) {
   }
 
@@ -190,6 +191,21 @@ export class CourseBatchesPage implements OnInit {
   spinner(flag) {
     this.zone.run(() => {
       this.showLoader = false;
+    });
+  }
+
+  showOfflineWarning() {
+    let toast =  this.toastController.create({
+      duration: 3000,
+      message: this.commonUtilService.translateMessage('NO_INTERNET_TITLE'),
+      showCloseButton: true,
+      position: 'top',
+      closeButtonText: '',
+      cssClass: 'toastHeader'
+    });
+    toast.present();
+    toast.onDidDismiss(() => {
+      toast = undefined;
     });
   }
 }
