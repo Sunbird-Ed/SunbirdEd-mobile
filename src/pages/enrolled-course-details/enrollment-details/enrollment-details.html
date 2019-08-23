@@ -30,21 +30,18 @@
         <div item-start>
           <h5 class="subtitle title">{{ batch.name }}</h5>
           <p>{{batch.startDate | date: 'mediumDate' }} - {{ batch.endDate | date: 'mediumDate' }}</p>
-          <p *ngIf="batch?.creatorFirstName">
+          <p *ngIf="batch.creatorFirstName">
             <span>{{ 'BATCH_CREATED_BY' | translate }}</span>&nbsp;
-            <span *ngIf="batch?.creatorFirstName" class="text-gray-color">{{ batch.creatorFirstName }}</span>&nbsp;
-            <span class="text-gray-color"
-              *ngIf="batch?.creatorLastName">{{batch.creatorLastName}}</span>
-          </p>
-          <p *ngIf="batch?.enrollmentEndDate">
-              <span *ngIf="(todayDate > batch?.enrollmentEndDate); else lastDateForEnrollment" class="enroll-msg-ended">{{ 'BATCH_ENROLLMENT_ENDED' | translate}}</span>
+            <span class="text-gray-color">{{ batch.creatorFirstName }}</span>&nbsp;<span class="text-gray-color"
+              *ngIf="batch.creatorLastName">{{batch.creatorLastName}}</span><br>
+              <span *ngIf="(todayDate > batch.enrollmentEndDate); else lastDateForEnrollment" class="enroll-msg-ended">{{ 'BATCH_ENROLLMENT_ENDED' | translate}}</span>
               <ng-template #lastDateForEnrollment>
-                <span class="enroll-msg-style">{{'ENROLLMENT_LAST_DATE' | translate}} {{batch.enrollmentEndDate | date: 'mediumDate'}}</span>
+                <span *ngIf="batch.enrollmentEndDate" class="enroll-msg-style">{{'ENROLLMENT_LAST_DATE' | translate}} {{batch.enrollmentEndDate | date: 'mediumDate'}}</span>
               </ng-template>
           </p>
         </div>
-        <button class="enroll-btn" ion-button clear item-end (click)="enrollIntoBatch(batch)" [disabled]="(batch?.enrollmentEndDate && (todayDate > batch?.enrollmentEndDate))"
-          [ngClass]="{'enroll-style' : (batch?.enrollmentEndDate && (todayDate > batch?.enrollmentEndDate))}">
+        <button class="enroll-btn" ion-button clear item-end (click)="enrollIntoBatch(batch)" [disabled]="(batch.enrollmentEndDate && (todayDate > batch.enrollmentEndDate))"
+          [ngClass]="{'enroll-style' : (batch.enrollmentEndDate && (todayDate > batch.enrollmentEndDate))}">
           {{ 'ENROLL' | translate }}
         </button>
       </ion-item>
