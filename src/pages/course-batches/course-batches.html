@@ -38,14 +38,18 @@
               {{batch.startDate | date: 'mediumDate' }} - {{ batch.endDate | date: 'mediumDate' }}
             </span>
             <p *ngIf="batch?.creatorFirstName">
-              <span>{{ 'BATCH_CREATED_BY' | translate }}</span>&nbsp;
-              <span class="text-gray-color">{{ batch?.creatorFirstName }}</span>&nbsp;<span class="text-gray-color"
-                *ngIf="batch?.creatorLastName">{{batch?.creatorLastName}}</span><br>
-                <span *ngIf="(todayDate > batch.enrollmentEndDate); else lastDateForEnrollment" class="enroll-msg-ended">{{ 'BATCH_ENROLLMENT_ENDED' | translate}}</span>
-                <ng-template #lastDateForEnrollment>
-                  <span *ngIf="batch.enrollmentEndDate" class="enroll-msg-style">{{'ENROLLMENT_LAST_DATE' | translate}} {{batch.enrollmentEndDate | date: 'mediumDate'}}</span>
-                </ng-template>
-            </p>
+                <span>{{ 'BATCH_CREATED_BY' | translate }}</span>&nbsp;
+                <span *ngIf="batch?.creatorFirstName" class="text-gray-color">{{ batch.creatorFirstName }}</span>&nbsp;
+                <span class="text-gray-color"
+                  *ngIf="batch?.creatorLastName">{{batch.creatorLastName}}</span>
+              </p>
+              <p>etrd {{batch?.enrollmentEndDate}}</p>
+              <p *ngIf="batch?.enrollmentEndDate">
+                  <span *ngIf="(todayDate > batch?.enrollmentEndDate); else lastDateForEnrollment" class="enroll-msg-ended">{{ 'BATCH_ENROLLMENT_ENDED' | translate}}</span>
+                  <ng-template #lastDateForEnrollment>
+                    <span class="enroll-msg-style">{{'ENROLLMENT_LAST_DATE' | translate}} {{batch.enrollmentEndDate | date: 'mediumDate'}}</span>
+                  </ng-template>
+              </p>
             <button class="enroll-btn" ion-button clear item-end (click)="enrollIntoBatch(batch)" [disabled]="(batch.enrollmentEndDate && (todayDate > batch.enrollmentEndDate))"
                [ngClass]="{'enroll-style' : (batch.enrollmentEndDate && (todayDate > batch.enrollmentEndDate))}">
               {{ 'ENROLL' | translate }}
@@ -56,14 +60,14 @@
     </div>
   </div>
 
-  <div *ngIf="upcommingBatches && upcommingBatches.length">
+  <div *ngIf="upcommingBatches && upcommingBatches.length && !showSignInCard">
     <div class="background-gray">
       <div class="width-100 batch-font" text-capitalize>
         {{ 'VIEW_UPCOMING_BATCHES' | translate }}
       </div>
     </div>
 
-    <div class="batch-list" padding-top *ngIf="!isGuestUser">
+    <div class="batch-list" padding-top *ngIf="!showSignInCard">
       <div>
         <ion-list *ngIf="upcommingBatches && upcommingBatches.length && !showLoader">
           <ion-item no-lines *ngFor="let batch of upcommingBatches">
