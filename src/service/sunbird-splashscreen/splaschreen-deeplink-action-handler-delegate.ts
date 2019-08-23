@@ -105,6 +105,7 @@ export class SplaschreenDeeplinkActionHandlerDelegate implements SplashscreenAct
     this.preferences.getString('batch_detail').toPromise()
     .then( resp => {
       if (resp) {
+        this.events.publish('return_course');
         this.enrollIntoBatch(JSON.parse(resp));
         this.preferences.putString('batch_detail', '').toPromise();
       }
