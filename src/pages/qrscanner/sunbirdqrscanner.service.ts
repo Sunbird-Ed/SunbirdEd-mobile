@@ -299,6 +299,8 @@ export class SunbirdQRScanner {
             this.qrScannerResultHandler.handleDialCode(source, scannedData);
           } else if (this.qrScannerResultHandler.isContentId(scannedData)) {
             this.qrScannerResultHandler.handleContentId(source, scannedData);
+          } else if (scannedData.includes('certs')) {
+            this.qrScannerResultHandler.handleCertsQR(source, scannedData);
           } else {
             this.qrScannerResultHandler.handleInvalidQRCode(source, scannedData);
             this.showInvalidCodeAlert();

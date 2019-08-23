@@ -30,9 +30,11 @@ import {
   SortOrder,
   TelemetryObject,
   UpdateServerProfileInfoRequest,
-  CachedItemRequestSourceFrom
+  CachedItemRequestSourceFrom,
+  CourseCertificate
 } from 'sunbird-sdk';
-import { Environment, InteractSubtype, InteractType, PageId } from '../../service/telemetry-constants';
+import { Environment, InteractSubtype, InteractType, PageId } from '@app/service/telemetry-constants';
+import {SocialSharing} from '@ionic-native/social-sharing';
 
 /**
  * The Profile page
@@ -93,6 +95,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('AUTH_SERVICE') private authService: AuthService,
+    @Inject('COURSE_SERVICE') private courseService: CourseService,
+    @Inject('CONTENT_SERVICE') private contentService: ContentService,
     private navCtrl: NavController,
     private popoverCtrl: PopoverController,
     private zone: NgZone,
@@ -100,14 +104,13 @@ export class ProfilePage implements OnInit, AfterViewInit {
     private navParams: NavParams,
     private events: Events,
     private appGlobalService: AppGlobalService,
-    @Inject('COURSE_SERVICE') private courseService: CourseService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private commonUtilService: CommonUtilService,
     private app: App,
-    @Inject('CONTENT_SERVICE') private contentService: ContentService,
     public viewCtrl: ViewController,
-    private headerServie: AppHeaderService
+    private headerServie: AppHeaderService,
+    private socialShare: SocialSharing,
   ) {
     this.userId = this.navParams.get('userId') || '';
     this.isRefreshProfile = this.navParams.get('returnRefreshedUserProfileDetails');
@@ -432,23 +435,45 @@ export class ProfilePage implements OnInit, AfterViewInit {
     this.trainingsCompleted = [];
     this.courseService.getEnrolledCourses(option).toPromise()
       .then((res: Course[]) => {
-        // res = JSON.parse(res);
-        const enrolledCourses = res;
-        console.log('course is ', res);
-        for (let i = 0, len = enrolledCourses.length; i < len; i++) {
-          if (enrolledCourses[i].status === 2) {
-            this.trainingsCompleted.push(enrolledCourses[i]);
-          }
-        }
+        this.trainingsCompleted = res.filter((course) => course.status === 2);
       })
       .catch((error: any) => {
         console.error('error while loading enrolled courses', error);
       });
   }
 
-  download(course: Course) {
-    this.courseService.downloadCurrentProfileCourseCertificate({ courseId: course.courseId }).subscribe( (res) => {
-      console.log('Response from cert', res);
+  mapTrainingsToCertificates(trainings: Course[]): CourseCertificate[] {
+    return trainings.reduce((accumulator, course) => {
+      if (!course.certificates) {
+        return accumulator;
+      }
+
+      accumulator = accumulator.concat(course.certificates);
+      return accumulator;
+    }, []);
+  }
+
+  getCertificateCourse(certificate: CourseCertificate): Course {
+    return this.trainingsCompleted.find((course: Course) => {
+      return course.certificates.indexOf(certificate) > -1;
+    })!;
+  }
+
+  downloadTrainingCertificate(course: Course, certificate: CourseCertificate) {
+    this.courseService.downloadCurrentProfileCourseCertificate({
+      courseId: course.courseId,
+      certificateToken: certificate.token
+    })
+    .subscribe();
+  }
+
+  shareTrainingCertificate(course: Course, certificate: CourseCertificate) {
+    this.courseService.downloadCurrentProfileCourseCertificate({
+      courseId: course.courseId,
+      certificateToken: certificate.token
+    })
+    .subscribe((res) => {
+      this.socialShare.share('', '', res.path, '');
     });
   }
 

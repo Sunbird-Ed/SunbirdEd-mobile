@@ -175,30 +175,27 @@
         </div>
     </div>
 
-    <div class="trainigs" *ngIf="trainingsCompleted?.length > 0">
+    <div class="trainigs" *ngIf="mapTrainingsToCertificates(trainingsCompleted).length > 0">
         <div class="bolder heading f16">
-            {{'TRAININGS_ATTENDED' | translate}} ({{trainingsCompleted.length}})&lrm;
+            {{'TRAININGS_ATTENDED' | translate}} ({{mapTrainingsToCertificates(trainingsCompleted).length}})&lrm;
         </div>
         <div class="content">
-            <div class="MB15" *ngFor="let training of trainingsCompleted | slice : startLimit:trainingsLimit;">
+            <div class="MB15" *ngFor="let certificate of (mapTrainingsToCertificates(trainingsCompleted) | slice:startLimit:trainingsLimit)">
                 <div class="training-1">
-                    <div class="fw" *ngIf="training?.courseName">
-                        {{training?.courseName}}
+                    <div class="fw" *ngIf="getCertificateCourse(certificate).courseName">
+                        {{getCertificateCourse(certificate).courseName}}
                     </div>
-                    <!-- <div class="lighter">
-                        Awarded by president Christopher Fernandes
-                    </div> -->
-                    <div class="lighter" *ngIf="training?.dateTime">
-                        {{training?.dateTime | date:'MMMM yyyy'}}
+                    <div class="lighter" *ngIf="getCertificateCourse(certificate).dateTime">
+                        {{getCertificateCourse(certificate).dateTime | date:'MMMM yyyy'}}
                     </div>
                 </div>
-                <div class="training-2" *ngIf="training?.certificates">
+                <div class="training-2">
                         <!-- <ion-icon class="ML10" name="ios-arrow-up"></ion-icon> -->
-                        <button ion-button clear icon-only class="sb-btn-tile" (click)="download(training)">
+                        <button ion-button clear icon-only class="sb-btn-tile" (click)="downloadTrainingCertificate(getCertificateCourse(certificate), certificate)">
                             <ion-icon class="sb-dt-card-blue-icon" name="download"></ion-icon>
                             <span class="sb-btn-footer-text">{{'DOWNLOAD' | translate}}</span>
                         </button>
-                        <button ion-button clear icon-only class="sb-btn-tile">
+                        <button hidden ion-button clear icon-only class="sb-btn-tile" (click)="shareTrainingCertificate(getCertificateCourse(certificate), certificate)">
                             <ion-icon ios="ios-share" md="md-share" class="sb-dt-card-blue-icon"></ion-icon>
                             <span class="sb-btn-footer-text">{{'SHARE' | translate}}</span>
                         </button>
@@ -250,7 +247,7 @@
                                             {{'MEDIUM' | translate}}: {{courseItem?.medium}}
                                         </div>
                                     </ion-col>
-    
+
                                 </ion-row>
                                 <ion-row>
                                     <ion-col col-12 class="PTB0">
