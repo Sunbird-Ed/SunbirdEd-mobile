@@ -24,7 +24,7 @@ import {
   CategoryTerm, ContentEventType, ContentRequest, ContentSearchCriteria, ContentService, EventsBusEvent,
   EventsBusService, FrameworkCategoryCode, FrameworkCategoryCodesGroup, FrameworkUtilService,
   GetFrameworkCategoryTermsRequest, Profile, ProfileService, ProfileType, SearchType, SharedPreferences,
-  TelemetryObject
+  TelemetryObject, Content
 } from 'sunbird-sdk';
 import { Environment, InteractSubtype, InteractType, PageId, ImpressionType, ImpressionSubtype } from '../../service/telemetry-constants';
 import { PlayerPage } from '../player/player';
@@ -130,6 +130,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   scrollEventRemover: any;
   subjects: any;
   @ViewChild('contentView') contentView: ContentView;
+  locallyDownloadResources: Array<Content>;
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
@@ -177,6 +178,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.events.subscribe('savedResources:update', (res) => {
       if (res && res.update) {
         this.loadRecentlyViewedContent(true);
+        this.getLocalContent();
       }
     });
     this.events.subscribe('event:showScanner', (data) => {
@@ -283,6 +285,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
     this.profile = this.appGlobalService.getCurrentUser();
     this.loadRecentlyViewedContent();
+    this.getLocalContent();
   }
 
   navigateToViewMoreContentsPage(section: string) {
@@ -561,14 +564,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     return filteredSubject;
   }
   markLocallyAvailableTextBook() {
-    if (!this.recentlyViewedResources || !this.storyAndWorksheets) {
+    if (!this.locallyDownloadResources || !this.storyAndWorksheets) {
       return;
     }
-    for (let i = 0; i < this.recentlyViewedResources.length; i++) {
+    for (let i = 0; i < this.locallyDownloadResources.length; i++) {
       for (let j = 0; j < this.storyAndWorksheets.length; j++) {
         for (let k = 0; k < this.storyAndWorksheets[j].contents.length; k++) {
-          if (this.recentlyViewedResources[i].isAvailableLocally &&
-            this.recentlyViewedResources[i].identifier === this.storyAndWorksheets[j].contents[k].identifier) {
+          if (this.locallyDownloadResources[i].isAvailableLocally &&
+            this.locallyDownloadResources[i].identifier === this.storyAndWorksheets[j].contents[k].identifier) {
             this.storyAndWorksheets[j].contents[k].isAvailableLocally = true;
           }
         }
@@ -694,6 +697,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.eventSubscription = this.eventsBusService.events().subscribe((event: EventsBusEvent) => {
       if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
         this.loadRecentlyViewedContent();
+        this.getLocalContent();
       }
     }) as any;
   }
@@ -1065,4 +1069,20 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       undefined,
       values);
   }
+  async getLocalContent() {
+    this.locallyDownloadResources = [];
+
+    const requestParams: ContentRequest = {
+      uid: this.profile ? this.profile.uid : undefined,
+      contentTypes: [],
+      audience: this.audienceFilter,
+      recentlyViewed: false,
+    };
+    this.contentService.getContents(requestParams).subscribe((data: Content[]) => {
+      this.ngZone.run(() => {
+        this.locallyDownloadResources = data;
+      });
+    })
+  }
+
 }

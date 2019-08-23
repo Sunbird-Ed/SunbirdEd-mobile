@@ -255,7 +255,7 @@ export class ContentActionsComponent {
   }
 
   isUnenrollDisabled() {
-    if (this.isObjectEmpty(this.batchDetails)) {
+    if (!this.batchDetails || this.isObjectEmpty(this.batchDetails)) {
       return true;
     }
 

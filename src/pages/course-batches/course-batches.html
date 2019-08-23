@@ -82,7 +82,7 @@
                   <span *ngIf="batch.enrollmentEndDate" class="enroll-msg-style">{{'ENROLLMENT_LAST_DATE' | translate}} {{batch.enrollmentEndDate | date: 'mediumDate'}}</span>
                 </ng-template>
             </p>
-            <button class="enroll-btn" ion-button clear item-end (click)="enrollIntoBatch(batch)" [disabled]="(batch.enrollmentEndDate && (todayDate > batch.enrollmentEndDate))"
+            <button class="enroll-btn" ion-button item-end (click)="enrollIntoBatch(batch)" [disabled]="(batch.enrollmentEndDate && (todayDate > batch.enrollmentEndDate))"
                 [ngClass]="{'enroll-style' : (batch.enrollmentEndDate && (todayDate > batch.enrollmentEndDate))}">
               {{ 'ENROLL' | translate }}
             </button>

@@ -197,7 +197,6 @@ export class ContentDetailsPage {
    */
   ionViewWillEnter(): void {
     this.headerService.hideHeader();
-    this.isCourse = this.navParams.get('isCourse') === true ? true : false;
     this.cardData = this.navParams.get('content');
     this.isChildContent = this.navParams.get('isChildContent');
     this.cardData.depth = this.navParams.get('depth') === undefined ? '' : this.navParams.get('depth');
@@ -222,7 +221,7 @@ export class ContentDetailsPage {
     } else {
       this.generateTelemetry();
     }
-
+    this.isPlayedFromCourse();
     this.setContentDetails(this.identifier, true, this.isPlayerLaunched);
     this.subscribeSdkEvent();
     this.findHierarchyOfContent();
@@ -1015,6 +1014,13 @@ export class ContentDetailsPage {
         this.childPaths.push(contentName);
       });
       this.childPaths.push(this.breadCrumbData.get(this.cardData.identifier));
+    }
+  }
+
+  isPlayedFromCourse() {
+    this.isCourse = Boolean(this.navParams.get('isCourse'));
+    if (this.cardData.hierarchyInfo && this.cardData.hierarchyInfo.length && this.cardData.hierarchyInfo[0].contentType === 'course') {
+      this.isCourse = true;
     }
   }
 
