@@ -389,7 +389,25 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
       actionsButtons: [
         {
           btntext: this.commonUtilService.translateMessage('CANCEL'),
-          btnClass: 'popover-color'
+          btnClass: 'popover-color',
+          btnDisabled$: transferProgress$
+          .startWith({
+            transferredCount: 0,
+            totalCount: 0
+          })
+          .map(({ transferredCount, totalCount }) => {
+            if (transferredCount && totalCount) {
+              if ((Math.round((transferredCount / totalCount) * 100)) === 100) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          })
+          .do((v) => {
+          }),
         },
       ],
       icon: null,
