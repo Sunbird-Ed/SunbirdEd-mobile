@@ -446,12 +446,6 @@ export class ProfilePage implements OnInit, AfterViewInit {
       });
   }
 
-  download(course: Course) {
-    this.courseService.downloadCurrentProfileCourseCertificate({ courseId: course.courseId }).subscribe( (res) => {
-      console.log('Response from cert', res);
-    });
-  }
-
   isResource(contentType) {
     return contentType === ContentType.STORY ||
       contentType === ContentType.WORKSHEET;

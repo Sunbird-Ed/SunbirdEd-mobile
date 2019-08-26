@@ -192,17 +192,6 @@
                         {{training?.dateTime | date:'MMMM yyyy'}}
                     </div>
                 </div>
-                <div class="training-2" *ngIf="training?.certificates">
-                        <!-- <ion-icon class="ML10" name="ios-arrow-up"></ion-icon> -->
-                        <button ion-button clear icon-only class="sb-btn-tile" (click)="download(training)">
-                            <ion-icon class="sb-dt-card-blue-icon" name="download"></ion-icon>
-                            <span class="sb-btn-footer-text">{{'DOWNLOAD' | translate}}</span>
-                        </button>
-                        <button ion-button clear icon-only class="sb-btn-tile">
-                            <ion-icon ios="ios-share" md="md-share" class="sb-dt-card-blue-icon"></ion-icon>
-                            <span class="sb-btn-footer-text">{{'SHARE' | translate}}</span>
-                        </button>
-                </div>
             </div>
             <div class="" text-center>
                 <button ion-button round class="txt-capitalize custom-round"
