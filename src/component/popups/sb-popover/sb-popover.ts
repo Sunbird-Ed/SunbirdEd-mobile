@@ -36,6 +36,7 @@ export class SbPopoverComponent implements OnDestroy {
   private sbPopoverDynamicMainTitleSubscription?: Subscription;
   private sbPopoverDynamicContent$?: Observable<string>;
   private sbPopoverDynamicContentSubscription?: Subscription;
+  private sbPopoverDynamicButtonDisabledSubscription?: Subscription;
 
   constructor(
     public viewCtrl: ViewController,
@@ -88,6 +89,17 @@ export class SbPopoverComponent implements OnDestroy {
         .subscribe();
     }
 
+    for (const actionsButton of this.actionsButtons) {
+      if (actionsButton.btnDisabled$) {
+        this.sbPopoverDynamicButtonDisabledSubscription = actionsButton.btnDisabled$
+          .do((v) => {
+            this.ngZone.run(() => {
+              actionsButton.btnDisabled = v;
+            });
+          })
+          .subscribe();
+      }
+    }
     this.contentId = (this.content && this.content.identifier) ? this.content.identifier : '';
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.viewCtrl.dismiss();
@@ -102,6 +114,10 @@ export class SbPopoverComponent implements OnDestroy {
 
     if (this.sbPopoverDynamicContentSubscription) {
       this.sbPopoverDynamicContentSubscription.unsubscribe();
+    }
+
+    if (this.sbPopoverDynamicButtonDisabledSubscription) {
+      this.sbPopoverDynamicButtonDisabledSubscription.unsubscribe();
     }
   }
 
