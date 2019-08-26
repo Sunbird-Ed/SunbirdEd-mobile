@@ -43,7 +43,6 @@
                 <span class="text-gray-color"
                   *ngIf="batch?.creatorLastName">{{batch.creatorLastName}}</span>
               </p>
-              <p>etrd {{batch?.enrollmentEndDate}}</p>
               <p *ngIf="batch?.enrollmentEndDate">
                   <span *ngIf="(todayDate > batch?.enrollmentEndDate); else lastDateForEnrollment" class="enroll-msg-ended">{{ 'BATCH_ENROLLMENT_ENDED' | translate}}</span>
                   <ng-template #lastDateForEnrollment>
