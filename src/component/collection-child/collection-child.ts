@@ -1,5 +1,5 @@
 import { TextbookTocService } from '../../pages/collection-details-etb/textbook-toc-service';
-import { Component, Input, NgZone, AfterViewInit } from '@angular/core';
+import { Component, Input, NgZone, AfterViewInit, OnInit } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
 import { ContentType, MimeType } from '@app/app/app.constant';
@@ -18,15 +18,17 @@ import {
   InteractType,
   PageId
 } from "@app/service/telemetry-constants";
+import { ContentUtil } from '@app/util/content-util';
 
 
 @Component({
     selector: 'collection-child',
     templateUrl: 'collection-child.html'
 })
-export class CollectionChildComponent implements AfterViewInit {
+export class CollectionChildComponent implements AfterViewInit, OnInit {
     cardData: any;
     parentId: any;
+    collectionChildIcon: any;
     // isTextbookTocPage: Boolean = false;
     @Input() childData: Content;
     @Input() index: any;
@@ -56,6 +58,7 @@ export class CollectionChildComponent implements AfterViewInit {
         this.cardData = this.navParams.get('content');
         this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
         this.parentId = this.navParams.get('parentId');
+
     }
 
 
@@ -180,5 +183,9 @@ export class CollectionChildComponent implements AfterViewInit {
     }
 
     ngAfterViewInit(): void {
+    }
+    ngOnInit(): void {
+        this.collectionChildIcon = ContentUtil.getAppIcon(this.childData.contentData.appIcon, this.childData.basePath,
+            this.commonUtilService.networkInfo.isNetworkAvailable);
     }
 }
