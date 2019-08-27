@@ -129,7 +129,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   headerObservable: any;
   scrollEventRemover: any;
   subjects: any;
-  @ViewChild('contentView') contentView: ContentView;
+  @ViewChild(ContentView) contentView: ContentView;
   locallyDownloadResources: Array<Content>;
 
   constructor(
@@ -204,22 +204,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         this.isUpgradePopoverShown = true;
       }
     });
-
-    this.events.subscribe('tab.change', (data: string) => {
-      // this.ngZone.run(() => {
-      if (data.trim().toUpperCase() === 'LIBRARY') {
-        if (this.appliedFilter) {
-          this.filterIcon = './assets/imgs/ic_action_filter.png';
-          this.resourceFilter = undefined;
-          this.appliedFilter = undefined;
-          this.isFilterApplied = false;
-          this.getPopularContent();
-        }
-      } else if (data === '') {
-        this.qrScanner.startScanner(this.appGlobalService.getPageIdForTelemetry());
-      }
-      // });
-    });
   }
 
   /**
@@ -239,15 +223,30 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.events.subscribe('tab.change', (data: string) => {
-      if (data.trim().toUpperCase() === 'LIBRARY') {
-        this.scrollToTop();
-      }
-    });
-
     this.events.subscribe('onboarding-card:completed', (param) => {
       this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
     });
+  }
+
+  ionViewWillLoad() {
+    this.events.subscribe('tab.change', (data: string) => {
+      if (data.trim().toUpperCase() === 'LIBRARY') {
+        this.scrollToTop();
+        if (this.appliedFilter) {
+          this.filterIcon = './assets/imgs/ic_action_filter.png';
+          this.resourceFilter = undefined;
+          this.appliedFilter = undefined;
+          this.isFilterApplied = false;
+          this.getPopularContent();
+        }
+      } else if (data === '') {
+        this.qrScanner.startScanner(this.appGlobalService.getPageIdForTelemetry());
+      }
+    });
+  }
+
+  ionViewWillUnload() {
+    this.events.unsubscribe('tab.change');
   }
 
   ionViewWillLeave(): void {
