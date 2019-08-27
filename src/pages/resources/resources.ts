@@ -206,7 +206,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     });
 
     this.events.subscribe('tab.change', (data: string) => {
-      this.scrollToTop();
       // this.ngZone.run(() => {
       if (data.trim().toUpperCase() === 'LIBRARY') {
         if (this.appliedFilter) {
@@ -240,6 +239,12 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    this.events.subscribe('tab.change', (data: string) => {
+      if (data.trim().toUpperCase() === 'LIBRARY') {
+        this.scrollToTop();
+      }
+    });
+
     this.events.subscribe('onboarding-card:completed', (param) => {
       this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
     });
@@ -358,7 +363,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           if (!hideLoaderFlag) {
             this.showLoader = false;
             if (!this.showLoader) {
-             this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+              this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
             }
           }
         });
@@ -511,7 +516,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.refresh = false;
           this.searchApiLoader = false;
           if (!this.refresh || !this.searchApiLoader) {
-           this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+            this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
           }
           // this.noInternetConnection = false;
           this.generateExtraInfoTelemetry(newSections.length);
@@ -535,7 +540,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             if (!isAfterLanguageChange) {
               this.commonUtilService.showToast('ERROR_FETCHING_DATA');
             }
-          } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable  && !avoidRefreshList) {
+          } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable && !avoidRefreshList) {
           }
           const errvalues = new Map();
           errvalues['isNetworkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
@@ -759,7 +764,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .then((res: CategoryTerm[]) => {
         this.subjects = res;
       })
-      .catch(() => {});
+      .catch(() => { });
   }
 
   getMediumData(frameworkId, categories): any {
@@ -1042,11 +1047,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   scrollToTop() {
-
     this.contentView.scrollToTop();
-    // this.contentView._scrollContent.nativeElement.scrollToTop();
-
   }
+
   exploreOtherContents() {
     this.navCtrl.push(ExploreBooksPage, {
       subjects: this.subjects,
@@ -1082,7 +1085,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.ngZone.run(() => {
         this.locallyDownloadResources = data;
       });
-    })
+    });
   }
 
 }
