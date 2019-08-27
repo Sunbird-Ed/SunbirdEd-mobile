@@ -1408,10 +1408,16 @@ export class SearchPage implements OnInit, OnDestroy {
     this.contentService.cancelDownload(this.parentContent.identifier).toPromise().then(() => {
       this.zone.run(() => {
         this.showLoading = false;
+        if (this.isSingleContent) {
+          this.navCtrl.pop();
+        }
       });
     }).catch(() => {
       this.zone.run(() => {
         this.showLoading = false;
+        if (this.isSingleContent) {
+          this.navCtrl.pop();
+        }
       });
     });
   }
