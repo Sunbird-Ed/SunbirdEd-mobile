@@ -191,22 +191,11 @@ export class EnrollmentDetailsPage {
       telemetryObject,
       values
     );
+    content.contentId = !content.contentId ? content.courseId : content.contentId;
+    this.navCtrl.push(EnrolledCourseDetailsPage, {
+      content: content
+    });
 
-    if (content.contentType === ContentType.COURSE) {
-      content.contentId = !content.contentId ? content.courseId : content.contentId;
-      this.navCtrl.push(EnrolledCourseDetailsPage, {
-        content: content
-      });
-    } else if (content.mimeType === MimeType.COLLECTION) {
-      // this.navCtrl.push(CollectionDetailsPage, {
-      this.navCtrl.push(CollectionDetailsEtbPage, {
-        content: content
-      });
-    } else {
-      this.navCtrl.push(ContentDetailsPage, {
-        content: content
-      });
-    }
   }
 
 }
