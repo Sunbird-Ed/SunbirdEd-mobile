@@ -92,13 +92,13 @@ export class CourseCard implements OnInit {
   checkRetiredOpenBatch(content: any, layoutName?: string): void {
     this.loader = this.commonUtilService.getLoader();
     this.loader.present();
-    let anyOpenBatch: Boolean = false;
+    let anyRunningBatch: Boolean = false;
     let retiredBatches: Array<any> = [];
     this.enrolledCourses = this.enrolledCourses || [];
     if (layoutName !== ContentCard.LAYOUT_INPROGRESS) {
       retiredBatches = this.enrolledCourses.filter((element) =>  {
         if (element.contentId === content.identifier && element.batch.status === 1 && element.cProgress !== 100) {
-          anyOpenBatch = true;
+          anyRunningBatch = true;
           content.batch = element.batch;
         }
         if (element.contentId === content.identifier && element.batch.status === 2 && element.cProgress !== 100) {
@@ -106,7 +106,7 @@ export class CourseCard implements OnInit {
         }
       });
     }
-    if (anyOpenBatch || !retiredBatches.length) {
+    if (anyRunningBatch || !retiredBatches.length) {
       // open the batch directly
       this.navigateToDetailPage(content, layoutName);
     } else if (retiredBatches.length) {

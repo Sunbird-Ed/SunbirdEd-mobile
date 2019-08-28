@@ -180,7 +180,7 @@
             {{'TRAININGS_ATTENDED' | translate}} ({{trainingsCompleted.length}})&lrm;
         </div>
         <div class="content">
-            <div class="MB15" *ngFor="let training of trainingsCompleted | slice : startLimit:trainingsLimit;">
+            <div class="MB15 flex-nowrap" *ngFor="let training of trainingsCompleted | slice : startLimit:trainingsLimit;">
                 <div class="training-1">
                     <div class="fw" *ngIf="training?.courseName">
                         {{training?.courseName}}
