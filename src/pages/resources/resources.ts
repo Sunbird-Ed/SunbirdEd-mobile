@@ -245,9 +245,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     });
   }
 
-  ionViewWillUnload() {
-    this.events.unsubscribe('tab.change');
-  }
+  // ionViewWillUnload() {  //SB-14403 : Qr scanner fails to launch when user switches
+  //   this.events.unsubscribe('tab.change');
+  // }
 
   ionViewWillLeave(): void {
     if (this.eventSubscription) {
