@@ -1,7 +1,7 @@
 page-enrollment-details {
     .subtitle {
         text-transform: capitalize;
-       
+
         @extend .font-weight-700;
         &.buttontext{
             color: map-get($colors, primary);
@@ -21,14 +21,19 @@ page-enrollment-details {
             font-size: 1em;
         }
 
-        
+
     }
     .item-divider .header{
-        
+
     }
 
     .enroll-msg-ended {
         color: #e55a28;
         font-size: 0.9em;
     }
+  .enroll-btn {
+    padding-top: 0.3rem;
+    padding-left: 0.7rem;
+    padding-right: 0.7rem;
+  }
 }

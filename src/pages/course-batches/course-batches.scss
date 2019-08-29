@@ -10,7 +10,7 @@ page-course-batches {
         @include ltr() {
         left: 0;
         };
-    
+
         @include rtl() {
         right: 0;
         };
@@ -33,7 +33,7 @@ page-course-batches {
         .msg-holder {
             padding-top: 30px;
             .empty-batch-icon{
-                width: 50px; 
+                width: 50px;
                 @include margin(null, null, null, 118px);
             }
             .text-holder{
@@ -46,13 +46,13 @@ page-course-batches {
         padding-top: 135px;
     }
     .batch-name {
-        margin-top: 0px; 
+        margin-top: 0px;
         font-size: 1.4rem;
         @extend .NotoSans-semi-bold;
     }
     .selected-filter {
         width: 88%;
-        padding-top: 8px; 
+        padding-top: 8px;
         @extend .font-weight-600;
     }
     .padding-top-30 {
@@ -61,7 +61,7 @@ page-course-batches {
     .batch-list {
         @include margin(null, null, null, -10px);
         .enroll-btn{
-            @include padding(null, 0, null, null !important);
+            @include padding(0.3rem, 0.7rem, null, 0.7rem !important);
             text-transform: none;
             font-size: 1.5rem;
         }
@@ -82,8 +82,8 @@ page-course-batches {
         @extend .NotoSans;
     }
 
-    .header-md::after { 
-        background-image: none; 
+    .header-md::after {
+        background-image: none;
     }
     .batch-font{
         @extend .NotoSans-bold;

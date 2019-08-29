@@ -21,6 +21,7 @@ import { App, Events } from 'ionic-angular';
 import { AppGlobalService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
 import { SearchPage } from '@app/pages/search';
 import { PageId, InteractType, InteractSubtype, Environment } from '../telemetry-constants';
+import { AppVersion } from '@ionic-native/app-version';
 
 @Injectable()
 export class SplaschreenDeeplinkActionHandlerDelegate implements SplashscreenActionHandlerDelegate {
@@ -28,6 +29,7 @@ export class SplaschreenDeeplinkActionHandlerDelegate implements SplashscreenAct
   isGuestUser: any;
   userId: string;
   enrolledCourses: any;
+  appLabel: any;
 
   constructor(
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
@@ -39,8 +41,13 @@ export class SplaschreenDeeplinkActionHandlerDelegate implements SplashscreenAct
     private appGlobalServices: AppGlobalService,
     private events: Events,
     private zone: NgZone,
+    private appVersion: AppVersion,
     private app: App) {
       this.getUserId();
+      this.appVersion.getAppName()
+      .then((appName: any) => {
+        this.appLabel = appName;
+      });
   }
 
   handleNotification(data) {
@@ -105,6 +112,7 @@ export class SplaschreenDeeplinkActionHandlerDelegate implements SplashscreenAct
     this.preferences.getString('batch_detail').toPromise()
     .then( resp => {
       if (resp) {
+        this.events.publish('return_course');
         this.enrollIntoBatch(JSON.parse(resp));
         this.preferences.putString('batch_detail', '').toPromise();
       }
@@ -143,12 +151,14 @@ export class SplaschreenDeeplinkActionHandlerDelegate implements SplashscreenAct
               batchId: batch.id,
               courseId: batch.courseId
             });
+            this.events.publish('coach_mark_seen', { showWalkthroughBackDrop: false, appName: this.appLabel });
             loader.dismiss();
             this.getEnrolledCourses();
             // navObj.pop();
           });
         }, (error) => {
           this.zone.run(() => {
+            loader.dismiss();
             if (error && error.code === 'NETWORK_ERROR') {
               this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NO_INTERNET_MESSAGE'));
             } else if (error && error.response
@@ -160,7 +170,7 @@ export class SplaschreenDeeplinkActionHandlerDelegate implements SplashscreenAct
           });
         });
     }
-}
+  }
 
   /**
    * Get logged-user id. User id is needed to enroll user into batch.

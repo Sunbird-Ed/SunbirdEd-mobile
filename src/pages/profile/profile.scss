@@ -381,13 +381,17 @@ page-profile {
     }
 
     .training-1 {
-        width: 80%;
-        float: left;
+        flex: 1;
     }
 
     .training-2 {
-        width: 20%;
-        float: right;
+        width: 30%;
+    }
+
+    .flex-nowrap {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: nowrap;
     }
 
 }

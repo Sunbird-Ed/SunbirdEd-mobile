@@ -180,7 +180,7 @@
             {{'TRAININGS_ATTENDED' | translate}} ({{mapTrainingsToCertificates(trainingsCompleted).length}})&lrm;
         </div>
         <div class="content">
-            <div class="MB15" *ngFor="let certificate of (mapTrainingsToCertificates(trainingsCompleted) | slice:startLimit:trainingsLimit)">
+            <div class="MB15 flex-nowrap" *ngFor="let certificate of (mapTrainingsToCertificates(trainingsCompleted) | slice:startLimit:trainingsLimit)">
                 <div class="training-1">
                     <div class="fw" *ngIf="getCertificateCourse(certificate).courseName">
                         {{getCertificateCourse(certificate).courseName}}

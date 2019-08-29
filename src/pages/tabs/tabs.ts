@@ -51,7 +51,6 @@ export class TabsPage {
       this.tabRef.select(tabIndex);
     }, 300);
     this.events.subscribe('return_course', () => {
-      console.log('tabs');
       setTimeout(() => {
         this.tabRef.select(1);
       }, 300);
