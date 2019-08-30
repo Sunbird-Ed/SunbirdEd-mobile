@@ -71,7 +71,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
   filterIcon = './assets/imgs/ic_action_filter.png';
   profile: any;
   isVisible = false;
-  inProgressSection = 'courses-in-progress';
+  inProgressSection = 'My Courses';
 
   /**
    * To queue downloaded identifier
