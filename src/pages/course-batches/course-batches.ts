@@ -6,6 +6,7 @@ import {EventTopics} from '../../app/app.constant';
 import {CommonUtilService} from '../../service/common-util.service';
 import { InteractType, InteractSubtype, Environment, PageId } from '@app/service/telemetry-constants';
 import { AppHeaderService } from '@app/service';
+import moment from 'moment';
 
 /**
  * Generated class for the CourseBatchesPage page.
@@ -23,42 +24,43 @@ export class CourseBatchesPage implements OnInit {
   /**
    * Contains user id
    */
-  userId: string;
+  public userId: string;
 
   /**
    * To hold course indentifier
    */
-  identifier: string;
+  public identifier: string;
 
   /**
    * Loader
    */
-  showLoader: boolean;
+  public showLoader: boolean;
 
   /**
    * Contains upcomming batches list
    */
-  upcommingBatches: Array<Batch> = [];
+  public upcommingBatches: Array<Batch> = [];
 
   /**
    * Contains ongoing batches list
    */
-  ongoingBatches: Array<Batch> = [];
+  public ongoingBatches: Array<Batch> = [];
 
   /**
    * Flag to check guest user
    */
-  isGuestUser = false;
+  public isGuestUser = false;
 
   /**
    * Contains batches list
    */
   public batches: Array<Batch> = [];
 
+  public todayDate: any;
   /**
    * Selected filter
    */
-  selectedFilter: string;
+  public selectedFilter: string;
   headerConfig = {
     showHeader: false,
     showBurgerMenu: false,
@@ -135,6 +137,7 @@ export class CourseBatchesPage implements OnInit {
         });
       }, (error) => {
         this.zone.run(() => {
+          loader.dismiss();
           if (error && error.code === 'NETWORK_ERROR') {
             this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NO_INTERNET_MESSAGE'));
           } else if (error && error.response
@@ -172,6 +175,7 @@ export class CourseBatchesPage implements OnInit {
   getBatchesByCourseId(): void {
     this.ongoingBatches = this.navParams.get('ongoingBatches');
     this.upcommingBatches = this.navParams.get('upcommingBatches');
+    this.todayDate =  moment(new Date()).format('YYYY-MM-DD');
   }
 
   spinner(flag) {

@@ -109,7 +109,10 @@ export enum PageId {
     SHOW_DUPLICATE_CONTENT_POPUP = 'show-duplicate-content-popup',
     CONTENT_TRANSFER_SUCCEED_POPUP = 'content-transfer-succeed-popup',
     CANCELLING_CONTENT_TRANSFER_POPUP = 'cancelling-content-transfer-popup',
-    DIAL_SEARCH = 'dial-book-result'
+    DIAL_SEARCH = 'dial-book-result',
+    TEXTBOOK_TOC = 'textbook-toc',
+    EXPLORE_MORE_CONTENT = 'explore-more-content'
+
 }
 export enum LogType {
     NOTIFICATION = 'notification'
@@ -137,7 +140,9 @@ export enum ImpressionSubtype {
     QR_CODE_VALID = 'qr-code-valid',
     INVALID_QR_CODE = 'invalid-qr-code',
     APP_RATING_POPUP = 'app-rating-popup',
-    QR_SCAN_WALKTHROUGH = 'qr-scan-walkthrough'
+    QR_SCAN_WALKTHROUGH = 'qr-scan-walkthrough',
+    COMINGSOON_POPUP = 'coming-soon-popup',
+    EXPLORE_MORE_CONTENT = 'explore-more-content'
 }
 export enum InteractType {
     TOUCH = 'TOUCH',
@@ -307,7 +312,24 @@ export enum InteractSubtype {
     UNIT_CLICKED = 'unit-clicked',
     PERMISSION_POPUP = 'permission-popup',
     WALKTHROUGH_BACKDROP_CLICKED = 'walkthrough-backdrop-clicked',
-    WALKTHROUGH_CONFIRMATION_CLICKED = 'walkthrough-confirmation-clicked'
+    WALKTHROUGH_CONFIRMATION_CLICKED = 'walkthrough-confirmation-clicked',
+    HOTCODE_PUSH_INITIATED = 'hotcode-push-initiated',
+    HOTCODE_PUSH_SUCCESS = 'hotcode-push-success',
+    HOTCODE_PUSH_FAILURE = 'hotcode-push-failure',
+    HOTCODE_PUSH_PROGRESS = 'hotcode-push-progress',
+    HOTCODE_PUSH_KEY_NOT_DEFINED = 'hotcode-push-key-not-defined',
+    SEARCH_HISTORY_CLICKED = 'search-history-clicked',
+    SHEEN_ANIMATION_START = 'sheen-animation-started',
+    SHEEN_ANIMATION_END = 'sheen-animation-ended',
+    FILTER_CLICKED = 'filter-clicked',
+    DROPDOWN_CLICKED = 'drop-down-clicked',
+    SUBUNIT_CLICKED = 'sub-unit-clicked',
+    SEE_MORE_CONTENT_CLICKED = 'see-more-content-clicked',
+    SEARCH_COMPLETED = 'search-completed',
+    SORT_BY_FILTER_SET = 'sort-by-filter-set',
+    SUBJECT_CLICKED = 'subject-clicked',
+    SORT_BY_CLICKED = 'sort-by-clicked',
+    SEARCH_INITIATED = 'search-initiated'
 }
 
 export enum ActionButtonType {

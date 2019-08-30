@@ -194,7 +194,8 @@ export class TelemetryGeneratorService {
         const values = new Map();
         values['isFirstTime'] = isFirstTime;
         values['size'] = content.size;
-        const telemetryObject = new TelemetryObject(content.identifier || content.contentId, content.contentType, content.pkgVersion);
+        const telemetryObject = new TelemetryObject(content.identifier || content.contentId,
+            content.contentData.contentType,  content.contentData.pkgVersion);
         this.generateInteractTelemetry(
             InteractType.OTHER,
             InteractSubtype.LOADING_SPINE,
@@ -326,4 +327,17 @@ export class TelemetryGeneratorService {
         return mimeType === MimeType.COLLECTION;
     }
 
+    generateStartSheenAnimationTelemetry() {
+        this.generateInteractTelemetry(InteractType.OTHER,
+            InteractSubtype.SHEEN_ANIMATION_START,
+            Environment.HOME,
+            PageId.LIBRARY);
+    }
+
+    generateEndSheenAnimationTelemetry() {
+        this.generateInteractTelemetry(InteractType.OTHER,
+            InteractSubtype.SHEEN_ANIMATION_END,
+            Environment.HOME,
+            PageId.LIBRARY);
+    }
 }

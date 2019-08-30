@@ -1,6 +1,6 @@
-import { BatchConstants } from './../../app/app.constant';
-import { Component, Inject, NgZone, OnDestroy, ViewChild } from '@angular/core';
-import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, Loading } from 'ionic-angular';
+import { BatchConstants, ContentFilterConfig } from './../../app/app.constant';
+import { ChangeDetectorRef, Component, Inject, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, Loading, TextInput } from 'ionic-angular';
 import { Content as ContentView } from 'ionic-angular';
 import {
   CachedItemRequestSourceFrom, Content, ContentDetailRequest, ContentEventType, ContentImport, ContentImportRequest,
@@ -8,7 +8,12 @@ import {
   CorrelationData, DownloadEventType, DownloadProgress, EventsBusEvent, EventsBusService, PageAssembleCriteria,
   PageAssembleFilter, PageAssembleService, PageName, ProfileType, SearchType, SharedPreferences, TelemetryObject,
   NetworkError, CourseService, CourseBatchesRequest, CourseEnrollmentType, CourseBatchStatus, Course, Batch,
-  FetchEnrolledCourseRequest
+  FetchEnrolledCourseRequest, Profile, ProfileService, Framework,
+  FrameworkCategoryCodesGroup,
+  FrameworkDetailsRequest,
+  FrameworkService,
+  FrameworkUtilService,
+  GetSuggestedFrameworksRequest, SearchEntry, SearchHistoryService
 } from 'sunbird-sdk';
 import { FilterPage } from './filters/filter';
 import { CollectionDetailsEtbPage } from '../collection-details-etb/collection-details-etb';
@@ -23,13 +28,16 @@ import { CommonUtilService } from '../../service/common-util.service';
 import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
 import { QrCodeResultPage } from '../qr-code-result/qr-code-result';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import {
   Environment, ImpressionType, InteractSubtype, InteractType, LogLevel, Mode, PageId
 } from '../../service/telemetry-constants';
 import { TabsPage } from '@app/pages/tabs/tabs';
 import { AppHeaderService } from '@app/service';
 import { EnrollmentDetailsPage } from '../enrolled-course-details/enrollment-details/enrollment-details';
+import { SearchHistoryNamespaces } from '@app/config/search-history-namespaces';
+import { AppVersion } from '@ionic-native/app-version';
+import { featureIdMap } from '@app/feature-id-map';
 
 declare const cordova;
 
@@ -38,8 +46,11 @@ declare const cordova;
   selector: 'page-search',
   templateUrl: './search.html'
 })
-export class SearchPage implements OnDestroy {
+export class SearchPage implements OnInit, OnDestroy {
 
+  public searchHistory$: Observable<SearchEntry[]>;
+
+  appName: string;
   showLoading: boolean;
   downloadProgress: any;
   @ViewChild('searchInput') searchBar;
@@ -80,6 +91,8 @@ export class SearchPage implements OnDestroy {
 
   parentContent: any = undefined;
 
+  contentData: any;
+
   childContent: any = undefined;
 
   loadingDisplayText = 'Loading content';
@@ -89,7 +102,7 @@ export class SearchPage implements OnDestroy {
   eventSubscription?: Subscription;
 
   displayDialCodeResult: any;
-  profile: any;
+  profile: Profile;
   isFirstLaunch = false;
   shouldGenerateEndTelemetry = false;
   backButtonFunc = undefined;
@@ -104,9 +117,25 @@ export class SearchPage implements OnDestroy {
   batches: any;
   loader?: Loading;
   userId: any;
+  identifier: string;
+  categories: Array<any> = [];
+  boardList: Array<any> = [];
+  mediumList: Array<any> = [];
+  gradeList: Array<any> = [];
+  isProfileUpdated: boolean;
   @ViewChild('contentView') contentView: ContentView;
   constructor(
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
+    @Inject('PAGE_ASSEMBLE_SERVICE') private pageService: PageAssembleService,
+    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    @Inject('PROFILE_SERVICE') private profileService: ProfileService,
+    @Inject('FRAMEWORK_SERVICE') private frameworkService: FrameworkService,
+    @Inject('FRAMEWORK_UTIL_SERVICE') private frameworkUtilService: FrameworkUtilService,
+    @Inject('COURSE_SERVICE') private courseService: CourseService,
+    @Inject('SEARCH_HISTORY_SERVICE') private searchHistoryService: SearchHistoryService,
+    private appVersion: AppVersion,
+    private changeDetectionRef: ChangeDetectorRef,
     private navParams: NavParams,
     private navCtrl: NavController,
     private zone: NgZone,
@@ -118,12 +147,8 @@ export class SearchPage implements OnDestroy {
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private translate: TranslateService,
-    @Inject('PAGE_ASSEMBLE_SERVICE') private pageService: PageAssembleService,
-    @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
-    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     private headerService: AppHeaderService,
-    @Inject('COURSE_SERVICE') private courseService: CourseService,
-    private popoverCtrl: PopoverController
+    private popoverCtrl: PopoverController,
   ) {
 
     this.checkUserSession();
@@ -135,6 +160,10 @@ export class SearchPage implements OnDestroy {
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
     this.getFrameworkId();
     this.selectedLanguageCode = this.translate.currentLang;
+  }
+
+  ngOnInit(): void {
+    this.getAppName();
   }
 
   ionViewWillEnter() {
@@ -154,11 +183,54 @@ export class SearchPage implements OnDestroy {
   }
 
   ionViewDidLoad() {
+    this.searchHistory$ = this.searchBar && (this.searchBar as TextInput).ionChange
+      .map((e) => e.value)
+      .share()
+      .startWith('')
+      .debounceTime(500)
+      .switchMap((v) => {
+        if (v) {
+          return this.searchHistoryService.getEntries({
+            like: v,
+            limit: 5,
+            namespace: this.source === PageId.LIBRARY ? SearchHistoryNamespaces.LIBRARY : SearchHistoryNamespaces.COURSE
+          });
+        }
+
+        return this.searchHistoryService.getEntries({
+          limit: 10,
+          namespace: this.source === PageId.LIBRARY ? SearchHistoryNamespaces.LIBRARY : SearchHistoryNamespaces.COURSE
+        });
+      })
+      .do((v) => {
+        setTimeout(() => {
+          this.changeDetectionRef.detectChanges();
+        });
+      }) as any;
+
     this.navBar.backButtonClick = () => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(ImpressionType.SEARCH,
         Environment.HOME, true, undefined, this.corRelationList);
       this.navigateToPreviousPage();
     };
+  }
+
+  onSearchHistoryTap(searchEntry: SearchEntry) {
+    this.searchKeywords = searchEntry.query;
+    this.handleSearch();
+
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.SEARCH_HISTORY_CLICKED,
+      Environment.HOME,
+      PageId.SEARCH,
+      undefined,
+      {
+        'selectedSearchHistory': searchEntry.query
+      },
+      undefined,
+      featureIdMap.searchHistory.SEARCH_HISTORY_QUERY_FROM_HISTORY
+    );
   }
 
   ionViewWillLeave() {
@@ -174,6 +246,13 @@ export class SearchPage implements OnDestroy {
     if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
     }
+  }
+
+  private async getAppName() {
+    return this.appVersion.getAppName()
+      .then((appName: any) => {
+        this.appName = appName;
+      });
   }
 
   getFrameworkId() {
@@ -265,7 +344,8 @@ export class SearchPage implements OnDestroy {
         shouldGenerateEndTelemetry: this.shouldGenerateEndTelemetry,
         parentContent: this.parentContent,
         isSingleContent: this.isSingleContent,
-        onboarding: this.appGlobalService.isOnBoardingCompleted
+        onboarding: this.appGlobalService.isOnBoardingCompleted,
+        isProfileUpdated: this.isProfileUpdated
       };
     } else {
       params = {
@@ -273,7 +353,8 @@ export class SearchPage implements OnDestroy {
         corRelation: this.corRelationList,
         parentContent: this.parentContent,
         isSingleContent: this.isSingleContent,
-        onboarding: this.appGlobalService.isOnBoardingCompleted
+        onboarding: this.appGlobalService.isOnBoardingCompleted,
+        isProfileUpdated: this.isProfileUpdated
       };
     }
     if (this.loader) {
@@ -301,7 +382,6 @@ export class SearchPage implements OnDestroy {
     } else if (content.mimeType === MimeType.COLLECTION) {
       if (this.isDialCodeSearch && !isRootContent) {
         params.isCreateNavigationStack = true;
-
         this.navCtrl.push(QrCodeResultPage, params);
         if (this.isSingleContent) {
           this.isSingleContent = false;
@@ -316,6 +396,218 @@ export class SearchPage implements OnDestroy {
     } else {
       this.navCtrl.push(ContentDetailsPage, params);
     }
+  }
+
+  setGrade(reset, grades) {
+    if (reset) {
+      this.profile.grade = [];
+      this.profile.gradeValue = {};
+    }
+    _.each(grades, (grade) => {
+      if (grade && this.profile.grade.indexOf(grade) === -1) {
+        if (this.profile.grade && this.profile.grade.length) {
+          this.profile.grade.push(grade);
+        } else {
+          this.profile.grade = [grade];
+        }
+      }
+    });
+  }
+
+  setMedium(reset, mediums) {
+    if (reset) {
+      this.profile.medium = [];
+    }
+    _.each(mediums, (medium) => {
+      if (medium && this.profile.medium.indexOf(medium) === -1) {
+        if (this.profile.medium && this.profile.medium.length) {
+          this.profile.medium.push(medium);
+        } else {
+          this.profile.medium = [medium];
+        }
+      }
+    });
+  }
+
+  findCode(categoryList: Array<any>, data, categoryType) {
+    if (_.find(categoryList, (category) => category.name === data[categoryType])) {
+      return _.find(categoryList, (category) => category.name === data[categoryType]).code;
+    } else {
+      return undefined;
+    }
+  }
+
+  setCurrentProfile(index, data) {
+    if (!this.profile.medium || !this.profile.medium.length) {
+      this.profile.medium = [];
+    }
+    switch (index) {
+      case 0:
+        this.profile.syllabus = [data.framework];
+        this.profile.board = [data.board];
+        this.setMedium(true, data.medium);
+        // this.profile.subject = [data.subject];
+        this.profile.subject = [];
+        this.setGrade(true, data.gradeLevel);
+        break;
+      case 1:
+        this.profile.board = [data.board];
+        this.setMedium(true, data.medium);
+        // this.profile.subject = [data.subject];
+        this.profile.subject = [];
+        this.setGrade(true, data.gradeLevel);
+        break;
+      case 2:
+        this.setMedium(false, data.medium);
+        break;
+      case 3:
+        this.setGrade(false, data.gradeLevel);
+        break;
+    }
+    this.editProfile();
+  }
+
+
+  checkProfileData(data, profile) {
+    if (data && data.framework) {
+
+      const getSuggestedFrameworksRequest: GetSuggestedFrameworksRequest = {
+        language: this.translate.currentLang,
+        requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
+      };
+      // Auto update the profile if that board/framework is listed in custodian framework list.
+      this.frameworkUtilService.getActiveChannelSuggestedFrameworkList(getSuggestedFrameworksRequest).toPromise()
+        .then((res: Framework[]) => {
+          this.isProfileUpdated = false;
+          res.forEach(element => {
+            // checking whether content data framework Id exists/valid in syllabus list
+            if (data.framework === element.identifier || data.board.indexOf(element.name) !== -1) {
+              data.framework = element.identifier;
+              this.isProfileUpdated = true;
+              const frameworkDetailsRequest: FrameworkDetailsRequest = {
+                frameworkId: element.identifier,
+                requiredCategories: FrameworkCategoryCodesGroup.DEFAULT_FRAMEWORK_CATEGORIES
+              };
+              this.frameworkService.getFrameworkDetails(frameworkDetailsRequest).toPromise()
+                .then((framework: Framework) => {
+                  this.categories = framework.categories;
+                  this.boardList = _.find(this.categories, (category) => category.code === 'board').terms;
+                  this.mediumList = _.find(this.categories, (category) => category.code === 'medium').terms;
+                  this.gradeList = _.find(this.categories, (category) => category.code === 'gradeLevel').terms;
+                  //                  this.subjectList = _.find(this.categories, (category) => category.code === 'subject').terms;
+                  if (data.board) {
+                    data.board = this.findCode(this.boardList, data, 'board');
+                  }
+                  if (data.medium) {
+                    if (typeof data.medium === 'string') {
+                      data.medium = [this.findCode(this.mediumList, data, 'medium')];
+                    } else {
+                      data.medium = _.map(data.medium, (dataMedium) => {
+                        return _.find(this.mediumList, (medium) => medium.name === dataMedium).code;
+                      });
+                    }
+                  }
+                  if (data.gradeLevel && data.gradeLevel.length) {
+                    data.gradeLevel = _.map(data.gradeLevel, (dataGrade) => {
+                      return _.find(this.gradeList, (grade) => grade.name === dataGrade).code;
+                    });
+                  }
+                  if (profile && profile.syllabus && profile.syllabus[0] && data.framework === profile.syllabus[0]) {
+                    if (data.board) {
+                      if (profile.board && !(profile.board.length > 1) && data.board === profile.board[0]) {
+                        if (data.medium) {
+                          let existingMedium = false;
+                          for (let i = 0; i < data.medium.length; i++) {
+                            const mediumExists = _.find(profile.medium, (medium) => {
+                              return medium === data.medium[i];
+                            });
+                            if (!mediumExists) {
+                              break;
+                            }
+                            existingMedium = true;
+                          }
+                          if (!existingMedium) {
+                            this.setCurrentProfile(2, data);
+                          }
+                          if (data.gradeLevel && data.gradeLevel.length) {
+                            let existingGrade = false;
+                            for (let i = 0; i < data.gradeLevel.length; i++) {
+                              const gradeExists = _.find(profile.grade, (grade) => {
+                                return grade === data.gradeLevel[i];
+                              });
+                              if (!gradeExists) {
+                                break;
+                              }
+                              existingGrade = true;
+                            }
+                            if (!existingGrade) {
+                              this.setCurrentProfile(3, data);
+                            }
+                          }
+                        }
+                      } else {
+                        this.setCurrentProfile(1, data);
+                      }
+                    }
+                  } else {
+                    this.setCurrentProfile(0, data);
+                  }
+                }).catch((err) => {
+                  if (err instanceof NetworkError) {
+                    this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
+                  }
+                });
+
+              return;
+            }
+          });
+        })
+        .catch((err) => {
+          if (err instanceof NetworkError) {
+            this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
+          }
+        });
+    }
+  }
+
+  editProfile() {
+    const req: Profile = {
+      board: this.profile.board,
+      grade: this.profile.grade,
+      medium: this.profile.medium,
+      subject: this.profile.subject,
+      uid: this.profile.uid,
+      handle: this.profile.handle,
+      profileType: this.profile.profileType,
+      source: this.profile.source,
+      createdAt: this.profile.createdAt,
+      syllabus: this.profile.syllabus
+    };
+    if (this.profile.grade && this.profile.grade.length > 0) {
+      this.profile.grade.forEach(gradeCode => {
+        for (let i = 0; i < this.gradeList.length; i++) {
+          if (this.gradeList[i].code === gradeCode) {
+            req.gradeValue = this.profile.gradeValue;
+            req.gradeValue[this.gradeList[i].code] = this.gradeList[i].name;
+            break;
+          }
+        }
+      });
+    }
+
+    this.profileService.updateProfile(req).toPromise()
+      .then((res: any) => {
+        if (res.syllabus && res.syllabus.length && res.board && res.board.length
+          && res.grade && res.grade.length && res.medium && res.medium.length) {
+          this.events.publish(AppGlobalService.USER_INFO_UPDATED);
+          this.events.publish('refresh:profile');
+        }
+        this.appGlobalService.guestUserProfile = res;
+        this.telemetryGeneratorService.generateProfilePopulatedTelemetry(PageId.DIAL_CODE_SCAN_RESULT,
+          req, 'auto');
+      })
+      .catch(() => {
+      });
   }
 
   showFilter() {
@@ -341,7 +633,7 @@ export class SearchPage implements OnDestroy {
     this.showLoader = true;
     this.responseData.filterCriteria.mode = 'hard';
     this.responseData.filterCriteria.searchType = SearchType.FILTER;
-
+    this.telemetryGeneratorService.generateStartSheenAnimationTelemetry();
     this.contentService.searchContent(this.responseData.filterCriteria).toPromise()
       .then((responseData: ContentSearchResult) => {
 
@@ -365,6 +657,7 @@ export class SearchPage implements OnDestroy {
           } else {
             this.isEmptyResult = true;
           }
+          this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
           this.showLoader = false;
         });
       }).catch(() => {
@@ -374,13 +667,26 @@ export class SearchPage implements OnDestroy {
       });
   }
 
+  handleCancel() {
+    this.searchKeywords = '';
+    this.searchBar.setFocus();
+    this.searchContentResult = undefined;
+    this.filterIcon = false;
+    this.isEmptyResult = false;
+  }
+
   handleSearch() {
     this.scrollToTop();
     if (this.searchKeywords.length < 3) {
       return;
     }
 
+    this.addSearchHistoryEntry();
+
     this.showLoader = true;
+    if (this.showLoader) {
+      this.telemetryGeneratorService.generateStartSheenAnimationTelemetry();
+    }
 
     (<any>window).cordova.plugins.Keyboard.close();
 
@@ -401,21 +707,21 @@ export class SearchPage implements OnDestroy {
     this.dialCodeResult = undefined;
     this.corRelationList = [];
 
-    // if (this.profile) {
+    if (this.profile) {
 
-    //   if (this.profile.board && this.profile.board.length) {
-    //     contentSearchRequest.board = this.applyProfileFilter(this.profile.board, contentSearchRequest.board, 'board');
-    //   }
+      if (this.profile.board && this.profile.board.length) {
+        contentSearchRequest.board = this.applyProfileFilter(this.profile.board, contentSearchRequest.board, 'board');
+      }
 
-    //   if (this.profile.medium && this.profile.medium.length) {
-    //     contentSearchRequest.medium = this.applyProfileFilter(this.profile.medium, contentSearchRequest.medium, 'medium');
-    //   }
+      if (this.profile.medium && this.profile.medium.length) {
+        contentSearchRequest.medium = this.applyProfileFilter(this.profile.medium, contentSearchRequest.medium, 'medium');
+      }
 
-    //   if (this.profile.grade && this.profile.grade.length) {
-    //     contentSearchRequest.grade = this.applyProfileFilter(this.profile.grade, contentSearchRequest.grade, 'gradeLevel');
-    //   }
+      if (this.profile.grade && this.profile.grade.length) {
+        contentSearchRequest.grade = this.applyProfileFilter(this.profile.grade, contentSearchRequest.grade, 'gradeLevel');
+      }
 
-    // }
+    }
 
     this.contentService.searchContent(contentSearchRequest).toPromise()
       .then((response: ContentSearchResult) => {
@@ -441,15 +747,30 @@ export class SearchPage implements OnDestroy {
           }
           this.showEmptyMessage = this.searchContentResult.length === 0;
           this.showLoader = false;
+          if (!this.showLoader) {
+            this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+          }
         });
       }).catch(() => {
         this.zone.run(() => {
           this.showLoader = false;
+          if (!this.showLoader) {
+            this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+          }
           if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
             this.commonUtilService.showToast('ERROR_OFFLINE_MODE');
           }
         });
       });
+  }
+
+  private addSearchHistoryEntry() {
+    this.searchHistoryService
+      .addEntry({
+        query: this.searchKeywords,
+        namespace: this.source === PageId.LIBRARY ? SearchHistoryNamespaces.LIBRARY : SearchHistoryNamespaces.COURSE
+      })
+      .toPromise();
   }
 
   applyProfileFilter(profileFilter: Array<any>, assembleFilter: Array<any>, categoryKey?: string) {
@@ -601,7 +922,7 @@ export class SearchPage implements OnDestroy {
     });
   }
 
-  getContentForDialCode() {
+  async getContentForDialCode() {
     if (this.dialCode === undefined || this.dialCode.length === 0) {
       return;
     }
@@ -609,13 +930,11 @@ export class SearchPage implements OnDestroy {
     this.isDialCodeSearch = true;
 
     this.showLoader = true;
-    this.contentType = ContentType.FOR_DIAL_CODE_SEARCH;
+    this.telemetryGeneratorService.generateStartSheenAnimationTelemetry();
 
-    let isOfflineSearch = false;
-
-    if (!this.commonUtilService.networkInfo.isNetworkAvailable) {
-      isOfflineSearch = true;
-    }
+    const contentTypes = await this.formAndFrameworkUtilService.getSupportedContentFilterConfig(
+      ContentFilterConfig.NAME_DIALCODE);
+    this.contentType = contentTypes;
 
     // Page API START
     const pageAssemblefilter: PageAssembleFilter = {};
@@ -639,6 +958,7 @@ export class SearchPage implements OnDestroy {
             this.processDialCodeResult(sections);
             // this.updateFilterIcon();  // TO DO
           }
+          this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
           this.showLoader = false;
         });
       }).catch(error => {
@@ -749,8 +1069,13 @@ export class SearchPage implements OnDestroy {
 
         if (dialCodeContentResult.length) {
           dialCodeResultObj.dialCodeContentResult = dialCodeContentResult;
-          displayDialCodeResult.push(dialCodeResultObj);
+          if (displayDialCodeResult && !(displayDialCodeResult.length > 0)) {
+            displayDialCodeResult.push(dialCodeResultObj);
+          } else {
+            displayDialCodeResult[0].dialCodeContentResult = dialCodeContentResult;
+          }
         }
+        // Course
         if (dialCodeContentCourseResult.length) {
           dialCodeCourseResultObj.dialCodeContentResult = dialCodeContentCourseResult;
           displayDialCodeResult.push(dialCodeCourseResultObj);
@@ -915,6 +1240,8 @@ export class SearchPage implements OnDestroy {
           } else {
             this.subscribeSdkEvent();
             this.downloadParentContent(parent);
+            this.profile = this.appGlobalService.getCurrentUser();
+            this.checkProfileData(data.contentData, this.profile);
           }
         } else {
           this.zone.run(() => {
@@ -998,7 +1325,21 @@ export class SearchPage implements OnDestroy {
             this.loadingDisplayText = 'Loading content ';
           }
         }
-
+        if (event.type === ContentEventType.IMPORT_PROGRESS) {
+          this.loadingDisplayText = this.commonUtilService.translateMessage('EXTRACTING_CONTENT') + ' ' +
+            Math.floor((event.payload.currentCount / event.payload.totalCount) * 100) +
+            '% (' + event.payload.currentCount + ' / ' + event.payload.totalCount + ')';
+            if (event.payload.currentCount === event.payload.totalCount) {
+              let timer = 30;
+              const interval = setInterval(() => {
+                this.loadingDisplayText = `Getting things ready in ${timer--}  seconds`;
+                if (timer === 0) {
+                  this.loadingDisplayText = 'Getting things ready';
+                  clearInterval(interval);
+                }
+              }, 1000);
+            }
+        }
         // if (event.payload && event.payload.status === 'IMPORT_COMPLETED' && event.type === 'contentImport') {
         if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
           if (this.queuedIdentifiers.length && this.isDownloadStarted) {
@@ -1075,12 +1416,10 @@ export class SearchPage implements OnDestroy {
       } else if (userType === ProfileType.TEACHER) {
         this.audienceFilter = AudienceFilter.GUEST_TEACHER;
       }
-
-      this.profile = this.appGlobalService.getCurrentUser();
     } else {
       this.audienceFilter = AudienceFilter.LOGGED_IN_USER;
-      this.profile = undefined;
     }
+    this.profile = this.appGlobalService.getCurrentUser();
   }
 
   private addCorRelation(id: string, type: string) {

@@ -1,44 +1,26 @@
-import {Component, Inject, NgZone, ViewChild} from '@angular/core';
-import {
-  AlertController,
-  App,
-  Events,
-  IonicApp,
-  IonicPage,
-  Navbar,
-  NavController,
-  NavParams,
-  Platform,
-  PopoverController,
-  ToastController
-} from 'ionic-angular';
-import {SocialSharing} from '@ionic-native/social-sharing';
+import { Component, Inject, NgZone, ViewChild } from '@angular/core';
+import { Events, IonicApp, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
-import {ContentConstants, EventTopics, PreferenceKey, StoreRating, XwalkConstants} from '../../app/app.constant';
-import {GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, Map, ShareUrl} from '@app/app';
+import { ContentConstants, EventTopics, PreferenceKey, StoreRating, XwalkConstants } from '../../app/app.constant';
+import { Map } from '@app/app';
 import {
-  BookmarkComponent,
   ConfirmAlertComponent,
   ContentActionsComponent,
-  ContentRatingAlertComponent,
   SbPopoverComponent
 } from '@app/component';
-import {AppGlobalService, AppHeaderService, AppRatingService, CourseUtilService, UtilityService} from '@app/service';
-import {EnrolledCourseDetailsPage} from '@app/pages/enrolled-course-details';
-import {Network} from '@ionic-native/network';
-import {UserAndGroupsPage} from '../user-and-groups/user-and-groups';
-import {TelemetryGeneratorService} from '../../service/telemetry-generator.service';
-import {CommonUtilService} from '../../service/common-util.service';
-import {DialogPopupComponent} from '../../component/dialog-popup/dialog-popup';
+import { AppGlobalService, AppHeaderService, AppRatingService, CourseUtilService, UtilityService } from '@app/service';
+import { EnrolledCourseDetailsPage } from '@app/pages/enrolled-course-details';
+import { Network } from '@ionic-native/network';
+import { UserAndGroupsPage } from '../user-and-groups/user-and-groups';
+import { TelemetryGeneratorService } from '../../service/telemetry-generator.service';
+import { CommonUtilService } from '../../service/common-util.service';
+import { DialogPopupComponent } from '../../component/dialog-popup/dialog-popup';
 import {
-  AuthService,
   ChildContentRequest,
   Content,
   ContentDeleteStatus,
   ContentDetailRequest,
   ContentEventType,
-  ContentExportRequest,
-  ContentExportResponse,
   ContentImport,
   ContentImportRequest,
   ContentImportResponse,
@@ -51,16 +33,15 @@ import {
   GetAllProfileRequest,
   PlayerService,
   ProfileService,
-  ProfileType,
   Rollup,
   SharedPreferences,
   StorageService,
   TelemetryObject
 } from 'sunbird-sdk';
-import {CanvasPlayerService} from '../player/canvas-player.service';
-import {PlayerPage} from '../player/player';
-import {File} from '@ionic-native/file';
-import {Subscription} from 'rxjs';
+import { CanvasPlayerService } from '../player/canvas-player.service';
+import { PlayerPage } from '../player/player';
+import { File } from '@ionic-native/file';
+import { Subscription } from 'rxjs';
 import {
   Environment,
   ImpressionType,
@@ -69,13 +50,14 @@ import {
   Mode,
   PageId,
 } from '../../service/telemetry-constants';
-import {TabsPage} from '../tabs/tabs';
-import {ContainerService} from '@app/service/container.services';
-import {FileSizePipe} from '@app/pipes/file-size/file-size';
-import {TranslateService} from '@ngx-translate/core';
-import {SbGenericPopoverComponent} from '@app/component/popups/sb-generic-popup/sb-generic-popover';
-import {AppRatingAlertComponent} from '@app/component/app-rating-alert/app-rating-alert';
-import moment from 'moment';
+import { FileSizePipe } from '@app/pipes/file-size/file-size';
+import { TranslateService } from '@ngx-translate/core';
+import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
+import { ContentShareHandler } from '@app/service/content/content-share-handler';
+import { AppVersion } from '@ionic-native/app-version';
+import { ProfileSwitchHandler } from '@app/service/user-groups/profile-switch-handler';
+import { RatingHandler } from '@app/service/rating/rating-handler';
+import { ContentUtil } from '@app/util/content-util';
 
 declare const cordova;
 
@@ -85,6 +67,7 @@ declare const cordova;
   templateUrl: 'content-details.html',
 })
 export class ContentDetailsPage {
+  appName: any;
   [x: string]: any;
   apiLevel: number;
   appAvailability: string;
@@ -116,7 +99,6 @@ export class ContentDetailsPage {
    * Used to handle update content workflow
    */
   isUpdateAvail = false;
-  userRating = 0;
   /*stores streaming url*/
   streamingUrl: any;
   contentDownloadable: {
@@ -133,7 +115,6 @@ export class ContentDetailsPage {
   public isPlayerLaunched = false;
   isGuestUser = false;
   launchPlayer: boolean;
-  profileType = '';
   isResumedCourse: boolean;
   objId;
   objType;
@@ -141,7 +122,6 @@ export class ContentDetailsPage {
   didViewLoad: boolean;
   contentDetail: any;
   backButtonFunc = undefined;
-  baseUrl = '';
   shouldGenerateEndTelemetry = false;
   source = '';
   unregisterBackButton: any;
@@ -153,8 +133,6 @@ export class ContentDetailsPage {
   showMessage: any;
   localImage: any;
   isUsrGrpAlrtOpen: Boolean = false;
-  private resume;
-  private ratingComment = '';
   private corRelationList: Array<CorrelationData>;
   private eventSubscription: Subscription;
   defaultLicense: string;
@@ -175,16 +153,13 @@ export class ContentDetailsPage {
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     @Inject('PLAYER_SERVICE') private playerService: PlayerService,
     @Inject('STORAGE_SERVICE') private storageService: StorageService,
-    @Inject('AUTH_SERVICE') private authService: AuthService,
     private navCtrl: NavController,
     private navParams: NavParams,
     private zone: NgZone,
     private events: Events,
     private popoverCtrl: PopoverController,
-    private social: SocialSharing,
     private platform: Platform,
     private appGlobalService: AppGlobalService,
-    private alertCtrl: AlertController,
     private ionicApp: IonicApp,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
@@ -192,29 +167,30 @@ export class ContentDetailsPage {
     private canvasPlayerService: CanvasPlayerService,
     private file: File,
     private utilityService: UtilityService,
-    private container: ContainerService,
-    private app: App,
     private network: Network,
     public toastController: ToastController,
     private fileSizePipe: FileSizePipe,
     private translate: TranslateService,
     private headerService: AppHeaderService,
-    private appRatingService: AppRatingService
+    private contentShareHandler: ContentShareHandler,
+    private appVersion: AppVersion,
+    private profileSwitchHandler: ProfileSwitchHandler,
+    private ratingHandler: RatingHandler
   ) {
-
-    this.objRollup = new Rollup();
-    // this.userId = this.appGlobalService.getUserId();
     this.subscribePlayEvent();
-    this.checkLoggedInOrGuestUser();
-    this.checkCurrentUserType();
-    this.handlePageResume();
     this.checkDeviceAPILevel();
     this.checkappAvailability();
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
     this.defaultLicense = ContentConstants.DEFAULT_LICENSE;
+    this.ratingHandler.resetRating();
   }
 
   ionViewDidLoad() {
+    this.appVersion.getAppName()
+      .then((appName: any) => {
+        this.appName = appName;
+      });
+
     if (!AppGlobalService.isPlayerLaunched) {
       this.calculateAvailableUserCount();
     }
@@ -224,30 +200,19 @@ export class ContentDetailsPage {
         if (!data.selectedUser['profileType']) {
           this.profileService.getActiveProfileSession().toPromise()
             .then((profile) => {
-              this.switchUser(profile);
+              this.profileSwitchHandler.switchUser(profile);
             });
         } else {
-          this.switchUser(data.selectedUser);
+          this.profileSwitchHandler.switchUser(data.selectedUser);
         }
       }
     });
-  }
-
-  private switchUser(selectedUser) {
-    if (this.appGlobalService.isUserLoggedIn()) {
-      this.authService.resignSession().subscribe();
-      (<any>window).splashscreen.clearPrefs();
-    }
-    this.resetTabs(selectedUser);
   }
 
   /**
    * Ionic life cycle hook
    */
   ionViewWillEnter(): void {
-    this.headerObservable = this.headerService.headerEventEmitted$.subscribe(eventName => {
-      this.handleHeaderEvents(eventName);
-    });
     this.headerService.hideHeader();
     this.cardData = this.navParams.get('content');
     this.isChildContent = this.navParams.get('isChildContent');
@@ -277,8 +242,6 @@ export class ContentDetailsPage {
     this.setContentDetails(this.identifier, true, this.isPlayerLaunched);
     this.subscribeSdkEvent();
     this.findHierarchyOfContent();
-    // this.setContentDetails(this.identifier, true, false);
-    // this.subscribeGenieEvent();
     this.networkSubscription = this.commonUtilService.networkAvailability$.subscribe((available: boolean) => {
       if (available) {
         this.presentToast();
@@ -297,7 +260,6 @@ export class ContentDetailsPage {
    * Ionic life cycle hook
    */
   ionViewWillLeave(): void {
-    this.headerObservable.unsubscribe();
     if (this.eventSubscription) {
       this.eventSubscription.unsubscribe();
     }
@@ -322,7 +284,6 @@ export class ContentDetailsPage {
       this.generateQRSessionEndEvent(this.source, this.cardData.identifier);
     }
     this.popToPreviousPage(true);
-    // this.backButtonFunc();
   }
 
   handleDeviceBackButton() {
@@ -340,25 +301,7 @@ export class ContentDetailsPage {
     }, 11);
   }
 
-  handlePageResume() {
-    // This is to know when the app has come to foreground
-    // this.resume = this.platform.resume.subscribe(() => {
-    //   console.log('Page Resumed');
-    //   this.isContentPlayed = true;
-    //   if (this.isPlayerLaunched) {
-    //     this.isPlayerLaunched = false;
-    //     this.setContentDetails(this.identifier, true /* No Automatic Rating for 1.9.0 */);
-    //   }
-    //   // this.updateContentProgress();
-    // });
-  }
-
   subscribePlayEvent() {
-    this.utilityService.getBuildConfigValue('BASE_URL')
-      .then(response => {
-        this.baseUrl = response;
-        console.log('url', this.baseUrl);
-      });
     this.launchPlayer = this.navParams.get('launchplayer');
     this.events.subscribe('playConfig', (config) => {
       this.appGlobalService.setSelectedUser(config['selectedUser']);
@@ -394,14 +337,6 @@ export class ContentDetailsPage {
     toast.present();
   }
 
-  /**
-   * Get the session to know if the user is logged-in or guest
-   *
-   */
-  checkLoggedInOrGuestUser() {
-    this.isGuestUser = !this.appGlobalService.isUserLoggedIn();
-  }
-
   calculateAvailableUserCount() {
     const profileRequest: GetAllProfileRequest = {
       local: true,
@@ -420,150 +355,6 @@ export class ContentDetailsPage {
       }).catch((error) => {
         console.error('Error occurred= ', error);
       });
-  }
-
-  checkCurrentUserType() {
-    if (this.isGuestUser) {
-      this.appGlobalService.getGuestUserInfo()
-        .then((userType) => {
-          this.profileType = userType;
-        })
-        .catch((error) => {
-          console.log('Error Occurred', error);
-          this.profileType = '';
-        });
-    }
-  }
-
-  checkBookmarkStatus() {
-    this.preferences.getString(PreferenceKey.IS_BOOKMARK_VIEWED).toPromise().then(val => {
-      if (!val) {
-        this.showBookmarkMenu();
-      }
-    });
-  }
-
-  /*
-   selectBookmark() {
-     this.content.bookmarked = true;
-     this.showMessage = true;
-     const notifyTimer = Observable.timer(10000);
-     notifyTimer.subscribe(e => {
-       this.showMessage = false;
-     });
-   }
-
-   deSelectBookmark() {
-     this.content.bookmarked = false;
-     if (this.showMessage) {
-       this.showMessage = false;
-     }
-   }
-   */
-  /**
-   * Function to rate content
-   */
-
-  async rateContent(popupType: string) {
-    const paramsMap = new Map();
-    if (this.isContentPlayed || this.content.contentAccess.length) {
-      if (popupType === 'automatic') {
-        if (!(await this.appRatingService.checkReadFile())) {
-          this.preferences.getString(PreferenceKey.APP_RATING_DATE).toPromise().then(async res => {
-            if (await this.validateAndCheckDateDiff(res)) {
-              paramsMap['IsPlayed'] = 'N';
-              this.appRating();
-            } else {
-              paramsMap['IsPlayed'] = 'Y';
-              this.contentRating(popupType);
-            }
-          }).catch(err => {
-            paramsMap['IsPlayed'] = 'Y';
-            this.contentRating(popupType);
-          });
-        } else {
-          paramsMap['IsPlayed'] = 'Y';
-          this.contentRating(popupType);
-        }
-      } else if (popupType === 'manual') {
-        paramsMap['IsPlayed'] = 'Y';
-        this.contentRating(popupType);
-      }
-
-    } else {
-      paramsMap['IsPlayed'] = 'N';
-      this.commonUtilService.showToast('TRY_BEFORE_RATING');
-    }
-    this.telemetryGeneratorService.generateInteractTelemetry(
-      InteractType.TOUCH,
-      InteractSubtype.RATING_CLICKED,
-      Environment.HOME,
-      PageId.CONTENT_DETAIL,
-      undefined,
-      paramsMap,
-      this.objRollup,
-      this.corRelationList);
-  }
-
-  async validateAndCheckDateDiff(date) {
-    let isValid = false;
-    if (await this.commonUtilService.networkInfo.isNetworkAvailable) {
-      const presentDate = moment();
-      const initialDate = moment(date);
-      if (initialDate.isValid()) {
-        const diffInDays = presentDate.diff(initialDate, 'days');
-        if (diffInDays >= StoreRating.DATE_DIFF) {
-          isValid = true;
-        }
-      }
-    }
-    return isValid;
-  }
-
-  contentRating(popupType) {
-    const popover = this.popoverCtrl.create(ContentRatingAlertComponent, {
-      content: this.content,
-      pageId: PageId.CONTENT_DETAIL,
-      rating: this.userRating,
-      comment: this.ratingComment,
-      popupType: popupType,
-    }, {
-        cssClass: 'sb-popover info',
-      });
-    popover.present({
-      ev: event
-    });
-    popover.onDidDismiss(data => {
-      if (data && data.message === 'rating.success') {
-        this.userRating = data.rating;
-        this.ratingComment = data.comment;
-      }
-    });
-  }
-
-  appRating() {
-    const popover = this.popoverCtrl.create(AppRatingAlertComponent, {
-      pageId: PageId.CONTENT_DETAIL,
-    }, {
-      cssClass: 'sb-popover'
-    });
-    popover.present({
-      ev: event
-    });
-    popover.onDidDismiss((data: any) => {
-      console.log(data);
-      switch (data) {
-        case null: {
-          this.appRatingService.setInitialDate();
-          break;
-        }
-        case StoreRating.RETURN_HELP: {
-          this.appRatingService.setInitialDate();
-          this.navCtrl.push('FaqPage');
-          break;
-        }
-      }
-    });
   }
 
   /**
@@ -605,11 +396,7 @@ export class ContentDetailsPage {
 
           if (showRating) {
             this.isPlayerLaunched = false;
-            if (this.userRating === 0) {
-              if (!this.appGlobalService.getSelectedUser()) {
-                this.rateContent('automatic');
-              }
-            }
+            this.ratingHandler.showRatingPopup(this.isContentPlayed, data, 'automatic', this.corRelationList, this.objRollup);
           }
         });
       })
@@ -630,6 +417,10 @@ export class ContentDetailsPage {
         }
         this.navCtrl.pop();
       });
+  }
+
+  rateContent(popUpType: string) {
+    this.ratingHandler.showRatingPopup(this.isContentPlayed, this.content, popUpType, this.corRelationList, this.objRollup);
   }
 
   extractApiResponse(data: Content) {
@@ -673,25 +464,11 @@ export class ContentDetailsPage {
     }
 
     this.playingContent = data;
-    // if (this.content.contentData.gradeLevel && this.content.contentData.gradeLevel.length
-    //   && typeof this.content.contentData.gradeLevel !== 'string') {
-    //  this.content.contentData.gradeLevel.join(', ');
-    // }
-    // if (this.content.contentData.attributions && this.content.contentData.attributions.length) {
-    //   this.content.contentData.attributions ? this.content.contentData.attributions.join(', ') : '';
-    // }
     if (this.content.contentData.me_totalRatings) {
       this.content.contentData.me_totalRatings = parseInt(this.content.contentData.me_totalRatings, 10) + '';
     }
     this.objId = this.content.identifier;
     this.objVer = this.content.contentData.pkgVersion;
-
-    // User Rating
-    const contentFeedback: any = data.contentFeedback;
-    if (contentFeedback !== undefined && contentFeedback.length !== 0) {
-      this.userRating = contentFeedback[0].rating;
-      this.ratingComment = contentFeedback[0].comments;
-    }
 
     // Check locally available
     if (Boolean(data.isAvailableLocally)) {
@@ -718,11 +495,7 @@ export class ContentDetailsPage {
     if (this.isPlayerLaunched) {
       this.downloadAndPlay = false;
     }
-    console.log('DownloadnPlay', this.downloadAndPlay);
-
     if (this.downloadAndPlay) {
-      console.log('Inside Download And Play');
-
       if (!this.contentDownloadable[this.content.identifier] || this.content.isUpdateAvailable) {
         /**
          * Content is not downloaded then call the following method
@@ -751,9 +524,6 @@ export class ContentDetailsPage {
       hierarchyInfo: null,
       level: !resumedCourseCardData ? 1 : 0,
     };
-    // if (this.navParams.get('resumedCourseCardData')) {
-    //   option.contentId = this.navParams.get('resumedCourseCardData').contentId || this.navParams.get('resumedCourseCardData').identifier;
-    // }
     option.hierarchyInfo = null;
 
     if (resumedCourseCardData && !resumedCourseCardData.batchId) {
@@ -798,7 +568,7 @@ export class ContentDetailsPage {
 
   generateTelemetry() {
     if (!this.didViewLoad && !this.isContentPlayed) {
-      this.generateRollUp();
+      this.objRollup = ContentUtil.generateRollUp(this.cardData.hierarchyInfo, this.identifier);
       const contentType = this.cardData.contentData ? this.cardData.contentData.contentType : this.cardData.contentType;
       this.objType = contentType;
       this.generateImpressionEvent(this.cardData.identifier, contentType, this.cardData.pkgVersion);
@@ -828,25 +598,6 @@ export class ContentDetailsPage {
       values,
       this.objRollup,
       this.corRelationList);
-  }
-
-  generateRollUp() {
-    const hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
-    if (hierarchyInfo === null) {
-      this.objRollup.l1 = this.identifier;
-    } else {
-      _.forEach(hierarchyInfo, (value, key) => {
-        if (key === 0) {
-          this.objRollup.l1 = value.identifier;
-        } else if (key === 1) {
-          this.objRollup.l2 = value.identifier;
-        } else if (key === 2) {
-          this.objRollup.l3 = value.identifier;
-        } else if (key === 3) {
-          this.objRollup.l4 = value.identifier;
-        }
-      });
-    }
   }
 
   generateImpressionEvent(objectId, objectType, objectVersion) {
@@ -1016,6 +767,10 @@ export class ContentDetailsPage {
         if (event.payload && event.type === ContentEventType.UPDATE) {
           this.zone.run(() => {
             this.isUpdateAvail = true;
+            if (event.payload.size) {
+              this.content.contentData.size = event.payload.size;
+            }
+
           });
         }
 
@@ -1076,20 +831,6 @@ export class ContentDetailsPage {
         values['network-type'] = this.network.type;
         values['size'] = this.content.contentData.size;
         this.importContent([this.identifier], this.isChildContent);
-        this.events.subscribe('genie.event', (data) => {
-          this.zone.run(() => {
-            data = JSON.parse(data);
-            const res = data;
-            if (res.type === 'downloadProgress' && res.data.downloadProgress) {
-              this.downloadProgress = res.data.downloadProgress === -1 ? '0' : res.data.downloadProgress;
-              if (res.data.downloadProgress === 100) {
-                // this.showLoading = false;
-                this.showDownload = false;
-                this.content.isAvailableLocally = true;
-              }
-            }
-          });
-        });
         const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
         this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
           this.isUpdateAvail ? InteractSubtype.UPDATE_INITIATE : InteractSubtype.DOWNLOAD_INITIATE,
@@ -1120,15 +861,6 @@ export class ContentDetailsPage {
           console.log('Error: download error =>>>>>', error);
         });
       });
-  }
-
-  /** function add eclipses to the texts**/
-  addElipsesInLongText(msg: string) {
-    if (this.commonUtilService.translateMessage(msg).length >= 12) {
-      return this.commonUtilService.translateMessage(msg).slice(0, 8) + '....';
-    } else {
-      return this.commonUtilService.translateMessage(msg);
-    }
   }
 
   /**
@@ -1225,7 +957,7 @@ export class ContentDetailsPage {
   openPlayAsPopup(isStreaming) {
     const profile = this.appGlobalService.getCurrentUser();
     this.isUsrGrpAlrtOpen = true;
-   // if (profile.board.length > 1) {
+    // if (profile.board.length > 1) {
     const confirm = this.popoverCtrl.create(SbGenericPopoverComponent, {
       sbPopoverHeading: this.commonUtilService.translateMessage('PLAY_AS'),
       sbPopoverMainTitle: profile.handle,
@@ -1361,45 +1093,9 @@ export class ContentDetailsPage {
     this.utilityService.getDeviceAPILevel()
       .then((res: any) => {
         this.apiLevel = res;
-        console.log('device api level', this.apiLevel);
       }).catch((error: any) => {
         console.error('Error ', error);
       });
-  }
-
-  showOverflowMenu(event) {
-    const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
-    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-      InteractSubtype.KEBAB_MENU_CLICKED,
-      Environment.HOME,
-      PageId.CONTENT_DETAIL,
-      telemetryObject,
-      undefined,
-      this.objRollup,
-      this.corRelationList);
-    const popover = this.popoverCtrl.create(ContentActionsComponent, {
-      content: this.content,
-      isChild: this.isChildContent,
-      objRollup: this.objRollup,
-      pageName: PageId.CONTENT_DETAIL,
-      corRelationList: this.corRelationList
-    }, {
-        cssClass: 'content-action'
-      });
-    popover.present({
-      ev: event
-    });
-    popover.onDidDismiss(data => {
-      this.zone.run(() => {
-        if (data === 'delete.success') {
-          this.content.contentData.streamingUrl = this.streamingUrl;
-          this.contentDownloadable[this.content.identifier] = false;
-          const playContent = this.playingContent;
-          playContent.isAvailableLocally = false;
-          //   this.content.streamingUrl = this.streamingUrl;
-        }
-      });
-    });
   }
 
   showDeletePopup() {
@@ -1513,75 +1209,11 @@ export class ContentDetailsPage {
     });
   }
 
-  showBookmarkMenu(event?) {
-    const popover = this.popoverCtrl.create(BookmarkComponent, {
-      content: this.content,
-      isChild: this.isChildContent,
-      objRollup: this.objRollup,
-      corRelationList: this.corRelationList,
-      position: 'bottom'
-    }, {
-        cssClass: 'bookmark-menu'
-      });
-    popover.present({
-      ev: event
-    });
-  }
-
-  updateBookmarkPreference() {
-    // this.preference.putString(PreferenceKey.IS_BOOKMARK_VIEWED, 'true');
-    // this.viewCtrl.dismiss();
-    console.log('updateBookmarkPreference');
-  }
-
   /**
    * Shares content to external devices
    */
   share() {
-    this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.content.contentType);
-    const loader = this.commonUtilService.getLoader();
-    loader.present();
-    const url = this.baseUrl + ShareUrl.CONTENT + this.content.identifier;
-    if (this.contentDownloadable[this.content.identifier]) {
-      const exportContentRequest: ContentExportRequest = {
-        contentIds: [this.content.identifier],
-        destinationFolder: this.storageService.getStorageDestinationDirectoryPath()
-      };
-      this.contentService.exportContent(exportContentRequest).toPromise()
-        .then((response: ContentExportResponse) => {
-          loader.dismiss();
-          this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.content.contentType);
-          this.social.share('', '', '' + response.exportedFilePath, url);
-        }).catch(() => {
-          loader.dismiss();
-          this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
-        });
-    } else {
-      loader.dismiss();
-      this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.content.contentType);
-      this.social.share(null, null, null, url);
-    }
-
-  }
-
-  /**
-   * Generates Interact Events
-   * @param interactType
-   * @param subType
-   * @param contentType
-   */
-  generateShareInteractEvents(interactType, subType, contentType) {
-    const values = new Map();
-    values['ContentType'] = contentType;
-    const telemetryObject = new TelemetryObject(this.objId, this.objType, this.objVer);
-    this.telemetryGeneratorService.generateInteractTelemetry(interactType,
-      subType,
-      Environment.HOME,
-      PageId.CONTENT_DETAIL,
-      telemetryObject,
-      values,
-      this.objRollup,
-      this.corRelationList);
+    this.contentShareHandler.shareContent(this.content, this.corRelationList, this.objRollup);
   }
 
   /**
@@ -1630,53 +1262,8 @@ export class ContentDetailsPage {
     popover.present();
   }
 
-  private resetTabs(selectedUser) {
-    setTimeout(() => {
-      if (selectedUser.profileType === ProfileType.STUDENT) {
-        initTabs(this.container, GUEST_STUDENT_TABS);
-        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.STUDENT).toPromise().then();
-      } else {
-        initTabs(this.container, GUEST_TEACHER_TABS);
-        this.preferences.putString(PreferenceKey.SELECTED_USER_TYPE, ProfileType.TEACHER).toPromise().then();
-      }
-      this.events.publish('refresh:profile');
-      this.events.publish(AppGlobalService.USER_INFO_UPDATED);
-      this.appGlobalService.setSelectedUser(undefined);
-      this.app.getRootNav().setRoot(TabsPage);
-    }, 1000);
-  }
-
-  /* Present Toast */
-
-
-  /* SUDO
-   if firstprperty is there and secondprperty is not there, then return firstprperty value
-   else if firstprperty is not there and secondprperty is there, then return secondprperty value
-   else do the merger of firstprperty and secondprperty value and return merged value
- */
-  mergeProperties(firstProp, secondProp) {
-    if (this.content.contentData[firstProp] && !this.content.contentData[secondProp]) {
-      return this.content.contentData[firstProp];
-    } else if (!this.content.contentData[firstProp] && this.content.contentData[secondProp]) {
-      return this.content.contentData[secondProp];
-    } else {
-      let first: any;
-      let second: any;
-      first = this.content.contentData[firstProp].split(', ');
-      second = this.content.contentData[secondProp].split(', ');
-      first = second.concat(first);
-      first = Array.from(new Set(first));
-      return first.join(', ');
-    }
-  }
-
-  handleHeaderEvents($event) {
-    switch ($event.name) {
-      case 'back':
-      
-        this.handleNavBackButton();
-        break;
-    }
+  mergeProperties(mergeProp) {
+    return ContentUtil.mergeProperties(this.content.contentData, mergeProp);
   }
 
   findHierarchyOfContent() {
@@ -1689,9 +1276,4 @@ export class ContentDetailsPage {
     }
   }
 
-  goBack(index, length) {
-    if (index !== (length - 1)) {
-      this.navCtrl.pop();
-    }
-  }
 }

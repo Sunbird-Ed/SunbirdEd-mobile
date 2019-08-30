@@ -1,33 +1,23 @@
-import {AppVersion} from '@ionic-native/app-version';
-import {AppGlobalService, AppHeaderService, CommonUtilService, TelemetryGeneratorService} from '@app/service';
-import {AppStorageInfo, DownloadManagerPageInterface, EmitedContents} from './download-manager.interface';
-import {ContentType} from './../../app/app.constant';
-import {Component, Inject, NgZone, OnInit} from '@angular/core';
-import {Events, IonicPage, Loading, NavController, NavParams, Popover, PopoverController} from 'ionic-angular';
+import { AppVersion } from '@ionic-native/app-version';
+import { AppGlobalService, AppHeaderService, CommonUtilService, TelemetryGeneratorService } from '@app/service';
+import { AppStorageInfo, DownloadManagerPageInterface, EmitedContents } from './download-manager.interface';
+import { ContentFilterConfig } from './../../app/app.constant';
+import { Component, Inject, NgZone, OnInit } from '@angular/core';
+import { Events, IonicPage, Loading, NavController, NavParams, Popover, PopoverController } from 'ionic-angular';
 import {
-  Content,
-  ContentDeleteRequest,
-  ContentDeleteResponse,
-  ContentDeleteStatus,
-  ContentRequest,
-  ContentService,
-  ContentSortCriteria,
-  ContentSpaceUsageSummaryRequest,
-  ContentSpaceUsageSummaryResponse,
-  DeviceInfo,
-  Profile,
-  SortOrder,
-  StorageService,
-  StorageDestination
+  Content, ContentDeleteRequest, ContentDeleteResponse, ContentDeleteStatus, ContentRequest, ContentService,
+  ContentSortCriteria, ContentSpaceUsageSummaryRequest, ContentSpaceUsageSummaryResponse, DeviceInfo, Profile,
+  SortOrder, StorageService, StorageDestination
 } from 'sunbird-sdk';
-import {SbPopoverComponent} from '@app/component';
-import {ActiveDownloadsPage} from '../active-downloads/active-downloads';
-import {Environment, InteractSubtype, InteractType, PageId} from '@app/service/telemetry-constants';
-import {StorageSettingsPage} from '../storage-settings/storage-settings';
-import {BehaviorSubject} from 'rxjs';
-import { SbNoNetworkPopupComponent } from '@app/component/popups/sb-no-network-popup/sb-no-network-popup';
-import { FileSizePipe } from '@app/pipes/file-size/file-size';
+import { SbPopoverComponent } from '@app/component';
+import { ActiveDownloadsPage } from '../active-downloads/active-downloads';
+import { Environment, InteractSubtype, InteractType, PageId } from '@app/service/telemetry-constants';
+import { StorageSettingsPage } from '../storage-settings/storage-settings';
+import { BehaviorSubject } from 'rxjs';
+import { FormAndFrameworkUtilService } from '../profile/formandframeworkutil.service';
 import { SbInsufficientStoragePopupComponent } from '@app/component/popups/sb-insufficient-storage-popup/sb-insufficient-storage-popup';
+import { FileSizePipe } from '@app/pipes/file-size/file-size';
+import {featureIdMap} from '@app/feature-id-map';
 
 /**
  * Generated class for the DownloadManagerPage page.
@@ -67,6 +57,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     private appGlobalService: AppGlobalService,
     private appVersion: AppVersion,
     private telemetryGeneratorService: TelemetryGeneratorService,
+    private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private fileSizePipe: FileSizePipe,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
@@ -79,7 +70,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
     return Promise.all(
       [this.getDownloadedContents(true),
       this.getAppName()]
-      );
+    );
   }
 
   ionViewWillEnter() {
@@ -110,10 +101,10 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
 
 
   private async getAppStorageInfo(): Promise<AppStorageInfo> {
-    const req: ContentSpaceUsageSummaryRequest = {paths: [this.storageService.getStorageDestinationDirectoryPath()]};
+    const req: ContentSpaceUsageSummaryRequest = { paths: [this.storageService.getStorageDestinationDirectoryPath()] };
     return this.contentService.getContentSpaceUsageSummary(req).toPromise()
       .then((res: ContentSpaceUsageSummaryResponse[]) => {
-       return  this.deviceInfo.getAvailableInternalMemorySize().toPromise()
+        return this.deviceInfo.getAvailableInternalMemorySize().toPromise()
           .then((size) => {
             this.storageInfo = {
               usedSpace: res[0].sizeOnDevice,
@@ -128,20 +119,24 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
   async getDownloadedContents(shouldGenerateTelemetry?, hideLoaderFlag?: boolean) {
     const profile: Profile = await this.appGlobalService.getCurrentUser();
 
-    if (!hideLoaderFlag) {
-      this.loader = this.commonUtilService.getLoader();
-      this.loader.present();
-      this.loader.onDidDismiss(() => {
-        this.loader = undefined;
-      });
-    }
+    // if (!hideLoaderFlag) {
+    //   this.loader = this.commonUtilService.getLoader();
+    //   this.loader.present();
+    //   this.loader.onDidDismiss(() => {
+    //     this.loader = undefined;
+    //   });
+    // }
     const defaultSortCriteria: ContentSortCriteria[] = [{
       sortAttribute: 'sizeOnDevice',
       sortOrder: SortOrder.DESC
     }];
+
+    const contentTypes = await this.formAndFrameworkUtilService.getSupportedContentFilterConfig(
+      ContentFilterConfig.NAME_DOWNLOADS);
+
     const requestParams: ContentRequest = {
       uid: profile.uid,
-      contentTypes: ContentType.FOR_DOWNLOADED_TAB,
+      contentTypes: contentTypes,
       audience: [],
       sortCriteria: this.sortCriteria || defaultSortCriteria
     };
@@ -169,16 +164,16 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
         });
         this.ngZone.run(() => {
           this.downloadedContents = data;
-          if (!hideLoaderFlag) {
-            this.loader.dismiss();
-          }
+          // if (!hideLoaderFlag) {
+          //   this.loader.dismiss();
+          // }
         });
       })
       .catch((e) => {
         this.ngZone.run(() => {
-          if (!hideLoaderFlag) {
-            this.loader.dismiss();
-          }
+          // if (!hideLoaderFlag) {
+          //   this.loader.dismiss();
+          // }
         });
       });
   }
@@ -232,7 +227,12 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
       InteractType.TOUCH,
       InteractSubtype.DELETE_CLICKED,
       Environment.DOWNLOADS,
-      PageId.BULK_DELETE_CONFIRMATION_POPUP, undefined, valuesMap);
+      PageId.BULK_DELETE_CONFIRMATION_POPUP,
+      undefined,
+      valuesMap,
+      undefined,
+      featureIdMap.downloadManager.DOWNLOADS_DELETE
+    );
     const contentDeleteRequest: ContentDeleteRequest = {
       contentDeleteList: emitedContents.selectedContents
     };
@@ -292,7 +292,12 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
       InteractType.TOUCH,
       InteractSubtype.SORT_OPTION_SELECTED,
       Environment.DOWNLOADS,
-      PageId.DOWNLOADS);
+      PageId.DOWNLOADS,
+      undefined,
+      undefined,
+      undefined,
+      featureIdMap.downloadManager.DOWNLOADS_SORT
+    );
     this.sortCriteria = [{
       sortOrder: SortOrder.DESC,
       sortAttribute: sortAttr

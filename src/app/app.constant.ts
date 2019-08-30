@@ -48,44 +48,25 @@ export class ContentType {
         ContentType.EXPLANATION_RESOURCE,
         ContentType.EXPERIENTIAL_RESOURCE
     ];
-    public static readonly FOR_PROFILE_TAB = [
-        ContentType.STORY,
-        ContentType.WORKSHEET,
-        ContentType.GAME,
-        ContentType.RESOURCE,
-        ContentType.COLLECTION,
-        ContentType.TEXTBOOK,
-        ContentType.LESSON_PLAN,
-        ContentType.COURSE,
-        ContentType.FOCUS_SPOT,
-        ContentType.LEARNING_OUTCOME_DEFINITION,
-        ContentType.PRACTICE_QUESTION_SET,
-        ContentType.CURIOSITY_QUESTIONS,
-        ContentType.MARKING_SCHEME_RUBRIC,
-        ContentType.EXPLANATION_RESOURCE,
-        ContentType.EXPERIENTIAL_RESOURCE
-    ];
     public static readonly FOR_DIAL_CODE_SEARCH = [
         ContentType.TEXTBOOK,
         ContentType.TEXTBOOK_UNIT,
         ContentType.COURSE
     ];
-    // Other than mimeType collection. ContentType need not to pass recently viewded.
-    public static readonly FOR_RECENTLY_VIEWED = [
-        ContentType.STORY,
-        ContentType.WORKSHEET,
-        ContentType.GAME,
-        ContentType.RESOURCE,
-        ContentType.LESSON_PLAN,
-        ContentType.FOCUS_SPOT,
-        ContentType.LEARNING_OUTCOME_DEFINITION,
-        ContentType.PRACTICE_QUESTION_SET,
-        ContentType.CURIOSITY_QUESTIONS
-    ];
 }
 
 export class MimeType {
     public static readonly COLLECTION = 'application/vnd.ekstep.content-collection';
+    public static readonly VIDEO = ['video/avi', 'video/mpeg', 'video/quicktime', 'video/3gpp', 'video/mpeg', 'video/mp4',
+                                    'video/ogg', 'video/webm'];
+    public static readonly AUDIO = [ 'audio/mp3', 'audio/mp4', 'audio/mpeg', 'audio/ogg', 'audio/webm', 'audio/x-wav', 'audio/wav'];
+    public static readonly INTERACTION = ['application/vnd.ekstep.ecml-archive', 'application/vnd.ekstep.html-archive',
+                                        'application/vnd.android.package-archive', 'application/vnd.ekstep.content-archive',
+                                        'application/vnd.ekstep.plugin-archive', 'application/vnd.ekstep.h5p-archive'];
+    public static readonly ALL = ['video/mp4', 'video/x-youtube', 'video/webm', 'application/pdf', 'application/epub',
+    'application/pdf', 'application/epub', 'application/vnd.ekstep.ecml-archive', 'application/vnd.ekstep.h5p-archive',
+     'application/vnd.ekstep.html-archive'
+    ];
 }
 
 export class Search {
@@ -126,7 +107,8 @@ export class BatchConstants {
         'creatorFirstName',
         'creatorLastName',
         'identifier',
-        'id'
+        'id',
+        'enrollmentEndDate'
     ];
     // createdFor ,courseAdditionalInfo, participant, updatedDate, createdDate, courseCreator, mentors
 }
@@ -145,6 +127,24 @@ export class ProfileConstants {
 
     public static readonly CONTACT_TYPE_PHONE = 'phone';
     public static readonly CONTACT_TYPE_EMAIL = 'email';
+}
+
+export class ExploreConstants {
+  public static readonly REQUIRED_FIELDS = [
+    'name',
+    'downloadUrl',
+    'variants',
+    'mimeType',
+    'contentType',
+    'resourceType',
+    'board',
+    'medium',
+    'gradeLevel',
+    'subject',
+    'streamingUrl',
+    'framework',
+    'appIcon'
+  ]
 }
 
 export class AudienceFilter {
@@ -201,6 +201,7 @@ export class PreferenceKey {
     public static readonly APP_RATE_LATER_CLICKED = 'app_rate_later_clicked';
     public static readonly APP_RATING_POPUP_APPEARED = 'app_rating_popup_appeared';
     public static readonly APP_PERMISSION_ASKED = 'app_permission_asked';
+    public static readonly DEPLOYMENT_KEY = 'deployment_key';
 }
 
 export class GenericAppConfig {
@@ -347,3 +348,18 @@ export class ContentConstants {
     public static readonly COMING_SOON_MSG = 'comingSoonMsg';
 }
 
+export class ContentFilterConfig {
+    public static readonly NAME_LIBRARY = 'library';
+    public static readonly NAME_COURSE = 'course';
+    public static readonly NAME_DOWNLOADS = 'downloads';
+    public static readonly NAME_DIALCODE = 'dialcode';
+    public static readonly CODE_CONTENT_TYPE = 'contentType';
+}
+
+export class ActionType {
+    public static readonly CODE_PUSH = 'codePush';
+    public static readonly COURSE_UPDATE = 'courseUpdate';
+    public static readonly CONTENT_UPDATE = 'contentUpdate';
+    public static readonly BOOK_UPDATE = 'bookUpdate';
+    public static readonly UPDATE_APP = 'updateApp';
+}

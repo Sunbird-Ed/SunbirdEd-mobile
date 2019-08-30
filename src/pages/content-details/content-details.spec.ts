@@ -30,7 +30,11 @@ import {
   fileSizePipeMock,
   buildParamServiceMock,
   alertControllerMock,
-  storageServiceMock
+  storageServiceMock,
+  profileSwitchHandlerMock,
+  appVersionMock,
+  ratingHandlerMock,
+  contentShareHandlerMock
 } from '../../__tests__/mocks';
 import { Observable, Subscription } from 'rxjs';
 import 'jest';
@@ -45,7 +49,8 @@ describe('ContentDetailsPage Component', () => {
     buildParamServiceMock.getBuildConfigValue.mockResolvedValue('SOME_URL');
     buildParamServiceMock.getDeviceAPILevel.mockResolvedValue('');
     buildParamServiceMock.checkAppAvailability.mockResolvedValue('org.xwalk.core');
-
+    utilityServiceMock.getDeviceAPILevel.mockResolvedValue('');
+    utilityServiceMock.checkAppAvailability.mockResolvedValue('');
 
     contentDetailsPage = new ContentDetailsPage(
       profileServiceMock as any,
@@ -54,31 +59,29 @@ describe('ContentDetailsPage Component', () => {
       sharedPreferencesMock as any,
       playerServiceMock as any,
       storageServiceMock as any,
-      authServiceMock as any,
       navCtrlMock as any,
       navParamsMock as any,
       zoneMock as any,
       eventsMock as any,
       popoverCtrlMock as any,
-      socialSharingMock as any,
       platformMock as any,
       appGlobalServiceMock as any,
-      alertControllerMock as any,
       ionicAppMock as any,
       telemetryGeneratorServiceMock as any,
       commonUtilServiceMock as any,
       courseUtilServiceMock as any,
       canvasPlayerServiceMock as any,
       fileMock as any,
-      buildParamServiceMock as any,
-      containerServiceMock as any,
-      appMock as any,
+      utilityServiceMock as any,
       networkMock as any,
       toastControllerMock as any,
       fileSizePipeMock as any,
       translateServiceMock as any,
       appHeaderServiceMock as any,
-      appRatingServiceMock as any
+      contentShareHandlerMock as any,
+      appVersionMock as any,
+      profileSwitchHandlerMock as any,
+      ratingHandlerMock as any
     );
 
     jest.resetAllMocks();
@@ -87,11 +90,9 @@ describe('ContentDetailsPage Component', () => {
   it('test instance initiation', () => {
     expect(contentDetailsPage).toBeTruthy();
   });
+
   it('should create valid instance for ContentDetailsPage', () => {
     spyOn(contentDetailsPage, 'subscribePlayEvent').and.stub();
-    spyOn(contentDetailsPage, 'checkLoggedInOrGuestUser').and.stub();
-    spyOn(contentDetailsPage, 'checkCurrentUserType').and.stub();
-    spyOn(contentDetailsPage, 'handlePageResume').and.stub();
     spyOn(contentDetailsPage, 'checkDeviceAPILevel').and.stub();
     spyOn(contentDetailsPage, 'checkappAvailability').and.stub();
   });
@@ -107,15 +108,6 @@ describe('ContentDetailsPage Component', () => {
     spyOn(contentDetailsPage, 'presentToast').and.stub();
     commonUtilServiceMock.networkAvailability$ = Observable.from([{ name: 'content' }]) as any;
     contentDetailsPage.ionViewWillEnter();
-  });
-
-  it('#ionViewWillLeave', () => {
-    contentDetailsPage.headerObservable = {
-      unsubscribe: jest.fn()
-    };
-    spyOn(contentDetailsPage.headerObservable, 'unsubscribe');
-    contentDetailsPage.ionViewWillLeave();
-    expect(contentDetailsPage.headerObservable.unsubscribe).toHaveBeenCalledTimes(1);
   });
 
   it('should be called handleNavBackButton()', () => {
@@ -158,16 +150,6 @@ describe('ContentDetailsPage Component', () => {
     // act
     contentDetailsPage.subscribePlayEvent();
     // assert
-  });
-
-  it('should be called checkLoggedInOrGuestUser()', () => {
-    // arrange
-    contentDetailsPage.isUserLoggedIn = false;
-    const userLoggedIn = !appGlobalServiceMock.isUserLoggedIn.mockReturnValue(true);
-    // act
-    contentDetailsPage.checkLoggedInOrGuestUser();
-    // assert
-    expect(contentDetailsPage.isUserLoggedIn).toBe(userLoggedIn);
   });
 
   it('#calculateAvailableUserCount should set userCount value to 1', (done) => {
@@ -309,67 +291,6 @@ describe('ContentDetailsPage Component', () => {
     // assert
     expect(contentDetailsPage.playContent).toHaveBeenCalled();
   });
-
-  it('#checkCurrentUserType should call getGuestUserInfo and set profileType', (done) => {
-    // arrange
-    const userType = 'Student';
-    contentDetailsPage.isGuestUser = true;
-    appGlobalServiceMock.getGuestUserInfo.mockResolvedValue(userType);
-    // act
-    contentDetailsPage.checkCurrentUserType();
-    // assert
-    setTimeout(() => {
-      expect(appGlobalServiceMock.getGuestUserInfo).toHaveBeenCalled();
-      expect(contentDetailsPage.profileType).toBe(userType);
-      done();
-    }, 0);
-  });
-
-  it('#checkCurrentUserType should go to catch and set profileType to blank', () => {
-    // arrange
-    contentDetailsPage.isGuestUser = true;
-    appGlobalServiceMock.getGuestUserInfo.mockReturnValue(Promise.reject());
-    // act
-    contentDetailsPage.checkCurrentUserType();
-    // assert
-    expect(appGlobalServiceMock.getGuestUserInfo).toHaveBeenCalled();
-    expect(contentDetailsPage.profileType).toBe('');
-  });
-
-  it('#checkBookmarkStatus should call showBookmarkMenu method', (done) => {
-    // arrange
-    sharedPreferencesMock.getString.mockReturnValue(Observable.of(false));
-    spyOn(contentDetailsPage, 'showBookmarkMenu');
-    // act
-    contentDetailsPage.checkBookmarkStatus();
-    // assert
-    setTimeout(() => {
-      expect(contentDetailsPage.showBookmarkMenu).toHaveBeenCalled();
-      done();
-    }, 0);
-  });
-
-  // it('#rateContent should call ', (done) => {
-  //   // arrange
-  //   contentDetailsPage.isContentPlayed = true;
-  //   contentDetailsPage.content = {
-  //     contentAccess: [1, 2]
-  //   };
-  //   const popupType = 'automatic' ;
-  //   appRatingServiceMock.checkReadFile.mockReturnValue(false);
-  //   sharedPreferencesMock.getString.mockReturnValue(Observable.of('2019/06/18 19:00'));
-  //   spyOn(contentDetailsPage, 'contentRating').and.stub();
-  //   spyOn(contentDetailsPage, 'validateAndCheckDateDiff');
-  //   // act
-  //   contentDetailsPage.rateContent(popupType);
-  //   // assert
-  //   expect(appRatingServiceMock.checkReadFile).toHaveBeenCalled();
-  //   setTimeout(() => {
-  //     expect(sharedPreferencesMock.getString).toHaveBeenCalled();
-  //     expect(contentDetailsPage.validateAndCheckDateDiff).toReturnWith(Promise.resolve());
-  //     done();
-  //   }, 0);
-  // });
 
 });
 

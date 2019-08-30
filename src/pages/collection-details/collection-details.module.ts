@@ -7,6 +7,7 @@ import { Ionic2RatingModule } from 'ionic2-rating';
 import { ComponentsModule } from '../../component/components.module';
 import { DirectivesModule } from '../../directives/directives.module';
 import { PipesModule } from '../../pipes/pipes.module';
+import { ContentShareHandler } from '@app/service/content/content-share-handler';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,7 @@ import { PipesModule } from '../../pipes/pipes.module';
     Ionic2RatingModule,
     PipesModule
   ],
-  providers: [],
+  providers: [ContentShareHandler],
   exports: [
     CollectionDetailsPage
   ]

@@ -15,7 +15,8 @@ import {
     appHeaderServiceMock,
     downloadServiceMock,
     eventBusServiceMock,
-    changeDetectionRefMock
+    changeDetectionRefMock,
+    storageServiceMock
 } from '../../__tests__/mocks';
 import { ActiveDownloadsInterface } from './active-downloads.interface';
 import { Observable, Subscription } from 'rxjs';
@@ -40,7 +41,8 @@ describe.only('ActiveDownloadsPage', () => {
             toastControllerMock as any,
             telemetryGeneratorServiceMock as any,
             downloadServiceMock as any,
-            eventBusServiceMock as any
+            eventBusServiceMock as any,
+            storageServiceMock as any
         );
         jest.resetAllMocks();
     });

@@ -8,20 +8,21 @@ ion-spinner {
   }
 
   .sb-card-textbook-container, .sb-card-view-all-container{
+    .sb-card-textbook{
     textbook-card {
       .sb-card{
-        border-bottom: 0.5px solid rgba(151, 151, 151, 0.40);
+         border-bottom: 0.5px solid rgba(151, 151, 151, 0.40);
         &:last-child{
-          border-bottom: 0.5px solid rgba(151, 151, 151, 0.40);
+           border-bottom: 0.5px solid rgba(151, 151, 151, 0.40);
         }
       }
-      &:last-child{
-        .sb-card{
-          border-bottom: none;
-        }
-        
-      }
+      // &:last-child{
+      //   .sb-card{
+      //     border-bottom: none;
+      //   }
+      // }
     }
+  }
   }
   .spinner-align{
     margin: 40px; 
@@ -52,4 +53,65 @@ ion-spinner {
   #couchMark {
     position: fixed;
   }
+
+  .sb-nodownloads-title {
+    & {
+      margin: 0;
+      font-size: 16px;
+      padding-top: 4%;
+      color: #666666;
+      font-weight: bold;
+      letter-spacing: -0.46px
+    }
+  }
+  .sb-nodownloads-container {
+    & {
+      padding-top: 5em;
+    }
+  }
+  .sub-heading {
+      padding: 1em 4em !important;
+      font-size: 12px;
+      color: #999999;
+      margin: 0;
+  }
+  .explore {
+    padding: 1em 3em !important;
+    border: 1px solid #024F9D;
+    border-radius: 4px;
+  }
+  .information {
+    padding: 1em 2em !important;
+    margin: 0 !important;
+    color: #999999;
+  }
+  .skeleton-rectangle {
+    width: 56px;
+    height: 56px;
+    border-radius: 2px;
+    @extend .animated-background;
+  }
+
+  .skeleton-title, .skeleton-text {
+    height: 14px;
+    border-radius: 2px;
+    margin-bottom: 8px;
+    @extend .animated-background;
+  }
+  .skeleton-text {
+    height: 8px;
+    width: 80%;
+  }
+  .animation-background {
+    padding: 0px 8px 0px 8px;
+    background-color: #f2f2f2;
+  }
+}
+
+.sb-view-more {
+  background: #EDF4F9;
+  text-align: center;
+  padding: $base-block-space * 2;
+  color:  $primary-color;
+  font-weight: bolder;
 }

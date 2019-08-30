@@ -1,9 +1,8 @@
+import { TextBookTocPage } from './textbook-toc/textbook-toc';
 import { ActiveDownloadsPage } from './../active-downloads/active-downloads';
-import { Component, Inject, NgZone, OnInit, ViewChild } from '@angular/core';
-import { Content as iContent } from 'ionic-angular';
-import {
-  Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController, ViewController
-} from 'ionic-angular';
+import {Component, Inject, NgZone, ViewChild, OnInit, ElementRef, ViewChildren, QueryList, ChangeDetectorRef} from '@angular/core';
+import { Content as iContent, ScrollEvent } from 'ionic-angular';
+import { Events, IonicPage, Navbar, NavController, NavParams, Platform, PopoverController, ToastController, ViewController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import * as _ from 'lodash';
@@ -21,7 +20,7 @@ import {
   ContentExportRequest, ContentExportResponse, ContentImport, ContentImportCompleted, ContentImportRequest,
   ContentImportResponse, ContentImportStatus, ContentMarkerRequest, ContentService, ContentUpdate, CorrelationData,
   DownloadEventType, DownloadProgress, EventsBusEvent, EventsBusService, MarkerType, Profile, ProfileService,
-  ProfileType, Rollup, StorageService, TelemetryErrorCode, TelemetryObject
+  ProfileType, Rollup, StorageService, TelemetryErrorCode, TelemetryObject, ContentImportProgress
 } from 'sunbird-sdk';
 import { Subscription } from 'rxjs';
 import {
@@ -29,7 +28,9 @@ import {
 } from '../../service/telemetry-constants';
 import { FileSizePipe } from '@app/pipes/file-size/file-size';
 import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popup/sb-generic-popover';
-import { ComingSoonMessageService } from "@app/service/coming-soon-message.service";
+import { ComingSoonMessageService } from '@app/service/coming-soon-message.service';
+import { ContentShareHandler } from '@app/service/content/content-share-handler';
+import { TextbookTocService } from './textbook-toc-service';
 
 /**
  * Generated class for the CollectionDetailsEtbPage page.
@@ -46,6 +47,8 @@ declare const cordova;
 })
 export class CollectionDetailsEtbPage implements OnInit {
 
+  @ViewChildren('filteredItems') public filteredItemsQueryList: QueryList<any>;
+
   facets: any;
   selected: boolean;
   isSelected: boolean;
@@ -56,8 +59,20 @@ export class CollectionDetailsEtbPage implements OnInit {
   };
 
   contentDetail?: Content;
-  childrenData: Array<any>;
-
+  childrenData?: Array<any>;
+  mimeTypes = [
+    { name: 'ALL', selected: true, value: ['all'], iconNormal: '', iconActive: ''},
+    { name: 'VIDEOS', value: ['video/mp4', 'video/x-youtube', 'video/webm'], iconNormal: './assets/imgs/play.svg',
+    iconActive: './assets/imgs/play-active.svg'},
+    { name: 'DOCS', value: ['application/pdf', 'application/epub', 'application/msword'], iconNormal: './assets/imgs/doc.svg',
+    iconActive: './assets/imgs/doc-active.svg'},
+    { name: 'INTERACTION',
+      value: ['application/vnd.ekstep.ecml-archive', 'application/vnd.ekstep.h5p-archive', 'application/vnd.ekstep.html-archive'],
+      iconNormal: './assets/imgs/touch.svg', iconActive: './assets/imgs/touch-active.svg'
+    },
+    // { name: 'AUDIOS', value: MimeType.AUDIO, iconNormal: './assets/imgs/audio.svg', iconActive: './assets/imgs/audio-active.svg'},
+  ];
+  activeMimeTypeFilter = ['all'];
   /**
    * Show loader while importing content
    */
@@ -196,17 +211,22 @@ export class CollectionDetailsEtbPage implements OnInit {
   headerObservable: any;
   breadCrumb = new Map();
   scrollPosition = 0;
-
+  currentFilter: string = 'ALL';
   // Local Image
   localImage = '';
   @ViewChild(Navbar) navBar: Navbar;
   @ViewChild(iContent) ionContent: iContent;
+  @ViewChild('stickyPillsRef') stickyPillsRef: ElementRef;
   private eventSubscription: Subscription;
 
   showDownload: boolean;
   networkSubscription: any;
   toast: any;
   contentTypesCount: any;
+  stckyUnitTitle?: string;
+  isChapterVisible = false;
+  importProgressMessage: string;
+
   constructor(
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
     @Inject('EVENTS_BUS_SERVICE') private eventBusService: EventsBusService,
@@ -229,12 +249,14 @@ export class CollectionDetailsEtbPage implements OnInit {
     private toastController: ToastController,
     private fileSizePipe: FileSizePipe,
     private headerService: AppHeaderService,
-    private comingSoonMessageService: ComingSoonMessageService
+    private comingSoonMessageService: ComingSoonMessageService,
+    private contentShareHandler: ContentShareHandler,
+    private changeDetectionRef: ChangeDetectorRef,
+    private textbookTocService: TextbookTocService
   ) {
     this.objRollup = new Rollup();
     this.checkLoggedInOrGuestUser();
     this.checkCurrentUserType();
-    this.getBaseURL();
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
     this.content = this.navParams.get('content');
     this.data = this.navParams.get('data');
@@ -246,6 +268,11 @@ export class CollectionDetailsEtbPage implements OnInit {
 	 * Angular life cycle hooks
 	 */
   ngOnInit() {
+  }
+
+  ionViewDidLoad() {
+    window['scrollWindow'] = this.ionContent;
+    this.registerDeviceBackButton();
   }
 
   /**
@@ -263,7 +290,6 @@ export class CollectionDetailsEtbPage implements OnInit {
       this.headerService.updatePageConfig(this.headerConfig);
       this.resetVariables();
       this.cardData = this.navParams.get('content');
-      console.log('this.cardData', this.cardData);
       this.corRelationList = this.navParams.get('corRelation');
       const depth = this.navParams.get('depth');
       this.shouldGenerateEndTelemetry = this.navParams.get('shouldGenerateEndTelemetry');
@@ -272,6 +298,7 @@ export class CollectionDetailsEtbPage implements OnInit {
       this.isAlreadyEnrolled = this.navParams.get('isAlreadyEnrolled');
       this.isChildClickable = this.navParams.get('isChildClickable');
       this.facets = this.facets = this.navParams.get('facets');
+      this.shownGroup = null;
 
       // check for parent content
       this.parentContent = this.navParams.get('parentContent');
@@ -355,11 +382,12 @@ export class CollectionDetailsEtbPage implements OnInit {
       isCollapsed = false;
       this.shownGroup = null;
     } else {
+      isCollapsed = false;
       this.shownGroup = group;
     }
     const values = new Map();
     values['isCollapsed'] = isCollapsed;
-    const telemetryObject = new TelemetryObject(content.identifier, ContentType.TEXTBOOK_UNIT, content.contentData.pkgVersion);
+    const telemetryObject = new TelemetryObject(content.identifier, ContentType.TEXTBOOK_UNIT, content.pkgVersion);
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.UNIT_CLICKED,
@@ -378,8 +406,6 @@ export class CollectionDetailsEtbPage implements OnInit {
   }
 
   changeValue(event, text) {
-    console.log('EVENT Thrown', event);
-    console.log('Tetx Inside ChnageValue', text);
     if (!text) {
       this.isSelected = false;
     } else {
@@ -405,16 +431,6 @@ export class CollectionDetailsEtbPage implements OnInit {
         false, this.cardData.identifier, this.corRelationList);
       this.handleBackButton();
     }, 10);
-  }
-
-  getBaseURL() {
-    this.utilityService.getBuildConfigValue('BASE_URL')
-      .then(response => {
-        this.baseUrl = response;
-      })
-      .catch((error) => {
-        console.error('Error Occurred=> ', error);
-      });
   }
 
   /**
@@ -461,8 +477,7 @@ export class CollectionDetailsEtbPage implements OnInit {
         .then((userType) => {
           this.profileType = userType;
         })
-        .catch((error) => {
-          console.error('Error Occurred', error);
+        .catch(() => {
           this.profileType = '';
         });
     }
@@ -491,8 +506,7 @@ export class CollectionDetailsEtbPage implements OnInit {
           });
         });
       })
-      .catch((error: any) => {
-        console.log('error while loading content details', error);
+      .catch(() => {
         loader.dismiss();
         this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
         this.navCtrl.pop();
@@ -716,7 +730,6 @@ export class CollectionDetailsEtbPage implements OnInit {
       })
       .catch((error: any) => {
         this.zone.run(() => {
-          console.log('error while loading content details', error);
           // if (this.isDownloadStarted) {
           this.showDownloadBtn = true;
           this.isDownloadStarted = false;
@@ -750,7 +763,11 @@ export class CollectionDetailsEtbPage implements OnInit {
         this.zone.run(() => {
           if (data && data.children) {
             this.breadCrumb.set(data.identifier, data.contentData.name);
+            if (this.textbookTocService.textbookIds.rootUnitId && this.activeMimeTypeFilter !== ['all']) {
+              this.onFilterMimeTypeChange(this.mimeTypes[0].value, 0, this.mimeTypes[0].name);
+            }
             this.childrenData = data.children;
+            this.changeDetectionRef.detectChanges();
           }
 
           if (!this.isDepthChild) {
@@ -759,6 +776,26 @@ export class CollectionDetailsEtbPage implements OnInit {
             this.getContentsSize(data.children || []);
           }
           this.showChildrenLoader = false;
+          const divElement = this.filteredItemsQueryList.find((f) => f.nativeElement.id);
+          let carouselIndex = this.childrenData
+            .findIndex((d: Content) => {
+                return divElement.nativeElement.id === d.identifier;
+            });
+
+          if (this.textbookTocService.textbookIds.rootUnitId) {
+            carouselIndex = this.childrenData.findIndex((content) => this.textbookTocService.textbookIds.rootUnitId === content.identifier);
+            // carouselIndex = carouselIndex > 0 ? carouselIndex : 0;
+          }
+          this.toggleGroup(carouselIndex, this.content);
+          if (this.textbookTocService.textbookIds.contentId) {
+            setTimeout(() => {
+              (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.add('sticky');
+              window['scrollWindow'].getScrollElement().scrollBy(0, 0);
+              document.getElementById(this.textbookTocService.textbookIds.contentId).scrollIntoView();
+              window['scrollWindow'].getScrollElement().scrollBy(0, -155);
+              this.textbookTocService.resetTextbookIds();
+            }, 0);
+          }
           this.telemetryGeneratorService.generateInteractTelemetry(
             InteractType.OTHER,
             InteractSubtype.IMPORT_COMPLETED,
@@ -772,7 +809,7 @@ export class CollectionDetailsEtbPage implements OnInit {
           this.showChildrenLoader = false;
         });
       });
-    this.ionContent.scrollTo(0, this.scrollPosition);
+    // this.ionContent.scrollTo(0, this.scrollPosition);
   }
 
   getContentsSize(data) {
@@ -870,7 +907,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     this.refreshHeader();
     this.downloadProgress = 0;
     this.cardData = '';
-    this.childrenData = [];
+    this.childrenData;
     this.contentDetail = undefined;
     this.showDownload = false;
     this.showDownloadBtn = false;
@@ -947,6 +984,22 @@ export class CollectionDetailsEtbPage implements OnInit {
           }
         }
 
+        if (event.type === ContentEventType.IMPORT_PROGRESS) {
+          this.importProgressMessage =  this.commonUtilService.translateMessage('EXTRACTING_CONTENT') + ' ' +
+            Math.floor((event.payload.currentCount / event.payload.totalCount) * 100) +
+            '% (' + event.payload.currentCount + ' / ' + event.payload.totalCount + ')';
+            if (event.payload.currentCount === event.payload.totalCount) {
+              let timer = 30;
+              const interval = setInterval(() => {
+                this.importProgressMessage = `Getting things ready in ${timer--}  seconds`;
+                if (timer === 0) {
+                  this.importProgressMessage = 'Getting things ready';
+                  clearInterval(interval);
+                }
+              }, 1000);
+            }
+        }
+
         // For content update available
         const hierarchyInfo = this.cardData.hierarchyInfo ? this.cardData.hierarchyInfo : null;
         const contentUpdateEvent = event as ContentUpdate;
@@ -973,29 +1026,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   }
 
   share() {
-    this.generateShareInteractEvents(InteractType.TOUCH, InteractSubtype.SHARE_LIBRARY_INITIATED, this.contentDetail.contentType);
-    const loader = this.commonUtilService.getLoader();
-    loader.present();
-    const url = this.baseUrl + ShareUrl.COLLECTION + this.contentDetail.identifier;
-    if (this.contentDetail.isAvailableLocally) {
-      const exportContentRequest: ContentExportRequest = {
-        contentIds: [this.contentDetail.identifier],
-        destinationFolder: this.storageService.getStorageDestinationDirectoryPath()
-      };
-      this.contentService.exportContent(exportContentRequest).toPromise()
-        .then((contntExportResponse: ContentExportResponse) => {
-          loader.dismiss();
-          this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.contentDetail.contentType);
-          this.social.share('', '', '' + contntExportResponse.exportedFilePath, url);
-        }).catch(() => {
-          loader.dismiss();
-          this.commonUtilService.showToast('SHARE_CONTENT_FAILED');
-        });
-    } else {
-      loader.dismiss();
-      this.generateShareInteractEvents(InteractType.OTHER, InteractSubtype.SHARE_LIBRARY_SUCCESS, this.contentDetail.contentType);
-      this.social.share('', '', '', url);
-    }
+    this.contentShareHandler.shareContent(this.contentDetail, this.corRelationList, this.objRollup);
   }
 
   /**
@@ -1098,19 +1129,6 @@ export class CollectionDetailsEtbPage implements OnInit {
         undefined,
         this.corRelationList);
     }
-  }
-
-  generateShareInteractEvents(interactType, subType, contentType) {
-    const values = new Map();
-    values['ContentType'] = contentType;
-    this.telemetryGeneratorService.generateInteractTelemetry(interactType,
-      subType,
-      Environment.HOME,
-      PageId.COLLECTION_DETAIL,
-      undefined,
-      values,
-      undefined,
-      this.corRelationList);
   }
 
   showDownloadConfirmationAlert(myEvent) {
@@ -1323,9 +1341,8 @@ export class CollectionDetailsEtbPage implements OnInit {
         this.commonUtilService.showToast('MSG_RESOURCE_DELETED');
         this.viewCtrl.dismiss('delete.success');
       }
-    }).catch((error: any) => {
+    }).catch(() => {
       loader.dismiss();
-      console.log('delete response: ', error);
       this.commonUtilService.showToast('CONTENT_DELETE_FAILED');
       this.viewCtrl.dismiss();
     });
@@ -1358,5 +1375,69 @@ export class CollectionDetailsEtbPage implements OnInit {
       Environment.HOME,
       PageId.COLLECTION_DETAIL);
     this.navCtrl.push(ActiveDownloadsPage);
+  }
+
+  async onFilterMimeTypeChange(val, idx, currentFilter?) {
+    const values = new Map();
+    values['filter'] = currentFilter;
+    this.activeMimeTypeFilter = val;
+    this.currentFilter = this.commonUtilService.translateMessage(currentFilter);
+    this.mimeTypes.forEach((type) => {
+      type.selected = false;
+    });
+    this.mimeTypes[idx].selected = true;
+    this.filteredItemsQueryList.changes
+      .do((v) => {
+        this.changeDetectionRef.detectChanges();
+        values['contentLength'] = v.length;
+      })
+      .subscribe();
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.FILTER_CLICKED,
+      Environment.HOME,
+      PageId.COLLECTION_DETAIL,
+      undefined,
+      values);
+  }
+
+  openTextbookToc() {
+    this.shownGroup = null;
+    this.navCtrl.push(TextBookTocPage, {
+      childrenData: this.childrenData,
+      parentId: this.identifier
+    });
+    const values = new Map();
+    values['selectChapterVisible'] = this.isChapterVisible;
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.DROPDOWN_CLICKED,
+      Environment.HOME,
+      PageId.COLLECTION_DETAIL,
+      undefined,
+      values
+    );
+  }
+
+  onScroll(event: ScrollEvent) {
+    const titles = document.querySelectorAll('[data-sticky-unit]');
+
+    const currentTitle = Array.from(titles).filter((title) => {
+      return title.getBoundingClientRect().top < 150;
+    }).slice(-1)[0];
+
+    if (currentTitle) {
+      this.isChapterVisible = true;
+      this.zone.run(() => {
+        this.stckyUnitTitle = currentTitle.getAttribute('data-sticky-unit');
+      });
+    }
+
+    if (event.scrollTop >= 205) {
+      (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.add('sticky');
+      return;
+    }
+
+    (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.remove('sticky');
   }
 }

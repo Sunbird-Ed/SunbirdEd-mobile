@@ -20,6 +20,7 @@ import { ImpressionType, Environment, PageId, InteractType, InteractSubtype, } f
 import { AppVersion } from '@ionic-native/app-version';
 import { AndroidPermissionsService } from '@app/service/android-permissions/android-permissions.service';
 import { AndroidPermission, AndroidPermissionsStatus } from '@app/service/android-permissions/android-permission';
+import {featureIdMap} from '@app/feature-id-map';
 @IonicPage()
 @Component({
   selector: 'page-storage-settings',
@@ -304,7 +305,9 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
           InteractType.TOUCH,
           InteractSubtype.POPUP_DISMISSED,
           Environment.DOWNLOADS,
-          PageId.TRANSFER_CONTENT_CONFIRMATION_POPUP, undefined, undefined, undefined
+          PageId.TRANSFER_CONTENT_CONFIRMATION_POPUP,
+          undefined, undefined, undefined,
+          featureIdMap.downloadManager.STORAGE_SETTINGS_TRANSFER
         );
 
         this.revertSelectedStorageDestination();
@@ -315,7 +318,8 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
         InteractType.TOUCH,
         InteractSubtype.START_CLICKED,
         Environment.DOWNLOADS,
-        PageId.TRANSFER_CONTENT_CONFIRMATION_POPUP, undefined, undefined, undefined
+        PageId.TRANSFER_CONTENT_CONFIRMATION_POPUP, undefined, undefined, undefined,
+        featureIdMap.downloadManager.STORAGE_SETTINGS_TRANSFER
       );
 
       await this.showTransferringContentsPopup(this.shouldTransferContentsPopup, this.storageDestination);
@@ -603,7 +607,11 @@ export class StorageSettingsPage implements OnInit, StorageSettingsInterface {
           InteractType.TOUCH,
           InteractSubtype.OK_CLICKED,
           Environment.DOWNLOADS,
-          PageId.SHOW_DUPLICATE_CONTENT_POPUP, undefined, undefined, undefined
+          PageId.SHOW_DUPLICATE_CONTENT_POPUP,
+          undefined,
+          undefined,
+          undefined,
+          featureIdMap.downloadManager.STORAGE_SETTINGS_TRANSFER
         );
       }
     });

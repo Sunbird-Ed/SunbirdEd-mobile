@@ -9,6 +9,7 @@ import { ComponentsModule } from './../../component/components.module';
 import { DirectivesModule } from './../../directives/directives.module';
 import { PipesModule } from '../../pipes/pipes.module';
 import { EnrollmentDetailsPageModule } from './enrollment-details/enrollment-details.module';
+import { ContentShareHandler } from '@app/service/content/content-share-handler';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { EnrollmentDetailsPageModule } from './enrollment-details/enrollment-det
     EnrollmentDetailsPageModule
   ],
   providers: [
+    ContentShareHandler
   ],
   exports: [
     EnrolledCourseDetailsPage
