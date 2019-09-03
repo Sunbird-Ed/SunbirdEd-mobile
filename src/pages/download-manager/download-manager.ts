@@ -294,7 +294,7 @@ export class DownloadManagerPage implements DownloadManagerPageInterface, OnInit
       Environment.DOWNLOADS,
       PageId.DOWNLOADS,
       undefined,
-      undefined,
+      valuesMap,
       undefined,
       featureIdMap.downloadManager.DOWNLOADS_SORT
     );
