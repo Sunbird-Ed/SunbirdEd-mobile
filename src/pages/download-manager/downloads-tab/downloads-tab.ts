@@ -144,6 +144,11 @@ export class DownloadsTabPage implements OnInit {
                 if (sortattribute.content !== this.selectedFilter) {
                     this.selectedFilter = sortattribute.content;
                     this.sortCriteriaChanged.emit(sortattribute);
+                    this.telemetryGeneratorService.generateInteractTelemetry(
+                        InteractType.TOUCH,
+                        InteractSubtype.SORT_OPTION_CLICKED,
+                        Environment.DOWNLOADS,
+                        PageId.DOWNLOADS);
                 }
                 if (this.deleteAllPopupPresent) {
                     this.deleteAllConfirm.dismiss(null);
