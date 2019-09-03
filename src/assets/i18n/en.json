@@ -566,5 +566,13 @@
   "WELCOME_BACK": "WELCOME BACK {{%s}}",
   "YES": "Yes",
   "YOUR_PROGRESS": "Your Progress: {{%s}}%",
-  "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "You are not connected to the Internet"
+  "YOU_ARE_NOT_CONNECTED_TO_THE_INTERNET": "You are not connected to the Internet",
+  "TEXTBOOK": "Textbooks",
+  "MERGE_ACCOUNT": "Merge Account",
+  "ACCOUNT_MERGE_CONFIRMATION_HEADING": "Merge Account",
+  "ACCOUNT_MERGE_CONFIRMATION_CONTENT": "Would you like to merge account?",
+  "ACCOUNT_MERGE_CONFIRMATION_CANCEL": "Cancel",
+  "ACCOUNT_MERGE_CONFIRMATION_OK": "OK",
+  "ACCOUNT_MERGE_FAILED": "Merge account failed",
+  "ACCOUNT_MERGE_SUCCESS": "Merge account successful"
 }
