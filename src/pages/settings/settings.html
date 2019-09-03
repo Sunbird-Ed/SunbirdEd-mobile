@@ -18,6 +18,10 @@
       <h2>{{ shareAppLabel }}</h2>
     </ion-item>
 
+    <ion-item *ngIf="isUserLoggedIn$ | async" (click)="showMergeAccountConfirmationPopup()" detail-push mode="ios">
+      <h2>{{ 'MERGE_ACCOUNT' | translate }}</h2>
+    </ion-item>
+
     <ion-item (click)="aboutUs()" detail-push mode="ios">
       <h2>{{ 'ABOUT_US' | translate }}</h2>
     </ion-item>
