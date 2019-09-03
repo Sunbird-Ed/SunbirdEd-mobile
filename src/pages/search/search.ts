@@ -739,7 +739,7 @@ export class SearchPage implements OnInit, OnDestroy {
             this.generateLogEvent(response);
             const values = new Map();
             values['from'] = this.source;
-            values['searchCount'] = this.searchContentResult.length;
+            values['searchCount'] = this.searchContentResult ? this.searchContentResult.length : 0;
             values['searchCriteria'] = response.request;
             this.telemetryGeneratorService.generateExtraInfoTelemetry(values, PageId.SEARCH);
           } else {
@@ -1462,7 +1462,7 @@ export class SearchPage implements OnInit, OnDestroy {
       const contentArray: Array<any> = searchResult.contentDataList;
       const params = new Array<any>();
       const paramsMap = new Map();
-      paramsMap['SearchResults'] = contentArray.length;
+      paramsMap['SearchResults'] = contentArray ? contentArray.length : 0;
       paramsMap['SearchCriteria'] = searchResult.request;
       params.push(paramsMap);
       this.telemetryGeneratorService.generateLogEvent(LogLevel.INFO,
