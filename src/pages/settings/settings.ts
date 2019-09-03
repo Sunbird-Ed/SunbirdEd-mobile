@@ -23,7 +23,6 @@ import {
 } from 'sunbird-sdk';
 import { PermissionPage } from '../permission/permission';
 import { Observable } from 'rxjs';
-import {AuthEndPoints} from '../../../../sunbird-mobile-sdk/src/auth/def/auth-end-points';
 import {TranslateService} from '@ngx-translate/core';
 import {SbPopoverComponent} from '@app/component';
 
@@ -213,7 +212,7 @@ export class SettingsPage {
             userId: mergeToProfileSession.userToken,
             accessToken: mergeToProfileSession.access_token
           }
-        } as MergeServerProfilesRequest
+        } as MergeServerProfilesRequest;
       })
       .mergeMap((mergeServerProfilesRequest) => {
         return this.profileService.mergeServerProfiles(mergeServerProfilesRequest)
@@ -240,7 +239,7 @@ export class SettingsPage {
       })
       .finally(() => {
         const launchUrl = this.sdkConfig.apiConfig.user_authentication.mergeUserHost +
-          this.sdkConfig.apiConfig.user_authentication.authUrl + AuthEndPoints.LOGOUT + '?redirect_uri=' +
+          this.sdkConfig.apiConfig.user_authentication.authUrl + '/logout' + '?redirect_uri=' +
           this.sdkConfig.apiConfig.host + '/oauth2callback';
 
         const inAppBrowserRef = cordova.InAppBrowser.open(launchUrl, '_blank', 'zoom=no');
