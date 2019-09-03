@@ -874,9 +874,13 @@ export class SearchPage implements OnInit, OnDestroy {
                 );
                 this.loader.dismiss();
                 popover.present();
-                popover.onDidDismiss(enrolled => {
-                  if (enrolled) {
+                popover.onDidDismiss(dismissData => {
+                  if (typeof data === 'boolean' && dismissData) {
                     this.getEnrolledCourses();
+                  }
+
+                  if (typeof dismissData === 'function') {
+                    (dismissData as Function).call(this);
                   }
                 });
               } else {
@@ -1404,10 +1408,16 @@ export class SearchPage implements OnInit, OnDestroy {
     this.contentService.cancelDownload(this.parentContent.identifier).toPromise().then(() => {
       this.zone.run(() => {
         this.showLoading = false;
+        if (this.isSingleContent) {
+          this.navCtrl.pop();
+        }
       });
     }).catch(() => {
       this.zone.run(() => {
         this.showLoading = false;
+        if (this.isSingleContent) {
+          this.navCtrl.pop();
+        }
       });
     });
   }

@@ -24,7 +24,7 @@ import {
   CategoryTerm, ContentEventType, ContentRequest, ContentSearchCriteria, ContentService, EventsBusEvent,
   EventsBusService, FrameworkCategoryCode, FrameworkCategoryCodesGroup, FrameworkUtilService,
   GetFrameworkCategoryTermsRequest, Profile, ProfileService, ProfileType, SearchType, SharedPreferences,
-  TelemetryObject
+  TelemetryObject, Content
 } from 'sunbird-sdk';
 import { Environment, InteractSubtype, InteractType, PageId, ImpressionType, ImpressionSubtype } from '../../service/telemetry-constants';
 import { PlayerPage } from '../player/player';
@@ -129,7 +129,8 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   headerObservable: any;
   scrollEventRemover: any;
   subjects: any;
-  @ViewChild('contentView') contentView: ContentView;
+  @ViewChild(ContentView) contentView: ContentView;
+  locallyDownloadResources: Array<Content>;
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
@@ -177,6 +178,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.events.subscribe('savedResources:update', (res) => {
       if (res && res.update) {
         this.loadRecentlyViewedContent(true);
+        this.getLocalContent();
       }
     });
     this.events.subscribe('event:showScanner', (data) => {
@@ -202,23 +204,6 @@ export class ResourcesPage implements OnInit, AfterViewInit {
         this.isUpgradePopoverShown = true;
       }
     });
-
-    this.events.subscribe('tab.change', (data: string) => {
-      this.scrollToTop();
-      // this.ngZone.run(() => {
-      if (data.trim().toUpperCase() === 'LIBRARY') {
-        if (this.appliedFilter) {
-          this.filterIcon = './assets/imgs/ic_action_filter.png';
-          this.resourceFilter = undefined;
-          this.appliedFilter = undefined;
-          this.isFilterApplied = false;
-          this.getPopularContent();
-        }
-      } else if (data === '') {
-        this.qrScanner.startScanner(this.appGlobalService.getPageIdForTelemetry());
-      }
-      // });
-    });
   }
 
   /**
@@ -242,6 +227,27 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       this.isOnBoardingCardCompleted = param.isOnBoardingCardCompleted;
     });
   }
+
+  ionViewWillLoad() {
+    this.events.subscribe('tab.change', (data: string) => {
+      if (data.trim().toUpperCase() === 'LIBRARY') {
+        this.scrollToTop();
+        if (this.appliedFilter) {
+          this.filterIcon = './assets/imgs/ic_action_filter.png';
+          this.resourceFilter = undefined;
+          this.appliedFilter = undefined;
+          this.isFilterApplied = false;
+          this.getPopularContent();
+        }
+      } else if (data === '') {
+        this.qrScanner.startScanner(this.appGlobalService.getPageIdForTelemetry());
+      }
+    });
+  }
+
+  // ionViewWillUnload() {  //SB-14403 : Qr scanner fails to launch when user switches
+  //   this.events.unsubscribe('tab.change');
+  // }
 
   ionViewWillLeave(): void {
     if (this.eventSubscription) {
@@ -283,6 +289,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
 
     this.profile = this.appGlobalService.getCurrentUser();
     this.loadRecentlyViewedContent();
+    this.getLocalContent();
   }
 
   navigateToViewMoreContentsPage(section: string) {
@@ -355,7 +362,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           if (!hideLoaderFlag) {
             this.showLoader = false;
             if (!this.showLoader) {
-             this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+              this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
             }
           }
         });
@@ -508,7 +515,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.refresh = false;
           this.searchApiLoader = false;
           if (!this.refresh || !this.searchApiLoader) {
-           this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+            this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
           }
           // this.noInternetConnection = false;
           this.generateExtraInfoTelemetry(newSections.length);
@@ -532,7 +539,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
             if (!isAfterLanguageChange) {
               this.commonUtilService.showToast('ERROR_FETCHING_DATA');
             }
-          } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable  && !avoidRefreshList) {
+          } else if (this.storyAndWorksheets.length === 0 && this.commonUtilService.networkInfo.isNetworkAvailable && !avoidRefreshList) {
           }
           const errvalues = new Map();
           errvalues['isNetworkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
@@ -561,14 +568,14 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     return filteredSubject;
   }
   markLocallyAvailableTextBook() {
-    if (!this.recentlyViewedResources || !this.storyAndWorksheets) {
+    if (!this.locallyDownloadResources || !this.storyAndWorksheets) {
       return;
     }
-    for (let i = 0; i < this.recentlyViewedResources.length; i++) {
+    for (let i = 0; i < this.locallyDownloadResources.length; i++) {
       for (let j = 0; j < this.storyAndWorksheets.length; j++) {
         for (let k = 0; k < this.storyAndWorksheets[j].contents.length; k++) {
-          if (this.recentlyViewedResources[i].isAvailableLocally &&
-            this.recentlyViewedResources[i].identifier === this.storyAndWorksheets[j].contents[k].identifier) {
+          if (this.locallyDownloadResources[i].isAvailableLocally &&
+            this.locallyDownloadResources[i].identifier === this.storyAndWorksheets[j].contents[k].identifier) {
             this.storyAndWorksheets[j].contents[k].isAvailableLocally = true;
           }
         }
@@ -694,6 +701,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     this.eventSubscription = this.eventsBusService.events().subscribe((event: EventsBusEvent) => {
       if (event.payload && event.type === ContentEventType.IMPORT_COMPLETED) {
         this.loadRecentlyViewedContent();
+        this.getLocalContent();
       }
     }) as any;
   }
@@ -755,7 +763,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       .then((res: CategoryTerm[]) => {
         this.subjects = res;
       })
-      .catch(() => {});
+      .catch(() => { });
   }
 
   getMediumData(frameworkId, categories): any {
@@ -1038,11 +1046,9 @@ export class ResourcesPage implements OnInit, AfterViewInit {
   }
 
   scrollToTop() {
-
     this.contentView.scrollToTop();
-    // this.contentView._scrollContent.nativeElement.scrollToTop();
-
   }
+
   exploreOtherContents() {
     this.navCtrl.push(ExploreBooksPage, {
       subjects: this.subjects,
@@ -1065,4 +1071,20 @@ export class ResourcesPage implements OnInit, AfterViewInit {
       undefined,
       values);
   }
+  async getLocalContent() {
+    this.locallyDownloadResources = [];
+
+    const requestParams: ContentRequest = {
+      uid: this.profile ? this.profile.uid : undefined,
+      contentTypes: [],
+      audience: this.audienceFilter,
+      recentlyViewed: false,
+    };
+    this.contentService.getContents(requestParams).subscribe((data: Content[]) => {
+      this.ngZone.run(() => {
+        this.locallyDownloadResources = data;
+      });
+    });
+  }
+
 }

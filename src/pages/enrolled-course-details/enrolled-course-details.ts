@@ -948,7 +948,8 @@ export class EnrolledCourseDetailsPage implements OnInit {
       isResumedCourse: true,
       isChildContent: true,
       resumedCourseCardData: this.courseCardData,
-      corRelation: this.corRelationList
+      corRelation: this.corRelationList,
+      isCourse: true
     });
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.RESUME_CLICKED,
@@ -1032,7 +1033,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
     if (enrolledCourses && enrolledCourses.length > 0) {
       for (const course of enrolledCourses) {
         if (course.courseId === identifier) {
-          if (this.courseCardData.batch && course.batchId === this.courseCardData.batchId) {
+          if (this.courseCardData.batch && course.batchId === this.courseCardData.batch.identifier) {
             this.isAlreadyEnrolled = true;
             this.courseCardData = course;
           } else if (!this.courseCardData.batch) {

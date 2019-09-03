@@ -1,5 +1,5 @@
 import { Component, NgZone, Inject } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController, Events } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ViewController, Events, App } from 'ionic-angular';
 import { EnrolledCourseDetailsPage } from '../enrolled-course-details';
 import {
   SharedPreferences,
@@ -58,11 +58,12 @@ export class EnrollmentDetailsPage {
     private zone: NgZone,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private commonUtilService: CommonUtilService,
+    private app: App
   ) {
     this.ongoingBatches = this.navParams.get('ongoingBatches');
     this.upcommingBatches = this.navParams.get('upcommingBatches');
     this.retiredBatched = this.navParams.get('retiredBatched');
-    this.todayDate =  moment(new Date()).format('YYYY-MM-DD');
+    this.todayDate = moment(new Date()).format('YYYY-MM-DD');
     this.courseId = this.navParams.get('courseId');
     this.getUserId();
 
@@ -72,22 +73,26 @@ export class EnrollmentDetailsPage {
     console.log('ionViewDidLoad EnrollmentDetailsPage');
   }
 
-  close() {
-    this.viewCtrl.dismiss();
+  close(data?: any) {
+    return this.viewCtrl.dismiss(data);
   }
 
   resumeCourse(content: any) {
     this.saveContentContext(content);
+
     if (content.lastReadContentId && content.status === 1) {
       this.events.publish('course:resume', {
         content: content
       });
+
+      this.close();
     } else {
-      this.navCtrl.push(EnrolledCourseDetailsPage, {
-        content: content
+      this.close(function() {
+        this.navCtrl.push(EnrolledCourseDetailsPage, {
+          content: content
+        });
       });
     }
-    this.close();
   }
 
   saveContentContext(content: any) {
@@ -172,7 +177,7 @@ export class EnrollmentDetailsPage {
 
   navigateToDetailPage(content: any, layoutName?: string): void {
     const identifier = content.contentId || content.identifier;
-    let type ;
+    let type;
     if (layoutName === this.layoutInProgress) {
       type = ContentType.COURSE;
     } else {
@@ -191,22 +196,11 @@ export class EnrollmentDetailsPage {
       telemetryObject,
       values
     );
+    content.contentId = !content.contentId ? content.courseId : content.contentId;
+    this.navCtrl.push(EnrolledCourseDetailsPage, {
+      content: content
+    });
 
-    if (content.contentType === ContentType.COURSE) {
-      content.contentId = !content.contentId ? content.courseId : content.contentId;
-      this.navCtrl.push(EnrolledCourseDetailsPage, {
-        content: content
-      });
-    } else if (content.mimeType === MimeType.COLLECTION) {
-      // this.navCtrl.push(CollectionDetailsPage, {
-      this.navCtrl.push(CollectionDetailsEtbPage, {
-        content: content
-      });
-    } else {
-      this.navCtrl.push(ContentDetailsPage, {
-        content: content
-      });
-    }
   }
 
 }
