@@ -93,10 +93,10 @@ export class ViewMoreCardComponent implements OnInit {
     @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
   ) {
     this.defaultImg = 'assets/imgs/ic_launcher.png';
+    this.loader = this.commonUtilService.getLoader();
   }
 
   checkRetiredOpenBatch(content: any, layoutName?: string): void {
-    this.loader = this.commonUtilService.getLoader();
     this.loader.present();
     let anyOpenBatch: Boolean = false;
     this.enrolledCourses = this.enrolledCourses || [];
@@ -216,6 +216,7 @@ export class ViewMoreCardComponent implements OnInit {
         this.events.publish('course:resume', {
           content: content
         });
+        this.navCtrl.pop();
       } else {
         this.navCtrl.push(EnrolledCourseDetailsPage, {
           content: content

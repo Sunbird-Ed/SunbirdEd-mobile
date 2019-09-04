@@ -455,8 +455,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   getCertificateCourse(certificate: CourseCertificate): Course {
     return this.trainingsCompleted.find((course: Course) => {
-      return course.certificates.indexOf(certificate) > -1;
-    })!;
+      return course.certificates ? course.certificates.indexOf(certificate) > -1 : undefined;
+    });
   }
 
   downloadTrainingCertificate(course: Course, certificate: CourseCertificate) {
