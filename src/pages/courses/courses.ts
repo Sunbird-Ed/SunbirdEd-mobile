@@ -89,6 +89,8 @@ export class CoursesPage implements OnInit, AfterViewInit {
   private eventSubscription: Subscription;
   headerObservable: any;
   private corRelationList: Array<CorrelationData>;
+  courseUpdateCheck: any;
+  isUpdateAvail: boolean;
 
   /**
    * Default method of class CoursesPage
@@ -665,18 +667,20 @@ export class CoursesPage implements OnInit, AfterViewInit {
     }
   }
 
-  getContentDetails(content) {
+  getContentDetails(content, emitUpdateIfAny: boolean = false) {
     const identifier = content.contentId || content.identifier;
     this.corRelationList = [{id: content.batchId, type: CorReleationDataType.COURSE_BATCH}];
-    this.contentService.getContentDetails({ contentId: identifier }).toPromise()
+    this.contentService.getContentDetails({ contentId: identifier, emitUpdateIfAny: emitUpdateIfAny }).toPromise()
       .then((data: Content) => {
         if (data && data.isAvailableLocally) {
-          this.showOverlay = false;
-          this.navigateToContentDetailsPage(content);
+          if (data.contentData.pkgVersion < content.content.pkgVersion) {
+            this.contentDetailsImportCall(identifier);
+          } else {
+            this.showOverlay = false;
+            this.navigateToContentDetailsPage(content);
+          }
         } else {
-          this.subscribeSdkEvent();
-          this.showOverlay = true;
-          this.importContent([identifier], false);
+          this.contentDetailsImportCall(identifier);
         }
       })
       .catch((err) => {
@@ -686,6 +690,12 @@ export class CoursesPage implements OnInit, AfterViewInit {
           this.commonUtilService.showToast('ERROR_CONTENT_NOT_AVAILABLE');
         }
       });
+  }
+
+  contentDetailsImportCall(identifier) {
+    this.subscribeSdkEvent();
+    this.showOverlay = true;
+    this.importContent([identifier], false);
   }
 
   navigateToViewMoreContentsPage(showEnrolledCourses: boolean, searchQuery?: any, headerTitle?: string) {
