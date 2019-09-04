@@ -327,17 +327,17 @@ export class TelemetryGeneratorService {
         return mimeType === MimeType.COLLECTION;
     }
 
-    generateStartSheenAnimationTelemetry() {
+    generateStartSheenAnimationTelemetry(pageId: string) {
         this.generateInteractTelemetry(InteractType.OTHER,
             InteractSubtype.SHEEN_ANIMATION_START,
             Environment.HOME,
-            PageId.LIBRARY);
+            pageId);
     }
 
-    generateEndSheenAnimationTelemetry() {
+    generateEndSheenAnimationTelemetry(pageId: string) {
         this.generateInteractTelemetry(InteractType.OTHER,
             InteractSubtype.SHEEN_ANIMATION_END,
             Environment.HOME,
-            PageId.LIBRARY);
+            pageId);
     }
 }
