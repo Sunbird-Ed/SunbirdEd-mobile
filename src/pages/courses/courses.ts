@@ -665,10 +665,19 @@ export class CoursesPage implements OnInit, AfterViewInit {
     }
   }
 
-  getContentDetails(content, emitUpdateIfAny: boolean = false) {
+  getContentDetails(content) {
     const identifier = content.contentId || content.identifier;
-    this.corRelationList = [{id: content.batchId, type: CorReleationDataType.COURSE_BATCH}];
-    this.contentService.getContentDetails({ contentId: identifier, emitUpdateIfAny: emitUpdateIfAny }).toPromise()
+    this.corRelationList = [
+      {
+        id: content.batchId,
+        type: CorReleationDataType.COURSE_BATCH
+      }
+    ];
+    const request = {
+      contentId: identifier,
+      emitUpdateIfAny: false
+    };
+    this.contentService.getContentDetails(request).toPromise()
       .then((data: Content) => {
         if (data && data.isAvailableLocally) {
           if (data.contentData.pkgVersion < content.content.pkgVersion) {
