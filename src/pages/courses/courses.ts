@@ -89,8 +89,6 @@ export class CoursesPage implements OnInit, AfterViewInit {
   private eventSubscription: Subscription;
   headerObservable: any;
   private corRelationList: Array<CorrelationData>;
-  courseUpdateCheck: any;
-  isUpdateAvail: boolean;
 
   /**
    * Default method of class CoursesPage
