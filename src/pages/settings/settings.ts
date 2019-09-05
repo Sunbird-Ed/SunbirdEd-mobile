@@ -163,7 +163,7 @@ export class SettingsPage {
       sbPopoverContent: this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_CONTENT'),
       actionsButtons: [
         {
-          btntext: this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_CANCEL'),
+          btntext: this.commonUtilService.translateMessage('CANCEL'),
           btnClass: 'popover-button-cancel',
         },
         {
@@ -172,7 +172,7 @@ export class SettingsPage {
         }
       ],
       handler: (selectedButton: string) => {
-        if (selectedButton === this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_CANCEL')) {
+        if (selectedButton === this.commonUtilService.translateMessage('CANCEL')) {
           // this.telemetryGeneratorService.generateInteractTelemetry(
           //   InteractType.TOUCH,
           //   InteractSubtype.PERMISSION_POPOVER_NOT_NOW_CLICKED,
