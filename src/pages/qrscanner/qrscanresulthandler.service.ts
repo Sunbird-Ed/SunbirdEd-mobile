@@ -95,8 +95,11 @@ export class QRScannerResultHandler {
   }
 
   handleCertsQR(source: string, scannedData: string) {
+    this.generateQRScanSuccessInteractEvent(scannedData, 'OpenBrowser', undefined, {
+      certificateId: scannedData.split('/certs/')[1], scannedFrom: 'mobileApp'
+    });
     this.telemetryService.buildContext().subscribe(context => {
-      scannedData = scannedData + '?clientId=android&&context=' + encodeURIComponent(JSON.stringify(context));
+      scannedData = scannedData + '?clientId=android&context=' + encodeURIComponent(JSON.stringify(context));
       this.inAppBrowserRef = cordova.InAppBrowser.open(scannedData, '_blank', 'zoom=no');
       this.inAppBrowserRef.addEventListener('loadstart', (event) => {
         if (event.url) {
@@ -153,16 +156,21 @@ export class QRScannerResultHandler {
     }
   }
 
-  generateQRScanSuccessInteractEvent(scannedData, action, dialCode) {
+  generateQRScanSuccessInteractEvent(scannedData, action, dialCode?, certificate?: { certificateId: string, scannedFrom: 'mobileApp' | 'genericApp' }) {
     const values = new Map();
     values['networkAvailable'] = this.commonUtilService.networkInfo.isNetworkAvailable ? 'Y' : 'N';
     values['scannedData'] = scannedData;
     values['action'] = action;
-    values['compatibile'] = (action === 'SearchResult' || action === 'ContentDetail') ? 1 : 0;
+    values['compatibile'] = (action === 'OpenBrowser' || action === 'SearchResult' || action === 'ContentDetail') ? 1 : 0;
 
     let telemetryObject: TelemetryObject;
+
     if (dialCode) {
       telemetryObject = new TelemetryObject(dialCode, 'qr', undefined);
+    }
+    if (certificate) {
+      values['scannedFrom'] = certificate.scannedFrom;
+      telemetryObject = new TelemetryObject(certificate.certificateId, 'certificate', undefined);
     }
 
     this.telemetryGeneratorService.generateInteractTelemetry(

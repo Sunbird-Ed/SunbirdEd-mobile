@@ -217,7 +217,7 @@ export class SettingsPage {
         console.error(e);
 
         this.telemetryGeneratorService.generateInteractTelemetry(
-          InteractType.TOUCH,
+          InteractType.OTHER,
           InteractSubtype.MERGE_ACCOUNT_FAILED,
           Environment.SETTINGS,
           PageId.SETTINGS
@@ -234,7 +234,7 @@ export class SettingsPage {
       })
       .do(async () => {
         this.telemetryGeneratorService.generateInteractTelemetry(
-          InteractType.TOUCH,
+          InteractType.OTHER,
           InteractSubtype.MERGE_ACCOUNT_SUCCESS,
           Environment.SETTINGS,
           PageId.SETTINGS
