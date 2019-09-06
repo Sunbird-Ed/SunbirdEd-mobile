@@ -156,11 +156,6 @@ export class SettingsPage {
   }
 
   async showMergeAccountConfirmationPopup() {
-    // this.telemetryGeneratorService.generateInteractTelemetry(
-    //   InteractType.TOUCH,
-    //   InteractSubtype.PERMISSION_POPOVER_NOT_NOW_CLICKED,
-    //   Environment.ONBOARDING,
-    //   PageId.QRCodeScanner);
     const confirm = this.popoverCtrl.create(SbPopoverComponent, {
       isNotShowCloseIcon: false,
       sbPopoverHeading: this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_HEADING'),
@@ -177,18 +172,8 @@ export class SettingsPage {
       ],
       handler: (selectedButton: string) => {
         if (selectedButton === this.commonUtilService.translateMessage('CANCEL')) {
-          // this.telemetryGeneratorService.generateInteractTelemetry(
-          //   InteractType.TOUCH,
-          //   InteractSubtype.PERMISSION_POPOVER_NOT_NOW_CLICKED,
-          //   Environment.ONBOARDING,
-          //   PageId.QRCodeScanner);
           confirm.dismiss();
         } else if (selectedButton === this.commonUtilService.translateMessage('OKAY')) {
-          // this.telemetryGeneratorService.generateInteractTelemetry(
-          //   InteractType.TOUCH,
-          //   InteractSubtype.PERMISSION_POPOVER_ALLOW_CLICKED,
-          //   Environment.ONBOARDING,
-          //   PageId.QRCodeScanner);
           confirm.dismiss();
           this.mergeAccount();
         }
@@ -201,6 +186,13 @@ export class SettingsPage {
   }
 
   private mergeAccount() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.MERGE_ACCOUNT_INITIATED,
+      Environment.SETTINGS,
+      PageId.SETTINGS
+    );
+
     this.authService.getSession()
       .map((session) => session!)
       .mergeMap(async (mergeToProfileSession) => {
@@ -224,6 +216,13 @@ export class SettingsPage {
       .catch(async (e) => {
         console.error(e);
 
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.MERGE_ACCOUNT_FAILED,
+          Environment.SETTINGS,
+          PageId.SETTINGS
+        );
+
         const toast = this.toastCtrl.create({
           message: await this.translate.get('ACCOUNT_MERGE_FAILED').toPromise(),
           duration: 2000,
@@ -234,6 +233,12 @@ export class SettingsPage {
         throw e;
       })
       .do(async () => {
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.TOUCH,
+          InteractSubtype.MERGE_ACCOUNT_SUCCESS,
+          Environment.SETTINGS,
+          PageId.SETTINGS
+        );
         const toast = this.toastCtrl.create({
           message: await this.translate.get('ACCOUNT_MERGE_SUCCESS').toPromise(),
           duration: 2000,
