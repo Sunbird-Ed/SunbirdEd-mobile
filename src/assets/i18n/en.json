@@ -4,7 +4,7 @@
   "ABOUT_APPLICATION": "About the Application",
   "ABOUT_US": "About Us",
   "ACCOMPLISHMENTS": "Accomplishments",
-  "ACCOUNT_MERGE_CONFIRMATION_CONTENT": "Would you like to merge accounts?",
+  "ACCOUNT_MERGE_CONFIRMATION_CONTENT": "If you have two accounts with {{%s}}, click <b>Merge</b> to: <ul><li>combine usage details of both accounts, and</li><li>delete the other account</li></ul>Else, click <b>Cancel</b>",
   "ACCOUNT_MERGE_CONFIRMATION_HEADING": "Merge Account",
   "ACCOUNT_MERGE_FAILED": "Failed to merge account ",
   "ACCOUNT_MERGE_SUCCESS": "Account merged successfully",
