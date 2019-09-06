@@ -976,10 +976,10 @@ export class EnrolledCourseDetailsPage implements OnInit {
     this.source = this.navParams.get('source');
     this.identifier = this.courseCardData.contentId || this.courseCardData.identifier;
 
-    if(!this.guestUser){
+    if (!this.guestUser) {
       this.updatedCourseCardData = await this.courseService.getEnrolledCourses
       ({userId: this.userId, returnFreshCourses: true}).toPromise().then((data) => {
-        return data.find((element) => element.courseId === this.identifier)
+        return data.find((element) => element.courseId === this.identifier && element.batchId === this.courseCardData.batchId);
       });
     }
 
