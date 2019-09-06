@@ -167,7 +167,7 @@ export class SettingsPage {
           btnClass: 'popover-button-cancel',
         },
         {
-          btntext: this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_OK'),
+          btntext: this.commonUtilService.translateMessage('OKAY'),
           btnClass: 'popover-button-allow',
         }
       ],
@@ -179,7 +179,7 @@ export class SettingsPage {
           //   Environment.ONBOARDING,
           //   PageId.QRCodeScanner);
           confirm.dismiss();
-        } else if (selectedButton === this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_OK')) {
+        } else if (selectedButton === this.commonUtilService.translateMessage('OKAY')) {
           // this.telemetryGeneratorService.generateInteractTelemetry(
           //   InteractType.TOUCH,
           //   InteractSubtype.PERMISSION_POPOVER_ALLOW_CLICKED,
