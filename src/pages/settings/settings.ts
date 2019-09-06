@@ -44,6 +44,7 @@ export class SettingsPage {
   appName: any;
 
   public isUserLoggedIn$: Observable<boolean>;
+  public isNotDefaultChannelProfile$: Observable<boolean>;
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
@@ -67,6 +68,9 @@ export class SettingsPage {
   ) {
     this.isUserLoggedIn$ = this.authService.getSession()
       .map((session) => !!session) as any;
+
+    this.isNotDefaultChannelProfile$ = this.profileService.isDefaultChannelProfile()
+      .map((isDefaultChannelProfile) => !isDefaultChannelProfile) as any;
   }
 
   ionViewWillEnter() {
@@ -151,7 +155,7 @@ export class SettingsPage {
     this.navCtrl.push(PermissionPage, { changePermissionAccess: true } ) ;
   }
 
-  showMergeAccountConfirmationPopup() {
+  async showMergeAccountConfirmationPopup() {
     // this.telemetryGeneratorService.generateInteractTelemetry(
     //   InteractType.TOUCH,
     //   InteractSubtype.PERMISSION_POPOVER_NOT_NOW_CLICKED,
@@ -160,7 +164,7 @@ export class SettingsPage {
     const confirm = this.popoverCtrl.create(SbPopoverComponent, {
       isNotShowCloseIcon: false,
       sbPopoverHeading: this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_HEADING'),
-      sbPopoverContent: this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_CONTENT'),
+      sbPopoverHtmlContent: '<div class="sb-popover-content text-left font-weight-normal padding-left-10 padding-right-10">' + this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_CONTENT', await this.appVersion.getAppName()) + '</div>',
       actionsButtons: [
         {
           btntext: this.commonUtilService.translateMessage('CANCEL'),
@@ -236,19 +240,6 @@ export class SettingsPage {
           position: 'bottom'
         });
         await toast.present();
-      })
-      .finally(() => {
-        const launchUrl = this.sdkConfig.apiConfig.user_authentication.mergeUserHost +
-          this.sdkConfig.apiConfig.user_authentication.authUrl + '/logout' + '?redirect_uri=' +
-          this.sdkConfig.apiConfig.host + '/oauth2callback';
-
-        const inAppBrowserRef = cordova.InAppBrowser.open(launchUrl, '_blank', 'zoom=no');
-
-        inAppBrowserRef.addEventListener('loadstart', async (event) => {
-          if ((<string>event.url).indexOf('/oauth2callback') > -1) {
-            inAppBrowserRef.close();
-          }
-        });
       })
       .subscribe();
   }
