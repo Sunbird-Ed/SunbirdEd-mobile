@@ -23,7 +23,6 @@ import {
 } from 'sunbird-sdk';
 import { PermissionPage } from '../permission/permission';
 import { Observable } from 'rxjs';
-import {AuthEndPoints} from '../../../../sunbird-mobile-sdk/src/auth/def/auth-end-points';
 import {TranslateService} from '@ngx-translate/core';
 import {SbPopoverComponent} from '@app/component';
 
@@ -45,6 +44,7 @@ export class SettingsPage {
   appName: any;
 
   public isUserLoggedIn$: Observable<boolean>;
+  public isNotDefaultChannelProfile$: Observable<boolean>;
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
@@ -68,6 +68,9 @@ export class SettingsPage {
   ) {
     this.isUserLoggedIn$ = this.authService.getSession()
       .map((session) => !!session) as any;
+
+    this.isNotDefaultChannelProfile$ = this.profileService.isDefaultChannelProfile()
+      .map((isDefaultChannelProfile) => !isDefaultChannelProfile) as any;
   }
 
   ionViewWillEnter() {
@@ -152,40 +155,25 @@ export class SettingsPage {
     this.navCtrl.push(PermissionPage, { changePermissionAccess: true } ) ;
   }
 
-  showMergeAccountConfirmationPopup() {
-    // this.telemetryGeneratorService.generateInteractTelemetry(
-    //   InteractType.TOUCH,
-    //   InteractSubtype.PERMISSION_POPOVER_NOT_NOW_CLICKED,
-    //   Environment.ONBOARDING,
-    //   PageId.QRCodeScanner);
+  async showMergeAccountConfirmationPopup() {
     const confirm = this.popoverCtrl.create(SbPopoverComponent, {
       isNotShowCloseIcon: false,
       sbPopoverHeading: this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_HEADING'),
-      sbPopoverContent: this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_CONTENT'),
+      sbPopoverHtmlContent: '<div class="sb-popover-content text-left font-weight-normal padding-left-10 padding-right-10">' + this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_CONTENT', await this.appVersion.getAppName()) + '</div>',
       actionsButtons: [
         {
-          btntext: this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_CANCEL'),
+          btntext: this.commonUtilService.translateMessage('CANCEL'),
           btnClass: 'popover-button-cancel',
         },
         {
-          btntext: this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_OK'),
+          btntext: this.commonUtilService.translateMessage('OKAY'),
           btnClass: 'popover-button-allow',
         }
       ],
       handler: (selectedButton: string) => {
-        if (selectedButton === this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_CANCEL')) {
-          // this.telemetryGeneratorService.generateInteractTelemetry(
-          //   InteractType.TOUCH,
-          //   InteractSubtype.PERMISSION_POPOVER_NOT_NOW_CLICKED,
-          //   Environment.ONBOARDING,
-          //   PageId.QRCodeScanner);
+        if (selectedButton === this.commonUtilService.translateMessage('CANCEL')) {
           confirm.dismiss();
-        } else if (selectedButton === this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_OK')) {
-          // this.telemetryGeneratorService.generateInteractTelemetry(
-          //   InteractType.TOUCH,
-          //   InteractSubtype.PERMISSION_POPOVER_ALLOW_CLICKED,
-          //   Environment.ONBOARDING,
-          //   PageId.QRCodeScanner);
+        } else if (selectedButton === this.commonUtilService.translateMessage('OKAY')) {
           confirm.dismiss();
           this.mergeAccount();
         }
@@ -198,6 +186,13 @@ export class SettingsPage {
   }
 
   private mergeAccount() {
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.MERGE_ACCOUNT_INITIATED,
+      Environment.SETTINGS,
+      PageId.SETTINGS
+    );
+
     this.authService.getSession()
       .map((session) => session!)
       .mergeMap(async (mergeToProfileSession) => {
@@ -213,13 +208,20 @@ export class SettingsPage {
             userId: mergeToProfileSession.userToken,
             accessToken: mergeToProfileSession.access_token
           }
-        } as MergeServerProfilesRequest
+        } as MergeServerProfilesRequest;
       })
       .mergeMap((mergeServerProfilesRequest) => {
         return this.profileService.mergeServerProfiles(mergeServerProfilesRequest)
       })
       .catch(async (e) => {
         console.error(e);
+
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.OTHER,
+          InteractSubtype.MERGE_ACCOUNT_FAILED,
+          Environment.SETTINGS,
+          PageId.SETTINGS
+        );
 
         const toast = this.toastCtrl.create({
           message: await this.translate.get('ACCOUNT_MERGE_FAILED').toPromise(),
@@ -231,25 +233,18 @@ export class SettingsPage {
         throw e;
       })
       .do(async () => {
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.OTHER,
+          InteractSubtype.MERGE_ACCOUNT_SUCCESS,
+          Environment.SETTINGS,
+          PageId.SETTINGS
+        );
         const toast = this.toastCtrl.create({
           message: await this.translate.get('ACCOUNT_MERGE_SUCCESS').toPromise(),
           duration: 2000,
           position: 'bottom'
         });
         await toast.present();
-      })
-      .finally(() => {
-        const launchUrl = this.sdkConfig.apiConfig.user_authentication.mergeUserHost +
-          this.sdkConfig.apiConfig.user_authentication.authUrl + AuthEndPoints.LOGOUT + '?redirect_uri=' +
-          this.sdkConfig.apiConfig.host + '/oauth2callback';
-
-        const inAppBrowserRef = cordova.InAppBrowser.open(launchUrl, '_blank', 'zoom=no');
-
-        inAppBrowserRef.addEventListener('loadstart', async (event) => {
-          if ((<string>event.url).indexOf('/oauth2callback') > -1) {
-            inAppBrowserRef.close();
-          }
-        });
       })
       .subscribe();
   }

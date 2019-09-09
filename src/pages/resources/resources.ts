@@ -330,7 +330,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     if (!hideLoaderFlag) {
       this.showLoader = true;
       if (this.showLoader) {
-        this.telemetryGeneratorService.generateStartSheenAnimationTelemetry();
+        this.telemetryGeneratorService.generateStartSheenAnimationTelemetry(PageId.LIBRARY);
       }
     }
     const requestParams: ContentRequest = {
@@ -362,7 +362,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           if (!hideLoaderFlag) {
             this.showLoader = false;
             if (!this.showLoader) {
-              this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+              this.telemetryGeneratorService.generateEndSheenAnimationTelemetry(PageId.LIBRARY);
             }
           }
         });
@@ -372,7 +372,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           if (!hideLoaderFlag) {
             this.showLoader = false;
             if (!this.showLoader) {
-              this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+              this.telemetryGeneratorService.generateEndSheenAnimationTelemetry(PageId.LIBRARY);
             }
           }
         });
@@ -389,7 +389,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     // this.noInternetConnection = false;
     const that = this;
     if (this.searchApiLoader) {
-      this.telemetryGeneratorService.generateStartSheenAnimationTelemetry();
+      this.telemetryGeneratorService.generateStartSheenAnimationTelemetry(PageId.LIBRARY);
     }
 
     if (!contentSearchCriteria) {
@@ -443,7 +443,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
     } else {
       this.searchApiLoader = false;
     }
-    this.telemetryGeneratorService.generateStartSheenAnimationTelemetry();
+    this.telemetryGeneratorService.generateStartSheenAnimationTelemetry(PageId.LIBRARY);
     const reqvalues = new Map();
     reqvalues['pageReq'] = this.getGroupByPageReq;
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
@@ -515,7 +515,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.refresh = false;
           this.searchApiLoader = false;
           if (!this.refresh || !this.searchApiLoader) {
-            this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+            this.telemetryGeneratorService.generateEndSheenAnimationTelemetry(PageId.LIBRARY);
           }
           // this.noInternetConnection = false;
           this.generateExtraInfoTelemetry(newSections.length);
@@ -532,7 +532,7 @@ export class ResourcesPage implements OnInit, AfterViewInit {
           this.refresh = false;
           this.searchApiLoader = false;
           if (!this.refresh || !this.searchApiLoader) {
-            this.telemetryGeneratorService.generateEndSheenAnimationTelemetry();
+            this.telemetryGeneratorService.generateEndSheenAnimationTelemetry(PageId.LIBRARY);
           }
           if (error === 'CONNECTION_ERROR') {
           } else if (error === 'SERVER_ERROR' || error === 'SERVER_AUTH_ERROR') {

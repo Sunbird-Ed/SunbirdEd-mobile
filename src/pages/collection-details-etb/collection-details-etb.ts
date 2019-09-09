@@ -151,7 +151,7 @@ export class CollectionDetailsEtbPage implements OnInit {
   /**
    * Contains identifier(s) of locally not available content(s)
    */
-  downloadIdentifiers = [];
+  downloadIdentifiers: Set<string> = new Set();
 
   /**
    * Child content size
@@ -839,11 +839,11 @@ export class CollectionDetailsEtbPage implements OnInit {
 
       this.getContentsSize(value.children);
       if (value.isAvailableLocally === false) {
-        this.downloadIdentifiers.push(value.contentData.identifier);
+        this.downloadIdentifiers.add(value.contentData.identifier);
       }
 
     });
-    if (this.downloadIdentifiers.length && !this.isDownloadCompleted) {
+    if (this.downloadIdentifiers.size && !this.isDownloadCompleted) {
       this.showDownloadBtn = true;
     }
   }
@@ -856,12 +856,12 @@ export class CollectionDetailsEtbPage implements OnInit {
     this.zone.run(() => {
       _.forEach(data, (value) => {
         if (value.isAvailableLocally === false) {
-          this.downloadIdentifiers.push(value.contentData.identifier);
+          this.downloadIdentifiers.add(value.contentData.identifier);
           size += value.contentData.size;
         }
       });
       this.downloadContentsSize = this.getReadableFileSize(+size);
-      if (this.downloadIdentifiers.length) {
+      if (this.downloadIdentifiers.size) {
         this.showDownloadBtn = true;
       }
     });
@@ -924,7 +924,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     this.contentDetail = undefined;
     this.showDownload = false;
     this.showDownloadBtn = false;
-    this.downloadIdentifiers = [];
+    this.downloadIdentifiers = new Set();
     this.queuedIdentifiers = [];
     this.showDownloadBtn = false;
     this.isDownloadCompleted = false;
@@ -1051,7 +1051,7 @@ export class CollectionDetailsEtbPage implements OnInit {
     this.isDownloadStarted = true;
     this.downloadPercentage = 0;
     this.showDownload = true;
-    this.importContent(this.downloadIdentifiers, true, true);
+    this.importContent(Array.from(this.downloadIdentifiers), true, true);
   }
 
 
@@ -1147,8 +1147,8 @@ export class CollectionDetailsEtbPage implements OnInit {
   showDownloadConfirmationAlert(myEvent) {
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
       let contentTypeCount;
-      if (this.downloadIdentifiers.length) {
-        contentTypeCount = this.downloadIdentifiers.length;
+      if (this.downloadIdentifiers.size) {
+        contentTypeCount = this.downloadIdentifiers.size;
       } else {
         contentTypeCount = '';
       }
