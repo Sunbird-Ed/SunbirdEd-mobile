@@ -460,6 +460,18 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   downloadTrainingCertificate(course: Course, certificate: CourseCertificate) {
+    const telemetryObject: TelemetryObject  = new TelemetryObject(certificate.id, ContentType.CERTIFICATE, undefined);
+
+    const values = new Map();
+    values['courseId'] = course.courseId;
+
+    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+    InteractSubtype.DOWNLOAD_CERTIFICATE_CLICKED,
+    Environment.USER, // env
+    PageId.PROFILE, // page name
+    telemetryObject,
+    values);
+
     this.courseService.downloadCurrentProfileCourseCertificate({
       courseId: course.courseId,
       certificateToken: certificate.token
