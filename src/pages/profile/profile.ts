@@ -443,12 +443,26 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   mapTrainingsToCertificates(trainings: Course[]): CourseCertificate[] {
+    /**
+     * If certificate is there loop through certificates and add certificates in accumulator
+     * with Course_Name and Date
+     * if not then add only Course_Name and Date and add in to the accumulator
+     */
     return trainings.reduce((accumulator, course) => {
-      if (!course.certificates) {
-        return accumulator;
+      const oneCert = {
+        courseName: course.courseName,
+        dateTime: course.dateTime,
+        courseId: course.courseId,
+        certificate: undefined
+      };
+      if (course.certificates && course.certificates.length) {
+        course.certificates.forEach( value => {
+          oneCert.certificate = value;
+          accumulator = accumulator.concat(oneCert);
+        });
+      } else {
+        accumulator = accumulator.concat(oneCert);
       }
-
-      accumulator = accumulator.concat(course.certificates);
       return accumulator;
     }, []);
   }
