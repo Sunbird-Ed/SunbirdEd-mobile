@@ -240,7 +240,8 @@ export class CourseCard implements OnInit {
       this.env,
       this.pageName ? this.pageName : this.layoutName,
       telemetryObject,
-      values);
+      values,
+      ContentUtil.generateRollUp(undefined, identifier));
     // Update enrolled courses playedOffline status.
     this.getContentState(content);
     this.saveContentContext(content);

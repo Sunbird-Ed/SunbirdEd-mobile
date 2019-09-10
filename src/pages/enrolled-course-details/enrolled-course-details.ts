@@ -958,9 +958,9 @@ export class EnrolledCourseDetailsPage implements OnInit {
       InteractSubtype.RESUME_CLICKED,
       Environment.HOME,
       PageId.COURSE_DETAIL,
+      this.telemetryObject,
       undefined,
-      undefined,
-      undefined,
+      this.objRollup,
       this.corRelationList
       );
   }
