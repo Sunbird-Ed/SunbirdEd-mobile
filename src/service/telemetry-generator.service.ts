@@ -217,7 +217,7 @@ export class TelemetryGeneratorService {
             values);
     }
 
-    generateDownloadAllClickTelemetry(pageId, content, downloadingIdentifier, childrenCount) {
+    generateDownloadAllClickTelemetry(pageId, content, downloadingIdentifier, childrenCount, rollup?, corelationList?) {
         const values = new Map();
         values['downloadingIdentifers'] = downloadingIdentifier;
         values['childrenCount'] = childrenCount;
@@ -228,7 +228,8 @@ export class TelemetryGeneratorService {
             Environment.HOME,
             pageId,
             telemetryObject,
-            values);
+            values,
+            rollup, corelationList);
     }
 
     generatePullToRefreshTelemetry(pageId, env) {
