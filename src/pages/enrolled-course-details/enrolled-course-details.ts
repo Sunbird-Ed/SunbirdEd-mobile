@@ -1023,7 +1023,9 @@ export class EnrolledCourseDetailsPage implements OnInit {
         Environment.HOME,
         false,
         this.identifier,
-        this.corRelationList
+        this.corRelationList,
+        this.objRollup,
+        this.telemetryObject
       );
       this.didViewLoad = false;
       this.generateEndEvent(this.objId, this.objType, this.objVer);
@@ -1405,7 +1407,8 @@ export class EnrolledCourseDetailsPage implements OnInit {
       case 'more': this.showOverflowMenu($event);
         break;
       case 'back': this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.COURSE_DETAIL, Environment.HOME,
-        true, this.identifier, this.corRelationList);
+        true, this.identifier, this.corRelationList, this.objRollup,
+        this.telemetryObject);
         this.handleNavBackButton();
         break;
     }
