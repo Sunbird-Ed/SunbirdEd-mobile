@@ -1,6 +1,9 @@
 textbook-toc {
   .scroll-content {
-    padding-bottom: 20% !important;
+    // padding-bottom: 20% !important;
+    section {
+      padding-bottom: 100px;
+    }
   }
   .sb-topic-text{
     width: 90.28%;
