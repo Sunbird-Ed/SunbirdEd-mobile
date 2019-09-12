@@ -239,12 +239,21 @@ export class SettingsPage {
           Environment.SETTINGS,
           PageId.SETTINGS
         );
-        const toast = this.toastCtrl.create({
-          message: await this.translate.get('ACCOUNT_MERGE_SUCCESS').toPromise(),
-          duration: 2000,
-          position: 'bottom'
+
+        const successPopover = this.popoverCtrl.create(SbPopoverComponent, {
+          sbPopoverHeading: this.commonUtilService.translateMessage('ACCOUNT_MERGE_SUCCESS_POPOVER_HEADING'),
+          icon: null,
+          actionsButtons: [
+            {
+              btntext: this.commonUtilService.translateMessage('OKAY'),
+              btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+            },
+          ],
+          sbPopoverContent: this.commonUtilService.translateMessage('ACCOUNT_MERGE_SUCCESS_POPOVER_CONTENT')
+        }, {
+          cssClass: 'sb-popover',
         });
-        await toast.present();
+        await successPopover.present();
       })
       .subscribe();
   }
