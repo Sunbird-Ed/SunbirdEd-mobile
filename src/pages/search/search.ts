@@ -38,6 +38,7 @@ import { EnrollmentDetailsPage } from '../enrolled-course-details/enrollment-det
 import { SearchHistoryNamespaces } from '@app/config/search-history-namespaces';
 import { AppVersion } from '@ionic-native/app-version';
 import { featureIdMap } from '@app/feature-id-map';
+import { ContentUtil } from '@app/util/content-util';
 
 declare const cordova;
 
@@ -1001,7 +1002,7 @@ export class SearchPage implements OnInit, OnDestroy {
       this.isDialCodeSearch ? PageId.DIAL_SEARCH : this.source,
       telemetryObject,
       values,
-      undefined,
+      ContentUtil.generateRollUp(undefined, identifier),
       this.corRelationList);
   }
 

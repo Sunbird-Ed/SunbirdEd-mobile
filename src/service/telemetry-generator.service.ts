@@ -16,6 +16,7 @@ import {
 import { Map } from '../app/telemetryutil';
 import { Environment, ImpressionType, InteractSubtype, InteractType, Mode, PageId } from '../service/telemetry-constants';
 import { MimeType } from '../app/app.constant';
+import { ContentUtil } from '@app/util/content-util';
 
 @Injectable()
 export class TelemetryGeneratorService {
@@ -167,7 +168,7 @@ export class TelemetryGeneratorService {
         this.telemetryService.error(telemetryErrorRequest).subscribe();
     }
 
-    generateBackClickedTelemetry(pageId, env, isNavBack: boolean, identifier?: string, corRelationList?) {
+    generateBackClickedTelemetry(pageId, env, isNavBack: boolean, identifier?: string, corRelationList?, objRollup?, telemetryObject?) {
         const values = new Map();
         if (identifier) {
             values['identifier'] = identifier;
@@ -177,9 +178,9 @@ export class TelemetryGeneratorService {
             isNavBack ? InteractSubtype.NAV_BACK_CLICKED : InteractSubtype.DEVICE_BACK_CLICKED,
             env,
             pageId,
-            undefined,
+            telemetryObject,
             values,
-            undefined,
+            objRollup,
             corRelationList);
 
     }
@@ -202,7 +203,8 @@ export class TelemetryGeneratorService {
             Environment.HOME,
             PageId.DOWNLOAD_SPINE,
             telemetryObject,
-            values);
+            values,
+            ContentUtil.generateRollUp(undefined, telemetryObject.id));
     }
 
     generateCancelDownloadTelemetry(content: any) {
@@ -217,7 +219,7 @@ export class TelemetryGeneratorService {
             values);
     }
 
-    generateDownloadAllClickTelemetry(pageId, content, downloadingIdentifier, childrenCount) {
+    generateDownloadAllClickTelemetry(pageId, content, downloadingIdentifier, childrenCount, rollup?, corelationList?) {
         const values = new Map();
         values['downloadingIdentifers'] = downloadingIdentifier;
         values['childrenCount'] = childrenCount;
@@ -228,7 +230,8 @@ export class TelemetryGeneratorService {
             Environment.HOME,
             pageId,
             telemetryObject,
-            values);
+            values,
+            rollup, corelationList);
     }
 
     generatePullToRefreshTelemetry(pageId, env) {
