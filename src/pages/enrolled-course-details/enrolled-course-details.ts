@@ -332,8 +332,8 @@ export class EnrolledCourseDetailsPage implements OnInit {
           comment: this.ratingComment,
           // popupType: popupType,
         }, {
-            cssClass: 'sb-popover info',
-          });
+          cssClass: 'sb-popover info',
+        });
         popover.present({
           ev: event
         });
@@ -381,8 +381,8 @@ export class EnrolledCourseDetailsPage implements OnInit {
       batchDetails: this.batchDetails,
       pageName: PageId.COURSE_DETAIL
     }, {
-        cssClass: 'content-action'
-      });
+      cssClass: 'content-action'
+    });
     popover.present({
       ev: event
     });
@@ -560,8 +560,8 @@ export class EnrolledCourseDetailsPage implements OnInit {
                       ],
                       icon: null
                     }, {
-                        cssClass: 'sb-popover info',
-                      });
+                      cssClass: 'sb-popover info',
+                    });
                     confirm.present({
                       ev: event
                     });
@@ -763,10 +763,10 @@ export class EnrolledCourseDetailsPage implements OnInit {
     const userId = this.appGlobalService.getUserId();
     const lastReadContentIdKey = 'lastReadContentId_' + userId + '_' + this.identifier + '_' + this.courseCardData.batchId;
     await this.preferences.getString(lastReadContentIdKey).toPromise()
-    .then(val => {
-      this.courseCardData.lastReadContentId = val;
-      lastReadContentId = val;
-    });
+      .then(val => {
+        this.courseCardData.lastReadContentId = val;
+        lastReadContentId = val;
+      });
 
     this.zone.run(() => {
       childrenData.forEach(childContent => {
@@ -962,7 +962,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
       undefined,
       this.objRollup,
       this.corRelationList
-      );
+    );
   }
 
 
@@ -982,17 +982,17 @@ export class EnrolledCourseDetailsPage implements OnInit {
 
     if (!this.guestUser) {
       this.updatedCourseCardData = await this.courseService.getEnrolledCourses
-      ({userId: this.userId, returnFreshCourses: false}).toPromise().then((data) => {
-        if (data.length > 0) {
-          const courseList: Array<Course> = [];
-          for (const course of data) {
-            courseList.push(course);
+        ({ userId: this.userId, returnFreshCourses: false }).toPromise().then((data) => {
+          if (data.length > 0) {
+            const courseList: Array<Course> = [];
+            for (const course of data) {
+              courseList.push(course);
+            }
+            this.appGlobalService.setEnrolledCourseList(courseList);
           }
-          this.appGlobalService.setEnrolledCourseList(courseList);
-        }
-        return data.find((element) => (this.courseCardData.batchId && element.batchId === this.courseCardData.batchId) ||
-        element.courseId === this.identifier);
-      });
+          return data.find((element) => (this.courseCardData.batchId && element.batchId === this.courseCardData.batchId) ||
+            element.courseId === this.identifier);
+        });
       if (this.updatedCourseCardData && !this.courseCardData.batch) {
         this.courseCardData.batch = this.updatedCourseCardData.batch;
         this.courseCardData.batchId = this.updatedCourseCardData.batchId;
@@ -1012,7 +1012,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
     this.headerService.showHeaderWithBackButton(['share', 'more']);
     // If courseCardData does not have a batch id then it is not a enrolled course
     this.subscribeSdkEvent();
-    this.populateCorRelationData( this.courseCardData.batchId);
+    this.populateCorRelationData(this.courseCardData.batchId);
     this.handleBackButton();
   }
 
@@ -1041,8 +1041,9 @@ export class EnrolledCourseDetailsPage implements OnInit {
   populateCorRelationData(batchId) {
     if (batchId && !this.corRelationList) {
       this.corRelationList = [];
-      this.corRelationList.push({id: batchId, type: CorReleationDataType.COURSE_BATCH});
     }
+    this.corRelationList.push({ id: batchId, type: CorReleationDataType.COURSE_BATCH });
+    this.corRelationList = this.commonUtilService.deDupe(this.corRelationList, 'type');
   }
 
   isCourseEnrolled(identifier: string) {
@@ -1112,7 +1113,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
           }
 
           if (event.type === ContentEventType.IMPORT_PROGRESS) {
-            this.importProgressMessage =  this.commonUtilService.translateMessage('EXTRACTING_CONTENT') + ' ' +
+            this.importProgressMessage = this.commonUtilService.translateMessage('EXTRACTING_CONTENT') + ' ' +
               Math.floor((event.payload.currentCount / event.payload.totalCount) * 100) +
               '% (' + event.payload.currentCount + ' / ' + event.payload.totalCount + ')';
             if (event.payload.currentCount === event.payload.totalCount) {
@@ -1266,7 +1267,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
     this.appVersion.getAppName()
       .then((appName: any) => {
         this.appName = appName;
-    });
+      });
     this.subscribeUtilityEvents();
   }
 
