@@ -4,6 +4,7 @@
   "ABOUT_APPLICATION": "ایپ کے بارے میں",
   "ABOUT_US": "ہمارے بارے میں",
   "ACCOMPLISHMENTS": "کامیابی",
+  "ACCOUNT_MERGE_CONFIRMATION_BTN_MERGE": "ضم",
   "ACCOUNT_MERGE_CONFIRMATION_CONTENT": "اگر آپ کے پاس {{%s}}  کے ساتھ دو اکاؤنٹ ہیں تو <b> ضم کریں </b> پر کلک کریں: <ul> <li> دونوں اکاؤنٹس کے استعمال کی تفصیلات جمع کریں ، اور </li> <li> دوسرا اکاؤنٹ حذف کریں </li> </ul> یا، <b> منسوخ کریں </b> پر کلک کریں۔",
   "ACCOUNT_MERGE_CONFIRMATION_HEADING": "اکاؤنٹ ضم کریں۔",
   "ACCOUNT_MERGE_FAILED": "اکاؤنٹ ضم کرنے میں ناکامی ہوئ۔",
