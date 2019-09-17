@@ -375,12 +375,53 @@ page-profile {
     .custom-round{
         border-radius: 64px !important;
     }
-    
+
     .bottom-cover {
         height: 65px;
     }
 
+    .training-1 {
+        flex: 1;
+    }
+
+    .training-2 {
+        width: 30%;
+    }
+
+    .flex-nowrap {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: nowrap;
+    }
+
 }
+
+.sb-btn-tile {
+    .button-inner {
+      flex-direction: column;
+    }
+    .sb-dt-card-danger-icon{
+      font-size : ($font-size-base * 2) + 2;
+      color: $orange;
+      @include margin(0,0,($base-block-space * .5),0);
+    }
+    .sb-dt-card-blue-icon{
+      font-size : ($font-size-base * 2) + 2;
+      color: $primary-color;
+      @include margin(0,0,($base-block-space * .5),0);
+    }   
+    .sb-btn-footer-text {
+      color : $gray;
+      font-weight: 100;
+      font-size: ($font-size-base - 2);
+      text-align: center;
+      text-transform: initial;
+    }
+    ion-icon {
+      line-height: 30px;
+    }
+   
+  }
 
 .padding-right-10 {
     @include padding(null, 10px, null, null !important);

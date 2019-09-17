@@ -175,68 +175,22 @@
         </div>
     </div>
 
-    <div class="contributions" *ngIf="contentCreatedByMe.length > 0">
-        <div class="bolder f16" style="padding: 15px; background-color: #fff; margin-bottom:  2px;">
-            {{'CONTRIBUTIONS' | translate}} ({{contentCreatedByMe.length}})&lrm;
-        </div>
-        <div class="cards-container" style="padding:15px 5px; background-color: #fff; ">
-            <ion-scroll scrollX="true" style="width: 100%" no-padding>
-                <div *ngIf="contentCreatedByMe  && isLoggedInUser">
-                    <ion-card *ngFor="let courseItem of contentCreatedByMe; let i=index"
-                        (click)="navigateToDetailPage(courseItem, layoutPopular, i);">
-                        <ion-card-content>
-                            <ion-row class="top">
-                                <ion-col col-3 class="img-container">
-                                    <img class="app-icon" src="{{courseItem?.appIcon}}" />
-                                </ion-col>
-                                <ion-col col-9 style="margin-bottom: 5px; padding-left: 15px; padding: 0 0 0 15px;">
-                                    <div style="margin-left: -3px; margin-bottom: 5px;" *ngIf="courseItem.resourceType">
-                                        <button ion-button outline class="badge">
-                                            {{courseItem?.resourceType}}
-                                        </button>
-                                    </div>
-                                    <div class="f11 ellipsis info" *ngIf="courseItem.subject">
-                                        {{'SUBJECT'| translate}}: {{courseItem?.subject}}
-                                    </div>
-                                    <div class="f11 ellipsis info"
-                                        *ngIf="courseItem.gradeLevel && courseItem.gradeLevel.length">
-                                        {{'CLASS' | translate}}: {{courseItem?.gradeLevel}}
-                                    </div>
-                                    <div class="f11 ellipsis info" *ngIf="courseItem.medium">
-                                        {{'MEDIUM' | translate}}: {{courseItem?.medium}}
-                                    </div>
-                                </ion-col>
-
-                            </ion-row>
-                            <ion-row>
-                                <ion-col col-12 class="PTB0">
-                                    <h6 class="name second-line-ellipsis">{{courseItem?.name}}</h6>
-                                </ion-col>
-                                <ion-col col-12 class="PTB0">
-                                    <p class="author">{{courseItem?.creator}}</p>
-                                </ion-col>
-                            </ion-row>
-                        </ion-card-content>
-                    </ion-card>
-                </div>
-            </ion-scroll>
-        </div>
-    </div>
-
     <div class="trainigs" *ngIf="trainingsCompleted?.length > 0">
         <div class="bolder heading f16">
             {{'TRAININGS_ATTENDED' | translate}} ({{trainingsCompleted.length}})&lrm;
         </div>
         <div class="content">
-            <div class="MB15" *ngFor="let training of trainingsCompleted | slice : startLimit:trainingsLimit;">
-                <div class="fw" *ngIf="training?.courseName">
-                    {{training?.courseName}}
-                </div>
-                <!-- <div class="lighter">
-                    Awarded by president Christopher Fernandes
-                </div> -->
-                <div class="lighter" *ngIf="training?.dateTime">
-                    {{training?.dateTime | date:'MMMM yyyy'}}
+            <div class="MB15 flex-nowrap" *ngFor="let training of trainingsCompleted | slice : startLimit:trainingsLimit;">
+                <div class="training-1">
+                    <div class="fw" *ngIf="training?.courseName">
+                        {{training?.courseName}}
+                    </div>
+                    <!-- <div class="lighter">
+                        Awarded by president Christopher Fernandes
+                    </div> -->
+                    <div class="lighter" *ngIf="training?.dateTime">
+                        {{training?.dateTime | date:'MMMM yyyy'}}
+                    </div>
                 </div>
             </div>
             <div class="" text-center>
@@ -253,5 +207,53 @@
             </div>
         </div>
     </div>
+
+    <div class="contributions" *ngIf="contentCreatedByMe.length > 0">
+            <div class="bolder f16" style="padding: 15px; background-color: #fff; margin-bottom:  2px;">
+                {{'CONTRIBUTIONS' | translate}} ({{contentCreatedByMe.length}})&lrm;
+            </div>
+            <div class="cards-container" style="padding:15px 5px; background-color: #fff; ">
+                <ion-scroll scrollX="true" style="width: 100%" no-padding>
+                    <div *ngIf="contentCreatedByMe  && isLoggedInUser">
+                        <ion-card *ngFor="let courseItem of contentCreatedByMe; let i=index"
+                            (click)="navigateToDetailPage(courseItem, layoutPopular, i);">
+                            <ion-card-content>
+                                <ion-row class="top">
+                                    <ion-col col-3 class="img-container">
+                                        <img class="app-icon" src="{{courseItem?.appIcon}}" />
+                                    </ion-col>
+                                    <ion-col col-9 style="margin-bottom: 5px; padding-left: 15px; padding: 0 0 0 15px;">
+                                        <div style="margin-left: -3px; margin-bottom: 5px;" *ngIf="courseItem.resourceType">
+                                            <button ion-button outline class="badge">
+                                                {{courseItem?.resourceType}}
+                                            </button>
+                                        </div>
+                                        <div class="f11 ellipsis info" *ngIf="courseItem.subject">
+                                            {{'SUBJECT'| translate}}: {{courseItem?.subject}}
+                                        </div>
+                                        <div class="f11 ellipsis info"
+                                            *ngIf="courseItem.gradeLevel && courseItem.gradeLevel.length">
+                                            {{'CLASS' | translate}}: {{courseItem?.gradeLevel}}
+                                        </div>
+                                        <div class="f11 ellipsis info" *ngIf="courseItem.medium">
+                                            {{'MEDIUM' | translate}}: {{courseItem?.medium}}
+                                        </div>
+                                    </ion-col>
+    
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col col-12 class="PTB0">
+                                        <h6 class="name second-line-ellipsis">{{courseItem?.name}}</h6>
+                                    </ion-col>
+                                    <ion-col col-12 class="PTB0">
+                                        <p class="author">{{courseItem?.creator}}</p>
+                                    </ion-col>
+                                </ion-row>
+                            </ion-card-content>
+                        </ion-card>
+                    </div>
+                </ion-scroll>
+            </div>
+        </div>
     <div class="bottom-cover"></div>
 </ion-content>

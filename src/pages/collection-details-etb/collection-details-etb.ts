@@ -384,6 +384,16 @@ export class CollectionDetailsEtbPage implements OnInit {
     } else {
       isCollapsed = false;
       this.shownGroup = group;
+      setTimeout(() => {
+        if (document.getElementById(content.identifier)) {
+          window['scrollWindow'].getScrollElement()
+          .scrollTo({
+            top: document.getElementById(content.identifier).offsetTop - 165,
+            left: 0,
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
     }
     const values = new Map();
     values['isCollapsed'] = isCollapsed;
@@ -791,7 +801,11 @@ export class CollectionDetailsEtbPage implements OnInit {
             setTimeout(() => {
               (this.stickyPillsRef.nativeElement as HTMLDivElement).classList.add('sticky');
               window['scrollWindow'].getScrollElement()
-              .scrollBy(0, document.getElementById(this.textbookTocService.textbookIds.contentId).offsetTop - 165);
+              .scrollTo({
+                top: document.getElementById(this.textbookTocService.textbookIds.contentId).offsetTop - 165,
+                left: 0,
+                behavior: 'smooth'
+              });
               this.textbookTocService.resetTextbookIds();
             }, 0);
           }

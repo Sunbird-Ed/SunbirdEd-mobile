@@ -92,13 +92,13 @@ export class CourseCard implements OnInit {
   checkRetiredOpenBatch(content: any, layoutName?: string): void {
     this.loader = this.commonUtilService.getLoader();
     this.loader.present();
-    let anyOpenBatch: Boolean = false;
+    let anyRunningBatch: Boolean = false;
     let retiredBatches: Array<any> = [];
     this.enrolledCourses = this.enrolledCourses || [];
     if (layoutName !== ContentCard.LAYOUT_INPROGRESS) {
       retiredBatches = this.enrolledCourses.filter((element) =>  {
         if (element.contentId === content.identifier && element.batch.status === 1 && element.cProgress !== 100) {
-          anyOpenBatch = true;
+          anyRunningBatch = true;
           content.batch = element.batch;
         }
         if (element.contentId === content.identifier && element.batch.status === 2 && element.cProgress !== 100) {
@@ -106,7 +106,7 @@ export class CourseCard implements OnInit {
         }
       });
     }
-    if (anyOpenBatch || !retiredBatches.length) {
+    if (anyRunningBatch || !retiredBatches.length) {
       // open the batch directly
       this.navigateToDetailPage(content, layoutName);
     } else if (retiredBatches.length) {
@@ -208,6 +208,7 @@ export class CourseCard implements OnInit {
     if (layoutName === this.layoutInProgress || content.contentType === ContentType.COURSE) {
       this.navCtrl.push(EnrolledCourseDetailsPage, {
         content: content,
+        isCourse: true,
         corRelation: corRelationList
       });
     } else if (content.mimeType === MimeType.COLLECTION) {
@@ -219,6 +220,7 @@ export class CourseCard implements OnInit {
     } else {
       this.navCtrl.push(ContentDetailsPage, {
         content: content,
+        isCourse: true,
         corRelation: corRelationList
       });
     }
@@ -239,15 +241,24 @@ export class CourseCard implements OnInit {
       telemetryObject,
       values);
     this.saveContentContext(content);
-    if (content.lastReadContentId && content.status === 1) {
-      this.events.publish('course:resume', {
-        content: content
-      });
-    } else {
-      this.navCtrl.push(EnrolledCourseDetailsPage, {
-        content: content
-      });
-    }
+
+    const userId = content.userId;
+    const lastReadContentIdKey = 'lastReadContentId_' + userId + '_' + identifier + '_' + content.batchId;
+    this.preferences.getString(lastReadContentIdKey).toPromise()
+    .then(val => {
+      content.lastReadContentId = val;
+
+      if (content.lastReadContentId) {
+        this.events.publish('course:resume', {
+          content: content
+        });
+      } else {
+        this.navCtrl.push(EnrolledCourseDetailsPage, {
+          content: content,
+          isCourse: true
+        });
+      }
+    });
   }
 
   ngOnInit() {

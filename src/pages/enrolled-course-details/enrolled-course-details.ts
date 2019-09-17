@@ -66,6 +66,7 @@ import { SbGenericPopoverComponent } from '@app/component/popups/sb-generic-popu
 import { BatchConstants } from '@app/app';
 import { ContentShareHandler } from '@app/service/content/content-share-handler';
 import { AppVersion } from '@ionic-native/app-version';
+import { ContentUtil } from '@app/util/content-util';
 
 declare const cordova;
 
@@ -853,6 +854,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
    * @param depth
    */
   navigateToChildrenDetailsPage(content: Content, depth): void {
+    let subtype = InteractSubtype.CONTENT_CLICKED;
     const contentState: ContentState = {
       batchId: this.courseCardData.batchId ? this.courseCardData.batchId : '',
       courseId: this.identifier
@@ -866,6 +868,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
           corRelation: this.corRelationList
         });
       } else if (content.mimeType === MimeType.COLLECTION) {
+        subtype = InteractSubtype.UNIT_CLICKED;
         let isChildClickable = true;
         if (this.isAlreadyEnrolled && this.isBatchNotStarted) {
           isChildClickable = false;
@@ -885,9 +888,18 @@ export class EnrolledCourseDetailsPage implements OnInit {
           depth: depth,
           contentState: contentState,
           isChildContent: true,
-          corRelation: this.corRelationList
+          corRelation: this.corRelationList,
+          isCourse: true
         });
       }
+      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+        subtype,
+        Environment.HOME,
+        PageId.COURSE_DETAIL,
+        ContentUtil.getTelemetryObject(content),
+        undefined,
+        undefined,
+        this.corRelationList);
     });
   }
 
@@ -936,7 +948,8 @@ export class EnrolledCourseDetailsPage implements OnInit {
       isResumedCourse: true,
       isChildContent: true,
       resumedCourseCardData: this.courseCardData,
-      corRelation: this.corRelationList
+      corRelation: this.corRelationList,
+      isCourse: true
     });
     this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
       InteractSubtype.RESUME_CLICKED,
@@ -1017,7 +1030,7 @@ export class EnrolledCourseDetailsPage implements OnInit {
     if (enrolledCourses && enrolledCourses.length > 0) {
       for (const course of enrolledCourses) {
         if (course.courseId === identifier) {
-          if (this.courseCardData.batch && course.batchId === this.courseCardData.batchId) {
+          if (this.courseCardData.batch && course.batchId === this.courseCardData.batch.identifier) {
             this.isAlreadyEnrolled = true;
             this.courseCardData = course;
           } else if (!this.courseCardData.batch) {
@@ -1152,36 +1165,34 @@ export class EnrolledCourseDetailsPage implements OnInit {
       reqvalues);
 
     if (this.commonUtilService.networkInfo.isNetworkAvailable) {
-      if (!this.guestUser) {
-        loader.present();
-        this.courseService.getCourseBatches(courseBatchesRequest).toPromise()
-          .then((data: Batch[]) => {
-            this.zone.run(() => {
-              this.batches = data;
-              if (this.batches.length) {
-                _.forEach(this.batches, (batch, key) => {
-                  if (batch.status === 1) {
-                    ongoingBatches.push(batch);
-                  } else {
-                    upcommingBatches.push(batch);
-                  }
-                });
-                loader.dismiss();
-                this.navCtrl.push(CourseBatchesPage, {
-                  ongoingBatches: ongoingBatches,
-                  upcommingBatches: upcommingBatches
-                });
-              } else {
-                loader.dismiss();
-                this.commonUtilService.showToast('NO_BATCHES_AVAILABLE');
-              }
-            });
-          })
-          .catch((error: any) => {
+      loader.present();
+      this.courseService.getCourseBatches(courseBatchesRequest).toPromise()
+        .then((data: Batch[]) => {
+          this.zone.run(() => {
+            this.batches = data;
+            if (this.batches.length) {
+              _.forEach(this.batches, (batch, key) => {
+                if (batch.status === 1) {
+                  ongoingBatches.push(batch);
+                } else {
+                  upcommingBatches.push(batch);
+                }
+              });
+              loader.dismiss();
+              this.navCtrl.push(CourseBatchesPage, {
+                ongoingBatches: ongoingBatches,
+                upcommingBatches: upcommingBatches,
+                course: this.course
+              });
+            } else {
+              loader.dismiss();
+              this.commonUtilService.showToast('NO_BATCHES_AVAILABLE');
+            }
           });
-      } else {
-        this.navCtrl.push(CourseBatchesPage);
-      }
+        })
+        .catch((error: any) => {
+          console.log('Error while fetching Batch Details', error);
+        });
     } else {
       this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
     }

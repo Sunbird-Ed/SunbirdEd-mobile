@@ -1,7 +1,7 @@
 import { TelemetryGeneratorService } from './../../service/telemetry-generator.service';
 import {Component, Inject, NgZone, OnInit} from '@angular/core';
-import {AuthService, Batch, CourseService, EnrollCourseRequest, OAuthSession} from 'sunbird-sdk';
-import {Events, IonicPage, NavController, NavParams} from 'ionic-angular';
+import {AuthService, Batch, CourseService, EnrollCourseRequest, OAuthSession, SharedPreferences} from 'sunbird-sdk';
+import {Events, IonicPage, NavController, NavParams, ToastController} from 'ionic-angular';
 import {EventTopics} from '../../app/app.constant';
 import {CommonUtilService} from '../../service/common-util.service';
 import { InteractType, InteractSubtype, Environment, PageId } from '@app/service/telemetry-constants';
@@ -66,6 +66,8 @@ export class CourseBatchesPage implements OnInit {
     showBurgerMenu: false,
     actionButtons: []
   };
+  public showSignInCard = false;
+  course: any;
 
   /**
    * Default method of class CourseBatchesComponent
@@ -79,6 +81,7 @@ export class CourseBatchesPage implements OnInit {
   constructor(
     @Inject('AUTH_SERVICE') private authService: AuthService,
     @Inject('COURSE_SERVICE') private courseService: CourseService,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
     private navCtrl: NavController,
     private navParams: NavParams,
     private zone: NgZone,
@@ -86,11 +89,13 @@ export class CourseBatchesPage implements OnInit {
     private events: Events,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private headerService: AppHeaderService,
+    public toastController: ToastController,
   ) {
   }
 
   ngOnInit(): void {
     this.getUserId();
+    this.getBatchesByCourseId();
   }
 
   ionViewWillEnter() {
@@ -107,45 +112,50 @@ export class CourseBatchesPage implements OnInit {
    * @param {any} item contains details of select batch
    */
   enrollIntoBatch(item: Batch): void {
-    const enrollCourseRequest: EnrollCourseRequest = {
-      batchId: item.id,
-      courseId: item.courseId,
-      userId: this.userId,
-      contentId: item.courseId,
-      batchStatus: item.status
-    };
-    const loader = this.commonUtilService.getLoader();
-    loader.present();
-    const reqvalues = new Map();
-    reqvalues['enrollReq'] = enrollCourseRequest;
-    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-      InteractSubtype.ENROLL_CLICKED,
-        Environment.HOME,
-        PageId.COURSE_BATCHES, undefined,
-        reqvalues);
+    if (this.isGuestUser) {
+      this.showSignInCard = true;
+      this.preferences.putString('batch_detail', JSON.stringify(item)).toPromise();
+      this.preferences.putString('course_data', JSON.stringify(this.course)).toPromise();
+    } else {
+      const enrollCourseRequest: EnrollCourseRequest = {
+        batchId: item.id,
+        courseId: item.courseId,
+        userId: this.userId,
+        batchStatus: item.status
+      };
+      const loader = this.commonUtilService.getLoader();
+      loader.present();
+      const reqvalues = new Map();
+      reqvalues['enrollReq'] = enrollCourseRequest;
+      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+        InteractSubtype.ENROLL_CLICKED,
+          Environment.HOME,
+          PageId.COURSE_BATCHES, undefined,
+          reqvalues);
 
-    this.courseService.enrollCourse(enrollCourseRequest).toPromise()
-      .then((data: boolean) => {
-        this.zone.run(() => {
-          this.commonUtilService.showToast(this.commonUtilService.translateMessage('COURSE_ENROLLED'));
-          this.events.publish(EventTopics.ENROL_COURSE_SUCCESS, {
-            batchId: item.id,
-            courseId: item.courseId
+      this.courseService.enrollCourse(enrollCourseRequest).toPromise()
+        .then((data: boolean) => {
+          this.zone.run(() => {
+            this.commonUtilService.showToast(this.commonUtilService.translateMessage('COURSE_ENROLLED'));
+            this.events.publish(EventTopics.ENROL_COURSE_SUCCESS, {
+              batchId: item.id,
+              courseId: item.courseId
+            });
+            loader.dismiss();
+            this.navCtrl.pop();
           });
-          loader.dismiss();
-          this.navCtrl.pop();
+        }, (error) => {
+          this.zone.run(() => {
+            loader.dismiss();
+            if (error && error.code === 'NETWORK_ERROR') {
+              this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NO_INTERNET_MESSAGE'));
+            } else if (error && error.response
+              && error.response.body && error.response.body.params && error.response.body.params.err === 'USER_ALREADY_ENROLLED_COURSE') {
+              this.commonUtilService.showToast(this.commonUtilService.translateMessage('ALREADY_ENROLLED_COURSE'));
+            }
+          });
         });
-      }, (error) => {
-        this.zone.run(() => {
-          loader.dismiss();
-          if (error && error.code === 'NETWORK_ERROR') {
-            this.commonUtilService.showToast(this.commonUtilService.translateMessage('ERROR_NO_INTERNET_MESSAGE'));
-          } else if (error && error.response
-            && error.response.body && error.response.body.params && error.response.body.params.err === 'USER_ALREADY_ENROLLED_COURSE') {
-            this.commonUtilService.showToast(this.commonUtilService.translateMessage('ALREADY_ENROLLED_COURSE'));
-          }
-        });
-      });
+    }
   }
 
   /**
@@ -161,7 +171,6 @@ export class CourseBatchesPage implements OnInit {
         this.zone.run(() => {
           this.isGuestUser = false;
           this.userId = session.userToken;
-          this.getBatchesByCourseId();
         });
       }
     }, () => {
@@ -175,12 +184,28 @@ export class CourseBatchesPage implements OnInit {
   getBatchesByCourseId(): void {
     this.ongoingBatches = this.navParams.get('ongoingBatches');
     this.upcommingBatches = this.navParams.get('upcommingBatches');
+    this.course = this.navParams.get('course');
     this.todayDate =  moment(new Date()).format('YYYY-MM-DD');
   }
 
   spinner(flag) {
     this.zone.run(() => {
       this.showLoader = false;
+    });
+  }
+
+  showOfflineWarning() {
+    let toast =  this.toastController.create({
+      duration: 3000,
+      message: this.commonUtilService.translateMessage('NO_INTERNET_TITLE'),
+      showCloseButton: true,
+      position: 'top',
+      closeButtonText: '',
+      cssClass: 'toastHeader'
+    });
+    toast.present();
+    toast.onDidDismiss(() => {
+      toast = undefined;
     });
   }
 }

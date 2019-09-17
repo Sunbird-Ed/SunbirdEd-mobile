@@ -44,7 +44,7 @@ describe('Notification Page', () => {
         it('should call getNotifications once received event', () => {
             eventsMock.subscribe.mockReturnValue(Observable.of(true));
             notificationPage.ionViewWillEnter();
-            expect(eventsMock.subscribe).toHaveReturned();
+            expect(notificationPage.getNotifications).toHaveBeenCalled();
         });
         it('should call registerBackButtonAction', () => {
             platformMock.registerBackButtonAction.mockReturnValue('');

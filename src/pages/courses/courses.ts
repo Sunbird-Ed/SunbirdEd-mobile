@@ -189,7 +189,15 @@ export class CoursesPage implements OnInit, AfterViewInit {
     });
   }
 
+  ionViewWillUnload() {
+    this.handleUnsubscribeEvents();
+  }
+
   ionViewWillLeave() {
+    this.handleUnsubscribeEvents();
+  }
+
+  private handleUnsubscribeEvents() {
     if (this.headerObservable) {
       this.headerObservable.unsubscribe();
     }
@@ -729,6 +737,7 @@ export class CoursesPage implements OnInit, AfterViewInit {
       isResumedCourse: true,
       isChildContent: true,
       resumedCourseCardData: content,
+      isCourse : true,
       corRelation: this.corRelationList
     });
   }

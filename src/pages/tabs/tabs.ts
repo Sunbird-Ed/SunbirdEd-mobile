@@ -50,6 +50,11 @@ export class TabsPage {
     setTimeout(() => {
       this.tabRef.select(tabIndex);
     }, 300);
+    this.events.subscribe('return_course', () => {
+      setTimeout(() => {
+        this.tabRef.select(1);
+      }, 300);
+    });
   }
 
   public ionChange(tab: Tab) {
