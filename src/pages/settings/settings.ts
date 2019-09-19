@@ -1,7 +1,7 @@
 import { AppGlobalService, TelemetryGeneratorService, UtilityService, AppHeaderService } from '@app/service';
 import { CommonUtilService } from './../../service/common-util.service';
 import { Component, Inject } from '@angular/core';
-import { NavController, PopoverController, ToastController } from 'ionic-angular';
+import { Loading, NavController, PopoverController, ToastController } from 'ionic-angular';
 import { DatasyncPage } from './datasync/datasync';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { AboutUsPage } from './about-us/about-us';
@@ -187,6 +187,8 @@ export class SettingsPage {
   }
 
   private mergeAccount() {
+    let loader: Loading | undefined;
+
     this.telemetryGeneratorService.generateInteractTelemetry(
       InteractType.TOUCH,
       InteractSubtype.MERGE_ACCOUNT_INITIATED,
@@ -211,11 +213,19 @@ export class SettingsPage {
           }
         } as MergeServerProfilesRequest;
       })
+      .do(() => {
+        loader = this.commonUtilService.getLoader();
+        loader.present();
+      })
       .mergeMap((mergeServerProfilesRequest) => {
         return this.profileService.mergeServerProfiles(mergeServerProfilesRequest)
       })
       .catch(async (e) => {
         console.error(e);
+
+        if (e instanceof Error && e['code'] === 'IN_APP_BROWSER_EXIT_ERROR') {
+          throw e;
+        }
 
         this.telemetryGeneratorService.generateInteractTelemetry(
           InteractType.OTHER,
@@ -255,6 +265,11 @@ export class SettingsPage {
           cssClass: 'sb-popover',
         });
         await successPopover.present();
+      })
+      .finally(() => {
+        if (loader) {
+          loader.dismiss();
+        }
       })
       .subscribe();
   }
