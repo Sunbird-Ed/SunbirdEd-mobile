@@ -11,12 +11,14 @@ import { DialogPopupComponent } from '@app/component/dialog-popup/dialog-popup';
 import { CommonUtilService } from '@app/service/common-util.service';
 import { UtilityService } from '@app/service/utility-service';
 import { ContentInfo } from '../content-info';
+import {Course, CourseService} from "sunbird-sdk";
 
 
 @Injectable()
 export class ContentPlayerHandler {
     constructor(
         @Inject('PLAYER_SERVICE') private playerService: PlayerService,
+        @Inject('COURSE_SERVICE') private courseService: CourseService,
         private app: App,
         private canvasPlayerService: CanvasPlayerService,
         private file: File,
@@ -58,6 +60,23 @@ export class ContentPlayerHandler {
             request.streaming = isStreaming;
         }
         request['correlationData'] = contentInfo.correlationList;
+        if (isCourse && content.contentData.totalQuestions) {
+          const correlationData: CorrelationData = {
+            id: this.courseService.generateAssessmentAttemptId({
+              courseId: contentInfo.course!.identifier,
+              batchId: contentInfo.course.batchId,
+              contentId: content.identifier,
+              userId: contentInfo.course.userId
+            }),
+            type: 'AttemptId'
+          };
+
+          if (request['correlationData']) {
+            request['correlationData'].push(correlationData)
+          }
+
+          request['correlationData'] = [correlationData];
+        }
         this.playerService.getPlayerConfig(content, request).subscribe((data) => {
             data['data'] = {};
             if (isCourse) {

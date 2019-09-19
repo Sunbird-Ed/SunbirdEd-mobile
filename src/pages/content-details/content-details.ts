@@ -28,7 +28,8 @@ import {
   ProfileService,
   Rollup,
   StorageService,
-  TelemetryObject
+  TelemetryObject,
+  Course
 } from 'sunbird-sdk';
 import { Subscription } from 'rxjs';
 import {
@@ -132,6 +133,11 @@ export class ContentDetailsPage {
   networkSubscription: any;
   telemetryObject: TelemetryObject;
   contentDeleteObservable: any;
+
+  get course(): Course | undefined {
+    return this.navParams.get('course');
+  }
+
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
@@ -903,7 +909,8 @@ export class ContentDetailsPage {
         telemetryObject: this.telemetryObject,
         rollUp: this.objRollup,
         correlationList: this.corRelationList,
-        hierachyInfo: hierachyInfo
+        hierachyInfo: hierachyInfo,
+        course: this.course
       };
       if (this.isResumedCourse) {
         this.playingContent.hierarchyInfo = hierachyInfo;
