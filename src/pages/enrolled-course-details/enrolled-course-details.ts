@@ -990,9 +990,9 @@ export class EnrolledCourseDetailsPage implements OnInit {
             }
             this.appGlobalService.setEnrolledCourseList(courseList);
           }
-          return data.find((element) => (this.courseCardData.batchId && element.batchId === this.courseCardData.batchId) ||
-            element.courseId === this.identifier);
-        });
+        return data.find((element) => (this.courseCardData.batchId && element.batchId === this.courseCardData.batchId) ||
+        (!this.courseCardData.batchId && element.courseId === this.identifier));
+      });
       if (this.updatedCourseCardData && !this.courseCardData.batch) {
         this.courseCardData.batch = this.updatedCourseCardData.batch;
         this.courseCardData.batchId = this.updatedCourseCardData.batchId;
