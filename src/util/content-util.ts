@@ -81,7 +81,7 @@ export class ContentUtil {
      * @returns {TelemetryObject}
      */
     public static getTelemetryObject(content): TelemetryObject {
-      const identifier = content.identifier;
+      const identifier = content.identifier ;
       const contentType = content.contentData ? content.contentData.contentType : content.contentType;
       const pkgVersion = content.contentData ? content.contentData.pkgVersion : content.pkgVersion;
       return new TelemetryObject(identifier, contentType, pkgVersion);

@@ -263,7 +263,7 @@ export class ContentDetailsPage {
 
   handleNavBackButton() {
     this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
-      true, this.cardData.identifier, this.corRelationList);
+      true, this.cardData.identifier, this.corRelationList, this.objRollup, this.telemetryObject);
     this.didViewLoad = false;
     this.generateEndEvent();
     if (this.shouldGenerateEndTelemetry) {
@@ -275,7 +275,7 @@ export class ContentDetailsPage {
   handleDeviceBackButton() {
     this.backButtonFunc = this.platform.registerBackButtonAction(() => {
       this.telemetryGeneratorService.generateBackClickedTelemetry(PageId.CONTENT_DETAIL, Environment.HOME,
-        false, this.cardData.identifier, this.corRelationList);
+        false, this.cardData.identifier, this.corRelationList, this.objRollup, this.telemetryObject);
       this.didViewLoad = false;
       this.popToPreviousPage(false);
       this.generateEndEvent();

@@ -23,8 +23,8 @@ import {
 } from 'sunbird-sdk';
 import { PermissionPage } from '../permission/permission';
 import { Observable } from 'rxjs';
-import {TranslateService} from '@ngx-translate/core';
-import {SbPopoverComponent} from '@app/component';
+import { TranslateService } from '@ngx-translate/core';
+import { SbPopoverComponent } from '@app/component';
 
 declare const cordova;
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
@@ -152,28 +152,29 @@ export class SettingsPage {
   }
 
   showPermissionPage() {
-    this.navCtrl.push(PermissionPage, { changePermissionAccess: true } ) ;
+    this.navCtrl.push(PermissionPage, { changePermissionAccess: true });
   }
 
   async showMergeAccountConfirmationPopup() {
     const confirm = this.popoverCtrl.create(SbPopoverComponent, {
       isNotShowCloseIcon: false,
       sbPopoverHeading: this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_HEADING'),
-      sbPopoverHtmlContent: '<div class="sb-popover-content text-left font-weight-normal padding-left-10 padding-right-10">' + this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_CONTENT', await this.appVersion.getAppName()) + '</div>',
+      sbPopoverHtmlContent: '<div class="sb-popover-content text-left font-weight-normal padding-left-10 padding-right-10">'
+        + this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_CONTENT', await this.appVersion.getAppName()) + '</div>',
       actionsButtons: [
         {
           btntext: this.commonUtilService.translateMessage('CANCEL'),
           btnClass: 'popover-button-cancel',
         },
         {
-          btntext: this.commonUtilService.translateMessage('OKAY'),
+          btntext: this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_BTN_MERGE'),
           btnClass: 'popover-button-allow',
         }
       ],
       handler: (selectedButton: string) => {
         if (selectedButton === this.commonUtilService.translateMessage('CANCEL')) {
           confirm.dismiss();
-        } else if (selectedButton === this.commonUtilService.translateMessage('OKAY')) {
+        } else if (selectedButton === this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_BTN_MERGE')) {
           confirm.dismiss();
           this.mergeAccount();
         }
@@ -239,12 +240,21 @@ export class SettingsPage {
           Environment.SETTINGS,
           PageId.SETTINGS
         );
-        const toast = this.toastCtrl.create({
-          message: await this.translate.get('ACCOUNT_MERGE_SUCCESS').toPromise(),
-          duration: 2000,
-          position: 'bottom'
+
+        const successPopover = this.popoverCtrl.create(SbPopoverComponent, {
+          sbPopoverHeading: this.commonUtilService.translateMessage('ACCOUNT_MERGE_SUCCESS_POPOVER_HEADING'),
+          icon: null,
+          actionsButtons: [
+            {
+              btntext: this.commonUtilService.translateMessage('OKAY'),
+              btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+            },
+          ],
+          sbPopoverContent: this.commonUtilService.translateMessage('ACCOUNT_MERGE_SUCCESS_POPOVER_CONTENT')
+        }, {
+          cssClass: 'sb-popover',
         });
-        await toast.present();
+        await successPopover.present();
       })
       .subscribe();
   }
