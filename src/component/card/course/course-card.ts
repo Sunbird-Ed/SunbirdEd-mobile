@@ -13,6 +13,7 @@ CourseService, CourseBatchesRequest, CourseEnrollmentType, CourseBatchStatus, Ge
 import {InteractSubtype, InteractType, Environment, PageId} from '../../../service/telemetry-constants';
 import { CommonUtilService } from '@app/service';
 import { EnrollmentDetailsPage } from '@app/pages/enrolled-course-details/enrollment-details/enrollment-details';
+import { ContentUtil } from '@app/util/content-util';
 
 /**
  * The course card component
@@ -200,7 +201,7 @@ export class CourseCard implements OnInit {
       this.pageName ? this.pageName : this.layoutName,
       telemetryObject,
       values,
-      undefined,
+      ContentUtil.generateRollUp(undefined, identifier),
       corRelationList);
       if (this.loader) {
         this.loader.dismiss();
@@ -239,7 +240,10 @@ export class CourseCard implements OnInit {
       this.env,
       this.pageName ? this.pageName : this.layoutName,
       telemetryObject,
-      values);
+      values,
+      ContentUtil.generateRollUp(undefined, identifier));
+    // Update enrolled courses playedOffline status.
+    this.getContentState(content);
     this.saveContentContext(content);
 
     const userId = content.userId;
@@ -268,6 +272,16 @@ export class CourseCard implements OnInit {
     }
   }
 
+  getContentState(course: any) {
+    const request: GetContentStateRequest = {
+      userId: course['userId'],
+      courseIds: [course['contentId']],
+      returnRefreshedContentStates: true,
+      batchId: course['batchId']
+    };
+    this.courseService.getContentState(request).subscribe();
+}
+
 
   saveContentContext(content: any) {
     const contentContextMap = new Map();
@@ -283,4 +297,3 @@ export class CourseCard implements OnInit {
     this.preferences.putString(PreferenceKey.CONTENT_CONTEXT, JSON.stringify(contentContextMap)).toPromise().then();
   }
 }
-

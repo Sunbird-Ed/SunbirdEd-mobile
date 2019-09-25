@@ -1,25 +1,30 @@
 import { AppGlobalService, TelemetryGeneratorService, UtilityService, AppHeaderService } from '@app/service';
 import { CommonUtilService } from './../../service/common-util.service';
 import { Component, Inject } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { Loading, NavController, PopoverController, ToastController } from 'ionic-angular';
 import { DatasyncPage } from './datasync/datasync';
 import { LanguageSettingsPage } from '../language-settings/language-settings';
 import { AboutUsPage } from './about-us/about-us';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { AppVersion } from '@ionic-native/app-version';
-import { AudienceFilter, ContentType, PreferenceKey } from '../../app/app.constant';
+import { PreferenceKey } from '../../app/app.constant';
 import { Environment, ImpressionType, InteractSubtype, InteractType, PageId, } from '../../service/telemetry-constants';
 import {
-  ContentRequest,
   ContentService,
   DeviceInfo,
-  GetAllProfileRequest,
   ProfileService,
   SharedPreferences,
   TelemetryImpressionRequest,
-  Profile
+  AuthService,
+  OAuthSessionProvider,
+  SdkConfig,
+  ApiService,
+  MergeServerProfilesRequest
 } from 'sunbird-sdk';
 import { PermissionPage } from '../permission/permission';
+import { Observable } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
+import { SbPopoverComponent } from '@app/component';
 
 declare const cordova;
 const KEY_SUNBIRD_CONFIG_FILE_PATH = 'sunbird_config_file_path';
@@ -38,20 +43,34 @@ export class SettingsPage {
   shareAppLabel: string;
   appName: any;
 
+  public isUserLoggedIn$: Observable<boolean>;
+  public isNotDefaultChannelProfile$: Observable<boolean>;
+
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
     @Inject('CONTENT_SERVICE') private contentService: ContentService,
+    @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
+    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
+    @Inject('AUTH_SERVICE') private authService: AuthService,
+    @Inject('SDK_CONFIG') private sdkConfig: SdkConfig,
+    @Inject('API_SERVICE') private apiService: ApiService,
     private navCtrl: NavController,
     private appVersion: AppVersion,
     private socialSharing: SocialSharing,
-    @Inject('DEVICE_INFO') private deviceInfo: DeviceInfo,
     private commonUtilService: CommonUtilService,
     private appGlobalService: AppGlobalService,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private utilityService: UtilityService,
-    @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
-    private headerService: AppHeaderService
+    private headerService: AppHeaderService,
+    private toastCtrl: ToastController,
+    private translate: TranslateService,
+    private popoverCtrl: PopoverController
   ) {
+    this.isUserLoggedIn$ = this.authService.getSession()
+      .map((session) => !!session) as any;
+
+    this.isNotDefaultChannelProfile$ = this.profileService.isDefaultChannelProfile()
+      .map((isDefaultChannelProfile) => !isDefaultChannelProfile) as any;
   }
 
   ionViewWillEnter() {
@@ -133,6 +152,125 @@ export class SettingsPage {
   }
 
   showPermissionPage() {
-    this.navCtrl.push(PermissionPage, { changePermissionAccess: true } ) ;
+    this.navCtrl.push(PermissionPage, { changePermissionAccess: true });
+  }
+
+  async showMergeAccountConfirmationPopup() {
+    const confirm = this.popoverCtrl.create(SbPopoverComponent, {
+      isNotShowCloseIcon: false,
+      sbPopoverHeading: this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_HEADING'),
+      sbPopoverHtmlContent: '<div class="sb-popover-content text-left font-weight-normal padding-left-10 padding-right-10">'
+        + this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_CONTENT', await this.appVersion.getAppName()) + '</div>',
+      actionsButtons: [
+        {
+          btntext: this.commonUtilService.translateMessage('CANCEL'),
+          btnClass: 'popover-button-cancel',
+        },
+        {
+          btntext: this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_BTN_MERGE'),
+          btnClass: 'popover-button-allow',
+        }
+      ],
+      handler: (selectedButton: string) => {
+        if (selectedButton === this.commonUtilService.translateMessage('CANCEL')) {
+          confirm.dismiss();
+        } else if (selectedButton === this.commonUtilService.translateMessage('ACCOUNT_MERGE_CONFIRMATION_BTN_MERGE')) {
+          confirm.dismiss();
+          this.mergeAccount();
+        }
+      }
+    }, {
+      cssClass: 'sb-popover primary',
+    });
+
+    confirm.present();
+  }
+
+  private mergeAccount() {
+    let loader: Loading | undefined;
+
+    this.telemetryGeneratorService.generateInteractTelemetry(
+      InteractType.TOUCH,
+      InteractSubtype.MERGE_ACCOUNT_INITIATED,
+      Environment.SETTINGS,
+      PageId.SETTINGS
+    );
+
+    this.authService.getSession()
+      .map((session) => session!)
+      .mergeMap(async (mergeToProfileSession) => {
+        const mergeFromProfileSessionProvider = new OAuthSessionProvider(this.sdkConfig.apiConfig, this.apiService, 'merge');
+        const mergeFromProfileSession = await mergeFromProfileSessionProvider.provide();
+
+        return {
+          from: {
+            userId: mergeFromProfileSession.userToken,
+            accessToken: mergeFromProfileSession.access_token
+          },
+          to: {
+            userId: mergeToProfileSession.userToken,
+            accessToken: mergeToProfileSession.access_token
+          }
+        } as MergeServerProfilesRequest;
+      })
+      .do(() => {
+        loader = this.commonUtilService.getLoader();
+        loader.present();
+      })
+      .mergeMap((mergeServerProfilesRequest) => {
+        return this.profileService.mergeServerProfiles(mergeServerProfilesRequest)
+      })
+      .catch(async (e) => {
+        console.error(e);
+
+        if (e instanceof Error && e['code'] === 'IN_APP_BROWSER_EXIT_ERROR') {
+          throw e;
+        }
+
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.OTHER,
+          InteractSubtype.MERGE_ACCOUNT_FAILED,
+          Environment.SETTINGS,
+          PageId.SETTINGS
+        );
+
+        const toast = this.toastCtrl.create({
+          message: await this.translate.get('ACCOUNT_MERGE_FAILED').toPromise(),
+          duration: 2000,
+          position: 'bottom'
+        });
+        await toast.present();
+
+        throw e;
+      })
+      .do(async () => {
+        this.telemetryGeneratorService.generateInteractTelemetry(
+          InteractType.OTHER,
+          InteractSubtype.MERGE_ACCOUNT_SUCCESS,
+          Environment.SETTINGS,
+          PageId.SETTINGS
+        );
+
+        const successPopover = this.popoverCtrl.create(SbPopoverComponent, {
+          sbPopoverHeading: this.commonUtilService.translateMessage('ACCOUNT_MERGE_SUCCESS_POPOVER_HEADING'),
+          icon: null,
+          actionsButtons: [
+            {
+              btntext: this.commonUtilService.translateMessage('OKAY'),
+              btnClass: 'sb-btn sb-btn-sm  sb-btn-outline-info'
+            },
+          ],
+          sbPopoverContent: this.commonUtilService.translateMessage('ACCOUNT_MERGE_SUCCESS_POPOVER_CONTENT')
+        }, {
+          cssClass: 'sb-popover',
+        });
+        await successPopover.present();
+      })
+      .finally(() => {
+        if (loader) {
+          loader.dismiss();
+        }
+      })
+      .subscribe();
   }
 }

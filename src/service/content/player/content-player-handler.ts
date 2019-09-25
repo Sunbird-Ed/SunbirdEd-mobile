@@ -15,6 +15,7 @@ import { ContentInfo } from '../content-info';
 
 @Injectable()
 export class ContentPlayerHandler {
+    private isPlayerLaunched = false;
     constructor(
         @Inject('PLAYER_SERVICE') private playerService: PlayerService,
         private app: App,
@@ -33,7 +34,7 @@ export class ContentPlayerHandler {
      *  @returns {void}
      */
     public launchContentPlayer(content: Content, isStreaming: boolean, shouldDownloadnPlay: boolean,
-         contentInfo: ContentInfo, isCourse: boolean) {
+        contentInfo: ContentInfo, isCourse: boolean) {
         if (!AppGlobalService.isPlayerLaunched) {
             AppGlobalService.isPlayerLaunched = true;
         }
@@ -66,6 +67,7 @@ export class ContentPlayerHandler {
             } else {
                 data.config.overlay.enableUserSwitcher = true;
             }
+            this.isPlayerLaunched = true;
             if (data.metadata.mimeType === 'application/vnd.ekstep.ecml-archive') {
                 if (!isStreaming) {
                     this.file.checkFile(`file://${data.metadata.basePath}/`, 'index.ecml').then((isAvailable) => {
@@ -92,5 +94,13 @@ export class ContentPlayerHandler {
                 this.app.getActiveNavs()[0].push(PlayerPage, { config: data });
             }
         });
+    }
+
+    public isContentPlayerLaunched(): boolean {
+        return this.isPlayerLaunched;
+    }
+
+    public setContentPlayerLaunchStatus(isPlayerLaunced: boolean) {
+        this.isPlayerLaunched = false;
     }
 }
