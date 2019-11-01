@@ -71,7 +71,7 @@
     "cordova-plugin-file-transfer": "1.7.1",
     "cordova-plugin-globalization": "1.11.0",
     "cordova-plugin-imagechooser": "git+https://github.com/project-sunbird/cordova-plugin-imagechooser.git",
-    "cordova-plugin-ionic-webview": "1.2.1",
+    "cordova-plugin-ionic-webview": "2.2.0",
     "cordova-plugin-local-notification": "git+https://github.com/katzer/cordova-plugin-local-notifications.git#master",
     "cordova-plugin-media": "^5.0.2",
     "cordova-plugin-network-information": "2.0.1",
