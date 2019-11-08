@@ -12,7 +12,6 @@
             {"type": "js", "src": "renderer/libs/videolibs/videojs-vjsdownload.js"},
             {"type": "css", "src": "renderer/libs/video-js.css"},
             {"type": "css", "src": "renderer/libs/videolibs/videojs-vjsdownload.css"},
-            {"type": "js", "src": "renderer/libs/videoyoutube.js"},
             {"type": "css", "src": "renderer/libs/loader.css"}
         ]
     },
