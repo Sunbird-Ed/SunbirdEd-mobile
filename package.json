@@ -99,7 +99,7 @@
     "lodash": "^4.17.15",
     "ng2-expansion-panels": "0.0.6",
     "ngx-chips": "1.8.2",
-    "node-sass": "^4.9.3",
+    "node-sass": "^7.0.0",
     "rxjs": "5.5.2",
     "sb-cordova-plugin-customtabs": "https://github.com/Sunbird-Ed/sb-cordova-plugin-customtabs.git",
     "sb-cordova-plugin-db": "git+https://github.com/swayangjit/sb-cordova-plugin-db.git",
